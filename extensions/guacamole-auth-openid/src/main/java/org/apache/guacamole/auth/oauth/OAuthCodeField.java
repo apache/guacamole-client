@@ -34,7 +34,7 @@ public class OAuthCodeField extends Field {
      * The standard HTTP parameter which will be included within the URL by all
      * OAuth services upon successful authentication and redirect.
      */
-    private static final String OAUTH_CODE_PARAMETER_NAME = "code";
+    public static final String PARAMETER_NAME = "code";
 
     /**
      * The full URI which the field should link to.
@@ -65,7 +65,7 @@ public class OAuthCodeField extends Field {
             String redirectURI) {
 
         // Init base field properties
-        super(OAUTH_CODE_PARAMETER_NAME, "GUAC_OAUTH_CODE");
+        super(PARAMETER_NAME, "GUAC_OAUTH_CODE");
 
         // Build authorization URI from given values
         try {
