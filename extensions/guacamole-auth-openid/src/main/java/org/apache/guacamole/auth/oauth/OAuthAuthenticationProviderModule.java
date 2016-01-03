@@ -20,7 +20,13 @@
 package org.apache.guacamole.auth.oauth;
 
 import com.google.inject.AbstractModule;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 import org.apache.guacamole.auth.oauth.conf.ConfigurationService;
+import org.apache.guacamole.auth.oauth.token.TokenService;
+import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;
@@ -43,6 +49,12 @@ public class OAuthAuthenticationProviderModule extends AbstractModule {
     private final AuthenticationProvider authProvider;
 
     /**
+     * A reference to the shared HTTP client to be used when making calls to
+     * the OAuth service.
+     */
+    private final Client client;
+
+    /**
      * Creates a new OAuth authentication provider module which configures
      * injection for the OAuthAuthenticationProvider.
      *
@@ -62,6 +74,15 @@ public class OAuthAuthenticationProviderModule extends AbstractModule {
         // Store associated auth provider
         this.authProvider = authProvider;
 
+        // Set up configuration for HTTP client
+        ClientConfig clientConfig = new DefaultClientConfig();
+        clientConfig.getSingletons().add(new JacksonJaxbJsonProvider()
+            .configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        );
+
+        // Store pre-configured HTTP client
+        this.client = Client.create(clientConfig);
+
     }
 
     @Override
@@ -73,6 +94,10 @@ public class OAuthAuthenticationProviderModule extends AbstractModule {
 
         // Bind OAuth-specific services
         bind(ConfigurationService.class);
+        bind(TokenService.class);
+
+        // Bind HTTP client
+        bind(Client.class).toInstance(client);
 
     }
 
