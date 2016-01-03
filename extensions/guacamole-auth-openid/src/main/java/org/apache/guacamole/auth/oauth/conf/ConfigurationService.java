@@ -51,6 +51,22 @@ public class ConfigurationService {
     }
 
     /**
+     * Returns the token endpoint (URI) of the OAuth service as configured with
+     * guacamole.properties.
+     *
+     * @return
+     *     The token endpoint of the OAuth service, as configured with
+     *     guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed, or if the authorization
+     *     endpoint property is missing.
+     */
+    public String getTokenEndpoint() throws GuacamoleException {
+        return environment.getRequiredProperty(OAuthGuacamoleProperties.OAUTH_TOKEN_ENDPOINT);
+    }
+
+    /**
      * Returns the OAuth client ID which should be submitted to the OAuth
      * service when necessary, as configured with guacamole.properties. This
      * value is typically provided by the OAuth service when OAuth credentials

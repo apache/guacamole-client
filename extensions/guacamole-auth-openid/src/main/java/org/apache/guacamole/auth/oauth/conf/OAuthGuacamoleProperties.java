@@ -45,6 +45,17 @@ public class OAuthGuacamoleProperties {
     };
 
     /**
+     * The token endpoint (URI) of the OAuth service.
+     */
+    public static final StringGuacamoleProperty OAUTH_TOKEN_ENDPOINT =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "oauth-token-endpoint"; }
+
+    };
+
+    /**
      * OAuth client ID which should be submitted to the OAuth service when
      * necessary. This value is typically provided by the OAuth service when
      * OAuth credentials are generated for your application.
