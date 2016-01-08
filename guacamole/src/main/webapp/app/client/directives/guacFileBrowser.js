@@ -123,6 +123,34 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
             };
 
             /**
+             * Recursively interpolates all text nodes within the DOM tree of
+             * the given element. All other node types, attributes, etc. will
+             * be left uninterpolated.
+             *
+             * @param {Element} element
+             *     The element at the root of the DOM tree to be interpolated.
+             *
+             * @param {Object} context
+             *     The evaluation context to use when evaluating expressions
+             *     embedded in text nodes within the provided element.
+             */
+            var interpolateElement = function interpolateElement(element, context) {
+
+                // Interpolate the contents of text nodes directly
+                if (element.nodeType === Node.TEXT_NODE)
+                    element.nodeValue = $interpolate(element.nodeValue)(context);
+
+                // Recursively interpolate the contents of all descendant text
+                // nodes
+                if (element.hasChildNodes()) {
+                    var children = element.childNodes;
+                    for (var i = 0; i < children.length; i++)
+                        interpolateElement(children[i], context);
+                }
+
+            };
+
+            /**
              * Creates a new element representing the given file and properly
              * handling user events, bypassing the overhead incurred through
              * use of ngRepeat and related techniques.
@@ -140,7 +168,8 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
             var createFileElement = function createFileElement(file) {
 
                 // Create from internal template
-                var element = angular.element($interpolate(fileTemplate)(file));
+                var element = angular.element(fileTemplate);
+                interpolateElement(element[0], file);
 
                 // Double-clicking on unknown file types will do nothing
                 var fileAction = function doNothing() {};
