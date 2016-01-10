@@ -20,7 +20,9 @@
         "ACTION_NAVIGATE_BACK"      : "Retour",
         "ACTION_NAVIGATE_HOME"      : "Accueil",
         "ACTION_SAVE"               : "Enregistrer",
+        "ACTION_SEARCH"             : "Rechercher",
         "ACTION_UPDATE_PASSWORD"    : "Mettre à jour mot de passe",
+        "ACTION_VIEW_HISTORY"       : "Historique",
 
         "DIALOG_HEADER_ERROR" : "Erreur",
 
@@ -130,7 +132,14 @@
 
     },
 
+    "DATA_SOURCE_DEFAULT" : {
+        "NAME" : "Standard (XML)"
+    },
+
     "FORM" : {
+
+        "FIELD_PLACEHOLDER_DATE" : "DD-MM-YYYY",
+        "FIELD_PLACEHOLDER_TIME" : "HH:MM:SS",
 
         "HELP_SHOW_PASSWORD" : "Cliquer pour afficher le mot de passe",
         "HELP_HIDE_PASSWORD" : "Cliquer pour masquer le mot de passe"
@@ -248,6 +257,8 @@
         
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
+        "INFO_READ_ONLY" : "Désolé, mais ce compte ne peut pas être édité.",
+
         "SECTION_HEADER_CONNECTIONS" : "Connexions",
         "SECTION_HEADER_EDIT_USER"   : "Modifier Utilisateur",
         "SECTION_HEADER_PERMISSIONS" : "Permissions",
@@ -262,6 +273,7 @@
         "FIELD_HEADER_COLOR_DEPTH"     : "Qualité couleur:",
         "FIELD_HEADER_CONSOLE"         : "Console Administrateur:",
         "FIELD_HEADER_CONSOLE_AUDIO"   : "Support son en console:",
+        "FIELD_HEADER_CREATE_DRIVE_PATH" : "Créer automatiquement un lecteur:",
         "FIELD_HEADER_DISABLE_AUDIO"   : "Désactiver son:",
         "FIELD_HEADER_DISABLE_AUTH"    : "Désactiver authentification:",
         "FIELD_HEADER_DOMAIN"          : "Nom du domaine:",
@@ -282,11 +294,14 @@
         "FIELD_HEADER_INITIAL_PROGRAM" : "Programme de démarrage:",
         "FIELD_HEADER_PASSWORD"        : "Mot de passe:",
         "FIELD_HEADER_PORT"            : "Port:",
+        "FIELD_HEADER_PRECONNECTION_BLOB" : "Pré-connexion BLOB (VM ID):",
+        "FIELD_HEADER_PRECONNECTION_ID"   : "Source RDP ID:",
         "FIELD_HEADER_REMOTE_APP_ARGS" : "Paramètres:",
         "FIELD_HEADER_REMOTE_APP_DIR"  : "Répertoire de travail:",
         "FIELD_HEADER_REMOTE_APP"      : "Programme:",
         "FIELD_HEADER_SECURITY"        : "Mode de Sécurité:",
         "FIELD_HEADER_SERVER_LAYOUT"   : "Agencement clavier:",
+        "FIELD_HEADER_SFTP_DIRECTORY"   : "Répertoire d'upload par défaut:",
         "FIELD_HEADER_SFTP_HOSTNAME"    : "Nom d'hôte:",
         "FIELD_HEADER_SFTP_PASSPHRASE"  : "Phrase secrète:",
         "FIELD_HEADER_SFTP_PASSWORD"    : "Mot de passe:",
@@ -325,6 +340,7 @@
         "SECTION_HEADER_DISPLAY"            : "Affichage",
         "SECTION_HEADER_NETWORK"            : "Réseau",
         "SECTION_HEADER_PERFORMANCE"        : "Performance",
+        "SECTION_HEADER_PRECONNECTION_PDU"  : "Pré-connexion PDU / Hyper-V",
         "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
         "SECTION_HEADER_SFTP"               : "SFTP"
 
@@ -332,6 +348,8 @@
 
     "PROTOCOL_SSH" : {
 
+        "FIELD_HEADER_COLOR_SCHEME" : "Palette de couleurs:",
+        "FIELD_HEADER_COMMAND"     : "Exécuter une commande:",
         "FIELD_HEADER_FONT_NAME"   : "Nom police:",
         "FIELD_HEADER_FONT_SIZE"   : "Taille police:",
         "FIELD_HEADER_ENABLE_SFTP" : "Activer SFTP:",
@@ -341,6 +359,12 @@
         "FIELD_HEADER_PASSPHRASE"  : "Phrase secrète:",
         "FIELD_HEADER_PORT"        : "Port:",
         "FIELD_HEADER_PRIVATE_KEY" : "Clé privée:",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Noir sur blanc",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Gris sur noir",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Vert sur noir",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Blanc sur noir",
 
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
@@ -363,12 +387,14 @@
         "SECTION_HEADER_AUTHENTICATION" : "Authentification",
         "SECTION_HEADER_DISPLAY"        : "Affichage",
         "SECTION_HEADER_NETWORK"        : "Réseau",
+        "SECTION_HEADER_SESSION"        : "Session / Environnement",
         "SECTION_HEADER_SFTP"           : "SFTP"
 
     },
 
     "PROTOCOL_TELNET" : {
 
+        "FIELD_HEADER_COLOR_SCHEME"   : "Palette de couleurs:",
         "FIELD_HEADER_FONT_NAME"      : "Nom police:",
         "FIELD_HEADER_FONT_SIZE"      : "Taille police:",
         "FIELD_HEADER_HOSTNAME"       : "Nom d'hôte:",
@@ -376,6 +402,12 @@
         "FIELD_HEADER_PASSWORD"       : "Mot de passe:",
         "FIELD_HEADER_PASSWORD_REGEX" : "Expression régulière Mot de passe:",
         "FIELD_HEADER_PORT"           : "Port:",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Noir sur blanc",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Gris sur noir",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Vert sur noir",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Blanc sur noir",
 
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
@@ -404,6 +436,7 @@
     "PROTOCOL_VNC" : {
 
         "FIELD_HEADER_AUDIO_SERVERNAME" : "Serveur de son:",
+        "FIELD_HEADER_CLIPBOARD_ENCODING" : "Encodage:",
         "FIELD_HEADER_COLOR_DEPTH"      : "Qualité couleur:",
         "FIELD_HEADER_CURSOR"           : "Curseur:",
         "FIELD_HEADER_DEST_HOST"        : "Hôte distant:",
@@ -414,6 +447,7 @@
         "FIELD_HEADER_PASSWORD"         : "Mot de passe:",
         "FIELD_HEADER_PORT"             : "Port:",
         "FIELD_HEADER_READ_ONLY"        : "Lecture seule:",
+        "FIELD_HEADER_SFTP_DIRECTORY"   : "Répertoire d'upload par défaut:",
         "FIELD_HEADER_SFTP_HOSTNAME"    : "Nom d'hôte:",
         "FIELD_HEADER_SFTP_PASSPHRASE"  : "Phrase secrète:",
         "FIELD_HEADER_SFTP_PASSWORD"    : "Mot de passe:",
@@ -431,6 +465,12 @@
         "FIELD_OPTION_CURSOR_EMPTY"  : "",
         "FIELD_OPTION_CURSOR_LOCAL"  : "Local",
         "FIELD_OPTION_CURSOR_REMOTE" : "Distant",
+
+        "FIELD_OPTION_CLIPBOARD_ENCODING_CP1252"    : "CP1252",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_EMPTY"     : "",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_ISO8859_1" : "ISO 8859-1",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_8"     : "UTF-8",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_16"    : "UTF-16",
 
         "NAME" : "VNC",
 
@@ -470,11 +510,16 @@
 
     "SETTINGS_CONNECTION_HISTORY" : {
 
+        "ACTION_SEARCH" : "@:APP.ACTION_SEARCH",
+
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
         "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
+        "HELP_CONNECTION_HISTORY" : "L'historique des dernières connexions est listé ici et peut être trié en cliquant sur l'en-tête des colonnes. Pour rechercher des enregistrements spécifiques, entrez un filtre et cliquez sur \"Rechercher\". Seuls les enregistrements correspondants au filtre renseigné seront listés.",
+
         "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_NO_HISTORY"                  : "Aucun enregistrement correspondant",
 
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Nom de connexion",
         "TABLE_HEADER_SESSION_DURATION"        : "Durée",
@@ -577,6 +622,7 @@
         "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
         "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
         "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME"
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
 
     }
 
