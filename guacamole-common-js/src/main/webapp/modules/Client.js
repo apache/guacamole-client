@@ -899,13 +899,20 @@ Guacamole.Client = function(tunnel) {
 
         "end": function(parameters) {
 
-            // Get stream
             var stream_index = parseInt(parameters[0]);
-            var stream = streams[stream_index];
 
-            // Signal end of stream
-            if (stream && stream.onend)
-                stream.onend();
+            // Get stream
+            var stream = streams[stream_index];
+            if (stream) {
+
+                // Signal end of stream if handler defined
+                if (stream.onend)
+                    stream.onend();
+
+                // Invalidate stream
+                delete streams[stream_index];
+
+            }
 
         },
 
