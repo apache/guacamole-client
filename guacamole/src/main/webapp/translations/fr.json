@@ -138,7 +138,7 @@
 
     "FORM" : {
 
-        "FIELD_PLACEHOLDER_DATE" : "DD-MM-YYYY",
+        "FIELD_PLACEHOLDER_DATE" : "AAAA-MM-JJ",
         "FIELD_PLACEHOLDER_TIME" : "HH:MM:SS",
 
         "HELP_SHOW_PASSWORD" : "Cliquer pour afficher le mot de passe",
