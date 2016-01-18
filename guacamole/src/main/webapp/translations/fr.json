@@ -74,7 +74,7 @@
         "ERROR_TUNNEL_204"     : "Le connexion demandée n'existe pas. Merci de vérifier le nom et de réessayer.",
         "ERROR_TUNNEL_205"     : "Cette connexion est actuellement utilisée et les connexions multiples ne sont pas autorisées. Merci de réeassyer plus tard.", 
         "ERROR_TUNNEL_301"     : "Vous n'avez pas le droit d'accéder à cette connexion car vous n'êtes pas connecté. Merci de vous connecter et de réessayer.", 
-        "ERROR_TUNNEL_303"     : "Vous n'avez pas le droit d'accéder à cette connexion. Si vous souhaitez y avoir accès, merci de demander à l'administrateur de vous ajouter dans la liste des utilisateurs autorisés ou de vérifier les paramètre système.",
+        "ERROR_TUNNEL_303"     : "Vous n'avez pas le droit d'accéder à cette connexion. Si vous souhaitez y avoir accès, merci de demander à l'administrateur de vous ajouter dans la liste des utilisateurs autorisés ou de vérifier les paramètres système.",
         "ERROR_TUNNEL_308"     : "Le serveur Guacamole a fermé la connexion car il n'y avait pas de réponse de votre navigateur Internet et qu'il l'a considéré comme déconnecté. Cela se produit à cause de problèmes réseaux (mauvais signal Wi-Fi ou réseau très lent). Merci de vérifier votre réseau et de réessayer.",
         "ERROR_TUNNEL_31D"     : "Le serveur Guacamole interdit cette connexion car vous avez dépassé la limite de connexions simultanées par utilisateur. Merci de fermer une ou plusieurs connexions et de reéssayer.",
         "ERROR_TUNNEL_DEFAULT" : "Une erreur interne est apparue dans le serveur Guacamole et la connexion a été fermée. Si le problème persiste, merci de notifier l'administrateur ou de regarder les journaux système.",
