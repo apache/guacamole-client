@@ -211,6 +211,53 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             };
 
+            /**
+             * Handles a mouse event originating from the user's actual mouse.
+             * This differs from handleEmulatedMouseState() in that the
+             * software mouse cursor must be shown only if the user's browser
+             * does not support explicitly setting the hardware mouse cursor.
+             *
+             * @param {Guacamole.Mouse.State} mouseState
+             *     The current state of the user's hardware mouse.
+             */
+            var handleMouseState = function handleMouseState(mouseState) {
+
+                // Do not attempt to handle mouse state changes if the client
+                // or display are not yet available
+                if (!client || !display)
+                    return;
+
+                // Send mouse state, show cursor if necessary
+                display.showCursor(!localCursor);
+                sendScaledMouseState(mouseState);
+
+            };
+
+            /**
+             * Handles a mouse event originating from one of Guacamole's mouse
+             * emulation objects. This differs from handleMouseState() in that
+             * the software mouse cursor must always be shown (as the emulated
+             * mouse device will not have its own cursor).
+             *
+             * @param {Guacamole.Mouse.State} mouseState
+             *     The current state of the user's emulated (touch) mouse.
+             */
+            var handleEmulatedMouseState = function handleEmulatedMouseState(mouseState) {
+
+                // Do not attempt to handle mouse state changes if the client
+                // or display are not yet available
+                if (!client || !display)
+                    return;
+
+                // Ensure software cursor is shown
+                display.showCursor(true);
+
+                // Send mouse state, ensure cursor is visible
+                scrollToMouse(mouseState);
+                sendScaledMouseState(mouseState);
+
+            };
+
             // Attach any given managed client
             $scope.$watch('client', function attachManagedClient(managedClient) {
 
@@ -264,20 +311,8 @@ angular.module('client').directive('guacClient', [function guacClient() {
             });
 
             // Swap mouse emulation modes depending on absolute mode flag
-            $scope.$watch('client.clientProperties.emulateAbsoluteMouse', function(emulateAbsoluteMouse) {
-
-                if (!client || !display) return;
-
-                var handleMouseState = function handleMouseState(mouseState) {
-
-                    // Ensure software cursor is shown
-                    display.showCursor(true);
-
-                    // Send mouse state, ensure cursor is visible
-                    scrollToMouse(mouseState);
-                    sendScaledMouseState(mouseState);
-
-                };
+            $scope.$watch('client.clientProperties.emulateAbsoluteMouse',
+                function mouseEmulationModeChanged(emulateAbsoluteMouse) {
 
                 var newMode, oldMode;
 
@@ -296,13 +331,17 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 // Set applicable mouse emulation object, unset the old one
                 if (newMode) {
 
+                    // Clear old handlers and copy state to new emulation mode
                     if (oldMode) {
                         oldMode.onmousedown = oldMode.onmouseup = oldMode.onmousemove = null;
                         newMode.currentState.x = oldMode.currentState.x;
                         newMode.currentState.y = oldMode.currentState.y;
                     }
 
-                    newMode.onmousedown = newMode.onmouseup = newMode.onmousemove = handleMouseState;
+                    // Handle emulated events only from the new emulation mode
+                    newMode.onmousedown =
+                    newMode.onmouseup   =
+                    newMode.onmousemove = handleEmulatedMouseState;
 
                 }
 
@@ -357,20 +396,15 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             };
 
-            // Watch for changes to mouse emulation mode
-            // Send all received mouse events to the client
-            mouse.onmousedown =
-            mouse.onmouseup   =
-            mouse.onmousemove = function(mouseState) {
-
-                if (!client || !display)
-                    return;
-
-                // Send mouse state, show cursor if necessary
-                display.showCursor(!localCursor);
-                sendScaledMouseState(mouseState);
-
+            // Ensure focus is regained via mousedown before forwarding event
+            mouse.onmousedown = function(mouseState) {
+                document.body.focus();
+                handleMouseState(mouseState);
             };
+
+            // Forward mouseup / mousemove events untouched
+            mouse.onmouseup   =
+            mouse.onmousemove = handleMouseState;
 
             // Hide software cursor when mouse leaves display
             mouse.onmouseout = function() {
