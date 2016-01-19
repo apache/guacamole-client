@@ -178,8 +178,9 @@ Guacamole.Keyboard = function(element) {
         this.keysym =  keysym_from_key_identifier(key, location)
                     || keysym_from_keycode(keyCode, location);
 
-        // DOM3 and keyCode are reliable sources
-        if (this.keysym)
+        // DOM3 and keyCode are reliable sources if the corresponding key is
+        // not a printable key
+        if (this.keysym && !isPrintable(this.keysym))
             this.reliable = true;
 
         // Use legacy keyIdentifier as a last resort, if it looks sane
@@ -589,6 +590,25 @@ Guacamole.Keyboard = function(element) {
             return null;
 
         return keysyms[location] || keysyms[0];
+    };
+
+    /**
+     * Returns true if the given keysym corresponds to a printable character,
+     * false otherwise.
+     *
+     * @param {Number} keysym
+     *     The keysym to check.
+     *
+     * @returns {Boolean}
+     *     true if the given keysym corresponds to a printable character,
+     *     false otherwise.
+     */
+    var isPrintable = function isPrintable(keysym) {
+
+        // Keysyms with Unicode equivalents are printable
+        return (keysym >= 0x00 && keysym <= 0xFF)
+            || (keysym & 0xFFFF0000) === 0x01000000;
+
     };
 
     function keysym_from_key_identifier(identifier, location, shifted) {
