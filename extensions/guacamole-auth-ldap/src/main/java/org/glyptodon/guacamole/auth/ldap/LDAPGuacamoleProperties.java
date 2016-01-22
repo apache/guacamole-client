@@ -64,6 +64,18 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
+     * The base DN of role based access control (RBAC) groups. All groups which
+     * will be used for RBAC must be contained somewhere within the subtree of
+     * this DN.
+     */
+    public static final StringGuacamoleProperty LDAP_GROUP_BASE_DN = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ldap-group-base-dn"; }
+
+    };
+
+    /**
      * The attribute or attributes which identify users. One of these
      * attributes must be present within each Guacamole user's record in the
      * LDAP directory. If the LDAP authentication will not be given its own
