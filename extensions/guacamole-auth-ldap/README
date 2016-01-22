@@ -96,8 +96,8 @@ guacamole.properties such that the authentication provider is available.
  Reporting problems
 ------------------------------------------------------------
 
-Please report any bugs encountered by opening a new ticket at the Trac system
+Please report any bugs encountered by opening a new issue in the JIRA system
 hosted at:
     
-    http://guac-dev.org/trac/
+    http://glyptodon.org/jira/
 
