@@ -64,8 +64,9 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
-     * The base DN of role based access control (RBAC) groups. All groups
-     * should be under this DN.
+     * The base DN of role based access control (RBAC) groups. All groups which
+     * will be used for RBAC must be contained somewhere within the subtree of
+     * this DN.
      */
     public static final StringGuacamoleProperty LDAP_GROUP_BASE_DN = new StringGuacamoleProperty() {
 
