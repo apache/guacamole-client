@@ -137,11 +137,12 @@ public class ConfigurationService {
 
     /**
      * Returns the base DN under which all Guacamole role based access control
-     * (RBAC) groups will be stored within the LDAP directory.
+     * (RBAC) groups will be stored within the LDAP directory. If RBAC will not
+     * be used, null is returned.
      *
      * @return
      *     The base DN under which all Guacamole RBAC groups will be stored
-     *     within the LDAP directory.
+     *     within the LDAP directory, or null if RBAC will not be used.
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
