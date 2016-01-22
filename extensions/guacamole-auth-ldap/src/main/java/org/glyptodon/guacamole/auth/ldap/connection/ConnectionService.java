@@ -96,9 +96,8 @@ public class ConnectionService {
 
         // Do not return any connections if base DN is not specified
         String configurationBaseDN = confService.getConfigurationBaseDN();
-        if (configurationBaseDN == null) {
+        if (configurationBaseDN == null)
             return Collections.<String, Connection>emptyMap();
-        }
 
         try {
 
@@ -112,7 +111,7 @@ public class ConnectionService {
 
             // Get the search filter for finding connections associated to the userDN
             String connectionSearchFilter = getConnectionSearchFilter(userDN, ldapConnection);
-            
+
             // Find all Guacamole connections for the given user by
             // looking for direct membership in the guacConfigGroup
             // and possibly any groups the user is a member of that are
@@ -195,12 +194,13 @@ public class ConnectionService {
             // Return map of all connections
             return connections;
 
-        } catch (LDAPException e) {
+        }
+        catch (LDAPException e) {
             throw new GuacamoleServerException("Error while querying for connections.", e);
         }
 
     }
-    
+
     /**
      * Returns the connection search filter for the given userDN.
      *
@@ -215,12 +215,14 @@ public class ConnectionService {
      *
      * @throws LDAPException
      *     If an error occurs preventing retrieval of user groups.
-     *     
+     *
      * @throws GuacamoleException
-     *     If an error occurs retrieving the group base DN. 
+     *     If an error occurs retrieving the group base DN.
      */
-    private String getConnectionSearchFilter(String userDN, LDAPConnection ldapConnection) throws LDAPException, GuacamoleException {
-        
+    private String getConnectionSearchFilter(String userDN,
+            LDAPConnection ldapConnection)
+            throws LDAPException, GuacamoleException {
+
         // Create a search filter for the connection search
         StringBuilder connectionSearchFilter = new StringBuilder();
 
@@ -231,7 +233,6 @@ public class ConnectionService {
 
         // If group base DN is specified search for user groups
         String groupBaseDN = confService.getGroupBaseDN();
-
         if (groupBaseDN != null) {
 
             // Get all groups the user is a member of starting at the groupBaseDN, excluding guacConfigGroups
@@ -244,19 +245,19 @@ public class ConnectionService {
             );
 
             // Append the additional user groups to the LDAP filter
-            // Now the filter will also look for guacConfigGroups that refer 
+            // Now the filter will also look for guacConfigGroups that refer
             // to groups the user is a member of
-            // The guacConfig group uses the seeAlso attribute to refer 
+            // The guacConfig group uses the seeAlso attribute to refer
             // to these other groups
             while (userRoleGroupResults.hasMore()) {
                 LDAPEntry entry = userRoleGroupResults.next();
                 connectionSearchFilter.append("(seeAlso=").append(escapingService.escapeLDAPSearchFilter(entry.getDN())).append(")");
             }
         }
-        
+
         // Complete the search filter.
-        connectionSearchFilter.append("))");  
-        
+        connectionSearchFilter.append("))");
+
         return connectionSearchFilter.toString();
     }
 

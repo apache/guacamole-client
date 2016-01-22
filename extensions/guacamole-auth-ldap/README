@@ -88,7 +88,7 @@ guacamole.properties such that the authentication provider is available.
 
     # The base DN within which all guacConfig objects can be found.
     ldap-config-base-dn:     dc=example,dc=net
-    
+
     # The base DN within which all role based groups can be found.
     ldap-group-base-dn:      ou=groups,dc=example,dc=net
 
