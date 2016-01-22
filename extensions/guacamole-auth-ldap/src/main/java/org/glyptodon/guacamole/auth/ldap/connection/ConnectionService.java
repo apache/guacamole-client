@@ -109,7 +109,8 @@ public class ConnectionService {
             // possibly be null
             assert(userDN != null);
 
-            // Get the search filter for finding connections associated to the userDN
+            // Get the search filter for finding connections accessible by the
+            // current user
             String connectionSearchFilter = getConnectionSearchFilter(userDN, ldapConnection);
 
             // Find all Guacamole connections for the given user by
@@ -202,16 +203,19 @@ public class ConnectionService {
     }
 
     /**
-     * Returns the connection search filter for the given userDN.
+     * Returns an LDAP search filter which queries all connections accessible
+     * by the user having the given DN.
      *
      * @param userDN
      *     DN of the user to search for associated guacConfigGroup connections.
      *
      * @param ldapConnection
-     *     LDAP connection to use for searching for associated groups.
+     *     LDAP connection to use if additional information must be queried to
+     *     produce the filter, such as groups driving RBAC.
      *
      * @return
-     *     Search filter for finding guacConfigGroup associated with the userDN.
+     *     An LDAP search filter which queries all guacConfigGroup objects
+     *     accessible by the user having the given DN.
      *
      * @throws LDAPException
      *     If an error occurs preventing retrieval of user groups.
