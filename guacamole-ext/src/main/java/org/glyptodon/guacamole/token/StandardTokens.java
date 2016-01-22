@@ -37,24 +37,24 @@ public class StandardTokens {
     /**
      * The name of the username token added via addStandardTokens().
      */
-    private static final String USERNAME_TOKEN = "GUAC_USERNAME";
+    public static final String USERNAME_TOKEN = "GUAC_USERNAME";
 
     /**
      * The name of the password token added via addStandardTokens().
      */
-    private static final String PASSWORD_TOKEN = "GUAC_PASSWORD";
+    public static final String PASSWORD_TOKEN = "GUAC_PASSWORD";
 
     /**
      * The name of the date token (server-local time) added via
      * addStandardTokens().
      */
-    private static final String DATE_TOKEN = "GUAC_DATE";
+    public static final String DATE_TOKEN = "GUAC_DATE";
 
     /**
      * The name of the time token (server-local time) added via
      * addStandardTokens().
      */
-    private static final String TIME_TOKEN = "GUAC_TIME";
+    public static final String TIME_TOKEN = "GUAC_TIME";
 
     /**
      * The date format that should be used for the date token. This format must
