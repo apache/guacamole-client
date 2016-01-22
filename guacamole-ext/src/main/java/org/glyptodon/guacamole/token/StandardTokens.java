@@ -75,6 +75,23 @@ public class StandardTokens {
 
     /**
      * Adds tokens which are standardized by guacamole-ext to the given
+     * TokenFilter and which do not require a corresponding Credentials object.
+     * These the server date and time (GUAC_DATE and GUAC_TIME respectively).
+     *
+     * @param filter
+     *     The TokenFilter to add standard tokens to.
+     */
+    public static void addStandardTokens(TokenFilter filter) {
+
+        // Add date/time tokens (server-local time)
+        Date currentTime = new Date();
+        filter.setToken(DATE_TOKEN, new SimpleDateFormat(DATE_FORMAT).format(currentTime));
+        filter.setToken(TIME_TOKEN, new SimpleDateFormat(TIME_FORMAT).format(currentTime));
+
+    }
+
+    /**
+     * Adds tokens which are standardized by guacamole-ext to the given
      * TokenFilter using the values from the given Credentials object. These
      * standardized tokens include the current username (GUAC_USERNAME),
      * password (GUAC_PASSWORD), and the server date and time (GUAC_DATE and
@@ -83,10 +100,11 @@ public class StandardTokens {
      * unset.
      *
      * @param filter
-     *     The TokenFilter to add standard username/password tokens to.
+     *     The TokenFilter to add standard tokens to.
      *
      * @param credentials
-     *     The Credentials containing the username/password to add.
+     *     The Credentials to use when populating the GUAC_USERNAME and
+     *     GUAC_PASSWORD tokens.
      */
     public static void addStandardTokens(TokenFilter filter, Credentials credentials) {
 
@@ -100,10 +118,8 @@ public class StandardTokens {
         if (password != null)
             filter.setToken(PASSWORD_TOKEN, password);
 
-        // Add date/time tokens (server-local time)
-        Date currentTime = new Date();
-        filter.setToken(DATE_TOKEN, new SimpleDateFormat(DATE_FORMAT).format(currentTime));
-        filter.setToken(TIME_TOKEN, new SimpleDateFormat(TIME_FORMAT).format(currentTime));
+        // Add any tokens which do not require credentials
+        addStandardTokens(filter);
 
     }
 
