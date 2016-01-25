@@ -350,6 +350,7 @@
 
         "FIELD_HEADER_COLOR_SCHEME" : "Color scheme:",
         "FIELD_HEADER_COMMAND"     : "Execute command:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
         "FIELD_HEADER_FONT_NAME"   : "Font name:",
         "FIELD_HEADER_FONT_SIZE"   : "Font size:",
         "FIELD_HEADER_ENABLE_SFTP" : "Enable SFTP:",
@@ -359,6 +360,8 @@
         "FIELD_HEADER_PASSPHRASE"  : "Passphrase:",
         "FIELD_HEADER_PORT"        : "Port:",
         "FIELD_HEADER_PRIVATE_KEY" : "Private key:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Black on white",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -388,6 +391,7 @@
         "SECTION_HEADER_DISPLAY"        : "Display",
         "SECTION_HEADER_NETWORK"        : "Network",
         "SECTION_HEADER_SESSION"        : "Session / Environment",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)",
         "SECTION_HEADER_SFTP"           : "SFTP"
 
     },
@@ -395,6 +399,7 @@
     "PROTOCOL_TELNET" : {
 
         "FIELD_HEADER_COLOR_SCHEME"   : "Color scheme:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
         "FIELD_HEADER_FONT_NAME"      : "Font name:",
         "FIELD_HEADER_FONT_SIZE"      : "Font size:",
         "FIELD_HEADER_HOSTNAME"       : "Hostname:",
@@ -402,6 +407,8 @@
         "FIELD_HEADER_PASSWORD"       : "Password:",
         "FIELD_HEADER_PASSWORD_REGEX" : "Password regular expression:",
         "FIELD_HEADER_PORT"           : "Port:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Black on white",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -429,6 +436,7 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentication",
         "SECTION_HEADER_DISPLAY"        : "Display",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)",
         "SECTION_HEADER_NETWORK"        : "Network"
 
     },
