@@ -69,6 +69,25 @@
         },
 
         {
+            "name" : "typescript",
+            "fields" : [
+                {
+                    "name"  : "typescript-path",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "typescript-name",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "create-typescript-path",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
             "name"  : "sftp",
             "fields" : [
                 {
