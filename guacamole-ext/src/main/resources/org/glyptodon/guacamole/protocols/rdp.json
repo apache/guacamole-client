@@ -69,6 +69,7 @@
                         "fr-fr-azerty",
                         "de-de-qwertz",
                         "it-it-qwerty",
+                        "ja-jp-qwerty",
                         "sv-se-qwerty",
                         "failsafe"
                     ]
