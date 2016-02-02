@@ -38,8 +38,10 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     // Required services
     var $document              = $injector.get('$document');
     var $q                     = $injector.get('$q');
+    var $rootScope             = $injector.get('$rootScope');
     var $window                = $injector.get('$window');
     var authenticationService  = $injector.get('authenticationService');
+    var clipboardService       = $injector.get('clipboardService');
     var connectionGroupService = $injector.get('connectionGroupService');
     var connectionService      = $injector.get('connectionService');
     var guacAudio              = $injector.get('guacAudio');
@@ -403,6 +405,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             reader.onend = function clipboard_text_end() {
                 $rootScope.$apply(function updateClipboard() {
                     managedClient.clipboardData = data;
+                    clipboardService.setLocalClipboard(data);
                 });
             };
 

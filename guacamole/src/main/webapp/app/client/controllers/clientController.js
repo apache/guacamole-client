@@ -35,6 +35,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Required services
     var $location             = $injector.get('$location');
     var authenticationService = $injector.get('authenticationService');
+    var clipboardService      = $injector.get('clipboardService');
     var guacClientManager     = $injector.get('guacClientManager');
     var guacNotification      = $injector.get('guacNotification');
     var preferenceService     = $injector.get('preferenceService');
@@ -229,11 +230,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.closeMenu = function closeMenu() {
         $scope.menu.shown = false;
     };
-
-    // Update the model when clipboard data received from client
-    $scope.$on('guacClientClipboard', function clientClipboardListener(event, client, mimetype, clipboardData) {
-       $scope.clipboardData = clipboardData; 
-    });
 
     /**
      * The client which should be attached to the client UI.
@@ -524,6 +520,19 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
                 text    : "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase(),
                 actions : actions
             });
+        }
+
+        // Hide status and sync local clipboard once connected
+        else if (connectionState === ManagedClientState.ConnectionState.CONNECTED) {
+
+            // Sync with local clipboard
+            clipboardService.getLocalClipboard().then(function clipboardRead(data) {
+                $scope.$broadcast('guacClipboard', 'text/plain', data);
+            });
+
+            // Hide status notification
+            guacNotification.showStatus(false);
+
         }
 
         // Hide status for all other states
