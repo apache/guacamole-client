@@ -77,34 +77,15 @@ angular.module('client').factory('clipboardService', ['$injector',
 
         var deferred = $q.defer();
 
-        // First, see if allow clipboard extension is installed
-        if (window.AllowClipboard) {
+        // Copy the given value into the clipboard DOM element
+        clipboardContent.value = text;
+        clipboardContent.select();
 
-            var clipboardClient = new AllowClipboard.Client.ClipboardClient();
-
-            clipboardClient.write(text, function(success) {
-                if (success)
-                    deferred.resolve();
-                else
-                    deferred.reject();
-            });
-
-        }
-
-        // Otherwise, try execCommand
-        else {
-
-            // Copy the given value into the clipboard DOM element
-            clipboardContent.value = text;
-            clipboardContent.select();
-
-            // Attempt to copy data from clipboard element into local clipboard
-            if (document.execCommand('copy'))
-                deferred.resolve();
-            else
-                deferred.reject();
-
-        }
+        // Attempt to copy data from clipboard element into local clipboard
+        if (document.execCommand('copy'))
+            deferred.resolve();
+        else
+            deferred.reject();
 
         return deferred.promise;
     };
@@ -121,34 +102,15 @@ angular.module('client').factory('clipboardService', ['$injector',
 
         var deferred = $q.defer();
 
-        // First, see if allow clipboard extension is installed
-        if (window.AllowClipboard) {
+        // Clear and select the clipboard DOM element
+        clipboardContent.value = '';
+        clipboardContent.select();
 
-            var clipboardClient = new AllowClipboard.Client.ClipboardClient();
-
-            clipboardClient.read(function(success, data) {
-                if (success)
-                    deferred.resolve(data);
-                else
-                    deferred.reject();
-            });
-
-        }
-
-        // Otherwise, try execCommand
-        else {
-
-            // Clear and select the clipboard DOM element
-            clipboardContent.value = '';
-            clipboardContent.select();
-
-            // Attempt paste local clipboard into clipboard DOM element
-            if (document.execCommand('paste'))
-                deferred.resolve(clipboardContent.value);
-            else
-                deferred.reject();
-
-        }
+        // Attempt paste local clipboard into clipboard DOM element
+        if (document.execCommand('paste'))
+            deferred.resolve(clipboardContent.value);
+        else
+            deferred.reject();
 
         return deferred.promise;
     };
