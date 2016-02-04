@@ -57,8 +57,10 @@ angular.module('client').factory('clipboardService', ['$injector',
 
     clipElement.appendChild(clipboardContent);
     clipElement.style.position = 'absolute';
-    clipElement.style.width = '0px';
-    clipElement.style.height = '0px';
+    clipElement.style.width = '1px';
+    clipElement.style.height = '1px';
+    clipElement.style.left = '-1px';
+    clipElement.style.top = '-1px';
     clipElement.style.overflow = 'hidden';
 
     document.body.appendChild(clipElement);
