@@ -119,7 +119,7 @@ angular.module('client').factory('clipboardService', ['$injector',
             else
                 deferred.reject();
 
-        }, 10);
+        }, 100);
 
         return deferred.promise;
     };
@@ -133,8 +133,8 @@ angular.module('client').factory('clipboardService', ['$injector',
 
             // Fire clipboard event if the data has changed
             if (data !== lastClipboardEvent) {
-               $rootScope.$broadcast('guacClipboard', 'text/plain', data);
-               lastClipboardEvent = data;
+                $rootScope.$broadcast('guacClipboard', 'text/plain', data);
+                lastClipboardEvent = data;
             }
 
         });
