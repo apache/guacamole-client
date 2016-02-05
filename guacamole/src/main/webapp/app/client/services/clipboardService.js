@@ -143,6 +143,7 @@ angular.module('client').factory('clipboardService', ['$injector',
     };
 
     // Attempt to read the clipboard if it may have changed
+    window.addEventListener('load',  checkClipboard, true);
     window.addEventListener('copy',  checkClipboard, true);
     window.addEventListener('cut',   checkClipboard, true);
     window.addEventListener('focus', function focusGained(e) {
