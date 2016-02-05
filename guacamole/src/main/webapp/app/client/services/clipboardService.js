@@ -55,14 +55,16 @@ angular.module('client').factory('clipboardService', ['$injector',
      */
     var lastClipboardEvent = '';
 
+    // Ensure textarea is selectable but not visible
     clipElement.appendChild(clipboardContent);
     clipElement.style.position = 'absolute';
-    clipElement.style.width = '1px';
-    clipElement.style.height = '1px';
-    clipElement.style.left = '-1px';
-    clipElement.style.top = '-1px';
+    clipElement.style.width    = '1px';
+    clipElement.style.height   = '1px';
+    clipElement.style.left     = '-1px';
+    clipElement.style.top      = '-1px';
     clipElement.style.overflow = 'hidden';
 
+    // Add textarea to DOM
     document.body.appendChild(clipElement);
 
     /**
