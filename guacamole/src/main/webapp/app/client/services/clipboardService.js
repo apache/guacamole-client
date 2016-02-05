@@ -104,21 +104,30 @@ angular.module('client').factory('clipboardService', ['$injector',
 
         var deferred = $q.defer();
 
-        // Clear and select the clipboard DOM element
-        clipboardContent.value = '';
-        clipboardContent.select();
+        // Wait for the next event queue run before attempting to read
+        // clipboard data (in case the copy/cut has not yet completed)
+        window.setTimeout(function deferredClipboardRead() {
 
-        // Attempt paste local clipboard into clipboard DOM element
-        if (document.execCommand('paste'))
-            deferred.resolve(clipboardContent.value);
-        else
-            deferred.reject();
+            // Clear and select the clipboard DOM element
+            clipboardContent.value = '';
+            clipboardContent.select();
+
+            // Attempt paste local clipboard into clipboard DOM element
+            if (document.execCommand('paste'))
+                deferred.resolve(clipboardContent.value);
+            else
+                deferred.reject();
+
+        }, 10);
 
         return deferred.promise;
     };
 
-    // Periodically attempt to read the clipboard, firing an event if successful
-    window.setInterval(function periodicallyReadClipboard() {
+    /**
+     * Checks whether the clipboard data has changed, firing a new
+     * "guacClipboard" event if it has.
+     */
+    var checkClipboard = function checkClipboard() {
         service.getLocalClipboard().then(function clipboardRead(data) {
 
             // Fire clipboard event if the data has changed
@@ -128,7 +137,12 @@ angular.module('client').factory('clipboardService', ['$injector',
             }
 
         });
-    }, 100);
+    };
+
+    // Attempt to read the clipboard if it may have changed
+    window.addEventListener('copy',  checkClipboard, true);
+    window.addEventListener('cut',   checkClipboard, true);
+    window.addEventListener('focus', checkClipboard, true);
 
     return service;
 
