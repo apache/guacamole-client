@@ -110,10 +110,11 @@ angular.module('client').factory('clipboardService', ['$injector',
 
             // Clear and select the clipboard DOM element
             clipboardContent.value = '';
+            clipboardContent.focus();
             clipboardContent.select();
 
             // Attempt paste local clipboard into clipboard DOM element
-            if (document.execCommand('paste'))
+            if (document.activeElement === clipboardContent && document.execCommand('paste'))
                 deferred.resolve(clipboardContent.value);
             else
                 deferred.reject();
@@ -142,7 +143,13 @@ angular.module('client').factory('clipboardService', ['$injector',
     // Attempt to read the clipboard if it may have changed
     window.addEventListener('copy',  checkClipboard, true);
     window.addEventListener('cut',   checkClipboard, true);
-    window.addEventListener('focus', checkClipboard, true);
+    window.addEventListener('focus', function focusGained(e) {
+
+        // Only recheck clipboard if it's the window itself that gained focus
+        if (e.target === window)
+            checkClipboard();
+
+    }, true);
 
     return service;
 
