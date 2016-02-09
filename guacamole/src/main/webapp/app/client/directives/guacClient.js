@@ -413,9 +413,11 @@ angular.module('client').directive('guacClient', [function guacClient() {
             };
 
             // Update remote clipboard if local clipboard changes
-            $scope.$watch('client.clipboardData', function clipboardChanged(data) {
-                if (client)
+            $scope.$on('guacClipboard', function onClipboard(event, mimetype, data) {
+                if (client) {
                     client.setClipboard(data);
+                    $scope.client.clipboardData = data;
+                }
             });
 
             // Translate local keydown events to remote keydown events if keyboard is enabled
