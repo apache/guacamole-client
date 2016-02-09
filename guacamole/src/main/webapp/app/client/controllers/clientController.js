@@ -372,13 +372,18 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         
         // Send clipboard data if menu is hidden
         if (!menuShown && menuShownPreviousState)
-            $scope.$broadcast('guacClipboard', 'text/plain', $scope.client.clipboardData); 
+            $scope.$broadcast('guacClipboard', 'text/plain', $scope.client.clipboardData);
         
         // Disable client keyboard if the menu is shown
         $scope.client.clientProperties.keyboardEnabled = !menuShown;
 
     });
-    
+
+    // Update remote clipboard if local clipboard changes
+    $scope.$on('guacClipboard', function onClipboard(event, mimetype, data) {
+        $scope.client.clipboardData = data;
+    });
+
     $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
         keysCurrentlyPressed[keysym] = true;   
         
