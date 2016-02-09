@@ -91,6 +91,9 @@ angular.module('client').factory('clipboardService', ['$injector',
         else
             deferred.reject();
 
+        // Unfocus the clipboard DOM event to avoid mobile keyboard opening
+        clipboardContent.blur();
+
         return deferred.promise;
     };
 
@@ -120,6 +123,9 @@ angular.module('client').factory('clipboardService', ['$injector',
                 deferred.resolve(clipboardContent.value);
             else
                 deferred.reject();
+
+            // Unfocus the clipboard DOM event to avoid mobile keyboard opening
+            clipboardContent.blur();
 
         }, 100);
 
