@@ -238,7 +238,24 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     $scope.client = guacClientManager.getManagedClient($routeParams.id, $routeParams.params);
 
+    /**
+     * Map of all currently pressed keys by keysym. If a particular key is
+     * currently pressed, the value stored under that key's keysym within this
+     * map will be true. All keys not currently pressed will not have entries
+     * within this map.
+     *
+     * @type Object.<Number, Boolean>
+     */
     var keysCurrentlyPressed = {};
+
+    /**
+     * Map of all currently pressed keys (by keysym) to the clipboard contents
+     * received from the remote desktop while those keys were pressed. All keys
+     * not currently pressed will not have entries within this map.
+     *
+     * @type Object.<Number, String>
+     */
+    var clipboardDataFromKey = {};
 
     /*
      * Check to see if all currently pressed keys are in the set of menu keys.
@@ -379,7 +396,19 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
+    // Watch clipboard for new data, associating it with any pressed keys
+    $scope.$watch('client.clipboardData', function clipboardChanged(data) {
+
+        // Associate new clipboard data with any currently-pressed key
+        for (var keysym in keysCurrentlyPressed)
+            clipboardDataFromKey[keysym] = data;
+
+    });
+
+    // Track pressed keys, opening the Guacamole menu after Ctrl+Alt+Shift
     $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
+
+        // Record key as pressed
         keysCurrentlyPressed[keysym] = true;   
         
         /* 
@@ -408,11 +437,24 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
                 });
             }
         }
+
     });
 
-    // Listen for broadcasted keyup events and fire the appropriate listeners
+    // Update pressed keys as they are released, synchronizing the clipboard
+    // with any data that appears to have come from those key presses
     $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
+
+        // Sync local clipboard with any clipboard data received while this
+        // key was pressed (if any)
+        var clipboardData = clipboardDataFromKey[keysym];
+        if (clipboardData) {
+            clipboardService.setLocalClipboard(clipboardData);
+            delete clipboardDataFromKey[keysym];
+        }
+
+        // Mark key as released
         delete keysCurrentlyPressed[keysym];
+
     });
 
     // Update page title when client name is received
