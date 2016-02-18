@@ -32,6 +32,18 @@ angular.module('index').config(['$provide', function($provide) {
         var $q = $injector.get('$q');
 
         /**
+         * Array of the root elements of all patches which should be applied to
+         * the HTML of retrieved templates.
+         *
+         * @type Element[]
+         */
+        var patches = [
+            $('<guac-patch before="a"><p>HELLO BEFORE</p></guac-patch>')[0],
+            $('<guac-patch after="a"><p>HELLO AFTER</p></guac-patch>')[0],
+            $('<guac-patch replace="div.protocol"><div class="protocol">:-)</div></guac-patch>')[0]
+        ];
+
+        /**
          * Invokes $templateRequest() with all arguments exactly as provided,
          * applying all HTML patches from any installed Guacamole extensions
          * to the HTML of the requested template.
@@ -50,8 +62,34 @@ angular.module('index').config(['$provide', function($provide) {
                 // Parse HTML into DOM tree
                 var root = $('<div></div>').html(data);
 
-                // STUB: Apply HTML patches
-                root.find('a').after('<p>HELLO</p>');
+                // Apply all defined patches
+                angular.forEach(patches, function applyPatch(patch) {
+
+                    // Ignore any patches which are malformed
+                    if (patch.tagName !== 'GUAC-PATCH')
+                        return;
+
+                    // Insert after any elements which match the "after"
+                    // selector (if defined)
+                    var after = patch.getAttribute('after');
+                    if (after)
+                        root.find(after).after(patch.innerHTML);
+
+                    // Insert before any elements which match the "before"
+                    // selector (if defined)
+                    var before = patch.getAttribute('before');
+                    if (before)
+                        root.find(before).before(patch.innerHTML);
+
+                    // Replace any elements which match the "replace" selector
+                    // (if defined)
+                    var replace = patch.getAttribute('replace');
+                    if (replace)
+                        root.find(replace).html(patch.innerHTML);
+
+                    // Ignore all other attributes
+
+                });
 
                 // Transform back into HTML
                 deferred.resolve.call(this, root.html());
