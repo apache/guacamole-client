@@ -90,6 +90,12 @@ public class Extension {
     private final Map<String, Resource> cssResources;
 
     /**
+     * Map of all HTML patch resources defined within the extension, where each
+     * key is the path to that resource within the extension.
+     */
+    private final Map<String, Resource> htmlResources;
+
+    /**
      * Map of all translation resources defined within the extension, where
      * each key is the path to that resource within the extension.
      */
@@ -352,6 +358,7 @@ public class Extension {
         // Define static resources
         cssResources = getClassPathResources("text/css", manifest.getCSSPaths());
         javaScriptResources = getClassPathResources("text/javascript", manifest.getJavaScriptPaths());
+        htmlResources = getClassPathResources("text/html", manifest.getHTMLPaths());
         translationResources = getClassPathResources("application/json", manifest.getTranslationPaths());
         staticResources = getClassPathResources(manifest.getResourceTypes());
 
@@ -429,6 +436,19 @@ public class Extension {
      */
     public Map<String, Resource> getCSSResources() {
         return cssResources;
+    }
+
+    /**
+     * Returns a map of all declared HTML patch resources associated with this
+     * extension, where the key of each entry in the map is the path to that
+     * resource within the extension .jar. HTML patch resources are declared
+     * within the extension manifest.
+     *
+     * @return
+     *     All declared HTML patch resources associated with this extension.
+     */
+    public Map<String, Resource> getHTMLResources() {
+        return htmlResources;
     }
 
     /**

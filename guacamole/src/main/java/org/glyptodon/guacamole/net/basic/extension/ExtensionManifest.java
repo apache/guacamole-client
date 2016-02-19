@@ -68,6 +68,12 @@ public class ExtensionManifest {
     private Collection<String> cssPaths;
 
     /**
+     * The paths of all HTML patch resources within the .jar of the extension
+     * associated with this manifest.
+     */
+    private Collection<String> htmlPaths;
+
+    /**
      * The paths of all translation JSON files within this extension, if any.
      */
     private Collection<String> translationPaths;
@@ -230,6 +236,36 @@ public class ExtensionManifest {
     @JsonProperty("css")
     public void setCSSPaths(Collection<String> cssPaths) {
         this.cssPaths = cssPaths;
+    }
+
+    /**
+     * Returns the paths to all HTML patch resources within the extension. These
+     * paths are defined within the manifest by the "html" property as an array
+     * of strings, where each string is a path relative to the root of the
+     * extension .jar.
+     *
+     * @return
+     *     A collection of paths to all HTML patch resources within the
+     *     extension.
+     */
+    @JsonProperty("html")
+    public Collection<String> getHTMLPaths() {
+        return htmlPaths;
+    }
+
+    /**
+     * Sets the paths to all HTML patch resources within the extension. These
+     * paths are defined within the manifest by the "html" property as an array
+     * of strings, where each string is a path relative to the root of the
+     * extension .jar.
+     *
+     * @param htmlPatchPaths
+     *     A collection of paths to all HTML patch resources within the
+     *     extension.
+     */
+    @JsonProperty("html")
+    public void setHTMLPaths(Collection<String> htmlPatchPaths) {
+        this.htmlPaths = htmlPatchPaths;
     }
 
     /**
