@@ -32,6 +32,16 @@ angular.module('index').config(['$provide', function($provide) {
         var $q = $injector.get('$q');
 
         /**
+         * A map of previously-returned promises from past calls to
+         * $templateRequest(). Future calls to $templateRequest() will return
+         * new promises chained to the first promise returned for a given URL,
+         * rather than redo patch processing for every request.
+         *
+         * @type Object.<String, Promise.<String>>
+         */
+        var promiseCache = {};
+
+        /**
          * Array of the raw HTML of all patches which should be applied to the
          * HTML of retrieved templates.
          *
@@ -224,13 +234,23 @@ angular.module('index').config(['$provide', function($provide) {
          * applying all HTML patches from any installed Guacamole extensions
          * to the HTML of the requested template.
          *
+         * @param {String} url
+         *     The URL of the template being requested.
+         *
          * @returns {Promise.<String>}
          *     A Promise which resolves with the patched HTML contents of the
          *     requested template if retrieval of the template is successful.
          */
-        var decoratedTemplateRequest = function decoratedTemplateRequest() {
+        var decoratedTemplateRequest = function decoratedTemplateRequest(url) {
             
             var deferred = $q.defer();
+
+            // Chain to cached promise if it already exists
+            var cachedPromise = promiseCache[url];
+            if (cachedPromise) {
+                cachedPromise.then(deferred.resolve, deferred.reject);
+                return deferred.promise;
+            }
 
             // Resolve promise with patched template HTML
             $delegate.apply(this, arguments).then(function patchTemplate(data) {
@@ -281,6 +301,8 @@ angular.module('index').config(['$provide', function($provide) {
 
             }, deferred.reject);
 
+            // Cache this promise for future results
+            promiseCache[url] = deferred.promise;
             return deferred.promise;
 
         };
