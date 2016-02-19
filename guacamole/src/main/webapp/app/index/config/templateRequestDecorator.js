@@ -81,19 +81,8 @@ angular.module('index').config(['$provide', function($provide) {
             function decorateTemplateRequest($delegate, $injector) {
 
         // Required services
-        var $q = $injector.get('$q');
-
-        /**
-         * Array of the raw HTML of all patches which should be applied to the
-         * HTML of retrieved templates.
-         *
-         * @type String[]
-         */
-        var patches = [
-            '<meta name="before" content="a"><p>HELLO BEFORE</p>',
-            '<meta name="after" content="a"><p>HELLO AFTER</p>',
-            '<meta name="replace" content="div.protocol"><div class="protocol">:-)</div>'
-        ];
+        var $q           = $injector.get('$q');
+        var patchService = $injector.get('patchService');
 
         /**
          * Represents a single HTML patching operation which will be applied
@@ -272,6 +261,59 @@ angular.module('index').config(['$provide', function($provide) {
         };
 
         /**
+         * Applies each of the given HTML patches to the given template.
+         *
+         * @param {Element[]} root
+         *     The JQuery-wrapped root element of the template being
+         *     patched.
+         *
+         * @param {String[]} patches
+         *     An array of all HTML patches to be applied to the given
+         *     template.
+         */
+        var applyPatches = function applyPatches(root, patches) {
+
+            // Apply all defined patches
+            angular.forEach(patches, function applyPatch(patch) {
+
+                var elements = $(patch);
+
+                // Filter out and parse all applicable meta tags
+                var operations = [];
+                elements = elements.filter(function filterMetaTags(index, element) {
+
+                    // Leave non-meta tags untouched
+                    if (element.tagName !== 'META')
+                        return true;
+
+                    // Only meta tags having a valid "name" attribute need
+                    // to be filtered
+                    var name = element.getAttribute('name');
+                    if (!name || !(name in PatchOperation.Operations))
+                        return true;
+
+                    // The "content" attribute must be present for any
+                    // valid "name" meta tag
+                    var content = element.getAttribute('content');
+                    if (!content)
+                        return true;
+
+                    // Filter out and parse meta tag
+                    operations.push(new PatchOperation(name, content));
+                    return false;
+
+                });
+
+                // Apply each operation implied by the meta tags
+                angular.forEach(operations, function applyOperation(operation) {
+                    operation.apply(root, elements);
+                });
+
+            });
+
+        };
+
+        /**
          * Invokes $templateRequest() with all arguments exactly as provided,
          * applying all HTML patches from any installed Guacamole extensions
          * to the HTML of the requested template.
@@ -297,49 +339,19 @@ angular.module('index').config(['$provide', function($provide) {
             // Resolve promise with patched template HTML
             $delegate.apply(this, arguments).then(function patchTemplate(data) {
 
-                // Parse HTML into DOM tree
-                var root = $('<div></div>').html(data);
+                // Retrieve and apply all patches
+                patchService.getPatches().success(function applyRetrievedPatches(patches) {
 
-                // Apply all defined patches
-                angular.forEach(patches, function applyPatch(patch) {
+                    // Parse HTML into DOM tree
+                    var root = $('<div></div>').html(data);
 
-                    var elements = $(patch);
+                    // Apply all HTML patches to the parsed DOM
+                    applyPatches(root, patches);
 
-                    // Filter out and parse all applicable meta tags
-                    var operations = [];
-                    elements = elements.filter(function filterMetaTags(index, element) {
+                    // Transform back into HTML
+                    deferred.resolve.call(this, root.html());
 
-                        // Leave non-meta tags untouched
-                        if (element.tagName !== 'META')
-                            return true;
-
-                        // Only meta tags having a valid "name" attribute need
-                        // to be filtered
-                        var name = element.getAttribute('name');
-                        if (!name || !(name in PatchOperation.Operations))
-                            return true;
-
-                        // The "content" attribute must be present for any
-                        // valid "name" meta tag
-                        var content = element.getAttribute('content');
-                        if (!content)
-                            return true;
-
-                        // Filter out and parse meta tag
-                        operations.push(new PatchOperation(name, content));
-                        return false;
-
-                    });
-
-                    // Apply each operation implied by the meta tags
-                    angular.forEach(operations, function applyOperation(operation) {
-                        operation.apply(root, elements);
-                    });
-
-                });
-
-                // Transform back into HTML
-                deferred.resolve.call(this, root.html());
+                }, deferred.reject);
 
             }, deferred.reject);
 
