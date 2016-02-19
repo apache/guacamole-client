@@ -22,24 +22,66 @@
 
 /**
  * Overrides $templateRequest such that HTML patches defined within Guacamole
- * extensions are automatically applied to template contents.
+ * extensions are automatically applied to template contents. As the results of
+ * $templateRequest are cached internally, $templateCache is also overridden to
+ * update the internal cache as necessary.
  */
 angular.module('index').config(['$provide', function($provide) {
+
+    /**
+     * A map of previously-returned promises from past calls to
+     * $templateRequest(). Future calls to $templateRequest() will return
+     * new promises chained to the first promise returned for a given URL,
+     * rather than redo patch processing for every request.
+     *
+     * @type Object.<String, Promise.<String>>
+     */
+    var promiseCache = {};
+
+    // Decorate $templateCache such that promiseCache is updated if a template
+    // is modified within $templateCache at runtime
+    $provide.decorator('$templateCache', ['$delegate',
+            function decorateTemplateCache($delegate) {
+
+        // Create shallow copy of original $templateCache which we can safely
+        // override
+        var decoratedTemplateCache = angular.extend({}, $delegate);
+
+        /**
+         * Overridden version of $templateCache.put() which automatically
+         * invalidates the cached $templateRequest result when used. Only the
+         * URL parameter is defined, as all other arguments, if any, will be
+         * passed through to the original $templateCache.put() when the actual
+         * put() operation is performed.
+         *
+         * @param {String} url
+         *     The URL of the template whose entry is being updated.
+         *
+         * @return {Object}
+         *     The value returned by $templateCache.put(), which is defined as
+         *     being the value that was just stored at the provided URL.
+         */
+        decoratedTemplateCache.put = function put(url) {
+
+            // Evict old cached $templateRequest() result
+            delete promiseCache[url];
+
+            // Continue with originally-requested put() operation
+            return $delegate.put.apply(this, arguments);
+
+        };
+
+        return decoratedTemplateCache;
+
+    }]);
+
+    // Decorate $templateRequest such that it automatically applies any HTML
+    // patches associated with installed Guacamole extensions
     $provide.decorator('$templateRequest', ['$delegate', '$injector',
             function decorateTemplateRequest($delegate, $injector) {
 
         // Required services
         var $q = $injector.get('$q');
-
-        /**
-         * A map of previously-returned promises from past calls to
-         * $templateRequest(). Future calls to $templateRequest() will return
-         * new promises chained to the first promise returned for a given URL,
-         * rather than redo patch processing for every request.
-         *
-         * @type Object.<String, Promise.<String>>
-         */
-        var promiseCache = {};
 
         /**
          * Array of the raw HTML of all patches which should be applied to the
