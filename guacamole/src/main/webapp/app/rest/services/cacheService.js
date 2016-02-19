@@ -49,6 +49,13 @@ angular.module('rest').factory('cacheService', ['$injector',
     service.languages = $cacheFactory('API-LANGUAGES');
 
     /**
+     * Cache used by patchService.
+     *
+     * @type $cacheFactory.Cache
+     */
+    service.patches = $cacheFactory('API-PATCHES');
+
+    /**
      * Cache used by schemaService.
      *
      * @type $cacheFactory.Cache
