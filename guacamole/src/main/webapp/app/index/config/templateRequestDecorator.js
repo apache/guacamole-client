@@ -49,7 +49,7 @@ angular.module('index').config(['$provide', function($provide) {
          * MUST be one of the valid names defined within
          * PatchOperation.Operations.
          *
-         * @contructor
+         * @constructor
          * @param {String} name
          *     The name of the patching operation that will be applied. Valid
          *     names are defined within PatchOperation.Operations.
