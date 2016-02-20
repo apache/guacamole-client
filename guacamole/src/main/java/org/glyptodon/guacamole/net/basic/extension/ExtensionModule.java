@@ -101,6 +101,11 @@ public class ExtensionModule extends ServletModule {
      * Service for adding and retrieving language resources.
      */
     private final LanguageResourceService languageResourceService;
+
+    /**
+     * Service for adding and retrieving HTML patch resources.
+     */
+    private final PatchResourceService patchResourceService;
     
     /**
      * Returns the classloader that should be used as the parent classloader
@@ -140,6 +145,7 @@ public class ExtensionModule extends ServletModule {
     public ExtensionModule(Environment environment) {
         this.environment = environment;
         this.languageResourceService = new LanguageResourceService(environment);
+        this.patchResourceService = new PatchResourceService();
     }
 
     /**
@@ -307,7 +313,7 @@ public class ExtensionModule extends ServletModule {
      *     A modifiable collection of static JavaScript resources which may
      *     receive new JavaScript resources from extensions.
      *
-     * @param cssResources 
+     * @param cssResources
      *     A modifiable collection of static CSS resources which may receive
      *     new CSS resources from extensions.
      */
@@ -366,6 +372,9 @@ public class ExtensionModule extends ServletModule {
                 // Add any translation resources
                 serveLanguageResources(extension.getTranslationResources());
 
+                // Add all HTML patch resources
+                patchResourceService.addPatchResources(extension.getHTMLResources().values());
+
                 // Add all static resources under namespace-derived prefix
                 String staticResourcePrefix = "/app/ext/" + extension.getNamespace() + "/";
                 serveStaticResources(staticResourcePrefix, extension.getStaticResources());
@@ -394,12 +403,13 @@ public class ExtensionModule extends ServletModule {
     @Override
     protected void configureServlets() {
 
-        // Bind language resource service
+        // Bind resource services
         bind(LanguageResourceService.class).toInstance(languageResourceService);
+        bind(PatchResourceService.class).toInstance(patchResourceService);
 
         // Load initial language resources from servlet context
         languageResourceService.addLanguageResources(getServletContext());
-        
+
         // Load authentication provider from guacamole.properties for sake of backwards compatibility
         Class<AuthenticationProvider> authProviderProperty = getAuthProviderProperty();
         if (authProviderProperty != null)

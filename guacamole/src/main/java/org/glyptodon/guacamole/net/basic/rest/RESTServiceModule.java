@@ -38,6 +38,7 @@ import org.glyptodon.guacamole.net.basic.rest.auth.SecureRandomAuthTokenGenerato
 import org.glyptodon.guacamole.net.basic.rest.auth.TokenSessionMap;
 import org.glyptodon.guacamole.net.basic.rest.history.HistoryRESTService;
 import org.glyptodon.guacamole.net.basic.rest.language.LanguageRESTService;
+import org.glyptodon.guacamole.net.basic.rest.patch.PatchRESTService;
 import org.glyptodon.guacamole.net.basic.rest.schema.SchemaRESTService;
 import org.glyptodon.guacamole.net.basic.rest.user.UserRESTService;
 
@@ -91,6 +92,7 @@ public class RESTServiceModule extends ServletModule {
         bind(ConnectionRESTService.class);
         bind(HistoryRESTService.class);
         bind(LanguageRESTService.class);
+        bind(PatchRESTService.class);
         bind(SchemaRESTService.class);
         bind(TokenRESTService.class);
         bind(UserRESTService.class);
