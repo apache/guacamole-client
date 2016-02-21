@@ -70,13 +70,22 @@ public class PatchRESTService {
 
         StringBuilder contents = new StringBuilder();
 
-        char buffer[] = new char[8192];
-        int length;
-
         // Read entire resource into StringBuilder one chunk at a time
         Reader reader = new InputStreamReader(resource.asStream(), "UTF-8");
-        while ((length = reader.read(buffer)) != -1) {
-            contents.append(buffer, 0, length);
+        try {
+
+            char buffer[] = new char[8192];
+            int length;
+
+            while ((length = reader.read(buffer)) != -1) {
+                contents.append(buffer, 0, length);
+            }
+
+        }
+
+        // Ensure resource is always closed
+        finally {
+            reader.close();
         }
 
         return contents.toString();
