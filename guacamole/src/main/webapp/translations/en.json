@@ -274,6 +274,7 @@
         "FIELD_HEADER_CONSOLE"         : "Administrator console:",
         "FIELD_HEADER_CONSOLE_AUDIO"   : "Support audio in console:",
         "FIELD_HEADER_CREATE_DRIVE_PATH" : "Automatically create drive:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
         "FIELD_HEADER_DISABLE_AUDIO"   : "Disable audio:",
         "FIELD_HEADER_DISABLE_AUTH"    : "Disable authentication:",
         "FIELD_HEADER_DOMAIN"          : "Domain:",
@@ -296,6 +297,8 @@
         "FIELD_HEADER_PORT"            : "Port:",
         "FIELD_HEADER_PRECONNECTION_BLOB" : "Preconnection BLOB (VM ID):",
         "FIELD_HEADER_PRECONNECTION_ID"   : "RDP source ID:",
+        "FIELD_HEADER_RECORDING_NAME" : "Recording name:",
+        "FIELD_HEADER_RECORDING_PATH" : "Recording path:",
         "FIELD_HEADER_REMOTE_APP_ARGS" : "Parameters:",
         "FIELD_HEADER_REMOTE_APP_DIR"  : "Working directory:",
         "FIELD_HEADER_REMOTE_APP"      : "Program:",
@@ -342,6 +345,7 @@
         "SECTION_HEADER_NETWORK"            : "Network",
         "SECTION_HEADER_PERFORMANCE"        : "Performance",
         "SECTION_HEADER_PRECONNECTION_PDU"  : "Preconnection PDU / Hyper-V",
+        "SECTION_HEADER_RECORDING"          : "Screen Recording",
         "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
         "SECTION_HEADER_SFTP"               : "SFTP"
 
@@ -351,6 +355,7 @@
 
         "FIELD_HEADER_COLOR_SCHEME" : "Color scheme:",
         "FIELD_HEADER_COMMAND"     : "Execute command:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
         "FIELD_HEADER_FONT_NAME"   : "Font name:",
         "FIELD_HEADER_FONT_SIZE"   : "Font size:",
@@ -361,6 +366,8 @@
         "FIELD_HEADER_PASSPHRASE"  : "Passphrase:",
         "FIELD_HEADER_PORT"        : "Port:",
         "FIELD_HEADER_PRIVATE_KEY" : "Private key:",
+        "FIELD_HEADER_RECORDING_NAME" : "Recording name:",
+        "FIELD_HEADER_RECORDING_PATH" : "Recording path:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
 
@@ -391,6 +398,7 @@
         "SECTION_HEADER_AUTHENTICATION" : "Authentication",
         "SECTION_HEADER_DISPLAY"        : "Display",
         "SECTION_HEADER_NETWORK"        : "Network",
+        "SECTION_HEADER_RECORDING"      : "Screen Recording",
         "SECTION_HEADER_SESSION"        : "Session / Environment",
         "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)",
         "SECTION_HEADER_SFTP"           : "SFTP"
@@ -400,6 +408,7 @@
     "PROTOCOL_TELNET" : {
 
         "FIELD_HEADER_COLOR_SCHEME"   : "Color scheme:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
         "FIELD_HEADER_FONT_NAME"      : "Font name:",
         "FIELD_HEADER_FONT_SIZE"      : "Font size:",
@@ -408,6 +417,8 @@
         "FIELD_HEADER_PASSWORD"       : "Password:",
         "FIELD_HEADER_PASSWORD_REGEX" : "Password regular expression:",
         "FIELD_HEADER_PORT"           : "Port:",
+        "FIELD_HEADER_RECORDING_NAME" : "Recording name:",
+        "FIELD_HEADER_RECORDING_PATH" : "Recording path:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
 
@@ -437,6 +448,7 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentication",
         "SECTION_HEADER_DISPLAY"        : "Display",
+        "SECTION_HEADER_RECORDING"      : "Screen Recording",
         "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)",
         "SECTION_HEADER_NETWORK"        : "Network"
 
@@ -447,6 +459,7 @@
         "FIELD_HEADER_AUDIO_SERVERNAME" : "Audio server name:",
         "FIELD_HEADER_CLIPBOARD_ENCODING" : "Encoding:",
         "FIELD_HEADER_COLOR_DEPTH"      : "Color depth:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
         "FIELD_HEADER_CURSOR"           : "Cursor:",
         "FIELD_HEADER_DEST_HOST"        : "Destination host:",
         "FIELD_HEADER_DEST_PORT"        : "Destination port:",
@@ -456,6 +469,8 @@
         "FIELD_HEADER_PASSWORD"         : "Password:",
         "FIELD_HEADER_PORT"             : "Port:",
         "FIELD_HEADER_READ_ONLY"        : "Read-only:",
+        "FIELD_HEADER_RECORDING_NAME" : "Recording name:",
+        "FIELD_HEADER_RECORDING_PATH" : "Recording path:",
         "FIELD_HEADER_SFTP_DIRECTORY"   : "Default upload directory:",
         "FIELD_HEADER_SFTP_HOSTNAME"    : "Hostname:",
         "FIELD_HEADER_SFTP_PASSPHRASE"  : "Passphrase:",
@@ -488,6 +503,7 @@
         "SECTION_HEADER_CLIPBOARD"      : "Clipboard",
         "SECTION_HEADER_DISPLAY"        : "Display",
         "SECTION_HEADER_NETWORK"        : "Network",
+        "SECTION_HEADER_RECORDING"      : "Screen Recording",
         "SECTION_HEADER_REPEATER"       : "VNC Repeater",
         "SECTION_HEADER_SFTP"           : "SFTP"
 
