@@ -299,6 +299,7 @@
         "FIELD_HEADER_PRECONNECTION_ID"   : "RDP source ID:",
         "FIELD_HEADER_RECORDING_NAME" : "Recording name:",
         "FIELD_HEADER_RECORDING_PATH" : "Recording path:",
+        "FIELD_HEADER_RESIZE_METHOD" : "Resize method:",
         "FIELD_HEADER_REMOTE_APP_ARGS" : "Parameters:",
         "FIELD_HEADER_REMOTE_APP_DIR"  : "Working directory:",
         "FIELD_HEADER_REMOTE_APP"      : "Program:",
@@ -320,6 +321,10 @@
         "FIELD_OPTION_COLOR_DEPTH_32"    : "True color (32-bit)",
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",
         "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "\"Display Update\" virtual channel (RDP 8.1+)",
+        "FIELD_OPTION_RESIZE_METHOD_EMPTY"          : "",
+        "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "Reconnect",
 
         "FIELD_OPTION_SECURITY_ANY"   : "Any",
         "FIELD_OPTION_SECURITY_EMPTY" : "",
