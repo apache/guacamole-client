@@ -71,6 +71,25 @@
                     "options" : [ "true" ]
                 }
             ]
+        },
+
+        {
+            "name" : "recording",
+            "fields" : [
+                {
+                    "name"  : "recording-path",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "recording-name",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "create-recording-path",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
         }
 
     ]
