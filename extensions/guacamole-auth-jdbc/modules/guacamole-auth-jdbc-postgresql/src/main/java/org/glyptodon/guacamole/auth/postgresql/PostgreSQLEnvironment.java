@@ -54,7 +54,7 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
      * The default value for the maximum number of connections to be
      * allowed to the Guacamole server overall.
      */
-    private final int ABSOLUTE_MAX_CONNECTIONS = 0;
+    private final int DEFAULT_ABSOLUTE_MAX_CONNECTIONS = 0;
 
     /**
      * The default value for the default maximum number of connections to be
@@ -172,7 +172,7 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     @Override
     public int getAbsoluteMaxConnections() throws GuacamoleException {
         return getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_ABSOLUTE_MAX_CONNECTIONS,
-            ABSOLUTE_MAX_CONNECTIONS
+            DEFAULT_ABSOLUTE_MAX_CONNECTIONS
         );
     }
 
