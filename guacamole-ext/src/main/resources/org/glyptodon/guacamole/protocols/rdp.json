@@ -101,6 +101,11 @@
                     "name"    : "color-depth",
                     "type"    : "ENUM",
                     "options" : [ "", "8", "16", "24", "32" ]
+                },
+                {
+                    "name"    : "resize-method",
+                    "type"    : "ENUM",
+                    "options" : [ "", "reconnect", "display-update" ]
                 }
             ]
         },
