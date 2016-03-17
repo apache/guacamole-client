@@ -134,7 +134,7 @@ public class RestrictedGuacamoleTunnelService
      * without exceeding the maximum, false is returned.
      *
      * @param counter
-     *     The AtomicInteger to attempt increment.
+     *     The AtomicInteger to attempt to increment.
      *
      * @param max
      *     The maximum value that the given AtomicInteger should contain, or
