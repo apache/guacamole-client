@@ -116,6 +116,19 @@ public class MySQLGuacamoleProperties {
     };
 
     /**
+     * The maximum number of concurrent connections to allow overall. Zero
+     * denotes unlimited.
+     */
+    public static final IntegerGuacamoleProperty
+            MYSQL_ABSOLUTE_MAX_CONNECTIONS =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "mysql-absolute-max-connections"; }
+
+    };
+
+    /**
      * The maximum number of concurrent connections to allow to any one
      * connection. Zero denotes unlimited.
      */

@@ -125,6 +125,19 @@ public class PostgreSQLGuacamoleProperties {
     };
 
     /**
+     * The maximum number of concurrent connections to allow overall. Zero
+     * denotes unlimited.
+     */
+    public static final IntegerGuacamoleProperty
+            POSTGRESQL_ABSOLUTE_MAX_CONNECTIONS =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-absolute-max-connections"; }
+
+    };
+
+    /**
      * The maximum number of concurrent connections to allow to any one
      * connection. Zero denotes unlimited.
      */

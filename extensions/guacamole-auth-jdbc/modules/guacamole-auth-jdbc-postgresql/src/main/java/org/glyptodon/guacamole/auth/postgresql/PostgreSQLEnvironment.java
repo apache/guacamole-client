@@ -51,6 +51,12 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     private static final int DEFAULT_PORT = 5432;
 
     /**
+     * The default value for the maximum number of connections to be
+     * allowed to the Guacamole server overall.
+     */
+    private final int ABSOLUTE_MAX_CONNECTIONS = 0;
+
+    /**
      * The default value for the default maximum number of connections to be
      * allowed per user to any one connection. Note that, as long as the
      * legacy "disallow duplicate" and "disallow simultaneous" properties are
@@ -161,6 +167,13 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
 
         }
 
+    }
+
+    @Override
+    public int getAbsoluteMaxConnections() throws GuacamoleException {
+        return getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_ABSOLUTE_MAX_CONNECTIONS,
+            ABSOLUTE_MAX_CONNECTIONS
+        );
     }
 
     @Override
