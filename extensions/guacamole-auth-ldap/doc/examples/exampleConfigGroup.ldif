@@ -9,4 +9,4 @@ guacConfigParameter: port=5900
 guacConfigParameter: password=secret
 member: cn=user1,dc=example,dc=com
 member: cn=user2,dc=example,dc=com
-seeAlso: ou=admins,ou=groups,dc=example,dc=com
+seeAlso: cn=admins,ou=groups,dc=example,dc=com
