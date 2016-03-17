@@ -23,15 +23,18 @@
 package org.glyptodon.guacamole.auth.jdbc.tunnel;
 
 import com.google.common.collect.ConcurrentHashMultiset;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.glyptodon.guacamole.GuacamoleClientTooManyException;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceConflictException;
+import org.glyptodon.guacamole.auth.jdbc.JDBCEnvironment;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 
 
@@ -46,6 +49,12 @@ import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 @Singleton
 public class RestrictedGuacamoleTunnelService
     extends AbstractGuacamoleTunnelService {
+
+    /**
+     * The environment of the Guacamole server.
+     */
+    @Inject
+    private JDBCEnvironment environment;
 
     /**
      * Set of all currently-active user/connection pairs (seats).
@@ -66,6 +75,12 @@ public class RestrictedGuacamoleTunnelService
      * Set of all currently-active connection groups.
      */
     private final ConcurrentHashMultiset<String> activeGroups = ConcurrentHashMultiset.<String>create();
+
+    /**
+     * The total number of active connections within this instance of
+     * Guacamole.
+     */
+    private final AtomicInteger totalActiveConnections = new AtomicInteger(0);
 
     /**
      * Attempts to add a single instance of the given value to the given
@@ -113,9 +128,53 @@ public class RestrictedGuacamoleTunnelService
 
     }
 
+    /**
+     * Attempts to increment the given AtomicInteger without exceeding the
+     * specified maximum value. If the AtomicInteger cannot be incremented
+     * without exceeding the maximum, false is returned.
+     *
+     * @param counter
+     *     The AtomicInteger to attempt to increment.
+     *
+     * @param max
+     *     The maximum value that the given AtomicInteger should contain, or
+     *     zero if no limit applies.
+     *
+     * @return
+     *     true if the AtomicInteger was successfully incremented without
+     *     exceeding the specified maximum, false if the AtomicInteger could
+     *     not be incremented.
+     */
+    private boolean tryIncrement(AtomicInteger counter, int max) {
+
+        // Repeatedly attempt to increment the given AtomicInteger until we
+        // explicitly succeed or explicitly fail
+        while (true) {
+
+            // Get current value
+            int count = counter.get();
+
+            // Bail out if the maximum has already been reached
+            if (count >= max && max != 0)
+                return false;
+
+            // Attempt to increment
+            if (counter.compareAndSet(count, count+1))
+                return true;
+
+            // Try again if unsuccessful
+
+        }
+
+    }
+
     @Override
     protected ModeledConnection acquire(AuthenticatedUser user,
             List<ModeledConnection> connections) throws GuacamoleException {
+
+        // Do not acquire connection unless within overall limits
+        if (!tryIncrement(totalActiveConnections, environment.getAbsoluteMaxConnections()))
+            throw new GuacamoleResourceConflictException("Cannot connect. Overall maximum connections reached.");
 
         // Get username
         String username = user.getUser().getIdentifier();
@@ -160,6 +219,9 @@ public class RestrictedGuacamoleTunnelService
 
         }
 
+        // Acquire failed
+        totalActiveConnections.decrementAndGet();
+
         // Too many connections by this user
         if (userSpecificFailure)
             throw new GuacamoleClientTooManyException("Cannot connect. Connection already in use by this user.");
@@ -174,6 +236,7 @@ public class RestrictedGuacamoleTunnelService
     protected void release(AuthenticatedUser user, ModeledConnection connection) {
         activeSeats.remove(new Seat(user.getUser().getIdentifier(), connection.getIdentifier()));
         activeConnections.remove(connection.getIdentifier());
+        totalActiveConnections.decrementAndGet();
     }
 
     @Override
