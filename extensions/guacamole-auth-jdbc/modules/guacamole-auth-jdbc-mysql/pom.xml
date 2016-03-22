@@ -2,7 +2,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.glyptodon.guacamole</groupId>
+    <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-jdbc-mysql</artifactId>
     <packaging>jar</packaging>
     <name>guacamole-auth-jdbc-mysql</name>
@@ -13,7 +13,7 @@
     </properties>
 
     <parent>
-        <groupId>org.glyptodon.guacamole</groupId>
+        <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-auth-jdbc</artifactId>
         <version>0.9.9</version>
         <relativePath>../../</relativePath>
@@ -65,14 +65,14 @@
 
         <!-- Guacamole Extension API -->
         <dependency>
-            <groupId>org.glyptodon.guacamole</groupId>
+            <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
             <scope>provided</scope>
         </dependency>
 
         <!-- Guacamole JDBC Authentication -->
         <dependency>
-            <groupId>org.glyptodon.guacamole</groupId>
+            <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-auth-jdbc-base</artifactId>
             <version>0.9.9</version>
         </dependency>

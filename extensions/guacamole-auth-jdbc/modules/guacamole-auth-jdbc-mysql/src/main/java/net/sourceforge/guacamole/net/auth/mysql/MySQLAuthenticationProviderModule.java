@@ -26,7 +26,7 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
 import java.util.Properties;
-import org.glyptodon.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleException;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
 
 /**

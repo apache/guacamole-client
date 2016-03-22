@@ -6,7 +6,7 @@
     "namespace" : "guac-postgresql",
 
     "authProviders" : [
-        "org.glyptodon.guacamole.auth.postgresql.PostgreSQLAuthenticationProvider"
+        "org.apache.guacamole.auth.postgresql.PostgreSQLAuthenticationProvider"
     ],
 
     "translations" : [

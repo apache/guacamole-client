@@ -23,15 +23,15 @@
 package net.sourceforge.guacamole.net.auth.ldap;
 
 
-import org.glyptodon.guacamole.auth.ldap.AuthenticationProviderService;
-import org.glyptodon.guacamole.auth.ldap.LDAPAuthenticationProviderModule;
+import org.apache.guacamole.auth.ldap.AuthenticationProviderService;
+import org.apache.guacamole.auth.ldap.LDAPAuthenticationProviderModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.auth.AuthenticatedUser;
-import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
-import org.glyptodon.guacamole.net.auth.Credentials;
-import org.glyptodon.guacamole.net.auth.UserContext;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.apache.guacamole.net.auth.AuthenticationProvider;
+import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.UserContext;
 
 /**
  * Allows users to be authenticated against an LDAP server. Each user may have

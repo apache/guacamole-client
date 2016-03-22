@@ -22,9 +22,9 @@
 
 package net.sourceforge.guacamole.net.auth.mysql;
 
-import org.glyptodon.guacamole.properties.BooleanGuacamoleProperty;
-import org.glyptodon.guacamole.properties.IntegerGuacamoleProperty;
-import org.glyptodon.guacamole.properties.StringGuacamoleProperty;
+import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.IntegerGuacamoleProperty;
+import org.apache.guacamole.properties.StringGuacamoleProperty;
 
 /**
  * Properties used by the MySQL Authentication plugin.

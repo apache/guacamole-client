@@ -22,8 +22,8 @@
 
 package net.sourceforge.guacamole.net.auth.mysql;
 
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.auth.jdbc.JDBCEnvironment;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

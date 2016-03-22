@@ -2,7 +2,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.glyptodon.guacamole</groupId>
+    <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-example</artifactId>
     <packaging>war</packaging>
     <version>0.9.9</version>
@@ -40,7 +40,7 @@
                 <configuration>
                     <overlays>
                         <overlay>
-                            <groupId>org.glyptodon.guacamole</groupId>
+                            <groupId>org.apache.guacamole</groupId>
                             <artifactId>guacamole-common-js</artifactId>
                             <type>zip</type>
                         </overlay>
@@ -64,7 +64,7 @@
 
         <!-- Main Guacamole library -->
         <dependency>
-            <groupId>org.glyptodon.guacamole</groupId>
+            <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-common</artifactId>
             <version>0.9.9</version>
             <scope>compile</scope>
@@ -72,7 +72,7 @@
 
         <!-- Guacamole JavaScript library -->
         <dependency>
-            <groupId>org.glyptodon.guacamole</groupId>
+            <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-common-js</artifactId>
             <version>0.9.9</version>
             <type>zip</type>

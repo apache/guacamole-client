@@ -4,7 +4,7 @@
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.glyptodon.guacamole</groupId>
+    <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-jdbc</artifactId>
     <packaging>pom</packaging>
     <version>0.9.9</version>
@@ -60,7 +60,7 @@
 
             <!-- Guacamole Extension API -->
             <dependency>
-                <groupId>org.glyptodon.guacamole</groupId>
+                <groupId>org.apache.guacamole</groupId>
                 <artifactId>guacamole-ext</artifactId>
                 <version>0.9.9</version>
                 <scope>provided</scope>
