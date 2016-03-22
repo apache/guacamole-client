@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.auth.mysql;
+package org.apache.guacamole.auth.mysql;
 
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;

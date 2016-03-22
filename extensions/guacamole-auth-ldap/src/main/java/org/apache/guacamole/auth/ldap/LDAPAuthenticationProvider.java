@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.auth.ldap;
+package org.apache.guacamole.auth.ldap;
 
 
 import org.apache.guacamole.auth.ldap.AuthenticationProviderService;

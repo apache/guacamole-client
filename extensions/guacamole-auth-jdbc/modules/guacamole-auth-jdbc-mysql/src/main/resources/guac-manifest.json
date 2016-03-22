@@ -6,7 +6,7 @@
     "namespace" : "guac-mysql",
 
     "authProviders" : [
-        "net.sourceforge.guacamole.net.auth.mysql.MySQLAuthenticationProvider"
+        "org.apache.guacamole.auth.mysql.MySQLAuthenticationProvider"
     ],
 
     "translations" : [

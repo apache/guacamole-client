@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import net.sourceforge.guacamole.net.basic.BasicFileAuthenticationProvider;
+import org.apache.guacamole.net.basic.BasicFileAuthenticationProvider;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;

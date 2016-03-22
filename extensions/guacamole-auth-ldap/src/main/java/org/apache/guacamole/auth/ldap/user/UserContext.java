@@ -26,7 +26,7 @@ import com.google.inject.Inject;
 import com.novell.ldap.LDAPConnection;
 import java.util.Collection;
 import java.util.Collections;
-import net.sourceforge.guacamole.net.auth.ldap.LDAPAuthenticationProvider;
+import org.apache.guacamole.auth.ldap.LDAPAuthenticationProvider;
 import org.apache.guacamole.auth.ldap.connection.ConnectionService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.Form;

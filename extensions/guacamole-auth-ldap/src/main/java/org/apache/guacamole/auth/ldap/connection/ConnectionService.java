@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import net.sourceforge.guacamole.net.auth.ldap.LDAPAuthenticationProvider;
+import org.apache.guacamole.auth.ldap.LDAPAuthenticationProvider;
 import org.apache.guacamole.auth.ldap.ConfigurationService;
 import org.apache.guacamole.auth.ldap.EscapingService;
 import org.apache.guacamole.GuacamoleException;

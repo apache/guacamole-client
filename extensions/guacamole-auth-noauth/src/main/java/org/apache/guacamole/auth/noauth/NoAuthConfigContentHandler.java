@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.auth.noauth;
+package org.apache.guacamole.auth.noauth;
 
 import java.util.Collections;
 import java.util.HashMap;

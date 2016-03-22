@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.auth.mysql;
+package org.apache.guacamole.auth.mysql;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;

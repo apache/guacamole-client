@@ -6,7 +6,7 @@
     "namespace" : "guac-ldap",
 
     "authProviders" : [
-        "net.sourceforge.guacamole.net.auth.ldap.LDAPAuthenticationProvider"
+        "org.apache.guacamole.auth.ldap.LDAPAuthenticationProvider"
     ],
 
     "translations" : [

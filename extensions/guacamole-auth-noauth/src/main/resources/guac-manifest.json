@@ -6,7 +6,7 @@
     "namespace" : "guac-noauth",
 
     "authProviders" : [
-        "net.sourceforge.guacamole.net.auth.noauth.NoAuthenticationProvider"
+        "org.apache.guacamole.auth.noauth.NoAuthenticationProvider"
     ],
 
     "translations" : [

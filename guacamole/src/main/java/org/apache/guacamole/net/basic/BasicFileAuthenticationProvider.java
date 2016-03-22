@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.basic;
+package org.apache.guacamole.net.basic;
 
 import java.io.BufferedInputStream;
 import java.io.File;
