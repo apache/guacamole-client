@@ -20,10 +20,8 @@
  * THE SOFTWARE.
  */
 
-package org.apache.guacamole.auth.basic;
+package org.apache.guacamole.auth.file;
 
-import org.apache.guacamole.auth.Authorization;
-import org.apache.guacamole.auth.UserMapping;
 import org.apache.guacamole.xml.TagHandler;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.xml.sax.Attributes;

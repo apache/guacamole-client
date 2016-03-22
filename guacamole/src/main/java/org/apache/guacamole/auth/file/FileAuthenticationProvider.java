@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.apache.guacamole.auth.basic;
+package org.apache.guacamole.auth.file;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -29,13 +29,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.simple.SimpleAuthenticationProvider;
-import org.apache.guacamole.auth.Authorization;
-import org.apache.guacamole.auth.UserMapping;
 import org.apache.guacamole.xml.DocumentHandler;
 import org.apache.guacamole.properties.FileGuacamoleProperty;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
@@ -53,12 +50,12 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *
  * @author Michael Jumper, Michal Kotas
  */
-public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvider {
+public class FileAuthenticationProvider extends SimpleAuthenticationProvider {
 
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(BasicFileAuthenticationProvider.class);
+    private final Logger logger = LoggerFactory.getLogger(FileAuthenticationProvider.class);
 
     /**
      * The time the user mapping file was last modified. If the file has never
@@ -78,8 +75,12 @@ public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvide
     private final Environment environment;
 
     /**
-     * The XML file to read the user mapping from.
+     * The XML file to read the user mapping from. This property has been
+     * deprecated, as the name "basic" is ridiculous, and providing for
+     * configurable user-mapping.xml locations is unnecessary complexity. Use
+     * GUACAMOLE_HOME/user-mapping.xml instead.
      */
+    @Deprecated
     public static final FileGuacamoleProperty BASIC_USER_MAPPING = new FileGuacamoleProperty() {
 
         @Override
@@ -88,10 +89,9 @@ public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvide
     };
 
     /**
-     * The default filename to use for the user mapping, if not defined within
-     * guacamole.properties.
+     * The filename to use for the user mapping.
      */
-    public static final String DEFAULT_USER_MAPPING = "user-mapping.xml";
+    public static final String USER_MAPPING_FILENAME = "user-mapping.xml";
     
     /**
      * Creates a new BasicFileAuthenticationProvider that authenticates users
@@ -101,7 +101,7 @@ public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvide
      *     If a required property is missing, or an error occurs while parsing
      *     a property.
      */
-    public BasicFileAuthenticationProvider() throws GuacamoleException {
+    public FileAuthenticationProvider() throws GuacamoleException {
         environment = new LocalEnvironment();
     }
 
@@ -120,14 +120,22 @@ public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvide
      *     A UserMapping containing all authorization data within the user
      *     mapping XML file, or null if the file cannot be found/parsed.
      */
+    @SuppressWarnings("deprecation") // We must continue to use the "basic-user-mapping" property until it is truly no longer supported
     private UserMapping getUserMapping() {
 
         // Get user mapping file, defaulting to GUACAMOLE_HOME/user-mapping.xml
         File userMappingFile;
         try {
+
+            // Continue supporting deprecated property, but warn in the logs
             userMappingFile = environment.getProperty(BASIC_USER_MAPPING);
+            if (userMappingFile != null)
+                logger.warn("The \"basic-user-mapping\" property is deprecated. Please use the \"GUACAMOLE_HOME/user-mapping.xml\" file instead.");
+
+            // Read user mapping from GUACAMOLE_HOME
             if (userMappingFile == null)
-                userMappingFile = new File(environment.getGuacamoleHome(), DEFAULT_USER_MAPPING);
+                userMappingFile = new File(environment.getGuacamoleHome(), USER_MAPPING_FILENAME);
+
         }
 
         // Abort if property cannot be parsed

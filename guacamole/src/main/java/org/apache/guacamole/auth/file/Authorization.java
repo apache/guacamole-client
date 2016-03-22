@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.apache.guacamole.auth;
+package org.apache.guacamole.auth.file;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
