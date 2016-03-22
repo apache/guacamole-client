@@ -5,7 +5,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole</artifactId>
     <packaging>war</packaging>
-    <version>0.9.9</version>
+    <version>0.9.9-incubating</version>
     <name>guacamole</name>
     <url>http://guac-dev.org/</url>
 
@@ -221,21 +221,21 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-common</artifactId>
-            <version>0.9.9</version>
+            <version>0.9.9-incubating</version>
         </dependency>
 
         <!-- Guacamole Extension API -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.9.9</version>
+            <version>0.9.9-incubating</version>
         </dependency>
 
         <!-- Guacamole JavaScript API -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-common-js</artifactId>
-            <version>0.9.9</version>
+            <version>0.9.9-incubating</version>
             <type>zip</type>
             <scope>runtime</scope>
         </dependency>

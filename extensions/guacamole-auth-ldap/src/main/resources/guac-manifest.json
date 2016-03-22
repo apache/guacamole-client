@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "0.9.9",
+    "guacamoleVersion" : "0.9.9-incubating",
 
     "name"      : "LDAP Authentication",
     "namespace" : "guac-ldap",
