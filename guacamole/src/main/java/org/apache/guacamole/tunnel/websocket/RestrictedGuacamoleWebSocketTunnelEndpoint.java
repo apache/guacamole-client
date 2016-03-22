@@ -34,7 +34,6 @@ import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.tunnel.TunnelRequest;
 import org.apache.guacamole.tunnel.TunnelRequestService;
 import org.apache.guacamole.websocket.GuacamoleWebSocketTunnelEndpoint;
-import org.apache.guacamole.websocket.GuacamoleWebSocketTunnelEndpoint;
 
 /**
  * Tunnel implementation which uses WebSocket as a tunnel backend, rather than

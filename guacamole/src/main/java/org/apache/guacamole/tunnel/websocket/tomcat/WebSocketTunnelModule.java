@@ -45,7 +45,7 @@ public class WebSocketTunnelModule extends ServletModule implements TunnelLoader
         try {
 
             // Attempt to find WebSocket servlet
-            Class.forName("org.apache.guacamole.websocket.tomcat.BasicGuacamoleWebSocketTunnelServlet");
+            Class.forName("org.apache.guacamole.tunnel.websocket.tomcat.RestrictedGuacamoleWebSocketTunnelServlet");
 
             // Support found
             return true;

@@ -94,8 +94,8 @@ public class FileAuthenticationProvider extends SimpleAuthenticationProvider {
     public static final String USER_MAPPING_FILENAME = "user-mapping.xml";
     
     /**
-     * Creates a new BasicFileAuthenticationProvider that authenticates users
-     * against simple, monolithic XML file.
+     * Creates a new FileAuthenticationProvider that authenticates users against
+     * simple, monolithic XML file.
      *
      * @throws GuacamoleException
      *     If a required property is missing, or an error occurs while parsing

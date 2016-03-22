@@ -72,8 +72,7 @@ public class HashTokenSessionMap implements TokenSessionMap {
     };
 
     /**
-     * Create a new BasicTokenGuacamoleSessionMap configured using the given
-     * environment.
+     * Create a new HashTokenSessionMap configured using the given environment.
      *
      * @param environment
      *     The environment to use when configuring the token session map.
