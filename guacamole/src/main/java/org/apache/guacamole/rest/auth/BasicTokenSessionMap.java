@@ -32,14 +32,14 @@ import java.util.concurrent.TimeUnit;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.GuacamoleSession;
-import org.apache.guacamole.properties.BasicGuacamoleProperties;
+import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A basic, HashMap-based implementation of the TokenSessionMap with support
- * for session timeouts.
- * 
+ * A HashMap-based implementation of the TokenSessionMap with support for
+ * session timeouts.
+ *
  * @author James Muehlner
  */
 public class BasicTokenSessionMap implements TokenSessionMap {
@@ -61,6 +61,17 @@ public class BasicTokenSessionMap implements TokenSessionMap {
             new ConcurrentHashMap<String, GuacamoleSession>();
 
     /**
+     * The session timeout for the Guacamole REST API, in minutes.
+     */
+    private final IntegerGuacamoleProperty API_SESSION_TIMEOUT =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "api-session-timeout"; }
+
+    };
+
+    /**
      * Create a new BasicTokenGuacamoleSessionMap configured using the given
      * environment.
      *
@@ -73,7 +84,7 @@ public class BasicTokenSessionMap implements TokenSessionMap {
 
         // Read session timeout from guacamole.properties
         try {
-            sessionTimeoutValue = environment.getProperty(BasicGuacamoleProperties.API_SESSION_TIMEOUT, 60);
+            sessionTimeoutValue = environment.getProperty(API_SESSION_TIMEOUT, 60);
         }
         catch (GuacamoleException e) {
             logger.error("Unable to read guacamole.properties: {}", e.getMessage());

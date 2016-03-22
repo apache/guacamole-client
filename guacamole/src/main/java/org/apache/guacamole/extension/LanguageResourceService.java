@@ -38,7 +38,7 @@ import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
-import org.apache.guacamole.properties.BasicGuacamoleProperties;
+import org.apache.guacamole.properties.StringSetProperty;
 import org.apache.guacamole.resource.ByteArrayResource;
 import org.apache.guacamole.resource.Resource;
 import org.apache.guacamole.resource.WebApplicationResource;
@@ -80,6 +80,19 @@ public class LanguageResourceService {
     private static final Pattern LANGUAGE_KEY_PATTERN = Pattern.compile(".*/([a-z]+(_[A-Z]+)?)\\.json");
 
     /**
+     * Comma-separated list of all allowed languages, where each language is
+     * represented by a language key, such as "en" or "en_US". If specified,
+     * only languages within this list will be listed as available by the REST
+     * service.
+     */
+    public final StringSetProperty ALLOWED_LANGUAGES = new StringSetProperty() {
+
+        @Override
+        public String getName() { return "allowed-languages"; }
+
+    };
+
+    /**
      * The set of all language keys which are explicitly listed as allowed
      * within guacamole.properties, or null if all defined languages should be
      * allowed.
@@ -110,7 +123,7 @@ public class LanguageResourceService {
 
         // Parse list of available languages from properties
         try {
-            parsedAllowedLanguages = environment.getProperty(BasicGuacamoleProperties.ALLOWED_LANGUAGES);
+            parsedAllowedLanguages = environment.getProperty(ALLOWED_LANGUAGES);
             logger.debug("Available languages will be restricted to: {}", parsedAllowedLanguages);
         }
 

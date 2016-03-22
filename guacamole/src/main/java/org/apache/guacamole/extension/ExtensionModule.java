@@ -37,7 +37,6 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
-import org.apache.guacamole.properties.BasicGuacamoleProperties;
 import org.apache.guacamole.resource.Resource;
 import org.apache.guacamole.resource.ResourceServlet;
 import org.apache.guacamole.resource.SequenceResource;
@@ -146,42 +145,6 @@ public class ExtensionModule extends ServletModule {
         this.environment = environment;
         this.languageResourceService = new LanguageResourceService(environment);
         this.patchResourceService = new PatchResourceService();
-    }
-
-    /**
-     * Reads the value of the now-deprecated "auth-provider" property from
-     * guacamole.properties, returning the corresponding AuthenticationProvider
-     * class. If no authentication provider could be read, or the property is
-     * not present, null is returned.
-     *
-     * As this property is deprecated, this function will also log warning
-     * messages if the property is actually specified.
-     *
-     * @return
-     *     The value of the deprecated "auth-provider" property, or null if the
-     *     property is not present.
-     */
-    @SuppressWarnings("deprecation") // We must continue to use this property until it is truly no longer supported
-    private Class<AuthenticationProvider> getAuthProviderProperty() {
-
-        // Get and bind auth provider instance, if defined via property
-        try {
-
-            // Use "auth-provider" property if present, but warn about deprecation
-            Class<AuthenticationProvider> authenticationProvider = environment.getProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
-            if (authenticationProvider != null)
-                logger.warn("The \"auth-provider\" and \"lib-directory\" properties are now deprecated. Please use the \"extensions\" and \"lib\" directories within GUACAMOLE_HOME instead.");
-
-            return authenticationProvider;
-
-        }
-        catch (GuacamoleException e) {
-            logger.warn("Value of deprecated \"auth-provider\" property within guacamole.properties is not valid: {}", e.getMessage());
-            logger.debug("Error reading authentication provider from guacamole.properties.", e);
-        }
-
-        return null;
-
     }
 
     /**
@@ -409,11 +372,6 @@ public class ExtensionModule extends ServletModule {
 
         // Load initial language resources from servlet context
         languageResourceService.addLanguageResources(getServletContext());
-
-        // Load authentication provider from guacamole.properties for sake of backwards compatibility
-        Class<AuthenticationProvider> authProviderProperty = getAuthProviderProperty();
-        if (authProviderProperty != null)
-            bindAuthenticationProvider(authProviderProperty);
 
         // Init JavaScript resources with base guacamole.min.js
         Collection<Resource> javaScriptResources = new ArrayList<Resource>();
