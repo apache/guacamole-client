@@ -26,8 +26,9 @@
 
     <!-- Git repository -->
     <scm>
-        <url>https://github.com/glyptodon/guacamole-client</url>
-        <connection>scm:git:git://github.com/glyptodon/guacamole-client.git</connection>
+        <url>https://github.com/apache/incubator-guacamole-client</url>
+        <connection>scm:git:https://git.wip-us.apache.org/repos/asf/incubator-guacamole-client.git</connection>
+
     </scm>
 
     <!-- Developers -->
