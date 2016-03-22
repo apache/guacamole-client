@@ -42,7 +42,7 @@
     </filter-mapping>
 
     <listener>
-        <listener-class>org.apache.guacamole.BasicServletContextListener</listener-class>
+        <listener-class>org.apache.guacamole.GuacamoleServletContextListener</listener-class>
     </listener>
 
     <!-- Audio file mimetype mappings -->
