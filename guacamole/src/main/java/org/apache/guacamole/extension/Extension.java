@@ -230,6 +230,9 @@ public class Extension {
         catch (ClassNotFoundException e) {
             throw new GuacamoleException("Authentication provider class not found.", e);
         }
+        catch (LinkageError e) {
+            throw new GuacamoleException("Authentication provider class cannot be loaded (wrong version of API?).", e);
+        }
 
     }
 
