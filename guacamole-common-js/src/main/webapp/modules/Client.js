@@ -233,89 +233,98 @@ Guacamole.Client = function(tunnel) {
     };
 
     /**
+     * Allocates an available stream index and creates a new
+     * Guacamole.OutputStream using that index, associating the resulting
+     * stream with this Guacamole.Client. Note that this stream will not yet
+     * exist as far as the other end of the Guacamole connection is concerned.
+     * Streams exist within the Guacamole protocol only when referenced by an
+     * instruction which creates the stream, such as a "clipboard", "file", or
+     * "pipe" instruction.
+     *
+     * @returns {Guacamole.OutputStream}
+     *     A new Guacamole.OutputStream with a newly-allocated index and
+     *     associated with this Guacamole.Client.
+     */
+    this.createOutputStream = function createOutputStream() {
+
+        // Allocate index
+        var index = stream_indices.next();
+
+        // Return new stream
+        var stream = output_streams[index] = new Guacamole.OutputStream(guac_client, index);
+        return stream;
+
+    };
+
+    /**
+     * Opens a new audio stream for writing, where audio data having the give
+     * mimetype will be sent along the returned stream. The instruction
+     * necessary to create this stream will automatically be sent.
+     *
+     * @param {String} mimetype
+     *     The mimetype of the audio data that will be sent along the returned
+     *     stream.
+     *
+     * @return {Guacamole.OutputStream}
+     *     The created audio stream.
+     */
+    this.createAudioStream = function(mimetype) {
+
+        // Allocate and associate stream with audio metadata
+        var stream = guac_client.createOutputStream();
+        tunnel.sendMessage("audio", stream.index, mimetype);
+        return stream;
+
+    };
+
+    /**
      * Opens a new file for writing, having the given index, mimetype and
-     * filename.
-     * 
+     * filename. The instruction necessary to create this stream will
+     * automatically be sent.
+     *
      * @param {String} mimetype The mimetype of the file being sent.
      * @param {String} filename The filename of the file being sent.
      * @return {Guacamole.OutputStream} The created file stream.
      */
     this.createFileStream = function(mimetype, filename) {
 
-        // Allocate index
-        var index = stream_indices.next();
-
-        // Create new stream
-        tunnel.sendMessage("file", index, mimetype, filename);
-        var stream = output_streams[index] = new Guacamole.OutputStream(guac_client, index);
-
-        // Override sendEnd() of stream to automatically free index
-        var old_end = stream.sendEnd;
-        stream.sendEnd = function() {
-            old_end();
-            stream_indices.free(index);
-            delete output_streams[index];
-        };
-
-        // Return new, overridden stream
+        // Allocate and associate stream with file metadata
+        var stream = guac_client.createOutputStream();
+        tunnel.sendMessage("file", stream.index, mimetype, filename);
         return stream;
 
     };
 
     /**
-     * Opens a new pipe for writing, having the given name and mimetype. 
-     * 
+     * Opens a new pipe for writing, having the given name and mimetype. The
+     * instruction necessary to create this stream will automatically be sent.
+     *
      * @param {String} mimetype The mimetype of the data being sent.
      * @param {String} name The name of the pipe.
      * @return {Guacamole.OutputStream} The created file stream.
      */
     this.createPipeStream = function(mimetype, name) {
 
-        // Allocate index
-        var index = stream_indices.next();
-
-        // Create new stream
-        tunnel.sendMessage("pipe", index, mimetype, name);
-        var stream = output_streams[index] = new Guacamole.OutputStream(guac_client, index);
-
-        // Override sendEnd() of stream to automatically free index
-        var old_end = stream.sendEnd;
-        stream.sendEnd = function() {
-            old_end();
-            stream_indices.free(index);
-            delete output_streams[index];
-        };
-
-        // Return new, overridden stream
+        // Allocate and associate stream with pipe metadata
+        var stream = guac_client.createOutputStream();
+        tunnel.sendMessage("pipe", stream.index, mimetype, name);
         return stream;
 
     };
 
     /**
-     * Opens a new clipboard object for writing, having the given mimetype.
-     * 
+     * Opens a new clipboard object for writing, having the given mimetype. The
+     * instruction necessary to create this stream will automatically be sent.
+     *
      * @param {String} mimetype The mimetype of the data being sent.
      * @param {String} name The name of the pipe.
      * @return {Guacamole.OutputStream} The created file stream.
      */
     this.createClipboardStream = function(mimetype) {
 
-        // Allocate index
-        var index = stream_indices.next();
-
-        // Create new stream
-        tunnel.sendMessage("clipboard", index, mimetype);
-        var stream = output_streams[index] = new Guacamole.OutputStream(guac_client, index);
-
-        // Override sendEnd() of stream to automatically free index
-        var old_end = stream.sendEnd;
-        stream.sendEnd = function() {
-            old_end();
-            stream_indices.free(index);
-            delete output_streams[index];
-        };
-
-        // Return new, overridden stream
+        // Allocate and associate stream with clipboard metadata
+        var stream = guac_client.createOutputStream();
+        tunnel.sendMessage("clipboard", stream.index, mimetype);
         return stream;
 
     };
@@ -323,7 +332,8 @@ Guacamole.Client = function(tunnel) {
     /**
      * Creates a new output stream associated with the given object and having
      * the given mimetype and name. The legality of a mimetype and name is
-     * dictated by the object itself.
+     * dictated by the object itself. The instruction necessary to create this
+     * stream will automatically be sent.
      *
      * @param {Number} index
      *     The index of the object for which the output stream is being
@@ -341,22 +351,9 @@ Guacamole.Client = function(tunnel) {
      */
     this.createObjectOutputStream = function createObjectOutputStream(index, mimetype, name) {
 
-        // Allocate index
-        var streamIndex = stream_indices.next();
-
-        // Create new stream
-        tunnel.sendMessage("put", index, streamIndex, mimetype, name);
-        var stream = output_streams[streamIndex] = new Guacamole.OutputStream(guac_client, streamIndex);
-
-        // Override sendEnd() of stream to automatically free index
-        var oldEnd = stream.sendEnd;
-        stream.sendEnd = function freeStreamIndex() {
-            oldEnd();
-            stream_indices.free(streamIndex);
-            delete output_streams[streamIndex];
-        };
-
-        // Return new, overridden stream
+        // Allocate and ssociate stream with object metadata
+        var stream = guac_client.createOutputStream();
+        tunnel.sendMessage("put", index, stream.index, mimetype, name);
         return stream;
 
     };
@@ -415,9 +412,13 @@ Guacamole.Client = function(tunnel) {
     };
 
     /**
-     * Marks a currently-open stream as complete.
+     * Marks a currently-open stream as complete. The other end of the
+     * Guacamole connection will be notified via an "end" instruction that the
+     * stream is closed, and the index will be made available for reuse in
+     * future streams.
      * 
-     * @param {Number} index The index of the stream to end.
+     * @param {Number} index
+     *     The index of the stream to end.
      */
     this.endStream = function(index) {
 
@@ -425,7 +426,15 @@ Guacamole.Client = function(tunnel) {
         if (!isConnected())
             return;
 
+        // Explicitly close stream by sending "end" instruction
         tunnel.sendMessage("end", index);
+
+        // Free associated index and stream if they exist
+        if (output_streams[index]) {
+            stream_indices.free(index);
+            delete output_streams[index];
+        }
+
     };
 
     /**
