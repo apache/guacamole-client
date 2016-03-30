@@ -150,6 +150,15 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     };
 
     /**
+     * The mimetype of audio data to be sent along the Guacamole connection if
+     * audio input is supported.
+     *
+     * @constant
+     * @type String
+     */
+    ManagedClient.AUDIO_INPUT_MIMETYPE = 'audio/L16;rate=44100,channels=2';
+
+    /**
      * Returns a promise which resolves with the string of connection
      * parameters to be passed to the Guacamole client during connection. This
      * string generally contains the desired connection ID, display resolution,
@@ -352,6 +361,12 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                     case 3:
                         ManagedClientState.setConnectionState(managedClient.clientState,
                             ManagedClientState.ConnectionState.CONNECTED);
+
+                        // Begin streaming audio input if possible
+                        var stream = client.createAudioStream(ManagedClient.AUDIO_INPUT_MIMETYPE);
+                        if (!Guacamole.AudioRecorder.getInstance(stream, ManagedClient.AUDIO_INPUT_MIMETYPE))
+                            stream.sendEnd();
+
                         break;
 
                     // Update history when disconnecting
