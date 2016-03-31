@@ -137,25 +137,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * @private
      * @type {AudioContext}
      */
-    var context = (function getAudioContext() {
-
-        // Fallback to Webkit-specific AudioContext implementation
-        var AudioContext = window.AudioContext || window.webkitAudioContext;
-
-        // Get new AudioContext instance if Web Audio API is supported
-        if (AudioContext) {
-            try {
-                return new AudioContext();
-            }
-            catch (e) {
-                // Do not use Web Audio API if not allowed by browser
-            }
-        }
-
-        // Web Audio API not supported
-        return null;
-
-    })();
+    var context = Guacamole.AudioContextFactory.getAudioContext();
 
     /**
      * The earliest possible time that the next packet could play without
@@ -488,7 +470,7 @@ Guacamole.RawAudioPlayer.prototype = new Guacamole.AudioPlayer();
 Guacamole.RawAudioPlayer.isSupportedType = function isSupportedType(mimetype) {
 
     // No supported types if no Web Audio API
-    if (!window.AudioContext && !window.webkitAudioContext)
+    if (!Guacamole.AudioContextFactory.getAudioContext())
         return false;
 
     return Guacamole.RawAudioFormat.parse(mimetype) !== null;
@@ -511,7 +493,7 @@ Guacamole.RawAudioPlayer.isSupportedType = function isSupportedType(mimetype) {
 Guacamole.RawAudioPlayer.getSupportedTypes = function getSupportedTypes() {
 
     // No supported types if no Web Audio API
-    if (!window.AudioContext && !window.webkitAudioContext)
+    if (!Guacamole.AudioContextFactory.getAudioContext())
         return [];
 
     // We support 8-bit and 16-bit raw PCM
