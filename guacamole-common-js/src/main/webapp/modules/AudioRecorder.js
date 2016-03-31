@@ -129,25 +129,7 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
      * @private
      * @type {AudioContext}
      */
-    var context = (function getAudioContext() {
-
-        // Fallback to Webkit-specific AudioContext implementation
-        var AudioContext = window.AudioContext || window.webkitAudioContext;
-
-        // Get new AudioContext instance if Web Audio API is supported
-        if (AudioContext) {
-            try {
-                return new AudioContext();
-            }
-            catch (e) {
-                // Do not use Web Audio API if not allowed by browser
-            }
-        }
-
-        // Web Audio API not supported
-        return null;
-
-    })();
+    var context = Guacamole.AudioContextFactory.getAudioContext();
 
     /**
      * A function which directly invokes the browser's implementation of
@@ -289,7 +271,7 @@ Guacamole.RawAudioRecorder.prototype = new Guacamole.AudioRecorder();
 Guacamole.RawAudioRecorder.isSupportedType = function isSupportedType(mimetype) {
 
     // No supported types if no Web Audio API
-    if (!window.AudioContext && !window.webkitAudioContext)
+    if (!Guacamole.AudioContextFactory.getAudioContext())
         return false;
 
     return Guacamole.RawAudioFormat.parse(mimetype) !== null;
@@ -312,7 +294,7 @@ Guacamole.RawAudioRecorder.isSupportedType = function isSupportedType(mimetype) 
 Guacamole.RawAudioRecorder.getSupportedTypes = function getSupportedTypes() {
 
     // No supported types if no Web Audio API
-    if (!window.AudioContext && !window.webkitAudioContext)
+    if (!Guacamole.AudioContextFactory.getAudioContext())
         return [];
 
     // We support 8-bit and 16-bit raw PCM
