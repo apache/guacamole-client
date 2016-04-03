@@ -200,8 +200,12 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
      */
     var toSampleArray = function toSampleArray(audioBuffer) {
 
+        // Calculate the number of samples in both input and output
+        var inSamples = audioBuffer.length;
+        var outSamples = Math.floor(audioBuffer.duration * format.rate);
+
         // Get array for raw PCM storage
-        var data = new SampleArray(audioBuffer.length * format.channels);
+        var data = new SampleArray(outSamples * format.channels);
 
         // Convert each channel
         for (var channel = 0; channel < format.channels; channel++) {
@@ -210,9 +214,14 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
 
             // Fill array with data from audio buffer channel
             var offset = channel;
-            for (var i = 0; i < audioData.length; i++) {
-                data[offset] = audioData[i] * maxSampleValue;
+            for (var i = 0; i < outSamples; i++) {
+
+                // Apply naiive resampling
+                var inOffset = Math.floor(i / outSamples * inSamples);
+                data[offset] = Math.floor(audioData[inOffset] * maxSampleValue);
+
                 offset += format.channels;
+
             }
 
         }
