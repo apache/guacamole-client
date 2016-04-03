@@ -179,7 +179,7 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
      * @private
      * @type {Number}
      */
-    var bufferSize = format.bytesPerSample * 4096;
+    var bufferSize = format.bytesPerSample * 256;
 
     /**
      * Converts the given AudioBuffer into an audio packet, ready for streaming
