@@ -237,7 +237,7 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
 
             // Send blobs when audio buffers are received
             processor.onaudioprocess = function processAudio(e) {
-                writer.sendData(toSampleArray(e.inputBuffer));
+                writer.sendData(toSampleArray(e.inputBuffer).buffer);
             };
 
             // Connect processing node to user's audio input source
