@@ -199,7 +199,7 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
     var toSampleArray = function toSampleArray(audioBuffer) {
 
         // Get array for raw PCM storage
-        var data = new SampleArray(audioBuffer.length);
+        var data = new SampleArray(audioBuffer.length * format.channels);
 
         // Convert each channel
         for (var channel = 0; channel < format.channels; channel++) {
