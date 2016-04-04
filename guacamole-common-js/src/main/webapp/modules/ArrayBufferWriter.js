@@ -71,13 +71,13 @@ Guacamole.ArrayBufferWriter = function(stream) {
         var bytes = new Uint8Array(data);
 
         // If small enough to fit into single instruction, send as-is
-        if (bytes.length <= 8064)
+        if (bytes.length <= 6048)
             __send_blob(bytes);
 
         // Otherwise, send as multiple instructions
         else {
-            for (var offset=0; offset<bytes.length; offset += 8064)
-                __send_blob(bytes.subarray(offset, offset + 8094));
+            for (var offset=0; offset<bytes.length; offset += 6048)
+                __send_blob(bytes.subarray(offset, offset + 6048));
         }
 
     };

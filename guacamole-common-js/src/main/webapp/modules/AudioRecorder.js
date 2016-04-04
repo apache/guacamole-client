@@ -115,6 +115,18 @@ Guacamole.AudioRecorder.getInstance = function getInstance(stream, mimetype) {
 Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
 
     /**
+     * The size of audio buffer to request from the Web Audio API when
+     * recording or processing audio, in sample-frames. This must be a power of
+     * two between 256 and 16384 inclusive, as required by
+     * AudioContext.createScriptProcessor().
+     *
+     * @private
+     * @constant
+     * @type {Number}
+     */
+    var BUFFER_SIZE = 512;
+
+    /**
      * The format of audio this recorder will encode.
      *
      * @private
@@ -172,16 +184,6 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
     var maxSampleValue = (format.bytesPerSample === 1) ? 128 : 32768;
 
     /**
-     * The size of audio buffer to request from the Web Audio API when
-     * recording audio. This must be a power of two between 256 and 16384
-     * inclusive, as required by AudioContext.createScriptProcessor().
-     *
-     * @private
-     * @type {Number}
-     */
-    var bufferSize = format.bytesPerSample * 4096;
-
-    /**
      * Converts the given AudioBuffer into an audio packet, ready for streaming
      * along the underlying output stream. Unlike the raw audio packets used by
      * this audio recorder, AudioBuffers require floating point samples and are
@@ -198,8 +200,12 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
      */
     var toSampleArray = function toSampleArray(audioBuffer) {
 
+        // Calculate the number of samples in both input and output
+        var inSamples = audioBuffer.length;
+        var outSamples = Math.floor(audioBuffer.duration * format.rate);
+
         // Get array for raw PCM storage
-        var data = new SampleArray(audioBuffer.length);
+        var data = new SampleArray(outSamples * format.channels);
 
         // Convert each channel
         for (var channel = 0; channel < format.channels; channel++) {
@@ -208,9 +214,14 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
 
             // Fill array with data from audio buffer channel
             var offset = channel;
-            for (var i = 0; i < audioData.length; i++) {
-                data[offset] = audioData[i] * maxSampleValue;
+            for (var i = 0; i < outSamples; i++) {
+
+                // Apply naiive resampling
+                var inOffset = Math.floor(i / outSamples * inSamples);
+                data[offset] = Math.floor(audioData[inOffset] * maxSampleValue);
+
                 offset += format.channels;
+
             }
 
         }
@@ -232,12 +243,12 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
         getUserMedia({ 'audio' : true }, function streamReceived(mediaStream) {
 
             // Create processing node which receives appropriately-sized audio buffers
-            var processor = context.createScriptProcessor(bufferSize, format.channels, format.channels);
+            var processor = context.createScriptProcessor(BUFFER_SIZE, format.channels, format.channels);
             processor.connect(context.destination);
 
             // Send blobs when audio buffers are received
             processor.onaudioprocess = function processAudio(e) {
-                writer.sendData(toSampleArray(e.inputBuffer));
+                writer.sendData(toSampleArray(e.inputBuffer).buffer);
             };
 
             // Connect processing node to user's audio input source
