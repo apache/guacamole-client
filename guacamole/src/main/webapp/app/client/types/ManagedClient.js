@@ -28,7 +28,6 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var ClientIdentifier     = $injector.get('ClientIdentifier');
     var ManagedClientState   = $injector.get('ManagedClientState');
     var ManagedDisplay       = $injector.get('ManagedDisplay');
-    var ManagedFileDownload  = $injector.get('ManagedFileDownload');
     var ManagedFilesystem    = $injector.get('ManagedFilesystem');
     var ManagedFileUpload    = $injector.get('ManagedFileUpload');
 
@@ -41,6 +40,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var clipboardService       = $injector.get('clipboardService');
     var connectionGroupService = $injector.get('connectionGroupService');
     var connectionService      = $injector.get('connectionService');
+    var tunnelService          = $injector.get('tunnelService');
     var guacAudio              = $injector.get('guacAudio');
     var guacHistory            = $injector.get('guacHistory');
     var guacImage              = $injector.get('guacImage');
@@ -103,15 +103,6 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * @type String
          */
         this.clipboardData = template.clipboardData || '';
-
-        /**
-         * All downloaded files. As files are downloaded, their progress can be
-         * observed through the elements of this array. It is intended that
-         * this array be manipulated externally as needed.
-         *
-         * @type ManagedFileDownload[]
-         */
-        this.downloads = template.downloads || [];
 
         /**
          * All uploaded files. As files are uploaded, their progress can be
@@ -453,9 +444,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
         // Handle any received files
         client.onfile = function clientFileReceived(stream, mimetype, filename) {
-            $rootScope.$apply(function startDownload() {
-                managedClient.downloads.push(ManagedFileDownload.getInstance(stream, mimetype, filename));
-            });
+            tunnelService.downloadStream(tunnel.uuid, stream, mimetype, filename);
         };
 
         // Handle any received filesystem objects
