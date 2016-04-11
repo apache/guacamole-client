@@ -36,7 +36,7 @@
 
         "INFO_ACTIVE_USER_COUNT" : "Ora utilizzato da {USERS} {USERS, plural, one{user} other{users}}.",
 
-        "NAME" : "Guacamole ${project.version}"
+        "NAME" : "Apache Guacamole ${project.version}"
 
     },
 

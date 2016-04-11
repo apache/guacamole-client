@@ -35,7 +35,7 @@
 
         "INFO_ACTIVE_USER_COUNT" : "Подключено пользователей {USERS}.",
 
-        "NAME" : "Guacamole ${project.version}",
+        "NAME" : "Apache Guacamole ${project.version}",
 
         "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{секунда} other{сек}}} minute{{VALUE, plural, one{минута} other{мин}}} hour{{VALUE, plural, one{час} other{ч}}} day{{VALUE, plural, one{день} other{дн}}} other{}}"
 
