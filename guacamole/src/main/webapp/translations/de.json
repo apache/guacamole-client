@@ -38,8 +38,6 @@
 
         "INFO_ACTIVE_USER_COUNT" : "In Benutzung durch {USERS} Benutzer.",
 
-        "NAME" : "Apache Guacamole ${project.version}",
-
         "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{Sekunde} other{Sekunden}}} minute{{VALUE, plural, one{Minute} other{Minuten}}} hour{{VALUE, plural, one{Stunde} other{Stunden}}} day{{VALUE, plural, one{Tag} other{Tage}}} other{}}"
 
     },

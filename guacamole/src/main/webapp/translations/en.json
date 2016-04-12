@@ -4,6 +4,9 @@
     
     "APP" : {
 
+        "NAME"    : "Apache Guacamole",
+        "VERSION" : "${project.version}",
+
         "ACTION_ACKNOWLEDGE"        : "OK",
         "ACTION_CANCEL"             : "Cancel",
         "ACTION_CLONE"              : "Clone",
@@ -37,8 +40,6 @@
         "FORMAT_DATE_TIME_PRECISE" : "yyyy-MM-dd HH:mm:ss",
 
         "INFO_ACTIVE_USER_COUNT" : "Currently in use by {USERS} {USERS, plural, one{user} other{users}}.",
-
-        "NAME" : "Apache Guacamole ${project.version}",
 
         "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{second} other{seconds}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{hour} other{hours}}} day{{VALUE, plural, one{day} other{days}}} other{}}"
 
