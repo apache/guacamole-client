@@ -37,6 +37,7 @@ import org.apache.guacamole.rest.history.HistoryRESTService;
 import org.apache.guacamole.rest.language.LanguageRESTService;
 import org.apache.guacamole.rest.patch.PatchRESTService;
 import org.apache.guacamole.rest.schema.SchemaRESTService;
+import org.apache.guacamole.rest.tunnel.TunnelRESTService;
 import org.apache.guacamole.rest.user.UserRESTService;
 
 /**
@@ -92,6 +93,7 @@ public class RESTServiceModule extends ServletModule {
         bind(PatchRESTService.class);
         bind(SchemaRESTService.class);
         bind(TokenRESTService.class);
+        bind(TunnelRESTService.class);
         bind(UserRESTService.class);
 
         // Set up the servlet and JSON mappings
