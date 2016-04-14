@@ -71,6 +71,14 @@ Guacamole.Tunnel = function() {
     this.receiveTimeout = 15000;
 
     /**
+     * The UUID uniquely identifying this tunnel. If not yet known, this will
+     * be null.
+     *
+     * @type {String}
+     */
+    this.uuid = null;
+
+    /**
      * Fired whenever an error is encountered by the tunnel.
      * 
      * @event
@@ -98,6 +106,18 @@ Guacamole.Tunnel = function() {
     this.oninstruction = null;
 
 };
+
+/**
+ * The Guacamole protocol instruction opcode reserved for arbitrary internal
+ * use by tunnel implementations. The value of this opcode is guaranteed to be
+ * the empty string (""). Tunnel implementations may use this opcode for any
+ * purpose. It is currently used by the HTTP tunnel to mark the end of the HTTP
+ * response, and by the WebSocket tunnel to transmit the tunnel UUID.
+ *
+ * @constant
+ * @type {String}
+ */
+Guacamole.Tunnel.INTERNAL_DATA_OPCODE = '';
 
 /**
  * All possible tunnel states.
@@ -151,8 +171,6 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
      * @private
      */
     var tunnel = this;
-
-    var tunnel_uuid;
 
     var TUNNEL_CONNECT = tunnelURL + "?connect";
     var TUNNEL_READ    = tunnelURL + "?read:";
@@ -286,7 +304,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
             sendingMessages = true;
 
             var message_xmlhttprequest = new XMLHttpRequest();
-            message_xmlhttprequest.open("POST", TUNNEL_WRITE + tunnel_uuid);
+            message_xmlhttprequest.open("POST", TUNNEL_WRITE + tunnel.uuid);
             message_xmlhttprequest.withCredentials = withCredentials;
             message_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
 
@@ -517,7 +535,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
 
         // Make request, increment request ID
         var xmlhttprequest = new XMLHttpRequest();
-        xmlhttprequest.open("GET", TUNNEL_READ + tunnel_uuid + ":" + (request_id++));
+        xmlhttprequest.open("GET", TUNNEL_READ + tunnel.uuid + ":" + (request_id++));
         xmlhttprequest.withCredentials = withCredentials;
         xmlhttprequest.send(null);
 
@@ -546,7 +564,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
             reset_timeout();
 
             // Get UUID from response
-            tunnel_uuid = connect_xmlhttprequest.responseText;
+            tunnel.uuid = connect_xmlhttprequest.responseText;
 
             tunnel.state = Guacamole.Tunnel.State.OPEN;
             if (tunnel.onstatechange)
@@ -733,13 +751,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         socket = new WebSocket(tunnelURL + "?" + data, "guacamole");
 
         socket.onopen = function(event) {
-
             reset_timeout();
-
-            tunnel.state = Guacamole.Tunnel.State.OPEN;
-            if (tunnel.onstatechange)
-                tunnel.onstatechange(tunnel.state);
-
         };
 
         socket.onclose = function(event) {
@@ -794,8 +806,22 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
                     // Get opcode
                     var opcode = elements.shift();
 
+                    // Update state and UUID when first instruction received
+                    if (tunnel.state !== Guacamole.Tunnel.State.OPEN) {
+
+                        // Associate tunnel UUID if received
+                        if (opcode === Guacamole.Tunnel.INTERNAL_DATA_OPCODE)
+                            tunnel.uuid = elements[0];
+
+                        // Tunnel is now open and UUID is available
+                        tunnel.state = Guacamole.Tunnel.State.OPEN;
+                        if (tunnel.onstatechange)
+                            tunnel.onstatechange(tunnel.state);
+
+                    }
+
                     // Call instruction handler.
-                    if (tunnel.oninstruction)
+                    if (opcode !== Guacamole.Tunnel.INTERNAL_DATA_OPCODE && tunnel.oninstruction)
                         tunnel.oninstruction(opcode, elements);
 
                     // Clear elements
@@ -926,6 +952,7 @@ Guacamole.ChainedTunnel = function(tunnelChain) {
             tunnel.onstatechange = chained_tunnel.onstatechange;
             tunnel.oninstruction = chained_tunnel.oninstruction;
             tunnel.onerror = chained_tunnel.onerror;
+            chained_tunnel.uuid = tunnel.uuid;
             committedTunnel = tunnel;
         }
 

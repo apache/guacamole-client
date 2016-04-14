@@ -124,10 +124,6 @@ public class TunnelRESTService {
         GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
         Map<String, StreamInterceptingTunnel> tunnels = session.getTunnels();
 
-        // STUB: For sake of testing, if only one tunnel exists, use that
-        if (tunnels.size() == 1)
-            tunnelUUID = tunnels.keySet().iterator().next();
-
         // Pull tunnel with given UUID
         final StreamInterceptingTunnel tunnel = tunnels.get(tunnelUUID);
         if (tunnel == null)

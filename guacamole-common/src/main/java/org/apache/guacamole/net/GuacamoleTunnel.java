@@ -34,6 +34,16 @@ import org.apache.guacamole.io.GuacamoleWriter;
 public interface GuacamoleTunnel {
 
     /**
+     * The Guacamole protocol instruction opcode reserved for arbitrary
+     * internal use by tunnel implementations. The value of this opcode is
+     * guaranteed to be the empty string (""). Tunnel implementations may use
+     * this opcode for any purpose. It is currently used by the HTTP tunnel to
+     * mark the end of the HTTP response, and by the WebSocket tunnel to
+     * transmit the tunnel UUID.
+     */
+    static final String INTERNAL_DATA_OPCODE = "";
+
+    /**
      * Acquires exclusive read access to the Guacamole instruction stream
      * and returns a GuacamoleReader for reading from that stream.
      *

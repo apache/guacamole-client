@@ -30,6 +30,7 @@ import org.eclipse.jetty.websocket.WebSocket.Connection;
 import org.eclipse.jetty.websocket.WebSocketServlet;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleConnectionClosedException;
+import org.apache.guacamole.protocol.GuacamoleInstruction;
 import org.apache.guacamole.tunnel.http.HTTPTunnelRequest;
 import org.apache.guacamole.tunnel.TunnelRequest;
 import org.apache.guacamole.protocol.GuacamoleStatus;
@@ -135,6 +136,12 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                         char[] readMessage;
 
                         try {
+
+                            // Send tunnel UUID
+                            connection.sendMessage(new GuacamoleInstruction(
+                                GuacamoleTunnel.INTERNAL_DATA_OPCODE,
+                                tunnel.getUUID().toString()
+                            ).toString());
 
                             try {
 
