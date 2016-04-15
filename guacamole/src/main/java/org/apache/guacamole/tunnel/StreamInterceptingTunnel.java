@@ -54,6 +54,12 @@ public class StreamInterceptingTunnel extends DelegatingGuacamoleTunnel {
     private static final Logger logger = LoggerFactory.getLogger(StreamInterceptingTunnel.class);
 
     /**
+     * The maximum number of milliseconds to wait for notification that a
+     * stream has closed before explicitly checking for closure ourselves.
+     */
+    private static final long STREAM_WAIT_TIMEOUT = 1000;
+
+    /**
      * Creates a new StreamInterceptingTunnel which wraps the given tunnel,
      * reading and intercepting stream-related instructions as necessary to
      * fulfill calls to interceptStream().
@@ -319,7 +325,7 @@ public class StreamInterceptingTunnel extends DelegatingGuacamoleTunnel {
         synchronized (stream) {
             while (streams.get(indexString) == stream) {
                 try {
-                    stream.wait();
+                    stream.wait(STREAM_WAIT_TIMEOUT);
                 }
                 catch (InterruptedException e) {
                     // Ignore
