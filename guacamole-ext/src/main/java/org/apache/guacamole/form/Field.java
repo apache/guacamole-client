@@ -99,6 +99,12 @@ public class Field {
          */
         public static String TIME = "TIME";
 
+        /**
+         * An HTTP query parameter which is expected to be embedded in the URL
+         * given to a user.
+         */
+        public static String QUERY_PARAMETER = "QUERY_PARAMETER";
+
     }
 
     /**
