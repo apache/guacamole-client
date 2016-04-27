@@ -230,11 +230,13 @@ CREATE TABLE `guacamole_user_permission` (
 
 CREATE TABLE `guacamole_connection_history` (
 
-  `history_id`    int(11)  NOT NULL AUTO_INCREMENT,
-  `user_id`       int(11)  NOT NULL,
-  `connection_id` int(11)  NOT NULL,
-  `start_date`    datetime NOT NULL,
-  `end_date`      datetime DEFAULT NULL,
+  `history_id`      int(11)  NOT NULL AUTO_INCREMENT,
+  `user_id`         int(11)  DEFAULT NULL,
+  `username`        varchar(128) NOT NULL,
+  `connection_id`   int(11)  DEFAULT NULL,
+  `connection_name` varchar(128) NOT NULL,
+  `start_date`      datetime NOT NULL,
+  `end_date`        datetime DEFAULT NULL,
 
   PRIMARY KEY (`history_id`),
   KEY `user_id` (`user_id`),
