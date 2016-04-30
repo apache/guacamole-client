@@ -184,6 +184,43 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
     var maxSampleValue = (format.bytesPerSample === 1) ? 128 : 32768;
 
     /**
+     * Determines the value of the waveform represented by the audio data at
+     * the given location. If the value cannot be determined exactly as it does
+     * not correspond to an exact sample within the audio data, the value will
+     * be derived through interpolating nearby samples.
+     *
+     * @param {Float32Array} audioData
+     *     An array of audio data, as returned by AudioBuffer.getChannelData().
+     *
+     * @param {Number} t
+     *     The relative location within the waveform from which the value
+     *     should be retrieved, represented as a floating point number between
+     *     0 and 1 inclusive, where 0 represents the earliest point in time and
+     *     1 represents the latest.
+     *
+     * @returns {Number}
+     *     The value of the waveform at the given location.
+     */
+    var interpolateSample = function getValueAt(audioData, t) {
+
+        // Convert [0, 1] range to [0, audioData.length - 1]
+        var index = (audioData.length - 1) * t;
+
+        // Get the closest whole integer samples indices
+        var left = Math.floor(index);
+        var right = Math.ceil(index);
+
+        // Pull the values of the closest samples
+        var leftValue = audioData[left];
+        var rightValue = audioData[right];
+
+        // Determine the value of the sample at the given non-integer location
+        // through linear interpolation of the nearest samples
+        return leftValue + (rightValue - leftValue) / (right - left) * (index - left);
+
+    };
+
+    /**
      * Converts the given AudioBuffer into an audio packet, ready for streaming
      * along the underlying output stream. Unlike the raw audio packets used by
      * this audio recorder, AudioBuffers require floating point samples and are
@@ -215,13 +252,8 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
             // Fill array with data from audio buffer channel
             var offset = channel;
             for (var i = 0; i < outSamples; i++) {
-
-                // Apply naiive resampling
-                var inOffset = Math.floor(i / outSamples * inSamples);
-                data[offset] = Math.floor(audioData[inOffset] * maxSampleValue);
-
+                data[offset] = interpolateSample(audioData, i / (outSamples - 1)) * maxSampleValue;
                 offset += format.channels;
-
             }
 
         }
