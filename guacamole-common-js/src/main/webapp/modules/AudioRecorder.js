@@ -202,6 +202,23 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
     var writtenSamples = 0;
 
     /**
+     * The source node providing access to the local audio input device.
+     *
+     * @private
+     * @type {MediaStreamAudioSourceNode}
+     */
+    var source = null;
+
+    /**
+     * The script processing node which receives audio input from the media
+     * stream source node as individual audio buffers.
+     *
+     * @private
+     * @type {ScriptProcessorNode}
+     */
+    var processor = null;
+
+    /**
      * Determines the value of the waveform represented by the audio data at
      * the given location. If the value cannot be determined exactly as it does
      * not correspond to an exact sample within the audio data, the value will
@@ -294,15 +311,29 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
 
         // Abort stream if rejected
         if (status.code !== Guacamole.Status.Code.SUCCESS) {
+
+            // Disconnect media source node from script processor
+            if (source)
+                source.disconnect();
+
+            // Disconnect associated script processor node
+            if (processor)
+                processor.disconnect();
+
+            // Remove references to now-unneeded components
+            processor = null;
+            source = null;
+
             writer.sendEnd();
             return;
+
         }
 
         // Attempt to retrieve an audio input stream from the browser
         getUserMedia({ 'audio' : true }, function streamReceived(mediaStream) {
 
             // Create processing node which receives appropriately-sized audio buffers
-            var processor = context.createScriptProcessor(BUFFER_SIZE, format.channels, format.channels);
+            processor = context.createScriptProcessor(BUFFER_SIZE, format.channels, format.channels);
             processor.connect(context.destination);
 
             // Send blobs when audio buffers are received
@@ -311,7 +342,7 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
             };
 
             // Connect processing node to user's audio input source
-            var source = context.createMediaStreamSource(mediaStream);
+            source = context.createMediaStreamSource(mediaStream);
             source.connect(processor);
 
         }, function streamDenied() {
