@@ -184,6 +184,24 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
     var maxSampleValue = (format.bytesPerSample === 1) ? 128 : 32768;
 
     /**
+     * The total number of audio samples read from the local audio input device
+     * over the life of this audio recorder.
+     *
+     * @private
+     * @type {Number}
+     */
+    var readSamples = 0;
+
+    /**
+     * The total number of audio samples written to the underlying Guacamole
+     * connection over the life of this audio recorder.
+     *
+     * @private
+     * @type {Number}
+     */
+    var writtenSamples = 0;
+
+    /**
      * Determines the value of the waveform represented by the audio data at
      * the given location. If the value cannot be determined exactly as it does
      * not correspond to an exact sample within the audio data, the value will
@@ -237,9 +255,18 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
      */
     var toSampleArray = function toSampleArray(audioBuffer) {
 
-        // Calculate the number of samples in both input and output
+        // Track overall amount of data read
         var inSamples = audioBuffer.length;
-        var outSamples = Math.floor(audioBuffer.duration * format.rate);
+        readSamples += inSamples;
+
+        // Calculate the total number of samples that should be written as of
+        // the audio data just received and adjust the size of the output
+        // packet accordingly
+        var expectedWrittenSamples = Math.round(readSamples * format.rate / audioBuffer.sampleRate);
+        var outSamples = expectedWrittenSamples - writtenSamples;
+
+        // Update number of samples written
+        writtenSamples += outSamples;
 
         // Get array for raw PCM storage
         var data = new SampleArray(outSamples * format.channels);
