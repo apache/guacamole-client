@@ -127,6 +127,17 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
     var BUFFER_SIZE = 512;
 
     /**
+     * The window size to use when applying Lanczos interpolation, commonly
+     * denoted by the variable "a".
+     * See: https://en.wikipedia.org/wiki/Lanczos_resampling
+     *
+     * @private
+     * @contant
+     * @type Number
+     */
+    var LANCZOS_WINDOW_SIZE = 3;
+
+    /**
      * The format of audio this recorder will encode.
      *
      * @private
@@ -219,11 +230,64 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
     var processor = null;
 
     /**
+     * The normalized sinc function. The normalized sinc function is defined as
+     * 1 for x=0 and sin(PI * x) / (PI * x) for all other values of x.
+     *
+     * See: https://en.wikipedia.org/wiki/Sinc_function
+     *
+     * @private
+     * @param {Number} x
+     *     The point at which the normalized sinc function should be computed.
+     *
+     * @returns {Number}
+     *     The value of the normalized sinc function at x.
+     */
+    var sinc = function sinc(x) {
+
+        // The value of sinc(0) is defined as 1
+        if (x === 0)
+            return 1;
+
+        // Otherwise, normlized sinc(x) is sin(PI * x) / (PI * x)
+        var piX = Math.PI * x;
+        return Math.sin(piX) / piX;
+
+    };
+
+    /**
+     * Calculates the value of the Lanczos kernal at point x for a given window
+     * size. See: https://en.wikipedia.org/wiki/Lanczos_resampling
+     *
+     * @private
+     * @param {Number} x
+     *     The point at which the value of the Lanczos kernel should be
+     *     computed.
+     *
+     * @param {Number} a
+     *     The window size to use for the Lanczos kernel.
+     *
+     * @returns {Number}
+     *     The value of the Lanczos kernel at the given point for the given
+     *     window size.
+     */
+    var lanczos = function lanczos(x, a) {
+
+        // Lanczos is sinc(x) * sinc(x / a) for -a < x < a ...
+        if (-a < x && x < a)
+            return sinc(x) * sinc(x / a);
+
+        // ... and 0 otherwise
+        return 0;
+
+    };
+
+    /**
      * Determines the value of the waveform represented by the audio data at
      * the given location. If the value cannot be determined exactly as it does
      * not correspond to an exact sample within the audio data, the value will
      * be derived through interpolating nearby samples.
      *
+     * @private
      * @param {Float32Array} audioData
      *     An array of audio data, as returned by AudioBuffer.getChannelData().
      *
@@ -241,17 +305,19 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
         // Convert [0, 1] range to [0, audioData.length - 1]
         var index = (audioData.length - 1) * t;
 
-        // Get the closest whole integer samples indices
-        var left = Math.floor(index);
-        var right = Math.ceil(index);
+        // Determine the start and end points for the summation used by the
+        // Lanczos interpolation algorithm (see: https://en.wikipedia.org/wiki/Lanczos_resampling)
+        var start = Math.floor(index) - LANCZOS_WINDOW_SIZE + 1;
+        var end = Math.floor(index) + LANCZOS_WINDOW_SIZE;
 
-        // Pull the values of the closest samples
-        var leftValue = audioData[left];
-        var rightValue = audioData[right];
+        // Calculate the value of the Lanczos interpolation function for the
+        // required range
+        var sum = 0;
+        for (var i = start; i <= end; i++) {
+            sum += (audioData[i] || 0) * lanczos(index - i, LANCZOS_WINDOW_SIZE);
+        }
 
-        // Determine the value of the sample at the given non-integer location
-        // through linear interpolation of the nearest samples
-        return leftValue + (rightValue - leftValue) / (right - left) * (index - left);
+        return sum;
 
     };
 
