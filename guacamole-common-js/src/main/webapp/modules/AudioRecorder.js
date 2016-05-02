@@ -213,6 +213,14 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
     var writtenSamples = 0;
 
     /**
+     * The audio stream provided by the browse, if allowed. If no stream has
+     * yet been received, this will be null.
+     *
+     * @type MediaStream
+     */
+    var mediaStream = null;
+
+    /**
      * The source node providing access to the local audio input device.
      *
      * @private
@@ -386,9 +394,17 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
             if (processor)
                 processor.disconnect();
 
+            // Stop capture
+            if (mediaStream) {
+                var tracks = mediaStream.getTracks();
+                for (var i = 0; i < tracks.length; i++)
+                    tracks[i].stop();
+            }
+
             // Remove references to now-unneeded components
             processor = null;
             source = null;
+            mediaStream = null;
 
             writer.sendEnd();
             return;
@@ -396,7 +412,7 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
         }
 
         // Attempt to retrieve an audio input stream from the browser
-        getUserMedia({ 'audio' : true }, function streamReceived(mediaStream) {
+        getUserMedia({ 'audio' : true }, function streamReceived(stream) {
 
             // Create processing node which receives appropriately-sized audio buffers
             processor = context.createScriptProcessor(BUFFER_SIZE, format.channels, format.channels);
@@ -408,8 +424,11 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
             };
 
             // Connect processing node to user's audio input source
-            source = context.createMediaStreamSource(mediaStream);
+            source = context.createMediaStreamSource(stream);
             source.connect(processor);
+
+            // Save stream for later cleanup
+            mediaStream = stream;
 
         }, function streamDenied() {
 
