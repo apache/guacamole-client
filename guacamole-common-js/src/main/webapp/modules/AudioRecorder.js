@@ -124,7 +124,7 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
      * @constant
      * @type {Number}
      */
-    var BUFFER_SIZE = 512;
+    var BUFFER_SIZE = 2048;
 
     /**
      * The window size to use when applying Lanczos interpolation, commonly
