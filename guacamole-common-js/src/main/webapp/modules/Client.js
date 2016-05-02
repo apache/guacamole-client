@@ -648,8 +648,9 @@ Guacamole.Client = function(tunnel) {
                 if (stream.onack)
                     stream.onack(new Guacamole.Status(code, reason));
 
-                // If code is an error, invalidate stream
-                if (code >= 0x0100) {
+                // If code is an error, invalidate stream if not already
+                // invalidated by onack handler
+                if (code >= 0x0100 && output_streams[stream_index] === stream) {
                     stream_indices.free(stream_index);
                     delete output_streams[stream_index];
                 }
