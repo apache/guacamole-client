@@ -1,7 +1,7 @@
 {
-    
+
     "NAME" : "Nederlands",
-    
+
     "APP" : {
 
         "ACTION_ACKNOWLEDGE"        : "OK",
@@ -125,7 +125,7 @@
         "TEXT_CLIENT_STATUS_CONNECTING"   : "Verbinden met Guacamole...",
         "TEXT_CLIENT_STATUS_DISCONNECTED" : "De verbinding is verbroken.",
         "TEXT_CLIENT_STATUS_WAITING"      : "Verbonden met Guacamole. Aan het wachten op reactie...",
-        "TEXT_RECONNECT_COUNTDOWN"        : "opnieuw verbinden over {REMAINING} {REMAINING, plural, one{seconde} other{seconden}}...",
+        "TEXT_RECONNECT_COUNTDOWN"        : "Opnieuw verbinden over {REMAINING} {REMAINING, plural, one{seconde} other{seconden}}...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
 
         "URL_OSK_LAYOUT" : "layouts/nl-nl-qwerty.json"
@@ -153,7 +153,7 @@
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 
         "INFO_NO_RECENT_CONNECTIONS" : "Geen recente verbindingen.",
-        
+
         "PASSWORD_CHANGED" : "Wachtwoord gewijzigd.",
 
         "SECTION_HEADER_ALL_CONNECTIONS"    : "Alle Verbindingen",
@@ -266,7 +266,7 @@
         "TEXT_CONFIRM_DELETE" : "Gebruikers kunnen niet worden hersteld nadat ze zijn verwijderd. Weet u zeker dat u deze gebruiker wilt verwijderen?"
 
     },
-    
+
     "PROTOCOL_RDP" : {
 
         "FIELD_HEADER_CLIENT_NAME"     : "Client naam:",
@@ -274,6 +274,7 @@
         "FIELD_HEADER_CONSOLE"         : "Administrator console:",
         "FIELD_HEADER_CONSOLE_AUDIO"   : "Support audio in console:",
         "FIELD_HEADER_CREATE_DRIVE_PATH" : "Automatisch genereren station:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatisch genereren opname map:",
         "FIELD_HEADER_DISABLE_AUDIO"   : "Uitschakelen geluid:",
         "FIELD_HEADER_DISABLE_AUTH"    : "Uitschakelen authenticatie:",
         "FIELD_HEADER_DOMAIN"          : "Domein:",
@@ -294,6 +295,11 @@
         "FIELD_HEADER_INITIAL_PROGRAM" : "Eerste programma:",
         "FIELD_HEADER_PASSWORD"        : "Wachtwoord:",
         "FIELD_HEADER_PORT"            : "Poort:",
+        "FIELD_HEADER_PRECONNECTION_BLOB" : "Voor te bereiden BLOB (VM ID):",
+        "FIELD_HEADER_PRECONNECTION_ID"   : "RDP bron ID:",
+        "FIELD_HEADER_RECORDING_NAME" : "Opname naam:",
+        "FIELD_HEADER_RECORDING_PATH" : "Opname map:",
+        "FIELD_HEADER_RESIZE_METHOD" : "Schaal methode:",
         "FIELD_HEADER_REMOTE_APP_ARGS" : "Parameters:",
         "FIELD_HEADER_REMOTE_APP_DIR"  : "Werk map:",
         "FIELD_HEADER_REMOTE_APP"      : "Programma:",
@@ -316,6 +322,10 @@
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 kleuren",
         "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
 
+        "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "\"Ververs scherm\" virtueel kanaal (RDP 8.1+)",
+        "FIELD_OPTION_RESIZE_METHOD_EMPTY"          : "",
+        "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "Verbind opnieuw",
+
         "FIELD_OPTION_SECURITY_ANY"   : "Ieder",
         "FIELD_OPTION_SECURITY_EMPTY" : "",
         "FIELD_OPTION_SECURITY_NLA"   : "NLA (Network Level Authentication)",
@@ -328,6 +338,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
         "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "Frans (Azerty)",
         "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italiaans (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japans (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Zweeds (Qwerty)",
 
         "NAME" : "RDP",
@@ -338,6 +349,8 @@
         "SECTION_HEADER_DISPLAY"            : "Scherm",
         "SECTION_HEADER_NETWORK"            : "Netwerk",
         "SECTION_HEADER_PERFORMANCE"        : "Prestatie instellingen",
+        "SECTION_HEADER_PRECONNECTION_PDU"  : "Voor te bereiden PDU / Hyper-V",
+        "SECTION_HEADER_RECORDING"          : "Scherm Opname",
         "SECTION_HEADER_REMOTEAPP"          : "ExterneApp",
         "SECTION_HEADER_SFTP"               : "SFTP"
 
@@ -347,6 +360,8 @@
 
         "FIELD_HEADER_COLOR_SCHEME" : "Kleuren combinatie:",
         "FIELD_HEADER_COMMAND"     : "Uitvoeren opdracht:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatisch genereren opname map:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatisch genereren typescript map:",
         "FIELD_HEADER_FONT_NAME"   : "Fontnaam:",
         "FIELD_HEADER_FONT_SIZE"   : "Fontgrootte:",
         "FIELD_HEADER_ENABLE_SFTP" : "SFTP mogelijk maken:",
@@ -356,6 +371,10 @@
         "FIELD_HEADER_PASSPHRASE"  : "Wachtwoordzin:",
         "FIELD_HEADER_PORT"        : "Poort:",
         "FIELD_HEADER_PRIVATE_KEY" : "Persoonlijke sleutel:",
+        "FIELD_HEADER_RECORDING_NAME" : "Opname naam:",
+        "FIELD_HEADER_RECORDING_PATH" : "Opname map:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript naam:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript map:",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Zwart op wit",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -384,7 +403,9 @@
         "SECTION_HEADER_AUTHENTICATION" : "Authenticatie",
         "SECTION_HEADER_DISPLAY"        : "Scherm",
         "SECTION_HEADER_NETWORK"        : "Netwerk",
+        "SECTION_HEADER_RECORDING"      : "Scherm Opname",
         "SECTION_HEADER_SESSION"        : "Sessie / Omgeving",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Tekst sessie opname)",
         "SECTION_HEADER_SFTP"           : "SFTP"
 
     },
@@ -392,6 +413,8 @@
     "PROTOCOL_TELNET" : {
 
         "FIELD_HEADER_COLOR_SCHEME"   : "Kleuren combinatie:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatisch genereren opname map:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatisch genereren typescript map:",
         "FIELD_HEADER_FONT_NAME"      : "Fontnaam:",
         "FIELD_HEADER_FONT_SIZE"      : "Fontgrootte:",
         "FIELD_HEADER_HOSTNAME"       : "Servernaam:",
@@ -399,6 +422,10 @@
         "FIELD_HEADER_PASSWORD"       : "Wachtwoord:",
         "FIELD_HEADER_PASSWORD_REGEX" : "Wachtwoord reguliere expressie:",
         "FIELD_HEADER_PORT"           : "Poort:",
+        "FIELD_HEADER_RECORDING_NAME" : "Opname naam:",
+        "FIELD_HEADER_RECORDING_PATH" : "Opname map:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript naam:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript map:",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Zwart op wit",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -426,6 +453,8 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "Authenticatie",
         "SECTION_HEADER_DISPLAY"        : "Scherm",
+        "SECTION_HEADER_RECORDING"      : "Scherm Opname",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Tekst Sessie Opname)",
         "SECTION_HEADER_NETWORK"        : "Netwerk"
 
     },
@@ -435,6 +464,7 @@
         "FIELD_HEADER_AUDIO_SERVERNAME" : "Audio server naam:",
         "FIELD_HEADER_CLIPBOARD_ENCODING" : "Encodering:",
         "FIELD_HEADER_COLOR_DEPTH"      : "Kleurdiepte:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatisch genereren opname map:",
         "FIELD_HEADER_CURSOR"           : "Cursor:",
         "FIELD_HEADER_DEST_HOST"        : "Externe server:",
         "FIELD_HEADER_DEST_PORT"        : "Externe poort:",
@@ -444,6 +474,8 @@
         "FIELD_HEADER_PASSWORD"         : "Wachtwoord:",
         "FIELD_HEADER_PORT"             : "Poort:",
         "FIELD_HEADER_READ_ONLY"        : "Alleen lezen:",
+        "FIELD_HEADER_RECORDING_NAME" : "Opname naam:",
+        "FIELD_HEADER_RECORDING_PATH" : "Opname map:",
         "FIELD_HEADER_SFTP_DIRECTORY"   : "Standaard upload map:",
         "FIELD_HEADER_SFTP_HOSTNAME"    : "Servernaam:",
         "FIELD_HEADER_SFTP_PASSPHRASE"  : "Wachtwoordzin:",
@@ -476,6 +508,7 @@
         "SECTION_HEADER_CLIPBOARD"      : "Klembord",
         "SECTION_HEADER_DISPLAY"        : "Scherm",
         "SECTION_HEADER_NETWORK"        : "Netwerk",
+        "SECTION_HEADER_RECORDING"      : "Scherm Opname",
         "SECTION_HEADER_REPEATER"       : "VNC Repeater",
         "SECTION_HEADER_SFTP"           : "SFTP"
 
@@ -544,7 +577,7 @@
         "FIELD_HEADER_PASSWORD_NEW"       : "Nieuw Wachtwoord:",
         "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Bevestig Nieuw Wachtwoord:",
         "FIELD_HEADER_USERNAME"           : "Gebruikersnaam:",
-        
+
         "HELP_DEFAULT_INPUT_METHOD" : "De standaard invoer methode bepaalt hoe toetsenbord gebeurtenissen ontvangen worden door Guacamole. Het veranderen van deze instelling kan nodig zijn bij gebruik van een mobiel apparaat of wanneer er via een IME getypt wordt. Deze instelling kan per verbinding worden overschreven via het Guacamole menu.",
         "HELP_DEFAULT_MOUSE_MODE"   : "De standaard muis emulatie modus bepaalt hoe de externe muis in nieuwe verbindingen omgaat met touch. Deze instelling kan per verbinding worden overschreven via het Guacamole menu.",
         "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
@@ -581,22 +614,22 @@
         "SECTION_HEADER_USERS"       : "Gebruikers"
 
     },
-    
+
     "SETTINGS_SESSIONS" : {
-        
+
         "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
         "ACTION_DELETE"      : "Beeindig Sessies",
-        
+
         "DIALOG_HEADER_CONFIRM_DELETE" : "Beeindig Sessie",
         "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
-        
+
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-        
+
         "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
         "HELP_SESSIONS" : "Alle Guacamole sessies die op dit moment actief zijn worden hier getoond. Als u een of meerdere sessies wilt beeindigen, vink die sessie(s) dan aan en klik op \"Beeindig Sessies\". Door het verbreken van een sessie verliest de gebruiker ogenblikkelijk het contact met die sessie(s).",
-        
+
         "INFO_NO_SESSIONS" : "Geen actieve sessies",
 
         "SECTION_HEADER_SESSIONS" : "Actieve Sessies",
