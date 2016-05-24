@@ -240,7 +240,7 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
     var writtenSamples = 0;
 
     /**
-     * The audio stream provided by the browse, if allowed. If no stream has
+     * The audio stream provided by the browser, if allowed. If no stream has
      * yet been received, this will be null.
      *
      * @type MediaStream
