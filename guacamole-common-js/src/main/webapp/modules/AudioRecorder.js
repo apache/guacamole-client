@@ -29,7 +29,26 @@ var Guacamole = Guacamole || {};
  */
 Guacamole.AudioRecorder = function AudioRecorder() {
 
-    // AudioRecorder currently provides no functions
+    /**
+     * Callback which is invoked when the audio recording process has stopped
+     * and the underlying Guacamole stream has been closed normally. Audio will
+     * only resume recording if a new Guacamole.AudioRecorder is started. This
+     * Guacamole.AudioRecorder instance MAY NOT be reused.
+     *
+     * @event
+     */
+    this.onclose = null;
+
+    /**
+     * Callback which is invoked when the audio recording process cannot
+     * continue due to an error, if it has started at all. The underlying
+     * Guacamole stream is automatically closed. Future attempts to record
+     * audio should not be made, and this Guacamole.AudioRecorder instance
+     * MAY NOT be reused.
+     *
+     * @event
+     */
+    this.onerror = null;
 
 };
 
@@ -113,6 +132,14 @@ Guacamole.AudioRecorder.getInstance = function getInstance(stream, mimetype) {
  *     such as: "audio/L16;rate=44100,channels=2".
  */
 Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
+
+    /**
+     * Reference to this RawAudioRecorder.
+     *
+     * @private
+     * @type {Guacamole.RawAudioRecorder}
+     */
+    var recorder = this;
 
     /**
      * The size of audio buffer to request from the Web Audio API when
@@ -211,6 +238,14 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
      * @type {Number}
      */
     var writtenSamples = 0;
+
+    /**
+     * The audio stream provided by the browser, if allowed. If no stream has
+     * yet been received, this will be null.
+     *
+     * @type MediaStream
+     */
+    var mediaStream = null;
 
     /**
      * The source node providing access to the local audio input device.
@@ -372,31 +407,19 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
 
     };
 
-    // Once audio stream is successfully open, request and begin reading audio
-    writer.onack = function audioStreamAcknowledged(status) {
-
-        // Abort stream if rejected
-        if (status.code !== Guacamole.Status.Code.SUCCESS) {
-
-            // Disconnect media source node from script processor
-            if (source)
-                source.disconnect();
-
-            // Disconnect associated script processor node
-            if (processor)
-                processor.disconnect();
-
-            // Remove references to now-unneeded components
-            processor = null;
-            source = null;
-
-            writer.sendEnd();
-            return;
-
-        }
+    /**
+     * Requests access to the user's microphone and begins capturing audio. All
+     * received audio data is resampled as necessary and forwarded to the
+     * Guacamole stream underlying this Guacamole.RawAudioRecorder. This
+     * function must be invoked ONLY ONCE per instance of
+     * Guacamole.RawAudioRecorder.
+     *
+     * @private
+     */
+    var beginAudioCapture = function beginAudioCapture() {
 
         // Attempt to retrieve an audio input stream from the browser
-        getUserMedia({ 'audio' : true }, function streamReceived(mediaStream) {
+        getUserMedia({ 'audio' : true }, function streamReceived(stream) {
 
             // Create processing node which receives appropriately-sized audio buffers
             processor = context.createScriptProcessor(BUFFER_SIZE, format.channels, format.channels);
@@ -408,15 +431,86 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
             };
 
             // Connect processing node to user's audio input source
-            source = context.createMediaStreamSource(mediaStream);
+            source = context.createMediaStreamSource(stream);
             source.connect(processor);
+
+            // Save stream for later cleanup
+            mediaStream = stream;
 
         }, function streamDenied() {
 
             // Simply end stream if audio access is not allowed
             writer.sendEnd();
 
+            // Notify of closure
+            if (recorder.onerror)
+                recorder.onerror();
+
         });
+
+    };
+
+    /**
+     * Stops capturing audio, if the capture has started, freeing all associated
+     * resources. If the capture has not started, this function simply ends the
+     * underlying Guacamole stream.
+     *
+     * @private
+     */
+    var stopAudioCapture = function stopAudioCapture() {
+
+        // Disconnect media source node from script processor
+        if (source)
+            source.disconnect();
+
+        // Disconnect associated script processor node
+        if (processor)
+            processor.disconnect();
+
+        // Stop capture
+        if (mediaStream) {
+            var tracks = mediaStream.getTracks();
+            for (var i = 0; i < tracks.length; i++)
+                tracks[i].stop();
+        }
+
+        // Remove references to now-unneeded components
+        processor = null;
+        source = null;
+        mediaStream = null;
+
+        // End stream
+        writer.sendEnd();
+
+    };
+
+    // Once audio stream is successfully open, request and begin reading audio
+    writer.onack = function audioStreamAcknowledged(status) {
+
+        // Begin capture if successful response and not yet started
+        if (status.code === Guacamole.Status.Code.SUCCESS && !mediaStream)
+            beginAudioCapture();
+
+        // Otherwise stop capture and cease handling any further acks
+        else {
+
+            // Stop capturing audio
+            stopAudioCapture();
+            writer.onack = null;
+
+            // Notify if stream has closed normally
+            if (status.code === Guacamole.Status.Code.RESOURCE_CLOSED) {
+                if (recorder.onclose)
+                    recorder.onclose();
+            }
+
+            // Otherwise notify of closure due to error
+            else {
+                if (recorder.onerror)
+                    recorder.onerror();
+            }
+
+        }
 
     };
 

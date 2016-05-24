@@ -133,6 +133,14 @@ Guacamole.Status.Code = {
     "RESOURCE_CONFLICT": 0x0205,
 
     /**
+     * The operation could not be performed as the requested resource is now
+     * closed.
+     *
+     * @type {Number}
+     */
+    "RESOURCE_CLOSED": 0x0206,
+
+    /**
      * The operation could not be performed because bad parameters were given.
      *
      * @type {Number}

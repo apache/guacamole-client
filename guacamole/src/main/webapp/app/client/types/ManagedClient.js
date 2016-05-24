@@ -263,6 +263,36 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     };
 
     /**
+     * Requests the creation of a new audio stream, recorded from the user's
+     * local audio input device. If audio input is supported by the connection,
+     * an audio stream will be created which will remain open until the remote
+     * desktop requests that it be closed. If the audio stream is successfully
+     * created but is later closed, a new audio stream will automatically be
+     * established to take its place. The mimetype used for all audio streams
+     * produced by this function is defined by
+     * ManagedClient.AUDIO_INPUT_MIMETYPE.
+     *
+     * @param {Guacamole.Client} client
+     *     The Guacamole.Client for which the audio stream is being requested.
+     */
+    var requestAudioStream = function requestAudioStream(client) {
+
+        // Create new audio stream, associating it with an AudioRecorder
+        var stream = client.createAudioStream(ManagedClient.AUDIO_INPUT_MIMETYPE);
+        var recorder = Guacamole.AudioRecorder.getInstance(stream, ManagedClient.AUDIO_INPUT_MIMETYPE);
+
+        // If creation of the AudioRecorder failed, simply end the stream
+        if (!recorder)
+            stream.sendEnd();
+
+        // Otherwise, ensure that another audio stream is created after this
+        // audio stream is closed
+        else
+            recorder.onclose = requestAudioStream.bind(this, client);
+
+    };
+
+    /**
      * Creates a new ManagedClient, connecting it to the specified connection
      * or group.
      *
@@ -363,9 +393,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                             ManagedClientState.ConnectionState.CONNECTED);
 
                         // Begin streaming audio input if possible
-                        var stream = client.createAudioStream(ManagedClient.AUDIO_INPUT_MIMETYPE);
-                        if (!Guacamole.AudioRecorder.getInstance(stream, ManagedClient.AUDIO_INPUT_MIMETYPE))
-                            stream.sendEnd();
+                        requestAudioStream(client);
 
                         break;
 
