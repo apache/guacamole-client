@@ -90,15 +90,21 @@ set_optional_property() {
 ## instead of a linked container.
 ##
 associate_mysql() {
-
-    # Use linked container if specified
-    if [ -n "$MYSQL_NAME" ]; then
-        MYSQL_HOSTNAME="$MYSQL_PORT_3306_TCP_ADDR"
-        MYSQL_PORT="$MYSQL_PORT_3306_TCP_PORT"
-    fi
-
-    # Use default port if none specified
-    MYSQL_PORT="${MYSQL_PORT-3306}"
+	: ${MYSQL_HOSTNAME:=mysql}
+	# overwrite "MYSQL_PORT" with default port if using linked container
+	if [ -n "$MYSQL_ENV_MYSQL_DATABASE" ]; then
+		MYSQL_PORT=3306
+	fi
+	# Use default port if none specified
+    	: ${MYSQL_PORT:=3306}
+    	
+	# if we're linked to MySQL and thus have credentials already, let's use them
+	: ${MYSQL_USER:=${MYSQL_ENV_MYSQL_USER:-root}}
+	if [ "$MYSQL_USER" = 'root' ]; then
+		: ${MYSQL_PASSWORD:=$MYSQL_ENV_MYSQL_ROOT_PASSWORD}
+	fi
+	: ${MYSQL_PASSWORD:=$MYSQL_ENV_MYSQL_PASSWORD}
+	: ${MYSQL_DATABASE:=${MYSQL_ENV_MYSQL_DATABASE:-guacamole}}
 
     # Verify required connection information is present
     if [ -z "$MYSQL_HOSTNAME" -o -z "$MYSQL_PORT" ]; then
@@ -184,16 +190,19 @@ END
 ## used instead of a linked container.
 ##
 associate_postgresql() {
-
-    # Use linked container if specified
-    if [ -n "$POSTGRES_NAME" ]; then
-        POSTGRES_HOSTNAME="$POSTGRES_PORT_5432_TCP_ADDR"
-        POSTGRES_PORT="$POSTGRES_PORT_5432_TCP_PORT"
-    fi
-
-    # Use default port if none specified
-    POSTGRES_PORT="${POSTGRES_PORT-5432}"
-
+	: ${POSTGRES_HOSTNAME:=postgres}
+	# overwrite "POSTGRES_PORT" with default port if using linked container
+	if [ -n "$POSTGRES_ENV_POSTGRES_DB" ]; then
+		POSTGRES_PORT=5432
+	fi
+	# Use default port if none specified
+	: ${POSTGRES_PORT:=5432}
+    	
+	# if we're linked to Postgres and thus have credentials already, let's use them
+	: ${POSTGRES_USER:=${POSTGRES_ENV_POSTGRES_USER:-postgres}}
+	: ${POSTGRES_PASSWORD:=$POSTGRES_ENV_POSTGRES_PASSWORD}
+	: ${POSTGRES_DATABASE:=${POSTGRES_ENV_POSTGRES_DB:-guacamole}}
+	
     # Verify required connection information is present
     if [ -z "$POSTGRES_HOSTNAME" -o -z "$POSTGRES_PORT" ]; then
         cat <<END
@@ -368,13 +377,13 @@ set_property "guacd-port"     "$GUACD_PORT_4822_TCP_PORT"
 INSTALLED_AUTH=""
 
 # Use MySQL if database specified
-if [ -n "$MYSQL_DATABASE" ]; then
+if [ -n "$MYSQL_DATABASE" -o -n "$MYSQL_ENV_MYSQL_DATABASE" ]; then
     associate_mysql
     INSTALLED_AUTH="$INSTALLED_AUTH mysql"
 fi
 
 # Use PostgreSQL if database specified
-if [ -n "$POSTGRES_DATABASE" ]; then
+if [ -n "$POSTGRES_DATABASE" -o -n "$POSTGRES_ENV_POSTGRES_DB" ]; then
     associate_postgresql
     INSTALLED_AUTH="$INSTALLED_AUTH postgres"
 fi
