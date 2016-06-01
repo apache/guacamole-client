@@ -16,9 +16,6 @@ Using this image will require an existing, running Docker container with the
 network access to a working LDAP server, or another Docker container providing
 a PostgreSQL or MySQL database.
 
-SQL Based Authentication
-========================
-
 The name of the database and all associated credentials are specified with
 environment variables given when the container is created. All other
 configuration information is generated from the Docker links.
@@ -120,7 +117,7 @@ documented in
 [the Guacamole manual](http://guacamole.incubator.apache.org/doc/gug/jdbc-auth.html#jdbc-auth-mysql).
 
 
-Deploying Aoache Guacamole with LDAP authentication
+Deploying Apache Guacamole with LDAP and database authentication
 --------------------------------------------------
 
     docker run --name some-guacamole --link some-guacd:guacd    \
@@ -129,17 +126,17 @@ Deploying Aoache Guacamole with LDAP authentication
         -e LDAP_CONFIG_BASE_DN=ou=connections,dc=example,dc=com \
         -d -p 8080:8080 glyptodon/guacamole
 
-Linking Guacamole to your LDAP directory will require additional configuration parameters
+Using Guacamole with your LDAP directory will require additional configuration parameters
 specified via environment variables. These variables collectively describe how Guacamole
 will connect to LDAP:
 
-1. `LDAP_HOSTNAME` - The base of the DN for all Guacamole users.
+1. `LDAP_HOSTNAME` - The hostname or IP address of your LDAP server.
 2. `LDAP_USER_BASE_DN` - The base of the DN for all Guacamole users.
 3. `LDAP_PORT` - The port your LDAP server listens on.  (Optional)
 4. `LDAP_ENCRYPTION_METHOD` - The encryption mechanism that Guacamole should use when
 communicating with your LDAP server. (Optional)
-5. `LDAP_GROUP_BASE_DN` - (Optional) The base of the DN for all groups that may be
-referenced within Guacamole configurations using the standard `seeAlso` attribute.
+5. `LDAP_GROUP_BASE_DN` - The base of the DN for all groups that may be
+referenced within Guacamole configurations using the standard `seeAlso` attribute. (Optional)
 6. `LDAP_SEARCH_BIND_DN` - The DN (Distinguished Name) of the user to bind as when
 authenticating users that are attempting to log in. (Optional)
 7. `LDAP_SEARCH_BIND_PASSWORD` - The password to provide to the LDAP server when
@@ -147,6 +144,24 @@ binding as `LDAP_SEARCH_BIND_DN` to authenticate other users. (Optional)
 8. `LDAP_USERNAME_ATTRIBUTE` - The attribute or attributes which contain the
 username within all Guacamole user objects in the LDAP directory. (Optional)
 9. `LDAP_CONFIG_BASE_DN` - The base of the DN for all Guacamole configurations. (Optional)
+
+Deploying Apache Guacamole with LDAP authentication
+--------------------------------------------------
+
+    docker run --name some-guacamole --link some-guacd:guacd    \
+        --link some-mysql:mysql                                 \
+        -e LDAP_HOSTNAME=172.17.42.1                            \
+        -e LDAP_USER_BASE_DN=ou=people,dc=example,dc=com        \
+        -e LDAP_CONFIG_BASE_DN=ou=connections,dc=example,dc=com \
+        -e MYSQL_DATABASE=guacamole_db                          \
+        -e MYSQL_USER=guacamole_user                            \
+        -e MYSQL_PASSWORD=some_password                         \
+        -d -p 8080:8080 glyptodon/guacamole
+
+Guacamole does support combining LDAP with a MySQL or PostgreSQL database, and this
+can be configured with the Guacamole Docker image, as well. By providing the
+required environment variables for both systems, Guacamole will automatically be
+configured to use both when the Docker image starts.
 
 Reporting issues
 ================
