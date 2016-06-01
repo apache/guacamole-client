@@ -117,8 +117,8 @@ documented in
 [the Guacamole manual](http://guacamole.incubator.apache.org/doc/gug/jdbc-auth.html#jdbc-auth-mysql).
 
 
-Deploying Apache Guacamole with LDAP and database authentication
---------------------------------------------------
+Deploying Apache Guacamole with LDAP authentication
+---------------------------------------------------
 
     docker run --name some-guacamole --link some-guacd:guacd    \
         -e LDAP_HOSTNAME=172.17.42.1                            \
@@ -145,8 +145,7 @@ binding as `LDAP_SEARCH_BIND_DN` to authenticate other users. (Optional)
 username within all Guacamole user objects in the LDAP directory. (Optional)
 9. `LDAP_CONFIG_BASE_DN` - The base of the DN for all Guacamole configurations. (Optional)
 
-Deploying Apache Guacamole with LDAP authentication
---------------------------------------------------
+### Deploying Apache Guacamole with LDAP and database authentication
 
     docker run --name some-guacamole --link some-guacd:guacd    \
         --link some-mysql:mysql                                 \
