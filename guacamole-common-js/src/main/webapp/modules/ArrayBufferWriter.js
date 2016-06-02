@@ -64,7 +64,7 @@ Guacamole.ArrayBufferWriter = function(stream) {
     /**
      * The maximum length of any blob sent by this Guacamole.ArrayBufferWriter,
      * in bytes. Data sent via
-     * {@link Guacamole.ArrayBufferWriter#sendData|sendData()} which exceeds
+     * [sendData()]{@link Guacamole.ArrayBufferWriter#sendData} which exceeds
      * this length will be split into multiple blobs. As the Guacamole protocol
      * limits the maximum size of any instruction or instruction element to
      * 8192 bytes, and the contents of blobs will be base64-encoded, this value

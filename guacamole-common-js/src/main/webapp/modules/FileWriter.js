@@ -112,7 +112,7 @@ Guacamole.FileWriter = function FileWriter(stream) {
 
         /**
          * Reads the next chunk of the file provided to
-         * {@link Guacamole.FileWriter#sendFile|sendFile()}. The chunk itself
+         * [sendFile()]{@link Guacamole.FileWriter#sendFile}. The chunk itself
          * is read asynchronously, and will not be available until
          * reader.onload fires.
          *
@@ -203,7 +203,7 @@ Guacamole.FileWriter = function FileWriter(stream) {
 
     /**
      * Fired when an error occurs reading a file passed to
-     * {@link Guacamole.FileWriter#sendFile|sendFile()}. The file transfer for
+     * [sendFile()]{@link Guacamole.FileWriter#sendFile}. The file transfer for
      * the given file will cease, but the stream will remain open.
      *
      * @event
@@ -220,7 +220,7 @@ Guacamole.FileWriter = function FileWriter(stream) {
 
     /**
      * Fired for each successfully-read chunk of file data as a file is being
-     * sent via {@link Guacamole.FileWriter#sendFile|sendFile()}.
+     * sent via [sendFile()]{@link Guacamole.FileWriter#sendFile}.
      *
      * @event
      * @param {File} file
@@ -233,7 +233,8 @@ Guacamole.FileWriter = function FileWriter(stream) {
 
     /**
      * Fired when a file passed to
-     * {@link Guacamole.FileWriter#sendFile|sendFile()} has finished being sent.
+     * [sendFile()]{@link Guacamole.FileWriter#sendFile} has finished being
+     * sent.
      *
      * @event
      * @param {File} file
