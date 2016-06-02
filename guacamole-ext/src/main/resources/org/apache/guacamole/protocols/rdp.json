@@ -124,6 +124,11 @@
                     "options" : [ "true" ]
                 },
                 {
+                    "name"    : "enable-audio-input",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"    : "enable-printing",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]

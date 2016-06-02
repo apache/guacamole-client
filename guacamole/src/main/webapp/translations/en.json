@@ -280,6 +280,7 @@
         "FIELD_HEADER_DOMAIN"          : "Domain:",
         "FIELD_HEADER_DPI"             : "Resolution (DPI):",
         "FIELD_HEADER_DRIVE_PATH"      : "Drive path:",
+        "FIELD_HEADER_ENABLE_AUDIO_INPUT"         : "Enable audio input (microphone):",
         "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "Enable desktop composition (Aero):",
         "FIELD_HEADER_ENABLE_DRIVE"               : "Enable drive:",
         "FIELD_HEADER_ENABLE_FONT_SMOOTHING"      : "Enable font smoothing (ClearType):",
