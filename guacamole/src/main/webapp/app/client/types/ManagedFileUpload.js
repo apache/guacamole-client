@@ -30,16 +30,6 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
     var $window = $injector.get('$window');
 
     /**
-     * The maximum number of bytes to include in each blob for the Guacamole
-     * file stream. Note that this, along with instruction opcode and protocol-
-     * related overhead, must not exceed the 8192 byte maximum imposed by the
-     * Guacamole protocol.
-     *
-     * @type Number
-     */
-    var STREAM_BLOB_SIZE = 4096;
-
-    /**
      * Object which serves as a surrogate interface, encapsulating a Guacamole
      * file upload while it is active, allowing it to be detached and
      * reattached from different client views.
@@ -136,93 +126,91 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
     ManagedFileUpload.getInstance = function getInstance(client, file, object, streamName) {
 
         var managedFileUpload = new ManagedFileUpload();
+        var streamAcknowledged = false;
 
-        // Construct reader for file
-        var reader = new FileReader();
-        reader.onloadend = function fileContentsLoaded() {
+        // Open file for writing
+        var stream;
+        if (!object)
+            stream = client.createFileStream(file.type, file.name);
 
-            // Open file for writing
-            var stream;
-            if (!object)
-                stream = client.createFileStream(file.type, file.name);
+        // If object/streamName specified, upload to that instead of a file
+        // stream
+        else
+            stream = object.createOutputStream(file.type, streamName);
 
-            // If object/streamName specified, upload to that instead of a file
-            // stream
-            else
-                stream = object.createOutputStream(file.type, streamName);
+        // Notify that the file transfer is pending
+        $rootScope.$apply(function uploadStreamOpen() {
 
-            var valid = true;
-            var bytes = new Uint8Array(reader.result);
-            var offset = 0;
+            // Init managed upload
+            managedFileUpload.filename = file.name;
+            managedFileUpload.mimetype = file.type;
+            managedFileUpload.progress = 0;
+            managedFileUpload.length   = file.size;
 
-            $rootScope.$apply(function uploadStreamOpen() {
+            // Notify that stream is open
+            ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
+                ManagedFileTransferState.StreamState.OPEN);
 
-                // Init managed upload
-                managedFileUpload.filename = file.name;
-                managedFileUpload.mimetype = file.type;
-                managedFileUpload.progress = 0;
-                managedFileUpload.length   = bytes.length;
+        });
 
-                // Notify that stream is open
-                ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
-                    ManagedFileTransferState.StreamState.OPEN);
+        var writer = new Guacamole.FileWriter(stream);
 
-            });
+        // Begin upload when stream is acknowledged, notify of any errors
+        writer.onack = function ackReceived(status) {
 
-            // Invalidate stream on all errors
-            // Continue upload when acknowledged
-            stream.onack = function ackReceived(status) {
-
-                // Handle errors 
-                if (status.isError()) {
-                    valid = false;
-                    $rootScope.$apply(function uploadStreamError() {
-                        ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
-                            ManagedFileTransferState.StreamState.ERROR,
-                            status.code);
-                    });
-                }
-
-                // Abort upload if stream is invalid
-                if (!valid)
-                    return false;
-
-                // Encode packet as base64
-                var slice = bytes.subarray(offset, offset + STREAM_BLOB_SIZE);
-                var base64 = getBase64(slice);
-
-                // Write packet
-                stream.sendBlob(base64);
-
-                // Advance to next packet
-                offset += STREAM_BLOB_SIZE;
-
-                $rootScope.$apply(function uploadStreamProgress() {
-
-                    // If at end, stop upload
-                    if (offset >= bytes.length) {
-                        stream.sendEnd();
-                        managedFileUpload.progress = bytes.length;
-
-                        // Upload complete
-                        ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
-                            ManagedFileTransferState.StreamState.CLOSED);
-
-                        // Notify of upload completion
-                        $rootScope.$broadcast('guacUploadComplete', file.name);
-
-                    }
-
-                    // Otherwise, update progress
-                    else
-                        managedFileUpload.progress = offset;
-
+            // Notify of any errors from the Guacamole server
+            if (status.isError()) {
+                $rootScope.$apply(function uploadStreamError() {
+                    ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
+                        ManagedFileTransferState.StreamState.ERROR,
+                        status.code);
                 });
+            }
 
-            }; // end ack handler
+            // Begin sending the requested file once stream is acknowledged
+            else if (!streamAcknowledged) {
+                writer.sendFile(file);
+                streamAcknowledged = true;
+            }
 
         };
-        reader.readAsArrayBuffer(file);
+
+        // Abort and notify if the file cannot be read
+        writer.onerror = function fileReadError(file, offset, error) {
+
+            // Abort transfer
+            writer.sendEnd();
+
+            // Upload failed
+            ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
+                ManagedFileTransferState.StreamState.ERROR);
+
+        };
+
+        // Notify of upload progress
+        writer.onprogress = function uploadProgressing(file, length) {
+
+            $rootScope.$apply(function uploadStreamProgress() {
+                managedFileUpload.progress = length;
+            });
+
+        };
+
+        // Clean up and notify when upload completes
+        writer.oncomplete = function uploadComplete(file) {
+
+            // If at end, stop upload
+            writer.sendEnd();
+            managedFileUpload.progress = file.size;
+
+            // Upload complete
+            ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
+                ManagedFileTransferState.StreamState.CLOSED);
+
+            // Notify of upload completion
+            $rootScope.$broadcast('guacUploadComplete', file.name);
+
+        };
 
         return managedFileUpload;
 
