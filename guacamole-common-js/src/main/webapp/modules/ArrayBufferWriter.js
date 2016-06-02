@@ -62,6 +62,20 @@ Guacamole.ArrayBufferWriter = function(stream) {
     }
 
     /**
+     * The maximum length of any blob sent by this Guacamole.ArrayBufferWriter,
+     * in bytes. Data sent via
+     * {@link Guacamole.ArrayBufferWriter#sendData|sendData()} which exceeds
+     * this length will be split into multiple blobs. As the Guacamole protocol
+     * limits the maximum size of any instruction or instruction element to
+     * 8192 bytes, and the contents of blobs will be base64-encoded, this value
+     * should only be increased with extreme caution.
+     *
+     * @type {Number}
+     * @default {@link Guacamole.ArrayBufferWriter.DEFAULT_BLOB_LENGTH}
+     */
+    this.blobLength = Guacamole.ArrayBufferWriter.DEFAULT_BLOB_LENGTH;
+
+    /**
      * Sends the given data.
      * 
      * @param {ArrayBuffer|TypedArray} data The data to send.
@@ -71,13 +85,13 @@ Guacamole.ArrayBufferWriter = function(stream) {
         var bytes = new Uint8Array(data);
 
         // If small enough to fit into single instruction, send as-is
-        if (bytes.length <= 6048)
+        if (bytes.length <= guac_writer.blobLength)
             __send_blob(bytes);
 
         // Otherwise, send as multiple instructions
         else {
-            for (var offset=0; offset<bytes.length; offset += 6048)
-                __send_blob(bytes.subarray(offset, offset + 6048));
+            for (var offset=0; offset<bytes.length; offset += guac_writer.blobLength)
+                __send_blob(bytes.subarray(offset, offset + guac_writer.blobLength));
         }
 
     };
@@ -98,3 +112,12 @@ Guacamole.ArrayBufferWriter = function(stream) {
     this.onack = null;
 
 };
+
+/**
+ * The default maximum blob length for new Guacamole.ArrayBufferWriter
+ * instances.
+ *
+ * @constant
+ * @type {Number}
+ */
+Guacamole.ArrayBufferWriter.DEFAULT_BLOB_LENGTH = 6048;
