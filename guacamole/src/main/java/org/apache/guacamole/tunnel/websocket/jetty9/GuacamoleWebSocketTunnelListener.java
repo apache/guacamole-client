@@ -30,6 +30,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.io.GuacamoleReader;
 import org.apache.guacamole.io.GuacamoleWriter;
 import org.apache.guacamole.net.GuacamoleTunnel;
+import org.apache.guacamole.protocol.GuacamoleInstruction;
 import org.apache.guacamole.protocol.GuacamoleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,6 +127,12 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
                 char[] readMessage;
 
                 try {
+
+                    // Send tunnel UUID
+                    remote.sendString(new GuacamoleInstruction(
+                        GuacamoleTunnel.INTERNAL_DATA_OPCODE,
+                        tunnel.getUUID().toString()
+                    ).toString());
 
                     try {
 

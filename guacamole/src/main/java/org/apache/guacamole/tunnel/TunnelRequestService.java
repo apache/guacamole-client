@@ -23,13 +23,9 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.List;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleSession;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
-import org.apache.guacamole.GuacamoleUnauthorizedException;
-import org.apache.guacamole.net.DelegatingGuacamoleTunnel;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
@@ -242,7 +238,7 @@ public class TunnelRequestService {
             throws GuacamoleException {
 
         // Monitor tunnel closure and data
-        GuacamoleTunnel monitoredTunnel = new DelegatingGuacamoleTunnel(tunnel) {
+        StreamInterceptingTunnel monitoredTunnel = new StreamInterceptingTunnel(tunnel) {
 
             /**
              * The time the connection began, measured in milliseconds since
