@@ -21,12 +21,14 @@ package org.apache.guacamole.rest.tunnel;
 
 import com.google.inject.Inject;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 import java.util.Set;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -140,6 +142,54 @@ public class TunnelRESTService {
         };
 
         return Response.ok(stream, mediaType).build();
+
+    }
+
+    /**
+     * Intercepts a specific stream, sending the contents of the given
+     * InputStream over that stream as "blob" instructions.
+     *
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @param tunnelUUID
+     *     The UUID of the tunnel containing the stream being intercepted.
+     *
+     * @param streamIndex
+     *     The index of the stream to intercept.
+     *
+     * @param filename
+     *     The filename to use for the sake of identifying the data being sent.
+     *
+     * @param data
+     *     An InputStream containing the data to be sent over the intercepted
+     *     stream.
+     *
+     * @throws GuacamoleException
+     *     If the session associated with the given auth token cannot be
+     *     retrieved, or if no such tunnel exists.
+     */
+    @POST
+    @Consumes(MediaType.WILDCARD)
+    @Path("/{tunnel}/streams/{index}/{filename}")
+    public void setStreamContents(@QueryParam("token") String authToken,
+            @PathParam("tunnel") String tunnelUUID,
+            @PathParam("index") final int streamIndex,
+            @PathParam("filename") String filename,
+            InputStream data)
+            throws GuacamoleException {
+
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        Map<String, StreamInterceptingTunnel> tunnels = session.getTunnels();
+
+        // Pull tunnel with given UUID
+        final StreamInterceptingTunnel tunnel = tunnels.get(tunnelUUID);
+        if (tunnel == null)
+            throw new GuacamoleResourceNotFoundException("No such tunnel.");
+
+        // Send input over stream
+        tunnel.interceptStream(streamIndex, data);
 
     }
 

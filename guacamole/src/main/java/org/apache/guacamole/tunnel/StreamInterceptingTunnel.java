@@ -19,7 +19,9 @@
 
 package org.apache.guacamole.tunnel;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.io.GuacamoleReader;
@@ -30,10 +32,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * GuacamoleTunnel implementation which provides for intercepting the contents
- * of in-progress streams, rerouting received blobs to a provided OutputStream.
- * Interception of streams is requested on a per stream basis and lasts only
- * for the duration of that stream.
+ * GuacamoleTunnel implementation which provides for producing or consuming the
+ * contents of in-progress streams, rerouting blobs to a provided OutputStream
+ * or from a provided InputStream. Interception of streams is requested on a per
+ * stream basis and lasts only for the duration of that stream.
  *
  * @author Michael Jumper
  */
@@ -57,6 +59,12 @@ public class StreamInterceptingTunnel extends DelegatingGuacamoleTunnel {
     public StreamInterceptingTunnel(GuacamoleTunnel tunnel) {
         super(tunnel);
     }
+
+    /**
+     * The filter to use for providing stream data from InputStreams.
+     */
+    private final InputStreamInterceptingFilter inputStreamFilter =
+            new InputStreamInterceptingFilter(this);
 
     /**
      * The filter to use for rerouting received stream data to OutputStreams.
@@ -92,9 +100,45 @@ public class StreamInterceptingTunnel extends DelegatingGuacamoleTunnel {
 
     }
 
+    /**
+     * Intercept the given stream, continuously writing the contents of the
+     * given InputStream as blobs. The stream will automatically end when
+     * when the end of the InputStream is reached. If there is no such
+     * stream, then the InputStream will be closed immediately. This function
+     * will block until all data from the InputStream has been written to the
+     * given stream.
+     *
+     * @param index
+     *     The index of the stream to intercept.
+     *
+     * @param stream
+     *     The InputStream to read all blobs data from.
+     */
+    public void interceptStream(int index, InputStream stream) {
+
+        // Log beginning of intercepted stream
+        logger.debug("Intercepting input stream #{} of tunnel \"{}\".",
+                index, getUUID());
+
+        inputStreamFilter.interceptStream(index, new BufferedInputStream(stream));
+
+        // Log end of intercepted stream
+        logger.debug("Intercepted input stream #{} of tunnel \"{}\" ended.",
+                index, getUUID());
+
+    }
+
     @Override
     public GuacamoleReader acquireReader() {
-        return new FilteredGuacamoleReader(super.acquireReader(), outputStreamFilter);
+
+        GuacamoleReader reader = super.acquireReader();
+
+        // Filter both input and output streams
+        reader = new FilteredGuacamoleReader(reader, inputStreamFilter);
+        reader = new FilteredGuacamoleReader(reader, outputStreamFilter);
+
+        return reader;
+
     }
 
     @Override
@@ -108,6 +152,7 @@ public class StreamInterceptingTunnel extends DelegatingGuacamoleTunnel {
 
         // Close all intercepted streams
         finally {
+            inputStreamFilter.closeAllInterceptedStreams();
             outputStreamFilter.closeAllInterceptedStreams();
         }
 
