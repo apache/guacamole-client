@@ -166,5 +166,31 @@ public enum GuacamoleStatus {
     public int getGuacamoleStatusCode() {
         return guac_code;
     }
-    
+
+    /**
+     * Returns the GuacamoleStatus corresponding to the given Guacamole
+     * protocol status code. If no such GuacamoleStatus is defined, null is
+     * returned.
+     *
+     * @param code
+     *     The Guacamole protocol status code to translate into a
+     *     GuacamoleStatus.
+     *
+     * @return
+     *     The GuacamoleStatus corresponding to the given Guacamole protocol
+     *     status code, or null if no such GuacamoleStatus is defined.
+     */
+    public static GuacamoleStatus fromGuacamoleStatusCode(int code) {
+
+        // Search for a GuacamoleStatus having the given status code
+        for (GuacamoleStatus status : values()) {
+            if (status.getGuacamoleStatusCode() == code)
+                return status;
+        }
+
+        // No such status found
+        return null;
+
+    }
+
 }
