@@ -177,8 +177,12 @@ public abstract class StreamInterceptingFilter<T extends Closeable>
      * @param stream
      *     The stream object which will produce or consume all data for the
      *     stream having the given index.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while intercepting the stream, or if the stream
+     *     itself reports an error.
      */
-    public void interceptStream(int index, T stream) {
+    public void interceptStream(int index, T stream) throws GuacamoleException {
 
         InterceptedStream<T> interceptedStream;
         String indexString = Integer.toString(index);
@@ -203,6 +207,10 @@ public abstract class StreamInterceptingFilter<T extends Closeable>
 
         // Wait for stream to close
         streams.waitFor(interceptedStream);
+
+        // Throw any asynchronously-provided exception
+        if (interceptedStream.hasStreamError())
+            throw interceptedStream.getStreamError();
 
     }
 

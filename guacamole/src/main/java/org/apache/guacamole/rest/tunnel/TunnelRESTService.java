@@ -136,7 +136,12 @@ public class TunnelRESTService {
 
             @Override
             public void write(OutputStream output) throws IOException {
-                tunnel.interceptStream(streamIndex, output);
+                try {
+                    tunnel.interceptStream(streamIndex, output);
+                }
+                catch (GuacamoleException e) {
+                    throw new IOException(e);
+                }
             }
 
         };
@@ -167,8 +172,9 @@ public class TunnelRESTService {
      *     stream.
      *
      * @throws GuacamoleException
-     *     If the session associated with the given auth token cannot be
-     *     retrieved, or if no such tunnel exists.
+     *     If the session associated with the given auth
+     *     token cannot be retrieved, if no such tunnel exists, or if the
+     *     intercepted stream itself closes with an error.
      */
     @POST
     @Consumes(MediaType.WILDCARD)

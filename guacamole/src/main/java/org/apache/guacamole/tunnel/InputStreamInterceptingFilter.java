@@ -27,6 +27,7 @@ import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.protocol.GuacamoleInstruction;
+import org.apache.guacamole.protocol.GuacamoleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,8 +165,24 @@ public class InputStreamInterceptingFilter
 
         // Terminate stream if an error is encountered
         if (!status.equals("0")) {
+
+            // Parse status code as integer
+            int code;
+            try {
+                code = Integer.parseInt(status);
+            }
+
+            // Assume internal error if parsing fails
+            catch (NumberFormatException e) {
+                logger.debug("Translating invalid status code \"{}\" to SERVER_ERROR.", status);
+                code = GuacamoleStatus.SERVER_ERROR.getGuacamoleStatusCode();
+            }
+
+            // Flag error and close stream
+            stream.setStreamError(code, args.get(1));
             closeInterceptedStream(stream);
             return;
+
         }
 
         // Send next blob

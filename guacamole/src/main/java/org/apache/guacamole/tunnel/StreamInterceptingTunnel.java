@@ -85,18 +85,27 @@ public class StreamInterceptingTunnel extends DelegatingGuacamoleTunnel {
      *
      * @param stream
      *     The OutputStream to write all intercepted data to.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while intercepting the stream, or if the stream
+     *     itself reports an error.
      */
-    public void interceptStream(int index, OutputStream stream) {
+    public void interceptStream(int index, OutputStream stream)
+            throws GuacamoleException {
 
         // Log beginning of intercepted stream
         logger.debug("Intercepting output stream #{} of tunnel \"{}\".",
                 index, getUUID());
 
-        outputStreamFilter.interceptStream(index, new BufferedOutputStream(stream));
+        try {
+            outputStreamFilter.interceptStream(index, new BufferedOutputStream(stream));
+        }
 
         // Log end of intercepted stream
-        logger.debug("Intercepted output stream #{} of tunnel \"{}\" ended.",
-                index, getUUID());
+        finally {
+            logger.debug("Intercepted output stream #{} of tunnel \"{}\" ended.",
+                    index, getUUID());
+        }
 
     }
 
@@ -113,18 +122,27 @@ public class StreamInterceptingTunnel extends DelegatingGuacamoleTunnel {
      *
      * @param stream
      *     The InputStream to read all blobs data from.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while intercepting the stream, or if the stream
+     *     itself reports an error.
      */
-    public void interceptStream(int index, InputStream stream) {
+    public void interceptStream(int index, InputStream stream)
+            throws GuacamoleException {
 
         // Log beginning of intercepted stream
         logger.debug("Intercepting input stream #{} of tunnel \"{}\".",
                 index, getUUID());
 
-        inputStreamFilter.interceptStream(index, new BufferedInputStream(stream));
+        try {
+            inputStreamFilter.interceptStream(index, new BufferedInputStream(stream));
+        }
 
         // Log end of intercepted stream
-        logger.debug("Intercepted input stream #{} of tunnel \"{}\" ended.",
-                index, getUUID());
+        finally {
+            logger.debug("Intercepted input stream #{} of tunnel \"{}\" ended.",
+                    index, getUUID());
+        }
 
     }
 
