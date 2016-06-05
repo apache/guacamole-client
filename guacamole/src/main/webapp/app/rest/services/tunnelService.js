@@ -24,8 +24,12 @@
 angular.module('rest').factory('tunnelService', ['$injector',
         function tunnelService($injector) {
 
+    // Required types
+    var Error = $injector.get('Error');
+
     // Required services
     var $http                 = $injector.get('$http');
+    var $q                    = $injector.get('$q');
     var $window               = $injector.get('$window');
     var authenticationService = $injector.get('authenticationService');
 
@@ -119,6 +123,98 @@ angular.module('rest').factory('tunnelService', ['$injector',
 
         // Begin download
         iframe.src = url;
+
+    };
+
+    /**
+     * Makes a request to the REST API to send the contents of the given file
+     * along a stream which has been created within the active Guacamole
+     * connection associated with the given tunnel. The contents of the file
+     * will automatically be split into individual "blob" instructions, as if
+     * sent by the connected Guacamole client.
+     *
+     * @param {String} tunnel
+     *     The UUID of the tunnel associated with the Guacamole connection
+     *     whose stream should receive the given file.
+     *
+     * @param {Guacamole.OutputStream} stream
+     *     The stream that should receive the given file.
+     *
+     * @param {File} file
+     *     The file that should be sent along the given stream.
+     *
+     * @param {Function} [progressCallback]
+     *     An optional callback which, if provided, will be invoked as the
+     *     file upload progresses. The current position within the file, in
+     *     bytes, will be provided to the callback as the sole argument.
+     *
+     * @return {Promise}
+     *     A promise which resolves when the upload has completed, and is
+     *     rejected with an Error if the upload fails. The Guacamole protocol
+     *     status code describing the failure will be included in the Error if
+     *     available. If the status code is available, the type of the Error
+     *     will be STREAM_ERROR.
+     */
+    service.uploadToStream = function uploadToStream(tunnel, stream, file,
+        progressCallback) {
+
+        var deferred = $q.defer();
+
+        // Build upload URL
+        var url = $window.location.origin
+                + $window.location.pathname
+                + 'api/tunnels/' + encodeURIComponent(tunnel)
+                + '/streams/' + encodeURIComponent(stream.index)
+                + '/' + encodeURIComponent(file.name)
+                + '?token=' + encodeURIComponent(authenticationService.getCurrentToken());
+
+        var xhr = new XMLHttpRequest();
+
+        // Invoke provided callback if upload tracking is supported
+        if (progressCallback && xhr.upload) {
+            xhr.upload.addEventListener('progress', function updateProgress(e) {
+                progressCallback(e.loaded);
+            });
+        }
+
+        // Resolve/reject promise once upload has stopped
+        xhr.onreadystatechange = function uploadStatusChanged() {
+
+            // Ignore state changes prior to completion
+            if (xhr.readyState !== 4)
+                return;
+
+            // Resolve if HTTP status code indicates success
+            if (xhr.status >= 200 && xhr.status < 300)
+                deferred.resolve();
+
+            // Parse and reject with resulting JSON error
+            else if (xhr.getResponseHeader('Content-Type') === 'application/json')
+                deferred.reject(angular.fromJson(xhr.responseText));
+
+            // Warn of lack of permission of a proxy rejects the upload
+            else if (xhr.status >= 400 && xhr.status < 500)
+                deferred.reject(new Error({
+                    'type'       : Error.Type.STREAM_ERROR,
+                    'statusCode' : Guacamole.Status.Code.CLIENT_FORBIDDEN,
+                    'message'    : 'HTTP ' + xhr.status
+                }));
+
+            // Assume internal error for all other cases
+            else
+                deferred.reject(new Error({
+                    'type'       : Error.Type.STREAM_ERROR,
+                    'statusCode' : Guacamole.Status.Code.INTERNAL_ERROR,
+                    'message'    : 'HTTP ' + xhr.status
+                }));
+
+        };
+
+        // Perform upload
+        xhr.open('POST', url, true);
+        xhr.send(file);
+
+        return deferred.promise;
 
     };
 
