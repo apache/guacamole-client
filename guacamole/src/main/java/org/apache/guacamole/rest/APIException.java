@@ -23,6 +23,7 @@ import java.util.Collection;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import org.apache.guacamole.form.Field;
+import org.apache.guacamole.protocol.GuacamoleStatus;
 
 /**
  * An exception that will result in the given error error information being
@@ -58,6 +59,43 @@ public class APIException extends WebApplicationException {
      */
     public APIException(APIError.Type type, String message) {
         this(new APIError(type, message));
+    }
+
+    /**
+     * Creates a new APIException which represents an error that occurred within
+     * an intercepted Guacamole stream. The nature of that error will be
+     * described by a given status code, which should be the status code
+     * provided by the "ack" instruction that reported the error.
+     *
+     * @param status
+     *     The Guacamole protocol status code describing the error that
+     *     occurred within the intercepted stream.
+     *
+     * @param message
+     *     An arbitrary human-readable message describing the error that
+     *     occurred.
+     */
+    public APIException(int status, String message) {
+        this(new APIError(status, message));
+    }
+
+    /**
+     * Creates a new APIException which represents an error that occurred within
+     * an intercepted Guacamole stream. The nature of that error will be
+     * described by a given Guacamole protocol status, which should be the
+     * status associated with the code provided by the "ack" instruction that
+     * reported the error.
+     *
+     * @param status
+     *     The Guacamole protocol status describing the error that occurred
+     *     within the intercepted stream.
+     *
+     * @param message
+     *     An arbitrary human-readable message describing the error that
+     *     occurred.
+     */
+    public APIException(GuacamoleStatus status, String message) {
+        this(status.getGuacamoleStatusCode(), message);
     }
 
     /**
