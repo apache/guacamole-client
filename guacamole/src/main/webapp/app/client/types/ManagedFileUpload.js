@@ -24,10 +24,12 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
     function defineManagedFileUpload($rootScope, $injector) {
 
     // Required types
+    var Error                    = $injector.get('Error');
     var ManagedFileTransferState = $injector.get('ManagedFileTransferState');
 
     // Required services
-    var $window = $injector.get('$window');
+    var $window       = $injector.get('$window');
+    var tunnelService = $injector.get('tunnelService');
 
     /**
      * Object which serves as a surrogate interface, encapsulating a Guacamole
@@ -105,8 +107,8 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
      * Creates a new ManagedFileUpload which uploads the given file to the
      * server through the given Guacamole client.
      * 
-     * @param {Guacamole.Client} client
-     *     The Guacamole client through which the file is to be uploaded.
+     * @param {ManagedClient} managedClient
+     *     The ManagedClient through which the file is to be uploaded.
      * 
      * @param {File} file
      *     The file to upload.
@@ -123,10 +125,13 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
      *     A new ManagedFileUpload object which can be used to track the
      *     progress of the upload.
      */
-    ManagedFileUpload.getInstance = function getInstance(client, file, object, streamName) {
+    ManagedFileUpload.getInstance = function getInstance(managedClient, file, object, streamName) {
 
         var managedFileUpload = new ManagedFileUpload();
-        var streamAcknowledged = false;
+
+        // Pull Guacamole.Tunnel and Guacamole.Client from given ManagedClient
+        var client = managedClient.client;
+        var tunnel = managedClient.tunnel;
 
         // Open file for writing
         var stream;
@@ -153,10 +158,8 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
 
         });
 
-        var writer = new Guacamole.FileWriter(stream);
-
-        // Begin upload when stream is acknowledged, notify of any errors
-        writer.onack = function ackReceived(status) {
+        // Upload file once stream is acknowledged
+        stream.onack = function beginUpload(status) {
 
             // Notify of any errors from the Guacamole server
             if (status.isError()) {
@@ -165,50 +168,48 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
                         ManagedFileTransferState.StreamState.ERROR,
                         status.code);
                 });
+                return;
             }
 
-            // Begin sending the requested file once stream is acknowledged
-            else if (!streamAcknowledged) {
-                writer.sendFile(file);
-                streamAcknowledged = true;
-            }
+            // Begin upload
+            tunnelService.uploadToStream(tunnel.uuid, stream, file, function uploadContinuing(length) {
+                $rootScope.$apply(function uploadStreamProgress() {
+                    managedFileUpload.progress = length;
+                });
+            })
 
-        };
+            // Notify if upload succeeds
+            .then(function uploadSuccessful() {
 
-        // Abort and notify if the file cannot be read
-        writer.onerror = function fileReadError(file, offset, error) {
+                // Upload complete
+                managedFileUpload.progress = file.size;
+                ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
+                    ManagedFileTransferState.StreamState.CLOSED);
 
-            // Abort transfer
-            writer.sendEnd();
+                // Notify of upload completion
+                $rootScope.$broadcast('guacUploadComplete', file.name);
 
-            // Upload failed
-            ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
-                ManagedFileTransferState.StreamState.ERROR);
+            },
 
-        };
+            // Notify if upload fails
+            function uploadFailed(error) {
 
-        // Notify of upload progress
-        writer.onprogress = function uploadProgressing(file, length) {
+                // Use provide status code if the error is coming from the stream
+                if (error.type === Error.Type.STREAM_ERROR)
+                    ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
+                        ManagedFileTransferState.StreamState.ERROR,
+                        error.statusCode);
 
-            $rootScope.$apply(function uploadStreamProgress() {
-                managedFileUpload.progress = length;
+                // Fail with internal error for all other causes
+                else
+                    ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
+                        ManagedFileTransferState.StreamState.ERROR,
+                        Guacamole.Status.Code.INTERNAL_ERROR);
+
             });
 
-        };
-
-        // Clean up and notify when upload completes
-        writer.oncomplete = function uploadComplete(file) {
-
-            // If at end, stop upload
-            writer.sendEnd();
-            managedFileUpload.progress = file.size;
-
-            // Upload complete
-            ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
-                ManagedFileTransferState.StreamState.CLOSED);
-
-            // Notify of upload completion
-            $rootScope.$broadcast('guacUploadComplete', file.name);
+            // Ignore all further acks
+            stream.onack = null;
 
         };
 

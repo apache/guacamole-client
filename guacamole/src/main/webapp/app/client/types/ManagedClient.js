@@ -519,7 +519,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         }
 
         // Start and manage file upload
-        managedClient.uploads.push(ManagedFileUpload.getInstance(managedClient.client, file, object, streamName));
+        managedClient.uploads.push(ManagedFileUpload.getInstance(managedClient, file, object, streamName));
 
     };
 
