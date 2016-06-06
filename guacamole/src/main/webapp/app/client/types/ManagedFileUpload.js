@@ -139,7 +139,7 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
             stream = object.createOutputStream(file.type, streamName);
 
         // Notify that the file transfer is pending
-        $rootScope.$apply(function uploadStreamOpen() {
+        $rootScope.$evalAsync(function uploadStreamOpen() {
 
             // Init managed upload
             managedFileUpload.filename = file.name;
