@@ -43,6 +43,14 @@ angular.module('rest').factory('Error', [function defineError() {
         this.message = template.message;
 
         /**
+         * The Guacamole protocol status code associated with the error that
+         * occurred. This is only valid for errors of type STREAM_ERROR.
+         *
+         * @type Number
+         */
+        this.statusCode = template.statusCode;
+
+        /**
          * The type string defining which values this parameter may contain,
          * as well as what properties are applicable. Valid types are listed
          * within Error.Type.
@@ -110,7 +118,16 @@ angular.module('rest').factory('Error', [function defineError() {
          *
          * @type String
          */
-        PERMISSION_DENIED : 'PERMISSION_DENIED'
+        PERMISSION_DENIED : 'PERMISSION_DENIED',
+
+        /**
+         * An error occurred within an intercepted stream, terminating that
+         * stream. The Guacamole protocol status code of that error will be
+         * stored within statusCode.
+         *
+         * @type String
+         */
+        STREAM_ERROR : 'STREAM_ERROR'
 
     };
 

@@ -34,6 +34,7 @@ import org.apache.guacamole.GuacamoleUnauthorizedException;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.apache.guacamole.rest.auth.AuthenticationService;
+import org.apache.guacamole.tunnel.GuacamoleStreamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -243,6 +244,21 @@ public class RESTExceptionWrapper implements MethodInterceptor {
 
             throw new APIException(
                 APIError.Type.BAD_REQUEST,
+                message
+            );
+
+        }
+
+        // Errors from intercepted streams
+        catch (GuacamoleStreamException e) {
+
+            // Generate default message
+            String message = e.getMessage();
+            if (message == null)
+                message = "Error reported by stream.";
+
+            throw new APIException(
+                e.getStatus(),
                 message
             );
 

@@ -37,6 +37,11 @@ public class APIError {
     private final String message;
 
     /**
+     * The associated Guacamole protocol status code.
+     */
+    private final Integer statusCode;
+
+    /**
      * All expected request parameters, if any, as a collection of fields.
      */
     private final Collection<Field> expected;
@@ -81,7 +86,14 @@ public class APIError {
         /**
          * Permission was denied to perform the requested operation.
          */
-        PERMISSION_DENIED(Response.Status.FORBIDDEN);
+        PERMISSION_DENIED(Response.Status.FORBIDDEN),
+
+        /**
+         * An error occurred within an intercepted stream, terminating that
+         * stream. The Guacamole protocol status code of that error can be
+         * retrieved with getStatusCode().
+         */
+        STREAM_ERROR(Response.Status.BAD_REQUEST);
 
         /**
          * The HTTP status associated with this error type.
@@ -111,6 +123,27 @@ public class APIError {
     }
 
     /**
+     * Creates a new APIError of type STREAM_ERROR and having the given
+     * Guacamole protocol status code and human-readable message. The status
+     * code and message should be taken directly from the "ack" instruction
+     * causing the error.
+     *
+     * @param statusCode
+     *     The Guacamole protocol status code describing the error that
+     *     occurred within the intercepted stream.
+     *
+     * @param message
+     *     An arbitrary human-readable message describing the error that
+     *     occurred.
+     */
+    public APIError(int statusCode, String message) {
+        this.type       = Type.STREAM_ERROR;
+        this.message    = message;
+        this.statusCode = statusCode;
+        this.expected   = null;
+    }
+
+    /**
      * Create a new APIError with the specified error message.
      *
      * @param type
@@ -120,9 +153,10 @@ public class APIError {
      *     The error message.
      */
     public APIError(Type type, String message) {
-        this.type     = type;
-        this.message  = message;
-        this.expected = null;
+        this.type       = type;
+        this.message    = message;
+        this.statusCode = null;
+        this.expected   = null;
     }
 
     /**
@@ -140,9 +174,10 @@ public class APIError {
      *     a result of the original request, as a collection of fields.
      */
     public APIError(Type type, String message, Collection<Field> expected) {
-        this.type     = type;
-        this.message  = message;
-        this.expected = expected;
+        this.type       = type;
+        this.message    = message;
+        this.statusCode = null;
+        this.expected   = expected;
     }
 
     /**
@@ -153,6 +188,19 @@ public class APIError {
      */
     public Type getType() {
         return type;
+    }
+
+    /**
+     * Returns the Guacamole protocol status code associated with the error
+     * that occurred. This is only valid for errors of type STREAM_ERROR.
+     *
+     * @return
+     *     The Guacamole protocol status code associated with the error that
+     *     occurred. If the error is not of type STREAM_ERROR, this will be
+     *     null.
+     */
+    public Integer getStatusCode() {
+        return statusCode;
     }
 
     /**
