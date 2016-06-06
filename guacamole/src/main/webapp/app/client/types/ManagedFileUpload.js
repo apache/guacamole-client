@@ -28,7 +28,6 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
     var ManagedFileTransferState = $injector.get('ManagedFileTransferState');
 
     // Required services
-    var $window       = $injector.get('$window');
     var tunnelService = $injector.get('tunnelService');
 
     /**
@@ -80,26 +79,6 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
          * @type Number
          */
         this.length = template.length;
-
-    };
-
-    /**
-     * Converts the given bytes to a base64-encoded string.
-     * 
-     * @param {Uint8Array} bytes A Uint8Array which contains the data to be
-     *                           encoded as base64.
-     * @return {String} The base64-encoded string.
-     */
-    var getBase64 = function getBase64(bytes) {
-
-        var data = "";
-
-        // Produce binary string from bytes in buffer
-        for (var i=0; i<bytes.byteLength; i++)
-            data += String.fromCharCode(bytes[i]);
-
-        // Convert to base64
-        return $window.btoa(data);
 
     };
 
