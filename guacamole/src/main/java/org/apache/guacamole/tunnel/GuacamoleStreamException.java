@@ -46,7 +46,7 @@ public class GuacamoleStreamException extends GuacamoleServerException {
      *
      * @param message
      *     The human readable description of the error that occurred, as
-     *     as provided by the stream.
+     *     provided by the stream.
      */
     public GuacamoleStreamException(GuacamoleStatus status, String message) {
         super(message);
