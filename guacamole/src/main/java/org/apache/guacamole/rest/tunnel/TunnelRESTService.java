@@ -172,9 +172,9 @@ public class TunnelRESTService {
      *     stream.
      *
      * @throws GuacamoleException
-     *     If the session associated with the given auth
-     *     token cannot be retrieved, if no such tunnel exists, or if the
-     *     intercepted stream itself closes with an error.
+     *     If the session associated with the given auth token cannot be
+     *     retrieved, if no such tunnel exists, or if the intercepted stream
+     *     itself closes with an error.
      */
     @POST
     @Consumes(MediaType.WILDCARD)
