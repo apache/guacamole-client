@@ -19,6 +19,9 @@
 
 package org.apache.guacamole.auth.jdbc.user;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
@@ -72,6 +75,17 @@ public class AuthenticatedUser implements org.apache.guacamole.net.auth.Authenti
      * "X-Forwarded-For" header.
      */
     private static final Pattern X_FORWARDED_FOR = Pattern.compile("^" + IP_ADDRESS_REGEX + "(, " + IP_ADDRESS_REGEX + ")*$");
+
+    /**
+     * The connections which have been committed for use by this user in the
+     * context of a balancing connection group. Balancing connection groups
+     * will preferentially choose connections within this set, unless those
+     * connections are not children of the group in question. If a group DOES
+     * have at least one child connection within this set, no connections that
+     * are not in this set will be used.
+     */
+    private final Set<String> preferredConnections =
+            Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
     /**
      * Derives the remote host of the authenticating user from the given
@@ -155,6 +169,36 @@ public class AuthenticatedUser implements org.apache.guacamole.net.auth.Authenti
      */
     public String getRemoteHost() {
         return remoteHost;
+    }
+
+    /**
+     * Returns whether the connection having the given identifier has been
+     * marked as preferred for this user's current Guacamole session. A
+     * preferred connection is always chosen in favor of other connections when
+     * it is a child of a balancing connection group.
+     *
+     * @param identifier
+     *     The identifier of the connection to test.
+     *
+     * @return
+     *     true if the connection having the given identifier has been marked
+     *     as preferred, false otherwise.
+     */
+    public boolean isPreferredConnection(String identifier) {
+        return preferredConnections.contains(identifier);
+    }
+
+    /**
+     * Marks the connection having the given identifier as preferred for this
+     * user's current Guacamole session. A preferred connection is always chosen
+     * in favor of other connections when it is a child of a balancing
+     * connection group.
+     *
+     * @param identifier
+     *     The identifier of the connection to prefer.
+     */
+    public void preferConnection(String identifier) {
+        preferredConnections.add(identifier);
     }
 
     @Override

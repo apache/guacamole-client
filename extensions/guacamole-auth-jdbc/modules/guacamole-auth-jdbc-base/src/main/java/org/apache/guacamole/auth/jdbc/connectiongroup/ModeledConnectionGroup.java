@@ -257,5 +257,16 @@ public class ModeledConnectionGroup extends ModeledGroupedDirectoryObject<Connec
 
     }
 
+    /**
+     * Returns whether individual users should be consistently assigned the same
+     * connection within a balancing group until they log out.
+     *
+     * @return
+     *     Whether individual users should be consistently assigned the same
+     *     connection within a balancing group until they log out.
+     */
+    public boolean isSessionAffinityEnabled() {
+        return getModel().isSessionAffinityEnabled();
+    }
 
 }
