@@ -26,11 +26,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.connection.ConnectionService;
-import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.ModeledGroupedDirectoryObject;
+import org.apache.guacamole.auth.jdbc.connection.ConnectionService;
+import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
+import org.apache.guacamole.form.BooleanField;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.form.NumericField;
@@ -68,12 +69,20 @@ public class ModeledConnectionGroup extends ModeledGroupedDirectoryObject<Connec
     public static final String MAX_CONNECTIONS_PER_USER_NAME = "max-connections-per-user";
 
     /**
+     * The name of the attribute which controls whether individual users will be
+     * consistently assigned the same connection within a balancing group until
+     * they log out.
+     */
+    public static final String ENABLE_SESSION_AFFINITY = "enable-session-affinity";
+
+    /**
      * All attributes related to restricting user accounts, within a logical
      * form.
      */
     public static final Form CONCURRENCY_LIMITS = new Form("concurrency", Arrays.<Field>asList(
         new NumericField(MAX_CONNECTIONS_NAME),
-        new NumericField(MAX_CONNECTIONS_PER_USER_NAME)
+        new NumericField(MAX_CONNECTIONS_PER_USER_NAME),
+        new BooleanField(ENABLE_SESSION_AFFINITY, "true")
     ));
 
     /**
@@ -168,6 +177,10 @@ public class ModeledConnectionGroup extends ModeledGroupedDirectoryObject<Connec
         // Set per-user connection limit attribute
         attributes.put(MAX_CONNECTIONS_PER_USER_NAME, NumericField.format(getModel().getMaxConnectionsPerUser()));
 
+        // Set session affinity attribute
+        attributes.put(ENABLE_SESSION_AFFINITY,
+                getModel().isSessionAffinityEnabled() ? "true" : "");
+
         return attributes;
     }
 
@@ -187,6 +200,10 @@ public class ModeledConnectionGroup extends ModeledGroupedDirectoryObject<Connec
             logger.warn("Not setting maximum connections per user: {}", e.getMessage());
             logger.debug("Unable to parse numeric attribute.", e);
         }
+
+        // Translate session affinity attribute
+        getModel().setSessionAffinityEnabled(
+                "true".equals(attributes.get(ENABLE_SESSION_AFFINITY)));
 
     }
 

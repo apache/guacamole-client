@@ -55,6 +55,12 @@ public class ConnectionGroupModel extends GroupedObjectModel {
     private Integer maxConnectionsPerUser;
 
     /**
+     * Whether individual users should be consistently assigned the same
+     * connection within a balancing group until they log out.
+     */
+    private boolean sessionAffinityEnabled;
+
+    /**
      * Creates a new, empty connection group.
      */
     public ConnectionGroupModel() {
@@ -154,6 +160,30 @@ public class ConnectionGroupModel extends GroupedObjectModel {
      */
     public void setMaxConnectionsPerUser(Integer maxConnectionsPerUser) {
         this.maxConnectionsPerUser = maxConnectionsPerUser;
+    }
+
+    /**
+     * Returns whether individual users should be consistently assigned the same
+     * connection within a balancing group until they log out.
+     *
+     * @return
+     *     Whether individual users should be consistently assigned the same
+     *     connection within a balancing group until they log out.
+     */
+    public boolean isSessionAffinityEnabled() {
+        return sessionAffinityEnabled;
+    }
+
+    /**
+     * Sets whether individual users should be consistently assigned the same
+     * connection within a balancing group until they log out.
+     *
+     * @param sessionAffinityEnabled
+     *     Whether individual users should be consistently assigned the same
+     *     connection within a balancing group until they log out.
+     */
+    public void setSessionAffinityEnabled(boolean sessionAffinityEnabled) {
+        this.sessionAffinityEnabled = sessionAffinityEnabled;
     }
 
     @Override

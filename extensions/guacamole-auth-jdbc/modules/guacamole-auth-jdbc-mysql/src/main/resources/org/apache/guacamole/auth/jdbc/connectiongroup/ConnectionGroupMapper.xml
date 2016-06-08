@@ -25,13 +25,14 @@
 
     <!-- Result mapper for connection objects -->
     <resultMap id="ConnectionGroupResultMap" type="org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupModel" >
-        <id     column="connection_group_id"      property="objectID"              jdbcType="INTEGER"/>
-        <result column="connection_group_name"    property="name"                  jdbcType="VARCHAR"/>
-        <result column="parent_id"                property="parentIdentifier"      jdbcType="INTEGER"/>
-        <result column="type"                     property="type"                  jdbcType="VARCHAR"
+        <id     column="connection_group_id"      property="objectID"               jdbcType="INTEGER"/>
+        <result column="connection_group_name"    property="name"                   jdbcType="VARCHAR"/>
+        <result column="parent_id"                property="parentIdentifier"       jdbcType="INTEGER"/>
+        <result column="type"                     property="type"                   jdbcType="VARCHAR"
                 javaType="org.apache.guacamole.net.auth.ConnectionGroup$Type"/>
-        <result column="max_connections"          property="maxConnections"        jdbcType="INTEGER"/>
-        <result column="max_connections_per_user" property="maxConnectionsPerUser" jdbcType="INTEGER"/>
+        <result column="max_connections"          property="maxConnections"         jdbcType="INTEGER"/>
+        <result column="max_connections_per_user" property="maxConnectionsPerUser"  jdbcType="INTEGER"/>
+        <result column="enable_session_affinity"  property="sessionAffinityEnabled" jdbcType="BOOLEAN"/>
     </resultMap>
 
     <!-- Select all connection group identifiers -->
@@ -79,7 +80,8 @@
             parent_id,
             type,
             max_connections,
-            max_connections_per_user
+            max_connections_per_user,
+            enable_session_affinity
         FROM guacamole_connection_group
         WHERE connection_group_id IN
             <foreach collection="identifiers" item="identifier"
@@ -98,7 +100,8 @@
             parent_id,
             type,
             max_connections,
-            max_connections_per_user
+            max_connections_per_user,
+            enable_session_affinity
         FROM guacamole_connection_group
         JOIN guacamole_connection_group_permission ON guacamole_connection_group_permission.connection_group_id = guacamole_connection_group.connection_group_id
         WHERE guacamole_connection_group.connection_group_id IN
@@ -120,7 +123,8 @@
             parent_id,
             type,
             max_connections,
-            max_connections_per_user
+            max_connections_per_user,
+            enable_session_affinity
         FROM guacamole_connection_group
         WHERE 
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=VARCHAR}</if>
@@ -144,14 +148,16 @@
             parent_id,
             type,
             max_connections,
-            max_connections_per_user
+            max_connections_per_user,
+            enable_session_affinity
         )
         VALUES (
             #{object.name,jdbcType=VARCHAR},
             #{object.parentIdentifier,jdbcType=VARCHAR},
             #{object.type,jdbcType=VARCHAR},
             #{object.maxConnections,jdbcType=INTEGER},
-            #{object.maxConnectionsPerUser,jdbcType=INTEGER}
+            #{object.maxConnectionsPerUser,jdbcType=INTEGER},
+            #{object.sessionAffinityEnabled,jdbcType=BOOLEAN}
         )
 
     </insert>
@@ -163,7 +169,8 @@
             parent_id                = #{object.parentIdentifier,jdbcType=VARCHAR},
             type                     = #{object.type,jdbcType=VARCHAR},
             max_connections          = #{object.maxConnections,jdbcType=INTEGER},
-            max_connections_per_user = #{object.maxConnectionsPerUser,jdbcType=INTEGER}
+            max_connections_per_user = #{object.maxConnectionsPerUser,jdbcType=INTEGER},
+            enable_session_affinity  = #{object.sessionAffinityEnabled,jdbcType=BOOLEAN}
         WHERE connection_group_id = #{object.objectID,jdbcType=INTEGER}
     </update>
 

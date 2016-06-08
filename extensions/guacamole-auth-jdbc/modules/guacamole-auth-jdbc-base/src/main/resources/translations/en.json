@@ -26,6 +26,7 @@
 
     "CONNECTION_GROUP_ATTRIBUTES" : {
 
+        "FIELD_HEADER_ENABLE_SESSION_AFFINITY"  : "Enable session affinity:",
         "FIELD_HEADER_MAX_CONNECTIONS"          : "Maximum number of connections:",
         "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Maximum number of connections per user:",
 

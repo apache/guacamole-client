@@ -63,6 +63,7 @@ CREATE TABLE guacamole_connection_group (
   -- Concurrency limits
   max_connections          integer,
   max_connections_per_user integer,
+  enable_session_affinity  boolean NOT NULL DEFAULT FALSE,
 
   PRIMARY KEY (connection_group_id),
 
