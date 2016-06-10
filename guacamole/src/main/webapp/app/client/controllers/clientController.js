@@ -755,7 +755,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         if (!$scope.client)
             return false;
 
-        return !!($scope.client.uploads.length || $scope.client.downloads.length);
+        return !!$scope.client.uploads.length;
 
     };
 

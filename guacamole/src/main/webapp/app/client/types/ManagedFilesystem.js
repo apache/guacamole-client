@@ -25,8 +25,7 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
     function defineManagedFilesystem($rootScope, $injector) {
 
     // Required types
-    var ManagedFileDownload = $injector.get('ManagedFileDownload');
-    var ManagedFileUpload   = $injector.get('ManagedFileUpload');
+    var tunnelService = $injector.get('tunnelService');
 
     /**
      * Object which serves as a surrogate interface, encapsulating a Guacamole
@@ -194,8 +193,8 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
 
     /**
      * Downloads the given file from the server using the given Guacamole
-     * client and filesystem. The file transfer can be monitored through the
-     * corresponding entry in the downloads array of the given ManagedClient.
+     * client and filesystem. The browser will automatically start the
+     * download upon completion of this function.
      *
      * @param {ManagedClient} managedClient
      *     The ManagedClient from which the file is to be downloaded.
@@ -215,8 +214,8 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
             // Parse filename from string
             var filename = path.match(/(.*[\\/])?(.*)/)[2];
 
-            // Start and track download
-            managedClient.downloads.push(ManagedFileDownload.getInstance(stream, mimetype, filename));
+            // Start download
+            tunnelService.downloadStream(managedClient.tunnel.uuid, stream, mimetype, filename);
 
         });
 
