@@ -38,8 +38,6 @@
 
         "INFO_ACTIVE_USER_COUNT" : "Op dit moment in gebruik door {USERS} {USERS, plural, one{gebruiker} other{gebruikers}}.",
 
-        "NAME" : "Guacamole ${project.version}",
-
         "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{seconde} other{seconden}}} minute{{VALUE, plural, one{minuut} other{minuten}}} hour{{VALUE, plural, one{uur} other{uren}}} day{{VALUE, plural, one{dag} other{dagen}}} other{}}"
 
     },

@@ -34,9 +34,7 @@
 
         "FORMAT_DATE_TIME_PRECISE" : "dd-MM-yyyy HH:mm:ss",
 
-        "INFO_ACTIVE_USER_COUNT" : "Ora utilizzato da {USERS} {USERS, plural, one{user} other{users}}.",
-
-        "NAME" : "Guacamole ${project.version}"
+        "INFO_ACTIVE_USER_COUNT" : "Ora utilizzato da {USERS} {USERS, plural, one{user} other{users}}."
 
     },
 

@@ -71,11 +71,36 @@
 }
 
 .login-ui .login-dialog .version {
-    font-size: 1.25em;
-    font-weight: bold;
     padding: 0.5em 0;
+}
+
+.login-ui .login-dialog .version .app-name {
+    font-weight: bold;
     text-transform: uppercase;
     text-align: center;
+    font-size: 1.25em;
+}
+
+.login-ui .login-dialog .version .version-number {
+
+    position: absolute;
+    right: 0;
+    bottom: 0;
+
+    padding: 0.25em 0.75em;
+    margin: 0.25em;
+
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    -khtml-border-radius: 0.5em;
+    border-radius: 0.5em;
+
+    color: white;
+    background: green;
+    font-size: 0.5em;
+    font-style: italic;
+    opacity: 0.5;
+
 }
 
 .login-ui .login-dialog .logo {
