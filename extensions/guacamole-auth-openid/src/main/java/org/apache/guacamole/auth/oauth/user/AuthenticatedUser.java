@@ -20,9 +20,9 @@
 package org.apache.guacamole.auth.oauth.user;
 
 import com.google.inject.Inject;
-import org.glyptodon.guacamole.net.auth.AbstractAuthenticatedUser;
-import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
-import org.glyptodon.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
+import org.apache.guacamole.net.auth.AuthenticationProvider;
+import org.apache.guacamole.net.auth.Credentials;
 
 /**
  * An OAuth-specific implementation of AuthenticatedUser, associating a

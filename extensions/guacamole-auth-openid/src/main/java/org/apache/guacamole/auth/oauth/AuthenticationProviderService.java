@@ -25,14 +25,12 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.oauth.user.AuthenticatedUser;
 import org.apache.guacamole.auth.oauth.conf.ConfigurationService;
-import org.apache.guacamole.auth.oauth.form.OAuthCodeField;
-import org.apache.guacamole.auth.oauth.token.TokenResponse;
-import org.apache.guacamole.auth.oauth.token.TokenService;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.form.Field;
-import org.glyptodon.guacamole.net.auth.Credentials;
-import org.glyptodon.guacamole.net.auth.credentials.CredentialsInfo;
-import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
+import org.apache.guacamole.auth.oauth.form.OAuthTokenField;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.form.Field;
+import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
+import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,12 +50,6 @@ public class AuthenticationProviderService {
      */
     @Inject
     private ConfigurationService confService;
-
-    /**
-     * Service for producing authentication tokens from OAuth codes.
-     */
-    @Inject
-    private TokenService tokenService;
 
     /**
      * Provider for AuthenticatedUser objects.
@@ -83,19 +75,15 @@ public class AuthenticationProviderService {
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 
-        String code = null;
+        String token = null;
 
-        // Pull OAuth code from request if present
+        // Pull OAuth token from request if present
         HttpServletRequest request = credentials.getRequest();
         if (request != null)
-            code = request.getParameter(OAuthCodeField.PARAMETER_NAME);
+            token = request.getParameter(OAuthTokenField.PARAMETER_NAME);
 
-        // TODO: Actually complete authentication using received code
-        if (code != null) {
-
-            // POST code and client information to OAuth token endpoint
-            TokenResponse response = tokenService.getTokenFromCode(code);
-            logger.debug("RESPONSE: {}", response);
+        // TODO: Actually validate received token
+        if (token != null) {
 
             // Create corresponding authenticated user
             AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
@@ -104,17 +92,13 @@ public class AuthenticationProviderService {
 
         }
 
-        // Request auth code
+        // Request OAuth token
         throw new GuacamoleInvalidCredentialsException("Invalid login.",
             new CredentialsInfo(Arrays.asList(new Field[] {
 
-                // Normal username/password fields
-                CredentialsInfo.USERNAME,
-                CredentialsInfo.PASSWORD,
-
-                // OAuth-specific code (will be rendered as an appropriate
-                // "Log in with..." button
-                new OAuthCodeField(
+                // OAuth-specific token (will automatically redirect the user
+                // to the authorization page via JavaScript)
+                new OAuthTokenField(
                     confService.getAuthorizationEndpoint(),
                     confService.getClientID(),
                     confService.getRedirectURI()

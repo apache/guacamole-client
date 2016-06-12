@@ -20,8 +20,8 @@
 package org.apache.guacamole.auth.oauth.conf;
 
 import com.google.inject.Inject;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.environment.Environment;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.environment.Environment;
 
 /**
  * Service for retrieving configuration information regarding the OAuth service.
@@ -51,22 +51,6 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the token endpoint (URI) of the OAuth service as configured with
-     * guacamole.properties.
-     *
-     * @return
-     *     The token endpoint of the OAuth service, as configured with
-     *     guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the authorization
-     *     endpoint property is missing.
-     */
-    public String getTokenEndpoint() throws GuacamoleException {
-        return environment.getRequiredProperty(OAuthGuacamoleProperties.OAUTH_TOKEN_ENDPOINT);
-    }
-
-    /**
      * Returns the OAuth client ID which should be submitted to the OAuth
      * service when necessary, as configured with guacamole.properties. This
      * value is typically provided by the OAuth service when OAuth credentials
@@ -82,24 +66,6 @@ public class ConfigurationService {
      */
     public String getClientID() throws GuacamoleException {
         return environment.getRequiredProperty(OAuthGuacamoleProperties.OAUTH_CLIENT_ID);
-    }
-
-    /**
-     * Returns the OAuth client secret which should be submitted to the OAuth
-     * service when necessary, as configured with guacamole.properties. This
-     * value is typically provided by the OAuth service when OAuth credentials
-     * are generated for your application.
-     *
-     * @return
-     *     The client secret to use when communicating with the OAuth service,
-     *     as configured with guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the client secret
-     *     property is missing.
-     */
-    public String getClientSecret() throws GuacamoleException {
-        return environment.getRequiredProperty(OAuthGuacamoleProperties.OAUTH_CLIENT_SECRET);
     }
 
     /**

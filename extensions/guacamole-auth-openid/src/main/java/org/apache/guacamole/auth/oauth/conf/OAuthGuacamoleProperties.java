@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.auth.oauth.conf;
 
-import org.glyptodon.guacamole.properties.StringGuacamoleProperty;
+import org.apache.guacamole.properties.StringGuacamoleProperty;
 
 /**
  * Provides properties required for use of the OAuth authentication provider.
@@ -45,17 +45,6 @@ public class OAuthGuacamoleProperties {
     };
 
     /**
-     * The token endpoint (URI) of the OAuth service.
-     */
-    public static final StringGuacamoleProperty OAUTH_TOKEN_ENDPOINT =
-            new StringGuacamoleProperty() {
-
-        @Override
-        public String getName() { return "oauth-token-endpoint"; }
-
-    };
-
-    /**
      * OAuth client ID which should be submitted to the OAuth service when
      * necessary. This value is typically provided by the OAuth service when
      * OAuth credentials are generated for your application.
@@ -65,19 +54,6 @@ public class OAuthGuacamoleProperties {
 
         @Override
         public String getName() { return "oauth-client-id"; }
-
-    };
-
-    /**
-     * OAuth client secret which should be submitted to the OAuth service when
-     * necessary. This value is typically provided by the OAuth service when
-     * OAuth credentials are generated for your application.
-     */
-    public static final StringGuacamoleProperty OAUTH_CLIENT_SECRET =
-            new StringGuacamoleProperty() {
-
-        @Override
-        public String getName() { return "oauth-client-secret"; }
 
     };
 

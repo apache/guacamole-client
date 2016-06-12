@@ -21,20 +21,21 @@ package org.apache.guacamole.auth.oauth.form;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import org.glyptodon.guacamole.form.Field;
+import java.util.UUID;
+import org.apache.guacamole.form.Field;
 
 /**
- * Field definition which represents the code returned by an OAuth service.
+ * Field definition which represents the token returned by an OAuth service.
  * Within the user interface, this will be rendered as an appropriate "Log in
  * with ..." button which links to the OAuth service.
  */
-public class OAuthCodeField extends Field {
+public class OAuthTokenField extends Field {
 
     /**
      * The standard HTTP parameter which will be included within the URL by all
      * OAuth services upon successful authentication and redirect.
      */
-    public static final String PARAMETER_NAME = "code";
+    public static final String PARAMETER_NAME = "id_token";
 
     /**
      * The full URI which the field should link to.
@@ -42,11 +43,12 @@ public class OAuthCodeField extends Field {
     private final String authorizationURI;
 
     /**
-     * Creates a new OAuth "code" field which links to the given OAuth service
-     * using the provided client ID. Successful authentication at the OAuth
-     * service will result in the client being redirected to the specified
-     * redirect URI. The OAuth code will be embedded in the query parameters of
-     * that URI.
+     * Creates a new OAuth "id_token" field which links to the given OAuth
+     * service using the provided client ID. Successful authentication at the
+     * OAuth service will result in the client being redirected to the specified
+     * redirect URI. The OAuth token will be embedded in the fragment (the part
+     * following the hash symbol) of that URI, which the JavaScript side of
+     * this extension will move to the query parameters.
      *
      * @param authorizationEndpoint
      *     The full URL of the endpoint accepting OAuth authentication
@@ -61,19 +63,20 @@ public class OAuthCodeField extends Field {
      *     The URI that the OAuth service should redirect to upon successful
      *     authentication.
      */
-    public OAuthCodeField(String authorizationEndpoint, String clientID,
+    public OAuthTokenField(String authorizationEndpoint, String clientID,
             String redirectURI) {
 
         // Init base field properties
-        super(PARAMETER_NAME, "GUAC_OAUTH_CODE");
+        super(PARAMETER_NAME, "GUAC_OAUTH_TOKEN");
 
         // Build authorization URI from given values
         try {
             this.authorizationURI = authorizationEndpoint
                     + "?scope=openid%20email%20profile"
-                    + "&response_type=code"
+                    + "&response_type=id_token"
                     + "&client_id=" + URLEncoder.encode(clientID, "UTF-8")
-                    + "&redirect_uri=" + URLEncoder.encode(redirectURI, "UTF-8");
+                    + "&redirect_uri=" + URLEncoder.encode(redirectURI, "UTF-8")
+                    + "&nonce=" + UUID.randomUUID().toString();
         }
 
         // Java is required to provide UTF-8 support
@@ -84,7 +87,7 @@ public class OAuthCodeField extends Field {
     }
 
     /**
-     * Returns the full URI that this field should link to when a new code
+     * Returns the full URI that this field should link to when a new token
      * needs to be obtained from the OAuth service.
      *
      * @return
