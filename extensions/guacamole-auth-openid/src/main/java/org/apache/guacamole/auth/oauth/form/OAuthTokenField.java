@@ -20,8 +20,9 @@
 package org.apache.guacamole.auth.oauth.form;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.URLEncoder;
-import java.util.UUID;
+import java.security.SecureRandom;
 import org.apache.guacamole.form.Field;
 
 /**
@@ -41,6 +42,23 @@ public class OAuthTokenField extends Field {
      * The full URI which the field should link to.
      */
     private final String authorizationURI;
+
+    /**
+     * Cryptographically-secure random number generator for generating the
+     * required nonce.
+     */
+    private static final SecureRandom random = new SecureRandom();
+
+    /**
+     * Generates a cryptographically-secure nonce value. The nonce is intended
+     * to be used to prevent replay attacks.
+     *
+     * @return
+     *     A cryptographically-secure nonce value.
+     */
+    private static String generateNonce() {
+        return new BigInteger(130, random).toString(32);
+    }
 
     /**
      * Creates a new OAuth "id_token" field which links to the given OAuth
@@ -76,7 +94,7 @@ public class OAuthTokenField extends Field {
                     + "&response_type=id_token"
                     + "&client_id=" + URLEncoder.encode(clientID, "UTF-8")
                     + "&redirect_uri=" + URLEncoder.encode(redirectURI, "UTF-8")
-                    + "&nonce=" + UUID.randomUUID().toString();
+                    + "&nonce=" + generateNonce();
         }
 
         // Java is required to provide UTF-8 support
