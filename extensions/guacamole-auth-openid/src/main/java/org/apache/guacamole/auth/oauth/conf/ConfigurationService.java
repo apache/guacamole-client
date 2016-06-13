@@ -79,11 +79,61 @@ public class ConfigurationService {
      *     as configured with guacamole.properties.
      *
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the client secret
+     *     If guacamole.properties cannot be parsed, or if the redirect URI
      *     property is missing.
      */
     public String getRedirectURI() throws GuacamoleException {
         return environment.getRequiredProperty(OAuthGuacamoleProperties.OAUTH_REDIRECT_URI);
+    }
+
+    /**
+     * Returns the issuer to expect for all received ID tokens, as configured
+     * with guacamole.properties.
+     *
+     * @return
+     *     The issuer to expect for all received ID tokens, as configured with
+     *     guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed, or if the issuer property
+     *     is missing.
+     */
+    public String getIssuer() throws GuacamoleException {
+        return environment.getRequiredProperty(OAuthGuacamoleProperties.OAUTH_ISSUER);
+    }
+
+    /**
+     * Returns the endpoint (URI) of the JWKS service which defines how
+     * received ID tokens (JWTs) shall be validated, as configured with
+     * guacamole.properties.
+     *
+     * @return
+     *     The endpoint (URI) of the JWKS service which defines how received ID
+     *     tokens (JWTs) shall be validated, as configured with
+     *     guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed, or if the JWKS endpoint
+     *     property is missing.
+     */
+    public String getJWKSEndpoint() throws GuacamoleException {
+        return environment.getRequiredProperty(OAuthGuacamoleProperties.OAUTH_JWKS_ENDPOINT);
+    }
+
+    /**
+     * Returns the claim type which contains the authenticated user's username
+     * within any valid JWT, as configured with guacamole.properties.
+     *
+     * @return
+     *     The claim type which contains the authenticated user's username
+     *     within any valid JWT, as configured with guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed, or if the username claim
+     *     type property is missing.
+     */
+    public String getUsernameClaimType() throws GuacamoleException {
+        return environment.getRequiredProperty(OAuthGuacamoleProperties.OAUTH_USERNAME_CLAIM_TYPE);
     }
 
 }

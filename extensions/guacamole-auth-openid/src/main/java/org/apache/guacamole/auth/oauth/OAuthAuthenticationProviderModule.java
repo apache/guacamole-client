@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.oauth;
 
 import com.google.inject.AbstractModule;
 import org.apache.guacamole.auth.oauth.conf.ConfigurationService;
+import org.apache.guacamole.auth.oauth.token.TokenValidationService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
@@ -73,6 +74,7 @@ public class OAuthAuthenticationProviderModule extends AbstractModule {
 
         // Bind OAuth-specific services
         bind(ConfigurationService.class);
+        bind(TokenValidationService.class);
 
     }
 

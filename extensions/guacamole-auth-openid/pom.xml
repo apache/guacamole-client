@@ -86,6 +86,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Java implementation of JOSE (jose.4.j) -->
+        <dependency>
+            <groupId>org.bitbucket.b_c</groupId>
+            <artifactId>jose4j</artifactId>
+            <version>0.5.1</version>
+        </dependency>
+
         <!-- Guice -->
         <dependency>
             <groupId>com.google.inject</groupId>

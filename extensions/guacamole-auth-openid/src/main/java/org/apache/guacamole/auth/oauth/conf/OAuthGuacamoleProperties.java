@@ -45,6 +45,41 @@ public class OAuthGuacamoleProperties {
     };
 
     /**
+     * The endpoint (URI) of the JWKS service which defines how received ID
+     * tokens (JWTs) shall be validated.
+     */
+    public static final StringGuacamoleProperty OAUTH_JWKS_ENDPOINT =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "oauth-jwks-endpoint"; }
+
+    };
+
+    /**
+     * The issuer to expect for all received ID tokens.
+     */
+    public static final StringGuacamoleProperty OAUTH_ISSUER =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "oauth-issuer"; }
+
+    };
+
+    /**
+     * The claim type which contains the authenticated user's username within
+     * any valid JWT.
+     */
+    public static final StringGuacamoleProperty OAUTH_USERNAME_CLAIM_TYPE =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "oauth-username-claim-type"; }
+
+    };
+
+    /**
      * OAuth client ID which should be submitted to the OAuth service when
      * necessary. This value is typically provided by the OAuth service when
      * OAuth credentials are generated for your application.

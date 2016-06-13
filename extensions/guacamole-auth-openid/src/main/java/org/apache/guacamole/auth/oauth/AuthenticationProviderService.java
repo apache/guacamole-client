@@ -23,9 +23,10 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.guacamole.auth.oauth.user.AuthenticatedUser;
 import org.apache.guacamole.auth.oauth.conf.ConfigurationService;
 import org.apache.guacamole.auth.oauth.form.OAuthTokenField;
+import org.apache.guacamole.auth.oauth.token.TokenValidationService;
+import org.apache.guacamole.auth.oauth.user.AuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.net.auth.Credentials;
@@ -50,6 +51,12 @@ public class AuthenticationProviderService {
      */
     @Inject
     private ConfigurationService confService;
+
+    /**
+     * Service for validating received ID tokens.
+     */
+    @Inject
+    private TokenValidationService tokenService;
 
     /**
      * Provider for AuthenticatedUser objects.
@@ -82,12 +89,12 @@ public class AuthenticationProviderService {
         if (request != null)
             token = request.getParameter(OAuthTokenField.PARAMETER_NAME);
 
-        // TODO: Actually validate received token
+        // If token provided, validate and produce authenticated user
         if (token != null) {
 
             // Create corresponding authenticated user
             AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-            authenticatedUser.init("STUB", credentials);
+            authenticatedUser.init(tokenService.processUsername(token), credentials);
             return authenticatedUser;
 
         }
