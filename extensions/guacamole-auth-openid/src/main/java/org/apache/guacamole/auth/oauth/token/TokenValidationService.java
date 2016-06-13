@@ -38,6 +38,9 @@ import org.jose4j.keys.resolvers.HttpsJwksVerificationKeyResolver;
  */
 public class TokenValidationService {
 
+    /**
+     * Service for retrieving OAuth configuration information.
+     */
     @Inject
     private ConfigurationService confService;
 
