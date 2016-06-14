@@ -22,7 +22,7 @@
 #
 
 # Start from Tomcat image
-FROM tomcat:8.0.20-jre7
+FROM tomcat:8.0.20-jre8
 MAINTAINER Michael Jumper <mike.jumper@guac-dev.org>
 
 # Version info
