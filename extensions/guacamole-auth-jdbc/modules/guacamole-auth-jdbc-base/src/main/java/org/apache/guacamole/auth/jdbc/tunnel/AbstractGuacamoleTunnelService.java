@@ -413,6 +413,43 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     }
 
     /**
+     * Filters the given collection of connection identifiers, returning a new
+     * collection which contains only those identifiers which are preferred. If
+     * no connection identifiers within the given collection are preferred, the
+     * collection is left untouched.
+     *
+     * @param user
+     *     The user whose preferred connections should be used to filter the
+     *     given collection of connection identifiers.
+     *
+     * @param identifiers
+     *     The collection of connection identifiers that should be filtered.
+     *
+     * @return
+     *     A collection of connection identifiers containing only the subset of
+     *     connection identifiers which are also preferred or, if none of the
+     *     provided identifiers are preferred, the original collection of
+     *     identifiers.
+     */
+    private Collection<String> getPreferredConnections(AuthenticatedUser user,
+            Collection<String> identifiers) {
+
+        // Search provided identifiers for any preferred connections
+        for (String identifier : identifiers) {
+
+            // If at least one prefferred connection is found, assume it is the
+            // only preferred connection
+            if (user.isPreferredConnection(identifier))
+                return Collections.singletonList(identifier);
+
+        }
+
+        // No preferred connections were found
+        return identifiers;
+
+    }
+
+    /**
      * Returns a list of all balanced connections within a given connection
      * group. If the connection group is not balancing, or it contains no
      * connections, an empty list is returned.
@@ -439,6 +476,10 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         Collection<String> identifiers = connectionMapper.selectIdentifiersWithin(connectionGroup.getIdentifier());
         if (identifiers.isEmpty())
             return Collections.<ModeledConnection>emptyList();
+
+        // Restrict to preferred connections if session affinity is enabled
+        if (connectionGroup.isSessionAffinityEnabled())
+            identifiers = getPreferredConnections(user, identifiers);
 
         // Retrieve all children
         Collection<ConnectionModel> models = connectionMapper.select(identifiers);
@@ -534,6 +575,10 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             release(user, connectionGroup);
             throw e;
         }
+
+        // If session affinity is enabled, prefer this connection going forward
+        if (connectionGroup.isSessionAffinityEnabled())
+            user.preferConnection(connection.getIdentifier());
 
         // Connect to acquired child
         return assignGuacamoleTunnel(new ActiveConnectionRecord(user, connectionGroup, connection), info);

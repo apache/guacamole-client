@@ -87,3 +87,10 @@ ALTER TABLE guacamole_connection_history
     FOREIGN KEY (connection_id)
     REFERENCES guacamole_connection (connection_id) ON DELETE SET NULL;
 
+--
+-- Add session affinity column
+--
+
+ALTER TABLE guacamole_connection_group
+    ADD COLUMN enable_session_affinity boolean NOT NULL DEFAULT 0;
+
