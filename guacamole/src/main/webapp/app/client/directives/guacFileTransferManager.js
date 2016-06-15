@@ -83,11 +83,6 @@ angular.module('client').directive('guacFileTransferManager', [function guacFile
                     return isInProgress(upload.transferState);
                 });
 
-                // Remove completed downloads
-                $scope.client.downloads = $scope.client.downloads.filter(function isDownloadInProgress(download) {
-                    return isInProgress(download.transferState);
-                });
-
             };
 
         }]

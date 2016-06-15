@@ -246,13 +246,12 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         
         // Get associated models
         AuthenticatedUser user = record.getUser();
-        UserModel userModel = user.getUser().getModel();
         ConnectionRecordModel recordModel = new ConnectionRecordModel();
 
         // Copy user information and timestamps into new record
-        recordModel.setUserID(userModel.getObjectID());
-        recordModel.setUsername(userModel.getIdentifier());
+        recordModel.setUsername(user.getIdentifier());
         recordModel.setConnectionIdentifier(connection.getIdentifier());
+        recordModel.setConnectionName(connection.getName());
         recordModel.setStartDate(record.getStartDate());
         recordModel.setEndDate(new Date());
 

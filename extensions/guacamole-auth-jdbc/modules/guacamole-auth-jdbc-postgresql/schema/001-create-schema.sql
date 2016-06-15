@@ -274,11 +274,13 @@ CREATE INDEX ON guacamole_user_permission(user_id);
 
 CREATE TABLE guacamole_connection_history (
 
-  history_id    serial      NOT NULL,
-  user_id       integer     NOT NULL,
-  connection_id integer     NOT NULL,
-  start_date    timestamptz NOT NULL,
-  end_date      timestamptz DEFAULT NULL,
+  history_id      serial       NOT NULL,
+  user_id         integer      DEFAULT NULL,
+  username        varchar(128) NOT NULL,
+  connection_id   integer      DEFAULT NULL,
+  connection_name varchar(128) NOT NULL,
+  start_date      timestamptz  NOT NULL,
+  end_date        timestamptz  DEFAULT NULL,
 
   PRIMARY KEY (history_id),
 
