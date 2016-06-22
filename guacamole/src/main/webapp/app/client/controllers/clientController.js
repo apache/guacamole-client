@@ -32,7 +32,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Required services
     var $location             = $injector.get('$location');
     var authenticationService = $injector.get('authenticationService');
-    var clipboardService      = $injector.get('clipboardService');
     var guacClientManager     = $injector.get('guacClientManager');
     var guacNotification      = $injector.get('guacNotification');
     var preferenceService     = $injector.get('preferenceService');
@@ -245,15 +244,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     var keysCurrentlyPressed = {};
 
-    /**
-     * Map of all currently pressed keys (by keysym) to the clipboard contents
-     * received from the remote desktop while those keys were pressed. All keys
-     * not currently pressed will not have entries within this map.
-     *
-     * @type Object.<Number, String>
-     */
-    var clipboardDataFromKey = {};
-
     /*
      * Check to see if all currently pressed keys are in the set of menu keys.
      */  
@@ -384,21 +374,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     $scope.$watch('menu.shown', function menuVisibilityChanged(menuShown, menuShownPreviousState) {
         
-        // Send clipboard data if menu is hidden
-        if (!menuShown && menuShownPreviousState)
-            $scope.$broadcast('guacClipboard', 'text/plain', $scope.client.clipboardData);
-        
         // Disable client keyboard if the menu is shown
         $scope.client.clientProperties.keyboardEnabled = !menuShown;
-
-    });
-
-    // Watch clipboard for new data, associating it with any pressed keys
-    $scope.$watch('client.clipboardData', function clipboardChanged(data) {
-
-        // Associate new clipboard data with any currently-pressed key
-        for (var keysym in keysCurrentlyPressed)
-            clipboardDataFromKey[keysym] = data;
 
     });
 
@@ -437,17 +414,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
-    // Update pressed keys as they are released, synchronizing the clipboard
-    // with any data that appears to have come from those key presses
+    // Update pressed keys as they are released
     $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
-
-        // Sync local clipboard with any clipboard data received while this
-        // key was pressed (if any)
-        var clipboardData = clipboardDataFromKey[keysym];
-        if (clipboardData) {
-            clipboardService.setLocalClipboard(clipboardData);
-            delete clipboardDataFromKey[keysym];
-        }
 
         // Mark key as released
         delete keysCurrentlyPressed[keysym];
@@ -559,19 +527,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
                 text    : "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase(),
                 actions : actions
             });
-        }
-
-        // Hide status and sync local clipboard once connected
-        else if (connectionState === ManagedClientState.ConnectionState.CONNECTED) {
-
-            // Sync with local clipboard
-            clipboardService.getLocalClipboard().then(function clipboardRead(data) {
-                $scope.$broadcast('guacClipboard', 'text/plain', data);
-            });
-
-            // Hide status notification
-            guacNotification.showStatus(false);
-
         }
 
         // Hide status for all other states

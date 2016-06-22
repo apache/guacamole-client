@@ -24,8 +24,7 @@ angular.module('client').factory('clipboardService', ['$injector',
         function clipboardService($injector) {
 
     // Get required services
-    var $q         = $injector.get('$q');
-    var $rootScope = $injector.get('$rootScope');
+    var $q = $injector.get('$q');
 
     var service = {};
 
@@ -43,14 +42,6 @@ angular.module('client').factory('clipboardService', ['$injector',
      * @type Element
      */
     var clipboardContent = document.createElement('textarea');
-
-    /**
-     * The contents of the last clipboard event broadcast by this service when
-     * the clipboard contents changed.
-     *
-     * @type String
-     */
-    var lastClipboardEvent = '';
 
     // Ensure textarea is selectable but not visible
     clipElement.appendChild(clipboardContent);
@@ -128,34 +119,6 @@ angular.module('client').factory('clipboardService', ['$injector',
 
         return deferred.promise;
     };
-
-    /**
-     * Checks whether the clipboard data has changed, firing a new
-     * "guacClipboard" event if it has.
-     */
-    var checkClipboard = function checkClipboard() {
-        service.getLocalClipboard().then(function clipboardRead(data) {
-
-            // Fire clipboard event if the data has changed
-            if (data !== lastClipboardEvent) {
-                $rootScope.$broadcast('guacClipboard', 'text/plain', data);
-                lastClipboardEvent = data;
-            }
-
-        });
-    };
-
-    // Attempt to read the clipboard if it may have changed
-    window.addEventListener('load',  checkClipboard, true);
-    window.addEventListener('copy',  checkClipboard, true);
-    window.addEventListener('cut',   checkClipboard, true);
-    window.addEventListener('focus', function focusGained(e) {
-
-        // Only recheck clipboard if it's the window itself that gained focus
-        if (e.target === window)
-            checkClipboard();
-
-    }, true);
 
     return service;
 

@@ -383,6 +383,10 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                         ManagedClientState.setConnectionState(managedClient.clientState,
                             ManagedClientState.ConnectionState.CONNECTED);
 
+                        // Send any clipboard data already provided
+                        if (managedClient.clipboardData)
+                            client.setClipboard(managedClient.clipboardData);
+
                         // Begin streaming audio input if possible
                         requestAudioStream(client);
 
