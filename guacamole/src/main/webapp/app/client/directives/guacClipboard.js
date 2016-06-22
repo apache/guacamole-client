@@ -143,6 +143,9 @@ angular.module('client').directive('guacClipboard', [function guacClipboard() {
 
         }, true);
 
+        // Perform initial clipboard check
+        checkClipboard();
+
     }];
 
     return config;
