@@ -1,1 +1,9 @@
-<textarea ng-model="data" rows="10" cols="40" class="clipboard"></textarea>
+<div class="clipboard">
+    <div ng-if="isText()" class="text-clipboard">
+        <textarea ng-model="data" rows="10" cols="40"></textarea>
+    </div>
+    <div ng-if="isImage()" class="image-clipboard">
+        <button ng-click="resetClipboard()" class="reset-button">Clear</button>
+        <img ng-src="{{imageURL}}">
+    </div>
+</div>

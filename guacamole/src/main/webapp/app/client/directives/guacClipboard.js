@@ -51,7 +51,7 @@ angular.module('client').directive('guacClipboard', [function guacClipboard() {
          * field. Changes to this value will be rendered within the field and,
          * if possible, will be pushed to the local clipboard.
          *
-         * @type String
+         * @type String|Blob
          */
         data : '='
 
@@ -85,6 +85,74 @@ angular.module('client').directive('guacClipboard', [function guacClipboard() {
          */
         var clipboardDataFromKey = {};
 
+        /**
+         * The URL of the image is currently stored within the clipboard. If
+         * the clipboard currently contains text, this will be null.
+         *
+         * @type String
+         */
+        $scope.imageURL = null;
+
+        // Intercept paste events, handling image data specifically
+        $element[0].addEventListener('paste', function dataPasted(e) {
+
+            // For each item within the clipboard
+            var items = e.clipboardData.items;
+            for (var i = 0; i < items.length; i++) {
+
+                // If the item is an image, attempt to read that image
+                if (items[i].kind === 'file' && /^image\//.exec(items[i].type)) {
+
+                    // Set clipboard data to contents
+                    $scope.$apply(function setClipboardData() {
+                        $scope.data = items[i].getAsFile();
+                    });
+
+                    // Do not paste
+                    e.preventDefault();
+                    return;
+
+                }
+
+            } // end for each item
+
+        });
+
+        /**
+         * Returns whether the clipboard currently contains only an image, the
+         * URL of which is exposed via the imageURL property.
+         *
+         * @returns {Boolean}
+         *     true if the current clipboard contains only an image, false
+         *     otherwise.
+         */
+        $scope.isImage = function isImage() {
+            return !!$scope.imageURL;
+        };
+
+        /**
+         * Returns whether the clipboard currently contains only text.
+         *
+         * @returns {Boolean}
+         *     true if the clipboard currently contains only text, false
+         *     otherwise.
+         */
+        $scope.isText = function isText() {
+            return !$scope.isImage();
+        };
+
+        /**
+         * Clears the current clipboard contents. If the clipboard currently
+         * displays an image, this will also return to a text-based clipboard
+         * display.
+         */
+        $scope.resetClipboard = function resetClipboard() {
+
+            // Reset to blank
+            $scope.data = '';
+
+        };
+
         // Watch clipboard for new data, associating it with any pressed keys
         $scope.$watch('data', function clipboardChanged(data) {
 
@@ -92,8 +160,21 @@ angular.module('client').directive('guacClipboard', [function guacClipboard() {
             for (var keysym in keysCurrentlyPressed)
                 clipboardDataFromKey[keysym] = data;
 
-            // Notify of updated clipboard data
-            $rootScope.$broadcast('guacClipboard', 'text/plain', data);
+            // Revoke old image URL, if any
+            if ($scope.imageURL) {
+                URL.revokeObjectURL($scope.imageURL);
+                $scope.imageURL = null;
+            }
+
+            // If the copied data was an image, display it as such
+            if (data instanceof Blob) {
+                $scope.imageURL = URL.createObjectURL(data);
+                $rootScope.$broadcast('guacClipboard', data.type, data);
+            }
+
+            // Otherwise, the data is simply text
+            else
+                $rootScope.$broadcast('guacClipboard', 'text/plain', data);
 
         });
 

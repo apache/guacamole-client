@@ -66,14 +66,6 @@
 }
 
 #guac-menu #clipboard-settings textarea {
-    width: 100%;
-    border: 1px solid #AAA;
-    -moz-border-radius: 0.25em;
-    -webkit-border-radius: 0.25em;
-    -khtml-border-radius: 0.25em;
-    border-radius: 0.25em;
-    white-space: pre;
-    display: block;
     font-size: 1em;
 }
 
