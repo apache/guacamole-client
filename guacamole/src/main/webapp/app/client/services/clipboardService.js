@@ -45,7 +45,7 @@ angular.module('client').factory('clipboardService', ['$injector',
 
     // Ensure textarea is selectable but not visible
     clipElement.appendChild(clipboardContent);
-    clipElement.style.position = 'absolute';
+    clipElement.style.position = 'fixed';
     clipElement.style.width    = '1px';
     clipElement.style.height   = '1px';
     clipElement.style.left     = '-1px';
