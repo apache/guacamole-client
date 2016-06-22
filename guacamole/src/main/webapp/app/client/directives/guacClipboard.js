@@ -63,6 +63,7 @@ angular.module('client').directive('guacClipboard', [function guacClipboard() {
 
         // Required services
         var $rootScope       = $injector.get('$rootScope');
+        var $window          = $injector.get('$window');
         var clipboardService = $injector.get('clipboardService');
 
         /**
@@ -122,26 +123,38 @@ angular.module('client').directive('guacClipboard', [function guacClipboard() {
         });
 
         /**
-         * Checks whether the clipboard data has changed, firing a new
-         * "guacClipboard" event if it has.
+         * Checks whether the clipboard data has changed, updating the stored
+         * clipboard data if it has. If this function is being called due to a
+         * DOM event, that event should be passed to this function such that the
+         * context of the call can be taken into account. Focus events, in
+         * particular, need to be considered only in the context of the window.
+         *
+         * @param {Event} [e]
+         *     The event currently being handled, if any.
          */
-        var checkClipboard = function checkClipboard() {
+        var checkClipboard = function checkClipboard(e) {
+
+            // Ignore focus events for anything except the window
+            if (e && e.type === 'focus' && e.target !== $window)
+                return;
+
             clipboardService.getLocalClipboard().then(function clipboardRead(data) {
                 $scope.data = data;
             });
+
         };
 
         // Attempt to read the clipboard if it may have changed
-        window.addEventListener('load',  checkClipboard, true);
-        window.addEventListener('copy',  checkClipboard, true);
-        window.addEventListener('cut',   checkClipboard, true);
-        window.addEventListener('focus', function focusGained(e) {
+        $window.addEventListener('copy',  checkClipboard, true);
+        $window.addEventListener('cut',   checkClipboard, true);
+        $window.addEventListener('focus', checkClipboard, true);
 
-            // Only recheck clipboard if it's the window itself that gained focus
-            if (e.target === window)
-                checkClipboard();
-
-        }, true);
+        // Clean up on destruction
+        $scope.$on('$destroy', function destroyClipboard() {
+            $window.removeEventListener('copy',  checkClipboard);
+            $window.removeEventListener('cut',   checkClipboard);
+            $window.removeEventListener('focus', checkClipboard);
+        });
 
         // Perform initial clipboard check
         checkClipboard();
