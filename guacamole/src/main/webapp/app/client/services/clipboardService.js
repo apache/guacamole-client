@@ -69,6 +69,9 @@ angular.module('client').factory('clipboardService', ['$injector',
 
         var deferred = $q.defer();
 
+        // Track the originally-focused element prior to changing focus
+        var originalElement = document.activeElement;
+
         // Copy the given value into the clipboard DOM element
         clipboardContent.value = text;
         clipboardContent.select();
@@ -79,8 +82,10 @@ angular.module('client').factory('clipboardService', ['$injector',
         else
             deferred.reject();
 
-        // Unfocus the clipboard DOM event to avoid mobile keyboard opening
+        // Unfocus the clipboard DOM event to avoid mobile keyboard opening,
+        // restoring whichever element was originally focused
         clipboardContent.blur();
+        originalElement.focus();
 
         return deferred.promise;
     };
@@ -101,6 +106,9 @@ angular.module('client').factory('clipboardService', ['$injector',
         // clipboard data (in case the copy/cut has not yet completed)
         window.setTimeout(function deferredClipboardRead() {
 
+            // Track the originally-focused element prior to changing focus
+            var originalElement = document.activeElement;
+
             // Clear and select the clipboard DOM element
             clipboardContent.value = '';
             clipboardContent.focus();
@@ -112,8 +120,10 @@ angular.module('client').factory('clipboardService', ['$injector',
             else
                 deferred.reject();
 
-            // Unfocus the clipboard DOM event to avoid mobile keyboard opening
+            // Unfocus the clipboard DOM event to avoid mobile keyboard opening,
+            // restoring whichever element was originally focused
             clipboardContent.blur();
+            originalElement.focus();
 
         }, 100);
 
