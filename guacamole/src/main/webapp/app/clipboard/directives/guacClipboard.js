@@ -27,7 +27,11 @@
  * "data" attribute, changes to clipboard data will be broadcast on the scope
  * via "guacClipboard" events.
  */
-angular.module('client').directive('guacClipboard', [function guacClipboard() {
+angular.module('clipboard').directive('guacClipboard', ['$injector',
+    function guacClipboard($injector) {
+
+    // Required types
+    var ClipboardData = $injector.get('ClipboardData');
 
     /**
      * Configuration object for the guacClipboard directive.
@@ -37,7 +41,7 @@ angular.module('client').directive('guacClipboard', [function guacClipboard() {
     var config = {
         restrict    : 'E',
         replace     : true,
-        templateUrl : 'app/client/templates/guacClipboard.html'
+        templateUrl : 'app/clipboard/templates/guacClipboard.html'
     };
 
     // Scope properties exposed by the guacClipboard directive
@@ -51,7 +55,7 @@ angular.module('client').directive('guacClipboard', [function guacClipboard() {
          * field. Changes to this value will be rendered within the field and,
          * if possible, will be pushed to the local clipboard.
          *
-         * @type String|Blob
+         * @type ClipboardData
          */
         data : '='
 
@@ -81,17 +85,42 @@ angular.module('client').directive('guacClipboard', [function guacClipboard() {
          * contents received while those keys were pressed. All keys not
          * currently pressed will not have entries within this map.
          *
-         * @type Object.<Number, String>
+         * @type Object.<Number, Blob>
          */
         var clipboardDataFromKey = {};
 
         /**
-         * The URL of the image is currently stored within the clipboard. If
-         * the clipboard currently contains text, this will be null.
+         * The FileReader to use to read File or Blob data received from the
+         * clipboard.
          *
-         * @type String
+         * @type FileReader
          */
-        $scope.imageURL = null;
+        var reader = new FileReader();
+
+        /**
+         * Properties which contain the current clipboard contents. Each
+         * property is mutually exclusive, and will only contain data if the
+         * clipboard contents are of a particular type.
+         */
+        $scope.content = {
+
+            /**
+             * The text contents of the clipboard. If the clipboard contents
+             * is not text, this will be null.
+             *
+             * @type String
+             */
+            text : null,
+
+            /**
+             * The URL of the image is currently stored within the clipboard. If
+             * the clipboard currently contains text, this will be null.
+             *
+             * @type String
+             */
+            imageURL : null
+
+        };
 
         // Intercept paste events, handling image data specifically
         $element[0].addEventListener('paste', function dataPasted(e) {
@@ -103,9 +132,15 @@ angular.module('client').directive('guacClipboard', [function guacClipboard() {
                 // If the item is an image, attempt to read that image
                 if (items[i].kind === 'file' && /^image\//.exec(items[i].type)) {
 
+                    // Retrieven contents as a File
+                    var file = items[i].getAsFile();
+
                     // Set clipboard data to contents
                     $scope.$apply(function setClipboardData() {
-                        $scope.data = items[i].getAsFile();
+                        $scope.data = new ClipboardData({
+                            type : file.type,
+                            data : file
+                        });
                     });
 
                     // Do not paste
@@ -127,7 +162,7 @@ angular.module('client').directive('guacClipboard', [function guacClipboard() {
          *     otherwise.
          */
         $scope.isImage = function isImage() {
-            return !!$scope.imageURL;
+            return !!$scope.content.imageURL;
         };
 
         /**
@@ -149,9 +184,24 @@ angular.module('client').directive('guacClipboard', [function guacClipboard() {
         $scope.resetClipboard = function resetClipboard() {
 
             // Reset to blank
-            $scope.data = '';
+            $scope.data = new ClipboardData({
+                type : 'text/plain',
+                data : ''
+            });
 
         };
+
+        // Keep data in sync with changes to text
+        $scope.$watch('content.text', function textChanged(text) {
+
+            if (text) {
+                $scope.data = new ClipboardData({
+                    type : $scope.data.type,
+                    data : text
+                });
+            }
+
+        });
 
         // Watch clipboard for new data, associating it with any pressed keys
         $scope.$watch('data', function clipboardChanged(data) {
@@ -160,21 +210,35 @@ angular.module('client').directive('guacClipboard', [function guacClipboard() {
             for (var keysym in keysCurrentlyPressed)
                 clipboardDataFromKey[keysym] = data;
 
-            // Revoke old image URL, if any
-            if ($scope.imageURL) {
-                URL.revokeObjectURL($scope.imageURL);
-                $scope.imageURL = null;
+            // Stop any current read process
+            reader.abort();
+
+            // If the clipboard data is a string, render it as text
+            if (typeof data.data === 'string') {
+                $scope.content.text     = data.data;
+                $scope.content.imageURL = null;
             }
 
-            // If the copied data was an image, display it as such
-            if (data instanceof Blob) {
-                $scope.imageURL = URL.createObjectURL(data);
-                $rootScope.$broadcast('guacClipboard', data.type, data);
+            // Render Blob/File contents based on mimetype
+            else if (data.data instanceof Blob) {
+
+                // If the copied data was an image, display it as such
+                if (/^image\//.exec(data.type)) {
+                    reader.onload = function updateImageURL() {
+                        $scope.$apply(function imageURLLoaded() {
+                            $scope.content.text     = null;
+                            $scope.content.imageURL = reader.result;
+                        });
+                    };
+                    reader.readAsDataURL(data.data);
+                }
+
+                // Ignore other data types
+
             }
 
-            // Otherwise, the data is simply text
-            else
-                $rootScope.$broadcast('guacClipboard', 'text/plain', data);
+            // Notify of change
+            $rootScope.$broadcast('guacClipboard', data);
 
         });
 

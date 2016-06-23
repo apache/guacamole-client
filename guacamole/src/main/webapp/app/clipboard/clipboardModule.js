@@ -18,17 +18,6 @@
  */
 
 /**
- * The module for code used to connect to a connection or balancing group.
+ * The module for code used to manipulate/observe the clipboard.
  */
-angular.module('client', [
-    'auth',
-    'clipboard',
-    'element',
-    'history',
-    'navigation',
-    'notification',
-    'osk',
-    'rest',
-    'textInput',
-    'touch'
-]);
+angular.module('clipboard', []);

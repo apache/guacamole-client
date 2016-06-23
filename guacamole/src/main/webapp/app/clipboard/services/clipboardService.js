@@ -20,7 +20,7 @@
 /**
  * A service for accessing local clipboard data.
  */
-angular.module('client').factory('clipboardService', ['$injector',
+angular.module('clipboard').factory('clipboardService', ['$injector',
         function clipboardService($injector) {
 
     // Get required services
@@ -58,14 +58,14 @@ angular.module('client').factory('clipboardService', ['$injector',
     /**
      * Sets the local clipboard, if possible, to the given text.
      *
-     * @param {String} text
-     *     The text to which the local clipboard should be set.
+     * @param {ClipboardData} data
+     *     The data to assign to the local clipboard should be set.
      *
      * @return {Promise}
      *     A promise that will resolve if setting the clipboard was successful,
      *     and will reject if it failed.
      */
-    service.setLocalClipboard = function setLocalClipboard(text) {
+    service.setLocalClipboard = function setLocalClipboard(data) {
 
         var deferred = $q.defer();
 
@@ -73,8 +73,28 @@ angular.module('client').factory('clipboardService', ['$injector',
         var originalElement = document.activeElement;
 
         // Copy the given value into the clipboard DOM element
-        clipboardContent.value = text;
+        clipboardContent.value = 'X';
         clipboardContent.select();
+
+        // Override copied contents of clipboard with the provided value
+        clipboardContent.oncopy = function overrideContent(e) {
+
+            // Override the contents of the clipboard
+            e.preventDefault();
+
+            // Remove anything already present within the clipboard
+            var items = e.clipboardData.items;
+            items.clear();
+
+            // If the provided data is a string, add it as such
+            if (typeof data.data === 'string')
+                items.add(data.data, data.type);
+
+            // Otherwise, add as a File
+            else
+                items.add(new File([data.data], 'data', { type : data.type }));
+
+        };
 
         // Attempt to copy data from clipboard element into local clipboard
         if (document.execCommand('copy'))
@@ -93,7 +113,7 @@ angular.module('client').factory('clipboardService', ['$injector',
     /**
      * Get the current value of the local clipboard.
      *
-     * @return {Promise}
+     * @return {Promise.<ClipboardData>}
      *     A promise that will resolve with the contents of the local clipboard
      *     if getting the clipboard was successful, and will reject if it
      *     failed.
@@ -114,9 +134,14 @@ angular.module('client').factory('clipboardService', ['$injector',
             clipboardContent.focus();
             clipboardContent.select();
 
+            // FIXME: Only handling text data
+
             // Attempt paste local clipboard into clipboard DOM element
             if (document.activeElement === clipboardContent && document.execCommand('paste'))
-                deferred.resolve(clipboardContent.value);
+                deferred.resolve(new ClipboardData({
+                    type : 'text/plain',
+                    data : clipboardContent.value
+                }));
             else
                 deferred.reject();
 
