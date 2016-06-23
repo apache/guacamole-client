@@ -21,19 +21,19 @@ var Guacamole = Guacamole || {};
 
 /**
  * A writer which automatically writes to the given output stream with the
- * contents of a local files, supplied as standard File objects.
+ * contents of provided Blob objects.
  *
  * @constructor
  * @param {Guacamole.OutputStream} stream
  *     The stream that data will be written to.
  */
-Guacamole.FileWriter = function FileWriter(stream) {
+Guacamole.BlobWriter = function BlobWriter(stream) {
 
     /**
-     * Reference to this Guacamole.FileWriter.
+     * Reference to this Guacamole.BlobWriter.
      *
      * @private
-     * @type {Guacamole.FileWriter}
+     * @type {Guacamole.BlobWriter}
      */
     var guacWriter = this;
 
@@ -100,19 +100,19 @@ Guacamole.FileWriter = function FileWriter(stream) {
     };
 
     /**
-     * Sends the contents of the given file over the underlying stream.
+     * Sends the contents of the given blob over the underlying stream.
      *
-     * @param {File} file
-     *     The file to send.
+     * @param {Blob} blob
+     *     The blob to send.
      */
-    this.sendFile = function sendFile(file) {
+    this.sendBlob = function sendBlob(blob) {
 
         var offset = 0;
         var reader = new FileReader();
 
         /**
-         * Reads the next chunk of the file provided to
-         * [sendFile()]{@link Guacamole.FileWriter#sendFile}. The chunk itself
+         * Reads the next chunk of the blob provided to
+         * [sendBlob()]{@link Guacamole.BlobWriter#sendBlob}. The chunk itself
          * is read asynchronously, and will not be available until
          * reader.onload fires.
          *
@@ -121,11 +121,11 @@ Guacamole.FileWriter = function FileWriter(stream) {
         var readNextChunk = function readNextChunk() {
 
             // If no further chunks remain, inform of completion and stop
-            if (offset >= file.size) {
+            if (offset >= blob.size) {
 
-                // Fire completion event for completed file
+                // Fire completion event for completed blob
                 if (guacWriter.oncomplete)
-                    guacWriter.oncomplete(file);
+                    guacWriter.oncomplete(blob);
 
                 // No further chunks to read
                 return;
@@ -133,10 +133,10 @@ Guacamole.FileWriter = function FileWriter(stream) {
             }
 
             // Obtain reference to next chunk as a new blob
-            var chunk = slice(file, offset, offset + arrayBufferWriter.blobLength);
+            var chunk = slice(blob, offset, offset + arrayBufferWriter.blobLength);
             offset += arrayBufferWriter.blobLength;
 
-            // Attempt to read the file contents represented by the blob into
+            // Attempt to read the blob contents represented by the blob into
             // a new array buffer
             reader.readAsArrayBuffer(chunk);
 
@@ -159,9 +159,9 @@ Guacamole.FileWriter = function FileWriter(stream) {
                 if (status.isError())
                     return;
 
-                // Inform of file upload progress via progress events
+                // Inform of blob upload progress via progress events
                 if (guacWriter.onprogress)
-                    guacWriter.onprogress(file, offset - arrayBufferWriter.blobLength);
+                    guacWriter.onprogress(blob, offset - arrayBufferWriter.blobLength);
 
                 // Queue the next chunk for reading
                 readNextChunk();
@@ -175,7 +175,7 @@ Guacamole.FileWriter = function FileWriter(stream) {
 
             // Fire error event, including the context of the error
             if (guacWriter.onerror)
-                guacWriter.onerror(file, offset, reader.error);
+                guacWriter.onerror(blob, offset, reader.error);
 
         };
 
@@ -202,16 +202,16 @@ Guacamole.FileWriter = function FileWriter(stream) {
     this.onack = null;
 
     /**
-     * Fired when an error occurs reading a file passed to
-     * [sendFile()]{@link Guacamole.FileWriter#sendFile}. The file transfer for
-     * the given file will cease, but the stream will remain open.
+     * Fired when an error occurs reading a blob passed to
+     * [sendBlob()]{@link Guacamole.BlobWriter#sendBlob}. The transfer for the
+     * the given blob will cease, but the stream will remain open.
      *
      * @event
-     * @param {File} file
-     *     The file that was being read when the error occurred.
+     * @param {Blob} blob
+     *     The blob that was being read when the error occurred.
      *
      * @param {Number} offset
-     *     The offset of the failed read attempt within the file, in bytes.
+     *     The offset of the failed read attempt within the blob, in bytes.
      *
      * @param {DOMError} error
      *     The error that occurred.
@@ -219,12 +219,12 @@ Guacamole.FileWriter = function FileWriter(stream) {
     this.onerror = null;
 
     /**
-     * Fired for each successfully-read chunk of file data as a file is being
-     * sent via [sendFile()]{@link Guacamole.FileWriter#sendFile}.
+     * Fired for each successfully-read chunk of data as a blob is being sent
+     * via [sendBlob()]{@link Guacamole.BlobWriter#sendBlob}.
      *
      * @event
-     * @param {File} file
-     *     The file that is being read.
+     * @param {Blob} blob
+     *     The blob that is being read.
      *
      * @param {Number} offset
      *     The offset of the read that just succeeded.
@@ -232,13 +232,13 @@ Guacamole.FileWriter = function FileWriter(stream) {
     this.onprogress = null;
 
     /**
-     * Fired when a file passed to
-     * [sendFile()]{@link Guacamole.FileWriter#sendFile} has finished being
+     * Fired when a blob passed to
+     * [sendBlob()]{@link Guacamole.BlobWriter#sendBlob} has finished being
      * sent.
      *
      * @event
-     * @param {File} file
-     *     The file that was sent.
+     * @param {Blob} blob
+     *     The blob that was sent.
      */
     this.oncomplete = null;
 
