@@ -48,3 +48,12 @@
     border: 1px solid black;
     background: url('images/checker.png');
 }
+
+.clipboard-service-target {
+    position: fixed;
+    left: -1px;
+    right: -1px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
