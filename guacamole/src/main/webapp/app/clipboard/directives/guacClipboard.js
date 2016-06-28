@@ -71,6 +71,14 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
         var clipboardService = $injector.get('clipboardService');
 
         /**
+         * Reference to the window.document object.
+         *
+         * @private
+         * @type HTMLDocument
+         */
+        var document = $window.document;
+
+        /**
          * Map of all currently pressed keys by keysym. If a particular key is
          * currently pressed, the value stored under that key's keysym within
          * this map will be true. All keys not currently pressed will not have entries
@@ -98,35 +106,184 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
         var reader = new FileReader();
 
         /**
-         * Properties which contain the current clipboard contents. Each
-         * property is mutually exclusive, and will only contain data if the
-         * clipboard contents are of a particular type.
+         * The content-editable DOM element which will contain the clipboard
+         * contents within the user interface provided by this directive.
+         *
+         * @type Element
          */
-        $scope.content = {
+        var element = $element[0];
 
-            /**
-             * The text contents of the clipboard. If the clipboard contents
-             * is not text, this will be null.
-             *
-             * @type String
-             */
-            text : null,
+        /**
+         * Modifies the contents of the given element such that it contains
+         * only plain text. All non-text child elements will be stripped and
+         * replaced with their text equivalents. As this function performs the
+         * conversion through incremental changes only, cursor position within
+         * the given element is preserved.
+         *
+         * @param {Element} element
+         *     The elements whose contents should be converted to plain text.
+         */
+        var convertToText = function convertToText(element) {
 
-            /**
-             * The URL of the image is currently stored within the clipboard. If
-             * the clipboard currently contains text, this will be null.
-             *
-             * @type String
-             */
-            imageURL : null
+            // For each child of the given element
+            var current = element.firstChild;
+            while (current) {
+
+                // Preserve the next child in the list, in case the current
+                // node is replaced
+                var next = current.nextSibling;
+
+                // If the child is not already a text node, replace it with its
+                // own text contents
+                if (current.nodeType !== Node.TEXT_NODE) {
+                    var textNode = document.createTextNode(current.textContent);
+                    current.parentElement.replaceChild(textNode, current);
+                }
+
+                // Advance to next child
+                current = next;
+
+            }
+
+        };
+
+        /**
+         * Parses the given data URL, returning its decoded contents as a new
+         * Blob. If the URL is not a valid data URL, null will be returned
+         * instead.
+         *
+         * @param {String} url
+         *     The data URL to parse.
+         *
+         * @returns {Blob}
+         *     A new Blob containing the decoded contents of the data URL, or
+         *     null if the URL is not a valid data URL.
+         */
+        var parseDataURL = function parseDataURL(url) {
+
+            // Parse given string as a data URL
+            var result = /^data:([^;]*);base64,([a-zA-Z0-9+/]*[=]*)$/.exec(url);
+            if (!result)
+                return null;
+
+            // Pull the mimetype and base64 contents of the data URL
+            var type = result[1];
+            var data = $window.atob(result[2]);
+
+            // Convert the decoded binary string into a typed array
+            var buffer = new Uint8Array(data.length);
+            for (var i = 0; i < data.length; i++)
+                buffer[i] = data.charCodeAt(i);
+
+            // Produce a proper blob containing the data and type provided in
+            // the data URL
+            return new Blob([buffer], { type : type });
+
+        };
+
+        /**
+         * Replaces the current text content of the given element with the
+         * given text. To avoid affecting the position of the cursor within an
+         * editable element, or firing unnecessary DOM modification events, the
+         * underlying <code>textContent</code> property of the element is only
+         * touched if doing so would actually change the text.
+         *
+         * @param {Element} element
+         *     The element whose text content should be changed.
+         *
+         * @param {String} text
+         *     The text content to assign to the given element.
+         */
+        var setTextContent = function setTextContent(element, text) {
+
+            // Strip out any non-text content while preserving cursor position
+            convertToText(element);
+
+            // Reset text content only if doing so will actually change the content
+            if (element.textContent !== text)
+                element.textContent = text;
+
+        };
+
+        /**
+         * Returns the URL of the single image within the given element, if the
+         * element truly contains only one child and that child is an image. If
+         * the content of the element is mixed or not an image, null is
+         * returned.
+         *
+         * @param {Element} element
+         *     The element whose image content should be retrieved.
+         *
+         * @returns {String}
+         *     The URL of the image contained within the given element, if that
+         *     element contains only a single child element which happens to be
+         *     an image, or null if the content of the element is not purely an
+         *     image.
+         */
+        var getImageContent = function getImageContent(element) {
+
+            // Return the source of the single child element, if it is an image
+            var firstChild = element.firstChild;
+            if (firstChild && firstChild.nodeName === 'IMG' && !firstChild.nextSibling)
+                return firstChild.getAttribute('src');
+
+            // Otherwise, the content of this element is not simply an image
+            return null;
+
+        };
+
+        /**
+         * Replaces the current contents of the given element with a single
+         * image having the given URL. To avoid affecting the position of the
+         * cursor within an editable element, or firing unnecessary DOM
+         * modification events, the content of the element is only touched if
+         * doing so would actually change content.
+         *
+         * @param {Element} element
+         *     The element whose image content should be changed.
+         *
+         * @param {String} url
+         *     The URL of the image which should be assigned as the contents of
+         *     the given element.
+         */
+        var setImageContent = function setImageContent(element, url) {
+
+            // Retrieve the URL of the current image contents, if any
+            var currentImage = getImageContent(element);
+
+            // If the current contents are not the given image (or not an image
+            // at all), reassign the contents
+            if (currentImage !== url) {
+
+                // Clear current contents
+                element.innerHTML = '';
+
+                // Add a new image as the sole contents of the element
+                var img = document.createElement('img');
+                img.src = url;
+                element.appendChild(img);
+
+            }
 
         };
 
         // Intercept paste events, handling image data specifically
-        $element[0].addEventListener('paste', function dataPasted(e) {
+        element.addEventListener('paste', function dataPasted(e) {
+
+            // Always clear the current clipboard contents upon paste
+            element.innerHTML = '';
+
+            // If we can't read the clipboard contents at all, abort
+            var clipboardData = e.clipboardData;
+            if (!clipboardData)
+                return;
+
+            // If the clipboard contents cannot be read as blobs, abort
+            var items = clipboardData.items;
+            if (!items)
+                return;
 
             // For each item within the clipboard
-            var items = e.clipboardData.items;
             for (var i = 0; i < items.length; i++) {
 
                 // If the item is an image, attempt to read that image
@@ -154,70 +311,68 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
         });
 
         /**
-         * Returns whether the clipboard currently contains only an image, the
-         * URL of which is exposed via the imageURL property.
-         *
-         * @returns {Boolean}
-         *     true if the current clipboard contains only an image, false
-         *     otherwise.
+         * Rereads the contents of the clipboard field, updating the
+         * ClipboardData object on the scope as necessary. The type of data
+         * stored within the ClipboardData object will be heuristically
+         * determined from the HTML contents of the clipboard field.
          */
-        $scope.isImage = function isImage() {
-            return !!$scope.content.imageURL;
-        };
+        var updateClipboardData = function updateClipboardData() {
 
-        /**
-         * Returns whether the clipboard currently contains only text.
-         *
-         * @returns {Boolean}
-         *     true if the clipboard currently contains only text, false
-         *     otherwise.
-         */
-        $scope.isText = function isText() {
-            return !$scope.isImage();
-        };
+            // If the clipboard contains a single image, parse and assign the
+            // image data to the internal clipboard
+            var currentImage = getImageContent(element);
+            if (currentImage) {
 
-        /**
-         * Clears the current clipboard contents. If the clipboard currently
-         * displays an image, this will also return to a text-based clipboard
-         * display.
-         */
-        $scope.resetClipboard = function resetClipboard() {
+                // Convert the image's data URL into a blob
+                var blob = parseDataURL(currentImage);
+                if (blob) {
 
-            // Reset to blank
-            $scope.data = new ClipboardData({
-                type : 'text/plain',
-                data : ''
+                    // Complete the assignment if conversion was successful
+                    $scope.$evalAsync(function assignClipboardData() {
+                        $scope.data = new ClipboardData({
+                            type : blob.type,
+                            data : blob
+                        });
+                    });
+
+                    return;
+
+                }
+
+            } // end if clipboard is an image
+
+            // If data does not appear to be an image, or image decoding fails,
+            // assume clipboard contents are text
+            $scope.$evalAsync(function assignClipboardText() {
+                $scope.data = new ClipboardData({
+                    type : 'text/plain',
+                    data : element.textContent
+                });
             });
 
         };
 
-        // Keep data in sync with changes to text
-        $scope.$watch('content.text', function textChanged(text) {
-
-            if (text) {
-                $scope.data = new ClipboardData({
-                    type : $scope.data.type,
-                    data : text
-                });
-            }
-
-        });
+        // Update the internally-stored clipboard data when events are fired
+        // that indicate the clipboard field may have been changed
+        element.addEventListener('input',                    updateClipboardData);
+        element.addEventListener('DOMCharacterDataModified', updateClipboardData);
+        element.addEventListener('DOMNodeInserted',          updateClipboardData);
+        element.addEventListener('DOMNodeRemoved',           updateClipboardData);
 
         // Watch clipboard for new data, associating it with any pressed keys
-        $scope.$watch('data', function clipboardChanged(data) {
+        $scope.$watch('data', function clipboardDataChanged(data) {
 
             // Associate new clipboard data with any currently-pressed key
             for (var keysym in keysCurrentlyPressed)
                 clipboardDataFromKey[keysym] = data;
 
             // Stop any current read process
-            reader.abort();
+            if (reader.readyState === 1)
+                reader.abort();
 
             // If the clipboard data is a string, render it as text
-            if (typeof data.data === 'string') {
-                $scope.content.text     = data.data;
-                $scope.content.imageURL = null;
-            }
+            if (typeof data.data === 'string')
+                setTextContent(element, data.data);
 
             // Render Blob/File contents based on mimetype
             else if (data.data instanceof Blob) {
@@ -225,10 +380,7 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
                 // If the copied data was an image, display it as such
                 if (/^image\//.exec(data.type)) {
                     reader.onload = function updateImageURL() {
-                        $scope.$apply(function imageURLLoaded() {
-                            $scope.content.text     = null;
-                            $scope.content.imageURL = reader.result;
-                        });
+                        setImageContent(element, reader.result);
                     };
                     reader.readAsDataURL(data.data);
                 }
