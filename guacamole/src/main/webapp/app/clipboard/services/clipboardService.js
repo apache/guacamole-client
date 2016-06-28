@@ -55,6 +55,22 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
     document.body.appendChild(clipboardContent);
 
     /**
+     * Stops the propogation of the given event through the DOM tree. This is
+     * identical to invoking stopPropogation() on the event directly, except
+     * that this function is usable as an event handler itself.
+     *
+     * @param {Event} e
+     *     The event whose propogation through the DOM tree should be stopped.
+     */
+    var stopEventPropagation = function stopEventPropagation(e) {
+        e.stopPropagation();
+    };
+
+    // Prevent events generated due to execCommand() from disturbing external things
+    clipboardContent.addEventListener('copy',  stopEventPropagation);
+    clipboardContent.addEventListener('paste', stopEventPropagation);
+
+    /**
      * A stack of past node selection ranges. A range convering the nodes
      * currently selected within the document can be pushed onto this stack
      * with pushSelection(), and the most recently pushed selection can be

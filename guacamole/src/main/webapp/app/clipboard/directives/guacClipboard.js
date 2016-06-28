@@ -288,9 +288,9 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
         };
 
         // Attempt to read the clipboard if it may have changed
-        $window.addEventListener('copy',  checkClipboard, true);
-        $window.addEventListener('cut',   checkClipboard, true);
-        $window.addEventListener('focus', checkClipboard, true);
+        $window.addEventListener('copy',  checkClipboard);
+        $window.addEventListener('cut',   checkClipboard);
+        $window.addEventListener('focus', checkClipboard);
 
         // Clean up on destruction
         $scope.$on('$destroy', function destroyClipboard() {
