@@ -33,6 +33,18 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
     var service = {};
 
     /**
+     * The amount of time to wait before actually serving a request to read
+     * clipboard data, in milliseconds. Providing a reasonable delay between
+     * request and read attempt allows the cut/copy operation to settle, in
+     * case the data we are anticipating to be present is not actually present
+     * in the clipboard yet.
+     *
+     * @constant
+     * @type Number
+     */
+    var CLIPBOARD_READ_DELAY = 100;
+
+    /**
      * Reference to the window.document object.
      *
      * @private
@@ -399,7 +411,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
             originalElement.focus();
             popSelection();
 
-        }, 100);
+        }, CLIPBOARD_READ_DELAY);
 
         return deferred.promise;
     };
