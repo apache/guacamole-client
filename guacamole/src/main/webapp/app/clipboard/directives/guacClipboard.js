@@ -238,6 +238,9 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
             // Notify of change
             $rootScope.$broadcast('guacClipboard', data);
 
+            // Attempt to set local clipboard with received data
+            clipboardService.setLocalClipboard(data);
+
         });
 
         // Track pressed keys
