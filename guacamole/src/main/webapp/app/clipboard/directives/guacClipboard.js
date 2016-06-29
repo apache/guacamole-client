@@ -113,30 +113,66 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
          */
         var element = $element[0];
 
+        /**
+         * Returns all files currently contained within the local clipboard,
+         * given a ClipboardEvent which should contain the current clipboard
+         * data. If no files are contained within the local clipboard, null
+         * is returned.
+         *
+         * @param {ClipboardEvent} e
+         *     The ClipboardEvent which should contain the current clipboard
+         *     data.
+         *
+         * @returns {File[]}
+         *     An array of all files currently contained with the clipboard, as
+         *     provided by the given ClipboardEvent, or null if no files are
+         *     present.
+         */
+        var getClipboardFiles = function getClipboardFiles(e) {
+
+            // Pull the clipboard data object
+            var clipboardData = e.clipboardData || $window.clipboardData;
+
+            // Read from the standard clipboard API items collection first
+            var items = clipboardData.items;
+            if (items) {
+
+                var files = [];
+
+                // Produce array of all files from clipboard data
+                for (var i = 0; i < items.length; i++) {
+                    if (items[i].kind === 'file')
+                        files.push(items[i].getAsFile());
+                }
+
+                return files;
+
+            }
+
+            // Failing that, try the files collection
+            if (clipboardData.files)
+                return clipboardData.files;
+
+            // No files accessible within given data
+            return null;
+
+        };
+
         // Intercept paste events, handling image data specifically
         element.addEventListener('paste', function dataPasted(e) {
 
-            // Always clear the current clipboard contents upon paste
-            element.innerHTML = '';
-
-            // If we can't read the clipboard contents at all, abort
-            var clipboardData = e.clipboardData;
-            if (!clipboardData)
-                return;
-
-            // If the clipboard contents cannot be read as blobs, abort
-            var items = clipboardData.items;
-            if (!items)
+            // Read all files from the clipboard data within the event
+            var files = getClipboardFiles(e);
+            if (!files)
                 return;
 
             // For each item within the clipboard
-            for (var i = 0; i < items.length; i++) {
+            for (var i = 0; i < files.length; i++) {
 
-                // If the item is an image, attempt to read that image
-                if (items[i].kind === 'file' && /^image\//.exec(items[i].type)) {
+                var file = files[i];
 
-                    // Retrieven contents as a File
-                    var file = items[i].getAsFile();
+                // If the file is an image, attempt to read that image
+                if (/^image\//.exec(file.type)) {
 
                     // Set clipboard data to contents
                     $scope.$apply(function setClipboardData() {
