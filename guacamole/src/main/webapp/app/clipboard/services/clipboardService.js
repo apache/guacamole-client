@@ -255,6 +255,10 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
             else if (current.nodeName === 'BR')
                 currentBlock += '\n';
 
+            // Render <img> as alt text, if available
+            else if (current.nodeName === 'IMG')
+                currentBlock += current.getAttribute('alt') || '';
+
             // For all other nodes, handling depends on whether they are
             // block-level elements
             else {
