@@ -71,14 +71,6 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
         var clipboardService = $injector.get('clipboardService');
 
         /**
-         * Reference to the window.document object.
-         *
-         * @private
-         * @type HTMLDocument
-         */
-        var document = $window.document;
-
-        /**
          * Map of all currently pressed keys by keysym. If a particular key is
          * currently pressed, the value stored under that key's keysym within
          * this map will be true. All keys not currently pressed will not have entries
