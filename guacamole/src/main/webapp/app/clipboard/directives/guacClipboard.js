@@ -220,7 +220,7 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
             $scope.$evalAsync(function assignClipboardText() {
                 $scope.data = new ClipboardData({
                     type : 'text/plain',
-                    data : element.textContent
+                    data : clipboardService.getTextContent(element)
                 });
             });
 

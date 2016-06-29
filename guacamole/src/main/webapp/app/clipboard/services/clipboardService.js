@@ -148,40 +148,6 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
     };
 
     /**
-     * Modifies the contents of the given element such that it contains only
-     * plain text. All non-text child elements will be stripped and replaced
-     * with their text equivalents. As this function performs the conversion
-     * through incremental changes only, cursor position within the given
-     * element is preserved.
-     *
-     * @param {Element} element
-     *     The elements whose contents should be converted to plain text.
-     */
-    var convertToText = function convertToText(element) {
-
-        // For each child of the given element
-        var current = element.firstChild;
-        while (current) {
-
-            // Preserve the next child in the list, in case the current
-            // node is replaced
-            var next = current.nextSibling;
-
-            // If the child is not already a text node, replace it with its
-            // own text contents
-            if (current.nodeType !== Node.TEXT_NODE) {
-                var textNode = document.createTextNode(current.textContent);
-                current.parentElement.replaceChild(textNode, current);
-            }
-
-            // Advance to next child
-            current = next;
-
-        }
-
-    };
-
-    /**
      * Sets the local clipboard, if possible, to the given text.
      *
      * @param {ClipboardData} data
@@ -261,6 +227,39 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
     };
 
     /**
+     * Returns the content of the given element as plain, unformatted text,
+     * preserving only individual characters and newlines. Formatting, images,
+     * etc. are not taken into account.
+     *
+     * @param {Element} element
+     *     The element whose text content should be returned.
+     *
+     * @returns {String}
+     *     The plain text contents of the given element, including newlines and
+     *     spacing but otherwise without any formatting.
+     */
+    service.getTextContent = function getTextContent(element) {
+
+        pushSelection();
+
+        // Generate a range which selects all nodes within the given element
+        var range = document.createRange();
+        range.selectNodeContents(element);
+
+        // Replace any current selection with the generated range
+        var selection = $window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        // Retrieve the visible text content of the element
+        var text = selection.toString();
+
+        popSelection();
+        return text;
+
+    };
+
+    /**
      * Replaces the current text content of the given element with the given
      * text. To avoid affecting the position of the cursor within an editable
      * element, or firing unnecessary DOM modification events, the underlying
@@ -276,10 +275,10 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
     service.setTextContent = function setTextContent(element, text) {
 
         // Strip out any non-text content while preserving cursor position
-        convertToText(element);
+        var textContent = service.getTextContent(element);
 
         // Reset text content only if doing so will actually change the content
-        if (element.textContent !== text)
+        if (textContent !== text)
             element.textContent = text;
 
     };
