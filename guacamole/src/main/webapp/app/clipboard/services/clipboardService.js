@@ -306,11 +306,8 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     service.setTextContent = function setTextContent(element, text) {
 
-        // Strip out any non-text content while preserving cursor position
-        var textContent = service.getTextContent(element);
-
         // Reset text content only if doing so will actually change the content
-        if (textContent !== text)
+        if (service.getTextContent(element) !== text)
             element.textContent = text;
 
     };
