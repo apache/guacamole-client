@@ -32,14 +32,6 @@
     padding: 0.25em;
 }
 
-.clipboard .image-clipboard .reset-button {
-    position: absolute;
-    left: 0;
-    top: 0;
-    font-size: 0.75em;
-    min-width: 0;
-}
-
 .clipboard p,
 .clipboard div {
     margin: 0;
