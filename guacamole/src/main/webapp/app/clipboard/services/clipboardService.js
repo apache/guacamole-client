@@ -306,6 +306,9 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     service.setTextContent = function setTextContent(element, text) {
 
+        // Strip out any images
+        $(element).find('img').remove();
+
         // Reset text content only if doing so will actually change the content
         if (service.getTextContent(element) !== text)
             element.textContent = text;
