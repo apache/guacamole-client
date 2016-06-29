@@ -170,7 +170,8 @@ Guacamole.StringWriter = function(stream) {
      * @param {String} text The text to send.
      */
     this.sendText = function(text) {
-        array_writer.sendData(__encode_utf8(text));
+        if (text.length)
+            array_writer.sendData(__encode_utf8(text));
     };
 
     /**

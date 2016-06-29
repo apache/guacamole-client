@@ -410,9 +410,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
             };
 
             // Update remote clipboard if local clipboard changes
-            $scope.$on('guacClipboard', function onClipboard(event, mimetype, data) {
+            $scope.$on('guacClipboard', function onClipboard(event, data) {
                 if (client) {
-                    client.setClipboard(data);
+                    ManagedClient.setClipboard($scope.client, data);
                     $scope.client.clipboardData = data;
                 }
             });

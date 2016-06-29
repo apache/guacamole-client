@@ -26,6 +26,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     // Required types
     var ClientProperties     = $injector.get('ClientProperties');
     var ClientIdentifier     = $injector.get('ClientIdentifier');
+    var ClipboardData        = $injector.get('ClipboardData');
     var ManagedClientState   = $injector.get('ManagedClientState');
     var ManagedDisplay       = $injector.get('ManagedDisplay');
     var ManagedFilesystem    = $injector.get('ManagedFilesystem');
@@ -37,7 +38,6 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var $rootScope             = $injector.get('$rootScope');
     var $window                = $injector.get('$window');
     var authenticationService  = $injector.get('authenticationService');
-    var clipboardService       = $injector.get('clipboardService');
     var connectionGroupService = $injector.get('connectionGroupService');
     var connectionService      = $injector.get('connectionService');
     var tunnelService          = $injector.get('tunnelService');
@@ -100,9 +100,12 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         /**
          * The current clipboard contents.
          *
-         * @type String
+         * @type ClipboardData
          */
-        this.clipboardData = template.clipboardData || '';
+        this.clipboardData = template.clipboardData || new ClipboardData({
+            type : 'text/plain',
+            data : ''
+        });
 
         /**
          * All uploaded files. As files are uploaded, their progress can be
@@ -383,6 +386,10 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                         ManagedClientState.setConnectionState(managedClient.clientState,
                             ManagedClientState.ConnectionState.CONNECTED);
 
+                        // Send any clipboard data already provided
+                        if (managedClient.clipboardData)
+                            ManagedClient.setClipboard(managedClient, managedClient.clipboardData);
+
                         // Begin streaming audio input if possible
                         requestAudioStream(client);
 
@@ -417,28 +424,43 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         // Handle any received clipboard data
         client.onclipboard = function clientClipboardReceived(stream, mimetype) {
 
-            // Only text/plain is supported for now
-            if (mimetype !== "text/plain") {
-                stream.sendAck("Only text/plain supported", Guacamole.Status.Code.UNSUPPORTED);
-                return;
+            var reader;
+
+            // If the received data is text, read it as a simple string
+            if (/^text\//.exec(mimetype)) {
+
+                reader = new Guacamole.StringReader(stream);
+
+                // Assemble received data into a single string
+                var data = '';
+                reader.ontext = function textReceived(text) {
+                    data += text;
+                };
+
+                // Set clipboard contents once stream is finished
+                reader.onend = function textComplete() {
+                    $rootScope.$apply(function updateClipboard() {
+                        managedClient.clipboardData = new ClipboardData({
+                            type : mimetype,
+                            data : data
+                        });
+                    });
+                };
+
             }
 
-            var reader = new Guacamole.StringReader(stream);
-            var data = "";
-
-            // Append any received data to buffer
-            reader.ontext = function clipboard_text_received(text) {
-                data += text;
-                stream.sendAck("Received", Guacamole.Status.Code.SUCCESS);
-            };
-
-            // Update state when done
-            reader.onend = function clipboard_text_end() {
-                $rootScope.$apply(function updateClipboard() {
-                    managedClient.clipboardData = data;
-                    clipboardService.setLocalClipboard(data);
-                });
-            };
+            // Otherwise read the clipboard data as a Blob
+            else {
+                reader = new Guacamole.BlobReader(stream, mimetype);
+                reader.onend = function blobComplete() {
+                    $rootScope.$apply(function updateClipboard() {
+                        managedClient.clipboardData = new ClipboardData({
+                            type : mimetype,
+                            data : reader.getBlob()
+                        });
+                    });
+                };
+            }
 
         };
 
@@ -520,6 +542,46 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
         // Start and manage file upload
         managedClient.uploads.push(ManagedFileUpload.getInstance(managedClient, file, object, streamName));
+
+    };
+
+    /**
+     * Sends the given clipboard data over the given Guacamole client, setting
+     * the contents of the remote clipboard to the data provided.
+     *
+     * @param {ManagedClient} managedClient
+     *     The ManagedClient over which the given clipboard data is to be sent.
+     *
+     * @param {ClipboardData} data
+     *     The clipboard data to send.
+     */
+    ManagedClient.setClipboard = function setClipboard(managedClient, data) {
+
+        var writer;
+
+        // Create stream with proper mimetype
+        var stream = managedClient.client.createClipboardStream(data.type);
+
+        // Send data as a string if it is stored as a string
+        if (typeof data.data === 'string') {
+            writer = new Guacamole.StringWriter(stream);
+            writer.sendText(data.data);
+            writer.sendEnd();
+        }
+
+        // Otherwise, assume the data is a File/Blob
+        else {
+
+            // Write File/Blob asynchronously
+            writer = new Guacamole.BlobWriter(stream);
+            writer.oncomplete = function clipboardSent() {
+                writer.sendEnd();
+            };
+
+            // Begin sending data
+            writer.sendBlob(data.data);
+
+        }
 
     };
 
