@@ -40,6 +40,11 @@
     min-width: 0;
 }
 
+.clipboard p,
+.clipboard div {
+    margin: 0;
+}
+
 .clipboard img {
     max-width: 100%;
     max-height: 100%;
