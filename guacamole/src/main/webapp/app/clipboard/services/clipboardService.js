@@ -240,22 +240,54 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     service.getTextContent = function getTextContent(element) {
 
-        pushSelection();
+        var blocks = [];
+        var currentBlock = '';
 
-        // Generate a range which selects all nodes within the given element
-        var range = document.createRange();
-        range.selectNodeContents(element);
+        // For each child of the given element
+        var current = element.firstChild;
+        while (current) {
 
-        // Replace any current selection with the generated range
-        var selection = $window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
+            // Simply append the content of any text nodes
+            if (current.nodeType === Node.TEXT_NODE)
+                currentBlock += current.nodeValue;
 
-        // Retrieve the visible text content of the element
-        var text = selection.toString();
+            // Render <br> as a newline character
+            else if (current.nodeName === 'BR')
+                currentBlock += '\n';
 
-        popSelection();
-        return text;
+            // For all other nodes, handling depends on whether they are
+            // block-level elements
+            else {
+
+                // If we are entering a new block context, start a new block if
+                // the current block is non-empty
+                if (currentBlock.length && $window.getComputedStyle(current).display === 'block') {
+
+                    // Trim trailing newline (would otherwise inflate the line count by 1)
+                    if (currentBlock.substring(currentBlock.length - 1) === '\n')
+                        currentBlock = currentBlock.substring(0, currentBlock.length - 1);
+
+                    // Finish current block and start a new block
+                    blocks.push(currentBlock);
+                    currentBlock = '';
+
+                }
+
+                // Append the content of the current element to the current block
+                currentBlock += service.getTextContent(current);
+
+            }
+
+            current = current.nextSibling;
+
+        }
+
+        // Add any in-progress block
+        if (currentBlock.length)
+            blocks.push(currentBlock);
+
+        // Combine all non-empty blocks, separated by newlines
+        return blocks.join('\n');
 
     };
 
