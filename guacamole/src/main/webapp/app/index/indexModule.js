@@ -23,6 +23,7 @@
 angular.module('index', [
     'auth',
     'client',
+    'clipboard',
     'home',
     'login',
     'manage',

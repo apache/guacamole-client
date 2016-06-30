@@ -26,6 +26,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     // Required services
     var $document        = $injector.get('$document');
     var $window          = $injector.get('$window');
+    var clipboardService = $injector.get('clipboardService');
     var guacNotification = $injector.get('guacNotification');
     
     /**
@@ -123,6 +124,28 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $window.onblur = function () {
         keyboard.reset();
     };
+
+    /**
+     * Checks whether the clipboard data has changed, firing a new
+     * "guacClipboard" event if it has.
+     */
+    var checkClipboard = function checkClipboard() {
+        clipboardService.getLocalClipboard().then(function clipboardRead(data) {
+            $scope.$broadcast('guacClipboard', data);
+        });
+    };
+
+    // Attempt to read the clipboard if it may have changed
+    $window.addEventListener('load',  checkClipboard, true);
+    $window.addEventListener('copy',  checkClipboard, true);
+    $window.addEventListener('cut',   checkClipboard, true);
+    $window.addEventListener('focus', function focusGained(e) {
+
+        // Only recheck clipboard if it's the window itself that gained focus
+        if (e.target === $window)
+            checkClipboard();
+
+    }, true);
 
     // Display login screen if a whole new set of credentials is needed
     $scope.$on('guacInvalidCredentials', function loginInvalid(event, parameters, error) {
