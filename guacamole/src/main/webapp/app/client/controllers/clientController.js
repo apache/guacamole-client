@@ -396,6 +396,10 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Watch clipboard for new data, associating it with any pressed keys
     $scope.$watch('client.clipboardData', function clipboardChanged(data) {
 
+        // Sync local clipboard as long as the menu is not open
+        if (!$scope.menu.shown)
+            clipboardService.setLocalClipboard(data);
+
         // Associate new clipboard data with any currently-pressed key
         for (var keysym in keysCurrentlyPressed)
             clipboardDataFromKey[keysym] = data;
