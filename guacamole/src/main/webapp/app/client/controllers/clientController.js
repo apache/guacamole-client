@@ -442,14 +442,13 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
 
         // Sync local clipboard with any clipboard data received while this
-        // key was pressed (if any)
+        // key was pressed (if any) as long as the menu is not open
         var clipboardData = clipboardDataFromKey[keysym];
-        if (clipboardData) {
+        if (clipboardData && !$scope.menu.shown)
             clipboardService.setLocalClipboard(clipboardData);
-            delete clipboardDataFromKey[keysym];
-        }
 
         // Mark key as released
+        delete clipboardDataFromKey[keysym];
         delete keysCurrentlyPressed[keysym];
 
     });
