@@ -250,7 +250,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * received from the remote desktop while those keys were pressed. All keys
      * not currently pressed will not have entries within this map.
      *
-     * @type Object.<Number, String>
+     * @type Object.<Number, ClipboardData>
      */
     var clipboardDataFromKey = {};
 
@@ -386,7 +386,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         
         // Send clipboard data if menu is hidden
         if (!menuShown && menuShownPreviousState)
-            $scope.$broadcast('guacClipboard', 'text/plain', $scope.client.clipboardData);
+            $scope.$broadcast('guacClipboard', $scope.client.clipboardData);
         
         // Disable client keyboard if the menu is shown
         $scope.client.clientProperties.keyboardEnabled = !menuShown;
@@ -395,6 +395,10 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     // Watch clipboard for new data, associating it with any pressed keys
     $scope.$watch('client.clipboardData', function clipboardChanged(data) {
+
+        // Sync local clipboard as long as the menu is not open
+        if (!$scope.menu.shown)
+            clipboardService.setLocalClipboard(data);
 
         // Associate new clipboard data with any currently-pressed key
         for (var keysym in keysCurrentlyPressed)
@@ -442,14 +446,13 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
 
         // Sync local clipboard with any clipboard data received while this
-        // key was pressed (if any)
+        // key was pressed (if any) as long as the menu is not open
         var clipboardData = clipboardDataFromKey[keysym];
-        if (clipboardData) {
+        if (clipboardData && !$scope.menu.shown)
             clipboardService.setLocalClipboard(clipboardData);
-            delete clipboardDataFromKey[keysym];
-        }
 
         // Mark key as released
+        delete clipboardDataFromKey[keysym];
         delete keysCurrentlyPressed[keysym];
 
     });
@@ -566,7 +569,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
             // Sync with local clipboard
             clipboardService.getLocalClipboard().then(function clipboardRead(data) {
-                $scope.$broadcast('guacClipboard', 'text/plain', data);
+                $scope.$broadcast('guacClipboard', data);
             });
 
             // Hide status notification

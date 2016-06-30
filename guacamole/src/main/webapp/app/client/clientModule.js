@@ -22,6 +22,7 @@
  */
 angular.module('client', [
     'auth',
+    'clipboard',
     'element',
     'history',
     'navigation',

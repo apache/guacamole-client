@@ -18,21 +18,6 @@
  */
 
 /**
- * The module for the root of the application.
+ * The module for code used to manipulate/observe the clipboard.
  */
-angular.module('index', [
-    'auth',
-    'client',
-    'clipboard',
-    'home',
-    'login',
-    'manage',
-    'navigation',
-    'ngRoute',
-    'ngTouch',
-    'notification',
-    'pascalprecht.translate',
-    'rest',
-    'settings',
-    'templates-main'
-]);
+angular.module('clipboard', []);
