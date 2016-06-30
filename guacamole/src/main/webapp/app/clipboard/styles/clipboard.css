@@ -17,6 +17,10 @@
  * under the License.
  */
 
+.clipboard, .clipboard-service-target {
+    background: white;
+}
+
 .clipboard  {
     position: relative;
     border: 1px solid #AAA;
@@ -24,7 +28,6 @@
     -webkit-border-radius: 0.25em;
     -khtml-border-radius: 0.25em;
     border-radius: 0.25em;
-    background: white;
     width: 100%;
     height: 2in;
     white-space: pre;
