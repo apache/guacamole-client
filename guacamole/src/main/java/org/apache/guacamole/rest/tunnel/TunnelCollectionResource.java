@@ -19,6 +19,9 @@
 
 package org.apache.guacamole.rest.tunnel;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import java.util.Map;
 import java.util.Set;
 import javax.ws.rs.Consumes;
@@ -47,6 +50,12 @@ public class TunnelCollectionResource {
     private final GuacamoleSession session;
 
     /**
+     * Factory for creating instances of resources which represent tunnels.
+     */
+    @Inject
+    private TunnelResourceFactory tunnelResourceFactory;
+
+    /**
      * Creates a new TunnelCollectionResource which exposes the active tunnels
      * of the given GuacamoleSession.
      *
@@ -54,7 +63,8 @@ public class TunnelCollectionResource {
      *     The GuacamoleSession whose tunnels should be exposed by this
      *     resource.
      */
-    public TunnelCollectionResource(GuacamoleSession session) {
+    @AssistedInject
+    public TunnelCollectionResource(@Assisted GuacamoleSession session) {
         this.session = session;
     }
 
@@ -97,7 +107,7 @@ public class TunnelCollectionResource {
             throw new GuacamoleResourceNotFoundException("No such tunnel.");
 
         // Return corresponding tunnel resource
-        return new TunnelResource(tunnel);
+        return tunnelResourceFactory.create(tunnel);
 
     }
 

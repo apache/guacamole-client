@@ -40,6 +40,8 @@ import org.apache.guacamole.rest.language.LanguageRESTService;
 import org.apache.guacamole.rest.patch.PatchRESTService;
 import org.apache.guacamole.rest.session.SessionResourceFactory;
 import org.apache.guacamole.rest.sharingprofile.SharingProfileModule;
+import org.apache.guacamole.rest.tunnel.TunnelCollectionResourceFactory;
+import org.apache.guacamole.rest.tunnel.TunnelResourceFactory;
 import org.apache.guacamole.rest.user.UserModule;
 
 /**
@@ -91,6 +93,8 @@ public class RESTServiceModule extends ServletModule {
         // Root-level resources
         bind(SessionRESTService.class);
         install(new FactoryModuleBuilder().build(SessionResourceFactory.class));
+        install(new FactoryModuleBuilder().build(TunnelCollectionResourceFactory.class));
+        install(new FactoryModuleBuilder().build(TunnelResourceFactory.class));
         install(new FactoryModuleBuilder().build(UserContextResourceFactory.class));
 
         // Resources below root
