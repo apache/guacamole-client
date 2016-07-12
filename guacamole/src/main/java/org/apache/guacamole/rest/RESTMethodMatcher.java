@@ -88,7 +88,26 @@ public class RESTMethodMatcher extends AbstractMatcher<Method> {
 
         }
 
-        // The method is not an HTTP method
+        // A method is also REST method if it overrides a REST method within
+        // the superclass
+        Class<?> superclass = method.getDeclaringClass().getSuperclass();
+        if (superclass != null) {
+
+            // Recheck against identical method within superclass
+            try {
+                return isRESTMethod(superclass.getMethod(method.getName(),
+                        method.getParameterTypes()));
+            }
+
+            // If there is no such method, then this method cannot possibly be
+            // a REST method
+            catch (NoSuchMethodException e) {
+                return false;
+            }
+
+        }
+
+        // Lacking a superclass, the search stops here - it's not a REST method
         return false;
 
     }
