@@ -37,6 +37,7 @@ import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.rest.activeconnection.APIActiveConnection;
 import org.apache.guacamole.rest.connection.APIConnection;
 import org.apache.guacamole.rest.connectiongroup.APIConnectionGroup;
+import org.apache.guacamole.rest.history.HistoryResource;
 import org.apache.guacamole.rest.user.APIUser;
 
 /**
@@ -167,6 +168,19 @@ public class UserContextResource {
             throws GuacamoleException {
         return userDirectoryResourceFactory.create(userContext,
                 userContext.getUserDirectory());
+    }
+
+    /**
+     * Returns a new resource which represents historical data contained
+     * within the UserContext exposed by this UserContextResource.
+     *
+     * @return
+     *     A new resource which represents the historical data contained within
+     *     the UserContext exposed by this UserContextResource.
+     */
+    @Path("history")
+    public HistoryResource getHistoryResource() {
+        return new HistoryResource(userContext);
     }
 
 }

@@ -19,13 +19,11 @@
 
 package org.apache.guacamole.rest.history;
 
-import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -33,27 +31,16 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.ConnectionRecordSet;
 import org.apache.guacamole.net.auth.UserContext;
-import org.apache.guacamole.GuacamoleSession;
-import org.apache.guacamole.rest.ObjectRetrievalService;
-import org.apache.guacamole.rest.auth.AuthenticationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * A REST Service for retrieving and managing the history records of Guacamole
+ * A REST resource for retrieving and managing the history records of Guacamole
  * objects.
  *
  * @author Michael Jumper
  */
-@Path("/data/{dataSource}/history")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class HistoryRESTService {
-
-    /**
-     * Logger for this class.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(HistoryRESTService.class);
+public class HistoryResource {
 
     /**
      * The maximum number of history records to return in any one response.
@@ -61,29 +48,24 @@ public class HistoryRESTService {
     private static final int MAXIMUM_HISTORY_SIZE = 1000;
 
     /**
-     * A service for authenticating users from auth tokens.
+     * The UserContext whose associated connection history is being exposed.
      */
-    @Inject
-    private AuthenticationService authenticationService;
+    private final UserContext userContext;
 
     /**
-     * Service for convenient retrieval of objects.
+     * Creates a new HistoryResource which exposes the connection history
+     * associated with the given UserContext.
+     *
+     * @param userContext
+     *     The UserContext whose connection history should be exposed.
      */
-    @Inject
-    private ObjectRetrievalService retrievalService;
+    public HistoryResource(UserContext userContext) {
+        this.userContext = userContext;
+    }
 
     /**
      * Retrieves the usage history for all connections, restricted by optional
      * filter parameters.
-     *
-     * @param authToken
-     *     The authentication token that is used to authenticate the user
-     *     performing the operation.
-     *
-     * @param authProviderIdentifier
-     *     The unique identifier of the AuthenticationProvider associated with
-     *     the UserContext containing the connection whose history is to be
-     *     retrieved.
      *
      * @param requiredContents
      *     The set of strings that each must occur somewhere within the
@@ -105,15 +87,11 @@ public class HistoryRESTService {
      *     If an error occurs while retrieving the connection history.
      */
     @GET
-    @Path("/connections")
-    public List<APIConnectionRecord> getConnectionHistory(@QueryParam("token") String authToken,
-            @PathParam("dataSource") String authProviderIdentifier,
+    @Path("connections")
+    public List<APIConnectionRecord> getConnectionHistory(
             @QueryParam("contains") List<String> requiredContents,
             @QueryParam("order") List<APIConnectionRecordSortPredicate> sortPredicates)
             throws GuacamoleException {
-
-        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
-        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
 
         // Retrieve overall connection history
         ConnectionRecordSet history = userContext.getConnectionHistory();
