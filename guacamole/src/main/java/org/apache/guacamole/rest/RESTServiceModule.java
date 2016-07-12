@@ -19,7 +19,10 @@
 
 package org.apache.guacamole.rest;
 
+import org.apache.guacamole.rest.session.UserContextResourceFactory;
+import org.apache.guacamole.rest.session.SessionResource;
 import com.google.inject.Scopes;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
@@ -95,6 +98,10 @@ public class RESTServiceModule extends ServletModule {
         bind(TokenRESTService.class);
         bind(TunnelRESTService.class);
         bind(UserRESTService.class);
+
+        // Root-level resources
+        bind(SessionResource.class);
+        install(new FactoryModuleBuilder().build(UserContextResourceFactory.class));
 
         // Set up the servlet and JSON mappings
         bind(GuiceContainer.class);
