@@ -50,9 +50,10 @@ angular.module('rest').factory('userService', ['$injector',
      *     If null, no filtering will be performed. Valid values are listed
      *     within PermissionSet.ObjectType.
      *                          
-     * @returns {Promise.<User[]>}
-     *     A promise which will resolve with an array of @link{User} objects
-     *     upon success.
+     * @returns {Promise.<Object.<String, User>>}
+     *     A promise which will resolve with a map of @link{User} objects
+     *     where each key is the identifier (username) of the corresponding
+     *     user.
      */
     service.getUsers = function getUsers(dataSource, permissionTypes) {
 

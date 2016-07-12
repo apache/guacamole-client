@@ -41,7 +41,7 @@ import org.apache.guacamole.rest.language.LanguageRESTService;
 import org.apache.guacamole.rest.patch.PatchRESTService;
 import org.apache.guacamole.rest.schema.SchemaRESTService;
 import org.apache.guacamole.rest.tunnel.TunnelRESTService;
-import org.apache.guacamole.rest.user.UserRESTService;
+import org.apache.guacamole.rest.user.UserModule;
 
 /**
  * A Guice Module to set up the servlet mappings and authentication-specific
@@ -94,7 +94,6 @@ public class RESTServiceModule extends ServletModule {
         bind(SchemaRESTService.class);
         bind(TokenRESTService.class);
         bind(TunnelRESTService.class);
-        bind(UserRESTService.class);
 
         // Root-level resources
         bind(SessionResource.class);
@@ -104,6 +103,7 @@ public class RESTServiceModule extends ServletModule {
         install(new ActiveConnectionModule());
         install(new ConnectionModule());
         install(new ConnectionGroupModule());
+        install(new UserModule());
 
         // Set up the servlet and JSON mappings
         bind(GuiceContainer.class);
