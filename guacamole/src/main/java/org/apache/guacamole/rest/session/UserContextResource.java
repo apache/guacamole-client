@@ -30,8 +30,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Connection;
+import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.rest.connection.APIConnection;
+import org.apache.guacamole.rest.connectiongroup.APIConnectionGroup;
 
 /**
  * A REST resource which exposes the contents of a particular UserContext.
@@ -52,7 +54,16 @@ public class UserContextResource {
      * Connection Directory.
      */
     @Inject
-    private DirectoryResourceFactory<Connection, APIConnection> connectionDirectoryResourceFactory;
+    private DirectoryResourceFactory<Connection, APIConnection>
+            connectionDirectoryResourceFactory;
+
+    /**
+     * Factory for creating DirectoryResources which expose a given
+     * ConnectionGroup Directory.
+     */
+    @Inject
+    private DirectoryResourceFactory<ConnectionGroup, APIConnectionGroup>
+            connectionGroupDirectoryResourceFactory;
 
     /**
      * Creates a new UserContextResource which exposes the data within the
@@ -83,6 +94,24 @@ public class UserContextResource {
             throws GuacamoleException {
         return connectionDirectoryResourceFactory.create(userContext,
                 userContext.getConnectionDirectory());
+    }
+
+    /**
+     * Returns a new resource which represents the ConnectionGroup Directory
+     * contained within the UserContext exposed by this UserContextResource.
+     *
+     * @return
+     *     A new resource which represents the ConnectionGroup Directory
+     *     contained within the UserContext exposed by this UserContextResource.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the ConnectionGroup Directory.
+     */
+    @Path("connectionGroups")
+    public DirectoryResource<ConnectionGroup, APIConnectionGroup> getConnectionGroupDirectoryResource()
+            throws GuacamoleException {
+        return connectionGroupDirectoryResourceFactory.create(userContext,
+                userContext.getConnectionGroupDirectory());
     }
 
 }
