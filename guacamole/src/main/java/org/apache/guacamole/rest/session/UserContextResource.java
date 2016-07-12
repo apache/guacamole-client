@@ -38,6 +38,7 @@ import org.apache.guacamole.rest.activeconnection.APIActiveConnection;
 import org.apache.guacamole.rest.connection.APIConnection;
 import org.apache.guacamole.rest.connectiongroup.APIConnectionGroup;
 import org.apache.guacamole.rest.history.HistoryResource;
+import org.apache.guacamole.rest.schema.SchemaResource;
 import org.apache.guacamole.rest.user.APIUser;
 
 /**
@@ -181,6 +182,21 @@ public class UserContextResource {
     @Path("history")
     public HistoryResource getHistoryResource() {
         return new HistoryResource(userContext);
+    }
+
+    /**
+     * Returns a new resource which represents meta information describing the
+     * kind of data which within the UserContext exposed by this
+     * UserContextResource.
+     *
+     * @return
+     *     A new resource which represents the meta information describing the
+     *     kind of data within the UserContext exposed by this
+     *     UserContextResource.
+     */
+    @Path("schema")
+    public SchemaResource getSchemaResource() {
+        return new SchemaResource(userContext);
     }
 
 }

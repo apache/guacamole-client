@@ -38,7 +38,6 @@ import org.apache.guacamole.rest.connection.ConnectionModule;
 import org.apache.guacamole.rest.connectiongroup.ConnectionGroupModule;
 import org.apache.guacamole.rest.language.LanguageRESTService;
 import org.apache.guacamole.rest.patch.PatchRESTService;
-import org.apache.guacamole.rest.schema.SchemaRESTService;
 import org.apache.guacamole.rest.tunnel.TunnelRESTService;
 import org.apache.guacamole.rest.user.UserModule;
 
@@ -89,7 +88,6 @@ public class RESTServiceModule extends ServletModule {
         // Set up the API endpoints
         bind(LanguageRESTService.class);
         bind(PatchRESTService.class);
-        bind(SchemaRESTService.class);
         bind(TokenRESTService.class);
         bind(TunnelRESTService.class);
 
