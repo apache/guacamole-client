@@ -29,9 +29,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.rest.activeconnection.APIActiveConnection;
 import org.apache.guacamole.rest.connection.APIConnection;
 import org.apache.guacamole.rest.connectiongroup.APIConnectionGroup;
 
@@ -48,6 +50,14 @@ public class UserContextResource {
      * The UserContext being exposed through this resource.
      */
     private final UserContext userContext;
+
+    /**
+     * Factory for creating DirectoryResources which expose a given
+     * ActiveConnection Directory.
+     */
+    @Inject
+    private DirectoryResourceFactory<ActiveConnection, APIActiveConnection>
+            activeConnectionDirectoryResourceFactory;
 
     /**
      * Factory for creating DirectoryResources which expose a given
@@ -76,6 +86,24 @@ public class UserContextResource {
     @AssistedInject
     public UserContextResource(@Assisted UserContext userContext) {
         this.userContext = userContext;
+    }
+
+    /**
+     * Returns a new resource which represents the ActiveConnection Directory
+     * contained within the UserContext exposed by this UserContextResource.
+     *
+     * @return
+     *     A new resource which represents the ActiveConnection Directory
+     *     contained within the UserContext exposed by this UserContextResource.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the ActiveConnection Directory.
+     */
+    @Path("activeConnections")
+    public DirectoryResource<ActiveConnection, APIActiveConnection>
+        getActiveConnectionDirectoryResource() throws GuacamoleException {
+        return activeConnectionDirectoryResourceFactory.create(userContext,
+                userContext.getActiveConnectionDirectory());
     }
 
     /**

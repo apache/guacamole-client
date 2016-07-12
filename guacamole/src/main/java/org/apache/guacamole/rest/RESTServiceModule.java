@@ -27,9 +27,9 @@ import com.google.inject.matcher.Matchers;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import org.aopalliance.intercept.MethodInterceptor;
+import org.apache.guacamole.rest.activeconnection.ActiveConnectionModule;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.apache.guacamole.rest.auth.TokenRESTService;
-import org.apache.guacamole.rest.activeconnection.ActiveConnectionRESTService;
 import org.apache.guacamole.rest.auth.AuthTokenGenerator;
 import org.apache.guacamole.rest.auth.AuthenticationService;
 import org.apache.guacamole.rest.auth.SecureRandomAuthTokenGenerator;
@@ -88,7 +88,6 @@ public class RESTServiceModule extends ServletModule {
         bind(ObjectRetrievalService.class);
 
         // Set up the API endpoints
-        bind(ActiveConnectionRESTService.class);
         bind(HistoryRESTService.class);
         bind(LanguageRESTService.class);
         bind(PatchRESTService.class);
@@ -102,6 +101,7 @@ public class RESTServiceModule extends ServletModule {
         install(new FactoryModuleBuilder().build(UserContextResourceFactory.class));
 
         // Resources below root
+        install(new ActiveConnectionModule());
         install(new ConnectionModule());
         install(new ConnectionGroupModule());
 
