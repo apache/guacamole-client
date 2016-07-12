@@ -21,16 +21,13 @@ package org.apache.guacamole.rest.user;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -39,14 +36,9 @@ import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.credentials.GuacamoleCredentialsException;
-import org.apache.guacamole.net.auth.permission.ObjectPermission;
-import org.apache.guacamole.net.auth.permission.Permission;
-import org.apache.guacamole.net.auth.permission.SystemPermission;
-import org.apache.guacamole.rest.APIPatch;
-import org.apache.guacamole.rest.PATCH;
 import org.apache.guacamole.rest.directory.DirectoryObjectResource;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
-import org.apache.guacamole.rest.permission.APIPermissionSet;
+import org.apache.guacamole.rest.permission.PermissionSetResource;
 
 /**
  * A REST resource which abstracts the operations available on an existing
@@ -158,172 +150,16 @@ public class UserResource
     }
 
     /**
-     * Gets a list of permissions for the user with the given username.
+     * Returns a resource which abstracts operations available on the overall
+     * permissions granted to the User represented by this UserResource.
      *
      * @return
-     *     A list of all permissions granted to the specified user.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving permissions.
+     *     A resource which representing the permissions granted to the User
+     *     represented by this UserResource.
      */
-    @GET
     @Path("permissions")
-    public APIPermissionSet getPermissions() throws GuacamoleException {
-        return new APIPermissionSet(user);
-    }
-
-    /**
-     * Updates the given permission set patch by queuing an add or remove
-     * operation for the given permission based on the given patch operation.
-     *
-     * @param <PermissionType>
-     *     The type of permission stored within the permission set.
-     *
-     * @param operation
-     *     The patch operation to perform.
-     *
-     * @param permissionSetPatch
-     *     The permission set patch being modified.
-     *
-     * @param permission
-     *     The permission being added or removed from the set.
-     *
-     * @throws GuacamoleException
-     *     If the requested patch operation is not supported.
-     */
-    private <PermissionType extends Permission> void updatePermissionSet(
-            APIPatch.Operation operation,
-            PermissionSetPatch<PermissionType> permissionSetPatch,
-            PermissionType permission) throws GuacamoleException {
-
-        // Add or remove permission based on operation
-        switch (operation) {
-
-            // Add permission
-            case add:
-                permissionSetPatch.addPermission(permission);
-                break;
-
-            // Remove permission
-            case remove:
-                permissionSetPatch.removePermission(permission);
-                break;
-
-            // Unsupported patch operation
-            default:
-                throw new GuacamoleClientException("Unsupported patch operation: \"" + operation + "\"");
-
-        }
-
-    }
-
-    /**
-     * Applies a given list of permission patches. Each patch specifies either
-     * an "add" or a "remove" operation for a permission type, represented by
-     * a string. Valid permission types depend on the path of each patch
-     * operation, as the path dictates the permission being modified, such as
-     * "/connectionPermissions/42" or "/systemPermissions".
-     *
-     * @param patches
-     *     The permission patches to apply for this request.
-     *
-     * @throws GuacamoleException
-     *     If a problem is encountered while modifying permissions.
-     */
-    @PATCH
-    @Path("permissions")
-    public void patchPermissions(List<APIPatch<String>> patches)
-            throws GuacamoleException {
-
-        // Permission patches for all types of permissions
-        PermissionSetPatch<ObjectPermission> connectionPermissionPatch       = new PermissionSetPatch<ObjectPermission>();
-        PermissionSetPatch<ObjectPermission> connectionGroupPermissionPatch  = new PermissionSetPatch<ObjectPermission>();
-        PermissionSetPatch<ObjectPermission> activeConnectionPermissionPatch = new PermissionSetPatch<ObjectPermission>();
-        PermissionSetPatch<ObjectPermission> userPermissionPatch             = new PermissionSetPatch<ObjectPermission>();
-        PermissionSetPatch<SystemPermission> systemPermissionPatch           = new PermissionSetPatch<SystemPermission>();
-
-        // Apply all patch operations individually
-        for (APIPatch<String> patch : patches) {
-
-            String path = patch.getPath();
-
-            // Create connection permission if path has connection prefix
-            if (path.startsWith(CONNECTION_PERMISSION_PATCH_PATH_PREFIX)) {
-
-                // Get identifier and type from patch operation
-                String identifier = path.substring(CONNECTION_PERMISSION_PATCH_PATH_PREFIX.length());
-                ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
-
-                // Create and update corresponding permission
-                ObjectPermission permission = new ObjectPermission(type, identifier);
-                updatePermissionSet(patch.getOp(), connectionPermissionPatch, permission);
-
-            }
-
-            // Create connection group permission if path has connection group prefix
-            else if (path.startsWith(CONNECTION_GROUP_PERMISSION_PATCH_PATH_PREFIX)) {
-
-                // Get identifier and type from patch operation
-                String identifier = path.substring(CONNECTION_GROUP_PERMISSION_PATCH_PATH_PREFIX.length());
-                ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
-
-                // Create and update corresponding permission
-                ObjectPermission permission = new ObjectPermission(type, identifier);
-                updatePermissionSet(patch.getOp(), connectionGroupPermissionPatch, permission);
-
-            }
-
-            // Create active connection permission if path has active connection prefix
-            else if (path.startsWith(ACTIVE_CONNECTION_PERMISSION_PATCH_PATH_PREFIX)) {
-
-                // Get identifier and type from patch operation
-                String identifier = path.substring(ACTIVE_CONNECTION_PERMISSION_PATCH_PATH_PREFIX.length());
-                ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
-
-                // Create and update corresponding permission
-                ObjectPermission permission = new ObjectPermission(type, identifier);
-                updatePermissionSet(patch.getOp(), activeConnectionPermissionPatch, permission);
-
-            }
-
-            // Create user permission if path has user prefix
-            else if (path.startsWith(USER_PERMISSION_PATCH_PATH_PREFIX)) {
-
-                // Get identifier and type from patch operation
-                String identifier = path.substring(USER_PERMISSION_PATCH_PATH_PREFIX.length());
-                ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
-
-                // Create and update corresponding permission
-                ObjectPermission permission = new ObjectPermission(type, identifier);
-                updatePermissionSet(patch.getOp(), userPermissionPatch, permission);
-
-            }
-
-            // Create system permission if path is system path
-            else if (path.equals(SYSTEM_PERMISSION_PATCH_PATH)) {
-
-                // Get identifier and type from patch operation
-                SystemPermission.Type type = SystemPermission.Type.valueOf(patch.getValue());
-
-                // Create and update corresponding permission
-                SystemPermission permission = new SystemPermission(type);
-                updatePermissionSet(patch.getOp(), systemPermissionPatch, permission);
-
-            }
-
-            // Otherwise, the path is not supported
-            else
-                throw new GuacamoleClientException("Unsupported patch path: \"" + path + "\"");
-
-        } // end for each patch operation
-
-        // Save the permission changes
-        connectionPermissionPatch.apply(user.getConnectionPermissions());
-        connectionGroupPermissionPatch.apply(user.getConnectionGroupPermissions());
-        activeConnectionPermissionPatch.apply(user.getActiveConnectionPermissions());
-        userPermissionPatch.apply(user.getUserPermissions());
-        systemPermissionPatch.apply(user.getSystemPermissions());
-
+    public PermissionSetResource getPermissions() {
+        return new PermissionSetResource(user);
     }
 
 }
