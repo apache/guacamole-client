@@ -258,7 +258,7 @@ public class DirectoryResource<InternalType extends Identifiable, ExternalType> 
             throw new GuacamoleResourceNotFoundException("Not found: \"" + identifier + "\"");
 
         // Return a resource which provides access to the retrieved object
-        return resourceFactory.create(directory, object);
+        return resourceFactory.create(userContext, directory, object);
 
     }
 
