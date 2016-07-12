@@ -19,16 +19,22 @@
 
 package org.apache.guacamole.rest.activeconnection;
 
+import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.ActiveConnection;
+import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.rest.connection.APIConnection;
 import org.apache.guacamole.rest.directory.DirectoryObjectResource;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
+import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
 
 /**
  * A REST resource which abstracts the operations available on an existing
@@ -42,6 +48,25 @@ public class ActiveConnectionResource
         extends DirectoryObjectResource<ActiveConnection, APIActiveConnection> {
 
     /**
+     * The UserContext associated with the Directory which contains the
+     * Connection exposed by this resource.
+     */
+    private final UserContext userContext;
+
+    /**
+     * The ActiveConnection exposed by this ActiveConnectionResource.
+     */
+    private final ActiveConnection activeConnection;
+
+    /**
+     * A factory which can be used to create instances of resources representing
+     * Connection.
+     */
+    @Inject
+    private DirectoryResourceFactory<Connection, APIConnection>
+            connectionDirectoryResourceFactory;
+
+    /**
      * Creates a new ActiveConnectionResource which exposes the operations and
      * subresources available for the given ActiveConnection.
      *
@@ -51,7 +76,7 @@ public class ActiveConnectionResource
      * @param directory
      *     The Directory which contains the given ActiveConnection.
      *
-     * @param connection
+     * @param activeConnection
      *     The ActiveConnection that this ActiveConnectionResource should
      *     represent.
      *
@@ -62,9 +87,33 @@ public class ActiveConnectionResource
     @AssistedInject
     public ActiveConnectionResource(@Assisted UserContext userContext,
             @Assisted Directory<ActiveConnection> directory,
-            @Assisted ActiveConnection connection,
+            @Assisted ActiveConnection activeConnection,
             DirectoryObjectTranslator<ActiveConnection, APIActiveConnection> translator) {
-        super(directory, connection, translator);
+        super(directory, activeConnection, translator);
+        this.userContext = userContext;
+        this.activeConnection = activeConnection;
+    }
+
+    /**
+     * Retrieves a resource representing the Connection object that is being
+     * actively used.
+     *
+     * @return
+     *     A resource representing the Connection object that is being actively
+     *     used.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the Connection.
+     */
+    @Path("connection")
+    public DirectoryObjectResource<Connection, APIConnection> getConnection()
+            throws GuacamoleException {
+
+        // Return the underlying connection as a resource
+        return connectionDirectoryResourceFactory
+                .create(userContext, userContext.getConnectionDirectory())
+                .getObjectResource(activeConnection.getConnectionIdentifier());
+
     }
 
 }
