@@ -33,15 +33,15 @@ import org.apache.guacamole.rest.ObjectRetrievalService;
 import org.apache.guacamole.rest.auth.AuthenticationService;
 
 /**
- * A REST resource which exposes all UserContexts within a Guacamole user's
- * session.
+ * A REST service which exposes all data associated with a Guacamole user's
+ * session via the underlying UserContexts.
  *
- * @author mjumper
+ * @author Michael Jumper
  */
 @Path("/data")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class SessionResource {
+public class SessionDataRESTService {
 
     /**
      * A service for authenticating users from auth tokens.
