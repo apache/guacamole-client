@@ -70,7 +70,7 @@ angular.module('rest').factory('userService', ['$injector',
         return $http({
             cache   : cacheService.users,
             method  : 'GET',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/users',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users',
             params  : httpParameters
         });
 
@@ -103,7 +103,7 @@ angular.module('rest').factory('userService', ['$injector',
         return $http({
             cache   : cacheService.users,
             method  : 'GET',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username),
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username),
             params  : httpParameters
         });
 
@@ -135,7 +135,7 @@ angular.module('rest').factory('userService', ['$injector',
         // Delete user
         return $http({
             method  : 'DELETE',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(user.username),
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(user.username),
             params  : httpParameters
         })
 
@@ -173,7 +173,7 @@ angular.module('rest').factory('userService', ['$injector',
         // Create user
         return $http({
             method  : 'POST',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/users',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users',
             params  : httpParameters,
             data    : user
         })
@@ -211,7 +211,7 @@ angular.module('rest').factory('userService', ['$injector',
         // Update user
         return $http({
             method  : 'PUT',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(user.username),
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(user.username),
             params  : httpParameters,
             data    : user
         })
@@ -256,7 +256,7 @@ angular.module('rest').factory('userService', ['$injector',
         // Update user password
         return $http({
             method  : 'PUT',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username) + '/password',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username) + '/password',
             params  : httpParameters,
             data    : new UserPasswordUpdate({
                 oldPassword : oldPassword,

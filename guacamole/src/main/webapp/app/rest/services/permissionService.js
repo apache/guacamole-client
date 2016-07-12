@@ -62,7 +62,7 @@ angular.module('rest').factory('permissionService', ['$injector',
         return $http({
             cache   : cacheService.users,
             method  : 'GET',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(userID) + '/permissions',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(userID) + '/permissions',
             params  : httpParameters
         });
 
@@ -235,7 +235,7 @@ angular.module('rest').factory('permissionService', ['$injector',
         // Patch user permissions
         return $http({
             method  : 'PATCH', 
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(userID) + '/permissions',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(userID) + '/permissions',
             params  : httpParameters,
             data    : permissionPatch
         })

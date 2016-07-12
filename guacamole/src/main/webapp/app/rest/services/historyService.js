@@ -76,7 +76,7 @@ angular.module('rest').factory('historyService', ['$injector',
         // Retrieve connection history
         return $http({
             method  : 'GET',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/history/connections',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/history/connections',
             params  : httpParameters
         });
 

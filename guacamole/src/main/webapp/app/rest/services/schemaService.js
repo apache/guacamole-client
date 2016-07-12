@@ -58,7 +58,7 @@ angular.module('rest').factory('schemaService', ['$injector',
         return $http({
             cache   : cacheService.schema,
             method  : 'GET',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/schema/userAttributes',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/userAttributes',
             params  : httpParameters
         });
 
@@ -92,7 +92,7 @@ angular.module('rest').factory('schemaService', ['$injector',
         return $http({
             cache   : cacheService.schema,
             method  : 'GET',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/schema/connectionAttributes',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/connectionAttributes',
             params  : httpParameters
         });
 
@@ -126,7 +126,7 @@ angular.module('rest').factory('schemaService', ['$injector',
         return $http({
             cache   : cacheService.schema,
             method  : 'GET',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/schema/connectionGroupAttributes',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/connectionGroupAttributes',
             params  : httpParameters
         });
 
@@ -157,7 +157,7 @@ angular.module('rest').factory('schemaService', ['$injector',
         return $http({
             cache   : cacheService.schema,
             method  : 'GET',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/schema/protocols',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/protocols',
             params  : httpParameters
         });
 

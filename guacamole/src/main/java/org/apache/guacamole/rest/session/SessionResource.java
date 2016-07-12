@@ -20,34 +20,32 @@
 package org.apache.guacamole.rest.session;
 
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSession;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.rest.ObjectRetrievalService;
-import org.apache.guacamole.rest.auth.AuthenticationService;
 
 /**
- * A REST service which exposes all data associated with a Guacamole user's
+ * A REST resource which exposes all data associated with a Guacamole user's
  * session via the underlying UserContexts.
  *
  * @author Michael Jumper
  */
-@Path("/data")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class SessionDataRESTService {
+public class SessionResource {
 
     /**
-     * A service for authenticating users from auth tokens.
+     * The GuacamoleSession being exposed by this SessionResource.
      */
-    @Inject
-    private AuthenticationService authenticationService;
+    private final GuacamoleSession session;
 
     /**
      * Service for convenient retrieval of objects.
@@ -63,12 +61,21 @@ public class SessionDataRESTService {
     private UserContextResourceFactory userContextResourceFactory;
 
     /**
+     * Creates a new SessionResource which exposes the data within the given
+     * GuacamoleSession.
+     *
+     * @param session
+     *     The GuacamoleSession which should be exposed through this
+     *     SessionResource.
+     */
+    @AssistedInject
+    public SessionResource(@Assisted GuacamoleSession session) {
+        this.session = session;
+    }
+
+    /**
      * Retrieves a resource representing the UserContext associated with the
      * AuthenticationProvider having the given identifier.
-     *
-     * @param authToken
-     *     The authentication token that is used to authenticate the user
-     *     performing the operation.
      *
      * @param authProviderIdentifier
      *     The unique identifier of the AuthenticationProvider associated with
@@ -79,17 +86,14 @@ public class SessionDataRESTService {
      *     AuthenticationProvider having the given identifier.
      *
      * @throws GuacamoleException
-     *     If the authentication token or AuthenticationProvider identifier are
-     *     invalid.
+     *     If the AuthenticationProvider identifier is invalid.
      */
-    @Path("{dataSource}")
+    @Path("data/{dataSource}")
     public UserContextResource getUserContextResource(
-            @QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier)
             throws GuacamoleException {
 
         // Pull UserContext defined by the given auth provider identifier
-        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
         UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
 
         // Return a resource exposing the retrieved UserContext

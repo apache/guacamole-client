@@ -20,7 +20,7 @@
 package org.apache.guacamole.rest;
 
 import org.apache.guacamole.rest.session.UserContextResourceFactory;
-import org.apache.guacamole.rest.session.SessionDataRESTService;
+import org.apache.guacamole.rest.session.SessionRESTService;
 import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.matcher.Matchers;
@@ -38,6 +38,7 @@ import org.apache.guacamole.rest.connection.ConnectionModule;
 import org.apache.guacamole.rest.connectiongroup.ConnectionGroupModule;
 import org.apache.guacamole.rest.language.LanguageRESTService;
 import org.apache.guacamole.rest.patch.PatchRESTService;
+import org.apache.guacamole.rest.session.SessionResourceFactory;
 import org.apache.guacamole.rest.tunnel.TunnelRESTService;
 import org.apache.guacamole.rest.user.UserModule;
 
@@ -92,7 +93,8 @@ public class RESTServiceModule extends ServletModule {
         bind(TunnelRESTService.class);
 
         // Root-level resources
-        bind(SessionDataRESTService.class);
+        bind(SessionRESTService.class);
+        install(new FactoryModuleBuilder().build(SessionResourceFactory.class));
         install(new FactoryModuleBuilder().build(UserContextResourceFactory.class));
 
         // Resources below root
