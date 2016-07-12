@@ -222,6 +222,10 @@ public class DirectoryResource<InternalType extends Identifiable, ExternalType> 
     public ExternalType createObject(ExternalType object)
             throws GuacamoleException {
 
+        // Validate that data was provided
+        if (object == null)
+            throw new GuacamoleClientException("Data must be submitted when creating objects.");
+
         // Create the new object within the directory
         directory.add(translator.toInternalObject(object));
 

@@ -27,6 +27,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Identifiable;
@@ -120,8 +121,15 @@ public class DirectoryObjectResource<InternalType extends Identifiable, External
      */
     @PUT
     public void updateObject(ExternalType modifiedObject) throws GuacamoleException {
+
+        // Validate that data was provided
+        if (modifiedObject == null)
+            throw new GuacamoleClientException("Data must be submitted when updating objects.");
+
+        // Perform update
         translator.applyExternalChanges(object, modifiedObject);
         directory.update(object);
+
     }
 
     /**
