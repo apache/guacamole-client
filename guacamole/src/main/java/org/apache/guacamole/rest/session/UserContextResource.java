@@ -19,12 +19,19 @@
 
 package org.apache.guacamole.rest.session;
 
+import org.apache.guacamole.rest.directory.DirectoryResource;
+import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
+import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.rest.connection.APIConnection;
 
 /**
  * A REST resource which exposes the contents of a particular UserContext.
@@ -41,6 +48,13 @@ public class UserContextResource {
     private final UserContext userContext;
 
     /**
+     * Factory for creating DirectoryResources which expose a given
+     * Connection Directory.
+     */
+    @Inject
+    private DirectoryResourceFactory<Connection, APIConnection> connectionDirectoryResourceFactory;
+
+    /**
      * Creates a new UserContextResource which exposes the data within the
      * given UserContext.
      *
@@ -51,6 +65,24 @@ public class UserContextResource {
     @AssistedInject
     public UserContextResource(@Assisted UserContext userContext) {
         this.userContext = userContext;
+    }
+
+    /**
+     * Returns a new resource which represents the Connection Directory
+     * contained within the UserContext exposed by this UserContextResource.
+     *
+     * @return
+     *     A new resource which represents the Connection Directory contained
+     *     within the UserContext exposed by this UserContextResource.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the Connection Directory.
+     */
+    @Path("connections")
+    public DirectoryResource<Connection, APIConnection> getConnectionDirectoryResource()
+            throws GuacamoleException {
+        return connectionDirectoryResourceFactory.create(userContext,
+                userContext.getConnectionDirectory());
     }
 
 }
