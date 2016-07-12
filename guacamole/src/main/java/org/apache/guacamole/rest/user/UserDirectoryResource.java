@@ -21,6 +21,7 @@ package org.apache.guacamole.rest.user;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import java.util.UUID;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -87,6 +88,17 @@ public class UserDirectoryResource extends DirectoryResource<User, APIUser> {
         this.userContext = userContext;
         this.directory = directory;
         this.resourceFactory = resourceFactory;
+    }
+
+    @Override
+    public APIUser createObject(APIUser object) throws GuacamoleException {
+
+        // Randomly set the password if it wasn't provided
+        if (object.getPassword() == null)
+            object.setPassword(UUID.randomUUID().toString());
+
+        return super.createObject(object);
+
     }
 
     @Override
