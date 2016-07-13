@@ -23,6 +23,7 @@ import com.google.inject.matcher.AbstractMatcher;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import javax.ws.rs.HttpMethod;
+import javax.ws.rs.Path;
 import org.apache.guacamole.GuacamoleException;
 
 /**
@@ -67,7 +68,7 @@ public class RESTMethodMatcher extends AbstractMatcher<Method> {
     /**
      * Returns whether the given method is annotated as a REST method. A REST
      * method is annotated with an annotation which is annotated with
-     * <code>@HttpMethod</code>.
+     * <code>@HttpMethod</code> or <code>@Path</code>.
      *
      * @param method
      *     The method to test.
@@ -84,6 +85,10 @@ public class RESTMethodMatcher extends AbstractMatcher<Method> {
             // A method is a REST method if it is annotated with @HttpMethod
             Class<? extends Annotation> annotationType = annotation.annotationType();
             if (annotationType.isAnnotationPresent(HttpMethod.class))
+                return true;
+
+            // A method is a REST method if it is annotated with @Path
+            if (Path.class.isAssignableFrom(annotationType))
                 return true;
 
         }
