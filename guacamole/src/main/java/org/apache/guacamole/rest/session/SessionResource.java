@@ -31,6 +31,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSession;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.rest.ObjectRetrievalService;
+import org.apache.guacamole.rest.tunnel.TunnelCollectionResource;
 
 /**
  * A REST resource which exposes all data associated with a Guacamole user's
@@ -99,6 +100,19 @@ public class SessionResource {
         // Return a resource exposing the retrieved UserContext
         return userContextResourceFactory.create(userContext);
 
+    }
+
+    /**
+     * Retrieves a resource representing all tunnels associated with session
+     * exposed by this SessionResource.
+     *
+     * @return
+     *     A resource representing all tunnels associated with the
+     *     AuthenticationProvider having the given identifier.
+     */
+    @Path("tunnels")
+    public TunnelCollectionResource getTunnelCollectionResource() {
+        return new TunnelCollectionResource(session);
     }
 
 }

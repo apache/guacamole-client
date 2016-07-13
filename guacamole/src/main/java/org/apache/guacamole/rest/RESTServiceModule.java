@@ -39,7 +39,6 @@ import org.apache.guacamole.rest.connectiongroup.ConnectionGroupModule;
 import org.apache.guacamole.rest.language.LanguageRESTService;
 import org.apache.guacamole.rest.patch.PatchRESTService;
 import org.apache.guacamole.rest.session.SessionResourceFactory;
-import org.apache.guacamole.rest.tunnel.TunnelRESTService;
 import org.apache.guacamole.rest.user.UserModule;
 
 /**
@@ -90,7 +89,6 @@ public class RESTServiceModule extends ServletModule {
         bind(LanguageRESTService.class);
         bind(PatchRESTService.class);
         bind(TokenRESTService.class);
-        bind(TunnelRESTService.class);
 
         // Root-level resources
         bind(SessionRESTService.class);
