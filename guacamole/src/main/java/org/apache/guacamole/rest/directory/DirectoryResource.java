@@ -158,6 +158,7 @@ public class DirectoryResource<InternalType extends Identifiable, ExternalType> 
             identifiers = objectPermissions.getAccessibleObjects(permissions, identifiers);
         }
 
+        // Translate each retrieved object into the corresponding external object
         Map<String, ExternalType> apiObjects = new HashMap<String, ExternalType>();
         for (InternalType object : directory.getAll(identifiers))
             apiObjects.put(object.getIdentifier(), translator.toExternalObject(object));
