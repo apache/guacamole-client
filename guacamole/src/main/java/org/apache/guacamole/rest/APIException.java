@@ -21,6 +21,7 @@ package org.apache.guacamole.rest;
 
 import java.util.Collection;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.protocol.GuacamoleStatus;
@@ -44,7 +45,10 @@ public class APIException extends WebApplicationException {
      *     The error that occurred.
      */
     public APIException(APIError error) {
-        super(Response.status(error.getType().getStatus()).entity(error).build());
+        super(Response.status(error.getType().getStatus())
+                .type(MediaType.APPLICATION_JSON)
+                .entity(error)
+                .build());
     }
 
     /**
