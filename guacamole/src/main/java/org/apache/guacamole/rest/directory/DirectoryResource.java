@@ -130,8 +130,8 @@ public class DirectoryResource<InternalType extends Identifiable, ExternalType> 
      *
      * @param permissions
      *     The set of permissions to filter with. A user must have one or more
-     *     of these permissions for a user to appear in the result.
-     *     If null, no filtering will be performed.
+     *     of these permissions for the affected objects to appear in the
+     *     result. If null, no filtering will be performed.
      *
      * @return
      *     A map of all visible objects. If a permission was specified, this
