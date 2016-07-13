@@ -30,7 +30,6 @@ import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSession;
 import org.apache.guacamole.net.auth.UserContext;
-import org.apache.guacamole.rest.ObjectRetrievalService;
 import org.apache.guacamole.rest.tunnel.TunnelCollectionResource;
 
 /**
@@ -47,12 +46,6 @@ public class SessionResource {
      * The GuacamoleSession being exposed by this SessionResource.
      */
     private final GuacamoleSession session;
-
-    /**
-     * Service for convenient retrieval of objects.
-     */
-    @Inject
-    private ObjectRetrievalService retrievalService;
 
     /**
      * Factory for creating UserContextResources which expose a given
@@ -95,7 +88,7 @@ public class SessionResource {
             throws GuacamoleException {
 
         // Pull UserContext defined by the given auth provider identifier
-        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
+        UserContext userContext = session.getUserContext(authProviderIdentifier);
 
         // Return a resource exposing the retrieved UserContext
         return userContextResourceFactory.create(userContext);

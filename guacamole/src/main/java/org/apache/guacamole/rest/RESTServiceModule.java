@@ -82,9 +82,6 @@ public class RESTServiceModule extends ServletModule {
         requestInjection(interceptor);
         bindInterceptor(Matchers.any(), new RESTMethodMatcher(), interceptor);
 
-        // Bind convenience services used by the REST API
-        bind(ObjectRetrievalService.class);
-
         // Set up the API endpoints
         bind(LanguageRESTService.class);
         bind(PatchRESTService.class);
