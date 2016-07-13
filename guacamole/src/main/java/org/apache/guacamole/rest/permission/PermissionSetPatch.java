@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.rest.user;
+package org.apache.guacamole.rest.permission;
 
 import java.util.HashSet;
 import java.util.Set;

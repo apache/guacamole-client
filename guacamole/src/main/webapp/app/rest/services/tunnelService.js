@@ -62,7 +62,7 @@ angular.module('rest').factory('tunnelService', ['$injector',
         // Retrieve tunnels
         return $http({
             method  : 'GET',
-            url     : 'api/tunnels',
+            url     : 'api/session/tunnels',
             params  : httpParameters
         });
 
@@ -100,7 +100,7 @@ angular.module('rest').factory('tunnelService', ['$injector',
         // Build download URL
         var url = $window.location.origin
                 + $window.location.pathname
-                + 'api/tunnels/' + encodeURIComponent(tunnel)
+                + 'api/session/tunnels/' + encodeURIComponent(tunnel)
                 + '/streams/' + encodeURIComponent(stream.index)
                 + '/' + encodeURIComponent(filename)
                 + '?token=' + encodeURIComponent(authenticationService.getCurrentToken());
@@ -163,7 +163,7 @@ angular.module('rest').factory('tunnelService', ['$injector',
         // Build upload URL
         var url = $window.location.origin
                 + $window.location.pathname
-                + 'api/tunnels/' + encodeURIComponent(tunnel)
+                + 'api/session/tunnels/' + encodeURIComponent(tunnel)
                 + '/streams/' + encodeURIComponent(stream.index)
                 + '/' + encodeURIComponent(file.name)
                 + '?token=' + encodeURIComponent(authenticationService.getCurrentToken());

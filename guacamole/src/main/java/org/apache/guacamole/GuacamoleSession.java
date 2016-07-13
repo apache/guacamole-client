@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.tunnel.StreamInterceptingTunnel;
 import org.slf4j.Logger;
@@ -124,6 +125,44 @@ public class GuacamoleSession {
      */
     public List<UserContext> getUserContexts() {
         return Collections.unmodifiableList(userContexts);
+    }
+
+    /**
+     * Returns the UserContext associated with this session that originated
+     * from the AuthenticationProvider with the given identifier. If no such
+     * UserContext exists, an exception is thrown.
+     *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider that created the
+     *     UserContext being retrieved.
+     *
+     * @return
+     *     The UserContext that was created by the AuthenticationProvider
+     *     having the given identifier.
+     *
+     * @throws GuacamoleException
+     *     If no such UserContext exists.
+     */
+    public UserContext getUserContext(String authProviderIdentifier)
+            throws GuacamoleException {
+
+        // Locate and return the UserContext associated with the
+        // AuthenticationProvider having the given identifier, if any
+        for (UserContext userContext : getUserContexts()) {
+
+            // Get AuthenticationProvider associated with current UserContext
+            AuthenticationProvider authProvider = userContext.getAuthenticationProvider();
+
+            // If AuthenticationProvider identifier matches, done
+            if (authProvider.getIdentifier().equals(authProviderIdentifier))
+                return userContext;
+
+        }
+
+        throw new GuacamoleResourceNotFoundException("Session not associated "
+                + "with authentication provider \"" + authProviderIdentifier + "\".");
+
+
     }
 
     /**

@@ -60,7 +60,7 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
         // Retrieve tunnels
         return $http({
             method  : 'GET',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/activeConnections',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/activeConnections',
             params  : httpParameters
         });
 
@@ -159,7 +159,7 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
         // Perform active connection deletion via PATCH
         return $http({
             method  : 'PATCH',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/activeConnections',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/activeConnections',
             params  : httpParameters,
             data    : activeConnectionPatch
         });

@@ -227,14 +227,14 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
                         PermissionSet.ObjectPermissionType.DELETE
                     ]);
 
-                userPromise.then(function usersReceived(userArrays) {
+                userPromise.then(function usersReceived(allUsers) {
 
                     var addedUsers = {};
                     $scope.manageableUsers = [];
 
                     // For each user in each data source
                     angular.forEach(dataSources, function addUserList(dataSource) {
-                        angular.forEach(userArrays[dataSource], function addUser(user) {
+                        angular.forEach(allUsers[dataSource], function addUser(user) {
 
                             // Do not add the same user twice
                             if (addedUsers[user.username])

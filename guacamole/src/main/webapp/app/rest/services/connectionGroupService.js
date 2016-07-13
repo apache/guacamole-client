@@ -73,7 +73,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
         return $http({
             cache   : cacheService.connections,
             method  : 'GET',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroupID) + '/tree',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroupID) + '/tree',
             params  : httpParameters
         });
        
@@ -106,7 +106,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
         return $http({
             cache   : cacheService.connections,
             method  : 'GET',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroupID),
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroupID),
             params  : httpParameters
         });
 
@@ -136,7 +136,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
         if (!connectionGroup.identifier) {
             return $http({
                 method  : 'POST',
-                url     : 'api/data/' + encodeURIComponent(dataSource) + '/connectionGroups',
+                url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups',
                 params  : httpParameters,
                 data    : connectionGroup
             })
@@ -152,7 +152,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
         else {
             return $http({
                 method  : 'PUT',
-                url     : 'api/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
+                url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
                 params  : httpParameters,
                 data    : connectionGroup
             })
@@ -185,7 +185,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
         // Delete connection group
         return $http({
             method  : 'DELETE',
-            url     : 'api/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
             params  : httpParameters
         })
 

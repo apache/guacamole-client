@@ -31,7 +31,6 @@ import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.UserContext;
-import org.apache.guacamole.rest.ObjectRetrievalService;
 import org.apache.guacamole.rest.auth.AuthenticationService;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 import org.slf4j.Logger;
@@ -60,12 +59,6 @@ public class TunnelRequestService {
      */
     @Inject
     private AuthenticationService authenticationService;
-
-    /**
-     * Service for convenient retrieval of objects.
-     */
-    @Inject
-    private ObjectRetrievalService retrievalService;
 
     /**
      * Reads and returns the client information provided within the given
@@ -327,7 +320,7 @@ public class TunnelRequestService {
         GuacamoleClientInformation info = getClientInformation(request);
 
         GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
-        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
+        UserContext userContext = session.getUserContext(authProviderIdentifier);
 
         try {
 

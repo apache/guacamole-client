@@ -19,26 +19,27 @@
 
 package org.apache.guacamole.rest;
 
+import org.apache.guacamole.rest.session.UserContextResourceFactory;
+import org.apache.guacamole.rest.session.SessionRESTService;
 import com.google.inject.Scopes;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import org.aopalliance.intercept.MethodInterceptor;
+import org.apache.guacamole.rest.activeconnection.ActiveConnectionModule;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.apache.guacamole.rest.auth.TokenRESTService;
-import org.apache.guacamole.rest.connection.ConnectionRESTService;
-import org.apache.guacamole.rest.connectiongroup.ConnectionGroupRESTService;
-import org.apache.guacamole.rest.activeconnection.ActiveConnectionRESTService;
 import org.apache.guacamole.rest.auth.AuthTokenGenerator;
 import org.apache.guacamole.rest.auth.AuthenticationService;
 import org.apache.guacamole.rest.auth.SecureRandomAuthTokenGenerator;
 import org.apache.guacamole.rest.auth.TokenSessionMap;
-import org.apache.guacamole.rest.history.HistoryRESTService;
+import org.apache.guacamole.rest.connection.ConnectionModule;
+import org.apache.guacamole.rest.connectiongroup.ConnectionGroupModule;
 import org.apache.guacamole.rest.language.LanguageRESTService;
 import org.apache.guacamole.rest.patch.PatchRESTService;
-import org.apache.guacamole.rest.schema.SchemaRESTService;
-import org.apache.guacamole.rest.tunnel.TunnelRESTService;
-import org.apache.guacamole.rest.user.UserRESTService;
+import org.apache.guacamole.rest.session.SessionResourceFactory;
+import org.apache.guacamole.rest.user.UserModule;
 
 /**
  * A Guice Module to set up the servlet mappings and authentication-specific
@@ -81,20 +82,21 @@ public class RESTServiceModule extends ServletModule {
         requestInjection(interceptor);
         bindInterceptor(Matchers.any(), new RESTMethodMatcher(), interceptor);
 
-        // Bind convenience services used by the REST API
-        bind(ObjectRetrievalService.class);
-
         // Set up the API endpoints
-        bind(ActiveConnectionRESTService.class);
-        bind(ConnectionGroupRESTService.class);
-        bind(ConnectionRESTService.class);
-        bind(HistoryRESTService.class);
         bind(LanguageRESTService.class);
         bind(PatchRESTService.class);
-        bind(SchemaRESTService.class);
         bind(TokenRESTService.class);
-        bind(TunnelRESTService.class);
-        bind(UserRESTService.class);
+
+        // Root-level resources
+        bind(SessionRESTService.class);
+        install(new FactoryModuleBuilder().build(SessionResourceFactory.class));
+        install(new FactoryModuleBuilder().build(UserContextResourceFactory.class));
+
+        // Resources below root
+        install(new ActiveConnectionModule());
+        install(new ConnectionModule());
+        install(new ConnectionGroupModule());
+        install(new UserModule());
 
         // Set up the servlet and JSON mappings
         bind(GuiceContainer.class);
