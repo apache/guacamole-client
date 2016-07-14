@@ -107,6 +107,21 @@ public interface UserContext {
             throws GuacamoleException;
 
     /**
+     * Retrieves a Directory which can be used to view and manipulate
+     * sharing profiles and their configurations, but only as allowed by the
+     * permissions given to the user.
+     *
+     * @return
+     *     A Directory whose operations are bound by the permissions of the
+     *     user.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while creating the Directory.
+     */
+    Directory<SharingProfile> getSharingProfileDirectory()
+            throws GuacamoleException;
+
+    /**
      * Retrieves all connection records visible to current user. The resulting
      * set of connection records can be further filtered and ordered using the
      * methods defined on ConnectionRecordSet.
@@ -164,5 +179,16 @@ public interface UserContext {
      *     A collection of all attributes applicable to connection groups.
      */
     Collection<Form> getConnectionGroupAttributes();
+
+    /**
+     * Retrieves a collection of all attributes applicable to sharing profiles.
+     * This collection will contain only those attributes which the current user
+     * has general permission to view or modify. If there are no such
+     * attributes, this collection will be empty.
+     *
+     * @return
+     *     A collection of all attributes applicable to sharing profile.
+     */
+    Collection<Form> getSharingProfileAttributes();
 
 }

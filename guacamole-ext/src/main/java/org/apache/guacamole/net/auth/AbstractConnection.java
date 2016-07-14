@@ -19,6 +19,9 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.Collections;
+import java.util.Set;
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -74,6 +77,12 @@ public abstract class AbstractConnection extends AbstractIdentifiable
     @Override
     public void setConfiguration(GuacamoleConfiguration configuration) {
         this.configuration = configuration;
+    }
+
+    @Override
+    public Set<String> getSharingProfileIdentifiers()
+            throws GuacamoleException {
+        return Collections.<String>emptySet();
     }
 
 }
