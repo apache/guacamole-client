@@ -19,8 +19,6 @@
 
 package org.apache.guacamole.rest.directory;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -51,7 +49,7 @@ import org.apache.guacamole.net.auth.Identifiable;
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class DirectoryObjectResource<InternalType extends Identifiable, ExternalType> {
+public abstract class DirectoryObjectResource<InternalType extends Identifiable, ExternalType> {
 
     /**
      * The Directory which contains the object represented by this
@@ -84,9 +82,7 @@ public class DirectoryObjectResource<InternalType extends Identifiable, External
      *     A DirectoryObjectTranslator implementation which handles the type of
      *     object given.
      */
-    @AssistedInject
-    public DirectoryObjectResource(@Assisted Directory<InternalType> directory,
-            @Assisted InternalType object,
+    public DirectoryObjectResource(Directory<InternalType> directory, InternalType object,
             DirectoryObjectTranslator<InternalType, ExternalType> translator) {
         this.directory = directory;
         this.object = object;

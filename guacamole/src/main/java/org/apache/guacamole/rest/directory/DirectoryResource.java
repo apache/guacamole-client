@@ -19,8 +19,6 @@
 
 package org.apache.guacamole.rest.directory;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +67,7 @@ import org.apache.guacamole.rest.PATCH;
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class DirectoryResource<InternalType extends Identifiable, ExternalType> {
+public abstract class DirectoryResource<InternalType extends Identifiable, ExternalType> {
 
     /**
      * The UserContext associated with the Directory being exposed by this
@@ -113,9 +111,7 @@ public class DirectoryResource<InternalType extends Identifiable, ExternalType> 
      *     A factory which can be used to create instances of resources
      *     representing individual objects contained within the given Directory.
      */
-    @AssistedInject
-    public DirectoryResource(@Assisted UserContext userContext,
-            @Assisted Directory<InternalType> directory,
+    public DirectoryResource(UserContext userContext, Directory<InternalType> directory,
             DirectoryObjectTranslator<InternalType, ExternalType> translator,
             DirectoryObjectResourceFactory<InternalType, ExternalType> resourceFactory) {
         this.userContext = userContext;
