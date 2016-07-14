@@ -37,7 +37,6 @@ import org.apache.guacamole.tunnel.StreamInterceptingTunnel;
  *
  * @author Michael Jumper
  */
-@Path("/tunnels")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TunnelCollectionResource {
