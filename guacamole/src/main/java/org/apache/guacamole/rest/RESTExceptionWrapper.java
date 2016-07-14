@@ -172,6 +172,11 @@ public class RESTExceptionWrapper implements MethodInterceptor {
 
             }
 
+            // Rethrow unchecked exceptions such that they are properly wrapped
+            catch (RuntimeException e) {
+                throw new GuacamoleException(e.getMessage(), e);
+            }
+
         }
 
         // Additional credentials are needed
@@ -267,17 +272,21 @@ public class RESTExceptionWrapper implements MethodInterceptor {
         // All other errors
         catch (GuacamoleException e) {
 
-            // Generate default message
+            // Log all reasonable details of exception
             String message = e.getMessage();
-            if (message == null)
-                message = "Unexpected server error.";
+            if (message != null)
+                logger.error("Unexpected internal error: {}", message);
+            else
+                logger.error("An internal error occurred, but did not contain "
+                           + "an error message. Enable debug-level logging for "
+                           + "details.");
 
-            // Ensure internal errors are logged at the debug level
+            // Ensure internal errors are fully logged at the debug level
             logger.debug("Unexpected exception in REST endpoint.", e);
 
             throw new APIException(
                 APIError.Type.INTERNAL_ERROR,
-                message
+                "Unexpected server error."
             );
 
         }
