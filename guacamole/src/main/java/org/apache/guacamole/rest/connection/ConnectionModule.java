@@ -27,6 +27,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
+import org.apache.guacamole.rest.directory.DirectoryResource;
 
 /**
  * Guice Module which configures injections required for handling Connection
@@ -41,6 +42,10 @@ public class ConnectionModule extends AbstractModule {
 
         // Create the required DirectoryResourceFactory implementation
         install(new FactoryModuleBuilder()
+                .implement(
+                    new TypeLiteral<DirectoryResource<Connection, APIConnection>>() {},
+                    ConnectionDirectoryResource.class
+                )
                 .build(new TypeLiteral<DirectoryResourceFactory<Connection, APIConnection>>() {}));
 
         // Create the required DirectoryObjectResourceFactory implementation

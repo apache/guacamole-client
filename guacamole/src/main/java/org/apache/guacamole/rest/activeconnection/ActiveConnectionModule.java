@@ -27,6 +27,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.rest.directory.DirectoryObjectResource;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
+import org.apache.guacamole.rest.directory.DirectoryResource;
 
 /**
  * Guice Module which configures injections required for handling
@@ -41,6 +42,10 @@ public class ActiveConnectionModule extends AbstractModule {
 
         // Create the required DirectoryResourceFactory implementation
         install(new FactoryModuleBuilder()
+                .implement(
+                    new TypeLiteral<DirectoryResource<ActiveConnection, APIActiveConnection>>() {},
+                    ActiveConnectionDirectoryResource.class
+                )
                 .build(new TypeLiteral<DirectoryResourceFactory<ActiveConnection, APIActiveConnection>>() {}));
 
         // Create the required DirectoryObjectResourceFactory implementation
