@@ -28,7 +28,7 @@ import org.apache.guacamole.net.GuacamoleTunnel;
  *
  * @author Michael Jumper
  */
-public interface ActiveConnection extends Identifiable {
+public interface ActiveConnection extends Identifiable, Shareable<SharingProfile> {
 
     /**
      * Returns the identifier of the connection being actively used. Unlike the
