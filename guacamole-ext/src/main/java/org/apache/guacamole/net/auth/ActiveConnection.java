@@ -47,7 +47,24 @@ public interface ActiveConnection extends Identifiable {
      *     The identifier of the connection being actively used.
      */
     void setConnectionIdentifier(String connnectionIdentifier);
-    
+
+    /**
+     * Returns the identifier of the sharing profile being actively used. If
+     * the connection is being accessed directly, this will be null.
+     *
+     * @return
+     *     The identifier of the sharing profile being actively used.
+     */
+    String getSharingProfileIdentifier();
+
+    /**
+     * Sets the identifier of the sharing profile being actively used.
+     *
+     * @param sharingProfileIdentifier
+     *     The identifier of the sharing profile being actively used.
+     */
+    void setSharingProfileIdentifier(String sharingProfileIdentifier);
+
     /**
      * Returns the date and time the connection began.
      *

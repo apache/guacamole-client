@@ -37,6 +37,11 @@ public abstract class AbstractActiveConnection extends AbstractIdentifiable
     private String connectionIdentifier;
 
     /**
+     * The identifier of the associated sharing profile.
+     */
+    private String sharingProfileIdentifier;
+
+    /**
      * The date and time this active connection began.
      */
     private Date startDate;
@@ -64,6 +69,16 @@ public abstract class AbstractActiveConnection extends AbstractIdentifiable
     @Override
     public void setConnectionIdentifier(String connnectionIdentifier) {
         this.connectionIdentifier = connnectionIdentifier;
+    }
+
+    @Override
+    public String getSharingProfileIdentifier() {
+        return sharingProfileIdentifier;
+    }
+
+    @Override
+    public void setSharingProfileIdentifier(String sharingProfileIdentifier) {
+        this.sharingProfileIdentifier = sharingProfileIdentifier;
     }
 
     @Override
