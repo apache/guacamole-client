@@ -112,6 +112,20 @@ public interface User extends Identifiable {
             throws GuacamoleException;
 
     /**
+     * Returns all sharing profile permissions given to this user.
+     *
+     * @return
+     *     An ObjectPermissionSet of all sharing profile permissions granted to
+     *     this user.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving permissions, or if reading all
+     *     permissions is not allowed.
+     */
+    ObjectPermissionSet getSharingProfilePermissions()
+            throws GuacamoleException;
+
+    /**
      * Returns all permissions given to this user regarding currently-active
      * connections.
      *
