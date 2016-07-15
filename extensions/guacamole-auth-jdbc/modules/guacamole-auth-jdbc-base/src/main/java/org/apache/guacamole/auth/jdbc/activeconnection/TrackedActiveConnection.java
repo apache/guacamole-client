@@ -20,11 +20,14 @@
 package org.apache.guacamole.auth.jdbc.activeconnection;
 
 import java.util.Date;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
 import org.apache.guacamole.auth.jdbc.tunnel.ActiveConnectionRecord;
 import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.ActiveConnection;
+import org.apache.guacamole.net.auth.credentials.UserCredentials;
 
 /**
  * An implementation of the ActiveConnection object which has an associated
@@ -43,6 +46,11 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
      * The identifier of the associated connection.
      */
     private String connectionIdentifier;
+
+    /**
+     * The identifier of the associated sharing profile.
+     */
+    private String sharingProfileIdentifier;
 
     /**
      * The date and time this active connection began.
@@ -90,9 +98,10 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
         super.init(currentUser);
         
         // Copy all non-sensitive data from given record
-        this.connectionIdentifier = activeConnectionRecord.getConnection().getIdentifier();
-        this.identifier           = activeConnectionRecord.getUUID().toString();
-        this.startDate            = activeConnectionRecord.getStartDate();
+        this.connectionIdentifier     = activeConnectionRecord.getConnectionIdentifier();
+        this.sharingProfileIdentifier = activeConnectionRecord.getSharingProfileIdentifier();
+        this.identifier               = activeConnectionRecord.getUUID().toString();
+        this.startDate                = activeConnectionRecord.getStartDate();
 
         // Include sensitive data, too, if requested
         if (includeSensitiveInformation) {
@@ -121,6 +130,22 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
     @Override
     public void setConnectionIdentifier(String connnectionIdentifier) {
         this.connectionIdentifier = connnectionIdentifier;
+    }
+
+    @Override
+    public String getSharingProfileIdentifier() {
+        return sharingProfileIdentifier;
+    }
+
+    @Override
+    public void setSharingProfileIdentifier(String sharingProfileIdentifier) {
+        this.sharingProfileIdentifier = sharingProfileIdentifier;
+    }
+
+    @Override
+    public UserCredentials getSharingCredentials(String identifier)
+            throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied");
     }
 
     @Override

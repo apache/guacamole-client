@@ -26,6 +26,7 @@ import org.apache.guacamole.auth.jdbc.connection.ConnectionDirectory;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Collection;
+import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
 import org.apache.guacamole.auth.jdbc.activeconnection.ActiveConnectionDirectory;
@@ -38,7 +39,9 @@ import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 
 /**
  * UserContext implementation which is driven by an arbitrary, underlying
@@ -135,6 +138,12 @@ public class UserContext extends RestrictedObject
     }
 
     @Override
+    public Directory<SharingProfile> getSharingProfileDirectory()
+            throws GuacamoleException {
+        return new SimpleDirectory<SharingProfile>();
+    }
+
+    @Override
     public Directory<ActiveConnection> getActiveConnectionDirectory()
             throws GuacamoleException {
         return activeConnectionDirectory;
@@ -171,6 +180,11 @@ public class UserContext extends RestrictedObject
     @Override
     public Collection<Form> getConnectionGroupAttributes() {
         return ModeledConnectionGroup.ATTRIBUTES;
+    }
+
+    @Override
+    public Collection<Form> getSharingProfileAttributes() {
+        return Collections.<Form>emptyList();
     }
 
 }

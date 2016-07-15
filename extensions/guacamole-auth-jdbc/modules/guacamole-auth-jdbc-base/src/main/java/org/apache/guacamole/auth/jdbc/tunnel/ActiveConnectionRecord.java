@@ -172,6 +172,16 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     }
 
     @Override
+    public String getSharingProfileIdentifier() {
+        return null;
+    }
+
+    @Override
+    public String getSharingProfileName() {
+        return null;
+    }
+
+    @Override
     public Date getStartDate() {
         return startDate;
     }
