@@ -28,7 +28,7 @@ import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.UserContext;
-import org.apache.guacamole.tunnel.StreamInterceptingTunnel;
+import org.apache.guacamole.tunnel.UserTunnel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,8 +59,8 @@ public class GuacamoleSession {
     /**
      * All currently-active tunnels, indexed by tunnel UUID.
      */
-    private final Map<String, StreamInterceptingTunnel> tunnels =
-            new ConcurrentHashMap<String, StreamInterceptingTunnel>();
+    private final Map<String, UserTunnel> tunnels =
+            new ConcurrentHashMap<String, UserTunnel>();
 
     /**
      * The last time this session was accessed.
@@ -196,7 +196,7 @@ public class GuacamoleSession {
      *
      * @return A map of all active tunnels associated with this session.
      */
-    public Map<String, StreamInterceptingTunnel> getTunnels() {
+    public Map<String, UserTunnel> getTunnels() {
         return tunnels;
     }
 
@@ -206,7 +206,7 @@ public class GuacamoleSession {
      *
      * @param tunnel The tunnel to associate with this session.
      */
-    public void addTunnel(StreamInterceptingTunnel tunnel) {
+    public void addTunnel(UserTunnel tunnel) {
         tunnels.put(tunnel.getUUID().toString(), tunnel);
     }
 

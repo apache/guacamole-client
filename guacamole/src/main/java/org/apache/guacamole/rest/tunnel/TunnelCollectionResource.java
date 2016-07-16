@@ -30,7 +30,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleSession;
-import org.apache.guacamole.tunnel.StreamInterceptingTunnel;
+import org.apache.guacamole.tunnel.UserTunnel;
 
 /**
  * A REST resource which exposes the active tunnels of a Guacamole session.
@@ -89,10 +89,10 @@ public class TunnelCollectionResource {
     public TunnelResource getTunnel(@PathParam("tunnel") String tunnelUUID)
             throws GuacamoleException {
 
-        Map<String, StreamInterceptingTunnel> tunnels = session.getTunnels();
+        Map<String, UserTunnel> tunnels = session.getTunnels();
 
         // Pull tunnel with given UUID
-        final StreamInterceptingTunnel tunnel = tunnels.get(tunnelUUID);
+        final UserTunnel tunnel = tunnels.get(tunnelUUID);
         if (tunnel == null)
             throw new GuacamoleResourceNotFoundException("No such tunnel.");
 

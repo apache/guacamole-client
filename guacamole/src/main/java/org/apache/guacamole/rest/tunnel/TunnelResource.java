@@ -27,7 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.tunnel.StreamInterceptingTunnel;
+import org.apache.guacamole.tunnel.UserTunnel;
 
 /**
  * A REST resource which abstracts the operations available for an individual
@@ -48,7 +48,7 @@ public class TunnelResource {
     /**
      * The tunnel that this TunnelResource represents.
      */
-    private final StreamInterceptingTunnel tunnel;
+    private final UserTunnel tunnel;
 
     /**
      * Creates a new TunnelResource which exposes the operations and
@@ -57,7 +57,7 @@ public class TunnelResource {
      * @param tunnel
      *     The tunnel that this TunnelResource should represent.
      */
-    public TunnelResource(StreamInterceptingTunnel tunnel) {
+    public TunnelResource(UserTunnel tunnel) {
         this.tunnel = tunnel;
     }
 
