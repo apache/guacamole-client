@@ -23,7 +23,9 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
@@ -113,6 +115,31 @@ public class ActiveConnectionResource
         return connectionDirectoryResourceFactory
                 .create(userContext, userContext.getConnectionDirectory())
                 .getObjectResource(activeConnection.getConnectionIdentifier());
+
+    }
+
+    /**
+     * Retrieves a set of credentials which can be POSTed by another user to the
+     * "/api/tokens" endpoint to obtain access strictly to this connection. The
+     * retrieved credentials may be purpose-generated and temporary.
+     *
+     * @param sharingProfileIdentifier The identifier of the sharing connection
+     * defining the semantics of the shared session.
+     *
+     * @return The set of credentials which should be used to access strictly
+     * this connection.
+     *
+     * @throws GuacamoleException If an error occurs while retrieving the
+     * sharing credentials for this connection.
+     */
+    @GET
+    @Path("sharingCredentials/{sharingProfile}")
+    public APIUserCredentials getSharingCredentials(
+            @PathParam("sharingProfile") String sharingProfileIdentifier)
+            throws GuacamoleException {
+
+        // Generate and return sharing credentials for the active connection
+        return new APIUserCredentials(activeConnection.getSharingCredentials(sharingProfileIdentifier));
 
     }
 
