@@ -69,6 +69,36 @@ angular.module('rest').factory('tunnelService', ['$injector',
     };
 
     /**
+     * Retrieves the set of sharing profiles that the current user can use to
+     * share the active connection of the given tunnel.
+     *
+     * @param {String} tunnel
+     *     The UUID of the tunnel associated with the Guacamole connection
+     *     whose sharing profiles are being retrieved.
+     *
+     * @returns {Promise.<Object.<String, SharingProfile>>}
+     *     A promise which will resolve with a map of @link{SharingProfile}
+     *     objects where each key is the identifier of the corresponding
+     *     sharing profile.
+     */
+    service.getSharingProfiles = function getSharingProfiles(tunnel) {
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Retrieve all associated sharing profiles
+        return $http({
+            method  : 'GET',
+            url     : 'api/session/tunnels/' + encodeURIComponent(tunnel)
+                        + '/activeConnection/connection/sharingProfiles',
+            params  : httpParameters
+        });
+
+    };
+
+    /**
      * Makes a request to the REST API to generate credentials which have
      * access strictly to the active connection associated with the given
      * tunnel, using the restrictions defined by the given sharing profile,
