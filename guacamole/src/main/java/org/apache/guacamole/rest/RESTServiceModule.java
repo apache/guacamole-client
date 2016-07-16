@@ -39,6 +39,7 @@ import org.apache.guacamole.rest.connectiongroup.ConnectionGroupModule;
 import org.apache.guacamole.rest.language.LanguageRESTService;
 import org.apache.guacamole.rest.patch.PatchRESTService;
 import org.apache.guacamole.rest.session.SessionResourceFactory;
+import org.apache.guacamole.rest.sharingprofile.SharingProfileModule;
 import org.apache.guacamole.rest.user.UserModule;
 
 /**
@@ -96,6 +97,7 @@ public class RESTServiceModule extends ServletModule {
         install(new ActiveConnectionModule());
         install(new ConnectionModule());
         install(new ConnectionGroupModule());
+        install(new SharingProfileModule());
         install(new UserModule());
 
         // Set up the servlet and JSON mappings
