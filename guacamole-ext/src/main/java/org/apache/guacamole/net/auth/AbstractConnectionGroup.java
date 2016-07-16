@@ -24,17 +24,13 @@ package org.apache.guacamole.net.auth;
  *
  * @author James Muehlner
  */
-public abstract class AbstractConnectionGroup implements ConnectionGroup {
+public abstract class AbstractConnectionGroup extends AbstractIdentifiable
+        implements ConnectionGroup {
 
     /**
      * The name associated with this connection group.
      */
     private String name;
-
-    /**
-     * The unique identifier associated with this connection group.
-     */
-    private String identifier;
 
     /**
      * The unique identifier of the parent connection group for
@@ -58,16 +54,6 @@ public abstract class AbstractConnectionGroup implements ConnectionGroup {
     }
 
     @Override
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    @Override
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    @Override
     public String getParentIdentifier() {
         return parentIdentifier;
     }
@@ -85,30 +71,6 @@ public abstract class AbstractConnectionGroup implements ConnectionGroup {
     @Override
     public void setType(ConnectionGroup.Type type) {
         this.type = type;
-    }
-
-    @Override
-    public int hashCode() {
-        if (identifier == null) return 0;
-        return identifier.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-
-        // Not equal if null or not a ConnectionGroup
-        if (obj == null) return false;
-        if (!(obj instanceof AbstractConnectionGroup)) return false;
-
-        // Get identifier
-        String objIdentifier = ((AbstractConnectionGroup) obj).identifier;
-
-        // If null, equal only if this identifier is null
-        if (objIdentifier == null) return identifier == null;
-
-        // Otherwise, equal only if strings are identical
-        return objIdentifier.equals(identifier);
-
     }
 
 }

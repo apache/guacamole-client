@@ -22,12 +22,14 @@ package org.apache.guacamole.net.auth;
 import java.util.Date;
 import org.apache.guacamole.net.GuacamoleTunnel;
 
-public abstract class AbstractActiveConnection implements ActiveConnection {
-
-    /**
-     * The identifier of this active connection.
-     */
-    private String identifier;
+/**
+ * Base implementation of an ActiveConnection, providing storage and simply
+ * getters/setters for its main properties.
+ *
+ * @author Michael Jumper
+ */
+public abstract class AbstractActiveConnection extends AbstractIdentifiable
+        implements ActiveConnection {
 
     /**
      * The identifier of the associated connection.
@@ -54,16 +56,6 @@ public abstract class AbstractActiveConnection implements ActiveConnection {
      */
     private GuacamoleTunnel tunnel;
 
-    @Override
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    @Override
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
- 
     @Override
     public String getConnectionIdentifier() {
         return connectionIdentifier;
