@@ -69,6 +69,43 @@ angular.module('rest').factory('tunnelService', ['$injector',
     };
 
     /**
+     * Makes a request to the REST API to generate credentials which have
+     * access strictly to the active connection associated with the given
+     * tunnel, using the restrictions defined by the given sharing profile,
+     * returning a promise that provides the resulting @link{UserCredentials}
+     * object if successful.
+     *
+     * @param {String} tunnel
+     *     The UUID of the tunnel associated with the Guacamole connection
+     *     being shared.
+     *
+     * @param {String} sharingProfile
+     *     The identifier of the connection object dictating the
+     *     semantics/restrictions which apply to the shared session.
+     *
+     * @returns {Promise.<UserCredentials>}
+     *     A promise which will resolve with a @link{UserCredentials} object
+     *     upon success.
+     */
+    service.getSharingCredentials = function getSharingCredentials(tunnel, sharingProfile) {
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Generate sharing credentials
+        return $http({
+            method  : 'GET',
+            url     : 'api/session/tunnels/' + encodeURIComponent(tunnel)
+                        + '/activeConnection/sharingCredentials/'
+                        + encodeURIComponent(sharingProfile),
+            params  : httpParameters
+        });
+
+    };
+
+    /**
      * Makes a request to the REST API to retrieve the contents of a stream
      * which has been created within the active Guacamole connection associated
      * with the given tunnel. The contents of the stream will automatically be
