@@ -26,45 +26,9 @@ package org.apache.guacamole.net.auth;
  *
  * @author Michael Jumper
  */
-public abstract class AbstractAuthenticatedUser implements AuthenticatedUser {
+public abstract class AbstractAuthenticatedUser extends AbstractIdentifiable
+        implements AuthenticatedUser {
 
-    /**
-     * The name of this user.
-     */
-    private String username;
-
-    @Override
-    public String getIdentifier() {
-        return username;
-    }
-
-    @Override
-    public void setIdentifier(String username) {
-        this.username = username;
-    }
-
-    @Override
-    public int hashCode() {
-        if (username == null) return 0;
-        return username.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-
-        // Not equal if null or not a User
-        if (obj == null) return false;
-        if (!(obj instanceof AbstractAuthenticatedUser)) return false;
-
-        // Get username
-        String objUsername = ((AbstractAuthenticatedUser) obj).username;
-
-        // If null, equal only if this username is null
-        if (objUsername == null) return username == null;
-
-        // Otherwise, equal only if strings are identical
-        return objUsername.equals(username);
-
-    }
+    // Prior functionality now resides within AbstractIdentifiable
 
 }

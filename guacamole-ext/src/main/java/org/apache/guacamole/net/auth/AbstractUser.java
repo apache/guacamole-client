@@ -26,12 +26,8 @@ package org.apache.guacamole.net.auth;
  *
  * @author Michael Jumper
  */
-public abstract class AbstractUser implements User {
-
-    /**
-     * The name of this user.
-     */
-    private String username;
+public abstract class AbstractUser extends AbstractIdentifiable
+        implements User {
 
     /**
      * This user's password. Note that while this provides a means for the
@@ -41,16 +37,6 @@ public abstract class AbstractUser implements User {
     private String password;
 
     @Override
-    public String getIdentifier() {
-        return username;
-    }
-
-    @Override
-    public void setIdentifier(String username) {
-        this.username = username;
-    }
-
-    @Override
     public String getPassword() {
         return password;
     }
@@ -58,30 +44,6 @@ public abstract class AbstractUser implements User {
     @Override
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    @Override
-    public int hashCode() {
-        if (username == null) return 0;
-        return username.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-
-        // Not equal if null or not a User
-        if (obj == null) return false;
-        if (!(obj instanceof AbstractUser)) return false;
-
-        // Get username
-        String objUsername = ((AbstractUser) obj).username;
-
-        // If null, equal only if this username is null
-        if (objUsername == null) return username == null;
-
-        // Otherwise, equal only if strings are identical
-        return objUsername.equals(username);
-
     }
 
 }
