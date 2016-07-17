@@ -40,6 +40,16 @@ public class APIConnectionRecord {
     private final String connectionName;
 
     /**
+     * The identifier of the sharing profile associated with this record.
+     */
+    private final String sharingProfileIdentifier;
+
+    /**
+     * The identifier of the sharing profile associated with this record.
+     */
+    private final String sharingProfileName;
+
+    /**
      * The date and time the connection began.
      */
     private final Date startDate;
@@ -73,13 +83,15 @@ public class APIConnectionRecord {
      *     The record to copy data from.
      */
     public APIConnectionRecord(ConnectionRecord record) {
-        this.connectionIdentifier = record.getConnectionIdentifier();
-        this.connectionName       = record.getConnectionName();
-        this.startDate            = record.getStartDate();
-        this.endDate              = record.getEndDate();
-        this.remoteHost           = record.getRemoteHost();
-        this.username             = record.getUsername();
-        this.active               = record.isActive();
+        this.connectionIdentifier     = record.getConnectionIdentifier();
+        this.connectionName           = record.getConnectionName();
+        this.sharingProfileIdentifier = record.getSharingProfileIdentifier();
+        this.sharingProfileName       = record.getSharingProfileName();
+        this.startDate                = record.getStartDate();
+        this.endDate                  = record.getEndDate();
+        this.remoteHost               = record.getRemoteHost();
+        this.username                 = record.getUsername();
+        this.active                   = record.isActive();
     }
 
     /**
@@ -101,6 +113,32 @@ public class APIConnectionRecord {
      */
     public String getConnectionName() {
         return connectionName;
+    }
+
+    /**
+     * Returns the identifier of the sharing profile associated with this
+     * record. If the connection was not being used via a sharing profile, this
+     * will be null.
+     *
+     * @return
+     *     The identifier of the sharing profile associated with this record,
+     *     or null if no sharing profile was used.
+     */
+    public String getSharingProfileIdentifier() {
+        return sharingProfileIdentifier;
+    }
+
+    /**
+     * Returns the name of the sharing profile associated with this record. If
+     * the connection was not being used via a sharing profile, this will be
+     * null.
+     *
+     * @return
+     *     The name of the sharing profile associated with this record, or null
+     *     if no sharing profile was used.
+     */
+    public String getSharingProfileName() {
+        return sharingProfileName;
     }
 
     /**

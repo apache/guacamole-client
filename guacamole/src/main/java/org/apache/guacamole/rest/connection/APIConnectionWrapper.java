@@ -22,6 +22,7 @@ package org.apache.guacamole.rest.connection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
@@ -120,6 +121,11 @@ public class APIConnectionWrapper implements Connection {
     @Override
     public void setAttributes(Map<String, String> attributes) {
         apiConnection.setAttributes(attributes);
+    }
+
+    @Override
+    public Set<String> getSharingProfileIdentifiers() {
+        throw new UnsupportedOperationException("Operation not supported.");
     }
 
     @Override

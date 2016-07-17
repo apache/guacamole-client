@@ -57,6 +57,12 @@ public class PermissionSetResource {
 
     /**
      * The prefix of any path within an operation of a JSON patch which
+     * modifies the permissions of a user regarding a specific sharing profile.
+     */
+    private static final String SHARING_PROFILE_PERMISSION_PATCH_PATH_PREFIX = "/sharingProfilePermissions/";
+
+    /**
+     * The prefix of any path within an operation of a JSON patch which
      * modifies the permissions of a user regarding a specific active connection.
      */
     private static final String ACTIVE_CONNECTION_PERMISSION_PATCH_PATH_PREFIX = "/activeConnectionPermissions/";
@@ -170,6 +176,7 @@ public class PermissionSetResource {
         // Permission patches for all types of permissions
         PermissionSetPatch<ObjectPermission> connectionPermissionPatch       = new PermissionSetPatch<ObjectPermission>();
         PermissionSetPatch<ObjectPermission> connectionGroupPermissionPatch  = new PermissionSetPatch<ObjectPermission>();
+        PermissionSetPatch<ObjectPermission> sharingProfilePermissionPatch   = new PermissionSetPatch<ObjectPermission>();
         PermissionSetPatch<ObjectPermission> activeConnectionPermissionPatch = new PermissionSetPatch<ObjectPermission>();
         PermissionSetPatch<ObjectPermission> userPermissionPatch             = new PermissionSetPatch<ObjectPermission>();
         PermissionSetPatch<SystemPermission> systemPermissionPatch           = new PermissionSetPatch<SystemPermission>();
@@ -202,6 +209,19 @@ public class PermissionSetResource {
                 // Create and update corresponding permission
                 ObjectPermission permission = new ObjectPermission(type, identifier);
                 updatePermissionSet(patch.getOp(), connectionGroupPermissionPatch, permission);
+
+            }
+
+            // Create sharing profile permission if path has sharing profile prefix
+            else if (path.startsWith(SHARING_PROFILE_PERMISSION_PATCH_PATH_PREFIX)) {
+
+                // Get identifier and type from patch operation
+                String identifier = path.substring(SHARING_PROFILE_PERMISSION_PATCH_PATH_PREFIX.length());
+                ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
+
+                // Create and update corresponding permission
+                ObjectPermission permission = new ObjectPermission(type, identifier);
+                updatePermissionSet(patch.getOp(), sharingProfilePermissionPatch, permission);
 
             }
 
@@ -252,6 +272,7 @@ public class PermissionSetResource {
         // Save the permission changes
         connectionPermissionPatch.apply(user.getConnectionPermissions());
         connectionGroupPermissionPatch.apply(user.getConnectionGroupPermissions());
+        sharingProfilePermissionPatch.apply(user.getSharingProfilePermissions());
         activeConnectionPermissionPatch.apply(user.getActiveConnectionPermissions());
         userPermissionPatch.apply(user.getUserPermissions());
         systemPermissionPatch.apply(user.getSystemPermissions());

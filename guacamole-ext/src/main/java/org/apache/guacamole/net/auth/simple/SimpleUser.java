@@ -195,4 +195,9 @@ public class SimpleUser extends AbstractUser {
         return new SimpleObjectPermissionSet();
     }
 
+    @Override
+    public ObjectPermissionSet getSharingProfilePermissions() {
+        return new SimpleObjectPermissionSet();
+    }
+
 }

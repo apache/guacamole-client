@@ -19,6 +19,9 @@
 
 package org.apache.guacamole.rest.tunnel;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
@@ -27,7 +30,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.tunnel.StreamInterceptingTunnel;
+import org.apache.guacamole.net.auth.ActiveConnection;
+import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.rest.activeconnection.APIActiveConnection;
+import org.apache.guacamole.rest.directory.DirectoryObjectResource;
+import org.apache.guacamole.rest.directory.DirectoryObjectResourceFactory;
+import org.apache.guacamole.tunnel.UserTunnel;
 
 /**
  * A REST resource which abstracts the operations available for an individual
@@ -48,7 +56,15 @@ public class TunnelResource {
     /**
      * The tunnel that this TunnelResource represents.
      */
-    private final StreamInterceptingTunnel tunnel;
+    private final UserTunnel tunnel;
+
+    /**
+     * A factory which can be used to create instances of resources representing
+     * ActiveConnections.
+     */
+    @Inject
+    private DirectoryObjectResourceFactory<ActiveConnection, APIActiveConnection>
+            activeConnectionResourceFactory;
 
     /**
      * Creates a new TunnelResource which exposes the operations and
@@ -57,8 +73,34 @@ public class TunnelResource {
      * @param tunnel
      *     The tunnel that this TunnelResource should represent.
      */
-    public TunnelResource(StreamInterceptingTunnel tunnel) {
+    @AssistedInject
+    public TunnelResource(@Assisted UserTunnel tunnel) {
         this.tunnel = tunnel;
+    }
+
+    /**
+     * Retrieves a resource representing the ActiveConnection object associated
+     * with this tunnel.
+     *
+     * @return
+     *     A resource representing the ActiveConnection object associated with
+     *     this tunnel.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the ActiveConnection.
+     */
+    @Path("activeConnection")
+    public DirectoryObjectResource<ActiveConnection, APIActiveConnection>
+        getActiveConnection() throws GuacamoleException {
+
+        // Pull the UserContext from the tunnel
+        UserContext userContext = tunnel.getUserContext();
+
+        // Return the associated ActiveConnection as a resource
+        return activeConnectionResourceFactory.create(userContext,
+                userContext.getActiveConnectionDirectory(),
+                tunnel.getActiveConnection());
+
     }
 
     /**

@@ -50,6 +50,11 @@ public class SystemPermission implements Permission<SystemPermission.Type> {
         CREATE_CONNECTION_GROUP,
 
         /**
+         * Create sharing profiles.
+         */
+        CREATE_SHARING_PROFILE,
+
+        /**
          * Administer the system in general, including adding permissions
          * which affect the system (like user creation, connection creation,
          * and system administration).

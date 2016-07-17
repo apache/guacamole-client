@@ -31,6 +31,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSession;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.rest.tunnel.TunnelCollectionResource;
+import org.apache.guacamole.rest.tunnel.TunnelCollectionResourceFactory;
 
 /**
  * A REST resource which exposes all data associated with a Guacamole user's
@@ -53,6 +54,13 @@ public class SessionResource {
      */
     @Inject
     private UserContextResourceFactory userContextResourceFactory;
+
+    /**
+     * Factory for creating instances of resources which represent the
+     * collection of tunnels within a GuacamoleSession.
+     */
+    @Inject
+    private TunnelCollectionResourceFactory tunnelCollectionResourceFactory;
 
     /**
      * Creates a new SessionResource which exposes the data within the given
@@ -105,7 +113,7 @@ public class SessionResource {
      */
     @Path("tunnels")
     public TunnelCollectionResource getTunnelCollectionResource() {
-        return new TunnelCollectionResource(session);
+        return tunnelCollectionResourceFactory.create(session);
     }
 
 }

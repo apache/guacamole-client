@@ -21,6 +21,7 @@ package org.apache.guacamole.net.auth;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
@@ -118,5 +119,22 @@ public interface Connection extends Identifiable, Connectable {
      *                            denied.
      */
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException;
+
+    /**
+     * Returns identifiers of all readable sharing profiles that can be used to
+     * join this connection when it is active. The level of access granted to a
+     * joining user is dictated by the connection parameters associated with
+     * the sharing profile, not necessarily the parameters of the primary
+     * connection being joined.
+     *
+     * @return
+     *     A Set of identifiers representing the sharing profiles for this
+     *     connection.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while fetching the sharing profiles for this
+     *     connection.
+     */
+    public Set<String> getSharingProfileIdentifiers() throws GuacamoleException;
 
 }

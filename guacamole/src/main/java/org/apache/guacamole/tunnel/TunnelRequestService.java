@@ -211,6 +211,10 @@ public class TunnelRequestService {
      * @param session
      *     The Guacamole session to associate the tunnel with.
      *
+     * @param context
+     *     The UserContext associated with the user for whom the tunnel is
+     *     being created.
+     *
      * @param type
      *     The type of object being connected to (connection or group).
      *
@@ -226,12 +230,12 @@ public class TunnelRequestService {
      *     If an error occurs while obtaining the tunnel.
      */
     protected GuacamoleTunnel createAssociatedTunnel(GuacamoleTunnel tunnel,
-            final String authToken,  final GuacamoleSession session,
-            final TunnelRequest.Type type, final String id)
-            throws GuacamoleException {
+            final String authToken, final GuacamoleSession session,
+            final UserContext context, final TunnelRequest.Type type,
+            final String id) throws GuacamoleException {
 
         // Monitor tunnel closure and data
-        StreamInterceptingTunnel monitoredTunnel = new StreamInterceptingTunnel(tunnel) {
+        UserTunnel monitoredTunnel = new UserTunnel(context, tunnel) {
 
             /**
              * The time the connection began, measured in milliseconds since
@@ -328,7 +332,7 @@ public class TunnelRequestService {
             GuacamoleTunnel tunnel = createConnectedTunnel(userContext, type, id, info);
 
             // Associate tunnel with session
-            return createAssociatedTunnel(tunnel, authToken, session, type, id);
+            return createAssociatedTunnel(tunnel, authToken, session, userContext, type, id);
 
         }
 

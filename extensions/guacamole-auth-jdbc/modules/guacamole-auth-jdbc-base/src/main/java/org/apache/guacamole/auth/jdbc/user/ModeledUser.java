@@ -49,6 +49,7 @@ import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
+import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -249,6 +250,12 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     public ObjectPermissionSet getConnectionGroupPermissions()
             throws GuacamoleException {
         return connectionGroupPermissionService.getPermissionSet(getCurrentUser(), this);
+    }
+
+    @Override
+    public ObjectPermissionSet getSharingProfilePermissions()
+            throws GuacamoleException {
+        return new SimpleObjectPermissionSet();
     }
 
     @Override

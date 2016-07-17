@@ -98,6 +98,11 @@ public class APIUserWrapper implements User {
     }
 
     @Override
+    public ObjectPermissionSet getSharingProfilePermissions() throws GuacamoleException {
+        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
+    }
+
+    @Override
     public ObjectPermissionSet getUserPermissions()
             throws GuacamoleException {
         throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");

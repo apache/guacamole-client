@@ -54,6 +54,12 @@ public class APIPermissionSet {
             new HashMap<String, Set<ObjectPermission.Type>>();
 
     /**
+     * Map of sharing profile ID to the set of granted permissions.
+     */
+    private Map<String, Set<ObjectPermission.Type>> sharingProfilePermissions =
+            new HashMap<String, Set<ObjectPermission.Type>>();
+
+    /**
      * Map of active connection ID to the set of granted permissions.
      */
     private Map<String, Set<ObjectPermission.Type>> activeConnectionPermissions =
@@ -155,6 +161,7 @@ public class APIPermissionSet {
         addSystemPermissions(systemPermissions,           user.getSystemPermissions());
         addObjectPermissions(connectionPermissions,       user.getConnectionPermissions());
         addObjectPermissions(connectionGroupPermissions,  user.getConnectionGroupPermissions());
+        addObjectPermissions(sharingProfilePermissions,   user.getSharingProfilePermissions());
         addObjectPermissions(activeConnectionPermissions, user.getActiveConnectionPermissions());
         addObjectPermissions(userPermissions,             user.getUserPermissions());
         
@@ -188,6 +195,21 @@ public class APIPermissionSet {
      */
     public Map<String, Set<ObjectPermission.Type>> getConnectionGroupPermissions() {
         return connectionGroupPermissions;
+    }
+
+    /**
+     * Returns a map of sharing profile identifiers to the set of permissions
+     * granted for that sharing profile. If no permissions are granted to a
+     * particular sharing profile, its identifier will not be present as a key
+     * in the map. This map is mutable, and changes to this map will affect the
+     * permission set directly.
+     *
+     * @return
+     *     A map of sharing profile identifiers to the set of permissions
+     *     granted for that sharing profile.
+     */
+    public Map<String, Set<ObjectPermission.Type>> getSharingProfilePermissions() {
+        return sharingProfilePermissions;
     }
 
     /**
@@ -255,6 +277,19 @@ public class APIPermissionSet {
      */
     public void setConnectionGroupPermissions(Map<String, Set<ObjectPermission.Type>> connectionGroupPermissions) {
         this.connectionGroupPermissions = connectionGroupPermissions;
+    }
+
+    /**
+     * Replaces the current map of sharing profile permissions with the given
+     * map, which must map each sharing profile identifier to its corresponding
+     * set of granted permissions. If a sharing profile has no permissions, its
+     * identifier must not be present as a key in the map.
+     *
+     * @param sharingProfilePermissions
+     *     The map which must replace the currently-stored map of permissions.
+     */
+    public void setSharingProfilePermissions(Map<String, Set<ObjectPermission.Type>> sharingProfilePermissions) {
+        this.sharingProfilePermissions = sharingProfilePermissions;
     }
 
     /**

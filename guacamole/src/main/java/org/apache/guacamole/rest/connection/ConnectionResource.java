@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.rest.connection;
 
+import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import java.util.ArrayList;
@@ -34,6 +35,8 @@ import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.rest.directory.DirectoryView;
+import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
@@ -44,6 +47,9 @@ import org.apache.guacamole.rest.history.APIConnectionRecord;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.rest.directory.DirectoryObjectResource;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
+import org.apache.guacamole.rest.directory.DirectoryResource;
+import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
+import org.apache.guacamole.rest.sharingprofile.APISharingProfile;
 
 /**
  * A REST resource which abstracts the operations available on an existing
@@ -65,6 +71,14 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
      * The Connection object represented by this ConnectionResource.
      */
     private final Connection connection;
+
+    /**
+     * A factory which can be used to create instances of resources representing
+     * SharingProfiles.
+     */
+    @Inject
+    private DirectoryResourceFactory<SharingProfile, APISharingProfile>
+            sharingProfileDirectoryResourceFactory;
 
     /**
      * Creates a new ConnectionResource which exposes the operations and
@@ -149,6 +163,35 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
 
         // Return the converted history
         return apiRecords;
+
+    }
+
+    /**
+     * Returns a resource which provides read-only access to the subset of
+     * SharingProfiles that the current user can use to share this connection.
+     *
+     * @return
+     *     A resource which provides read-only access to the subset of
+     *     SharingProfiles that the current user can use to share this
+     *     connection.
+     *
+     * @throws GuacamoleException
+     *     If the SharingProfiles associated with this connection cannot be
+     *     retrieved.
+     */
+    @Path("sharingProfiles")
+    public DirectoryResource<SharingProfile, APISharingProfile>
+            getSharingProfileDirectoryResource() throws GuacamoleException {
+
+        // Produce subset of all SharingProfiles, containing only those which
+        // are associated with this connection
+        Directory<SharingProfile> sharingProfiles = new DirectoryView<SharingProfile>(
+            userContext.getSharingProfileDirectory(),
+            connection.getSharingProfileIdentifiers()
+        );
+
+        // Return a new resource which provides access to only those SharingProfiles
+        return sharingProfileDirectoryResourceFactory.create(userContext, sharingProfiles);
 
     }
 

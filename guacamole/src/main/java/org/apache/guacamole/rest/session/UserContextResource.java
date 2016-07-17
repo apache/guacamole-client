@@ -32,6 +32,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
+import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.rest.activeconnection.APIActiveConnection;
@@ -39,6 +40,7 @@ import org.apache.guacamole.rest.connection.APIConnection;
 import org.apache.guacamole.rest.connectiongroup.APIConnectionGroup;
 import org.apache.guacamole.rest.history.HistoryResource;
 import org.apache.guacamole.rest.schema.SchemaResource;
+import org.apache.guacamole.rest.sharingprofile.APISharingProfile;
 import org.apache.guacamole.rest.user.APIUser;
 
 /**
@@ -78,6 +80,14 @@ public class UserContextResource {
     @Inject
     private DirectoryResourceFactory<ConnectionGroup, APIConnectionGroup>
             connectionGroupDirectoryResourceFactory;
+
+    /**
+     * Factory for creating DirectoryResources which expose a given
+     * SharingProfile Directory.
+     */
+    @Inject
+    private DirectoryResourceFactory<SharingProfile, APISharingProfile>
+            sharingProfileDirectoryResourceFactory;
 
     /**
      * Factory for creating DirectoryResources which expose a given
@@ -151,6 +161,24 @@ public class UserContextResource {
             throws GuacamoleException {
         return connectionGroupDirectoryResourceFactory.create(userContext,
                 userContext.getConnectionGroupDirectory());
+    }
+
+    /**
+     * Returns a new resource which represents the SharingProfile Directory
+     * contained within the UserContext exposed by this UserContextResource.
+     *
+     * @return
+     *     A new resource which represents the SharingProfile Directory
+     *     contained within the UserContext exposed by this UserContextResource.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the SharingProfile Directory.
+     */
+    @Path("sharingProfiles")
+    public DirectoryResource<SharingProfile, APISharingProfile>
+        getSharingProfileDirectoryResource() throws GuacamoleException {
+        return sharingProfileDirectoryResourceFactory.create(userContext,
+                userContext.getSharingProfileDirectory());
     }
 
     /**

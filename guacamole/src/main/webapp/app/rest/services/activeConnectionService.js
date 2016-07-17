@@ -166,6 +166,41 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
         
     };
 
+    /**
+     * Makes a request to the REST API to generate credentials which have
+     * access strictly to the given active connection, using the restrictions
+     * defined by the given sharing profile, returning a promise that provides
+     * the resulting @link{UserCredentials} object if successful.
+     *
+     * @param {String} id
+     *     The identifier of the active connection being shared.
+     *
+     * @param {String} sharingProfile
+     *     The identifier of the sharing profile dictating the
+     *     semantics/restrictions which apply to the shared session.
+     *
+     * @returns {Promise.<UserCredentials>}
+     *     A promise which will resolve with a @link{UserCredentials} object
+     *     upon success.
+     */
+    service.getSharingCredentials = function getSharingCredentials(dataSource, id, sharingProfile) {
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Generate sharing credentials
+        return $http({
+            method  : 'GET',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource)
+                        + '/activeConnections/' + encodeURIComponent(id)
+                        + '/sharingCredentials/' + encodeURIComponent(sharingProfile),
+            params  : httpParameters
+        });
+
+    };
+
     return service;
 
 }]);

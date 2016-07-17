@@ -73,7 +73,7 @@ angular.module('rest').factory('Field', [function defineField() {
          *
          * @type String
          */
-        TEXT : "TEXT",
+        TEXT : 'TEXT',
 
         /**
          * The type string associated with parameters that may contain an
@@ -82,7 +82,7 @@ angular.module('rest').factory('Field', [function defineField() {
          * 
          * @type String
          */
-        USERNAME : "USERNAME",
+        USERNAME : 'USERNAME',
 
         /**
          * The type string associated with parameters that may contain an
@@ -91,7 +91,7 @@ angular.module('rest').factory('Field', [function defineField() {
          * 
          * @type String
          */
-        PASSWORD : "PASSWORD",
+        PASSWORD : 'PASSWORD',
 
         /**
          * The type string associated with parameters that may contain only
@@ -99,7 +99,7 @@ angular.module('rest').factory('Field', [function defineField() {
          * 
          * @type String
          */
-        NUMERIC : "NUMERIC",
+        NUMERIC : 'NUMERIC',
 
         /**
          * The type string associated with parameters that may contain only a
@@ -110,7 +110,7 @@ angular.module('rest').factory('Field', [function defineField() {
          * 
          * @type String
          */
-        BOOLEAN : "BOOLEAN",
+        BOOLEAN : 'BOOLEAN',
 
         /**
          * The type string associated with parameters that may contain a
@@ -118,7 +118,7 @@ angular.module('rest').factory('Field', [function defineField() {
          * 
          * @type String
          */
-        ENUM : "ENUM",
+        ENUM : 'ENUM',
 
         /**
          * The type string associated with parameters that may contain any
@@ -126,7 +126,7 @@ angular.module('rest').factory('Field', [function defineField() {
          *
          * @type String
          */
-        MULTILINE : "MULTILINE",
+        MULTILINE : 'MULTILINE',
 
         /**
          * The type string associated with parameters that may contain timezone
@@ -135,7 +135,7 @@ angular.module('rest').factory('Field', [function defineField() {
          *
          * @type String
          */
-        TIMEZONE : "TIMEZONE",
+        TIMEZONE : 'TIMEZONE',
 
         /**
          * The type string associated with parameters that may contain dates.
@@ -143,7 +143,7 @@ angular.module('rest').factory('Field', [function defineField() {
          *
          * @type String
          */
-        DATE : "DATE",
+        DATE : 'DATE',
 
         /**
          * The type string associated with parameters that may contain times.
@@ -152,7 +152,15 @@ angular.module('rest').factory('Field', [function defineField() {
          *
          * @type String
          */
-        TIME : "TIME"
+        TIME : 'TIME',
+
+        /**
+         * An HTTP query parameter which is expected to be embedded in the URL
+         * given to a user.
+         *
+         * @type String
+         */
+        QUERY_PARAMETER : 'QUERY_PARAMETER'
 
     };
 

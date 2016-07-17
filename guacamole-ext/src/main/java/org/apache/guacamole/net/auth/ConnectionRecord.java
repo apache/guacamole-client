@@ -49,6 +49,32 @@ public interface ConnectionRecord {
     public String getConnectionName();
 
     /**
+     * Returns the identifier of the sharing profile that was used to access the
+     * connection associated with this connection record. If the connection was
+     * accessed directly (without involving a sharing profile), this will be
+     * null.
+     *
+     * @return
+     *     The identifier of the sharing profile used to access the connection
+     *     associated with this connection record, or null if the connection
+     *     was accessed directly.
+     */
+    public String getSharingProfileIdentifier();
+
+    /**
+     * Returns the name of the sharing profile that was used to access the
+     * connection associated with this connection record. If the connection was
+     * accessed directly (without involving a sharing profile), this will be
+     * null.
+     *
+     * @return
+     *     The name of the sharing profile used to access the connection
+     *     associated with this connection record, or null if the connection
+     *     was accessed directly.
+     */
+    public String getSharingProfileName();
+
+    /**
      * Returns the date and time the connection began.
      *
      * @return The date and time the connection began.

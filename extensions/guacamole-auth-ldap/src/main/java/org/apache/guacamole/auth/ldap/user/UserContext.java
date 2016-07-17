@@ -34,6 +34,7 @@ import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.ConnectionRecordSet;
 import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionGroup;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionGroupDirectory;
@@ -194,6 +195,12 @@ public class UserContext implements org.apache.guacamole.net.auth.UserContext {
     }
 
     @Override
+    public Directory<SharingProfile> getSharingProfileDirectory()
+            throws GuacamoleException {
+        return new SimpleDirectory<SharingProfile>();
+    }
+
+    @Override
     public ConnectionRecordSet getConnectionHistory()
             throws GuacamoleException {
         return new SimpleConnectionRecordSet();
@@ -211,6 +218,11 @@ public class UserContext implements org.apache.guacamole.net.auth.UserContext {
 
     @Override
     public Collection<Form> getConnectionGroupAttributes() {
+        return Collections.<Form>emptyList();
+    }
+
+    @Override
+    public Collection<Form> getSharingProfileAttributes() {
         return Collections.<Form>emptyList();
     }
 
