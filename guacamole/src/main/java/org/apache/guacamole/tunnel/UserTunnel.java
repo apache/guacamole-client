@@ -98,7 +98,7 @@ public class UserTunnel extends StreamInterceptingTunnel {
         Directory<ActiveConnection> activeConnectionDirectory = userContext.getActiveConnectionDirectory();
         Collection<String> activeConnectionIdentifiers = activeConnectionDirectory.getIdentifiers();
 
-        // Search all  connections for a tunnel which matches this tunnel
+        // Search all connections for a tunnel which matches this tunnel
         for (ActiveConnection activeConnection : activeConnectionDirectory.getAll(activeConnectionIdentifiers)) {
 
             // If we lack access, continue with next tunnel

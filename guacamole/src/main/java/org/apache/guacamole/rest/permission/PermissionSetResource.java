@@ -212,7 +212,7 @@ public class PermissionSetResource {
 
             }
 
-            // Create sharing profile permission if path has sharing profileprefix
+            // Create sharing profile permission if path has sharing profile prefix
             else if (path.startsWith(SHARING_PROFILE_PERMISSION_PATCH_PATH_PREFIX)) {
 
                 // Get identifier and type from patch operation
