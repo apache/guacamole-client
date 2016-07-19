@@ -29,6 +29,7 @@ SELECT user_id, permission
 FROM (
           SELECT 'guacadmin'  AS username, 'CREATE_CONNECTION'       AS permission
     UNION SELECT 'guacadmin'  AS username, 'CREATE_CONNECTION_GROUP' AS permission
+    UNION SELECT 'guacadmin'  AS username, 'CREATE_SHARING_PROFILE'  AS permission
     UNION SELECT 'guacadmin'  AS username, 'CREATE_USER'             AS permission
     UNION SELECT 'guacadmin'  AS username, 'ADMINISTER'              AS permission
 ) permissions

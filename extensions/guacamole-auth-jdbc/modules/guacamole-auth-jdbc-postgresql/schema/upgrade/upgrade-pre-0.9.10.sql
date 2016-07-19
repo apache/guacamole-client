@@ -95,3 +95,96 @@ ALTER TABLE guacamole_connection_history
 ALTER TABLE guacamole_connection_group
     ADD COLUMN enable_session_affinity boolean NOT NULL DEFAULT FALSE;
 
+--
+-- Add new system-level permission
+--
+
+ALTER TYPE guacamole_system_permission_type
+    ADD VALUE 'CREATE_SHARING_PROFILE'
+    AFTER 'CREATE_CONNECTION_GROUP';
+
+--
+-- Add sharing profile table
+--
+
+CREATE TABLE guacamole_sharing_profile (
+
+  sharing_profile_id    serial       NOT NULL,
+  sharing_profile_name  varchar(128) NOT NULL,
+  primary_connection_id integer      NOT NULL,
+
+  PRIMARY KEY (sharing_profile_id),
+
+  CONSTRAINT sharing_profile_name_primary
+    UNIQUE (sharing_profile_name, primary_connection_id),
+
+  CONSTRAINT guacamole_sharing_profile_ibfk_1
+    FOREIGN KEY (primary_connection_id)
+    REFERENCES guacamole_connection (connection_id)
+    ON DELETE CASCADE
+
+);
+
+CREATE INDEX ON guacamole_sharing_profile(primary_connection_id);
+
+--
+-- Add table of sharing profile parameters
+--
+
+CREATE TABLE guacamole_sharing_profile_parameter (
+
+  sharing_profile_id integer       NOT NULL,
+  parameter_name     varchar(128)  NOT NULL,
+  parameter_value    varchar(4096) NOT NULL,
+
+  PRIMARY KEY (sharing_profile_id, parameter_name),
+
+  CONSTRAINT guacamole_sharing_profile_parameter_ibfk_1
+    FOREIGN KEY (sharing_profile_id)
+    REFERENCES guacamole_sharing_profile (sharing_profile_id) ON DELETE CASCADE
+
+);
+
+CREATE INDEX ON guacamole_sharing_profile_parameter(sharing_profile_id);
+
+--
+-- Object-level permission table for sharing profiles
+--
+
+CREATE TABLE guacamole_sharing_profile_permission (
+
+  user_id            integer NOT NULL,
+  sharing_profile_id integer NOT NULL,
+  permission         guacamole_object_permission_type NOT NULL,
+
+  PRIMARY KEY (user_id,sharing_profile_id,permission),
+
+  CONSTRAINT guacamole_sharing_profile_permission_ibfk_1
+    FOREIGN KEY (sharing_profile_id)
+    REFERENCES guacamole_sharing_profile (sharing_profile_id) ON DELETE CASCADE,
+
+  CONSTRAINT guacamole_sharing_profile_permission_ibfk_2
+    FOREIGN KEY (user_id)
+    REFERENCES guacamole_user (user_id) ON DELETE CASCADE
+
+);
+
+CREATE INDEX ON guacamole_sharing_profile_permission(sharing_profile_id);
+CREATE INDEX ON guacamole_sharing_profile_permission(user_id);
+
+--
+-- Add new (optional) sharing profile ID and name columns to connection history
+--
+
+ALTER TABLE guacamole_connection_history
+    ADD COLUMN sharing_profile_id integer;
+
+ALTER TABLE guacamole_connection_history
+    ADD COLUMN sharing_profile_name varchar(128);
+
+ALTER TABLE guacamole_connection_history
+    ADD CONSTRAINT guacamole_connection_history_ibfk_3
+    FOREIGN KEY (sharing_profile_id)
+    REFERENCES guacamole_sharing_profile (sharing_profile_id) ON DELETE SET NULL;
+
+CREATE INDEX ON guacamole_connection_history(sharing_profile_id);

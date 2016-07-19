@@ -107,6 +107,30 @@ CREATE TABLE `guacamole_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table of sharing profiles. Each sharing profile has a name, associated set
+-- of parameters, and a primary connection. The primary connection is the
+-- connection that the sharing profile shares, and the parameters dictate the
+-- restrictions/features which apply to the user joining the connection via the
+-- sharing profile.
+--
+
+CREATE TABLE guacamole_sharing_profile (
+
+  `sharing_profile_id`    int(11)      NOT NULL AUTO_INCREMENT,
+  `sharing_profile_name`  varchar(128) NOT NULL,
+  `primary_connection_id` int(11)      NOT NULL,
+
+  PRIMARY KEY (`sharing_profile_id`),
+  UNIQUE KEY `sharing_profile_name_primary` (sharing_profile_name, primary_connection_id),
+
+  CONSTRAINT `guacamole_sharing_profile_ibfk_1`
+    FOREIGN KEY (`primary_connection_id`)
+    REFERENCES `guacamole_connection` (`connection_id`)
+    ON DELETE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table of connection parameters. Each parameter is simply a name/value pair
 -- associated with a connection.
 --
@@ -122,6 +146,27 @@ CREATE TABLE `guacamole_connection_parameter` (
   CONSTRAINT `guacamole_connection_parameter_ibfk_1`
     FOREIGN KEY (`connection_id`)
     REFERENCES `guacamole_connection` (`connection_id`) ON DELETE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table of sharing profile parameters. Each parameter is simply
+-- name/value pair associated with a sharing profile. These parameters dictate
+-- the restrictions/features which apply to the user joining the associated
+-- connection via the sharing profile.
+--
+
+CREATE TABLE guacamole_sharing_profile_parameter (
+
+  `sharing_profile_id` integer       NOT NULL,
+  `parameter_name`     varchar(128)  NOT NULL,
+  `parameter_value`    varchar(4096) NOT NULL,
+
+  PRIMARY KEY (`sharing_profile_id`, `parameter_name`),
+
+  CONSTRAINT `guacamole_sharing_profile_parameter_ibfk_1`
+    FOREIGN KEY (`sharing_profile_id`)
+    REFERENCES `guacamole_sharing_profile` (`sharing_profile_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -178,6 +223,32 @@ CREATE TABLE `guacamole_connection_group_permission` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table of sharing profile permissions. Each sharing profile permission grants
+-- a user specific access to a sharing profile.
+--
+
+CREATE TABLE guacamole_sharing_profile_permission (
+
+  `user_id`            integer NOT NULL,
+  `sharing_profile_id` integer NOT NULL,
+  `permission`         enum('READ',
+                            'UPDATE',
+                            'DELETE',
+                            'ADMINISTER') NOT NULL,
+
+  PRIMARY KEY (`user_id`, `sharing_profile_id`, `permission`),
+
+  CONSTRAINT `guacamole_sharing_profile_permission_ibfk_1`
+    FOREIGN KEY (`sharing_profile_id`)
+    REFERENCES `guacamole_sharing_profile` (`sharing_profile_id`) ON DELETE CASCADE,
+
+  CONSTRAINT `guacamole_sharing_profile_permission_ibfk_2`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table of system permissions. Each system permission grants a user a
 -- system-level privilege of some kind.
 --
@@ -186,7 +257,8 @@ CREATE TABLE `guacamole_system_permission` (
 
   `user_id`    int(11) NOT NULL,
   `permission` enum('CREATE_CONNECTION',
-		    'CREATE_CONNECTION_GROUP',
+                    'CREATE_CONNECTION_GROUP',
+                    'CREATE_SHARING_PROFILE',
                     'CREATE_USER',
                     'ADMINISTER') NOT NULL,
 
@@ -232,27 +304,34 @@ CREATE TABLE `guacamole_user_permission` (
 
 CREATE TABLE `guacamole_connection_history` (
 
-  `history_id`      int(11)  NOT NULL AUTO_INCREMENT,
-  `user_id`         int(11)  DEFAULT NULL,
-  `username`        varchar(128) NOT NULL,
-  `connection_id`   int(11)  DEFAULT NULL,
-  `connection_name` varchar(128) NOT NULL,
-  `start_date`      datetime NOT NULL,
-  `end_date`        datetime DEFAULT NULL,
+  `history_id`           int(11)      NOT NULL AUTO_INCREMENT,
+  `user_id`              int(11)      DEFAULT NULL,
+  `username`             varchar(128) NOT NULL,
+  `connection_id`        int(11)      DEFAULT NULL,
+  `connection_name`      varchar(128) NOT NULL,
+  `sharing_profile_id`   int(11)      DEFAULT NULL,
+  `sharing_profile_name` varchar(128) DEFAULT NULL,
+  `start_date`           datetime     NOT NULL,
+  `end_date`             datetime     DEFAULT NULL,
 
   PRIMARY KEY (`history_id`),
   KEY `user_id` (`user_id`),
   KEY `connection_id` (`connection_id`),
+  KEY `sharing_profile_id` (`sharing_profile_id`),
   KEY `start_date` (`start_date`),
   KEY `end_date` (`end_date`),
 
   CONSTRAINT `guacamole_connection_history_ibfk_1`
     FOREIGN KEY (`user_id`)
-    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE,
+    REFERENCES `guacamole_user` (`user_id`) ON DELETE SET NULL,
 
   CONSTRAINT `guacamole_connection_history_ibfk_2`
     FOREIGN KEY (`connection_id`)
-    REFERENCES `guacamole_connection` (`connection_id`) ON DELETE CASCADE
+    REFERENCES `guacamole_connection` (`connection_id`) ON DELETE SET NULL
+
+  CONSTRAINT `guacamole_connection_history_ibfk_3`
+    FOREIGN KEY (`sharing_profile_id`)
+    REFERENCES `guacamole_sharing_profile` (`sharing_profile_id`) ON DELETE SET NULL
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

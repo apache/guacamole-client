@@ -31,6 +31,7 @@ FROM (
     VALUES
         ('guacadmin', 'CREATE_CONNECTION'),
         ('guacadmin', 'CREATE_CONNECTION_GROUP'),
+        ('guacadmin', 'CREATE_SHARING_PROFILE'),
         ('guacadmin', 'CREATE_USER'),
         ('guacadmin', 'ADMINISTER')
 ) permissions (username, permission)
