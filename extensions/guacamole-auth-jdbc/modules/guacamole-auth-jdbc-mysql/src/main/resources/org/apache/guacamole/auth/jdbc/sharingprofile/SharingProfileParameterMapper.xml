@@ -21,43 +21,43 @@
     under the License.
 -->
 
-<mapper namespace="org.apache.guacamole.auth.jdbc.connection.ParameterMapper">
+<mapper namespace="org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterMapper">
 
-    <!-- Result mapper for connection parameters -->
-    <resultMap id="ParameterResultMap" type="org.apache.guacamole.auth.jdbc.connection.ParameterModel">
-        <result column="connection_id"   property="connectionIdentifier" jdbcType="INTEGER"/>
-        <result column="parameter_name"  property="name"                 jdbcType="VARCHAR"/>
-        <result column="parameter_value" property="value"                jdbcType="VARCHAR"/>
+    <!-- Result mapper for sharing profile parameters -->
+    <resultMap id="ParameterResultMap" type="org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterModel">
+        <result column="sharing_profile_id" property="sharingProfileIdentifier" jdbcType="INTEGER"/>
+        <result column="parameter_name"     property="name"                     jdbcType="VARCHAR"/>
+        <result column="parameter_value"    property="value"                    jdbcType="VARCHAR"/>
     </resultMap>
 
-    <!-- Select all parameters of a given connection -->
+    <!-- Select all parameters of a given sharing profile -->
     <select id="select" resultMap="ParameterResultMap">
         SELECT
-            connection_id,
+            sharing_profile_id,
             parameter_name,
             parameter_value
-        FROM guacamole_connection_parameter
+        FROM guacamole_sharing_profile_parameter
         WHERE
-            connection_id = #{identifier,jdbcType=INTEGER}::integer
+            sharing_profile_id = #{identifier,jdbcType=VARCHAR}
     </select>
 
-    <!-- Delete all parameters of a given connection -->
+    <!-- Delete all parameters of a given sharing profile -->
     <delete id="delete">
-        DELETE FROM guacamole_connection_parameter
-        WHERE connection_id = #{identifier,jdbcType=INTEGER}::integer
+        DELETE FROM guacamole_sharing_profile_parameter
+        WHERE sharing_profile_id = #{identifier,jdbcType=VARCHAR}
     </delete>
 
     <!-- Insert all given parameters -->
-    <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.connection.ParameterModel">
+    <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterModel">
 
-        INSERT INTO guacamole_connection_parameter (
-            connection_id,
+        INSERT INTO guacamole_sharing_profile_parameter (
+            sharing_profile_id,
             parameter_name,
             parameter_value
         )
         VALUES 
             <foreach collection="parameters" item="parameter" separator=",">
-                (#{parameter.connectionIdentifier,jdbcType=INTEGER}::integer,
+                (#{parameter.sharingProfileIdentifier,jdbcType=VARCHAR},
                  #{parameter.name,jdbcType=VARCHAR},
                  #{parameter.value,jdbcType=VARCHAR})
             </foreach>

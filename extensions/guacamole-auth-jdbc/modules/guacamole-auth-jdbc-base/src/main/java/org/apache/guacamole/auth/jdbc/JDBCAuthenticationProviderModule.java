@@ -32,7 +32,6 @@ import org.apache.guacamole.auth.jdbc.user.UserDirectory;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupMapper;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionMapper;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordMapper;
-import org.apache.guacamole.auth.jdbc.connection.ParameterMapper;
 import org.apache.guacamole.auth.jdbc.permission.SystemPermissionMapper;
 import org.apache.guacamole.auth.jdbc.user.UserMapper;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupService;
@@ -59,6 +58,10 @@ import org.apache.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermissio
 import org.apache.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermissionSet;
 import org.apache.guacamole.auth.jdbc.activeconnection.ActiveConnectionService;
 import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
+import org.apache.guacamole.auth.jdbc.connection.ConnectionParameterMapper;
+import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionMapper;
+import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileMapper;
+import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterMapper;
 import org.apache.guacamole.auth.jdbc.tunnel.RestrictedGuacamoleTunnelService;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.mybatis.guice.MyBatisModule;
@@ -118,8 +121,11 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         addMapperClass(ConnectionGroupPermissionMapper.class);
         addMapperClass(ConnectionPermissionMapper.class);
         addMapperClass(ConnectionRecordMapper.class);
-        addMapperClass(ParameterMapper.class);
+        addMapperClass(ConnectionParameterMapper.class);
         addMapperClass(SystemPermissionMapper.class);
+        addMapperClass(SharingProfileMapper.class);
+        addMapperClass(SharingProfileParameterMapper.class);
+        addMapperClass(SharingProfilePermissionMapper.class);
         addMapperClass(UserMapper.class);
         addMapperClass(UserPermissionMapper.class);
         

@@ -70,7 +70,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
      * Mapper for accessing connection parameters.
      */
     @Inject
-    private ParameterMapper parameterMapper;
+    private ConnectionParameterMapper parameterMapper;
 
     /**
      * Mapper for accessing connection history.
@@ -197,12 +197,12 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
      *     A collection of parameter models containing the name/value pairs
      *     of the given connection's parameters.
      */
-    private Collection<ParameterModel> getParameterModels(ModeledConnection connection) {
+    private Collection<ConnectionParameterModel> getParameterModels(ModeledConnection connection) {
 
         Map<String, String> parameters = connection.getConfiguration().getParameters();
         
         // Convert parameters to model objects
-        Collection<ParameterModel> parameterModels = new ArrayList<ParameterModel>(parameters.size());
+        Collection<ConnectionParameterModel> parameterModels = new ArrayList<ConnectionParameterModel>(parameters.size());
         for (Map.Entry<String, String> parameterEntry : parameters.entrySet()) {
 
             // Get parameter name and value
@@ -214,7 +214,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
                 continue;
             
             // Produce model object from parameter
-            ParameterModel model = new ParameterModel();
+            ConnectionParameterModel model = new ConnectionParameterModel();
             model.setConnectionIdentifier(connection.getIdentifier());
             model.setName(name);
             model.setValue(value);
@@ -237,7 +237,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
         connection.setConfiguration(object.getConfiguration());
 
         // Insert new parameters, if any
-        Collection<ParameterModel> parameterModels = getParameterModels(connection);
+        Collection<ConnectionParameterModel> parameterModels = getParameterModels(connection);
         if (!parameterModels.isEmpty())
             parameterMapper.insert(parameterModels);
 
@@ -253,7 +253,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
         super.updateObject(user, object);
 
         // Replace existing parameters with new parameters, if any
-        Collection<ParameterModel> parameterModels = getParameterModels(object);
+        Collection<ConnectionParameterModel> parameterModels = getParameterModels(object);
         parameterMapper.delete(object.getIdentifier());
         if (!parameterModels.isEmpty())
             parameterMapper.insert(parameterModels);
@@ -332,7 +332,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
 
         // Populate parameter map if we have permission to do so
         if (canRetrieveParameters) {
-            for (ParameterModel parameter : parameterMapper.select(identifier))
+            for (ConnectionParameterModel parameter : parameterMapper.select(identifier))
                 parameterMap.put(parameter.getName(), parameter.getValue());
         }
 

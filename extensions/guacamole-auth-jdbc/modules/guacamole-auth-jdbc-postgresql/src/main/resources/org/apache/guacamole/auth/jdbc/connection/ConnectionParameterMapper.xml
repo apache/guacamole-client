@@ -21,10 +21,10 @@
     under the License.
 -->
 
-<mapper namespace="org.apache.guacamole.auth.jdbc.connection.ParameterMapper">
+<mapper namespace="org.apache.guacamole.auth.jdbc.connection.ConnectionParameterMapper">
 
     <!-- Result mapper for connection parameters -->
-    <resultMap id="ParameterResultMap" type="org.apache.guacamole.auth.jdbc.connection.ParameterModel">
+    <resultMap id="ParameterResultMap" type="org.apache.guacamole.auth.jdbc.connection.ConnectionParameterModel">
         <result column="connection_id"   property="connectionIdentifier" jdbcType="INTEGER"/>
         <result column="parameter_name"  property="name"                 jdbcType="VARCHAR"/>
         <result column="parameter_value" property="value"                jdbcType="VARCHAR"/>
@@ -38,17 +38,17 @@
             parameter_value
         FROM guacamole_connection_parameter
         WHERE
-            connection_id = #{identifier,jdbcType=VARCHAR}
+            connection_id = #{identifier,jdbcType=INTEGER}::integer
     </select>
 
     <!-- Delete all parameters of a given connection -->
     <delete id="delete">
         DELETE FROM guacamole_connection_parameter
-        WHERE connection_id = #{identifier,jdbcType=VARCHAR}
+        WHERE connection_id = #{identifier,jdbcType=INTEGER}::integer
     </delete>
 
     <!-- Insert all given parameters -->
-    <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.connection.ParameterModel">
+    <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.connection.ConnectionParameterModel">
 
         INSERT INTO guacamole_connection_parameter (
             connection_id,
@@ -57,7 +57,7 @@
         )
         VALUES 
             <foreach collection="parameters" item="parameter" separator=",">
-                (#{parameter.connectionIdentifier,jdbcType=VARCHAR},
+                (#{parameter.connectionIdentifier,jdbcType=INTEGER}::integer,
                  #{parameter.name,jdbcType=VARCHAR},
                  #{parameter.value,jdbcType=VARCHAR})
             </foreach>
