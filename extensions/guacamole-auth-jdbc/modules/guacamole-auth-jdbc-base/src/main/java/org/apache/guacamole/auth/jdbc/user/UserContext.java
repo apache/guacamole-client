@@ -26,13 +26,14 @@ import org.apache.guacamole.auth.jdbc.connection.ConnectionDirectory;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Collection;
-import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
 import org.apache.guacamole.auth.jdbc.activeconnection.ActiveConnectionDirectory;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordSet;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
+import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
+import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileDirectory;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -41,7 +42,6 @@ import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
-import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 
 /**
  * UserContext implementation which is driven by an arbitrary, underlying
@@ -81,6 +81,13 @@ public class UserContext extends RestrictedObject
     private ConnectionGroupDirectory connectionGroupDirectory;
 
     /**
+     * Sharing profile directory restricted by the permissions of the user
+     * associated with this context.
+     */
+    @Inject
+    private SharingProfileDirectory sharingProfileDirectory;
+
+    /**
      * ActiveConnection directory restricted by the permissions of the user
      * associated with this context.
      */
@@ -108,6 +115,7 @@ public class UserContext extends RestrictedObject
         userDirectory.init(currentUser);
         connectionDirectory.init(currentUser);
         connectionGroupDirectory.init(currentUser);
+        sharingProfileDirectory.init(currentUser);
         activeConnectionDirectory.init(currentUser);
 
     }
@@ -140,7 +148,7 @@ public class UserContext extends RestrictedObject
     @Override
     public Directory<SharingProfile> getSharingProfileDirectory()
             throws GuacamoleException {
-        return new SimpleDirectory<SharingProfile>();
+        return sharingProfileDirectory;
     }
 
     @Override
@@ -184,7 +192,7 @@ public class UserContext extends RestrictedObject
 
     @Override
     public Collection<Form> getSharingProfileAttributes() {
-        return Collections.<Form>emptyList();
+        return ModeledSharingProfile.ATTRIBUTES;
     }
 
 }
