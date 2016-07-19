@@ -60,12 +60,12 @@ public class ModeledConnectionRecord implements ConnectionRecord {
 
     @Override
     public String getSharingProfileIdentifier() {
-        return null;
+        return model.getSharingProfileIdentifier();
     }
 
     @Override
     public String getSharingProfileName() {
-        return null;
+        return model.getSharingProfileName();
     }
 
     @Override
