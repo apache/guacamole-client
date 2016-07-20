@@ -38,6 +38,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermissionService;
 import org.apache.guacamole.auth.jdbc.permission.ConnectionGroupPermissionService;
 import org.apache.guacamole.auth.jdbc.permission.ConnectionPermissionService;
+import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionService;
 import org.apache.guacamole.auth.jdbc.permission.UserPermissionService;
 import org.apache.guacamole.form.BooleanField;
 import org.apache.guacamole.form.DateField;
@@ -49,7 +50,6 @@ import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
-import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -161,6 +161,12 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     private ConnectionGroupPermissionService connectionGroupPermissionService;
 
     /**
+     * Service for retrieving sharing profile permissions.
+     */
+    @Inject
+    private SharingProfilePermissionService sharingProfilePermissionService;
+
+    /**
      * Service for retrieving active connection permissions.
      */
     @Inject
@@ -255,7 +261,7 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     @Override
     public ObjectPermissionSet getSharingProfilePermissions()
             throws GuacamoleException {
-        return new SimpleObjectPermissionSet();
+        return sharingProfilePermissionService.getPermissionSet(getCurrentUser(), this);
     }
 
     @Override

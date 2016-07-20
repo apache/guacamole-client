@@ -35,10 +35,9 @@ import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordMapper;
-import org.apache.guacamole.auth.jdbc.connection.ParameterMapper;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionModel;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel;
-import org.apache.guacamole.auth.jdbc.connection.ParameterModel;
+import org.apache.guacamole.auth.jdbc.connection.ConnectionParameterModel;
 import org.apache.guacamole.auth.jdbc.user.UserModel;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
@@ -55,6 +54,7 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.StandardTokens;
 import org.apache.guacamole.token.TokenFilter;
 import org.mybatis.guice.transactional.Transactional;
+import org.apache.guacamole.auth.jdbc.connection.ConnectionParameterMapper;
 
 
 /**
@@ -88,7 +88,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      * Mapper for accessing connection parameters.
      */
     @Inject
-    private ParameterMapper parameterMapper;
+    private ConnectionParameterMapper parameterMapper;
 
     /**
      * Mapper for accessing connection history.
@@ -217,8 +217,8 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         config.setProtocol(model.getProtocol());
 
         // Set parameters from associated data
-        Collection<ParameterModel> parameters = parameterMapper.select(connection.getIdentifier());
-        for (ParameterModel parameter : parameters)
+        Collection<ConnectionParameterModel> parameters = parameterMapper.select(connection.getIdentifier());
+        for (ConnectionParameterModel parameter : parameters)
             config.setParameter(parameter.getName(), parameter.getValue());
 
         // Build token filter containing credential tokens

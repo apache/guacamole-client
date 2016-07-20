@@ -17,19 +17,19 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.jdbc.connection;
+package org.apache.guacamole.auth.jdbc.sharingprofile;
 
 /**
- * A single parameter name/value pair belonging to a connection.
+ * A single parameter name/value pair belonging to a sharing profile.
  *
  * @author Michael Jumper
  */
-public class ParameterModel {
+public class SharingProfileParameterModel {
 
     /**
-     * The identifier of the connection associated with this parameter.
+     * The identifier of the sharing profile associated with this parameter.
      */
-    private String connectionIdentifier;
+    private String sharingProfileIdentifier;
 
     /**
      * The name of the parameter.
@@ -42,23 +42,27 @@ public class ParameterModel {
     private String value;
 
     /**
-     * Returns the identifier of the connection associated with this parameter.
+     * Returns the identifier of the sharing profile associated with this
+     * parameter.
      *
      * @return
-     *     The identifier of the connection associated with this parameter.
+     *     The identifier of the sharing profile associated with this
+     *     parameter.
      */
-    public String getConnectionIdentifier() {
-        return connectionIdentifier;
+    public String getSharingProfileIdentifier() {
+        return sharingProfileIdentifier;
     }
 
     /**
-     * Sets the identifier of the connection associated with this parameter.
+     * Sets the identifier of the sharing profile associated with this
+     * parameter.
      *
-     * @param connectionIdentifier
-     *     The identifier of the connection to associate with this parameter.
+     * @param sharingProfileIdentifier
+     *     The identifier of the sharing profile to associate with this
+     *     parameter.
      */
-    public void setConnectionIdentifier(String connectionIdentifier) {
-        this.connectionIdentifier = connectionIdentifier;
+    public void setSharingProfileIdentifier(String sharingProfileIdentifier) {
+        this.sharingProfileIdentifier = sharingProfileIdentifier;
     }
 
     /**

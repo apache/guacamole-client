@@ -17,51 +17,51 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.jdbc.connection;
+package org.apache.guacamole.auth.jdbc.sharingprofile;
 
 import java.util.Collection;
 import org.apache.ibatis.annotations.Param;
 
 /**
- * Mapper for connection parameter objects.
+ * Mapper for sharing profile parameter objects.
  *
  * @author Michael Jumper
  */
-public interface ParameterMapper {
+public interface SharingProfileParameterMapper {
 
     /**
-     * Returns a collection of all parameters associated with the connection
-     * having the given identifier.
+     * Returns a collection of all parameters associated with the sharing
+     * profile having the given identifier.
      *
      * @param identifier
-     *     The identifier of the connection whose parameters are to be
+     *     The identifier of the sharing profile whose parameters are to be
      *     retrieved.
      *
      * @return
-     *     A collection of all parameters associated with the connection
+     *     A collection of all parameters associated with the sharing profile
      *     having the given identifier. This collection will be empty if no
-     *     such connection exists.
+     *     such sharing profile exists.
      */
-    Collection<ParameterModel> select(@Param("identifier") String identifier);
+    Collection<SharingProfileParameterModel> select(@Param("identifier") String identifier);
 
     /**
      * Inserts each of the parameter model objects in the given collection as
-     * new connection parameters.
+     * new sharing profile parameters.
      *
      * @param parameters
-     *     The connection parameters to insert.
+     *     The sharing profile parameters to insert.
      *
      * @return
      *     The number of rows inserted.
      */
-    int insert(@Param("parameters") Collection<ParameterModel> parameters);
+    int insert(@Param("parameters") Collection<SharingProfileParameterModel> parameters);
 
     /**
-     * Deletes all parameters associated with the connection having the given
-     * identifier.
+     * Deletes all parameters associated with the sharing profile having the
+     * given identifier.
      *
      * @param identifier
-     *     The identifier of the connection whose parameters should be
+     *     The identifier of the sharing profile whose parameters should be
      *     deleted.
      *
      * @return
