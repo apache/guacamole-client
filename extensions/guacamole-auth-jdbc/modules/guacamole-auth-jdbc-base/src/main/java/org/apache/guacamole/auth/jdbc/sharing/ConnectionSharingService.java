@@ -24,6 +24,7 @@ import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileService;
@@ -104,6 +105,12 @@ public class ConnectionSharingService {
         ModeledSharingProfile sharingProfile =
                 sharingProfileService.retrieveObject(user,
                         sharingProfileIdentifier);
+
+        // Verify that this profile is indeed a sharing profile for the
+        // requested connection
+        String connectionIdentifier = activeConnection.getConnectionIdentifier();
+        if (sharingProfile == null || !sharingProfile.getPrimaryConnectionIdentifier().equals(connectionIdentifier))
+            throw new GuacamoleSecurityException("Permission denied.");
 
         // Generate a share key for the requested connection
         String key = keyGenerator.getShareKey();
