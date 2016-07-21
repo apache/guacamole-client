@@ -467,7 +467,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
 
                 // Verify that the connection ID is known
                 String connectionID = activeConnection.getConnectionID();
-                if (connectionID == null)
+                if (!activeConnection.isActive() || connectionID == null)
                     throw new GuacamoleResourceNotFoundException("No existing connection to be joined.");
 
                 // Build configuration from the sharing profile and the ID of

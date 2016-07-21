@@ -36,8 +36,7 @@ import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
 /**
  * A connection record implementation that describes an active connection. As
  * the associated connection has not yet ended, getEndDate() will always return
- * null, and isActive() will always return true. The associated start date will
- * be the time of this objects creation.
+ * null. The associated start date will be the time of this objects creation.
  *
  * @author Michael Jumper
  */
@@ -325,10 +324,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
 
     @Override
     public boolean isActive() {
-
-        // Active connections are active by definition
-        return true;
-        
+        return tunnel != null && tunnel.isOpen();
     }
 
     /**
