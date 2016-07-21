@@ -19,16 +19,17 @@
 
 package org.apache.guacamole.auth.jdbc.sharing;
 
+import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
 import org.apache.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
+import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionRecord;
@@ -42,6 +43,12 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
  * @author Michael Jumper
  */
 public class SharedConnection implements Connection {
+
+    /**
+     * Service for establishing tunnels to Guacamole connections.
+     */
+    @Inject
+    private GuacamoleTunnelService tunnelService;
 
     /**
      * Randomly-generated unique identifier, guaranteeing this shared connection
@@ -130,8 +137,8 @@ public class SharedConnection implements Connection {
     @Override
     public GuacamoleTunnel connect(GuacamoleClientInformation info)
             throws GuacamoleException {
-        // STUB
-        throw new GuacamoleUnsupportedException("Connecting to shared connections is not yet implemented.");
+        return tunnelService.getGuacamoleTunnel(user, activeConnection,
+                sharingProfile, info);
     }
 
     @Override

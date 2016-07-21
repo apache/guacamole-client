@@ -21,13 +21,16 @@ package org.apache.guacamole.auth.jdbc.tunnel;
 
 import java.util.Date;
 import java.util.UUID;
+import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
+import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 import org.apache.guacamole.net.AbstractGuacamoleTunnel;
 import org.apache.guacamole.net.GuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.ConnectionRecord;
+import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
 
 
 /**
@@ -44,7 +47,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      * The user that connected to the connection associated with this connection
      * record.
      */
-    private final AuthenticatedUser user;
+    private final RemoteAuthenticatedUser user;
 
     /**
      * The balancing group from which the associated connection was chosen, if
@@ -58,6 +61,13 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     private final ModeledConnection connection;
 
     /**
+     * The sharing profile that was used to access the connection associated
+     * with this connection record. If the connection was accessed directly
+     * (without involving a sharing profile), this will be null.
+     */
+    private final ModeledSharingProfile sharingProfile;
+
+    /**
      * The time this connection record was created.
      */
     private final Date startDate = new Date();
@@ -66,13 +76,54 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      * The UUID that will be assigned to the underlying tunnel.
      */
     private final UUID uuid = UUID.randomUUID();
+
+    /**
+     * The connection ID of the connection as determined by guacd, not to be
+     * confused with the connection identifier determined by the database. This
+     * is the ID that must be supplied to guacd if joining this connection.
+     */
+    private String connectionID;
     
     /**
      * The GuacamoleTunnel used by the connection associated with this
      * connection record.
      */
     private GuacamoleTunnel tunnel;
-    
+
+    /**
+     * Creates a new connection record associated with the given user,
+     * connection, balancing connection group, and sharing profile. The given
+     * balancing connection group MUST be the connection group from which the
+     * given connection was chosen, and the given sharing profile MUST be the
+     * sharing profile that was used to share access to the given connection.
+     * The start date of this connection record will be the time of its
+     * creation.
+     *
+     * @param user
+     *     The user that connected to the connection associated with this
+     *     connection record.
+     *
+     * @param balancingGroup
+     *     The balancing group from which the given connection was chosen, or
+     *     null if no balancing group is being used.
+     *
+     * @param connection
+     *     The connection to associate with this connection record.
+     *
+     * @param sharingProfile
+     *     The sharing profile that was used to share access to the given
+     *     connection, or null if no sharing profile was used.
+     */
+    private ActiveConnectionRecord(RemoteAuthenticatedUser user,
+            ModeledConnectionGroup balancingGroup,
+            ModeledConnection connection,
+            ModeledSharingProfile sharingProfile) {
+        this.user = user;
+        this.balancingGroup = balancingGroup;
+        this.connection = connection;
+        this.sharingProfile = sharingProfile;
+    }
+   
     /**
      * Creates a new connection record associated with the given user,
      * connection, and balancing connection group. The given balancing
@@ -90,12 +141,10 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      * @param connection
      *     The connection to associate with this connection record.
      */
-    public ActiveConnectionRecord(AuthenticatedUser user,
+    public ActiveConnectionRecord(RemoteAuthenticatedUser user,
             ModeledConnectionGroup balancingGroup,
             ModeledConnection connection) {
-        this.user = user;
-        this.balancingGroup = balancingGroup;
-        this.connection = connection;
+        this(user, balancingGroup, connection, null);
     }
 
     /**
@@ -110,9 +159,36 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      * @param connection
      *     The connection to associate with this connection record.
      */
-    public ActiveConnectionRecord(AuthenticatedUser user,
+    public ActiveConnectionRecord(RemoteAuthenticatedUser user,
             ModeledConnection connection) {
         this(user, null, connection);
+    }
+
+    /**
+     * Creates a new connection record associated with the given user, active
+     * connection, and sharing profile. The given sharing profile MUST be the
+     * sharing profile that was used to share access to the given connection.
+     * The start date of this connection record will be the time of its
+     * creation.
+     *
+     * @param user
+     *     The user that connected to the connection associated with this
+     *     connection record.
+     *
+     * @param activeConnection
+     *     The active connection which is being shared to the given user via
+     *     the given sharing profile.
+     *
+     * @param sharingProfile
+     *     The sharing profile that was used to share access to the given
+     *     connection. As a record created in this way always refers to a
+     *     shared connection, this value may NOT be null.
+     */
+    public ActiveConnectionRecord(RemoteAuthenticatedUser user,
+            TrackedActiveConnection activeConnection,
+            ModeledSharingProfile sharingProfile) {
+        this(user, null, activeConnection.getConnection(), sharingProfile);
+        this.connectionID = activeConnection.getConnectionID();
     }
 
     /**
@@ -123,7 +199,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      *     The user that connected to the connection associated with this
      *     connection record.
      */
-    public AuthenticatedUser getUser() {
+    public RemoteAuthenticatedUser getUser() {
         return user;
     }
 
@@ -150,6 +226,20 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     }
 
     /**
+     * Returns the sharing profile that was used to access the connection
+     * associated with this connection record. If the connection was accessed
+     * directly (without involving a sharing profile), this will be null.
+     *
+     * @return
+     *     The sharing profile that was used to access the connection
+     *     associated with this connection record, or null if the connection
+     *     was accessed directly.
+     */
+    public ModeledSharingProfile getSharingProfile() {
+        return sharingProfile;
+    }
+
+    /**
      * Returns whether the connection associated with this connection record
      * was chosen from a balancing group.
      *
@@ -159,6 +249,21 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      */
     public boolean hasBalancingGroup() {
         return balancingGroup != null;
+    }
+
+    /**
+     * Returns whether this connection record is associated with a connection
+     * being used directly, in the absence of a sharing profile. If a connection
+     * is shared, this will continue to return false for the connection being
+     * shared, but will return true for the connections which join that
+     * connection.
+     *
+     * @return
+     *     true if the connection associated with this connection record is
+     *     being used directly, false otherwise.
+     */
+    public boolean isPrimaryConnection() {
+        return sharingProfile == null;
     }
 
     @Override
@@ -173,12 +278,26 @@ public class ActiveConnectionRecord implements ConnectionRecord {
 
     @Override
     public String getSharingProfileIdentifier() {
+
+        // Return sharing profile identifier if known
+        if (sharingProfile != null)
+            return sharingProfile.getIdentifier();
+
+        // No associated sharing profile
         return null;
+
     }
 
     @Override
     public String getSharingProfileName() {
+
+        // Return sharing profile name if known
+        if (sharingProfile != null)
+            return sharingProfile.getName();
+
+        // No associated sharing profile
         return null;
+
     }
 
     @Override
@@ -201,7 +320,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
 
     @Override
     public String getUsername() {
-        return user.getUser().getIdentifier();
+        return user.getIdentifier();
     }
 
     @Override
@@ -229,13 +348,13 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      * given socket.
      *
      * @param socket
-     *     The GuacamoleSocket to use to create the tunnel associated with this
-     *     connection record.
+     *     The ConfiguredGuacamoleSocket to use to create the tunnel associated
+     *     with this connection record.
      * 
      * @return
      *     The newly-created tunnel associated with this connection record.
      */
-    public GuacamoleTunnel assignGuacamoleTunnel(final GuacamoleSocket socket) {
+    public GuacamoleTunnel assignGuacamoleTunnel(final ConfiguredGuacamoleSocket socket) {
 
         // Create tunnel with given socket
         this.tunnel = new AbstractGuacamoleTunnel() {
@@ -251,6 +370,10 @@ public class ActiveConnectionRecord implements ConnectionRecord {
             }
 
         };
+
+        // Store connection ID of the primary connection only
+        if (isPrimaryConnection())
+            this.connectionID = socket.getConnectionID();
 
         // Return newly-created tunnel
         return this.tunnel;
@@ -268,5 +391,20 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     public UUID getUUID() {
         return uuid;
     }
-    
+
+    /**
+     * Returns the connection ID of the in-progress connection as determined by
+     * guacd, not to be confused with the connection identifier determined by
+     * the database. This is the ID that must be supplied to guacd if joining
+     * this connection. If the in-progress connection is joining another
+     * connection, this will be the ID of the connection being joined, NOT the
+     * ID of the connection directly represented by this record.
+     *
+     * @return
+     *     The ID of the in-progress connection, as determined by guacd.
+     */
+    public String getConnectionID() {
+        return connectionID;
+    }
+
 }

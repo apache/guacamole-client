@@ -24,6 +24,9 @@ import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
+import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionUser;
+import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
@@ -144,5 +147,40 @@ public interface GuacamoleTunnelService {
      *     currently-active connections.
      */
     public Collection<ActiveConnectionRecord> getActiveConnections(ConnectionGroup connectionGroup);
+
+    /**
+     * Creates a socket for the given user which joins the given active
+     * connection. The given client information will be passed to guacd when
+     * the connection is established. This function will apply any concurrent
+     * usage rules in effect, but will NOT test object- or system-level
+     * permissions.
+     *
+     * @param user
+     *     The user for whom the connection is being established.
+     *
+     * @param activeConnection
+     *     The active connection the user is joining.
+     *
+     * @param sharingProfile
+     *     The sharing profile whose associated parameters dictate the level
+     *     of access granted to the user joining the connection.
+     *
+     * @param info
+     *     Information describing the Guacamole client connecting to the given
+     *     connection.
+     *
+     * @return
+     *     A new GuacamoleTunnel which is configured and connected to the given
+     *     active connection.
+     *
+     * @throws GuacamoleException
+     *     If the connection cannot be established due to concurrent usage
+     *     rules.
+     */
+    GuacamoleTunnel getGuacamoleTunnel(SharedConnectionUser user,
+            TrackedActiveConnection activeConnection,
+            ModeledSharingProfile sharingProfile,
+            GuacamoleClientInformation info)
+            throws GuacamoleException;
 
 }

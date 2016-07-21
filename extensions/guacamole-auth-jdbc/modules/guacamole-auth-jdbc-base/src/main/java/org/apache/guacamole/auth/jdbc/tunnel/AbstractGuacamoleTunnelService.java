@@ -38,10 +38,11 @@ import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordMapper;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionModel;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionParameterModel;
-import org.apache.guacamole.auth.jdbc.user.UserModel;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
+import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionMapper;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.GuacamoleSocket;
@@ -55,6 +56,11 @@ import org.apache.guacamole.token.StandardTokens;
 import org.apache.guacamole.token.TokenFilter;
 import org.mybatis.guice.transactional.Transactional;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionParameterMapper;
+import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionUser;
+import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
+import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterMapper;
+import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterModel;
+import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 
 
 /**
@@ -88,7 +94,13 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      * Mapper for accessing connection parameters.
      */
     @Inject
-    private ConnectionParameterMapper parameterMapper;
+    private ConnectionParameterMapper connectionParameterMapper;
+
+    /**
+     * Mapper for accessing sharing profile parameters.
+     */
+    @Inject
+    private SharingProfileParameterMapper sharingProfileParameterMapper;
 
     /**
      * Mapper for accessing connection history.
@@ -141,7 +153,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      * @throws GuacamoleException
      *     If access is denied to the given user for any reason.
      */
-    protected abstract ModeledConnection acquire(AuthenticatedUser user,
+    protected abstract ModeledConnection acquire(RemoteAuthenticatedUser user,
             List<ModeledConnection> connections) throws GuacamoleException;
 
     /**
@@ -155,7 +167,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      * @param connection
      *     The connection being released.
      */
-    protected abstract void release(AuthenticatedUser user,
+    protected abstract void release(RemoteAuthenticatedUser user,
             ModeledConnection connection);
 
     /**
@@ -172,7 +184,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      * @throws GuacamoleException
      *     If access is denied to the given user for any reason.
      */
-    protected abstract void acquire(AuthenticatedUser user,
+    protected abstract void acquire(RemoteAuthenticatedUser user,
             ModeledConnectionGroup connectionGroup) throws GuacamoleException;
 
     /**
@@ -186,7 +198,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      * @param connectionGroup
      *     The connection group being released.
      */
-    protected abstract void release(AuthenticatedUser user,
+    protected abstract void release(RemoteAuthenticatedUser user,
             ModeledConnectionGroup connectionGroup);
 
     /**
@@ -206,7 +218,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      *     A GuacamoleConfiguration containing the protocol and parameters from
      *     the given connection.
      */
-    private GuacamoleConfiguration getGuacamoleConfiguration(AuthenticatedUser user,
+    private GuacamoleConfiguration getGuacamoleConfiguration(RemoteAuthenticatedUser user,
             ModeledConnection connection) {
 
         // Generate configuration from available data
@@ -217,7 +229,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         config.setProtocol(model.getProtocol());
 
         // Set parameters from associated data
-        Collection<ConnectionParameterModel> parameters = parameterMapper.select(connection.getIdentifier());
+        Collection<ConnectionParameterModel> parameters = connectionParameterMapper.select(connection.getIdentifier());
         for (ConnectionParameterModel parameter : parameters)
             config.setParameter(parameter.getName(), parameter.getValue());
 
@@ -233,6 +245,52 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     }
 
     /**
+     * Returns a guacamole configuration which joins the active connection
+     * having the given ID, using the provided sharing profile to restrict the
+     * access provided to the user accessing the shared connection. If tokens
+     * are used in the connection parameter values of the sharing profile,
+     * credentials from the given user will be substituted appropriately.
+     *
+     * @param user
+     *     The user whose credentials should be used if necessary.
+     *
+     * @param sharingProfile
+     *     The sharing profile whose associated parameters dictate the level
+     *     of access granted to the user joining the connection.
+     *
+     * @param connectionID
+     *     The ID of the connection being joined, as provided by guacd when the
+     *     original connection was established, or null if a new connection
+     *     should be created instead.
+     *
+     * @return
+     *     A GuacamoleConfiguration containing the protocol and parameters from
+     *     the given connection.
+     */
+    private GuacamoleConfiguration getGuacamoleConfiguration(RemoteAuthenticatedUser user,
+            ModeledSharingProfile sharingProfile, String connectionID) {
+
+        // Generate configuration from available data
+        GuacamoleConfiguration config = new GuacamoleConfiguration();
+        config.setConnectionID(connectionID);
+
+        // Set parameters from associated data
+        Collection<SharingProfileParameterModel> parameters = sharingProfileParameterMapper.select(sharingProfile.getIdentifier());
+        for (SharingProfileParameterModel parameter : parameters)
+            config.setParameter(parameter.getName(), parameter.getValue());
+
+        // Build token filter containing credential tokens
+        TokenFilter tokenFilter = new TokenFilter();
+        StandardTokens.addStandardTokens(tokenFilter, user.getCredentials());
+
+        // Filter the configuration
+        tokenFilter.filterValues(config.getParameters());
+
+        return config;
+
+    }
+
+    /**
      * Saves the given ActiveConnectionRecord to the database. The end date of
      * the saved record will be populated with the current time.
      *
@@ -241,17 +299,15 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      */
     private void saveConnectionRecord(ActiveConnectionRecord record) {
 
-        // Get associated connection
-        ModeledConnection connection = record.getConnection();
-        
         // Get associated models
-        AuthenticatedUser user = record.getUser();
         ConnectionRecordModel recordModel = new ConnectionRecordModel();
 
         // Copy user information and timestamps into new record
-        recordModel.setUsername(user.getIdentifier());
-        recordModel.setConnectionIdentifier(connection.getIdentifier());
-        recordModel.setConnectionName(connection.getName());
+        recordModel.setUsername(record.getUsername());
+        recordModel.setConnectionIdentifier(record.getConnectionIdentifier());
+        recordModel.setConnectionName(record.getConnectionName());
+        recordModel.setSharingProfileIdentifier(record.getSharingProfileIdentifier());
+        recordModel.setSharingProfileName(record.getSharingProfileName());
         recordModel.setStartDate(record.getStartDate());
         recordModel.setEndDate(new Date());
 
@@ -329,19 +385,26 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             if (!hasRun.compareAndSet(false, true))
                 return;
 
-            // Get original user and connection
-            AuthenticatedUser user = activeConnection.getUser();
-            ModeledConnection connection = activeConnection.getConnection();
-
-            // Get associated identifiers
-            String identifier = connection.getIdentifier();
-            String parentIdentifier = connection.getParentIdentifier();
-
-            // Release connection
+            // Remove underlying tunnel from list of active tunnels
             activeTunnels.remove(activeConnection.getUUID().toString());
-            activeConnections.remove(identifier, activeConnection);
-            activeConnectionGroups.remove(parentIdentifier, activeConnection);
-            release(user, connection);
+
+            // Get original user
+            RemoteAuthenticatedUser user = activeConnection.getUser();
+
+            // Release the associated connection if this is the primary connection
+            if (activeConnection.isPrimaryConnection()) {
+
+                // Get connection and associated identifiers
+                ModeledConnection connection = activeConnection.getConnection();
+                String identifier = connection.getIdentifier();
+                String parentIdentifier = connection.getParentIdentifier();
+
+                // Release connection
+                activeConnections.remove(identifier, activeConnection);
+                activeConnectionGroups.remove(parentIdentifier, activeConnection);
+                release(user, connection);
+
+            }
 
             // Release any associated group
             if (activeConnection.hasBalancingGroup())
@@ -379,25 +442,44 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      *     while connection configuration information is being retrieved.
      */
     private GuacamoleTunnel assignGuacamoleTunnel(ActiveConnectionRecord activeConnection,
-            GuacamoleClientInformation info)
-            throws GuacamoleException {
+            GuacamoleClientInformation info) throws GuacamoleException {
 
-        ModeledConnection connection = activeConnection.getConnection();
-        
         // Record new active connection
         Runnable cleanupTask = new ConnectionCleanupTask(activeConnection);
         activeTunnels.put(activeConnection.getUUID().toString(), activeConnection);
-        activeConnections.put(connection.getIdentifier(), activeConnection);
-        activeConnectionGroups.put(connection.getParentIdentifier(), activeConnection);
 
         try {
 
+            GuacamoleConfiguration config;
+
+            // Pull configuration directly from the connection if we are not
+            // joining an active connection
+            if (activeConnection.isPrimaryConnection()) {
+                ModeledConnection connection = activeConnection.getConnection();
+                activeConnections.put(connection.getIdentifier(), activeConnection);
+                activeConnectionGroups.put(connection.getParentIdentifier(), activeConnection);
+                config = getGuacamoleConfiguration(activeConnection.getUser(), connection);
+            }
+
+            // If we ARE joining an active connection, generate a configuration
+            // which does so
+            else {
+
+                // Verify that the connection ID is known
+                String connectionID = activeConnection.getConnectionID();
+                if (connectionID == null)
+                    throw new GuacamoleResourceNotFoundException("No existing connection to be joined.");
+
+                // Build configuration from the sharing profile and the ID of
+                // the connection being joined
+                config = getGuacamoleConfiguration(activeConnection.getUser(),
+                        activeConnection.getSharingProfile(), connectionID);
+
+            }
+
             // Obtain socket which will automatically run the cleanup task
-            GuacamoleSocket socket = new ConfiguredGuacamoleSocket(
-                getUnconfiguredGuacamoleSocket(cleanupTask),
-                getGuacamoleConfiguration(activeConnection.getUser(), connection),
-                info
-            );
+            ConfiguredGuacamoleSocket socket = new ConfiguredGuacamoleSocket(
+                getUnconfiguredGuacamoleSocket(cleanupTask), config, info);
 
             // Assign and return new tunnel 
             return activeConnection.assignGuacamoleTunnel(socket);
@@ -593,6 +675,19 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             return Collections.<ActiveConnectionRecord>emptyList();
 
         return activeConnectionGroups.get(connectionGroup.getIdentifier());
+
+    }
+
+    @Override
+    @Transactional
+    public GuacamoleTunnel getGuacamoleTunnel(SharedConnectionUser user,
+            TrackedActiveConnection activeConnection,
+            ModeledSharingProfile sharingProfile,
+            GuacamoleClientInformation info)
+            throws GuacamoleException {
+
+        // Connect to shared connection
+        return assignGuacamoleTunnel(new ActiveConnectionRecord(user, activeConnection, sharingProfile), info);
 
     }
 
