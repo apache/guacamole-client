@@ -42,7 +42,6 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
-import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionMapper;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.GuacamoleSocket;
@@ -56,6 +55,7 @@ import org.apache.guacamole.token.StandardTokens;
 import org.apache.guacamole.token.TokenFilter;
 import org.mybatis.guice.transactional.Transactional;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionParameterMapper;
+import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionDefinition;
 import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionUser;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterMapper;
@@ -467,7 +467,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
 
                 // Verify that the connection ID is known
                 String connectionID = activeConnection.getConnectionID();
-                if (!activeConnection.isActive() || connectionID == null)
+                if (connectionID == null)
                     throw new GuacamoleResourceNotFoundException("No existing connection to be joined.");
 
                 // Build configuration from the sharing profile and the ID of
@@ -681,13 +681,14 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     @Override
     @Transactional
     public GuacamoleTunnel getGuacamoleTunnel(SharedConnectionUser user,
-            TrackedActiveConnection activeConnection,
-            ModeledSharingProfile sharingProfile,
+            SharedConnectionDefinition definition,
             GuacamoleClientInformation info)
             throws GuacamoleException {
 
         // Connect to shared connection
-        return assignGuacamoleTunnel(new ActiveConnectionRecord(user, activeConnection, sharingProfile), info);
+        return assignGuacamoleTunnel(
+                new ActiveConnectionRecord(user, definition.getActiveConnection(),
+                        definition.getSharingProfile()), info);
 
     }
 

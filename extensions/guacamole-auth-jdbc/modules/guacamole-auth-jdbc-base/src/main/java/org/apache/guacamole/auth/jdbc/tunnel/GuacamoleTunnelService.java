@@ -24,9 +24,8 @@ import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
+import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionDefinition;
 import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionUser;
-import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
@@ -158,12 +157,9 @@ public interface GuacamoleTunnelService {
      * @param user
      *     The user for whom the connection is being established.
      *
-     * @param activeConnection
-     *     The active connection the user is joining.
-     *
-     * @param sharingProfile
-     *     The sharing profile whose associated parameters dictate the level
-     *     of access granted to the user joining the connection.
+     * @param definition
+     *     The SharedConnectionDefinition dictating the connection being shared
+     *     and any associated restrictions.
      *
      * @param info
      *     Information describing the Guacamole client connecting to the given
@@ -178,8 +174,7 @@ public interface GuacamoleTunnelService {
      *     rules.
      */
     GuacamoleTunnel getGuacamoleTunnel(SharedConnectionUser user,
-            TrackedActiveConnection activeConnection,
-            ModeledSharingProfile sharingProfile,
+            SharedConnectionDefinition definition,
             GuacamoleClientInformation info)
             throws GuacamoleException;
 
