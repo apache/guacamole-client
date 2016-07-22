@@ -44,6 +44,11 @@ public class SharedConnectionDefinition {
     private final ModeledSharingProfile sharingProfile;
 
     /**
+     * The unique key with which a user may access the shared connection.
+     */
+    private final String shareKey;
+
+    /**
      * Creates a new SharedConnectionDefinition which describes an active
      * connection that can be joined, including the restrictions dictated by a
      * given sharing profile.
@@ -54,11 +59,15 @@ public class SharedConnectionDefinition {
      * @param sharingProfile
      *     A sharing profile whose associated parameters dictate the level of
      *     access provided to the shared connection.
+     *
+     * @param shareKey
+     *     The unique key with which a user may access the shared connection.
      */
     public SharedConnectionDefinition(TrackedActiveConnection activeConnection,
-            ModeledSharingProfile sharingProfile) {
+            ModeledSharingProfile sharingProfile, String shareKey) {
         this.activeConnection = activeConnection;
         this.sharingProfile = sharingProfile;
+        this.shareKey = shareKey;
     }
 
     /**
@@ -82,6 +91,17 @@ public class SharedConnectionDefinition {
      */
     public ModeledSharingProfile getSharingProfile() {
         return sharingProfile;
+    }
+
+    /**
+     * Returns the unique key with which a user may access the shared
+     * connection.
+     *
+     * @return
+     *     The unique key with which a user may access the shared connection.
+     */
+    public String getShareKey() {
+        return shareKey;
     }
 
 }

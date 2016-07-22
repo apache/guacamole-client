@@ -48,8 +48,12 @@ public class HashSharedConnectionMap implements SharedConnectionMap {
     }
 
     @Override
-    public void put(String key, SharedConnectionDefinition definition) {
-        connectionMap.put(key, definition);
+    public void add(SharedConnectionDefinition definition) {
+
+        // Store definition by share key
+        String shareKey = definition.getShareKey();
+        connectionMap.put(shareKey, definition);
+
     }
 
     @Override

@@ -28,19 +28,15 @@ package org.apache.guacamole.auth.jdbc.sharing;
 public interface SharedConnectionMap {
 
     /**
-     * Associates the given share key with a SharedConnectionDefinition,
+     * Stores the given SharedConnectionDefinition by its associated share key,
      * allowing the connection it describes to be accessed by users having the
      * share key.
      *
-     * @param key
-     *     The share key to use to share the connection described by the given
-     *     SharedConnectionDefinition.
-     *
      * @param definition
      *     The SharedConnectionDefinition describing the connection being
-     *     shared via the given share key.
+     *     shared.
      */
-    public void put(String key, SharedConnectionDefinition definition);
+    public void add(SharedConnectionDefinition definition);
 
     /**
      * Retrieves the connection definition associated with the given share key.

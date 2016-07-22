@@ -114,8 +114,8 @@ public class ConnectionSharingService {
 
         // Generate a share key for the requested connection
         String key = keyGenerator.getShareKey();
-        connectionMap.put(key, new SharedConnectionDefinition(activeConnection,
-                sharingProfile));
+        connectionMap.add(new SharedConnectionDefinition(activeConnection,
+                sharingProfile, key));
 
         // Return credentials defining a single expected parameter
         return new UserCredentials(SHARE_KEY,
