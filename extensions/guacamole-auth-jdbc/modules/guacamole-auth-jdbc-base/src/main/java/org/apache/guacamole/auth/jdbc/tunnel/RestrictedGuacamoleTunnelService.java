@@ -27,12 +27,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.guacamole.GuacamoleClientTooManyException;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceConflictException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
+import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 
 
 /**
@@ -166,7 +166,7 @@ public class RestrictedGuacamoleTunnelService
     }
 
     @Override
-    protected ModeledConnection acquire(AuthenticatedUser user,
+    protected ModeledConnection acquire(RemoteAuthenticatedUser user,
             List<ModeledConnection> connections) throws GuacamoleException {
 
         // Do not acquire connection unless within overall limits
@@ -174,7 +174,7 @@ public class RestrictedGuacamoleTunnelService
             throw new GuacamoleResourceConflictException("Cannot connect. Overall maximum connections reached.");
 
         // Get username
-        String username = user.getUser().getIdentifier();
+        String username = user.getIdentifier();
 
         // Sort connections in ascending order of usage
         ModeledConnection[] sortedConnections = connections.toArray(new ModeledConnection[connections.size()]);
@@ -230,18 +230,18 @@ public class RestrictedGuacamoleTunnelService
     }
 
     @Override
-    protected void release(AuthenticatedUser user, ModeledConnection connection) {
-        activeSeats.remove(new Seat(user.getUser().getIdentifier(), connection.getIdentifier()));
+    protected void release(RemoteAuthenticatedUser user, ModeledConnection connection) {
+        activeSeats.remove(new Seat(user.getIdentifier(), connection.getIdentifier()));
         activeConnections.remove(connection.getIdentifier());
         totalActiveConnections.decrementAndGet();
     }
 
     @Override
-    protected void acquire(AuthenticatedUser user,
+    protected void acquire(RemoteAuthenticatedUser user,
             ModeledConnectionGroup connectionGroup) throws GuacamoleException {
 
         // Get username
-        String username = user.getUser().getIdentifier();
+        String username = user.getIdentifier();
 
         // Attempt to aquire connection group according to per-user limits
         Seat seat = new Seat(username, connectionGroup.getIdentifier());
@@ -267,9 +267,9 @@ public class RestrictedGuacamoleTunnelService
     }
 
     @Override
-    protected void release(AuthenticatedUser user,
+    protected void release(RemoteAuthenticatedUser user,
             ModeledConnectionGroup connectionGroup) {
-        activeGroupSeats.remove(new Seat(user.getUser().getIdentifier(), connectionGroup.getIdentifier()));
+        activeGroupSeats.remove(new Seat(user.getIdentifier(), connectionGroup.getIdentifier()));
         activeGroups.remove(connectionGroup.getIdentifier());
     }
 

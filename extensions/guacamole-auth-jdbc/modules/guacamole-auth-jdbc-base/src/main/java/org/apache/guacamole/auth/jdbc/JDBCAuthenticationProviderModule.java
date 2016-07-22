@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc;
 
+import com.google.inject.Scopes;
 import org.apache.guacamole.auth.jdbc.user.UserContext;
 import org.apache.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
@@ -62,6 +63,11 @@ import org.apache.guacamole.auth.jdbc.connection.ConnectionParameterMapper;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionService;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionSet;
+import org.apache.guacamole.auth.jdbc.sharing.ConnectionSharingService;
+import org.apache.guacamole.auth.jdbc.sharing.HashSharedConnectionMap;
+import org.apache.guacamole.auth.jdbc.sharing.SecureRandomShareKeyGenerator;
+import org.apache.guacamole.auth.jdbc.sharing.ShareKeyGenerator;
+import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionMap;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileDirectory;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileMapper;
@@ -163,10 +169,13 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(ConnectionGroupPermissionService.class);
         bind(ConnectionGroupService.class);
         bind(ConnectionPermissionService.class);
+        bind(ConnectionSharingService.class);
         bind(ConnectionService.class);
         bind(GuacamoleTunnelService.class).to(RestrictedGuacamoleTunnelService.class);
         bind(PasswordEncryptionService.class).to(SHA256PasswordEncryptionService.class);
         bind(SaltService.class).to(SecureRandomSaltService.class);
+        bind(SharedConnectionMap.class).to(HashSharedConnectionMap.class).in(Scopes.SINGLETON);
+        bind(ShareKeyGenerator.class).to(SecureRandomShareKeyGenerator.class).in(Scopes.SINGLETON);
         bind(SharingProfilePermissionService.class);
         bind(SharingProfileService.class);
         bind(SystemPermissionService.class);

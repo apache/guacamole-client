@@ -19,10 +19,12 @@
 
 package org.apache.guacamole.auth.jdbc.activeconnection;
 
+import com.google.inject.Inject;
 import java.util.Date;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
+import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
+import org.apache.guacamole.auth.jdbc.sharing.ConnectionSharingService;
 import org.apache.guacamole.auth.jdbc.tunnel.ActiveConnectionRecord;
 import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -38,14 +40,20 @@ import org.apache.guacamole.net.auth.credentials.UserCredentials;
 public class TrackedActiveConnection extends RestrictedObject implements ActiveConnection {
 
     /**
+     * Service for managing shared connections.
+     */
+    @Inject
+    private ConnectionSharingService sharingService;
+
+    /**
      * The identifier of this active connection.
      */
     private String identifier;
 
     /**
-     * The identifier of the associated connection.
+     * The connection being actively used or shared.
      */
-    private String connectionIdentifier;
+    private ModeledConnection connection;
 
     /**
      * The identifier of the associated sharing profile.
@@ -66,6 +74,13 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
      * The username of the user that initiated this connection.
      */
     private String username;
+
+    /**
+     * The connection ID of the connection as determined by guacd, not to be
+     * confused with the connection identifier determined by the database. This
+     * is the ID that must be supplied to guacd if joining this connection.
+     */
+    private String connectionID;
 
     /**
      * The underlying GuacamoleTunnel.
@@ -98,7 +113,8 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
         super.init(currentUser);
         
         // Copy all non-sensitive data from given record
-        this.connectionIdentifier     = activeConnectionRecord.getConnectionIdentifier();
+        this.connection               = activeConnectionRecord.getConnection();
+        this.connectionID             = activeConnectionRecord.getConnectionID();
         this.sharingProfileIdentifier = activeConnectionRecord.getSharingProfileIdentifier();
         this.identifier               = activeConnectionRecord.getUUID().toString();
         this.startDate                = activeConnectionRecord.getStartDate();
@@ -121,15 +137,42 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
- 
+
+    /**
+     * Returns the connection being actively used. If this active connection is
+     * not the primary connection, this will be the connection being actively
+     * shared.
+     *
+     * @return
+     *     The connection being actively used.
+     */
+    public ModeledConnection getConnection() {
+        return connection;
+    }
+
+    /**
+     * Returns the connection ID of the in-progress connection as determined by
+     * guacd, not to be confused with the connection identifier determined by
+     * the database. This is the ID that must be supplied to guacd if joining
+     * this connection.
+     *
+     * @return
+     *     The ID of the in-progress connection, as determined by guacd.
+     */
+    public String getConnectionID() {
+        return connectionID;
+    }
+
     @Override
     public String getConnectionIdentifier() {
-        return connectionIdentifier;
+        return connection.getIdentifier();
     }
 
     @Override
     public void setConnectionIdentifier(String connnectionIdentifier) {
-        this.connectionIdentifier = connnectionIdentifier;
+        throw new UnsupportedOperationException("The connection identifier of "
+                + "TrackedActiveConnection is inherited from the underlying "
+                + "connection.");
     }
 
     @Override
@@ -145,7 +188,8 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
     @Override
     public UserCredentials getSharingCredentials(String identifier)
             throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied");
+        return sharingService.generateTemporaryCredentials(getCurrentUser(),
+                this, identifier);
     }
 
     @Override
