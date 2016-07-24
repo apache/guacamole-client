@@ -51,6 +51,12 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
     private String identifier;
 
     /**
+     * The actual connection record from which this ActiveConnection derives its
+     * data.
+     */
+    private ActiveConnectionRecord connectionRecord;
+
+    /**
      * The connection being actively used or shared.
      */
     private ModeledConnection connection;
@@ -74,13 +80,6 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
      * The username of the user that initiated this connection.
      */
     private String username;
-
-    /**
-     * The connection ID of the connection as determined by guacd, not to be
-     * confused with the connection identifier determined by the database. This
-     * is the ID that must be supplied to guacd if joining this connection.
-     */
-    private String connectionID;
 
     /**
      * The underlying GuacamoleTunnel.
@@ -111,10 +110,10 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
             boolean includeSensitiveInformation) {
 
         super.init(currentUser);
+        this.connectionRecord = activeConnectionRecord;
         
         // Copy all non-sensitive data from given record
         this.connection               = activeConnectionRecord.getConnection();
-        this.connectionID             = activeConnectionRecord.getConnectionID();
         this.sharingProfileIdentifier = activeConnectionRecord.getSharingProfileIdentifier();
         this.identifier               = activeConnectionRecord.getUUID().toString();
         this.startDate                = activeConnectionRecord.getStartDate();
@@ -150,19 +149,6 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
         return connection;
     }
 
-    /**
-     * Returns the connection ID of the in-progress connection as determined by
-     * guacd, not to be confused with the connection identifier determined by
-     * the database. This is the ID that must be supplied to guacd if joining
-     * this connection.
-     *
-     * @return
-     *     The ID of the in-progress connection, as determined by guacd.
-     */
-    public String getConnectionID() {
-        return connectionID;
-    }
-
     @Override
     public String getConnectionIdentifier() {
         return connection.getIdentifier();
@@ -189,7 +175,7 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
     public UserCredentials getSharingCredentials(String identifier)
             throws GuacamoleException {
         return sharingService.generateTemporaryCredentials(getCurrentUser(),
-                this, identifier);
+                connectionRecord, identifier);
     }
 
     @Override

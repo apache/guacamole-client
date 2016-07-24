@@ -19,8 +19,8 @@
 
 package org.apache.guacamole.auth.jdbc.sharing;
 
-import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
+import org.apache.guacamole.auth.jdbc.tunnel.ActiveConnectionRecord;
 
 /**
  * Defines the semantics/restrictions of a shared connection by associating an
@@ -35,7 +35,7 @@ public class SharedConnectionDefinition {
     /**
      * The active connection being shared.
      */
-    private final TrackedActiveConnection activeConnection;
+    private final ActiveConnectionRecord activeConnection;
 
     /**
      * The sharing profile which dictates the level of access provided to a user
@@ -63,7 +63,7 @@ public class SharedConnectionDefinition {
      * @param shareKey
      *     The unique key with which a user may access the shared connection.
      */
-    public SharedConnectionDefinition(TrackedActiveConnection activeConnection,
+    public SharedConnectionDefinition(ActiveConnectionRecord activeConnection,
             ModeledSharingProfile sharingProfile, String shareKey) {
         this.activeConnection = activeConnection;
         this.sharingProfile = sharingProfile;
@@ -71,13 +71,13 @@ public class SharedConnectionDefinition {
     }
 
     /**
-     * Returns the TrackedActiveConnection of the actual in-progress connection
+     * Returns the ActiveConnectionRecord of the actual in-progress connection
      * being shared.
      *
      * @return
-     *     The TrackedActiveConnection being shared.
+     *     The ActiveConnectionRecord being shared.
      */
-    public TrackedActiveConnection getActiveConnection() {
+    public ActiveConnectionRecord getActiveConnection() {
         return activeConnection;
     }
 

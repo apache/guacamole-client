@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.jdbc.tunnel;
 
 import java.util.Date;
 import java.util.UUID;
-import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
@@ -184,7 +183,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      *     shared connection, this value may NOT be null.
      */
     public ActiveConnectionRecord(RemoteAuthenticatedUser user,
-            TrackedActiveConnection activeConnection,
+            ActiveConnectionRecord activeConnection,
             ModeledSharingProfile sharingProfile) {
         this(user, null, activeConnection.getConnection(), sharingProfile);
         this.connectionID = activeConnection.getConnectionID();
