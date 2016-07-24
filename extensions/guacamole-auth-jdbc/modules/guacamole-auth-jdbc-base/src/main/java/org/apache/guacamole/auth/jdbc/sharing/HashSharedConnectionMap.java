@@ -64,7 +64,13 @@ public class HashSharedConnectionMap implements SharedConnectionMap {
             return null;
 
         // Attempt to retrieve only if non-null
-        return connectionMap.remove(key);
+        SharedConnectionDefinition definition = connectionMap.remove(key);
+        if (definition == null)
+            return null;
+
+        // Close all associated tunnels and disallow further sharing
+        definition.invalidate();
+        return definition;
 
     }
 

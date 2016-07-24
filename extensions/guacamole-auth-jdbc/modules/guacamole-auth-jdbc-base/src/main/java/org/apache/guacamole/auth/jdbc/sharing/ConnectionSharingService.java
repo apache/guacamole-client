@@ -117,6 +117,10 @@ public class ConnectionSharingService {
         connectionMap.add(new SharedConnectionDefinition(activeConnection,
                 sharingProfile, key));
 
+        // Ensure the share key is properly invalidated when the original
+        // connection is closed
+        activeConnection.registerShareKey(key);
+
         // Return credentials defining a single expected parameter
         return new UserCredentials(SHARE_KEY,
                 Collections.singletonMap(SHARE_KEY_NAME, key));

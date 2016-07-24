@@ -109,6 +109,12 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     private ConnectionRecordMapper connectionRecordMapper;
 
     /**
+     * Provider for creating active connection records.
+     */
+    @Inject
+    private Provider<ActiveConnectionRecord> activeConnectionRecordProvider;
+
+    /**
      * The hostname to use when connecting to guacd if no hostname is provided
      * within guacamole.properties.
      */
@@ -385,6 +391,9 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             if (!hasRun.compareAndSet(false, true))
                 return;
 
+            // Connection can no longer be shared
+            activeConnection.invalidate();
+
             // Remove underlying tunnel from list of active tunnels
             activeTunnels.remove(activeConnection.getUUID().toString());
 
@@ -621,9 +630,13 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             final ModeledConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException {
 
-        // Acquire and connect to single connection
+        // Acquire access to single connection
         acquire(user, Collections.singletonList(connection));
-        return assignGuacamoleTunnel(new ActiveConnectionRecord(user, connection), info);
+
+        // Connect only if the connection was successfully acquired
+        ActiveConnectionRecord connectionRecord = activeConnectionRecordProvider.get();
+        connectionRecord.init(user, connection);
+        return assignGuacamoleTunnel(connectionRecord, info);
 
     }
 
@@ -663,7 +676,9 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             user.preferConnection(connection.getIdentifier());
 
         // Connect to acquired child
-        return assignGuacamoleTunnel(new ActiveConnectionRecord(user, connectionGroup, connection), info);
+        ActiveConnectionRecord connectionRecord = activeConnectionRecordProvider.get();
+        connectionRecord.init(user, connectionGroup, connection);
+        return assignGuacamoleTunnel(connectionRecord, info);
 
     }
 
@@ -685,10 +700,18 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             GuacamoleClientInformation info)
             throws GuacamoleException {
 
-        // Connect to shared connection
-        return assignGuacamoleTunnel(
-                new ActiveConnectionRecord(user, definition.getActiveConnection(),
-                        definition.getSharingProfile()), info);
+        // Create a connection record which describes the shared connection
+        ActiveConnectionRecord connectionRecord = activeConnectionRecordProvider.get();
+        connectionRecord.init(user, definition.getActiveConnection(),
+                definition.getSharingProfile());
+
+        // Connect to shared connection described by the created record
+        GuacamoleTunnel tunnel = assignGuacamoleTunnel(connectionRecord, info);
+
+        // Register tunnel, such that it is closed when the
+        // SharedConnectionDefinition is invalidated
+        definition.registerTunnel(tunnel);
+        return tunnel;
 
     }
 
