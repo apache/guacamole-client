@@ -30,6 +30,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.rest.activeconnection.APIActiveConnection;
@@ -96,10 +97,14 @@ public class TunnelResource {
         // Pull the UserContext from the tunnel
         UserContext userContext = tunnel.getUserContext();
 
+        // Fail if the active connection cannot be found
+        ActiveConnection activeConnection = tunnel.getActiveConnection();
+        if (activeConnection == null)
+            throw new GuacamoleResourceNotFoundException("No readable active connection for tunnel.");
+
         // Return the associated ActiveConnection as a resource
         return activeConnectionResourceFactory.create(userContext,
-                userContext.getActiveConnectionDirectory(),
-                tunnel.getActiveConnection());
+                userContext.getActiveConnectionDirectory(), activeConnection);
 
     }
 

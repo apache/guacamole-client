@@ -55,7 +55,7 @@
 
     <!-- Select identifiers of all readable sharing profiles associated with a particular connection -->
     <select id="selectReadableIdentifiersWithin" resultType="string">
-        SELECT sharing_profile_id
+        SELECT guacamole_sharing_profile.sharing_profile_id
         FROM guacamole_sharing_profile
         JOIN guacamole_sharing_profile_permission ON guacamole_sharing_profile_permission.sharing_profile_id = guacamole_sharing_profile.sharing_profile_id
         WHERE

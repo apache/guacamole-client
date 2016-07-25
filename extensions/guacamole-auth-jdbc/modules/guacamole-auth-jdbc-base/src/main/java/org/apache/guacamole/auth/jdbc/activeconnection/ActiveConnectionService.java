@@ -80,6 +80,7 @@ public class ActiveConnectionService
     public Collection<TrackedActiveConnection> retrieveObjects(AuthenticatedUser user,
             Collection<String> identifiers) throws GuacamoleException {
 
+        String username = user.getIdentifier();
         boolean isAdmin = user.getUser().isAdministrator();
         Set<String> identifierSet = new HashSet<String>(identifiers);
 
@@ -90,10 +91,15 @@ public class ActiveConnectionService
         Collection<TrackedActiveConnection> activeConnections = new ArrayList<TrackedActiveConnection>(identifiers.size());
         for (ActiveConnectionRecord record : records) {
 
+            // Sensitive information should be included if the connection was
+            // started by the current user OR the user is an admin
+            boolean includeSensitiveInformation =
+                    isAdmin || username.equals(record.getUsername());
+
             // Add connection if within requested identifiers
             if (identifierSet.contains(record.getUUID().toString())) {
                 TrackedActiveConnection activeConnection = trackedActiveConnectionProvider.get();
-                activeConnection.init(user, record, isAdmin);
+                activeConnection.init(user, record, includeSensitiveInformation);
                 activeConnections.add(activeConnection);
             }
 
