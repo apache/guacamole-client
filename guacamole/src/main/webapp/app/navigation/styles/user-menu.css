@@ -48,9 +48,8 @@
 
 .user-menu .menu-dropdown .menu-title {
 
-    font-size: 1.25em;
     font-weight: bold;
-    padding: 0.5em 2em;
+    padding-left: 2em;
 
     background-repeat: no-repeat;
     background-size: 1em;
