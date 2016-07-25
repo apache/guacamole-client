@@ -19,11 +19,13 @@
 
 package org.apache.guacamole.auth.jdbc.tunnel;
 
+import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
-import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
+import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionMap;
+import org.apache.guacamole.auth.jdbc.sharing.SharedObjectManager;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 import org.apache.guacamole.net.AbstractGuacamoleTunnel;
@@ -46,25 +48,25 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      * The user that connected to the connection associated with this connection
      * record.
      */
-    private final RemoteAuthenticatedUser user;
+    private RemoteAuthenticatedUser user;
 
     /**
      * The balancing group from which the associated connection was chosen, if
      * any. If no balancing group was used, this will be null.
      */
-    private final ModeledConnectionGroup balancingGroup;
+    private ModeledConnectionGroup balancingGroup;
 
     /**
      * The connection associated with this connection record.
      */
-    private final ModeledConnection connection;
+    private ModeledConnection connection;
 
     /**
      * The sharing profile that was used to access the connection associated
      * with this connection record. If the connection was accessed directly
      * (without involving a sharing profile), this will be null.
      */
-    private final ModeledSharingProfile sharingProfile;
+    private ModeledSharingProfile sharingProfile;
 
     /**
      * The time this connection record was created.
@@ -90,7 +92,29 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     private GuacamoleTunnel tunnel;
 
     /**
-     * Creates a new connection record associated with the given user,
+     * Map of all currently-shared connections.
+     */
+    @Inject
+    private SharedConnectionMap connectionMap;
+
+    /**
+     * Manager which tracks all share keys associated with this connection
+     * record. All share keys registered with this manager will automatically be
+     * removed from the common SharedConnectionMap once the manager is
+     * invalidated.
+     */
+    private final SharedObjectManager<String> shareKeyManager =
+            new SharedObjectManager<String>() {
+
+        @Override
+        protected void cleanup(String key) {
+            connectionMap.remove(key);
+        }
+
+    };
+
+    /**
+     * Initializes this connection record, associating it with the given user,
      * connection, balancing connection group, and sharing profile. The given
      * balancing connection group MUST be the connection group from which the
      * given connection was chosen, and the given sharing profile MUST be the
@@ -113,7 +137,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      *     The sharing profile that was used to share access to the given
      *     connection, or null if no sharing profile was used.
      */
-    private ActiveConnectionRecord(RemoteAuthenticatedUser user,
+    private void init(RemoteAuthenticatedUser user,
             ModeledConnectionGroup balancingGroup,
             ModeledConnection connection,
             ModeledSharingProfile sharingProfile) {
@@ -124,7 +148,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     }
    
     /**
-     * Creates a new connection record associated with the given user,
+     * Initializes this connection record, associating it with the given user,
      * connection, and balancing connection group. The given balancing
      * connection group MUST be the connection group from which the given
      * connection was chosen. The start date of this connection record will be
@@ -140,16 +164,16 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      * @param connection
      *     The connection to associate with this connection record.
      */
-    public ActiveConnectionRecord(RemoteAuthenticatedUser user,
+    public void init(RemoteAuthenticatedUser user,
             ModeledConnectionGroup balancingGroup,
             ModeledConnection connection) {
-        this(user, balancingGroup, connection, null);
+        init(user, balancingGroup, connection, null);
     }
 
     /**
-     * Creates a new connection record associated with the given user and
-     * connection. The start date of this connection record will be the time of
-     * its creation.
+     * Initializes this connection record, associating it with the given user
+     * and connection. The start date of this connection record will be the time
+     * of its creation.
      *
      * @param user
      *     The user that connected to the connection associated with this
@@ -158,17 +182,17 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      * @param connection
      *     The connection to associate with this connection record.
      */
-    public ActiveConnectionRecord(RemoteAuthenticatedUser user,
+    public void init(RemoteAuthenticatedUser user,
             ModeledConnection connection) {
-        this(user, null, connection);
+        init(user, null, connection);
     }
 
     /**
-     * Creates a new connection record associated with the given user, active
-     * connection, and sharing profile. The given sharing profile MUST be the
-     * sharing profile that was used to share access to the given connection.
-     * The start date of this connection record will be the time of its
-     * creation.
+     * Initializes this connection record, associating it with the given user,
+     * active connection, and sharing profile. The given sharing profile MUST be
+     * the sharing profile that was used to share access to the given
+     * connection. The start date of this connection record will be the time of
+     * its creation.
      *
      * @param user
      *     The user that connected to the connection associated with this
@@ -183,10 +207,10 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      *     connection. As a record created in this way always refers to a
      *     shared connection, this value may NOT be null.
      */
-    public ActiveConnectionRecord(RemoteAuthenticatedUser user,
-            TrackedActiveConnection activeConnection,
+    public void init(RemoteAuthenticatedUser user,
+            ActiveConnectionRecord activeConnection,
             ModeledSharingProfile sharingProfile) {
-        this(user, null, activeConnection.getConnection(), sharingProfile);
+        init(user, null, activeConnection.getConnection(), sharingProfile);
         this.connectionID = activeConnection.getConnectionID();
     }
 
@@ -401,6 +425,34 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      */
     public String getConnectionID() {
         return connectionID;
+    }
+
+    /**
+     * Registers the given share key with this ActiveConnectionRecord, such that
+     * the key is automatically removed from the common SharedConnectionMap when
+     * the connection represented by this ActiveConnectionRecord is closed. For
+     * share keys to be properly invalidated when the connection being shared is
+     * closed, all such share keys MUST be registered with the
+     * ActiveConnectionRecord of the connection being shared.
+     *
+     * @param key
+     *     The share key which should automatically be removed from the common
+     *     SharedConnectionMap when the connection represented by this
+     *     ActiveConnectionRecord is closed.
+     */
+    public void registerShareKey(String key) {
+        shareKeyManager.register(key);
+    }
+
+    /**
+     * Invalidates this ActiveConnectionRecord and all registered share keys. If
+     * any additional share keys are registered after this function is invoked,
+     * those keys will be immediately invalidated. This function MUST be invoked
+     * when the connection represented by this ActiveConnectionRecord is
+     * closing.
+     */
+    public void invalidate() {
+        shareKeyManager.invalidate();
     }
 
 }

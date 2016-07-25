@@ -42,7 +42,6 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
-import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionMapper;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.GuacamoleSocket;
@@ -56,6 +55,7 @@ import org.apache.guacamole.token.StandardTokens;
 import org.apache.guacamole.token.TokenFilter;
 import org.mybatis.guice.transactional.Transactional;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionParameterMapper;
+import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionDefinition;
 import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionUser;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterMapper;
@@ -107,6 +107,12 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      */
     @Inject
     private ConnectionRecordMapper connectionRecordMapper;
+
+    /**
+     * Provider for creating active connection records.
+     */
+    @Inject
+    private Provider<ActiveConnectionRecord> activeConnectionRecordProvider;
 
     /**
      * The hostname to use when connecting to guacd if no hostname is provided
@@ -385,6 +391,9 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             if (!hasRun.compareAndSet(false, true))
                 return;
 
+            // Connection can no longer be shared
+            activeConnection.invalidate();
+
             // Remove underlying tunnel from list of active tunnels
             activeTunnels.remove(activeConnection.getUUID().toString());
 
@@ -467,7 +476,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
 
                 // Verify that the connection ID is known
                 String connectionID = activeConnection.getConnectionID();
-                if (!activeConnection.isActive() || connectionID == null)
+                if (connectionID == null)
                     throw new GuacamoleResourceNotFoundException("No existing connection to be joined.");
 
                 // Build configuration from the sharing profile and the ID of
@@ -621,9 +630,13 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             final ModeledConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException {
 
-        // Acquire and connect to single connection
+        // Acquire access to single connection
         acquire(user, Collections.singletonList(connection));
-        return assignGuacamoleTunnel(new ActiveConnectionRecord(user, connection), info);
+
+        // Connect only if the connection was successfully acquired
+        ActiveConnectionRecord connectionRecord = activeConnectionRecordProvider.get();
+        connectionRecord.init(user, connection);
+        return assignGuacamoleTunnel(connectionRecord, info);
 
     }
 
@@ -663,7 +676,9 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             user.preferConnection(connection.getIdentifier());
 
         // Connect to acquired child
-        return assignGuacamoleTunnel(new ActiveConnectionRecord(user, connectionGroup, connection), info);
+        ActiveConnectionRecord connectionRecord = activeConnectionRecordProvider.get();
+        connectionRecord.init(user, connectionGroup, connection);
+        return assignGuacamoleTunnel(connectionRecord, info);
 
     }
 
@@ -681,13 +696,22 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     @Override
     @Transactional
     public GuacamoleTunnel getGuacamoleTunnel(SharedConnectionUser user,
-            TrackedActiveConnection activeConnection,
-            ModeledSharingProfile sharingProfile,
+            SharedConnectionDefinition definition,
             GuacamoleClientInformation info)
             throws GuacamoleException {
 
-        // Connect to shared connection
-        return assignGuacamoleTunnel(new ActiveConnectionRecord(user, activeConnection, sharingProfile), info);
+        // Create a connection record which describes the shared connection
+        ActiveConnectionRecord connectionRecord = activeConnectionRecordProvider.get();
+        connectionRecord.init(user, definition.getActiveConnection(),
+                definition.getSharingProfile());
+
+        // Connect to shared connection described by the created record
+        GuacamoleTunnel tunnel = assignGuacamoleTunnel(connectionRecord, info);
+
+        // Register tunnel, such that it is closed when the
+        // SharedConnectionDefinition is invalidated
+        definition.registerTunnel(tunnel);
+        return tunnel;
 
     }
 

@@ -48,8 +48,12 @@ public class HashSharedConnectionMap implements SharedConnectionMap {
     }
 
     @Override
-    public void put(String key, SharedConnectionDefinition definition) {
-        connectionMap.put(key, definition);
+    public void add(SharedConnectionDefinition definition) {
+
+        // Store definition by share key
+        String shareKey = definition.getShareKey();
+        connectionMap.put(shareKey, definition);
+
     }
 
     @Override
@@ -60,7 +64,13 @@ public class HashSharedConnectionMap implements SharedConnectionMap {
             return null;
 
         // Attempt to retrieve only if non-null
-        return connectionMap.remove(key);
+        SharedConnectionDefinition definition = connectionMap.remove(key);
+        if (definition == null)
+            return null;
+
+        // Close all associated tunnels and disallow further sharing
+        definition.invalidate();
+        return definition;
 
     }
 

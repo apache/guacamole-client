@@ -19,8 +19,12 @@
 
 package org.apache.guacamole.auth.jdbc.sharing;
 
-import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
+import org.apache.guacamole.auth.jdbc.tunnel.ActiveConnectionRecord;
+import org.apache.guacamole.net.GuacamoleTunnel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Defines the semantics/restrictions of a shared connection by associating an
@@ -33,15 +37,47 @@ import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 public class SharedConnectionDefinition {
 
     /**
+     * Logger for this class.
+     */
+    private final Logger logger = LoggerFactory.getLogger(SharedConnectionDefinition.class);
+
+    /**
      * The active connection being shared.
      */
-    private final TrackedActiveConnection activeConnection;
+    private final ActiveConnectionRecord activeConnection;
 
     /**
      * The sharing profile which dictates the level of access provided to a user
      * of the shared connection.
      */
     private final ModeledSharingProfile sharingProfile;
+
+    /**
+     * The unique key with which a user may access the shared connection.
+     */
+    private final String shareKey;
+
+    /**
+     * Manager which tracks all tunnels associated with this shared connection
+     * definition. All tunnels registered with this manager will be
+     * automatically closed once the manager is invalidated.
+     */
+    private final SharedObjectManager<GuacamoleTunnel> tunnels =
+            new SharedObjectManager<GuacamoleTunnel>() {
+
+        @Override
+        protected void cleanup(GuacamoleTunnel tunnel) {
+
+            try {
+                tunnel.close();
+            }
+            catch (GuacamoleException e) {
+                logger.debug("Unable to close tunnel of shared connection.", e);
+            }
+
+        }
+
+    };
 
     /**
      * Creates a new SharedConnectionDefinition which describes an active
@@ -54,21 +90,25 @@ public class SharedConnectionDefinition {
      * @param sharingProfile
      *     A sharing profile whose associated parameters dictate the level of
      *     access provided to the shared connection.
+     *
+     * @param shareKey
+     *     The unique key with which a user may access the shared connection.
      */
-    public SharedConnectionDefinition(TrackedActiveConnection activeConnection,
-            ModeledSharingProfile sharingProfile) {
+    public SharedConnectionDefinition(ActiveConnectionRecord activeConnection,
+            ModeledSharingProfile sharingProfile, String shareKey) {
         this.activeConnection = activeConnection;
         this.sharingProfile = sharingProfile;
+        this.shareKey = shareKey;
     }
 
     /**
-     * Returns the TrackedActiveConnection of the actual in-progress connection
+     * Returns the ActiveConnectionRecord of the actual in-progress connection
      * being shared.
      *
      * @return
-     *     The TrackedActiveConnection being shared.
+     *     The ActiveConnectionRecord being shared.
      */
-    public TrackedActiveConnection getActiveConnection() {
+    public ActiveConnectionRecord getActiveConnection() {
         return activeConnection;
     }
 
@@ -82,6 +122,44 @@ public class SharedConnectionDefinition {
      */
     public ModeledSharingProfile getSharingProfile() {
         return sharingProfile;
+    }
+
+    /**
+     * Returns the unique key with which a user may access the shared
+     * connection.
+     *
+     * @return
+     *     The unique key with which a user may access the shared connection.
+     */
+    public String getShareKey() {
+        return shareKey;
+    }
+
+    /**
+     * Registers the given tunnel with this SharedConnectionDefinition, such
+     * that the tunnel is automatically closed when this
+     * SharedConnectionDefinition is invalidated. For shared connections to be
+     * properly closed when the associated share key ceases being valid, the
+     * tunnels resulting from the use of the share key MUST be registered to the
+     * SharedConnectionDefinition associated with that share key.
+     *
+     * @param tunnel
+     *     The tunnel which should automatically be closed when this
+     *     SharedConnectionDefinition is invalidated.
+     */
+    public void registerTunnel(GuacamoleTunnel tunnel) {
+        tunnels.register(tunnel);
+    }
+
+    /**
+     * Invalidates this SharedConnectionDefinition and closes all registered
+     * tunnels. If any additional tunnels are registered after this function is
+     * invoked, those tunnels will be immediately closed. This function MUST be
+     * invoked when the share key associated with this
+     * SharedConnectionDefinition will no longer be used.
+     */
+    public void invalidate() {
+        tunnels.invalidate();
     }
 
 }

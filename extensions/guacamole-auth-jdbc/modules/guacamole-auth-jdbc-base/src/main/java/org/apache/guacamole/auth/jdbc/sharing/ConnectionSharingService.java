@@ -25,9 +25,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
-import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileService;
+import org.apache.guacamole.auth.jdbc.tunnel.ActiveConnectionRecord;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -98,7 +98,7 @@ public class ConnectionSharingService {
      *     If permission to share the given connection is denied.
      */
     public UserCredentials generateTemporaryCredentials(AuthenticatedUser user,
-            TrackedActiveConnection activeConnection,
+            ActiveConnectionRecord activeConnection,
             String sharingProfileIdentifier) throws GuacamoleException {
 
         // Pull sharing profile (verifying access)
@@ -114,8 +114,12 @@ public class ConnectionSharingService {
 
         // Generate a share key for the requested connection
         String key = keyGenerator.getShareKey();
-        connectionMap.put(key, new SharedConnectionDefinition(activeConnection,
-                sharingProfile));
+        connectionMap.add(new SharedConnectionDefinition(activeConnection,
+                sharingProfile, key));
+
+        // Ensure the share key is properly invalidated when the original
+        // connection is closed
+        activeConnection.registerShareKey(key);
 
         // Return credentials defining a single expected parameter
         return new UserCredentials(SHARE_KEY,

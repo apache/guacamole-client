@@ -26,9 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
 import org.apache.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
-import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
@@ -64,15 +62,10 @@ public class SharedConnection implements Connection {
     private SharedConnectionUser user;
 
     /**
-     * The active connection being shared.
+     * The SharedConnectionDefinition dictating the connection being shared and
+     * any associated restrictions.
      */
-    private TrackedActiveConnection activeConnection;
-
-    /**
-     * The sharing profile which dictates the level of access provided to a user
-     * of the shared connection.
-     */
-    private ModeledSharingProfile sharingProfile;
+    private SharedConnectionDefinition definition;
 
     /**
      * Creates a new SharedConnection which can be used to join the connection
@@ -88,8 +81,7 @@ public class SharedConnection implements Connection {
      */
     public void init(SharedConnectionUser user, SharedConnectionDefinition definition) {
         this.user = user;
-        this.activeConnection = definition.getActiveConnection();
-        this.sharingProfile = definition.getSharingProfile();
+        this.definition = definition;
     }
 
     @Override
@@ -104,7 +96,7 @@ public class SharedConnection implements Connection {
 
     @Override
     public String getName() {
-        return sharingProfile.getName();
+        return definition.getSharingProfile().getName();
     }
 
     @Override
@@ -124,9 +116,15 @@ public class SharedConnection implements Connection {
 
     @Override
     public GuacamoleConfiguration getConfiguration() {
+
+        // Pull the connection being shared
+        Connection primaryConnection = definition.getActiveConnection().getConnection();
+
+        // Construct a skeletal configuration that exposes only the protocol in use
         GuacamoleConfiguration config = new GuacamoleConfiguration();
-        config.setProtocol(activeConnection.getConnection().getConfiguration().getProtocol());
+        config.setProtocol(primaryConnection.getConfiguration().getProtocol());
         return config;
+
     }
 
     @Override
@@ -137,8 +135,7 @@ public class SharedConnection implements Connection {
     @Override
     public GuacamoleTunnel connect(GuacamoleClientInformation info)
             throws GuacamoleException {
-        return tunnelService.getGuacamoleTunnel(user, activeConnection,
-                sharingProfile, info);
+        return tunnelService.getGuacamoleTunnel(user, definition, info);
     }
 
     @Override
