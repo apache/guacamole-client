@@ -24,6 +24,7 @@
         "ACTION_NAVIGATE_HOME"      : "Home",
         "ACTION_SAVE"               : "Save",
         "ACTION_SEARCH"             : "Search",
+        "ACTION_SHARE"              : "Share",
         "ACTION_UPDATE_PASSWORD"    : "Update Password",
         "ACTION_VIEW_HISTORY"       : "History",
 
@@ -55,6 +56,7 @@
         "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
         "ACTION_RECONNECT"                 : "Reconnect",
         "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
         "ACTION_UPLOAD_FILES"              : "Upload Files",
 
         "DIALOG_HEADER_CONNECTING"       : "Connecting",

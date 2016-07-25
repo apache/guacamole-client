@@ -28,6 +28,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var ManagedClientState = $injector.get('ManagedClientState');
     var ManagedFilesystem  = $injector.get('ManagedFilesystem');
     var ScrollState        = $injector.get('ScrollState');
+    var UserCredentials    = $injector.get('UserCredentials');
 
     // Required services
     var $location             = $injector.get('$location');
@@ -36,6 +37,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var guacClientManager     = $injector.get('guacClientManager');
     var guacNotification      = $injector.get('guacNotification');
     var preferenceService     = $injector.get('preferenceService');
+    var tunnelService         = $injector.get('tunnelService');
     var userPageService       = $injector.get('userPageService');
 
     /**
@@ -236,6 +238,15 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.client = guacClientManager.getManagedClient($routeParams.id, $routeParams.params);
 
     /**
+     * Map of all available sharing profiles for the current connection by
+     * their identifiers. If this information is not yet available, or no such
+     * sharing profiles exist, this will be an empty object.
+     *
+     * @type Object.<String, SharingProfile>
+     */
+    $scope.sharingProfiles = {};
+
+    /**
      * Map of all currently pressed keys by keysym. If a particular key is
      * currently pressed, the value stored under that key's keysym within this
      * map will be true. All keys not currently pressed will not have entries
@@ -405,6 +416,47 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             clipboardDataFromKey[keysym] = data;
 
     });
+
+    // Pull sharing profiles once the tunnel UUID is known
+    $scope.$watch('client.tunnel.uuid', function retrieveSharingProfiles(uuid) {
+
+        // Only pull sharing profiles if tunnel UUID is actually available
+        if (!uuid)
+            return;
+
+        // Pull sharing profiles for the current connection
+        tunnelService.getSharingProfiles(uuid)
+        .success(function sharingProfilesRetrieved(sharingProfiles) {
+            $scope.sharingProfiles = sharingProfiles;
+        });
+
+    });
+
+    /**
+     * Produces a sharing link for the current connection using the given
+     * sharing profile. The resulting sharing link, and any required login
+     * information, will be displayed to the user once the various underlying
+     * service calls succeed.
+     *
+     * @param {SharingProfile} sharingProfile
+     *     The sharing profile to use to generate the sharing link.
+     */
+    $scope.share = function share(sharingProfile) {
+
+        // Retrieve sharing credentials for the sake of generating a share link
+        tunnelService.getSharingCredentials($scope.client.tunnel.uuid, sharingProfile.identifier)
+        .success(function sharingCredentialsReceived(sharingCredentials) {
+
+            // TODONT: COMPLETE HACK: Shove the share link into the clipboard
+            var href = UserCredentials.getLink(sharingCredentials);
+            $scope.client.clipboardData = {
+                'type' : 'text/plain',
+                'data' : href
+            };
+
+        });
+
+    };
 
     // Track pressed keys, opening the Guacamole menu after Ctrl+Alt+Shift
     $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
@@ -759,6 +811,26 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             return false;
 
         return !!$scope.client.uploads.length;
+
+    };
+
+    /**
+     * Returns whether the current user can share the current connection with
+     * other users. A connection can be shared if and only if there is at least
+     * one associated sharing profile.
+     *
+     * @returns {Boolean}
+     *     true if the current user can share the current connection with other
+     *     users, false otherwise.
+     */
+    $scope.canShareConnection = function canShareConnection() {
+
+        // If there is at least one sharing profile, the connection can be shared
+        for (var dummy in $scope.sharingProfiles)
+            return true;
+
+        // Otherwise, sharing is not possible
+        return false;
 
     };
 
