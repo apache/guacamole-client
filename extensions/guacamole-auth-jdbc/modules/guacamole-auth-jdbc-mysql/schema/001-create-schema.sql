@@ -327,7 +327,7 @@ CREATE TABLE `guacamole_connection_history` (
 
   CONSTRAINT `guacamole_connection_history_ibfk_2`
     FOREIGN KEY (`connection_id`)
-    REFERENCES `guacamole_connection` (`connection_id`) ON DELETE SET NULL
+    REFERENCES `guacamole_connection` (`connection_id`) ON DELETE SET NULL,
 
   CONSTRAINT `guacamole_connection_history_ibfk_3`
     FOREIGN KEY (`sharing_profile_id`)
