@@ -26,7 +26,6 @@ import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProviderModule;
-import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.user.AuthenticationProviderService;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.slf4j.Logger;
@@ -73,7 +72,7 @@ public class PostgreSQLAuthenticationProvider implements AuthenticationProvider 
             new PostgreSQLAuthenticationProviderModule(environment),
 
             // Configure JDBC authentication core
-            new JDBCAuthenticationProviderModule(this, environment)
+            new JDBCAuthenticationProviderModule(environment)
 
         );
 

@@ -61,7 +61,6 @@ public class SharedConnectionUserContext implements UserContext {
     /**
      * The AuthenticationProvider that created this SharedConnectionUserContext.
      */
-    @Inject
     private AuthenticationProvider authProvider;
 
     /**
@@ -117,6 +116,9 @@ public class SharedConnectionUserContext implements UserContext {
         // Build list of all accessible connection identifiers
         Collection<String> connectionIdentifiers =
                 Collections.singletonList(connection.getIdentifier());
+
+        // Associate the originating authentication provider
+        this.authProvider = user.getAuthenticationProvider();
 
         // The connection directory should contain only the shared connection
         this.connectionDirectory = new SimpleConnectionDirectory(
