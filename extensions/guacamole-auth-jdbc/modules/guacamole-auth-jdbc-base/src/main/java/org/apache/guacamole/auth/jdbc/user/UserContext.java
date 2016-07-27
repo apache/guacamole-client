@@ -54,12 +54,6 @@ public class UserContext extends RestrictedObject
     implements org.apache.guacamole.net.auth.UserContext {
 
     /**
-     * The AuthenticationProvider that created this UserContext.
-     */
-    @Inject
-    private AuthenticationProvider authProvider;
-
-    /**
      * User directory restricted by the permissions of the user associated
      * with this context.
      */
@@ -127,7 +121,7 @@ public class UserContext extends RestrictedObject
 
     @Override
     public AuthenticationProvider getAuthenticationProvider() {
-        return authProvider;
+        return getCurrentUser().getAuthenticationProvider();
     }
 
     @Override

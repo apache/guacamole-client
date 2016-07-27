@@ -74,7 +74,6 @@ import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileMapper;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterMapper;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileService;
 import org.apache.guacamole.auth.jdbc.tunnel.RestrictedGuacamoleTunnelService;
-import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
 
@@ -94,26 +93,14 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
     private final JDBCEnvironment environment;
 
     /**
-     * The AuthenticationProvider which is using this module to configure
-     * injection.
-     */
-    private final AuthenticationProvider authProvider;
-
-    /**
      * Creates a new JDBC authentication provider module that configures the
      * various injected base classes using the given environment, and provides
      * connections using the given socket service.
      *
-     * @param authProvider
-     *     The AuthenticationProvider which is using this module to configure
-     *     injection.
-     *
      * @param environment
      *     The environment to use to configure injected classes.
      */
-    public JDBCAuthenticationProviderModule(AuthenticationProvider authProvider,
-            JDBCEnvironment environment) {
-        this.authProvider = authProvider;
+    public JDBCAuthenticationProviderModule(JDBCEnvironment environment) {
         this.environment = environment;
     }
 
@@ -143,7 +130,6 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         // Bind core implementations of guacamole-ext classes
         bind(ActiveConnectionDirectory.class);
         bind(ActiveConnectionPermissionSet.class);
-        bind(AuthenticationProvider.class).toInstance(authProvider);
         bind(JDBCEnvironment.class).toInstance(environment);
         bind(ConnectionDirectory.class);
         bind(ConnectionGroupDirectory.class);
