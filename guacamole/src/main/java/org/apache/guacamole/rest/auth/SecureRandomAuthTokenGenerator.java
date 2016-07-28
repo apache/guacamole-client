@@ -20,7 +20,7 @@
 package org.apache.guacamole.rest.auth;
 
 import java.security.SecureRandom;
-import org.apache.commons.codec.binary.Hex;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * An implementation of the AuthTokenGenerator based around SecureRandom.
@@ -39,7 +39,7 @@ public class SecureRandomAuthTokenGenerator implements AuthTokenGenerator {
         byte[] bytes = new byte[32];
         secureRandom.nextBytes(bytes);
         
-        return Hex.encodeHexString(bytes);
+        return DatatypeConverter.printHexBinary(bytes);
     }
     
 }
