@@ -19,29 +19,33 @@
 
 package org.apache.guacamole.auth.postgresql;
 
-import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProvider;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProviderModule;
+import org.apache.guacamole.auth.jdbc.JDBCInjectorProvider;
 
 /**
- * Provides a PostgreSQL-based implementation of the AuthenticationProvider
- * functionality.
+ * JDBCInjectorProvider implementation which configures Guice injections for
+ * connecting to a PostgreSQL database based on PostgreSQL-specific options
+ * provided via guacamole.properties.
  *
- * @author James Muehlner
  * @author Michael Jumper
  */
-public class PostgreSQLAuthenticationProvider extends JDBCAuthenticationProvider {
-
-    /**
-     * Creates a new PostgreSQLAuthenticationProvider that reads and writes
-     * authentication data to a PostgreSQL database defined by properties in
-     * guacamole.properties.
-     */
-    public PostgreSQLAuthenticationProvider() {
-        super(new PostgreSQLInjectorProvider());
-    }
+public class PostgreSQLInjectorProvider extends JDBCInjectorProvider {
 
     @Override
-    public String getIdentifier() {
-        return "postgresql";
+    protected Injector create() throws GuacamoleException {
+
+        // Get local environment
+        PostgreSQLEnvironment environment = new PostgreSQLEnvironment();
+
+        // Set up Guice injector
+        return Guice.createInjector(
+            new JDBCAuthenticationProviderModule(environment),
+            new PostgreSQLAuthenticationProviderModule(environment)
+        );
+
     }
 
 }
