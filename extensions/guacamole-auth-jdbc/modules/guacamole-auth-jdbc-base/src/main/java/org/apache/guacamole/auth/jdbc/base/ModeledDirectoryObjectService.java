@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import javax.xml.stream.events.Characters;
 import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
@@ -311,6 +312,9 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
     @Override
     public Collection<InternalType> retrieveObjects(AuthenticatedUser user,
             Collection<String> identifiers) throws GuacamoleException {
+
+        // Ignore invalid identifiers
+        identifiers = ObjectModel.filterIdentifiers(identifiers);
 
         // Do not query if no identifiers given
         if (identifiers.isEmpty())
