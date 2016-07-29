@@ -130,6 +130,29 @@ public class ConnectionSharingService {
     }
 
     /**
+     * Returns the share key contained within the given credentials. If there is
+     * no such share key, null is returned.
+     *
+     * @param credentials
+     *     The credentials from which the share key should be retrieved.
+     *
+     * @return
+     *     The share key contained within the given credentials, or null if
+     *     the credentials do not contain a share key.
+     */
+    public String getShareKey(Credentials credentials) {
+
+        // Pull associated HTTP request
+        HttpServletRequest request = credentials.getRequest();
+        if (request == null)
+            return null;
+
+        // Retrieve the share key from the request
+        return request.getParameter(SHARE_KEY_NAME);
+
+    }
+
+    /**
      * Returns a SharedAuthenticatedUser if the given credentials contain a
      * valid share key. The returned user will be associated with the single
      * shared connection to which they have been granted temporary access. If
@@ -151,18 +174,9 @@ public class ConnectionSharingService {
     public SharedAuthenticatedUser retrieveSharedConnectionUser(
             AuthenticationProvider authProvider, Credentials credentials) {
 
-        // Pull associated HTTP request
-        HttpServletRequest request = credentials.getRequest();
-        if (request == null)
-            return null;
-
-        // Retrieve the share key from the request
-        String shareKey = request.getParameter(ConnectionSharingService.SHARE_KEY_NAME);
-        if (shareKey == null)
-            return null;
-
         // Validate the share key
-        if (connectionMap.get(shareKey) == null)
+        String shareKey = getShareKey(credentials);
+        if (shareKey == null || connectionMap.get(shareKey) == null)
             return null;
 
         // Return temporary in-memory user

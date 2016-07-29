@@ -28,6 +28,7 @@ import org.apache.guacamole.auth.jdbc.sharing.user.SharedUserContext;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 
@@ -89,6 +90,22 @@ public class SharedAuthenticationProviderService implements AuthenticationProvid
         String shareKey = sharedAuthenticatedUser.getShareKey();
         if (shareKey != null)
             context.registerShareKey(shareKey);
+
+        return context;
+
+    }
+
+    @Override
+    public UserContext updateUserContext(AuthenticationProvider authenticationProvider,
+            UserContext context, AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException {
+
+        // Retrieve the share key from the request
+        String shareKey = sharingService.getShareKey(credentials);
+
+        // Update the user context with the share key, if given
+        if (shareKey != null)
+            ((SharedUserContext) context).registerShareKey(shareKey);
 
         return context;
 

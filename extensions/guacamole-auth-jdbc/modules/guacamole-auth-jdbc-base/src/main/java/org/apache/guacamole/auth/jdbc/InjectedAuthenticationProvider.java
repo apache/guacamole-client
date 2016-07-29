@@ -97,10 +97,8 @@ public abstract class InjectedAuthenticationProvider implements AuthenticationPr
     public UserContext updateUserContext(UserContext context,
             AuthenticatedUser authenticatedUser, Credentials credentials)
             throws GuacamoleException {
-
-        // No need to update the context
-        return context;
-
+        return authProviderService.updateUserContext(this, context,
+                authenticatedUser, credentials);
     }
 
 }
