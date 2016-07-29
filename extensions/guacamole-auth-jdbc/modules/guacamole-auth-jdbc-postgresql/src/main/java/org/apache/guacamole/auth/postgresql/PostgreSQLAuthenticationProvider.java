@@ -19,7 +19,9 @@
 
 package org.apache.guacamole.auth.postgresql;
 
-import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProvider;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.InjectedAuthenticationProvider;
+import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProviderService;
 
 /**
  * Provides a PostgreSQL-based implementation of the AuthenticationProvider
@@ -28,15 +30,19 @@ import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProvider;
  * @author James Muehlner
  * @author Michael Jumper
  */
-public class PostgreSQLAuthenticationProvider extends JDBCAuthenticationProvider {
+public class PostgreSQLAuthenticationProvider extends InjectedAuthenticationProvider {
 
     /**
      * Creates a new PostgreSQLAuthenticationProvider that reads and writes
      * authentication data to a PostgreSQL database defined by properties in
      * guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If a required property is missing, or an error occurs while parsing
+     *     a property.
      */
-    public PostgreSQLAuthenticationProvider() {
-        super(new PostgreSQLInjectorProvider());
+    public PostgreSQLAuthenticationProvider() throws GuacamoleException {
+        super(new PostgreSQLInjectorProvider(), JDBCAuthenticationProviderService.class);
     }
 
     @Override

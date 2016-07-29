@@ -24,48 +24,58 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
-import org.apache.guacamole.auth.jdbc.user.AuthenticationProviderService;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 
 /**
- * Provides a base implementation of an AuthenticationProvider which is backed
- * by an arbitrary underlying database. It is up to the subclass implementation
- * to configure the underlying database appropriately via Guice.
+ * Provides a base implementation of an AuthenticationProvider which delegates
+ * the various function calls to an underlying AuthenticationProviderService
+ * implementation. As such a service is injectable by Guice, this provides a
+ * means for Guice to (effectively) apply dependency injection to an
+ * AuthenticationProvider, even though it is the AuthenticationProvider that
+ * serves as the entry point.
  *
- * @author James Muehlner
  * @author Michael Jumper
  */
-public abstract class JDBCAuthenticationProvider implements AuthenticationProvider {
+public abstract class InjectedAuthenticationProvider implements AuthenticationProvider {
 
     /**
-     * Provider of the singleton Injector instance which will manage the object
-     * graph of this authentication provider.
+     * The AuthenticationProviderService to which all AuthenticationProvider
+     * calls will be delegated.
      */
-    private final JDBCInjectorProvider injectorProvider;
+    private final AuthenticationProviderService authProviderService;
 
     /**
-     * Creates a new AuthenticationProvider that is backed by an arbitrary
-     * underlying database.
+     * Creates a new AuthenticationProvider that delegates all calls to an
+     * underlying AuthenticationProviderService. The behavior of the
+     * AuthenticationProvider is defined by the given
+     * AuthenticationProviderService implementation, which will be injected by
+     * the Guice Injector provided by the given JDBCInjectorProvider.
      *
      * @param injectorProvider
      *     A JDBCInjectorProvider instance which provides singleton instances
      *     of a Guice Injector, pre-configured to set up all injections and
      *     access to the underlying database via MyBatis.
+     *
+     * @param authProviderServiceClass
+     *    The AuthenticationProviderService implementation which defines the
+     *    behavior of this AuthenticationProvider.
+     *
+     * @throws GuacamoleException
+     *     If the Injector cannot be created due to an error.
      */
-    public JDBCAuthenticationProvider(JDBCInjectorProvider injectorProvider) {
-        this.injectorProvider = injectorProvider;
+    public InjectedAuthenticationProvider(JDBCInjectorProvider injectorProvider,
+            Class<? extends AuthenticationProviderService> authProviderServiceClass)
+        throws GuacamoleException {
+
+        Injector injector = injectorProvider.get();
+        authProviderService = injector.getInstance(authProviderServiceClass);
+
     }
 
     @Override
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
-
-        Injector injector = injectorProvider.get();
-
-        // Create AuthenticatedUser based on credentials, if valid
-        AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
         return authProviderService.authenticateUser(this, credentials);
-
     }
 
     @Override
@@ -80,13 +90,7 @@ public abstract class JDBCAuthenticationProvider implements AuthenticationProvid
     @Override
     public UserContext getUserContext(AuthenticatedUser authenticatedUser)
             throws GuacamoleException {
-
-        Injector injector = injectorProvider.get();
-
-        // Create UserContext based on credentials, if valid
-        AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
         return authProviderService.getUserContext(authenticatedUser);
-
     }
 
     @Override
