@@ -33,9 +33,16 @@ import org.apache.guacamole.net.auth.Credentials;
 public class AuthenticatedUser extends RemoteAuthenticatedUser {
 
     /**
-     * The user that authenticated.
+     * The ModeledUser object which is backed by the data associated with this
+     * user in the database.
      */
     private final ModeledUser user;
+
+    /**
+     * The AuthenticationProvider that is associated with this user's
+     * corresponding ModeledUser.
+     */
+    private final AuthenticationProvider modelAuthenticationProvider;
 
     /**
      * The connections which have been committed for use by this user in the
@@ -49,14 +56,41 @@ public class AuthenticatedUser extends RemoteAuthenticatedUser {
             Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
     /**
+     * Creates a copy of the given AuthenticatedUser which is associated with
+     * the data stored in the provided ModeledUser. The AuthenticatedUser need
+     * not have come from the same AuthenticationProvider which produced the
+     * given ModeledUser.
+     *
+     * @param authenticatedUser
+     *     An existing AuthenticatedUser representing the user that
+     *     authenticated.
+     *
+     * @param modelAuthenticationProvider
+     *     The AuthenticationProvider that is associated with the given user's
+     *     corresponding ModeledUser.
+     *
+     * @param user
+     *     A ModeledUser object which is backed by the data associated with
+     *     this user in the database.
+     */
+    public AuthenticatedUser(org.apache.guacamole.net.auth.AuthenticatedUser authenticatedUser,
+            AuthenticationProvider modelAuthenticationProvider, ModeledUser user) {
+        super(authenticatedUser.getAuthenticationProvider(), authenticatedUser.getCredentials());
+        this.modelAuthenticationProvider = modelAuthenticationProvider;
+        this.user = user;
+    }
+
+    /**
      * Creates a new AuthenticatedUser associating the given user with their
      * corresponding credentials.
      *
      * @param authenticationProvider
-     *     The AuthenticationProvider that has authenticated the given user.
+     *     The AuthenticationProvider that has authenticated the given user
+     *     and which produced the given ModeledUser.
      *
      * @param user
-     *     The user this object should represent.
+     *     A ModeledUser object which is backed by the data associated with
+     *     this user in the database.
      *
      * @param credentials 
      *     The credentials given by the user when they authenticated.
@@ -64,17 +98,34 @@ public class AuthenticatedUser extends RemoteAuthenticatedUser {
     public AuthenticatedUser(AuthenticationProvider authenticationProvider,
             ModeledUser user, Credentials credentials) {
         super(authenticationProvider, credentials);
+        this.modelAuthenticationProvider = authenticationProvider;
         this.user = user;
     }
 
     /**
-     * Returns the user that authenticated.
+     * Returns a ModeledUser object which is backed by the data associated with
+     * this user within the database.
      *
      * @return 
-     *     The user that authenticated.
+     *     A ModeledUser object which is backed by the data associated with
+     *     this user in the database.
      */
     public ModeledUser getUser() {
         return user;
+    }
+
+    /**
+     * Returns the AuthenticationProvider which produced the ModeledUser
+     * retrievable via getUser(). This is not necessarily the same as the
+     * AuthenticationProvider which authenticated that user, which can be
+     * retrieved with getAuthenticationProvider().
+     *
+     * @return
+     *     The AuthenticationProvider which produced the ModeledUser
+     *     retrievable via getUser().
+     */
+    public AuthenticationProvider getModelAuthenticationProvider() {
+        return modelAuthenticationProvider;
     }
 
     /**

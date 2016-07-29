@@ -353,6 +353,10 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      * Retrieves the user corresponding to the given AuthenticatedUser from the
      * database.
      *
+     * @param authenticationProvider
+     *     The AuthenticationProvider on behalf of which the user is being
+     *     retrieved.
+     *
      * @param authenticatedUser
      *     The AuthenticatedUser to retrieve the corresponding ModeledUser of.
      *
@@ -360,7 +364,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      *     The ModeledUser which corresponds to the given AuthenticatedUser, or
      *     null if no such user exists.
      */
-    public ModeledUser retrieveUser(org.apache.guacamole.net.auth.AuthenticatedUser authenticatedUser) {
+    public ModeledUser retrieveUser(AuthenticationProvider authenticationProvider,
+            org.apache.guacamole.net.auth.AuthenticatedUser authenticatedUser) {
 
         // If we already queried this user, return that rather than querying again
         if (authenticatedUser instanceof AuthenticatedUser)
@@ -376,7 +381,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
         // Create corresponding user object, set up cyclic reference
         ModeledUser user = getObjectInstance(null, userModel);
-        user.setCurrentUser(new AuthenticatedUser(authenticatedUser.getAuthenticationProvider(), user, authenticatedUser.getCredentials()));
+        user.setCurrentUser(new AuthenticatedUser(authenticatedUser,
+                authenticationProvider, user));
 
         // Return already-authenticated user
         return user;

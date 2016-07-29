@@ -121,7 +121,7 @@ public class UserContext extends RestrictedObject
 
     @Override
     public AuthenticationProvider getAuthenticationProvider() {
-        return getCurrentUser().getAuthenticationProvider();
+        return getCurrentUser().getModelAuthenticationProvider();
     }
 
     @Override

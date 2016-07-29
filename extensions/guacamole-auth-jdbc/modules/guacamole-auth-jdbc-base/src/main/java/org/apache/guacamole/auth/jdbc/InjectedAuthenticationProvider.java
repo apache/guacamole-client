@@ -90,7 +90,7 @@ public abstract class InjectedAuthenticationProvider implements AuthenticationPr
     @Override
     public UserContext getUserContext(AuthenticatedUser authenticatedUser)
             throws GuacamoleException {
-        return authProviderService.getUserContext(authenticatedUser);
+        return authProviderService.getUserContext(this, authenticatedUser);
     }
 
     @Override

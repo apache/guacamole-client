@@ -67,11 +67,11 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
     }
 
     @Override
-    public org.apache.guacamole.net.auth.UserContext getUserContext(
+    public UserContext getUserContext(AuthenticationProvider authenticationProvider,
             AuthenticatedUser authenticatedUser) throws GuacamoleException {
 
         // Retrieve user account for already-authenticated user
-        ModeledUser user = userService.retrieveUser(authenticatedUser);
+        ModeledUser user = userService.retrieveUser(authenticationProvider, authenticatedUser);
         if (user == null)
             return null;
 
