@@ -288,6 +288,10 @@ public class AuthenticationService {
      *     The AuthenticatedUser that has successfully authenticated or re-
      *     authenticated.
      *
+     * @param credentials
+     *     The Credentials provided by the user in the most recent
+     *     authentication attempt.
+     *
      * @return
      *     A List of all UserContexts associated with the given
      *     AuthenticatedUser.
@@ -296,7 +300,8 @@ public class AuthenticationService {
      *     If an error occurs while creating or updating any UserContext.
      */
     private List<UserContext> getUserContexts(GuacamoleSession existingSession,
-            AuthenticatedUser authenticatedUser) throws GuacamoleException {
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
 
         List<UserContext> userContexts = new ArrayList<UserContext>(authProviders.size());
 
@@ -309,7 +314,7 @@ public class AuthenticationService {
 
                 // Update existing UserContext
                 AuthenticationProvider authProvider = oldUserContext.getAuthenticationProvider();
-                UserContext userContext = authProvider.updateUserContext(oldUserContext, authenticatedUser);
+                UserContext userContext = authProvider.updateUserContext(oldUserContext, authenticatedUser, credentials);
 
                 // Add to available data, if successful
                 if (userContext != null)
@@ -379,7 +384,7 @@ public class AuthenticationService {
 
         // Get up-to-date AuthenticatedUser and associated UserContexts
         AuthenticatedUser authenticatedUser = getAuthenticatedUser(existingSession, credentials);
-        List<UserContext> userContexts = getUserContexts(existingSession, authenticatedUser);
+        List<UserContext> userContexts = getUserContexts(existingSession, authenticatedUser, credentials);
 
         // Update existing session, if it exists
         String authToken;

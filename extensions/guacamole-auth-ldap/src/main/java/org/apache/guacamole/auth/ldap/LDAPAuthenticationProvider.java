@@ -20,8 +20,6 @@
 package org.apache.guacamole.auth.ldap;
 
 
-import org.apache.guacamole.auth.ldap.AuthenticationProviderService;
-import org.apache.guacamole.auth.ldap.LDAPAuthenticationProviderModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
@@ -97,7 +95,8 @@ public class LDAPAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public UserContext updateUserContext(UserContext context,
-            AuthenticatedUser authenticatedUser) throws GuacamoleException {
+            AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException {
         return context;
     }
 
