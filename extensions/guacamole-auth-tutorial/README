@@ -1,0 +1,89 @@
+
+------------------------------------------------------------
+ About this README
+------------------------------------------------------------
+
+This README is intended to provide quick and to-the-point documentation for
+technical users intending to compile parts of Guacamole themselves.
+
+Distribution-specific packages are available from the files section of the main
+project page:
+
+    http://sourceforge.net/projects/guacamole/files/
+
+Distribution-specific documentation is provided on the Guacamole wiki:
+
+    http://guac-dev.org/
+
+
+------------------------------------------------------------
+ What is guacamole-auth-tutorial?
+------------------------------------------------------------
+
+guacamole-auth-tutorial is a Java library for use with the Guacamole web
+application which shows a tutorial authentication provider.
+
+
+
+------------------------------------------------------------
+ Compiling and installing guacamole-auth-tutorial
+------------------------------------------------------------
+
+This is built using Maven. Building it
+compiles all classes and packages them into a redistributable .jar file. This
+.jar file can be installed in the library directory configured in
+guacamole.properties such that the authentication provider is available.
+
+1) Run mvn package
+
+    $ mvn package
+
+    Maven will download any needed dependencies for building the .jar file.
+    Once all dependencies have been downloaded, the .jar file will be
+    created in the target/ subdirectory of the current directory.
+
+    If this process fails, check the build errors, and verify that the
+    contents of your settings.xml file is correct.
+
+2) Extract the .tar.gz file now present in the target/ directory, and
+   place the .jar files in the extracted lib/ subdirectory in the library
+   directory specified in guacamole.properties.
+
+    You will likely need to do this as root.
+
+    If you do not have a library directory configured in your
+    guacamole.properties, you will need to specify one. The directory
+    is specified using the "lib-directory" property.
+
+
+3) Configure guacamole.properties
+
+    Certain properties are needed for this tutorial authentication provider to run
+    
+    # Username and password
+    tutorial-user:     tutorial
+    tutorial-password: password
+
+    # Connection information
+    tutorial-protocol:   vnc
+    tutorial-parameters: hostname=localhost, port=5900
+
+
+5) Restart Tomcat
+
+    The guacamole.properties file as well as any authentication provider .jar
+    files are only read when Tomcat starts. This goes for any other servlet
+    container as well.
+
+    You must restart Tomcat before any of the above changes can take effect.
+
+
+------------------------------------------------------------
+ Reporting problems
+------------------------------------------------------------
+
+Please report any bugs encountered by opening a new ticket at the Trac system
+hosted at:
+
+    http://guac-dev.org/trac/
+

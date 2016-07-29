@@ -31,6 +31,7 @@
         <module>extensions/guacamole-auth-jdbc</module>
         <module>extensions/guacamole-auth-ldap</module>
         <module>extensions/guacamole-auth-noauth</module>
+        <module>extensions/guacamole-auth-tutorial</module>
 
     </modules>
 
