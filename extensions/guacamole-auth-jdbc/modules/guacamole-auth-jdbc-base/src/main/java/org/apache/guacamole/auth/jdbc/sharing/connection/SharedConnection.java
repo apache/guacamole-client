@@ -17,17 +17,17 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.jdbc.sharing;
+package org.apache.guacamole.auth.jdbc.sharing.connection;
 
 import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
+import org.apache.guacamole.auth.jdbc.sharing.connectiongroup.SharedRootConnectionGroup;
 import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
+import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionRecord;
@@ -49,17 +49,10 @@ public class SharedConnection implements Connection {
     private GuacamoleTunnelService tunnelService;
 
     /**
-     * Randomly-generated unique identifier, guaranteeing this shared connection
-     * does not duplicate the identifying information of the underlying
-     * connection being shared.
-     */
-    private final String identifier = UUID.randomUUID().toString();
-
-    /**
      * The user that successfully authenticated to obtain access to this
      * SharedConnection.
      */
-    private SharedConnectionUser user;
+    private RemoteAuthenticatedUser user;
 
     /**
      * The SharedConnectionDefinition dictating the connection being shared and
@@ -79,14 +72,14 @@ public class SharedConnection implements Connection {
      *     The SharedConnectionDefinition dictating the connection being shared
      *     and any associated restrictions.
      */
-    public void init(SharedConnectionUser user, SharedConnectionDefinition definition) {
+    public void init(RemoteAuthenticatedUser user, SharedConnectionDefinition definition) {
         this.user = user;
         this.definition = definition;
     }
 
     @Override
     public String getIdentifier() {
-        return identifier;
+        return definition.getShareKey();
     }
 
     @Override
@@ -106,7 +99,7 @@ public class SharedConnection implements Connection {
 
     @Override
     public String getParentIdentifier() {
-        return RootConnectionGroup.IDENTIFIER;
+        return SharedRootConnectionGroup.IDENTIFIER;
     }
 
     @Override

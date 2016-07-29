@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.jdbc.sharing;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import org.apache.guacamole.auth.jdbc.sharing.connection.SharedConnectionDefinition;
 
 /**
  * A HashMap-based implementation of the SharedConnectionMap.

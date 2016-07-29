@@ -17,13 +17,15 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.jdbc.sharing;
+package org.apache.guacamole.auth.jdbc.sharing.user;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import java.util.Collection;
 import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.sharing.connection.SharedConnectionDirectory;
+import org.apache.guacamole.auth.jdbc.sharing.connectiongroup.SharedRootConnectionGroup;
+import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -34,32 +36,23 @@ import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
-import org.apache.guacamole.net.auth.simple.SimpleConnectionDirectory;
-import org.apache.guacamole.net.auth.simple.SimpleConnectionGroup;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionGroupDirectory;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionRecordSet;
 import org.apache.guacamole.net.auth.simple.SimpleDirectory;
-import org.apache.guacamole.net.auth.simple.SimpleUser;
 import org.apache.guacamole.net.auth.simple.SimpleUserDirectory;
 
 /**
- * The user context of a SharedConnectionUser, providing access ONLY to the
- * user themselves, the single SharedConnection associated with that user, and
- * an internal root connection group containing only that single
- * SharedConnection.
+ * The user context of a SharedUser, providing access ONLY to the user
+ * themselves, the any SharedConnections associated with that user via share
+ * keys, and an internal root connection group containing only those
+ * connections.
  *
  * @author Michael Jumper
  */
-public class SharedConnectionUserContext implements UserContext {
+public class SharedUserContext implements UserContext {
 
     /**
-     * Provider for retrieving SharedConnection instances.
-     */
-    @Inject
-    private Provider<SharedConnection> connectionProvider;
-
-    /**
-     * The AuthenticationProvider that created this SharedConnectionUserContext.
+     * The AuthenticationProvider that created this SharedUserContext.
      */
     private AuthenticationProvider authProvider;
 
@@ -72,7 +65,8 @@ public class SharedConnectionUserContext implements UserContext {
      * A directory of all connections visible to the user for whom this user
      * context was created.
      */
-    private Directory<Connection> connectionDirectory;
+    @Inject
+    private SharedConnectionDirectory connectionDirectory;
 
     /**
      * A directory of all connection groups visible to the user for whom this
@@ -94,54 +88,48 @@ public class SharedConnectionUserContext implements UserContext {
     private ConnectionGroup rootGroup;
 
     /**
-     * Creates a new SharedConnectionUserContext which provides access ONLY to
-     * the given user, the single SharedConnection associated with that user,
-     * and an internal root connection group containing only that single
-     * SharedConnection.
+     * Creates a new SharedUserContext which provides access ONLY to the given
+     * user, the SharedConnections associated with the share keys used by that
+     * user, and an internal root connection group containing only those
+     * SharedConnections.
+     *
+     * @param authProvider
+     *     The AuthenticationProvider that created this
+     *     SharedUserContext;
      *
      * @param user
-     *     The SharedConnectionUser for whom this SharedConnectionUserContext
-     *     is being created.
+     *     The RemoteAuthenticatedUser for whom this SharedUserContext is being
+     *     created.
      */
-    public void init(SharedConnectionUser user) {
-
-        // Get the definition of the shared connection
-        SharedConnectionDefinition definition =
-                user.getSharedConnectionDefinition();
-
-        // Create a single shared connection accessible by the user
-        SharedConnection connection = connectionProvider.get();
-        connection.init(user, definition);
-
-        // Build list of all accessible connection identifiers
-        Collection<String> connectionIdentifiers =
-                Collections.singletonList(connection.getIdentifier());
+    public void init(AuthenticationProvider authProvider, RemoteAuthenticatedUser user) {
 
         // Associate the originating authentication provider
-        this.authProvider = user.getAuthenticationProvider();
+        this.authProvider = authProvider;
 
-        // The connection directory should contain only the shared connection
-        this.connectionDirectory = new SimpleConnectionDirectory(
-                Collections.<Connection>singletonList(connection));
-
-        // The user should have access only to the shared connection and himself
-        this.self = new SimpleUser(user.getIdentifier(),
-                Collections.<String>singletonList(user.getIdentifier()),
-                connectionIdentifiers,
-                Collections.<String>emptyList());
-
-        // The root group contains only the shared connection
-        String rootIdentifier = connection.getParentIdentifier();
-        this.rootGroup = new SimpleConnectionGroup(rootIdentifier, rootIdentifier,
-                connectionIdentifiers, Collections.<String>emptyList());
+        // Provide access to all connections shared with the given user
+        this.connectionDirectory.init(user);
 
         // The connection group directory contains only the root group
+        this.rootGroup = new SharedRootConnectionGroup(this);
         this.connectionGroupDirectory = new SimpleConnectionGroupDirectory(
                 Collections.singletonList(this.rootGroup));
 
         // The user directory contains only this user
+        this.self = new SharedUser(user, this);
         this.userDirectory = new SimpleUserDirectory(this.self);
 
+    }
+
+    /**
+     * Registers a new share key with this SharedUserContext such that the user
+     * will have access to the connection associated with that share key. The
+     * share key will be automatically de-registered when it is no longer valid.
+     *
+     * @param shareKey
+     *     The share key to register.
+     */
+    public void registerShareKey(String shareKey) {
+        connectionDirectory.registerShareKey(shareKey);
     }
 
     @Override
