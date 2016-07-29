@@ -50,7 +50,7 @@ import org.apache.guacamole.net.auth.User;
  * @author James Muehlner
  * @author Michael Jumper
  */
-public class UserContext extends RestrictedObject
+public class ModeledUserContext extends RestrictedObject
     implements org.apache.guacamole.net.auth.UserContext {
 
     /**
