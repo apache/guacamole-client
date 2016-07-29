@@ -185,6 +185,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                         }
                         catch (IOException e) {
                             logger.debug("WebSocket tunnel read failed due to I/O error.", e);
+                            closeConnection(connection, GuacamoleStatus.SERVER_ERROR);
                         }
 
                     }
