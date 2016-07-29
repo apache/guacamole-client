@@ -6,7 +6,8 @@
     "namespace" : "guac-postgresql",
 
     "authProviders" : [
-        "org.apache.guacamole.auth.postgresql.PostgreSQLAuthenticationProvider"
+        "org.apache.guacamole.auth.postgresql.PostgreSQLAuthenticationProvider",
+        "org.apache.guacamole.auth.postgresql.PostgreSQLSharedAuthenticationProvider"
     ],
 
     "translations" : [
