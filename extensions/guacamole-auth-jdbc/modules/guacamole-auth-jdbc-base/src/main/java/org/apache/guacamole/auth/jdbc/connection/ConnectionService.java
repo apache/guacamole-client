@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.GuacamoleClientException;
@@ -101,7 +101,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
     }
 
     @Override
-    protected ModeledConnection getObjectInstance(AuthenticatedUser currentUser,
+    protected ModeledConnection getObjectInstance(ModeledAuthenticatedUser currentUser,
             ConnectionModel model) {
         ModeledConnection connection = connectionProvider.get();
         connection.init(currentUser, model);
@@ -109,7 +109,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
     }
 
     @Override
-    protected ConnectionModel getModelInstance(AuthenticatedUser currentUser,
+    protected ConnectionModel getModelInstance(ModeledAuthenticatedUser currentUser,
             final Connection object) {
 
         // Create new ModeledConnection backed by blank model
@@ -127,7 +127,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
     }
 
     @Override
-    protected boolean hasCreatePermission(AuthenticatedUser user)
+    protected boolean hasCreatePermission(ModeledAuthenticatedUser user)
             throws GuacamoleException {
 
         // Return whether user has explicit connection creation permission
@@ -137,7 +137,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
     }
 
     @Override
-    protected ObjectPermissionSet getPermissionSet(AuthenticatedUser user)
+    protected ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user)
             throws GuacamoleException {
 
         // Return permissions related to connections 
@@ -146,7 +146,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
     }
 
     @Override
-    protected void beforeCreate(AuthenticatedUser user,
+    protected void beforeCreate(ModeledAuthenticatedUser user,
             ConnectionModel model) throws GuacamoleException {
 
         super.beforeCreate(user, model);
@@ -163,7 +163,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
     }
 
     @Override
-    protected void beforeUpdate(AuthenticatedUser user,
+    protected void beforeUpdate(ModeledAuthenticatedUser user,
             ConnectionModel model) throws GuacamoleException {
 
         super.beforeUpdate(user, model);
@@ -229,7 +229,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
     }
 
     @Override
-    public ModeledConnection createObject(AuthenticatedUser user, Connection object)
+    public ModeledConnection createObject(ModeledAuthenticatedUser user, Connection object)
             throws GuacamoleException {
 
         // Create connection
@@ -246,7 +246,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
     }
     
     @Override
-    public void updateObject(AuthenticatedUser user, ModeledConnection object)
+    public void updateObject(ModeledAuthenticatedUser user, ModeledConnection object)
             throws GuacamoleException {
 
         // Update connection
@@ -282,7 +282,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
      * @throws GuacamoleException
      *     If an error occurs while reading identifiers.
      */
-    public Set<String> getIdentifiersWithin(AuthenticatedUser user,
+    public Set<String> getIdentifiersWithin(ModeledAuthenticatedUser user,
             String identifier)
             throws GuacamoleException {
 
@@ -313,7 +313,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
      *     A new map of all parameter name/value pairs that the given user has
      *     access to.
      */
-    public Map<String, String> retrieveParameters(AuthenticatedUser user,
+    public Map<String, String> retrieveParameters(ModeledAuthenticatedUser user,
             String identifier) {
 
         Map<String, String> parameterMap = new HashMap<String, String>();
@@ -394,7 +394,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
      * @throws GuacamoleException
      *     If permission to read the connection history is denied.
      */
-    public List<ConnectionRecord> retrieveHistory(AuthenticatedUser user,
+    public List<ConnectionRecord> retrieveHistory(ModeledAuthenticatedUser user,
             ModeledConnection connection) throws GuacamoleException {
 
         String identifier = connection.getIdentifier();
@@ -450,7 +450,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
      * @throws GuacamoleException
      *     If permission to read the connection history is denied.
      */
-    public List<ConnectionRecord> retrieveHistory(AuthenticatedUser user,
+    public List<ConnectionRecord> retrieveHistory(ModeledAuthenticatedUser user,
             Collection<ConnectionRecordSearchTerm> requiredContents,
             List<ConnectionRecordSortPredicate> sortPredicates, int limit)
             throws GuacamoleException {
@@ -492,7 +492,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
      * @throws GuacamoleException
      *     If permission to connect to this connection is denied.
      */
-    public GuacamoleTunnel connect(AuthenticatedUser user,
+    public GuacamoleTunnel connect(ModeledAuthenticatedUser user,
             ModeledConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException {
 

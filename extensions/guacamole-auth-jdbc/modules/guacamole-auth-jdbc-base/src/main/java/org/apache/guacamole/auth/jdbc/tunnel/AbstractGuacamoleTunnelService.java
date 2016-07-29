@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordMapper;
@@ -522,7 +522,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      *     provided identifiers are preferred, the original collection of
      *     identifiers.
      */
-    private Collection<String> getPreferredConnections(AuthenticatedUser user,
+    private Collection<String> getPreferredConnections(ModeledAuthenticatedUser user,
             Collection<String> identifiers) {
 
         // Search provided identifiers for any preferred connections
@@ -556,7 +556,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      *     A list containing all balanced connections within the given group,
      *     or an empty list if there are no such connections.
      */
-    private List<ModeledConnection> getBalancedConnections(AuthenticatedUser user,
+    private List<ModeledConnection> getBalancedConnections(ModeledAuthenticatedUser user,
             ModeledConnectionGroup connectionGroup) {
 
         // If not a balancing group, there are no balanced connections
@@ -588,7 +588,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     }
 
     @Override
-    public Collection<ActiveConnectionRecord> getActiveConnections(AuthenticatedUser user)
+    public Collection<ActiveConnectionRecord> getActiveConnections(ModeledAuthenticatedUser user)
         throws GuacamoleException {
 
         // Simply return empty list if there are no active tunnels
@@ -626,7 +626,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
 
     @Override
     @Transactional
-    public GuacamoleTunnel getGuacamoleTunnel(final AuthenticatedUser user,
+    public GuacamoleTunnel getGuacamoleTunnel(final ModeledAuthenticatedUser user,
             final ModeledConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException {
 
@@ -647,7 +647,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
 
     @Override
     @Transactional
-    public GuacamoleTunnel getGuacamoleTunnel(AuthenticatedUser user,
+    public GuacamoleTunnel getGuacamoleTunnel(ModeledAuthenticatedUser user,
             ModeledConnectionGroup connectionGroup,
             GuacamoleClientInformation info) throws GuacamoleException {
 

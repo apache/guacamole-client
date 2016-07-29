@@ -20,7 +20,7 @@
 package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
@@ -59,7 +59,7 @@ public interface ObjectPermissionService
      * @throws GuacamoleException
      *     If an error occurs while retrieving the requested permission.
      */
-    ObjectPermission retrievePermission(AuthenticatedUser user,
+    ObjectPermission retrievePermission(ModeledAuthenticatedUser user,
             ModeledUser targetUser, ObjectPermission.Type type,
             String identifier) throws GuacamoleException;
 
@@ -89,7 +89,7 @@ public interface ObjectPermissionService
      * @throws GuacamoleException
      *     If an error occurs while retrieving permissions.
      */
-    Collection<String> retrieveAccessibleIdentifiers(AuthenticatedUser user,
+    Collection<String> retrieveAccessibleIdentifiers(ModeledAuthenticatedUser user,
             ModeledUser targetUser, Collection<ObjectPermission.Type> permissions,
             Collection<String> identifiers) throws GuacamoleException;
 

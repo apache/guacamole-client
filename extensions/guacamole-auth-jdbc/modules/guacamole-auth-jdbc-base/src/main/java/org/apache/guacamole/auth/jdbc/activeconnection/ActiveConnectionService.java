@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.jdbc.base.DirectoryObjectService;
@@ -57,7 +57,7 @@ public class ActiveConnectionService
     private Provider<TrackedActiveConnection> trackedActiveConnectionProvider;
     
     @Override
-    public TrackedActiveConnection retrieveObject(AuthenticatedUser user,
+    public TrackedActiveConnection retrieveObject(ModeledAuthenticatedUser user,
             String identifier) throws GuacamoleException {
 
         // Pull objects having given identifier
@@ -77,7 +77,7 @@ public class ActiveConnectionService
     }
     
     @Override
-    public Collection<TrackedActiveConnection> retrieveObjects(AuthenticatedUser user,
+    public Collection<TrackedActiveConnection> retrieveObjects(ModeledAuthenticatedUser user,
             Collection<String> identifiers) throws GuacamoleException {
 
         String username = user.getIdentifier();
@@ -110,7 +110,7 @@ public class ActiveConnectionService
     }
 
     @Override
-    public void deleteObject(AuthenticatedUser user, String identifier)
+    public void deleteObject(ModeledAuthenticatedUser user, String identifier)
         throws GuacamoleException {
 
         // Only administrators may delete active connections
@@ -131,7 +131,7 @@ public class ActiveConnectionService
     }
 
     @Override
-    public Set<String> getIdentifiers(AuthenticatedUser user)
+    public Set<String> getIdentifiers(ModeledAuthenticatedUser user)
         throws GuacamoleException {
 
         // Retrieve all visible connections (permissions enforced by tunnel service)
@@ -147,7 +147,7 @@ public class ActiveConnectionService
     }
 
     @Override
-    public TrackedActiveConnection createObject(AuthenticatedUser user,
+    public TrackedActiveConnection createObject(ModeledAuthenticatedUser user,
             ActiveConnection object) throws GuacamoleException {
 
         // Updating active connections is not implemented
@@ -156,7 +156,7 @@ public class ActiveConnectionService
     }
 
     @Override
-    public void updateObject(AuthenticatedUser user, TrackedActiveConnection object)
+    public void updateObject(ModeledAuthenticatedUser user, TrackedActiveConnection object)
             throws GuacamoleException {
 
         // Updating active connections is not implemented

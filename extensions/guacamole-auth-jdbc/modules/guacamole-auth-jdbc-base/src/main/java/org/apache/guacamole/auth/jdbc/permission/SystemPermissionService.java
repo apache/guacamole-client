@@ -22,7 +22,7 @@ package org.apache.guacamole.auth.jdbc.permission;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Collection;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
@@ -77,7 +77,7 @@ public class SystemPermissionService
     }
 
     @Override
-    public SystemPermissionSet getPermissionSet(AuthenticatedUser user,
+    public SystemPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
             ModeledUser targetUser) throws GuacamoleException {
 
         // Create permission set for requested user
@@ -89,7 +89,7 @@ public class SystemPermissionService
     }
     
     @Override
-    public void createPermissions(AuthenticatedUser user, ModeledUser targetUser,
+    public void createPermissions(ModeledAuthenticatedUser user, ModeledUser targetUser,
             Collection<SystemPermission> permissions) throws GuacamoleException {
 
         // Only an admin can create system permissions
@@ -105,7 +105,7 @@ public class SystemPermissionService
     }
 
     @Override
-    public void deletePermissions(AuthenticatedUser user, ModeledUser targetUser,
+    public void deletePermissions(ModeledAuthenticatedUser user, ModeledUser targetUser,
             Collection<SystemPermission> permissions) throws GuacamoleException {
 
         // Only an admin can delete system permissions
@@ -145,7 +145,7 @@ public class SystemPermissionService
      * @throws GuacamoleException
      *     If an error occurs while retrieving the requested permission.
      */
-    public SystemPermission retrievePermission(AuthenticatedUser user,
+    public SystemPermission retrievePermission(ModeledAuthenticatedUser user,
             ModeledUser targetUser, SystemPermission.Type type) throws GuacamoleException {
 
         // Retrieve permissions only if allowed

@@ -22,15 +22,18 @@ package org.apache.guacamole.auth.jdbc.user;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
- * Associates a user with the credentials they used to authenticate.
+ * Associates a user with the credentials they used to authenticate, their
+ * corresponding ModeledUser, and the AuthenticationProvider which produced
+ * that ModeledUser.
  *
  * @author Michael Jumper 
  */
-public class AuthenticatedUser extends RemoteAuthenticatedUser {
+public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
 
     /**
      * The ModeledUser object which is backed by the data associated with this
@@ -73,7 +76,7 @@ public class AuthenticatedUser extends RemoteAuthenticatedUser {
      *     A ModeledUser object which is backed by the data associated with
      *     this user in the database.
      */
-    public AuthenticatedUser(org.apache.guacamole.net.auth.AuthenticatedUser authenticatedUser,
+    public ModeledAuthenticatedUser(AuthenticatedUser authenticatedUser,
             AuthenticationProvider modelAuthenticationProvider, ModeledUser user) {
         super(authenticatedUser.getAuthenticationProvider(), authenticatedUser.getCredentials());
         this.modelAuthenticationProvider = modelAuthenticationProvider;
@@ -95,7 +98,7 @@ public class AuthenticatedUser extends RemoteAuthenticatedUser {
      * @param credentials 
      *     The credentials given by the user when they authenticated.
      */
-    public AuthenticatedUser(AuthenticationProvider authenticationProvider,
+    public ModeledAuthenticatedUser(AuthenticationProvider authenticationProvider,
             ModeledUser user, Credentials credentials) {
         super(authenticationProvider, credentials);
         this.modelAuthenticationProvider = authenticationProvider;

@@ -101,7 +101,7 @@ public class UserContext extends RestrictedObject
     private Provider<ConnectionRecordSet> connectionRecordSetProvider;
     
     @Override
-    public void init(AuthenticatedUser currentUser) {
+    public void init(ModeledAuthenticatedUser currentUser) {
 
         super.init(currentUser);
         

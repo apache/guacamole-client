@@ -21,7 +21,7 @@ package org.apache.guacamole.auth.jdbc.connection;
 
 import com.google.inject.Inject;
 import java.util.Map;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -36,7 +36,7 @@ public class ModeledGuacamoleConfiguration extends GuacamoleConfiguration {
      * The user this configuration belongs to. Access is based on his/her
      * permission settings.
      */
-    private AuthenticatedUser currentUser;
+    private ModeledAuthenticatedUser currentUser;
 
     /**
      * The internal model object containing the values which represent the
@@ -72,7 +72,7 @@ public class ModeledGuacamoleConfiguration extends GuacamoleConfiguration {
      * @param connectionModel 
      *     The model object backing this configuration.
      */
-    public void init(AuthenticatedUser currentUser, ConnectionModel connectionModel) {
+    public void init(ModeledAuthenticatedUser currentUser, ConnectionModel connectionModel) {
         this.currentUser = currentUser;
         this.connectionModel = connectionModel;
     }

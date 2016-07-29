@@ -37,6 +37,7 @@ import org.apache.guacamole.auth.jdbc.permission.UserPermissionMapper;
 import org.apache.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.PasswordField;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
@@ -140,7 +141,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     }
 
     @Override
-    protected ModeledUser getObjectInstance(AuthenticatedUser currentUser,
+    protected ModeledUser getObjectInstance(ModeledAuthenticatedUser currentUser,
             UserModel model) {
         ModeledUser user = userProvider.get();
         user.init(currentUser, model);
@@ -148,7 +149,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     }
 
     @Override
-    protected UserModel getModelInstance(AuthenticatedUser currentUser,
+    protected UserModel getModelInstance(ModeledAuthenticatedUser currentUser,
             final User object) {
 
         // Create new ModeledUser backed by blank model
@@ -165,7 +166,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     }
 
     @Override
-    protected boolean hasCreatePermission(AuthenticatedUser user)
+    protected boolean hasCreatePermission(ModeledAuthenticatedUser user)
             throws GuacamoleException {
 
         // Return whether user has explicit user creation permission
@@ -175,7 +176,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     }
 
     @Override
-    protected ObjectPermissionSet getPermissionSet(AuthenticatedUser user)
+    protected ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user)
             throws GuacamoleException {
 
         // Return permissions related to users
@@ -184,7 +185,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     }
 
     @Override
-    protected void beforeCreate(AuthenticatedUser user, UserModel model)
+    protected void beforeCreate(ModeledAuthenticatedUser user, UserModel model)
             throws GuacamoleException {
 
         super.beforeCreate(user, model);
@@ -201,7 +202,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     }
 
     @Override
-    protected void beforeUpdate(AuthenticatedUser user,
+    protected void beforeUpdate(ModeledAuthenticatedUser user,
             UserModel model) throws GuacamoleException {
 
         super.beforeUpdate(user, model);
@@ -224,7 +225,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
     @Override
     protected Collection<ObjectPermissionModel>
-        getImplicitPermissions(AuthenticatedUser user, UserModel model) {
+        getImplicitPermissions(ModeledAuthenticatedUser user, UserModel model) {
             
         // Get original set of implicit permissions
         Collection<ObjectPermissionModel> implicitPermissions = super.getImplicitPermissions(user, model);
@@ -247,7 +248,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     }
         
     @Override
-    protected void beforeDelete(AuthenticatedUser user, String identifier) throws GuacamoleException {
+    protected void beforeDelete(ModeledAuthenticatedUser user, String identifier) throws GuacamoleException {
 
         super.beforeDelete(user, identifier);
 
@@ -277,7 +278,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      * @throws GuacamoleException
      *     If the provided credentials to not conform to expectations.
      */
-    public AuthenticatedUser retrieveAuthenticatedUser(AuthenticationProvider authenticationProvider,
+    public ModeledAuthenticatedUser retrieveAuthenticatedUser(AuthenticationProvider authenticationProvider,
             Credentials credentials) throws GuacamoleException {
 
         // Get username and password
@@ -300,7 +301,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
         // Create corresponding user object, set up cyclic reference
         ModeledUser user = getObjectInstance(null, userModel);
-        user.setCurrentUser(new AuthenticatedUser(authenticationProvider, user, credentials));
+        user.setCurrentUser(new ModeledAuthenticatedUser(authenticationProvider, user, credentials));
 
         // Verify user account is still valid as of today
         if (!user.isAccountValid())
@@ -365,11 +366,11 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      *     null if no such user exists.
      */
     public ModeledUser retrieveUser(AuthenticationProvider authenticationProvider,
-            org.apache.guacamole.net.auth.AuthenticatedUser authenticatedUser) {
+            AuthenticatedUser authenticatedUser) {
 
         // If we already queried this user, return that rather than querying again
-        if (authenticatedUser instanceof AuthenticatedUser)
-            return ((AuthenticatedUser) authenticatedUser).getUser();
+        if (authenticatedUser instanceof ModeledAuthenticatedUser)
+            return ((ModeledAuthenticatedUser) authenticatedUser).getUser();
 
         // Get username
         String username = authenticatedUser.getIdentifier();
@@ -381,7 +382,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
         // Create corresponding user object, set up cyclic reference
         ModeledUser user = getObjectInstance(null, userModel);
-        user.setCurrentUser(new AuthenticatedUser(authenticatedUser,
+        user.setCurrentUser(new ModeledAuthenticatedUser(authenticatedUser,
                 authenticationProvider, user));
 
         // Return already-authenticated user
