@@ -43,6 +43,12 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
 public class SharedConnection implements Connection {
 
     /**
+     * The name of the attribute which contains the username of the user that
+     * shared this connection.
+     */
+    public static final String CONNECTION_OWNER = "jdbc-shared-by";
+
+    /**
      * Service for establishing tunnels to Guacamole connections.
      */
     @Inject
@@ -133,12 +139,13 @@ public class SharedConnection implements Connection {
 
     @Override
     public Map<String, String> getAttributes() {
-        return Collections.<String, String>emptyMap();
+        String sharedBy = definition.getActiveConnection().getUser().getIdentifier();
+        return Collections.<String, String>singletonMap(CONNECTION_OWNER, sharedBy);
     }
 
     @Override
     public void setAttributes(Map<String, String> attributes) {
-        // Do nothing - no attributes supported
+        // Do nothing - changing attributes not supported
     }
 
     @Override

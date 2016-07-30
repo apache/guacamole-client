@@ -42,6 +42,10 @@
         "NAME" : "PostgreSQL"
     },
 
+    "HOME" : {
+        "INFO_SHARED_BY" : "Shared by {USERNAME}"
+    },
+
     "USER_ATTRIBUTES" : {
 
         "FIELD_HEADER_DISABLED"            : "Login disabled:",
