@@ -17,19 +17,13 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.jdbc.user;
+package org.apache.guacamole.auth.jdbc;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.sharing.ConnectionSharingService;
-import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionUser;
-import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionUserContext;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
-import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
+import org.apache.guacamole.net.auth.UserContext;
 
 /**
  * Service which authenticates users based on credentials and provides for
@@ -38,31 +32,7 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsExce
  *
  * @author Michael Jumper
  */
-public class AuthenticationProviderService  {
-
-    /**
-     * Service for accessing users.
-     */
-    @Inject
-    private UserService userService;
-
-    /**
-     * Provider for retrieving UserContext instances.
-     */
-    @Inject
-    private Provider<UserContext> userContextProvider;
-
-    /**
-     * Provider for retrieving SharedConnectionUserContext instances.
-     */
-    @Inject
-    private Provider<SharedConnectionUserContext> sharedUserContextProvider;
-
-    /**
-     * Service for sharing active connections.
-     */
-    @Inject
-    private ConnectionSharingService sharingService;
+public interface AuthenticationProviderService  {
 
     /**
      * Authenticates the user having the given credentials, returning a new
@@ -86,24 +56,7 @@ public class AuthenticationProviderService  {
      *     credentials are invalid or expired.
      */
     public AuthenticatedUser authenticateUser(AuthenticationProvider authenticationProvider,
-            Credentials credentials) throws GuacamoleException {
-
-        AuthenticatedUser user;
-
-        // Check whether user is authenticating with a valid sharing key
-        user = sharingService.retrieveSharedConnectionUser(authenticationProvider, credentials);
-        if (user != null)
-            return user;
-
-        // Authenticate user
-        user = userService.retrieveAuthenticatedUser(authenticationProvider, credentials);
-        if (user != null)
-            return user;
-
-        // Otherwise, unauthorized
-        throw new GuacamoleInvalidCredentialsException("Invalid login", CredentialsInfo.USERNAME_PASSWORD);
-
-    }
+            Credentials credentials) throws GuacamoleException;
 
     /**
      * Returning a new UserContext instance for the given already-authenticated
@@ -121,26 +74,7 @@ public class AuthenticationProviderService  {
      *     If an error occurs during authentication, or if the given
      *     credentials are invalid or expired.
      */
-    public org.apache.guacamole.net.auth.UserContext getUserContext(
-            AuthenticatedUser authenticatedUser) throws GuacamoleException {
-
-        // Produce sharing-specific user context if this is the user of a shared connection
-        if (authenticatedUser instanceof SharedConnectionUser) {
-            SharedConnectionUserContext context = sharedUserContextProvider.get();
-            context.init((SharedConnectionUser) authenticatedUser);
-            return context;
-        }
-
-        // Retrieve user account for already-authenticated user
-        ModeledUser user = userService.retrieveUser(authenticatedUser);
-        if (user == null)
-            return null;
-
-        // Link to user context
-        UserContext context = userContextProvider.get();
-        context.init(user.getCurrentUser());
-        return context;
-
-    }
+    public UserContext getUserContext(AuthenticatedUser authenticatedUser)
+            throws GuacamoleException;
 
 }

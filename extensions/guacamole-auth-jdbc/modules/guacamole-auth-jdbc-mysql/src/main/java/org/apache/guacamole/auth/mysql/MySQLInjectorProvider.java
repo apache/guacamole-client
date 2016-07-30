@@ -19,35 +19,33 @@
 
 package org.apache.guacamole.auth.mysql;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.InjectedAuthenticationProvider;
-import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProviderService;
+import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProviderModule;
+import org.apache.guacamole.auth.jdbc.JDBCInjectorProvider;
 
 /**
- * Provides a MySQL based implementation of the AuthenticationProvider
- * functionality.
+ * JDBCInjectorProvider implementation which configures Guice injections for
+ * connecting to a MySQL database based on MySQL-specific options provided via
+ * guacamole.properties.
  *
- * @author James Muehlner
  * @author Michael Jumper
  */
-public class MySQLAuthenticationProvider extends InjectedAuthenticationProvider {
-
-    /**
-     * Creates a new MySQLAuthenticationProvider that reads and writes
-     * authentication data to a MySQL database defined by properties in
-     * guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
-     */
-    public MySQLAuthenticationProvider() throws GuacamoleException {
-        super(new MySQLInjectorProvider(), JDBCAuthenticationProviderService.class);
-    }
+public class MySQLInjectorProvider extends JDBCInjectorProvider {
 
     @Override
-    public String getIdentifier() {
-        return "mysql";
+    protected Injector create() throws GuacamoleException {
+
+        // Get local environment
+        MySQLEnvironment environment = new MySQLEnvironment();
+
+        // Set up Guice injector
+        return Guice.createInjector(
+            new JDBCAuthenticationProviderModule(environment),
+            new MySQLAuthenticationProviderModule(environment)
+        );
+
     }
 
 }
