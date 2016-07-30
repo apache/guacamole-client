@@ -95,7 +95,7 @@ public class SharedConnection implements Connection {
 
     @Override
     public String getName() {
-        return definition.getSharingProfile().getName();
+        return definition.getActiveConnection().getConnection().getName();
     }
 
     @Override
