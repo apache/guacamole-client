@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
@@ -140,7 +140,7 @@ public abstract class ModeledPermissionService<PermissionSetType extends Permiss
     }
 
     @Override
-    public Set<PermissionType> retrievePermissions(AuthenticatedUser user,
+    public Set<PermissionType> retrievePermissions(ModeledAuthenticatedUser user,
             ModeledUser targetUser) throws GuacamoleException {
 
         // Retrieve permissions only if allowed

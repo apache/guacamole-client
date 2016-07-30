@@ -20,7 +20,7 @@
 package org.apache.guacamole.auth.jdbc.tunnel;
 
 import java.util.Collection;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.GuacamoleException;
@@ -55,7 +55,7 @@ public interface GuacamoleTunnelService {
      *     If an error occurs while retrieving all active connections, or if
      *     permission is denied.
      */
-    public Collection<ActiveConnectionRecord> getActiveConnections(AuthenticatedUser user)
+    public Collection<ActiveConnectionRecord> getActiveConnections(ModeledAuthenticatedUser user)
             throws GuacamoleException;
 
     /**
@@ -83,7 +83,7 @@ public interface GuacamoleTunnelService {
      *     If the connection cannot be established due to concurrent usage
      *     rules.
      */
-    GuacamoleTunnel getGuacamoleTunnel(AuthenticatedUser user,
+    GuacamoleTunnel getGuacamoleTunnel(ModeledAuthenticatedUser user,
             ModeledConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException;
 
@@ -127,7 +127,7 @@ public interface GuacamoleTunnelService {
      *     If the connection cannot be established due to concurrent usage
      *     rules, or if the connection group is not balancing.
      */
-    GuacamoleTunnel getGuacamoleTunnel(AuthenticatedUser user,
+    GuacamoleTunnel getGuacamoleTunnel(ModeledAuthenticatedUser user,
             ModeledConnectionGroup connectionGroup,
             GuacamoleClientInformation info)
             throws GuacamoleException;

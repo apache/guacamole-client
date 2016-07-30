@@ -23,7 +23,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
-import org.apache.guacamole.auth.jdbc.user.UserContext;
+import org.apache.guacamole.auth.jdbc.user.ModeledUserContext;
 import org.apache.guacamole.auth.jdbc.user.UserService;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -50,7 +50,7 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
      * Provider for retrieving UserContext instances.
      */
     @Inject
-    private Provider<UserContext> userContextProvider;
+    private Provider<ModeledUserContext> userContextProvider;
 
     @Override
     public AuthenticatedUser authenticateUser(AuthenticationProvider authenticationProvider,
@@ -67,16 +67,16 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
     }
 
     @Override
-    public org.apache.guacamole.net.auth.UserContext getUserContext(
+    public ModeledUserContext getUserContext(AuthenticationProvider authenticationProvider,
             AuthenticatedUser authenticatedUser) throws GuacamoleException {
 
         // Retrieve user account for already-authenticated user
-        ModeledUser user = userService.retrieveUser(authenticatedUser);
+        ModeledUser user = userService.retrieveUser(authenticationProvider, authenticatedUser);
         if (user == null)
             return null;
 
         // Link to user context
-        UserContext context = userContextProvider.get();
+        ModeledUserContext context = userContextProvider.get();
         context.init(user.getCurrentUser());
         return context;
 

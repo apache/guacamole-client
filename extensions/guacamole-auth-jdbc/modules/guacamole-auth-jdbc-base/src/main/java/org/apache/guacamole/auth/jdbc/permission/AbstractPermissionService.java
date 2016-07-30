@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
@@ -61,7 +61,7 @@ public abstract class AbstractPermissionService<PermissionSetType extends Permis
      *     If an error occurs while checking permission status, or if
      *     permission is denied to read the current user's permissions.
      */
-    protected boolean canReadPermissions(AuthenticatedUser user,
+    protected boolean canReadPermissions(ModeledAuthenticatedUser user,
             ModeledUser targetUser) throws GuacamoleException {
 
         // A user can always read their own permissions

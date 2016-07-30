@@ -20,7 +20,7 @@
 package org.apache.guacamole.auth.jdbc;
 
 import com.google.inject.Scopes;
-import org.apache.guacamole.auth.jdbc.user.UserContext;
+import org.apache.guacamole.auth.jdbc.user.ModeledUserContext;
 import org.apache.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupDirectory;
@@ -140,12 +140,12 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(ModeledGuacamoleConfiguration.class);
         bind(ModeledSharingProfile.class);
         bind(ModeledUser.class);
+        bind(ModeledUserContext.class);
         bind(RootConnectionGroup.class);
         bind(SharingProfileDirectory.class);
         bind(SharingProfilePermissionSet.class);
         bind(SystemPermissionSet.class);
         bind(TrackedActiveConnection.class);
-        bind(UserContext.class);
         bind(UserDirectory.class);
         bind(UserPermissionSet.class);
         

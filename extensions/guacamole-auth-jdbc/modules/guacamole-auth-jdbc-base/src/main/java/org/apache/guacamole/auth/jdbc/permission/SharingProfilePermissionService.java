@@ -21,7 +21,7 @@ package org.apache.guacamole.auth.jdbc.permission;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 
@@ -52,7 +52,7 @@ public class SharingProfilePermissionService extends ModeledObjectPermissionServ
     }
 
     @Override
-    public ObjectPermissionSet getPermissionSet(AuthenticatedUser user,
+    public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
             ModeledUser targetUser) throws GuacamoleException {
 
         // Create permission set for requested user

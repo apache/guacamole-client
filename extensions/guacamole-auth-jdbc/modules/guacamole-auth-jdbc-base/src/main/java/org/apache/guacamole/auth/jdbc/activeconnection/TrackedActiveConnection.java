@@ -26,7 +26,7 @@ import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.sharing.ConnectionSharingService;
 import org.apache.guacamole.auth.jdbc.tunnel.ActiveConnectionRecord;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.net.auth.credentials.UserCredentials;
@@ -105,7 +105,7 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
      *     as well. This includes the remote host, associated tunnel, and
      *     username.
      */
-    public void init(AuthenticatedUser currentUser,
+    public void init(ModeledAuthenticatedUser currentUser,
             ActiveConnectionRecord activeConnectionRecord,
             boolean includeSensitiveInformation) {
 

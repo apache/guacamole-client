@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
@@ -69,7 +69,7 @@ public interface PermissionService<PermissionSetType extends PermissionSet<Permi
      *     user, or if permission to retrieve the permissions of the given
      *     user is denied.
      */
-    PermissionSetType getPermissionSet(AuthenticatedUser user,
+    PermissionSetType getPermissionSet(ModeledAuthenticatedUser user,
             ModeledUser targetUser) throws GuacamoleException;
 
     /**
@@ -87,7 +87,7 @@ public interface PermissionService<PermissionSetType extends PermissionSet<Permi
      * @throws GuacamoleException
      *     If an error occurs while retrieving the requested permissions.
      */
-    Set<PermissionType> retrievePermissions(AuthenticatedUser user,
+    Set<PermissionType> retrievePermissions(ModeledAuthenticatedUser user,
             ModeledUser targetUser) throws GuacamoleException;
 
     /**
@@ -107,7 +107,7 @@ public interface PermissionService<PermissionSetType extends PermissionSet<Permi
      *     If the user lacks permission to create the permissions, or an error
      *     occurs while creating the permissions.
      */
-    void createPermissions(AuthenticatedUser user, ModeledUser targetUser,
+    void createPermissions(ModeledAuthenticatedUser user, ModeledUser targetUser,
             Collection<PermissionType> permissions) throws GuacamoleException;
 
     /**
@@ -127,7 +127,7 @@ public interface PermissionService<PermissionSetType extends PermissionSet<Permi
      *     If the user lacks permission to delete the permissions, or an error
      *     occurs while deleting the permissions.
      */
-    void deletePermissions(AuthenticatedUser user, ModeledUser targetUser,
+    void deletePermissions(ModeledAuthenticatedUser user, ModeledUser targetUser,
             Collection<PermissionType> permissions) throws GuacamoleException;
 
 }

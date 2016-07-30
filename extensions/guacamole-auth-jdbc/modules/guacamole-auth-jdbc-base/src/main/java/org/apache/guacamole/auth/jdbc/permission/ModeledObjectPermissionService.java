@@ -22,7 +22,7 @@ package org.apache.guacamole.auth.jdbc.permission;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
@@ -89,7 +89,7 @@ public abstract class ModeledObjectPermissionService
      *     If an error occurs while checking permission status, or if
      *     permission is denied to read the current user's permissions.
      */
-    protected boolean canAlterPermissions(AuthenticatedUser user, ModeledUser targetUser,
+    protected boolean canAlterPermissions(ModeledAuthenticatedUser user, ModeledUser targetUser,
             Collection<ObjectPermission> permissions)
             throws GuacamoleException {
 
@@ -123,7 +123,7 @@ public abstract class ModeledObjectPermissionService
     }
     
     @Override
-    public void createPermissions(AuthenticatedUser user, ModeledUser targetUser,
+    public void createPermissions(ModeledAuthenticatedUser user, ModeledUser targetUser,
             Collection<ObjectPermission> permissions)
             throws GuacamoleException {
 
@@ -140,7 +140,7 @@ public abstract class ModeledObjectPermissionService
     }
 
     @Override
-    public void deletePermissions(AuthenticatedUser user, ModeledUser targetUser,
+    public void deletePermissions(ModeledAuthenticatedUser user, ModeledUser targetUser,
             Collection<ObjectPermission> permissions)
             throws GuacamoleException {
 
@@ -157,7 +157,7 @@ public abstract class ModeledObjectPermissionService
     }
 
     @Override
-    public ObjectPermission retrievePermission(AuthenticatedUser user,
+    public ObjectPermission retrievePermission(ModeledAuthenticatedUser user,
             ModeledUser targetUser, ObjectPermission.Type type,
             String identifier) throws GuacamoleException {
 
@@ -179,7 +179,7 @@ public abstract class ModeledObjectPermissionService
     }
 
     @Override
-    public Collection<String> retrieveAccessibleIdentifiers(AuthenticatedUser user,
+    public Collection<String> retrieveAccessibleIdentifiers(ModeledAuthenticatedUser user,
             ModeledUser targetUser, Collection<ObjectPermission.Type> permissions,
             Collection<String> identifiers) throws GuacamoleException {
 

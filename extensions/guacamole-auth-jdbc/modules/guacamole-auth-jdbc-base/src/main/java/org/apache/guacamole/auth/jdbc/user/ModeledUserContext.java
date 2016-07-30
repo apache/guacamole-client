@@ -50,7 +50,7 @@ import org.apache.guacamole.net.auth.User;
  * @author James Muehlner
  * @author Michael Jumper
  */
-public class UserContext extends RestrictedObject
+public class ModeledUserContext extends RestrictedObject
     implements org.apache.guacamole.net.auth.UserContext {
 
     /**
@@ -101,7 +101,7 @@ public class UserContext extends RestrictedObject
     private Provider<ConnectionRecordSet> connectionRecordSetProvider;
     
     @Override
-    public void init(AuthenticatedUser currentUser) {
+    public void init(ModeledAuthenticatedUser currentUser) {
 
         super.init(currentUser);
         
@@ -121,7 +121,7 @@ public class UserContext extends RestrictedObject
 
     @Override
     public AuthenticationProvider getAuthenticationProvider() {
-        return getCurrentUser().getAuthenticationProvider();
+        return getCurrentUser().getModelAuthenticationProvider();
     }
 
     @Override

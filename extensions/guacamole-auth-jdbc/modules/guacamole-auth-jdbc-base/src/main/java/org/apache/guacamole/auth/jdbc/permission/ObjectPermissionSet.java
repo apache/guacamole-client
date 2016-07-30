@@ -23,7 +23,7 @@ import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
@@ -63,7 +63,7 @@ public abstract class ObjectPermissionSet extends RestrictedObject
      * @param user
      *     The user to whom the permissions in this set are granted.
      */
-    public void init(AuthenticatedUser currentUser, ModeledUser user) {
+    public void init(ModeledAuthenticatedUser currentUser, ModeledUser user) {
         super.init(currentUser);
         this.user = user;
     }

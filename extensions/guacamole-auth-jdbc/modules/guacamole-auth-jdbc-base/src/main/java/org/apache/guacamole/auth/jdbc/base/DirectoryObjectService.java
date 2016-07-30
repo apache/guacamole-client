@@ -21,7 +21,7 @@ package org.apache.guacamole.auth.jdbc.base;
 
 import java.util.Collection;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 
 /**
@@ -58,7 +58,7 @@ public interface DirectoryObjectService<InternalType, ExternalType> {
      * @throws GuacamoleException
      *     If an error occurs while retrieving the requested object.
      */
-    InternalType retrieveObject(AuthenticatedUser user, String identifier)
+    InternalType retrieveObject(ModeledAuthenticatedUser user, String identifier)
             throws GuacamoleException;
     
     /**
@@ -77,7 +77,7 @@ public interface DirectoryObjectService<InternalType, ExternalType> {
      * @throws GuacamoleException
      *     If an error occurs while retrieving the requested objects.
      */
-    Collection<InternalType> retrieveObjects(AuthenticatedUser user,
+    Collection<InternalType> retrieveObjects(ModeledAuthenticatedUser user,
             Collection<String> identifiers) throws GuacamoleException;
 
     /**
@@ -97,7 +97,7 @@ public interface DirectoryObjectService<InternalType, ExternalType> {
      *     If the user lacks permission to create the object, or an error
      *     occurs while creating the object.
      */
-    InternalType createObject(AuthenticatedUser user, ExternalType object)
+    InternalType createObject(ModeledAuthenticatedUser user, ExternalType object)
             throws GuacamoleException;
 
     /**
@@ -114,7 +114,7 @@ public interface DirectoryObjectService<InternalType, ExternalType> {
      *     If the user lacks permission to delete the object, or an error
      *     occurs while deleting the object.
      */
-    void deleteObject(AuthenticatedUser user, String identifier)
+    void deleteObject(ModeledAuthenticatedUser user, String identifier)
         throws GuacamoleException;
 
     /**
@@ -131,7 +131,7 @@ public interface DirectoryObjectService<InternalType, ExternalType> {
      *     If the user lacks permission to update the object, or an error
      *     occurs while updating the object.
      */
-    void updateObject(AuthenticatedUser user, InternalType object)
+    void updateObject(ModeledAuthenticatedUser user, InternalType object)
             throws GuacamoleException;
 
     /**
@@ -147,6 +147,6 @@ public interface DirectoryObjectService<InternalType, ExternalType> {
      * @throws GuacamoleException
      *     If an error occurs while reading identifiers.
      */
-    Set<String> getIdentifiers(AuthenticatedUser user) throws GuacamoleException;
+    Set<String> getIdentifiers(ModeledAuthenticatedUser user) throws GuacamoleException;
 
 }

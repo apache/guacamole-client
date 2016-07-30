@@ -67,6 +67,7 @@ public class SharedAuthenticationProviderService implements AuthenticationProvid
 
     @Override
     public org.apache.guacamole.net.auth.UserContext getUserContext(
+            AuthenticationProvider authenticationProvider,
             AuthenticatedUser authenticatedUser) throws GuacamoleException {
 
         // Produce sharing-specific user context if this is the user of a shared connection

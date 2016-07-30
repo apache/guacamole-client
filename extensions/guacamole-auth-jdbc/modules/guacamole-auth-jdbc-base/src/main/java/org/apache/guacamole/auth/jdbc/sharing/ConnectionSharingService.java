@@ -22,7 +22,7 @@ package org.apache.guacamole.auth.jdbc.sharing;
 import com.google.inject.Inject;
 import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
@@ -97,7 +97,7 @@ public class ConnectionSharingService {
      * @throws GuacamoleException
      *     If permission to share the given connection is denied.
      */
-    public UserCredentials generateTemporaryCredentials(AuthenticatedUser user,
+    public UserCredentials generateTemporaryCredentials(ModeledAuthenticatedUser user,
             ActiveConnectionRecord activeConnection,
             String sharingProfileIdentifier) throws GuacamoleException {
 

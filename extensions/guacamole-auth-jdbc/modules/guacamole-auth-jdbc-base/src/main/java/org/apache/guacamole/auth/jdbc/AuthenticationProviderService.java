@@ -63,6 +63,10 @@ public interface AuthenticationProviderService  {
      * user. A new placeholder account will be created for any user that does
      * not already exist within the database.
      *
+     * @param authenticationProvider
+     *     The AuthenticationProvider on behalf of which the UserContext is
+     *     being produced.
+     *
      * @param authenticatedUser
      *     The credentials to use to produce the UserContext.
      *
@@ -74,7 +78,7 @@ public interface AuthenticationProviderService  {
      *     If an error occurs during authentication, or if the given
      *     credentials are invalid or expired.
      */
-    public UserContext getUserContext(AuthenticatedUser authenticatedUser)
-            throws GuacamoleException;
+    public UserContext getUserContext(AuthenticationProvider authenticationProvider,
+            AuthenticatedUser authenticatedUser) throws GuacamoleException;
 
 }

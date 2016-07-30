@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
@@ -84,7 +84,7 @@ public class SharingProfileService
     }
 
     @Override
-    protected ModeledSharingProfile getObjectInstance(AuthenticatedUser currentUser,
+    protected ModeledSharingProfile getObjectInstance(ModeledAuthenticatedUser currentUser,
             SharingProfileModel model) {
         ModeledSharingProfile sharingProfile = sharingProfileProvider.get();
         sharingProfile.init(currentUser, model);
@@ -92,7 +92,7 @@ public class SharingProfileService
     }
 
     @Override
-    protected SharingProfileModel getModelInstance(AuthenticatedUser currentUser,
+    protected SharingProfileModel getModelInstance(ModeledAuthenticatedUser currentUser,
             final SharingProfile object) {
 
         // Create new ModeledSharingProfile backed by blank model
@@ -111,7 +111,7 @@ public class SharingProfileService
     }
 
     @Override
-    protected boolean hasCreatePermission(AuthenticatedUser user)
+    protected boolean hasCreatePermission(ModeledAuthenticatedUser user)
             throws GuacamoleException {
 
         // Return whether user has explicit sharing profile creation permission
@@ -121,7 +121,7 @@ public class SharingProfileService
     }
 
     @Override
-    protected ObjectPermissionSet getPermissionSet(AuthenticatedUser user)
+    protected ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user)
             throws GuacamoleException {
 
         // Return permissions related to sharing profiles
@@ -130,7 +130,7 @@ public class SharingProfileService
     }
 
     @Override
-    protected void beforeCreate(AuthenticatedUser user,
+    protected void beforeCreate(ModeledAuthenticatedUser user,
             SharingProfileModel model) throws GuacamoleException {
 
         super.beforeCreate(user, model);
@@ -147,7 +147,7 @@ public class SharingProfileService
     }
 
     @Override
-    protected void beforeUpdate(AuthenticatedUser user,
+    protected void beforeUpdate(ModeledAuthenticatedUser user,
             SharingProfileModel model) throws GuacamoleException {
 
         super.beforeUpdate(user, model);
@@ -213,7 +213,7 @@ public class SharingProfileService
     }
 
     @Override
-    public ModeledSharingProfile createObject(AuthenticatedUser user, SharingProfile object)
+    public ModeledSharingProfile createObject(ModeledAuthenticatedUser user, SharingProfile object)
             throws GuacamoleException {
 
         // Create sharing profile
@@ -230,7 +230,7 @@ public class SharingProfileService
     }
     
     @Override
-    public void updateObject(AuthenticatedUser user, ModeledSharingProfile object)
+    public void updateObject(ModeledAuthenticatedUser user, ModeledSharingProfile object)
             throws GuacamoleException {
 
         // Update sharing profile
@@ -266,7 +266,7 @@ public class SharingProfileService
      * @throws GuacamoleException
      *     If an error occurs while reading identifiers.
      */
-    public Set<String> getIdentifiersWithin(AuthenticatedUser user,
+    public Set<String> getIdentifiersWithin(ModeledAuthenticatedUser user,
             String identifier)
             throws GuacamoleException {
 
@@ -298,7 +298,7 @@ public class SharingProfileService
      *     A new map of all parameter name/value pairs that the given user has
      *     access to.
      */
-    public Map<String, String> retrieveParameters(AuthenticatedUser user,
+    public Map<String, String> retrieveParameters(ModeledAuthenticatedUser user,
             String identifier) {
 
         Map<String, String> parameterMap = new HashMap<String, String>();

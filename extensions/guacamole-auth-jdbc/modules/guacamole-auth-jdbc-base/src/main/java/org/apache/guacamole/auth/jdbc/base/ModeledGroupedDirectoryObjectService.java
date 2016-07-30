@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.auth.Identifiable;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -76,7 +76,7 @@ public abstract class ModeledGroupedDirectoryObjectService<InternalType extends 
      *     If an error occurs while determining which parent connection groups
      *     are affected.
      */
-    protected Collection<String> getModifiedGroups(AuthenticatedUser user,
+    protected Collection<String> getModifiedGroups(ModeledAuthenticatedUser user,
             String identifier, ModelType model) throws GuacamoleException {
 
         // Get old parent identifier
@@ -130,7 +130,7 @@ public abstract class ModeledGroupedDirectoryObjectService<InternalType extends 
      *     If an error occurs while determining which parent connection groups
      *     are affected.
      */
-    protected boolean canUpdateModifiedGroups(AuthenticatedUser user,
+    protected boolean canUpdateModifiedGroups(ModeledAuthenticatedUser user,
             String identifier, ModelType model) throws GuacamoleException {
 
         // If user is an administrator, no need to check
@@ -156,7 +156,7 @@ public abstract class ModeledGroupedDirectoryObjectService<InternalType extends 
     }
 
     @Override
-    protected void beforeCreate(AuthenticatedUser user,
+    protected void beforeCreate(ModeledAuthenticatedUser user,
             ModelType model) throws GuacamoleException {
 
         super.beforeCreate(user, model);
@@ -168,7 +168,7 @@ public abstract class ModeledGroupedDirectoryObjectService<InternalType extends 
     }
 
     @Override
-    protected void beforeUpdate(AuthenticatedUser user,
+    protected void beforeUpdate(ModeledAuthenticatedUser user,
             ModelType model) throws GuacamoleException {
 
         super.beforeUpdate(user, model);
@@ -180,7 +180,7 @@ public abstract class ModeledGroupedDirectoryObjectService<InternalType extends 
     }
 
     @Override
-    protected void beforeDelete(AuthenticatedUser user,
+    protected void beforeDelete(ModeledAuthenticatedUser user,
             String identifier) throws GuacamoleException {
 
         super.beforeDelete(user, identifier);

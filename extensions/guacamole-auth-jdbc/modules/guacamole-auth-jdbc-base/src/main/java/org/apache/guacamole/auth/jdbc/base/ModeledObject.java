@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.base;
 
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 
 /**
  * Common base class for objects have an underlying model. For the purposes of
@@ -48,7 +48,7 @@ public abstract class ModeledObject<ModelType> extends RestrictedObject {
      * @param model 
      *     The backing model object.
      */
-    public void init(AuthenticatedUser currentUser, ModelType model) {
+    public void init(ModeledAuthenticatedUser currentUser, ModelType model) {
         super.init(currentUser);
         setModel(model);
     }

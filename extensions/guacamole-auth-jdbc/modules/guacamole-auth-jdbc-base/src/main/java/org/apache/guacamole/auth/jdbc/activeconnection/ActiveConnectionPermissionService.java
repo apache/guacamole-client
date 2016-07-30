@@ -32,7 +32,7 @@ import org.apache.guacamole.auth.jdbc.permission.AbstractPermissionService;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionService;
 import org.apache.guacamole.auth.jdbc.tunnel.ActiveConnectionRecord;
 import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -60,7 +60,7 @@ public class ActiveConnectionPermissionService
     private Provider<ActiveConnectionPermissionSet> activeConnectionPermissionSetProvider;
 
     @Override
-    public ObjectPermission retrievePermission(AuthenticatedUser user,
+    public ObjectPermission retrievePermission(ModeledAuthenticatedUser user,
             ModeledUser targetUser, ObjectPermission.Type type,
             String identifier) throws GuacamoleException {
 
@@ -78,7 +78,7 @@ public class ActiveConnectionPermissionService
     }
 
     @Override
-    public Set<ObjectPermission> retrievePermissions(AuthenticatedUser user,
+    public Set<ObjectPermission> retrievePermissions(ModeledAuthenticatedUser user,
             ModeledUser targetUser) throws GuacamoleException {
 
         // Retrieve permissions only if allowed
@@ -113,7 +113,7 @@ public class ActiveConnectionPermissionService
     }
 
     @Override
-    public Collection<String> retrieveAccessibleIdentifiers(AuthenticatedUser user,
+    public Collection<String> retrieveAccessibleIdentifiers(ModeledAuthenticatedUser user,
             ModeledUser targetUser, Collection<ObjectPermission.Type> permissionTypes,
             Collection<String> identifiers) throws GuacamoleException {
 
@@ -139,7 +139,7 @@ public class ActiveConnectionPermissionService
     }
 
     @Override
-    public ObjectPermissionSet getPermissionSet(AuthenticatedUser user,
+    public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
             ModeledUser targetUser) throws GuacamoleException {
     
         // Create permission set for requested user
@@ -151,7 +151,7 @@ public class ActiveConnectionPermissionService
     }
 
     @Override
-    public void createPermissions(AuthenticatedUser user,
+    public void createPermissions(ModeledAuthenticatedUser user,
             ModeledUser targetUser, Collection<ObjectPermission> permissions)
             throws GuacamoleException {
 
@@ -161,7 +161,7 @@ public class ActiveConnectionPermissionService
     }
 
     @Override
-    public void deletePermissions(AuthenticatedUser user,
+    public void deletePermissions(ModeledAuthenticatedUser user,
             ModeledUser targetUser, Collection<ObjectPermission> permissions)
             throws GuacamoleException {
 

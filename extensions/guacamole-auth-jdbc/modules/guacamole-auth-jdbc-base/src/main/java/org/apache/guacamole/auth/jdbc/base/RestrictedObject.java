@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.base;
 
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 
 /**
  * Common base class for objects that are associated with the users that
@@ -33,7 +33,7 @@ public abstract class RestrictedObject {
      * The user this object belongs to. Access is based on his/her permission
      * settings.
      */
-    private AuthenticatedUser currentUser;
+    private ModeledAuthenticatedUser currentUser;
 
     /**
      * Initializes this object, associating it with the current authenticated
@@ -42,7 +42,7 @@ public abstract class RestrictedObject {
      * @param currentUser
      *     The user that created or retrieved this object.
      */
-    public void init(AuthenticatedUser currentUser) {
+    public void init(ModeledAuthenticatedUser currentUser) {
         setCurrentUser(currentUser);
     }
 
@@ -54,7 +54,7 @@ public abstract class RestrictedObject {
      * @return
      *     The user that created or queried this object.
      */
-    public AuthenticatedUser getCurrentUser() {
+    public ModeledAuthenticatedUser getCurrentUser() {
         return currentUser;
     }
 
@@ -66,7 +66,7 @@ public abstract class RestrictedObject {
      * @param currentUser 
      *     The user that created or queried this object.
      */
-    public void setCurrentUser(AuthenticatedUser currentUser) {
+    public void setCurrentUser(ModeledAuthenticatedUser currentUser) {
         this.currentUser = currentUser;
     }
 

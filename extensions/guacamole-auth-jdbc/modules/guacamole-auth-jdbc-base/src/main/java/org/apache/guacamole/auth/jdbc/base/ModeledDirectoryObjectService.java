@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import javax.xml.stream.events.Characters;
-import org.apache.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
@@ -100,7 +100,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      * @return
      *     An object which is backed by the given model object.
      */
-    protected abstract InternalType getObjectInstance(AuthenticatedUser currentUser,
+    protected abstract InternalType getObjectInstance(ModeledAuthenticatedUser currentUser,
             ModelType model);
 
     /**
@@ -116,7 +116,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      * @return
      *     A model object which is based on the given object.
      */
-    protected abstract ModelType getModelInstance(AuthenticatedUser currentUser,
+    protected abstract ModelType getModelInstance(ModeledAuthenticatedUser currentUser,
             ExternalType object);
 
     /**
@@ -133,7 +133,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      * @throws GuacamoleException
      *     If permission to read the user's permissions is denied.
      */
-    protected abstract boolean hasCreatePermission(AuthenticatedUser user)
+    protected abstract boolean hasCreatePermission(ModeledAuthenticatedUser user)
             throws GuacamoleException;
 
     /**
@@ -156,7 +156,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      * @throws GuacamoleException
      *     If permission to read the user's permissions is denied.
      */
-    protected boolean hasObjectPermission(AuthenticatedUser user,
+    protected boolean hasObjectPermission(ModeledAuthenticatedUser user,
             String identifier, ObjectPermission.Type type)
             throws GuacamoleException {
 
@@ -184,7 +184,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      * @throws GuacamoleException
      *     If permission to read the user's permissions is denied.
      */
-    protected abstract ObjectPermissionSet getPermissionSet(AuthenticatedUser user)
+    protected abstract ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user)
             throws GuacamoleException;
 
     /**
@@ -202,7 +202,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      *     A collection of objects which are backed by the models in the given
      *     collection.
      */
-    protected Collection<InternalType> getObjectInstances(AuthenticatedUser currentUser,
+    protected Collection<InternalType> getObjectInstances(ModeledAuthenticatedUser currentUser,
             Collection<ModelType> models) {
 
         // Create new collection of objects by manually converting each model
@@ -230,7 +230,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      *     If the object is invalid, or an error prevents validating the given
      *     object.
      */
-    protected void beforeCreate(AuthenticatedUser user,
+    protected void beforeCreate(ModeledAuthenticatedUser user,
             ModelType model ) throws GuacamoleException {
 
         // Verify permission to create objects
@@ -255,7 +255,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      *     If the object is invalid, or an error prevents validating the given
      *     object.
      */
-    protected void beforeUpdate(AuthenticatedUser user,
+    protected void beforeUpdate(ModeledAuthenticatedUser user,
             ModelType model) throws GuacamoleException {
 
         // By default, do nothing.
@@ -280,7 +280,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      *     If the object is invalid, or an error prevents validating the given
      *     object.
      */
-    protected void beforeDelete(AuthenticatedUser user,
+    protected void beforeDelete(ModeledAuthenticatedUser user,
             String identifier) throws GuacamoleException {
 
         // Verify permission to delete objects
@@ -290,7 +290,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
     }
 
     @Override
-    public InternalType retrieveObject(AuthenticatedUser user,
+    public InternalType retrieveObject(ModeledAuthenticatedUser user,
             String identifier) throws GuacamoleException {
 
         // Pull objects having given identifier
@@ -310,7 +310,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
     }
 
     @Override
-    public Collection<InternalType> retrieveObjects(AuthenticatedUser user,
+    public Collection<InternalType> retrieveObjects(ModeledAuthenticatedUser user,
             Collection<String> identifiers) throws GuacamoleException {
 
         // Ignore invalid identifiers
@@ -350,7 +350,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      *     The collection of implicit permissions that should be granted due to
      *     the creation of the given object.
      */
-    protected Collection<ObjectPermissionModel> getImplicitPermissions(AuthenticatedUser user,
+    protected Collection<ObjectPermissionModel> getImplicitPermissions(ModeledAuthenticatedUser user,
             ModelType model) {
         
         // Build list of implicit permissions
@@ -377,7 +377,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
     }
 
     @Override
-    public InternalType createObject(AuthenticatedUser user, ExternalType object)
+    public InternalType createObject(ModeledAuthenticatedUser user, ExternalType object)
         throws GuacamoleException {
 
         ModelType model = getModelInstance(user, object);
@@ -397,7 +397,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
     }
 
     @Override
-    public void deleteObject(AuthenticatedUser user, String identifier)
+    public void deleteObject(ModeledAuthenticatedUser user, String identifier)
         throws GuacamoleException {
 
         beforeDelete(user, identifier);
@@ -408,7 +408,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
     }
 
     @Override
-    public void updateObject(AuthenticatedUser user, InternalType object)
+    public void updateObject(ModeledAuthenticatedUser user, InternalType object)
         throws GuacamoleException {
 
         ModelType model = object.getModel();
@@ -420,7 +420,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
     }
 
     @Override
-    public Set<String> getIdentifiers(AuthenticatedUser user)
+    public Set<String> getIdentifiers(ModeledAuthenticatedUser user)
         throws GuacamoleException {
 
         // Bypass permission checks if the user is a system admin
