@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
-import javax.xml.stream.events.Characters;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
@@ -289,6 +288,62 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
     }
 
+    /**
+     * Returns whether the given string is a valid identifier within the JDBC
+     * authentication extension. Invalid identifiers may result in SQL errors
+     * from the underlying database when used in queries.
+     *
+     * @param identifier
+     *     The string to check for validity.
+     *
+     * @return
+     *     true if the given string is a valid identifier, false otherwise.
+     */
+    protected boolean isValidIdentifier(String identifier) {
+
+        // Empty identifiers are invalid
+        if (identifier.isEmpty())
+            return false;
+
+        // Identifier is invalid if any non-numeric characters are present
+        for (int i = 0; i < identifier.length(); i++) {
+            if (!Character.isDigit(identifier.charAt(i)))
+                return false;
+        }
+
+        // Identifier is valid - contains only numeric characters
+        return true;
+
+    }
+
+    /**
+     * Filters the given collection of strings, returning a new collection
+     * containing only those strings which are valid identifiers. If no strings
+     * within the collection are valid identifiers, the returned collection will
+     * simply be empty.
+     *
+     * @param identifiers
+     *     The collection of strings to filter.
+     *
+     * @return
+     *     A new collection containing only the strings within the provided
+     *     collection which are valid identifiers.
+     */
+    protected Collection<String> filterIdentifiers(Collection<String> identifiers) {
+
+        // Obtain enough space for a full copy of the given identifiers
+        Collection<String> validIdentifiers = new ArrayList<String>(identifiers.size());
+
+        // Add only valid identifiers to the copy
+        for (String identifier : identifiers) {
+            if (isValidIdentifier(identifier))
+                validIdentifiers.add(identifier);
+        }
+
+        return validIdentifiers;
+
+    }
+
     @Override
     public InternalType retrieveObject(ModeledAuthenticatedUser user,
             String identifier) throws GuacamoleException {
@@ -314,7 +369,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
             Collection<String> identifiers) throws GuacamoleException {
 
         // Ignore invalid identifiers
-        identifiers = ObjectModel.filterIdentifiers(identifiers);
+        identifiers = filterIdentifiers(identifiers);
 
         // Do not query if no identifiers given
         if (identifiers.isEmpty())
