@@ -258,6 +258,14 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
     }
 
+    @Override
+    protected boolean isValidIdentifier(String identifier) {
+
+        // All strings are valid user identifiers
+        return true;
+
+    }
+
     /**
      * Retrieves the user corresponding to the given credentials from the
      * database. If the user account is expired, and the credentials contain
