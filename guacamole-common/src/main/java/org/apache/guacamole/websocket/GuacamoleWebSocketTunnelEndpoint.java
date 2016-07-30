@@ -198,6 +198,7 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
                 }
                 catch (IOException e) {
                     logger.debug("I/O error prevents further reads.", e);
+                    closeConnection(session, GuacamoleStatus.SERVER_ERROR);
                 }
 
             }
