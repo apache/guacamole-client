@@ -95,7 +95,8 @@ public abstract class InjectedAuthenticationProvider implements AuthenticationPr
 
     @Override
     public UserContext updateUserContext(UserContext context,
-            AuthenticatedUser authenticatedUser) throws GuacamoleException {
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
 
         // No need to update the context
         return context;

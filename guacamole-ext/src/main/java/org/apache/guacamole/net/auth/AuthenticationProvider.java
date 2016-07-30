@@ -130,6 +130,11 @@ public interface AuthenticationProvider {
      *     this AuthenticationProvider or any other installed
      *     AuthenticationProvider.
      *
+     * @param credentials
+     *     The credentials which were most recently submitted. These are not
+     *     guaranteed to be the same as the credentials associated with the
+     *     AuthenticatedUser when they originally authenticated.
+     *
      * @return
      *     An updated UserContext describing the permissions, connection,
      *     connection groups, etc. accessible or associated with the given
@@ -140,6 +145,7 @@ public interface AuthenticationProvider {
      *     If an error occurs while updating the UserContext.
      */
     UserContext updateUserContext(UserContext context,
-            AuthenticatedUser authenticatedUser) throws GuacamoleException;
+            AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException;
     
 }

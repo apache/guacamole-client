@@ -251,7 +251,8 @@ public abstract class SimpleAuthenticationProvider
 
     @Override
     public UserContext updateUserContext(UserContext context,
-        AuthenticatedUser authorizedUser) throws GuacamoleException {
+        AuthenticatedUser authorizedUser, Credentials credentials)
+            throws GuacamoleException {
 
         // Simply return the given context, updating nothing
         return context;

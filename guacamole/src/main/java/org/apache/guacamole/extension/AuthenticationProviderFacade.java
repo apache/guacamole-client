@@ -183,7 +183,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
 
     @Override
     public UserContext updateUserContext(UserContext context,
-            AuthenticatedUser authenticatedUser)
+            AuthenticatedUser authenticatedUser, Credentials credentials)
             throws GuacamoleException {
 
         // Ignore auth attempts if no auth provider could be loaded
@@ -193,7 +193,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
         }
 
         // Delegate to underlying auth provider
-        return authProvider.updateUserContext(context, authenticatedUser);
+        return authProvider.updateUserContext(context, authenticatedUser, credentials);
         
     }
 
