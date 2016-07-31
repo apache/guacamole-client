@@ -127,7 +127,7 @@ public class SharedRootConnectionGroup implements ConnectionGroup {
 
     @Override
     public Type getType() {
-        return Type.BALANCING;
+        return Type.ORGANIZATIONAL;
     }
 
     @Override
