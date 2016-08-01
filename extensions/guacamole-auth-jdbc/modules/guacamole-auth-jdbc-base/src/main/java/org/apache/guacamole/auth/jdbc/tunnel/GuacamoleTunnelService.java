@@ -24,8 +24,8 @@ import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionDefinition;
-import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionUser;
+import org.apache.guacamole.auth.jdbc.sharing.connection.SharedConnectionDefinition;
+import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
@@ -173,7 +173,7 @@ public interface GuacamoleTunnelService {
      *     If the connection cannot be established due to concurrent usage
      *     rules.
      */
-    GuacamoleTunnel getGuacamoleTunnel(SharedConnectionUser user,
+    GuacamoleTunnel getGuacamoleTunnel(RemoteAuthenticatedUser user,
             SharedConnectionDefinition definition,
             GuacamoleClientInformation info)
             throws GuacamoleException;

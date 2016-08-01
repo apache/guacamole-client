@@ -81,4 +81,36 @@ public interface AuthenticationProviderService  {
     public UserContext getUserContext(AuthenticationProvider authenticationProvider,
             AuthenticatedUser authenticatedUser) throws GuacamoleException;
 
+    /**
+     * Returns an updated UserContext instance for the given
+     * already-authenticated user. If no changes need be made to the
+     * UserContext, the original UserContext will be returned.
+     *
+     * @param authenticationProvider
+     *     The AuthenticationProvider on behalf of which the UserContext is
+     *     being updated.
+     *
+     * @param context
+     *     The UserContext to update.
+     *
+     * @param authenticatedUser
+     *     The AuthenticatedUser associated with the UserContext being updated.
+     *
+     * @param credentials
+     *     The credentials most recently submitted by the user. These
+     *     credentials are not guaranteed to be the same as the credentials
+     *     already associated with the AuthenticatedUser.
+     *
+     * @return
+     *     A new UserContext instance for the user identified by the given
+     *     credentials.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs during authentication, or if the given
+     *     credentials are invalid or expired.
+     */
+    public UserContext updateUserContext(AuthenticationProvider authenticationProvider,
+            UserContext context, AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException;
+
 }

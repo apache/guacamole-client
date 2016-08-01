@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.auth.jdbc.sharing.connection.SharedConnectionDefinition;
+import org.apache.guacamole.auth.jdbc.sharing.user.SharedAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileService;
 import org.apache.guacamole.auth.jdbc.tunnel.ActiveConnectionRecord;
@@ -128,11 +130,34 @@ public class ConnectionSharingService {
     }
 
     /**
-     * Returns a SharedConnectionUser (an implementation of AuthenticatedUser)
-     * if the given credentials contain a valid share key. The returned user
-     * will be associated with the single shared connection to which they have
-     * been granted temporary access. If the share key is invalid, or no share
-     * key is contained within the given credentials, null is returned.
+     * Returns the share key contained within the given credentials. If there is
+     * no such share key, null is returned.
+     *
+     * @param credentials
+     *     The credentials from which the share key should be retrieved.
+     *
+     * @return
+     *     The share key contained within the given credentials, or null if
+     *     the credentials do not contain a share key.
+     */
+    public String getShareKey(Credentials credentials) {
+
+        // Pull associated HTTP request
+        HttpServletRequest request = credentials.getRequest();
+        if (request == null)
+            return null;
+
+        // Retrieve the share key from the request
+        return request.getParameter(SHARE_KEY_NAME);
+
+    }
+
+    /**
+     * Returns a SharedAuthenticatedUser if the given credentials contain a
+     * valid share key. The returned user will be associated with the single
+     * shared connection to which they have been granted temporary access. If
+     * the share key is invalid, or no share key is contained within the given
+     * credentials, null is returned.
      *
      * @param authProvider
      *     The AuthenticationProvider on behalf of which the user is being
@@ -142,31 +167,20 @@ public class ConnectionSharingService {
      *     The credentials which are expected to contain the share key.
      *
      * @return
-     *     A SharedConnectionUser with access to a single shared connection, if
-     *     the share key within the given credentials is valid, or null if the
-     *     share key is invalid or absent.
+     *     A SharedAuthenticatedUser with access to a single shared connection,
+     *     if the share key within the given credentials is valid, or null if
+     *     the share key is invalid or absent.
      */
-    public SharedConnectionUser retrieveSharedConnectionUser(
+    public SharedAuthenticatedUser retrieveSharedConnectionUser(
             AuthenticationProvider authProvider, Credentials credentials) {
 
-        // Pull associated HTTP request
-        HttpServletRequest request = credentials.getRequest();
-        if (request == null)
+        // Validate the share key
+        String shareKey = getShareKey(credentials);
+        if (shareKey == null || connectionMap.get(shareKey) == null)
             return null;
 
-        // Retrieve the share key from the request
-        String shareKey = request.getParameter(ConnectionSharingService.SHARE_KEY_NAME);
-        if (shareKey == null)
-            return null;
-
-        // Pull the connection definition describing the connection these
-        // credentials provide access to (if any)
-        SharedConnectionDefinition definition = connectionMap.get(shareKey);
-        if (definition == null)
-            return null;
-
-        // Return temporary in-memory user with access only to the shared connection
-        return new SharedConnectionUser(authProvider, definition, credentials);
+        // Return temporary in-memory user
+        return new SharedAuthenticatedUser(authProvider, credentials, shareKey);
 
     }
     

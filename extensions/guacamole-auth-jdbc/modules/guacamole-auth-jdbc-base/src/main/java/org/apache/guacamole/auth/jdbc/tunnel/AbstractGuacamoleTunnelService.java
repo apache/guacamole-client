@@ -55,8 +55,7 @@ import org.apache.guacamole.token.StandardTokens;
 import org.apache.guacamole.token.TokenFilter;
 import org.mybatis.guice.transactional.Transactional;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionParameterMapper;
-import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionDefinition;
-import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionUser;
+import org.apache.guacamole.auth.jdbc.sharing.connection.SharedConnectionDefinition;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterMapper;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterModel;
@@ -695,7 +694,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
 
     @Override
     @Transactional
-    public GuacamoleTunnel getGuacamoleTunnel(SharedConnectionUser user,
+    public GuacamoleTunnel getGuacamoleTunnel(RemoteAuthenticatedUser user,
             SharedConnectionDefinition definition,
             GuacamoleClientInformation info)
             throws GuacamoleException {

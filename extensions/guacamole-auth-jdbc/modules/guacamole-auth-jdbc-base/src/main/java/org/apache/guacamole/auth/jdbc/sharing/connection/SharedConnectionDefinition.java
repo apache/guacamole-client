@@ -17,9 +17,10 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.jdbc.sharing;
+package org.apache.guacamole.auth.jdbc.sharing.connection;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.sharing.SharedObjectManager;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.tunnel.ActiveConnectionRecord;
 import org.apache.guacamole.net.GuacamoleTunnel;

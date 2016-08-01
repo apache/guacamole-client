@@ -28,6 +28,7 @@ import org.apache.guacamole.auth.jdbc.user.UserService;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 
@@ -78,6 +79,16 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
         // Link to user context
         ModeledUserContext context = userContextProvider.get();
         context.init(user.getCurrentUser());
+        return context;
+
+    }
+
+    @Override
+    public UserContext updateUserContext(AuthenticationProvider authenticationProvider,
+            UserContext context, AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException {
+
+        // No need to update the context
         return context;
 
     }

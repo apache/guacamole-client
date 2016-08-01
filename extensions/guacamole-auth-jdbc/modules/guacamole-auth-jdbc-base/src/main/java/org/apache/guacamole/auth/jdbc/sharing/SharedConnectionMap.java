@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.jdbc.sharing;
 
+import org.apache.guacamole.auth.jdbc.sharing.connection.SharedConnectionDefinition;
+
 /**
  * Represents a mapping between share keys and the Guacamole connection being
  * shared.

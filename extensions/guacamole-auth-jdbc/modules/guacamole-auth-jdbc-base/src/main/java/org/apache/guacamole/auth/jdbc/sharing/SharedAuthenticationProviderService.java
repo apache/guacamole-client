@@ -23,16 +23,19 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.AuthenticationProviderService;
+import org.apache.guacamole.auth.jdbc.sharing.user.SharedAuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.sharing.user.SharedUserContext;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 
 /**
  * Service which authenticates users based on share keys and provides for the
- * creation of corresponding. The created UserContext objects are restricted to
- * the connections associated with those share keys via a common
+ * creation of corresponding UserContexts. The created UserContext objects are
+ * restricted to the connections associated with those share keys via a common
  * ConnectionSharingService.
  *
  * @author Michael Jumper
@@ -40,10 +43,10 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsExce
 public class SharedAuthenticationProviderService implements AuthenticationProviderService {
 
     /**
-     * Provider for retrieving SharedConnectionUserContext instances.
+     * Provider for retrieving SharedUserContext instances.
      */
     @Inject
-    private Provider<SharedConnectionUserContext> sharedUserContextProvider;
+    private Provider<SharedUserContext> sharedUserContextProvider;
 
     /**
      * Service for sharing active connections.
@@ -66,19 +69,45 @@ public class SharedAuthenticationProviderService implements AuthenticationProvid
     }
 
     @Override
-    public org.apache.guacamole.net.auth.UserContext getUserContext(
+    public SharedUserContext getUserContext(
             AuthenticationProvider authenticationProvider,
             AuthenticatedUser authenticatedUser) throws GuacamoleException {
 
-        // Produce sharing-specific user context if this is the user of a shared connection
-        if (authenticatedUser instanceof SharedConnectionUser) {
-            SharedConnectionUserContext context = sharedUserContextProvider.get();
-            context.init((SharedConnectionUser) authenticatedUser);
-            return context;
-        }
+        // Obtain a reference to a correct AuthenticatedUser which can be used
+        // for accessing shared connections
+        SharedAuthenticatedUser sharedAuthenticatedUser;
+        if (authenticatedUser instanceof SharedAuthenticatedUser)
+            sharedAuthenticatedUser = (SharedAuthenticatedUser) authenticatedUser;
+        else
+            sharedAuthenticatedUser = new SharedAuthenticatedUser(authenticatedUser);
 
-        // No shared connections otherwise
-        return null;
+        // Produce empty user context for known-authenticated user
+        SharedUserContext context = sharedUserContextProvider.get();
+        context.init(authenticationProvider, sharedAuthenticatedUser);
+
+        // Add the shared connection associated with the originally-provided
+        // share key (if any)
+        String shareKey = sharedAuthenticatedUser.getShareKey();
+        if (shareKey != null)
+            context.registerShareKey(shareKey);
+
+        return context;
+
+    }
+
+    @Override
+    public UserContext updateUserContext(AuthenticationProvider authenticationProvider,
+            UserContext context, AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException {
+
+        // Retrieve the share key from the request
+        String shareKey = sharingService.getShareKey(credentials);
+
+        // Update the user context with the share key, if given
+        if (shareKey != null)
+            ((SharedUserContext) context).registerShareKey(shareKey);
+
+        return context;
 
     }
 
