@@ -120,7 +120,7 @@ body.client {
     text-transform: none;
 }
 
-.client .user-menu .options li a.disconnect {
+.client .user-menu .menu-contents li a.disconnect {
     background-repeat: no-repeat;
     background-size: 1em;
     background-position: 0.75em center;

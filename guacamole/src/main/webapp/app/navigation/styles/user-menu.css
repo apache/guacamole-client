@@ -58,7 +58,7 @@
 
 }
 
-.user-menu .menu-dropdown .options li a {
+.user-menu .menu-dropdown .menu-contents li a {
 
     background-repeat: no-repeat;
     background-size: 1em;
@@ -67,17 +67,18 @@
     background-image: url('images/protocol-icons/guac-monitor.png');
 
 }
-.user-menu .menu-dropdown .options li a[href="#/"] {
+
+.user-menu .menu-dropdown .menu-contents li a[href="#/"] {
     background-image: url('images/action-icons/guac-home-dark.png');
 }
 
-.user-menu .menu-dropdown .options li a[href="#/settings/users"],
-.user-menu .menu-dropdown .options li a[href="#/settings/connections"],
-.user-menu .menu-dropdown .options li a[href="#/settings/sessions"],
-.user-menu .menu-dropdown .options li a[href="#/settings/preferences"] {
+.user-menu .menu-dropdown .menu-contents li a[href="#/settings/users"],
+.user-menu .menu-dropdown .menu-contents li a[href="#/settings/connections"],
+.user-menu .menu-dropdown .menu-contents li a[href="#/settings/sessions"],
+.user-menu .menu-dropdown .menu-contents li a[href="#/settings/preferences"] {
     background-image: url('images/action-icons/guac-config-dark.png');
 }
 
-.user-menu .menu-dropdown .options li a.logout {
+.user-menu .menu-dropdown .menu-contents li a.logout {
     background-image: url('images/action-icons/guac-logout-dark.png');
 }
