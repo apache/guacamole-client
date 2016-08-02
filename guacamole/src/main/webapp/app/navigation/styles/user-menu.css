@@ -46,127 +46,19 @@
 
 }
 
-.user-menu .user-menu-dropdown {
+.user-menu .menu-dropdown .menu-title {
 
-    /* IE10 */
-    display: -ms-flexbox;
-    -ms-flex-align: center;
-    -ms-flex-direction: row;
-
-    /* Ancient Mozilla */
-    display: -moz-box;
-    -moz-box-align: center;
-    -moz-box-orient: horizontal;
-    
-    /* Ancient WebKit */
-    display: -webkit-box;
-    -webkit-box-align: center;
-    -webkit-box-orient: horizontal;
-
-    /* Old WebKit */
-    display: -webkit-flex;
-    -webkit-align-items: center;
-    -webkit-flex-direction: row;
-
-    /* W3C */
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-
-}
-
-.user-menu .user-menu-dropdown {
-    position: relative;
-    border-left: 1px solid rgba(0,0,0,0.125);
-    background: rgba(0,0,0,0.04);
-}
-
-.user-menu .user-menu-dropdown:hover {
-    background: rgba(0,0,0,0.01);
-}
-
-.user-menu .user-menu-dropdown.open,
-.user-menu .user-menu-dropdown.open:hover {
-    background: rgba(0,0,0,0.3);
-}
-
-.user-menu .username {
-
-    cursor: default;
-    margin: 0;
-    min-width: 2in;
-
-    font-size: 1.25em;
     font-weight: bold;
-    padding: 0.5em 2em;
+    padding-left: 2em;
 
     background-repeat: no-repeat;
     background-size: 1em;
     background-position: 0.5em center;
     background-image: url('images/user-icons/guac-user.png');
 
-    -ms-flex: 0 0 auto;
-    -moz-box-flex: 0;
-    -webkit-box-flex: 0;
-    -webkit-flex: 0 0 auto;
-    flex: 0 0 auto;
-   
 }
 
-.user-menu .menu-indicator {
-
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-
-    width: 2em;
-    background-repeat: no-repeat;
-    background-size: 1em;
-    background-position: center center;
-    background-image: url('images/arrows/down.png');
-
-}
-
-.user-menu .options {
-
-    visibility: hidden;
-
-    position: absolute;
-    top: 100%;
-    right: 0;
-    left: -1px;
-
-    background: #EEE;
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.125);
-    border-left: 1px solid rgba(0,0,0,0.125);
-    border-bottom: 1px solid rgba(0,0,0,0.125);
-
-    z-index: 5;
-    
-}
-
-.user-menu .options ul {
-    margin: 0;
-    padding: 0;
-}
-
-.user-menu .user-menu-dropdown.open .options {
-    visibility: visible;
-}
-
-.user-menu .options li {
-    padding: 0;
-    list-style-type: none;
-}
-
-.user-menu .options li a {
-
-    display: block;
-    cursor: pointer;
-    color: black;
-    text-decoration: none;
-    padding: 0.75em;
+.user-menu .menu-dropdown .menu-contents li a {
 
     background-repeat: no-repeat;
     background-size: 1em;
@@ -176,38 +68,17 @@
 
 }
 
-.user-menu .options li a:hover {
-    background-color: #CDA;
-}
-
-.user-menu .options li a.current,
-.user-menu .options li a.current:hover {
-    background-color: transparent;
-    cursor: default;
-    opacity: 0.25;
-}
-
-.user-menu .options li a[href="#/"] {
+.user-menu .menu-dropdown .menu-contents li a[href="#/"] {
     background-image: url('images/action-icons/guac-home-dark.png');
 }
 
-.user-menu .options li a[href="#/settings/users"],
-.user-menu .options li a[href="#/settings/connections"],
-.user-menu .options li a[href="#/settings/sessions"],
-.user-menu .options li a[href="#/settings/preferences"] {
+.user-menu .menu-dropdown .menu-contents li a[href="#/settings/users"],
+.user-menu .menu-dropdown .menu-contents li a[href="#/settings/connections"],
+.user-menu .menu-dropdown .menu-contents li a[href="#/settings/sessions"],
+.user-menu .menu-dropdown .menu-contents li a[href="#/settings/preferences"] {
     background-image: url('images/action-icons/guac-config-dark.png');
 }
 
-.user-menu .options li a.logout {
+.user-menu .menu-dropdown .menu-contents li a.logout {
     background-image: url('images/action-icons/guac-logout-dark.png');
-}
-
-.user-menu .options li a.danger {
-    color: white;
-    font-weight: bold;
-    background-color: #A43;
-}
-
-.user-menu .options li a.danger:hover {
-    background-color: #C54;
 }

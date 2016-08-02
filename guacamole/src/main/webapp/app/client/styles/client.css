@@ -116,7 +116,11 @@ body.client {
 
 }
 
-.client .user-menu .options li a.disconnect {
+.client .menu .header h2 {
+    text-transform: none;
+}
+
+.client .user-menu .menu-contents li a.disconnect {
     background-repeat: no-repeat;
     background-size: 1em;
     background-position: 0.75em center;

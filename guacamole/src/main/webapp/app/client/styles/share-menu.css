@@ -17,35 +17,7 @@
  * under the License.
  */
 
-h1 {
-    
-    margin: 0;
-    padding: 0.5em;
-
-    font-size: 2em;
-    vertical-align: middle;
-    text-align: center;
-
-}
-
-h2 {
-    font-size: 1.25em;
-    font-weight: bold;
-    text-transform: uppercase;
-    padding: 0.5em;
-    margin: 0;
-}
-
-.header {
-
-    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.125);
-    background: rgba(0, 0, 0, 0.04);
-
-    margin-bottom: 1em;
-    margin-top: 0;
-    border-top: none;
-    width: 100%;
+.share-menu {
 
     /* IE10 */
     display: -ms-flexbox;
@@ -56,7 +28,7 @@ h2 {
     display: -moz-box;
     -moz-box-align: stretch;
     -moz-box-orient: horizontal;
-    
+
     /* Ancient WebKit */
     display: -webkit-box;
     -webkit-box-align: stretch;
@@ -74,31 +46,13 @@ h2 {
 
 }
 
-.header ~ * .header,
-.header ~ .header {
-    margin-top: 1em;
-    border-top: 1px solid rgba(0, 0, 0, 0.125);
-}
+.share-menu .menu-dropdown .menu-title {
 
-.header h2 {
-    -ms-flex: 1 1 auto;
-    -moz-box-flex: 1;
-    -webkit-box-flex: 1;
-    -webkit-flex: 1 1 auto;
-    flex: 1 1 auto;
-}
+    padding-left: 2em;
 
-.header .filter {
-    margin: 0;
-    padding: 0.5em;
-}
+    background-repeat: no-repeat;
+    background-size: 1em;
+    background-position: 0.5em center;
+    background-image: url('images/share.png');
 
-.header .filter input {
-    -moz-border-radius: 0;
-    -webkit-border-radius: 0;
-    -khtml-border-radius: 0;
-    border-radius: 0;
-    border: none;
-    border-left: 1px solid rgba(0, 0, 0, 0.125);
-    background-color: transparent;
 }

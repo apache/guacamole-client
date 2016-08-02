@@ -43,11 +43,34 @@
             <!-- Stationary header -->
             <div class="header">
                 <h2>{{client.name}}</h2>
+                <div class="share-menu" ng-show="canShareConnection()">
+                    <guac-menu menu-title="'CLIENT.ACTION_SHARE' | translate">
+                        <ul ng-repeat="sharingProfile in sharingProfiles">
+                            <li><a ng-click="share(sharingProfile)">{{sharingProfile.name}}</a></li>
+                        </ul>
+                    </guac-menu>
+                </div>
                 <guac-user-menu local-actions="clientMenuActions"></guac-user-menu>
             </div>
 
             <!-- Scrollable body -->
             <div class="menu-body" guac-touch-drag="menuDrag" guac-scroll="menu.scrollState">
+
+                <!-- Connection sharing -->
+                <div class="menu-section" id="share-links" ng-show="isShared()">
+                    <div class="content">
+                        <h3>{{'CLIENT.INFO_CONNECTION_SHARED' | translate}}</h3>
+                        <p class="description"
+                           translate="CLIENT.HELP_SHARE_LINK"
+                           translate-values="{LINKS : getShareLinkCount()}"></p>
+                        <table>
+                            <tr ng-repeat="link in client.shareLinks | orderBy: name">
+                                <th>{{link.name}}</th>
+                                <td><a href="{{link.href}}" target="_blank">{{link.href}}</a></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
 
                 <!-- Clipboard -->
                 <div class="menu-section" id="clipboard-settings">

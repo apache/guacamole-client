@@ -1,34 +1,26 @@
 <div class="user-menu">
+    <guac-menu menu-title="username">
+           
+        <!-- Local actions -->
+        <ul class="action-list">
+            <li ng-repeat="action in localActions">
+                <a ng-class="action.className" ng-click="action.callback()">
+                    {{action.name | translate}}
+                </a>
+            </li>
+        </ul>
 
-    <div class="user-menu-dropdown" ng-class="{open: menuShown}" ng-click="toggleMenu()">
-        <div class="username">{{username}}</div>
-        <div class="menu-indicator"></div>
-        
-        <!-- Menu options -->
-        <div class="options">
-            
-            <!-- Local actions -->
-            <ul class="action-list">
-                <li ng-repeat="action in localActions">
-                    <a ng-class="action.className" ng-click="action.callback()">
-                        {{action.name | translate}}
-                    </a>
-                </li>
-            </ul>
+        <!-- Navigation links -->
+        <guac-page-list pages="pages"></guac-page-list>
 
-            <!-- Navigation links -->
-            <guac-page-list pages="pages"></guac-page-list>
+        <!-- Actions -->
+        <ul class="action-list">
+            <li ng-repeat="action in actions">
+                <a ng-class="action.className" ng-click="action.callback()">
+                    {{action.name | translate}}
+                </a>
+            </li>
+        </ul>
 
-            <!-- Actions -->
-            <ul class="action-list">
-                <li ng-repeat="action in actions">
-                    <a ng-class="action.className" ng-click="action.callback()">
-                        {{action.name | translate}}
-                    </a>
-                </li>
-            </ul>
-
-        </div>
-    </div>
-
+    </guac-menu>
 </div>
