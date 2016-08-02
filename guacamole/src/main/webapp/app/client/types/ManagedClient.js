@@ -31,6 +31,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var ManagedDisplay       = $injector.get('ManagedDisplay');
     var ManagedFilesystem    = $injector.get('ManagedFilesystem');
     var ManagedFileUpload    = $injector.get('ManagedFileUpload');
+    var ManagedShareLink     = $injector.get('ManagedShareLink');
 
     // Required services
     var $document              = $injector.get('$document');
@@ -124,6 +125,15 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * @type ManagedFilesystem[]
          */
         this.filesystems = template.filesystems || [];
+
+        /**
+         * All available share links generated for the this ManagedClient via
+         * ManagedClient.createShareLink(). Each resulting share link is stored
+         * under the identifier of its corresponding SharingProfile.
+         *
+         * @type Object.<String, ManagedShareLink>
+         */
+        this.shareLinks = template.shareLinks || {};
 
         /**
          * The current state of the Guacamole client (idle, connecting,
@@ -582,6 +592,62 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             writer.sendBlob(data.data);
 
         }
+
+    };
+
+    /**
+     * Produces a sharing link for the given ManagedClient using the given
+     * sharing profile. The resulting sharing link, and any required login
+     * information, can be retrieved from the <code>shareLinks</code> property
+     * of the given ManagedClient once the various underlying service calls
+     * succeed.
+     *
+     * @param {ManagedClient} client
+     *     The ManagedClient which will be shared via the generated sharing
+     *     link.
+     *
+     * @param {SharingProfile} sharingProfile
+     *     The sharing profile to use to generate the sharing link.
+     *
+     * @returns {Promise}
+     *     A Promise which is resolved once the sharing link has been
+     *     successfully generated, and rejected if generating the link fails.
+     */
+    ManagedClient.createShareLink = function createShareLink(client, sharingProfile) {
+
+        // Retrieve sharing credentials for the sake of generating a share link
+        var credentialRequest = tunnelService.getSharingCredentials(
+                client.tunnel.uuid, sharingProfile.identifier);
+
+        // Add a new share link once the credentials are ready
+        credentialRequest.success(function sharingCredentialsReceived(sharingCredentials) {
+            client.shareLinks[sharingProfile.identifier] =
+                ManagedShareLink.getInstance(sharingProfile, sharingCredentials);
+        });
+
+        return credentialRequest;
+
+    };
+
+    /**
+     * Returns whether the given ManagedClient is being shared. A ManagedClient
+     * is shared if it has any associated share links.
+     *
+     * @param {ManagedClient} client
+     *     The ManagedClient to check.
+     *
+     * @returns {Boolean}
+     *     true if the ManagedClient has at least one associated share link,
+     *     false otherwise.
+     */
+    ManagedClient.isShared = function isShared(client) {
+
+        // The connection is shared if at least one share link exists
+        for (var dummy in client.shareLinks)
+            return true;
+
+        // No share links currently exist
+        return false;
 
     };
 

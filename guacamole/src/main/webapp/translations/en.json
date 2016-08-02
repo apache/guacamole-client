@@ -103,7 +103,9 @@
         "HELP_MOUSE_MODE"          : "Determines how the remote mouse behaves with respect to touches.",
         "HELP_MOUSE_MODE_ABSOLUTE" : "Tap to click. The click occurs at the location of the touch.",
         "HELP_MOUSE_MODE_RELATIVE" : "Drag to move the mouse pointer and tap to click. The click occurs at the location of the pointer.",
+        "HELP_SHARE_LINK"          : "The current connection is being shared, and can be accessed by anyone with the following {LINKS, plural, one{link} other{links}}:",
 
+        "INFO_CONNECTION_SHARED" : "This connection is now shared.",
         "INFO_NO_FILE_TRANSFERS" : "No file transfers.",
 
         "NAME_INPUT_METHOD_NONE"   : "None",

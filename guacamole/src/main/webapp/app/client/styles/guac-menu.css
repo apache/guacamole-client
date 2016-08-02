@@ -171,3 +171,31 @@
 #guac-menu #devices .device.filesystem {
     background-image: url('images/drive.png');
 }
+
+#guac-menu #share-links {
+
+    padding: 1em;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    background: rgba(0, 0, 0, 0.04);
+
+    font-size: 0.8em;
+
+}
+
+#guac-menu #share-links h3 {
+    padding-bottom: 0;
+}
+
+#guac-menu #share-links th {
+    white-space: nowrap;
+}
+
+#guac-menu #share-links a[href] {
+
+    display: block;
+    padding: 0 1em;
+
+    font-family: monospace;
+    font-weight: bold;
+
+}

@@ -28,7 +28,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var ManagedClientState = $injector.get('ManagedClientState');
     var ManagedFilesystem  = $injector.get('ManagedFilesystem');
     var ScrollState        = $injector.get('ScrollState');
-    var UserCredentials    = $injector.get('UserCredentials');
 
     // Required services
     var $location             = $injector.get('$location');
@@ -435,26 +434,42 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     /**
      * Produces a sharing link for the current connection using the given
      * sharing profile. The resulting sharing link, and any required login
-     * information, will be displayed to the user once the various underlying
-     * service calls succeed.
+     * information, will be displayed to the user within the Guacamole menu.
      *
      * @param {SharingProfile} sharingProfile
      *     The sharing profile to use to generate the sharing link.
      */
     $scope.share = function share(sharingProfile) {
+        ManagedClient.createShareLink($scope.client, sharingProfile);
+    };
 
-        // Retrieve sharing credentials for the sake of generating a share link
-        tunnelService.getSharingCredentials($scope.client.tunnel.uuid, sharingProfile.identifier)
-        .success(function sharingCredentialsReceived(sharingCredentials) {
+    /**
+     * Returns whether the current connection has any associated share links.
+     *
+     * @returns {Boolean}
+     *     true if the current connection has at least one associated share
+     *     link, false otherwise.
+     */
+    $scope.isShared = function isShared() {
+        return ManagedClient.isShared($scope.client);
+    };
 
-            // TODONT: COMPLETE HACK: Shove the share link into the clipboard
-            var href = UserCredentials.getLink(sharingCredentials);
-            $scope.client.clipboardData = {
-                'type' : 'text/plain',
-                'data' : href
-            };
+    /**
+     * Returns the total number of share links associated with the current
+     * connection.
+     *
+     * @returns {Number}
+     *     The total number of share links associated with the current
+     *     connection.
+     */
+    $scope.getShareLinkCount = function getShareLinkCount() {
 
-        });
+        // Count total number of links within the ManagedClient's share link map
+        var linkCount = 0;
+        for (var dummy in $scope.client.shareLinks)
+            linkCount++;
+
+        return linkCount;
 
     };
 
