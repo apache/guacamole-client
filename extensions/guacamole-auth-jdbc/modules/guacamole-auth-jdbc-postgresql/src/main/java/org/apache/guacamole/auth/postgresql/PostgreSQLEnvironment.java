@@ -48,6 +48,12 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     private static final int DEFAULT_PORT = 5432;
 
     /**
+     * Whether a database user account is required by default for authentication
+     * to succeed.
+     */
+    private static final boolean DEFAULT_USER_REQUIRED = false;
+
+    /**
      * The default value for the maximum number of connections to be
      * allowed to the Guacamole server overall.
      */
@@ -164,6 +170,14 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
 
         }
 
+    }
+
+    @Override
+    public boolean isUserRequired() throws GuacamoleException {
+        return getProperty(
+            PostgreSQLGuacamoleProperties.POSTGRESQL_USER_REQUIRED,
+            DEFAULT_USER_REQUIRED
+        );
     }
 
     @Override

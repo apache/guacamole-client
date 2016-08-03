@@ -96,6 +96,19 @@ public class PostgreSQLGuacamoleProperties {
     };
 
     /**
+     * Whether a user account within the database is required for authentication
+     * to succeed, even if the user has been authenticated via another
+     * authentication provider.
+     */
+    public static final BooleanGuacamoleProperty
+            POSTGRESQL_USER_REQUIRED = new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-user-required"; }
+
+    };
+
+    /**
      * Whether or not multiple users accessing the same connection at the same
      * time should be disallowed.
      */
