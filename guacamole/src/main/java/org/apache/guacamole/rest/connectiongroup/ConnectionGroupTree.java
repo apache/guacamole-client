@@ -28,16 +28,20 @@ import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
+import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.SharingProfile;
+import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.rest.connection.APIConnection;
+import org.apache.guacamole.rest.sharingprofile.APISharingProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides access to the entire tree of connection groups and their
- * connections.
+ * Provides access to the entire tree of connection groups, their
+ * connections, and any associated sharing profiles.
  *
  * @author Michael Jumper
  */
@@ -49,14 +53,36 @@ public class ConnectionGroupTree {
     private static final Logger logger = LoggerFactory.getLogger(ConnectionGroupTree.class);
 
     /**
-     * The context of the user obtaining this tree.
-     */
-    private final UserContext userContext;
-    
-    /**
      * The root connection group as an APIConnectionGroup.
      */
     private final APIConnectionGroup rootAPIGroup;
+
+    /**
+     * All connection permissions granted to the user obtaining this tree.
+     */
+    private final ObjectPermissionSet connectionPermissions;
+
+    /**
+     * All sharing profile permissions granted to the user obtaining this tree.
+     */
+    private final ObjectPermissionSet sharingProfilePermissions;
+
+    /**
+     * The directory of all connections visible to the user obtaining this tree.
+     */
+    private final Directory<Connection> connectionDirectory;
+
+    /**
+     * The directory of all connection groups visible to the user obtaining this
+     * tree.
+     */
+    private final Directory<ConnectionGroup> connectionGroupDirectory;
+
+    /**
+     * The directory of all sharing profiles visible to the user obtaining this
+     * tree.
+     */
+    private final Directory<SharingProfile> sharingProfileDirectory;
 
     /**
      * All connection groups that have been retrieved, stored by their
@@ -64,6 +90,12 @@ public class ConnectionGroupTree {
      */
     private final Map<String, APIConnectionGroup> retrievedGroups =
             new HashMap<String, APIConnectionGroup>();
+
+    /**
+     * All connections that have been retrieved, stored by their identifiers.
+     */
+    private final Map<String, APIConnection> retrievedConnections =
+            new HashMap<String, APIConnection>();
 
     /**
      * Adds each of the provided connections to the current tree as children
@@ -95,7 +127,9 @@ public class ConnectionGroupTree {
                 }
 
                 // Add child
-                children.add(new APIConnection(connection));
+                APIConnection apiConnection = new APIConnection(connection);
+                retrievedConnections.put(connection.getIdentifier(), apiConnection);
+                children.add(apiConnection);
                 
             }
 
@@ -150,7 +184,55 @@ public class ConnectionGroupTree {
         } // end for each connection group
         
     }
-    
+
+    /**
+     * Adds each of the provided sharing profiles to the current tree as
+     * children of their respective primary connections. The primary connections
+     * must already be added.
+     *
+     * @param sharingProfiles
+     *     The sharing profiles to add to the tree.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while adding the sharing profiles to the tree.
+     */
+    private void addSharingProfiles(Collection<SharingProfile> sharingProfiles)
+        throws GuacamoleException {
+
+        // Add each sharing profile to the tree
+        for (SharingProfile sharingProfile : sharingProfiles) {
+
+            // Retrieve the sharing profile's associated connection
+            String primaryConnectionIdentifier = sharingProfile.getPrimaryConnectionIdentifier();
+            APIConnection primaryConnection = retrievedConnections.get(primaryConnectionIdentifier);
+
+            // Add the sharing profile as a child of the primary connection
+            if (primaryConnection != null) {
+
+                Collection<APISharingProfile> children = primaryConnection.getSharingProfiles();
+
+                // Create child collection if it does not yet exist
+                if (children == null) {
+                    children = new ArrayList<APISharingProfile>();
+                    primaryConnection.setSharingProfiles(children);
+                }
+
+                // Add child
+                children.add(new APISharingProfile(sharingProfile));
+
+            }
+
+            // Warn of internal consistency issues
+            else
+                logger.debug("Sharing profile \"{}\" cannot be added to the "
+                        + "tree: primary connection \"{}\" does not actually "
+                        + "exist.", sharingProfile.getIdentifier(),
+                        primaryConnectionIdentifier);
+
+        } // end for each sharing profile
+
+    }
+
     /**
      * Adds all descendants of the given parent groups to their corresponding
      * parents already stored under root.
@@ -167,7 +249,7 @@ public class ConnectionGroupTree {
      * @throws GuacamoleException
      *     If an error occurs while retrieving the descendants.
      */
-    private void addDescendants(Collection<ConnectionGroup> parents,
+    private void addConnectionGroupDescendants(Collection<ConnectionGroup> parents,
             List<ObjectPermission.Type> permissions)
         throws GuacamoleException {
 
@@ -185,22 +267,64 @@ public class ConnectionGroupTree {
         }
 
         // Filter identifiers based on permissions, if requested
-        if (permissions != null && !permissions.isEmpty()) {
-            ObjectPermissionSet permissionSet = userContext.self().getConnectionPermissions();
-            childConnectionIdentifiers = permissionSet.getAccessibleObjects(permissions, childConnectionIdentifiers);
-        }
+        if (permissions != null && !permissions.isEmpty())
+            childConnectionIdentifiers = connectionPermissions.getAccessibleObjects(
+                    permissions, childConnectionIdentifiers);
         
         // Retrieve child connections
         if (!childConnectionIdentifiers.isEmpty()) {
-            Collection<Connection> childConnections = userContext.getConnectionDirectory().getAll(childConnectionIdentifiers);
+            Collection<Connection> childConnections = connectionDirectory.getAll(childConnectionIdentifiers);
             addConnections(childConnections);
+            addConnectionDescendants(childConnections, permissions);
         }
 
         // Retrieve child connection groups
         if (!childConnectionGroupIdentifiers.isEmpty()) {
-            Collection<ConnectionGroup> childConnectionGroups = userContext.getConnectionGroupDirectory().getAll(childConnectionGroupIdentifiers);
+            Collection<ConnectionGroup> childConnectionGroups = connectionGroupDirectory.getAll(childConnectionGroupIdentifiers);
             addConnectionGroups(childConnectionGroups);
-            addDescendants(childConnectionGroups, permissions);
+            addConnectionGroupDescendants(childConnectionGroups, permissions);
+        }
+
+    }
+
+    /**
+     * Adds all descendant sharing profiles of the given connections to their
+     * corresponding primary connections already stored under root.
+     *
+     * @param connections
+     *     The connections whose descendant sharing profiles should be added to
+     *     the tree.
+     *
+     * @param permissions
+     *     If specified and non-empty, limit added sharing profiles to only
+     *     those for which the current user has any of the given
+     *     permissions. Otherwise, all visible sharing profiles are added.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the descendants.
+     */
+    private void addConnectionDescendants(Collection<Connection> connections,
+            List<ObjectPermission.Type> permissions)
+        throws GuacamoleException {
+
+        // If no connections, nothing to do
+        if (connections.isEmpty())
+            return;
+
+        // Build lists of sharing profile identifiers for retrieval
+        Collection<String> identifiers = new ArrayList<String>();
+        for (Connection connection : connections)
+            identifiers.addAll(connection.getSharingProfileIdentifiers());
+
+        // Filter identifiers based on permissions, if requested
+        if (permissions != null && !permissions.isEmpty())
+            identifiers = sharingProfilePermissions.getAccessibleObjects(
+                    permissions, identifiers);
+
+        // Retrieve and add all associated sharing profiles
+        if (!identifiers.isEmpty()) {
+            Collection<SharingProfile> sharingProfiles = sharingProfileDirectory.getAll(identifiers);
+            addSharingProfiles(sharingProfiles);
         }
 
     }
@@ -229,14 +353,22 @@ public class ConnectionGroupTree {
     public ConnectionGroupTree(UserContext userContext, ConnectionGroup root,
             List<ObjectPermission.Type> permissions) throws GuacamoleException {
 
-        this.userContext = userContext;
-        
         // Store root of tree
         this.rootAPIGroup = new APIConnectionGroup(root);
         retrievedGroups.put(root.getIdentifier(), this.rootAPIGroup);
 
+        // Store user's current permissions
+        User self = userContext.self();
+        this.connectionPermissions = self.getConnectionPermissions();
+        this.sharingProfilePermissions = self.getSharingProfilePermissions();
+
+        // Store required directories
+        this.connectionDirectory = userContext.getConnectionDirectory();
+        this.connectionGroupDirectory = userContext.getConnectionGroupDirectory();
+        this.sharingProfileDirectory = userContext.getSharingProfileDirectory();
+
         // Add all descendants
-        addDescendants(Collections.singleton(root), permissions);
+        addConnectionGroupDescendants(Collections.singleton(root), permissions);
         
     }
 

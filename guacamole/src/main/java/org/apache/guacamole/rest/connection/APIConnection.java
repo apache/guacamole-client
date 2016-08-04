@@ -19,12 +19,14 @@
 
 package org.apache.guacamole.rest.connection;
 
+import java.util.Collection;
 import java.util.Map;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
+import org.apache.guacamole.rest.sharingprofile.APISharingProfile;
 
 /**
  * A simple connection to expose through the REST endpoints.
@@ -64,6 +66,12 @@ public class APIConnection {
      * Map of all associated attributes by attribute identifier.
      */
     private Map<String, String> attributes;
+
+    /**
+     * All associated sharing profiles. If sharing profiles are not being
+     * queried, this may be omitted.
+     */
+    private Collection<APISharingProfile> sharingProfiles;
 
     /**
      * The count of currently active connections using this connection.
@@ -225,6 +233,30 @@ public class APIConnection {
      */
     public void setAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
+    }
+
+    /**
+     * Returns a collection of all associated sharing profiles, or null if
+     * sharing profiles have not been queried.
+     *
+     * @return
+     *     A collection of all associated sharing profiles, or null if sharing
+     *     profiles have not been queried.
+     */
+    public Collection<APISharingProfile> getSharingProfiles() {
+        return sharingProfiles;
+    }
+
+    /**
+     * Sets the collection of all associated sharing profiles to the given
+     * collection, which may be null if sharing profiles have not been queried.
+     *
+     * @param sharingProfiles
+     *     The collection containing all sharing profiles associated with this
+     *     connection, or null if sharing profiles have not been queried.
+     */
+    public void setSharingProfiles(Collection<APISharingProfile> sharingProfiles) {
+        this.sharingProfiles = sharingProfiles;
     }
 
 }
