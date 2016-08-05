@@ -178,11 +178,11 @@ div.section {
     background-position: center center;
 }
 
-.group .icon {
+.group > .caption .icon {
     background-image: url('images/folder-closed.png');
 }
 
-.group.expanded .icon {
+.group.expanded > .caption .icon {
     background-image: url('images/folder-open.png');
 }
 
@@ -253,11 +253,11 @@ div.section {
     background-image: url('images/group-icons/guac-closed.png');
 }
 
-.expandable.expanded .icon.expand {
+.expandable.expanded > .caption .icon.expand {
     background-image: url('images/group-icons/guac-open.png');
 }
 
-.expandable.empty .icon.expand {
+.expandable.empty > .caption .icon.expand {
     opacity: 0.25;
     background-image: url('images/group-icons/guac-open.png');
 }
