@@ -88,6 +88,25 @@ angular.module('rest').factory('PermissionFlagSet', ['PermissionSet',
         };
 
         /**
+         * The granted state of each permission for each sharing profile, as a
+         * map of object permission type string to permission map. The
+         * permission map is, in turn, a map of sharing profile identifier to
+         * boolean value. A particular permission is granted if its
+         * corresponding boolean value is set to true. Valid permission type
+         * strings are defined within PermissionSet.ObjectPermissionType.
+         * Permissions which are not granted may be set to false, but this is
+         * not required.
+         *
+         * @type Object.<String, Object.<String, Boolean>>
+         */
+        this.sharingProfilePermissions = template.sharingProfilePermissions || {
+            'READ'       : {},
+            'UPDATE'     : {},
+            'DELETE'     : {},
+            'ADMINISTER' : {}
+        };
+
+        /**
          * The granted state of each permission for each active connection, as
          * a map of object permission type string to permission map. The
          * permission map is, in turn, a map of active connection identifier to
@@ -187,6 +206,9 @@ angular.module('rest').factory('PermissionFlagSet', ['PermissionSet',
 
         // Add all granted connection group permissions
         addObjectPermissions(permissionSet.connectionGroupPermissions, permissionFlagSet.connectionGroupPermissions);
+
+        // Add all granted sharing profile permissions
+        addObjectPermissions(permissionSet.sharingProfilePermissions, permissionFlagSet.sharingProfilePermissions);
 
         // Add all granted active connection permissions
         addObjectPermissions(permissionSet.activeConnectionPermissions, permissionFlagSet.activeConnectionPermissions);

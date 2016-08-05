@@ -175,6 +175,10 @@ angular.module('rest').factory('permissionService', ['$injector',
         addObjectPatchOperations(patch, operation, "/connectionGroupPermissions",
             permissions.connectionGroupPermissions);
 
+        // Add sharing profile permission operations to patch
+        addObjectPatchOperations(patch, operation, "/sharingProfilePermissions",
+            permissions.sharingProfilePermissions);
+
         // Add active connection permission operations to patch
         addObjectPatchOperations(patch, operation, "/activeConnectionPermissions",
             permissions.activeConnectionPermissions);

@@ -1,38 +1,60 @@
 <div class="group-list">
 
-    <script type="text/ng-template" id="nestedGroup.html">
+    <script type="text/ng-template" id="nestedItem.html">
 
         <!-- Connection -->
-        <div class="connection" ng-show="isVisibleConnection(item)">
+        <div class="connection expandable" ng-if="isVisibleConnection(item)"
+            ng-class="{expanded: item.isExpanded, empty: !item.children.length}">
             <div class="caption">
+
+                <!-- Expand/collapse icon -->
+                <div class="icon expand" ng-click="toggleExpanded(item)"
+                    ng-if="sharingProfileTemplate"></div>
+
                 <ng-include src="connectionTemplate"/>
+
             </div>
+
+            <!-- Children of this connection -->
+            <div class="children" ng-show="item.isExpanded">
+                <div class="list-item" ng-repeat="item in item.children | orderBy : 'name'"
+                    ng-include="'nestedItem.html'"></div>
+            </div>
+
         </div>
 
         <!-- Connection group -->
-        <div class="group" ng-show="isVisibleConnectionGroup(item)">
+        <div class="group expandable" ng-if="isVisibleConnectionGroup(item)"
+            ng-class="{expanded: item.isExpanded, empty: !item.children.length, balancer: item.isBalancing}">
             <div class="caption">
 
-                <!-- Connection group icon -->
-                <div class="icon group type" ng-click="toggleExpanded(item)"
-                     ng-class="{expanded: item.isExpanded, empty: !item.children.length, balancer: item.isBalancing}"></div>
+                <!-- Expand/collapse icon -->
+                <div class="icon expand" ng-click="toggleExpanded(item)"></div>
 
                 <ng-include src="connectionGroupTemplate"/>
 
             </div>
 
             <!-- Children of this group -->
-            <div class="children" ng-show="item.isExpanded">
-                <div class="list-item" ng-repeat="item in item.children | orderBy : 'name'" ng-include="'nestedGroup.html'">
+            <div class="children" ng-if="item.isExpanded">
+                <div class="list-item" ng-repeat="item in item.children | orderBy : 'name'"
+                    ng-include="'nestedItem.html'"></div>
             </div>
 
+        </div>
+
+        <!-- Sharing profile -->
+        <div class="sharing-profile" ng-show="isVisibleSharingProfile(item)">
+            <div class="caption">
+                <ng-include src="sharingProfileTemplate"/>
+            </div>
         </div>
 
     </script>
 
     <!-- Root-level connections / groups -->
     <div class="group-list-page">
-        <div class="list-item" ng-repeat="item in childrenPage" ng-include="'nestedGroup.html'"></div>
+        <div class="list-item" ng-repeat="item in childrenPage" ng-include="'nestedItem.html'"></div>
     </div>
 
     <!-- Pager for connections / groups -->

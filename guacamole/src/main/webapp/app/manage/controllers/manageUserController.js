@@ -633,6 +633,10 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         {
             label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
             value: PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP
+        },
+        {
+            label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+            value: PermissionSet.SystemPermissionType.CREATE_SHARING_PROFILE
         }
     ];
 
@@ -705,10 +709,10 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $scope.systemPermissionChanged = function systemPermissionChanged(type) {
 
         // Determine current permission setting
-        var value = $scope.permissionFlags.systemPermissions[type];
+        var granted = $scope.permissionFlags.systemPermissions[type];
 
         // Add/remove permission depending on flag state
-        if (value)
+        if (granted)
             addSystemPermission(type);
         else
             removeSystemPermission(type);
@@ -775,10 +779,10 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $scope.userPermissionChanged = function userPermissionChanged(type, identifier) {
 
         // Determine current permission setting
-        var value = $scope.permissionFlags.userPermissions[type][identifier];
+        var granted = $scope.permissionFlags.userPermissions[type][identifier];
 
         // Add/remove permission depending on flag state
-        if (value)
+        if (granted)
             addUserPermission(type, identifier);
         else
             removeUserPermission(type, identifier);
@@ -861,6 +865,45 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
     };
 
+    /**
+     * Updates the permissionsAdded and permissionsRemoved permission sets to
+     * reflect the addition of the given sharing profile permission.
+     *
+     * @param {String} identifier
+     *     The identifier of the sharing profile to add READ permission for.
+     */
+    var addSharingProfilePermission = function addSharingProfilePermission(identifier) {
+
+        // If permission was previously removed, simply un-remove it
+        if (PermissionSet.hasSharingProfilePermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier))
+            PermissionSet.removeSharingProfilePermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
+
+        // Otherwise, explicitly add the permission
+        else
+            PermissionSet.addSharingProfilePermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
+
+    };
+
+    /**
+     * Updates the permissionsAdded and permissionsRemoved permission sets to
+     * reflect the removal of the given sharing profile permission.
+     *
+     * @param {String} identifier
+     *     The identifier of the sharing profile to remove READ permission for.
+     */
+    var removeSharingProfilePermission = function removeSharingProfilePermission(identifier) {
+
+        // If permission was previously added, simply un-add it
+        if (PermissionSet.hasSharingProfilePermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier))
+            PermissionSet.removeSharingProfilePermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
+
+        // Otherwise, explicitly remove the permission
+        else
+            PermissionSet.addSharingProfilePermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
+
+    };
+
+
     // Expose permission query and modification functions to group list template
     $scope.groupListContext = {
 
@@ -888,10 +931,10 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         connectionPermissionChanged : function connectionPermissionChanged(identifier) {
 
             // Determine current permission setting
-            var value = $scope.permissionFlags.connectionPermissions.READ[identifier];
+            var granted = $scope.permissionFlags.connectionPermissions.READ[identifier];
 
             // Add/remove permission depending on flag state
-            if (value)
+            if (granted)
                 addConnectionPermission(identifier);
             else
                 removeConnectionPermission(identifier);
@@ -910,13 +953,35 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         connectionGroupPermissionChanged : function connectionGroupPermissionChanged(identifier) {
 
             // Determine current permission setting
-            var value = $scope.permissionFlags.connectionGroupPermissions.READ[identifier];
+            var granted = $scope.permissionFlags.connectionGroupPermissions.READ[identifier];
 
             // Add/remove permission depending on flag state
-            if (value)
+            if (granted)
                 addConnectionGroupPermission(identifier);
             else
                 removeConnectionGroupPermission(identifier);
+
+        },
+
+        /**
+         * Notifies the controller that a change has been made to the given
+         * sharing profile permission for the user being edited. This only
+         * applies to READ permissions.
+         *
+         * @param {String} identifier
+         *     The identifier of the sharing profile affected by the changed
+         *     permission.
+         */
+        sharingProfilePermissionChanged : function sharingProfilePermissionChanged(identifier) {
+
+            // Determine current permission setting
+            var granted = $scope.permissionFlags.sharingProfilePermissions.READ[identifier];
+
+            // Add/remove permission depending on flag state
+            if (granted)
+                addSharingProfilePermission(identifier);
+            else
+                removeSharingProfilePermission(identifier);
 
         }
 

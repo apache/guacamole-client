@@ -95,6 +95,15 @@ angular.module('rest').factory('Connection', [function defineConnection() {
          */
         this.activeConnections = template.activeConnections;
 
+        /**
+         * An array of all associated sharing profiles, if known. This property
+         * may be null or undefined if sharing profiles have not been queried,
+         * and thus the sharing profiles are unknown.
+         *
+         * @type SharingProfile[]
+         */
+        this.sharingProfiles = template.sharingProfiles;
+
     };
 
     return Connection;
