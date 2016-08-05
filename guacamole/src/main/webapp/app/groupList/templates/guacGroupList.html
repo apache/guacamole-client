@@ -58,7 +58,7 @@
     </div>
 
     <!-- Pager for connections / groups -->
-    <guac-pager page="childrenPage" items="rootItems | orderBy : 'name'"
+    <guac-pager page="childrenPage" items="rootItems | orderBy : ['weight', 'name']"
                 page-size="pageSize"></guac-pager>
 
 </div>

@@ -132,6 +132,16 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
          */
         this.wrappedItem = template.wrappedItem;
 
+        /**
+         * The sorting weight to apply when displaying this GroupListItem. This
+         * weight is relative only to other sorting weights. If two items have
+         * the same weight, they will be sorted based on their names.
+         *
+         * @type Number
+         * @default 0
+         */
+        this.weight = template.weight || 0;
+
     };
 
     /**
