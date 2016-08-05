@@ -214,17 +214,42 @@ div.section {
 }
  
 .group.empty.balancer .icon {
-    opacity: 1;
     background-image: url('images/protocol-icons/guac-monitor.png');
 }
 
-.expandable.expanded > .children {
+.expandable.expanded > .children > .list-item {
+    position: relative;
+}
+
+.expandable.expanded > .children > .list-item:before,
+.expandable.expanded > .children > .list-item:after {
     display: block;
-    border-left: 1px dotted rgba(0, 0, 0, 0.25);
+    content: ' ';
+    position: absolute;
+    z-index: -1;
+}
+
+.expandable.expanded > .children > .list-item:before {
+    border-left: 1px solid #BBB;
+    left: -13px;
+    top: -0.75em;
+    bottom: 0;
+}
+
+.expandable.expanded > .children > .list-item:last-child:before {
+    height: 1.5em;
+}
+
+.expandable.expanded > .children > .list-item:after {
+    display: block;
+    content: ' ';
+    border-bottom: 1px solid #BBB;
+    left: -13px;
+    width: 13px;
+    top: 0.75em;
 }
 
 .expandable > .caption .icon.expand {
-    opacity: 0.75;
     background-image: url('images/group-icons/guac-closed.png');
 }
 
