@@ -1,19 +1,15 @@
-<a ng-href="#/client/{{context.getClientIdentifier(item)}}">
+<a ng-href="#/client/{{context.getClientIdentifier(item)}}"
+   ng-class="{active: item.getActiveConnections()}">
 
-    <div class="caption" ng-class="{active: item.getActiveConnections()}">
+    <!-- Connection icon -->
+    <div class="icon type" ng-class="item.protocol"></div>
 
-        <!-- Connection icon -->
-        <div class="protocol">
-            <div class="icon type" ng-class="item.protocol"></div>
-        </div>
+    <!-- Connection name -->
+    <span class="name">{{item.name}}</span>
 
-        <!-- Connection name -->
-        <span class="name">{{item.name}}</span>
-        
-        <!-- Active user count -->
-        <span class="activeUserCount" ng-show="item.getActiveConnections()"
-            translate="HOME.INFO_ACTIVE_USER_COUNT"
-            translate-values="{USERS: item.getActiveConnections()}"></span>
+    <!-- Active user count -->
+    <span class="activeUserCount" ng-show="item.getActiveConnections()"
+        translate="HOME.INFO_ACTIVE_USER_COUNT"
+        translate-values="{USERS: item.getActiveConnections()}"></span>
 
-    </div>
 </a>

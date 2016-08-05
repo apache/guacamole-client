@@ -164,14 +164,11 @@ div.section {
     background-image: url('images/action-icons/guac-monitor-add.png');
 }
 
-.protocol {
+.connection .icon,
+.connection-group .icon {
     display: inline-block;
-}
-
-.protocol .icon {
     width: 24px;
     height: 24px;
-    background-image: url('images/protocol-icons/guac-plug.png');
     background-size: 16px 16px;
     -moz-background-size: 16px 16px;
     -webkit-background-size: 16px 16px;
@@ -180,44 +177,57 @@ div.section {
     background-position: center center;
 }
 
-.protocol .icon.ssh,
-.protocol .icon.telnet {
+.group .icon {
+    background-image: url('images/folder-closed.png');
+}
+
+.group.expanded .icon {
+    background-image: url('images/folder-open.png');
+}
+
+.connection .icon {
+    background-image: url('images/protocol-icons/guac-plug.png');
+}
+
+.connection .icon.ssh,
+.connection .icon.telnet {
     background-image: url('images/protocol-icons/guac-text.png');
 }
 
-.protocol .icon.vnc,
-.protocol .icon.rdp {
+.connection .icon.vnc,
+.connection .icon.rdp {
     background-image: url('images/protocol-icons/guac-monitor.png');
 }
+
 /*
  * Groups
  */
 
-.group > .children {
+.expandable > .children {
     margin-left: 13px;
-    padding-left: 6px;
+    padding-left: 13px;
 }
  
-.group .icon.group.type.empty.balancer {
+.group.empty.balancer .icon {
     opacity: 1;
     background-image: url('images/protocol-icons/guac-monitor.png');
 }
 
-.group.expanded > .children {
+.expandable.expanded > .children {
     display: block;
     border-left: 1px dotted rgba(0, 0, 0, 0.25);
 }
 
-.group > .caption .icon.group {
+.expandable > .caption .icon.expand {
     opacity: 0.75;
     background-image: url('images/group-icons/guac-closed.png');
 }
 
-.group .icon.type.group.expanded {
+.expandable.expanded .icon.expand {
     background-image: url('images/group-icons/guac-open.png');
 }
 
-.group .icon.type.group.empty {
+.expandable.empty .icon.expand {
     opacity: 0.25;
     background-image: url('images/group-icons/guac-open.png');
 }

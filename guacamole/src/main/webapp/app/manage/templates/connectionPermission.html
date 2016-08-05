@@ -1,11 +1,9 @@
 <div class="choice">
 
     <!-- Connection icon -->
-    <div class="protocol">
-        <div class="icon type" ng-class="item.protocol"></div>
-    </div>
+    <div class="icon type" ng-class="item.protocol"></div>
 
-    <!-- Checkbox -->
+    <!-- Permission checkbox -->
     <input type="checkbox" ng-model="context.getPermissionFlags().connectionPermissions.READ[item.identifier]"
                            ng-change="context.connectionPermissionChanged(item.identifier)"/>
 
