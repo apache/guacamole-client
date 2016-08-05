@@ -256,6 +256,7 @@
         "FIELD_HEADER_CREATE_NEW_USERS"              : "Create new users:",
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Create new connections:",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Create new connection groups:",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "Create new sharing profiles:",
         "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
         "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
         "FIELD_HEADER_USERNAME"                      : "Username:",

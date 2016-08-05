@@ -165,7 +165,8 @@ div.section {
 }
 
 .connection .icon,
-.connection-group .icon {
+.connection-group .icon,
+.sharing-profile .icon {
     display: inline-block;
     width: 24px;
     height: 24px;
@@ -197,6 +198,10 @@ div.section {
 .connection .icon.vnc,
 .connection .icon.rdp {
     background-image: url('images/protocol-icons/guac-monitor.png');
+}
+
+.sharing-profile .icon {
+    background-image: url('images/share.png');
 }
 
 /*
