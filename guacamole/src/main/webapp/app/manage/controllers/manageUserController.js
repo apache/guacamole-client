@@ -709,10 +709,10 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $scope.systemPermissionChanged = function systemPermissionChanged(type) {
 
         // Determine current permission setting
-        var value = $scope.permissionFlags.systemPermissions[type];
+        var granted = $scope.permissionFlags.systemPermissions[type];
 
         // Add/remove permission depending on flag state
-        if (value)
+        if (granted)
             addSystemPermission(type);
         else
             removeSystemPermission(type);
@@ -779,10 +779,10 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $scope.userPermissionChanged = function userPermissionChanged(type, identifier) {
 
         // Determine current permission setting
-        var value = $scope.permissionFlags.userPermissions[type][identifier];
+        var granted = $scope.permissionFlags.userPermissions[type][identifier];
 
         // Add/remove permission depending on flag state
-        if (value)
+        if (granted)
             addUserPermission(type, identifier);
         else
             removeUserPermission(type, identifier);
@@ -931,10 +931,10 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         connectionPermissionChanged : function connectionPermissionChanged(identifier) {
 
             // Determine current permission setting
-            var value = $scope.permissionFlags.connectionPermissions.READ[identifier];
+            var granted = $scope.permissionFlags.connectionPermissions.READ[identifier];
 
             // Add/remove permission depending on flag state
-            if (value)
+            if (granted)
                 addConnectionPermission(identifier);
             else
                 removeConnectionPermission(identifier);
@@ -953,10 +953,10 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         connectionGroupPermissionChanged : function connectionGroupPermissionChanged(identifier) {
 
             // Determine current permission setting
-            var value = $scope.permissionFlags.connectionGroupPermissions.READ[identifier];
+            var granted = $scope.permissionFlags.connectionGroupPermissions.READ[identifier];
 
             // Add/remove permission depending on flag state
-            if (value)
+            if (granted)
                 addConnectionGroupPermission(identifier);
             else
                 removeConnectionGroupPermission(identifier);
@@ -975,10 +975,10 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         sharingProfilePermissionChanged : function sharingProfilePermissionChanged(identifier) {
 
             // Determine current permission setting
-            var value = $scope.permissionFlags.sharingProfilePermissions.READ[identifier];
+            var granted = $scope.permissionFlags.sharingProfilePermissions.READ[identifier];
 
             // Add/remove permission depending on flag state
-            if (value)
+            if (granted)
                 addSharingProfilePermission(identifier);
             else
                 removeSharingProfilePermission(identifier);
