@@ -178,11 +178,11 @@ div.section {
     background-position: center center;
 }
 
-.group > .caption .icon {
+.connection-group > .caption .icon {
     background-image: url('images/folder-closed.png');
 }
 
-.group.expanded > .caption .icon {
+.connection-group.expanded > .caption .icon {
     background-image: url('images/folder-open.png');
 }
 
@@ -213,7 +213,7 @@ div.section {
     padding-left: 13px;
 }
  
-.group.empty.balancer .icon {
+.connection-group.empty.balancer .icon {
     background-image: url('images/protocol-icons/guac-monitor.png');
 }
 

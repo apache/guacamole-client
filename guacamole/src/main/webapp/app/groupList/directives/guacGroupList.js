@@ -46,37 +46,18 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
             context : '=',
 
             /**
-             * The URL or ID of the Angular template to use when rendering a
-             * connection. The @link{GroupListItem} associated with that
-             * connection will be exposed within the scope of the template
-             * as <code>item</code>, and the arbitrary context object, if any,
-             * will be exposed as <code>context</code>.
+             * The map of @link{GroupListItem} type to the URL or ID of the
+             * Angular template to use when rendering a @link{GroupListItem} of
+             * that type. The @link{GroupListItem} itself will be within the
+             * scope of the template as <code>item</code>, and the arbitrary
+             * context object, if any, will be exposed as <code>context</code>.
+             * If the template for a type is omitted, items of that type will
+             * not be rendered. All standard types are defined by
+             * @link{GroupListItem.Type}, but use of custom types is legal.
              *
-             * @type String
+             * @type Object.<String, String>
              */
-            connectionTemplate : '=',
-
-            /**
-             * The URL or ID of the Angular template to use when rendering a
-             * connection group. The @link{GroupListItem} associated with that
-             * connection group will be exposed within the scope of the
-             * template as <code>item</code>, and the arbitrary context object,
-             * if any, will be exposed as <code>context</code>.
-             *
-             * @type String
-             */
-            connectionGroupTemplate : '=',
-
-            /**
-             * The URL or ID of the Angular template to use when rendering a
-             * sharing profile. The @link{GroupListItem} associated with that
-             * sharing profile will be exposed within the scope of the template
-             * as <code>item</code>, and the arbitrary context object, if any,
-             * will be exposed as <code>context</code>.
-             *
-             * @type String
-             */
-            sharingProfileTemplate : '=',
+            templates : '=',
 
             /**
              * Whether the root of the connection group hierarchy given should
@@ -145,51 +126,20 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
             };
 
             /**
-             * Returns whether the given item represents a connection that can
-             * be displayed. If there is no connection template, then no
-             * connection is visible.
-             * 
-             * @param {GroupListItem} item
-             *     The item to check.
+             * Returns whether a @link{GroupListItem} of the given type can be
+             * displayed. If there is no template associated with the given
+             * type, then a @link{GroupListItem} of that type cannot be
+             * displayed.
+             *
+             * @param {String} type
+             *     The type to check.
              *
              * @returns {Boolean}
-             *     true if the given item is a connection that can be
-             *     displayed, false otherwise.
+             *     true if the given @link{GroupListItem} type can be displayed,
+             *     false otherwise.
              */
-            $scope.isVisibleConnection = function isVisibleConnection(item) {
-                return item.isConnection && !!$scope.connectionTemplate;
-            };
-
-            /**
-             * Returns whether the given item represents a connection group
-             * that can be displayed. If there is no connection group template,
-             * then no connection group is visible.
-             * 
-             * @param {GroupListItem} item
-             *     The item to check.
-             *
-             * @returns {Boolean}
-             *     true if the given item is a connection group that can be
-             *     displayed, false otherwise.
-             */
-            $scope.isVisibleConnectionGroup = function isVisibleConnectionGroup(item) {
-                return item.isConnectionGroup && !!$scope.connectionGroupTemplate;
-            };
-
-            /**
-             * Returns whether the given item represents a sharing profile that
-             * can be displayed. If there is no sharing profile template, then
-             * no sharing profile is visible.
-             *
-             * @param {GroupListItem} item
-             *     The item to check.
-             *
-             * @returns {Boolean}
-             *     true if the given item is a sharing profile that can be
-             *     displayed, false otherwise.
-             */
-            $scope.isVisibleSharingProfile = function isVisibleSharingProfile(item) {
-                return item.isSharingProfile && !!$scope.sharingProfileTemplate;
+            $scope.isVisible = function isVisible(type) {
+                return !!$scope.templates[type];
             };
 
             // Set contents whenever the connection group is assigned or changed
@@ -212,7 +162,8 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
 
                         // Create root item for current connection group
                         var rootItem = GroupListItem.fromConnectionGroup(dataSource, connectionGroup,
-                            !!$scope.connectionTemplate, !!$scope.sharingProfileTemplate,
+                            $scope.isVisible(GroupListItem.Type.CONNECTION),
+                            $scope.isVisible(GroupListItem.Type.SHARING_PROFILE),
                             countActiveConnections);
 
                         // If root group is to be shown, add it as a root item
@@ -265,7 +216,7 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              *     connection group.
              */
             $scope.toggleExpanded = function toggleExpanded(groupListItem) {
-                groupListItem.isExpanded = !groupListItem.isExpanded;
+                groupListItem.expanded = !groupListItem.expanded;
             };
 
         }]
