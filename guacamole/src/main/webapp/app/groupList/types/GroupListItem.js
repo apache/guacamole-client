@@ -37,16 +37,16 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
         template = template || {};
 
         /**
-         * The identifier of the data source associated with the connection or
-         * connection group this item represents.
+         * The identifier of the data source associated with the connection,
+         * connection group, or sharing profile this item represents.
          *
          * @type String
          */
         this.dataSource = template.dataSource;
 
         /**
-         * The unique identifier associated with the connection or connection
-         * group this item represents.
+         * The unique identifier associated with the connection, connection
+         * group, or sharing profile this item represents.
          *
          * @type String
          */
@@ -78,7 +78,7 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
 
         /**
          * Whether this item represents a connection. If this item represents
-         * a connection group, this MUST be false.
+         * a connection group or sharing profile, this MUST be false.
          *
          * @type Boolean
          */
@@ -86,11 +86,19 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
 
         /**
          * Whether this item represents a connection group. If this item
-         * represents a connection, this MUST be false.
+         * represents a connection or sharing profile, this MUST be false.
          *
          * @type Boolean
          */
         this.isConnectionGroup = template.isConnectionGroup;
+
+        /**
+         * Whether this item represents a sharing profile. If this item
+         * represents a connection or connection group, this MUST be false.
+         *
+         * @type Boolean
+         */
+        this.isSharingProfile = template.isSharingProfile;
 
         /**
          * Whether this item represents a balancing connection group.
@@ -107,8 +115,8 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
         this.isExpanded = template.isExpanded;
         
         /**
-         * Returns the number of currently active users for this connection or
-         * connection group, if known.
+         * Returns the number of currently active users for this connection,
+         * connection group, or sharing profile, if known.
          * 
          * @type Number
          */
@@ -117,10 +125,10 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
         });
 
         /**
-         * The connection or connection group whose data is exposed within
-         * this GroupListItem.
+         * The connection, connection group, or sharing profile whose data is
+         * exposed within this GroupListItem.
          *
-         * @type Connection|ConnectionGroup
+         * @type Connection|ConnectionGroup|SharingProfile
          */
         this.wrappedItem = template.wrappedItem;
 
@@ -137,6 +145,10 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
      *     The connection whose contents should be represented by the new
      *     GroupListItem.
      *
+     * @param {Boolean} [includeSharingProfiles=true]
+     *     Whether sharing profiles should be included in the contents of the
+     *     resulting GroupListItem. By default, sharing profiles are included.
+     *
      * @param {Function} [countActiveConnections]
      *     A getter which returns the current number of active connections for
      *     the given connection. If omitted, the number of active connections
@@ -148,7 +160,17 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
      *     A new GroupListItem which represents the given connection.
      */
     GroupListItem.fromConnection = function fromConnection(dataSource,
-        connection, countActiveConnections) {
+        connection, includeSharingProfiles, countActiveConnections) {
+
+        var children = [];
+
+        // Add any sharing profiles
+        if (connection.sharingProfiles && includeSharingProfiles !== false) {
+            connection.sharingProfiles.forEach(function addSharingProfile(child) {
+                children.push(GroupListItem.fromSharingProfile(dataSource,
+                    child, countActiveConnections));
+            });
+        }
 
         // Return item representing the given connection
         return new GroupListItem({
@@ -162,7 +184,11 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
             // Type information
             isConnection      : true,
             isConnectionGroup : false,
-            
+            isSharingProfile  : false,
+
+            // Already-converted children
+            children : children,
+
             // Count of currently active connections using this connection
             getActiveConnections : function getActiveConnections() {
 
@@ -197,6 +223,10 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
      *     Whether connections should be included in the contents of the
      *     resulting GroupListItem. By default, connections are included.
      *
+     * @param {Boolean} [includeSharingProfiles=true]
+     *     Whether sharing profiles should be included in the contents of the
+     *     resulting GroupListItem. By default, sharing profiles are included.
+     *
      * @param {Function} [countActiveConnections]
      *     A getter which returns the current number of active connections for
      *     the given connection. If omitted, the number of active connections
@@ -216,8 +246,8 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
      *     including all descendants.
      */
     GroupListItem.fromConnectionGroup = function fromConnectionGroup(dataSource,
-        connectionGroup, includeConnections, countActiveConnections,
-        countActiveConnectionGroups) {
+        connectionGroup, includeConnections, includeSharingProfiles,
+        countActiveConnections, countActiveConnectionGroups) {
 
         var children = [];
 
@@ -225,7 +255,7 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
         if (connectionGroup.childConnections && includeConnections !== false) {
             connectionGroup.childConnections.forEach(function addChildConnection(child) {
                 children.push(GroupListItem.fromConnection(dataSource, child,
-                    countActiveConnections));
+                    includeSharingProfiles, countActiveConnections));
             });
         }
 
@@ -233,8 +263,8 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
         if (connectionGroup.childConnectionGroups) {
             connectionGroup.childConnectionGroups.forEach(function addChildGroup(child) {
                 children.push(GroupListItem.fromConnectionGroup(dataSource,
-                    child, includeConnections, countActiveConnections,
-                    countActiveConnectionGroups));
+                    child, includeConnections, includeSharingProfiles,
+                    countActiveConnections, countActiveConnectionGroups));
             });
         }
 
@@ -249,6 +279,7 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
             // Type information
             isConnection      : false,
             isConnectionGroup : true,
+            isSharingProfile  : false,
             isBalancing       : connectionGroup.type === ConnectionGroup.Type.BALANCING,
 
             // Already-converted children
@@ -268,6 +299,44 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
 
             // Wrapped item
             wrappedItem : connectionGroup
+
+        });
+
+    };
+
+    /**
+     * Creates a new GroupListItem using the contents of the given sharing
+     * profile.
+     *
+     * @param {String} dataSource
+     *     The identifier of the data source containing the given sharing
+     *     profile.
+     *
+     * @param {SharingProfile} sharingProfile
+     *     The sharing profile whose contents should be represented by the new
+     *     GroupListItem.
+     *
+     * @returns {GroupListItem}
+     *     A new GroupListItem which represents the given sharing profile.
+     */
+    GroupListItem.fromSharingProfile = function fromSharingProfile(dataSource,
+        sharingProfile) {
+
+        // Return item representing the given sharing profile
+        return new GroupListItem({
+
+            // Identifying information
+            name       : sharingProfile.name,
+            identifier : sharingProfile.identifier,
+            dataSource : dataSource,
+
+            // Type information
+            isConnection      : false,
+            isConnectionGroup : false,
+            isSharingProfile  : true,
+
+            // Wrapped item
+            wrappedItem : sharingProfile
 
         });
 

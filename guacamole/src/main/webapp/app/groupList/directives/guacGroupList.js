@@ -68,6 +68,17 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
             connectionGroupTemplate : '=',
 
             /**
+             * The URL or ID of the Angular template to use when rendering a
+             * sharing profile. The @link{GroupListItem} associated with that
+             * sharing profile will be exposed within the scope of the template
+             * as <code>item</code>, and the arbitrary context object, if any,
+             * will be exposed as <code>context</code>.
+             *
+             * @type String
+             */
+            sharingProfileTemplate : '=',
+
+            /**
              * Whether the root of the connection group hierarchy given should
              * be shown. If false (the default), only the descendants of the
              * given connection group will be listed.
@@ -165,6 +176,22 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
                 return item.isConnectionGroup && !!$scope.connectionGroupTemplate;
             };
 
+            /**
+             * Returns whether the given item represents a sharing profile that
+             * can be displayed. If there is no sharing profile template, then
+             * no sharing profile is visible.
+             *
+             * @param {GroupListItem} item
+             *     The item to check.
+             *
+             * @returns {Boolean}
+             *     true if the given item is a sharing profile that can be
+             *     displayed, false otherwise.
+             */
+            $scope.isVisibleSharingProfile = function isVisibleSharingProfile(item) {
+                return item.isSharingProfile && !!$scope.sharingProfileTemplate;
+            };
+
             // Set contents whenever the connection group is assigned or changed
             $scope.$watch('connectionGroups', function setContents(connectionGroups) {
 
@@ -185,7 +212,8 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
 
                         // Create root item for current connection group
                         var rootItem = GroupListItem.fromConnectionGroup(dataSource, connectionGroup,
-                            !!$scope.connectionTemplate, countActiveConnections);
+                            !!$scope.connectionTemplate, !!$scope.sharingProfileTemplate,
+                            countActiveConnections);
 
                         // If root group is to be shown, add it as a root item
                         if ($scope.showRootGroup)
