@@ -73,7 +73,18 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              *
              * @type Number
              */
-            pageSize : '='
+            pageSize : '=',
+
+            /**
+             * A callback which accepts an array of GroupListItems as its sole
+             * parameter. If provided, the callback will be invoked whenever an
+             * array of root-level GroupListItems is about to be rendered.
+             * Changes may be made by this function to that array or to the
+             * GroupListItems themselves.
+             *
+             * @type Function
+             */
+            decorator : '='
 
         },
 
@@ -205,6 +216,10 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
                     });
 
                 }
+
+                // Invoke item decorator, if provided
+                if ($scope.decorator)
+                    $scope.decorator($scope.rootItems);
 
             });
 
