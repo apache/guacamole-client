@@ -137,6 +137,15 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
             resolve       : { updateCurrentToken: updateCurrentToken }
         })
 
+        // Sharing profile editor
+        .when('/manage/:dataSource/sharingProfiles/:id?', {
+            title         : 'APP.NAME',
+            bodyClassName : 'manage',
+            templateUrl   : 'app/manage/templates/manageSharingProfile.html',
+            controller    : 'manageSharingProfileController',
+            resolve       : { updateCurrentToken: updateCurrentToken }
+        })
+
         // Connection group editor
         .when('/manage/:dataSource/connectionGroups/:id?', {
             title         : 'APP.NAME',

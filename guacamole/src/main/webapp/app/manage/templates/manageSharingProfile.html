@@ -1,0 +1,44 @@
+<div class="view" ng-class="{loading: !isLoaded()}">
+
+    <!-- Main property editor -->
+    <div class="header">
+        <h2>{{'MANAGE_SHARING_PROFILE.SECTION_HEADER_EDIT_SHARING_PROFILE' | translate}}</h2>
+        <guac-user-menu></guac-user-menu>
+    </div>
+    <div class="section">
+        <table class="properties">
+            <tr>
+                <th>{{'MANAGE_SHARING_PROFILE.FIELD_HEADER_NAME' | translate}}</th>
+                <td><input type="text" ng-model="sharingProfile.name"
+                           autocorrect="off" autocapitalize="off"/></td>
+            </tr>
+            <tr>
+                <th>{{'MANAGE_SHARING_PROFILE.FIELD_HEADER_PRIMARY_CONNECTION' | translate}}</th>
+                <td>{{primaryConnection.name}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Sharing profile attributes section -->
+    <div class="attributes">
+        <guac-form namespace="'SHARING_PROFILE_ATTRIBUTES'" content="attributes"
+                   model="sharingProfile.attributes"></guac-form>
+    </div>
+
+    <!-- Sharing profile parameters -->
+    <h2 class="header">{{'MANAGE_SHARING_PROFILE.SECTION_HEADER_PARAMETERS' | translate}}</h2>
+    <div class="section connection-parameters" ng-class="{loading: !parameters}">
+        <guac-form namespace="getNamespace(primaryConnection.protocol)"
+                   content="protocols[primaryConnection.protocol].forms"
+                   model="parameters"></guac-form>
+    </div>
+
+    <!-- Form action buttons -->
+    <div class="action-buttons">
+        <button ng-show="canSaveSharingProfile" ng-click="saveSharingProfile()">{{'MANAGE_SHARING_PROFILE.ACTION_SAVE' | translate}}</button>
+        <button ng-show="canCloneSharingProfile" ng-click="cloneSharingProfile()">{{'MANAGE_SHARING_PROFILE.ACTION_CLONE' | translate}}</button>
+        <button ng-click="cancel()">{{'MANAGE_SHARING_PROFILE.ACTION_CANCEL' | translate}}</button>
+        <button ng-show="canDeleteSharingProfile" ng-click="deleteSharingProfile()" class="danger">{{'MANAGE_SHARING_PROFILE.ACTION_DELETE' | translate}}</button>
+    </div>
+
+</div>
