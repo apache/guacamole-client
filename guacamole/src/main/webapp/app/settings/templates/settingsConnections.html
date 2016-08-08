@@ -33,9 +33,15 @@
         <guac-group-list
             page-size="25"
             connection-groups="filteredRootGroups"
+            decorator="rootItemDecorator"
             templates="{
+
                 'connection'       : 'app/settings/templates/connection.html',
-                'connection-group' : 'app/settings/templates/connectionGroup.html'
+                'connection-group' : 'app/settings/templates/connectionGroup.html',
+
+                'new-connection'       : 'app/settings/templates/newConnection.html',
+                'new-connection-group' : 'app/settings/templates/newConnectionGroup.html'
+
             }"/>
     </div>
 </div>

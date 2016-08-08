@@ -175,7 +175,9 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
 
     // If we are creating a new connection group, populate skeleton connection group data
     else
-        $scope.connectionGroup = new ConnectionGroup();
+        $scope.connectionGroup = new ConnectionGroup({
+            parentIdentifier : $location.search().parent
+        });
 
     /**
      * Available connection group types, as translation string / internal value
