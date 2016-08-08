@@ -1,6 +1,6 @@
 {
     "name"  : "rdp",
-    "forms" : [
+    "connectionForms" : [
 
         {
             "name"  : "network",

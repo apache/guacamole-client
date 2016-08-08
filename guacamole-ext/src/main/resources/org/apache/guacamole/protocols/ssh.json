@@ -1,6 +1,6 @@
 {
     "name"  : "ssh",
-    "forms" : [
+    "connectionForms" : [
 
         {
             "name"  : "network",

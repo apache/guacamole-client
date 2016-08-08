@@ -1,6 +1,6 @@
 {
     "name"  : "telnet",
-    "forms" : [
+    "connectionForms" : [
 
         {
             "name"  : "network",

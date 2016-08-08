@@ -44,13 +44,23 @@ angular.module('rest').factory('Protocol', [function defineProtocol() {
         this.name = template.name;
 
         /**
-         * An array of forms containing all known parameters for this protocol,
-         * their types, and other information.
+         * An array of forms describing all known parameters for a connection
+         * using this protocol, including their types and other information.
          *
          * @type Form[]
          * @default []
          */
-        this.forms = template.forms || [];
+        this.connectionForms = template.connectionForms || [];
+
+        /**
+         * An array of forms describing all known parameters relevant to a
+         * sharing profile whose primary connection uses this protocol,
+         * including their types, and other information.
+         *
+         * @type Form[]
+         * @default []
+         */
+        this.sharingProfileForms = template.sharingProfileForms || [];
 
     };
 

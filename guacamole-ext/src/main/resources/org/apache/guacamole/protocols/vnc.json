@@ -1,6 +1,6 @@
 {
     "name"  : "vnc",
-    "forms" : [
+    "connectionForms" : [
 
         {
             "name"  : "network",
