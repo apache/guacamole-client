@@ -150,5 +150,19 @@
             ]
         }
 
+    ],
+    "sharingProfileForms" : [
+
+        {
+            "name"  : "display",
+            "fields" : [
+                {
+                    "name"    : "read-only",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        }
+
     ]
 }

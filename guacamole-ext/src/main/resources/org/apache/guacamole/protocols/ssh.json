@@ -54,6 +54,11 @@
                     "name"  : "font-size",
                     "type"  : "ENUM",
                     "options" : [ "", "8", "9", "10", "11", "12", "14", "18", "24", "30", "36", "48", "60", "72", "96" ]
+                },
+                {
+                    "name"    : "read-only",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
                 }
             ]
         },
@@ -111,6 +116,20 @@
             "fields" : [
                 {
                     "name"    : "enable-sftp",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        }
+
+    ],
+    "sharingProfileForms" : [
+
+        {
+            "name"  : "display",
+            "fields" : [
+                {
+                    "name"    : "read-only",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
                 }

@@ -271,6 +271,7 @@
         "FIELD_HEADER_INITIAL_PROGRAM" : "Запуск программ при подключении:",
         "FIELD_HEADER_PASSWORD"        : "Пароль:",
         "FIELD_HEADER_PORT"            : "Порт:",
+        "FIELD_HEADER_READ_ONLY"       : "Только просмотр:",
         "FIELD_HEADER_REMOTE_APP_ARGS" : "Параметры RemoteApp:",
         "FIELD_HEADER_REMOTE_APP_DIR"  : "Рабочий каталог RemoteApp:",
         "FIELD_HEADER_REMOTE_APP"      : "Программы RemoteApp:",
@@ -322,6 +323,7 @@
         "FIELD_HEADER_PASSPHRASE"  : "Секретная фраза:",
         "FIELD_HEADER_PORT"        : "Порт:",
         "FIELD_HEADER_PRIVATE_KEY" : "Приватный ключ:",
+        "FIELD_HEADER_READ_ONLY"   : "Только просмотр:",
 
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
@@ -352,6 +354,7 @@
         "FIELD_HEADER_PASSWORD"       : "Пароль:",
         "FIELD_HEADER_PASSWORD_REGEX" : "Регулярное выражение для пароля:",
         "FIELD_HEADER_PORT"           : "Порт:",
+        "FIELD_HEADER_READ_ONLY"      : "Только просмотр:",
 
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
