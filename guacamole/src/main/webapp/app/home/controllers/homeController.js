@@ -26,6 +26,7 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     // Get required types
     var ConnectionGroup  = $injector.get('ConnectionGroup');
     var ClientIdentifier = $injector.get('ClientIdentifier');
+    var GroupListItem    = $injector.get('GroupListItem');
             
     // Get required services
     var authenticationService  = $injector.get('authenticationService');
@@ -95,15 +96,15 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
         getClientIdentifier : function getClientIdentifier(item) {
 
             // If the item is a connection, generate a connection identifier
-            if (item.isConnection)
+            if (item.type === GroupListItem.Type.CONNECTION)
                 return ClientIdentifier.toString({
                     dataSource : item.dataSource,
                     type       : ClientIdentifier.Types.CONNECTION,
                     id         : item.identifier
                 });
 
-            // If the item is a connection, generate a connection group identifier
-            if (item.isConnectionGroup)
+            // If the item is a connection group, generate a connection group identifier
+            if (item.type === GroupListItem.Type.CONNECTION_GROUP)
                 return ClientIdentifier.toString({
                     dataSource : item.dataSource,
                     type       : ClientIdentifier.Types.CONNECTION_GROUP,

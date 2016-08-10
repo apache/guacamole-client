@@ -78,9 +78,11 @@
                 <guac-group-list
                     context="groupListContext"
                     connection-groups="filteredRootGroups"
-                    connection-template="'app/manage/templates/connectionPermission.html'"
-                    sharing-profile-template="'app/manage/templates/sharingProfilePermission.html'"
-                    connection-group-template="'app/manage/templates/connectionGroupPermission.html'"
+                    templates="{
+                        'connection'       : 'app/manage/templates/connectionPermission.html',
+                        'sharing-profile'  : 'app/manage/templates/sharingProfilePermission.html',
+                        'connection-group' : 'app/manage/templates/connectionGroupPermission.html'
+                    }"
                     page-size="20"/>
             </div>
         </div>

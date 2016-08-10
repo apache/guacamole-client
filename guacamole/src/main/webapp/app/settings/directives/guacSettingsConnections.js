@@ -35,6 +35,7 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
 
             // Required types
             var ConnectionGroup = $injector.get('ConnectionGroup');
+            var GroupListItem   = $injector.get('GroupListItem');
             var PermissionSet   = $injector.get('PermissionSet');
 
             // Required services
@@ -205,6 +206,112 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
 
             };
 
+            /**
+             * Returns whether the current user can update the connection group
+             * having the given identifier within the current data source.
+             *
+             * @param {String} identifier
+             *     The identifier of the connection group to check.
+             *
+             * @return {Boolean}
+             *     true if the current user can update the connection group
+             *     having the given identifier within the current data source,
+             *     false otherwise.
+             */
+            $scope.canUpdateConnectionGroup = function canUpdateConnectionGroup(identifier) {
+
+                // Abort if permissions have not yet loaded
+                if (!$scope.permissions)
+                    return false;
+
+                // Can update the connection if adminstrator or have explicit permission
+                if (PermissionSet.hasSystemPermission($scope.permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+                 || PermissionSet.hasConnectionGroupPermission($scope.permissions, PermissionSet.ObjectPermissionType.UPDATE, identifier))
+                     return true;
+
+                // Current data sources does not allow the connection group to be updated
+                return false;
+
+            };
+
+            /**
+             * Adds connection-group-specific contextual actions to the given
+             * array of GroupListItems. Each contextual action will be
+             * represented by a new GroupListItem.
+             *
+             * @param {GroupListItem[]} items
+             *     The array of GroupListItems to which new GroupListItems
+             *     representing connection-group-specific contextual actions
+             *     should be added.
+             *
+             * @param {GroupListItem} [parent]
+             *     The GroupListItem representing the connection group which
+             *     contains the given array of GroupListItems, if known.
+             */
+            var addConnectionGroupActions = function addConnectionGroupActions(items, parent) {
+
+                // Do nothing if we lack permission to modify the parent at all
+                if (parent && !$scope.canUpdateConnectionGroup(parent.identifier))
+                    return;
+
+                // Add action for creating a child connection, if the user has
+                // permission to do so
+                if ($scope.canCreateConnections())
+                    items.push(new GroupListItem({
+                        type        : 'new-connection',
+                        dataSource  : $scope.dataSource,
+                        weight      : 1,
+                        wrappedItem : parent
+                    }));
+
+                // Add action for creating a child connection group, if the user
+                // has permission to do so
+                if ($scope.canCreateConnectionGroups())
+                    items.push(new GroupListItem({
+                        type        : 'new-connection-group',
+                        dataSource  : $scope.dataSource,
+                        weight      : 1,
+                        wrappedItem : parent
+                    }));
+
+            };
+
+            /**
+             * Decorates the given GroupListItem, including all descendants,
+             * adding contextual actions.
+             *
+             * @param {GroupListItem} item
+             *     The GroupListItem which should be decorated with additional
+             *     GroupListItems representing contextual actions.
+             */
+            var decorateItem = function decorateItem(item) {
+
+                // If the item is a connection group, add actions specific to
+                // connection groups
+                if (item.type === GroupListItem.Type.CONNECTION_GROUP)
+                    addConnectionGroupActions(item.children, item);
+
+                // Decorate all children
+                angular.forEach(item.children, decorateItem);
+
+            };
+
+            /**
+             * Callback which decorates all items within the given array of
+             * GroupListItems, including their descendants, adding contextual
+             * actions.
+             *
+             * @param {GroupListItem[]} items
+             *     The array of GroupListItems which should be decorated with
+             *     additional GroupListItems representing contextual actions.
+             */
+            $scope.rootItemDecorator = function rootItemDecorator(items) {
+
+                // Decorate each root-level item
+                angular.forEach(items, decorateItem);
+
+            };
+
             // Retrieve current permissions
             permissionService.getPermissions($scope.dataSource, currentUsername)
             .success(function permissionsRetrieved(permissions) {
@@ -219,19 +326,19 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
                 if (!$scope.canManageConnections())
                     $location.path('/');
 
-            });
-            
-            // Retrieve all connections for which we have UPDATE or DELETE permission
-            dataSourceService.apply(
-                connectionGroupService.getConnectionGroupTree,
-                [$scope.dataSource],
-                ConnectionGroup.ROOT_IDENTIFIER,
-                [PermissionSet.ObjectPermissionType.UPDATE, PermissionSet.ObjectPermissionType.DELETE]
-            )
-            .then(function connectionGroupsReceived(rootGroups) {
-                $scope.rootGroups = rootGroups;
-            });
-            
+                // Retrieve all connections for which we have UPDATE or DELETE permission
+                dataSourceService.apply(
+                    connectionGroupService.getConnectionGroupTree,
+                    [$scope.dataSource],
+                    ConnectionGroup.ROOT_IDENTIFIER,
+                    [PermissionSet.ObjectPermissionType.UPDATE, PermissionSet.ObjectPermissionType.DELETE]
+                )
+                .then(function connectionGroupsReceived(rootGroups) {
+                    $scope.rootGroups = rootGroups;
+                });
+
+            }); // end retrieve permissions
+
         }]
     };
     

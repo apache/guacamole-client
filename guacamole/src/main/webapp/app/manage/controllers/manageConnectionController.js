@@ -291,7 +291,10 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
 
     // If we are creating a new connection, populate skeleton connection data
     else {
-        $scope.connection = new Connection({ protocol: 'vnc' });
+        $scope.connection = new Connection({
+            protocol         : 'vnc',
+            parentIdentifier : $location.search().parent
+        });
         $scope.historyEntryWrappers = [];
         $scope.parameters = {};
     }

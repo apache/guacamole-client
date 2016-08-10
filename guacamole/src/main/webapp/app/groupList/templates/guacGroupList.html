@@ -1,55 +1,31 @@
 <div class="group-list">
 
     <script type="text/ng-template" id="nestedItem.html">
+        <div class="{{item.type}}" ng-if="isVisible(item.type)"
+            ng-class="{
+                expanded   : item.expanded,
+                expandable : item.expandable,
+                empty      : !item.children.length
+            }">
 
-        <!-- Connection -->
-        <div class="connection expandable" ng-if="isVisibleConnection(item)"
-            ng-class="{expanded: item.isExpanded, empty: !item.children.length}">
+            <!-- Item caption -->
             <div class="caption">
 
                 <!-- Expand/collapse icon -->
                 <div class="icon expand" ng-click="toggleExpanded(item)"
-                    ng-if="sharingProfileTemplate"></div>
+                    ng-if="item.expandable"></div>
 
-                <ng-include src="connectionTemplate"/>
+                <ng-include src="templates[item.type]"/>
 
             </div>
 
-            <!-- Children of this connection -->
-            <div class="children" ng-show="item.isExpanded">
+            <!-- Children of item (if any) -->
+            <div class="children" ng-if="item.expanded">
                 <div class="list-item" ng-repeat="item in item.children | orderBy : 'name'"
                     ng-include="'nestedItem.html'"></div>
             </div>
 
         </div>
-
-        <!-- Connection group -->
-        <div class="group expandable" ng-if="isVisibleConnectionGroup(item)"
-            ng-class="{expanded: item.isExpanded, empty: !item.children.length, balancer: item.isBalancing}">
-            <div class="caption">
-
-                <!-- Expand/collapse icon -->
-                <div class="icon expand" ng-click="toggleExpanded(item)"></div>
-
-                <ng-include src="connectionGroupTemplate"/>
-
-            </div>
-
-            <!-- Children of this group -->
-            <div class="children" ng-if="item.isExpanded">
-                <div class="list-item" ng-repeat="item in item.children | orderBy : 'name'"
-                    ng-include="'nestedItem.html'"></div>
-            </div>
-
-        </div>
-
-        <!-- Sharing profile -->
-        <div class="sharing-profile" ng-show="isVisibleSharingProfile(item)">
-            <div class="caption">
-                <ng-include src="sharingProfileTemplate"/>
-            </div>
-        </div>
-
     </script>
 
     <!-- Root-level connections / groups -->
@@ -58,7 +34,7 @@
     </div>
 
     <!-- Pager for connections / groups -->
-    <guac-pager page="childrenPage" items="rootItems | orderBy : 'name'"
+    <guac-pager page="childrenPage" items="rootItems | orderBy : ['weight', 'name']"
                 page-size="pageSize"></guac-pager>
 
 </div>

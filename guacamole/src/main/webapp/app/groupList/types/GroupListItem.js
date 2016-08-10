@@ -77,43 +77,36 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
         this.children = template.children || [];
 
         /**
-         * Whether this item represents a connection. If this item represents
-         * a connection group or sharing profile, this MUST be false.
+         * The type of object represented by this GroupListItem. Standard types
+         * are defined by GroupListItem.Type, but custom types are also legal.
          *
-         * @type Boolean
+         * @type String
          */
-        this.isConnection = template.isConnection;
+        this.type = template.type;
 
         /**
-         * Whether this item represents a connection group. If this item
-         * represents a connection or sharing profile, this MUST be false.
+         * Whether this item, or items of the same type, can contain children.
+         * This may be true even if this particular item does not presently
+         * contain children.
          *
          * @type Boolean
          */
-        this.isConnectionGroup = template.isConnectionGroup;
-
-        /**
-         * Whether this item represents a sharing profile. If this item
-         * represents a connection or connection group, this MUST be false.
-         *
-         * @type Boolean
-         */
-        this.isSharingProfile = template.isSharingProfile;
+        this.expandable = template.expandable;
 
         /**
          * Whether this item represents a balancing connection group.
          *
          * @type Boolean
          */
-        this.isBalancing = template.isBalancing;
+        this.balancing = template.balancing;
 
         /**
          * Whether the children items should be displayed.
          *
          * @type Boolean
          */
-        this.isExpanded = template.isExpanded;
-        
+        this.expanded = template.expanded;
+
         /**
          * Returns the number of currently active users for this connection,
          * connection group, or sharing profile, if known.
@@ -126,11 +119,23 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
 
         /**
          * The connection, connection group, or sharing profile whose data is
-         * exposed within this GroupListItem.
+         * exposed within this GroupListItem. If the type of this GroupListItem
+         * is not one of the types defined by GroupListItem.Type, then this
+         * value may be anything.
          *
-         * @type Connection|ConnectionGroup|SharingProfile
+         * @type Connection|ConnectionGroup|SharingProfile|*
          */
         this.wrappedItem = template.wrappedItem;
+
+        /**
+         * The sorting weight to apply when displaying this GroupListItem. This
+         * weight is relative only to other sorting weights. If two items have
+         * the same weight, they will be sorted based on their names.
+         *
+         * @type Number
+         * @default 0
+         */
+        this.weight = template.weight || 0;
 
     };
 
@@ -182,9 +187,8 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
             dataSource : dataSource,
 
             // Type information
-            isConnection      : true,
-            isConnectionGroup : false,
-            isSharingProfile  : false,
+            expandable : includeSharingProfiles,
+            type       : GroupListItem.Type.CONNECTION,
 
             // Already-converted children
             children : children,
@@ -277,10 +281,9 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
             dataSource : dataSource,
 
             // Type information
-            isConnection      : false,
-            isConnectionGroup : true,
-            isSharingProfile  : false,
-            isBalancing       : connectionGroup.type === ConnectionGroup.Type.BALANCING,
+            type       : GroupListItem.Type.CONNECTION_GROUP,
+            balancing  : connectionGroup.type === ConnectionGroup.Type.BALANCING,
+            expandable : true,
 
             // Already-converted children
             children : children,
@@ -331,14 +334,48 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
             dataSource : dataSource,
 
             // Type information
-            isConnection      : false,
-            isConnectionGroup : false,
-            isSharingProfile  : true,
+            type : GroupListItem.Type.SHARING_PROFILE,
 
             // Wrapped item
             wrappedItem : sharingProfile
 
         });
+
+    };
+
+    /**
+     * All pre-defined types of GroupListItems. Note that, while these are the
+     * standard types supported by GroupListItem and the related guacGroupList
+     * directive, the type string is otherwise arbitrary and custom types are
+     * legal.
+     *
+     * @type Object.<String, String>
+     */
+    GroupListItem.Type = {
+
+        /**
+         * The standard type string of a GroupListItem which represents a
+         * connection.
+         *
+         * @type String
+         */
+        CONNECTION : 'connection',
+
+        /**
+         * The standard type string of a GroupListItem which represents a
+         * connection group.
+         *
+         * @type String
+         */
+        CONNECTION_GROUP : 'connection-group',
+
+        /**
+         * The standard type string of a GroupListItem which represents a
+         * sharing profile.
+         *
+         * @type String
+         */
+        SHARING_PROFILE : 'sharing-profile'
 
     };
 
