@@ -292,6 +292,7 @@
         "FIELD_HEADER_INITIAL_PROGRAM" : "Startprogramm:",
         "FIELD_HEADER_PASSWORD"        : "Passwort:",
         "FIELD_HEADER_PORT"            : "Port:",
+        "FIELD_HEADER_READ_ONLY"       : "Nur-Lesen:",
         "FIELD_HEADER_REMOTE_APP_ARGS" : "Parameter:",
         "FIELD_HEADER_REMOTE_APP_DIR"  : "Arbeitsverzeichnis:",
         "FIELD_HEADER_REMOTE_APP"      : "Programm:",
@@ -354,6 +355,7 @@
         "FIELD_HEADER_PASSPHRASE"  : "Passphrase:",
         "FIELD_HEADER_PORT"        : "Port:",
         "FIELD_HEADER_PRIVATE_KEY" : "Privater Schlüssel:",
+        "FIELD_HEADER_READ_ONLY"   : "Nur-Lesen:",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Schwarz auf Weiß",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -397,6 +399,7 @@
         "FIELD_HEADER_PASSWORD"       : "Passwort:",
         "FIELD_HEADER_PASSWORD_REGEX" : "Reguläre Passwortersetzungen:",
         "FIELD_HEADER_PORT"           : "Port:",
+        "FIELD_HEADER_READ_ONLY"      : "Nur-Lesen:",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Schwarz auf Weiß",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",

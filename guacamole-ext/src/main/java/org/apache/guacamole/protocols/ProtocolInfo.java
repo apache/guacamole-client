@@ -24,9 +24,10 @@ import java.util.Collection;
 import org.apache.guacamole.form.Form;
 
 /**
- * Describes a protocol and all forms associated with it, as required by
- * a protocol plugin for guacd. This class allows known forms for a
- * protocol to be exposed to the user as friendly fields.
+ * Describes a protocol and all parameters associated with it, as required by
+ * a protocol plugin for guacd. Each parameter is described with a Form, which
+ * allows the parameters of a protocol to be exposed to the user as friendly
+ * groupings of fields.
  *
  * @author Michael Jumper
  */
@@ -38,15 +39,45 @@ public class ProtocolInfo {
     private String name;
 
     /**
-     * A collection of all associated protocol forms.
+     * A collection of forms describing all known parameters for a connection
+     * using this protocol.
      */
-    private Collection<Form> forms;
+    private Collection<Form> connectionForms;
+
+    /**
+     * A collection of forms describing all known parameters relevant to a
+     * sharing profile whose primary connection uses this protocol.
+     */
+    private Collection<Form> sharingProfileForms;
+
+    /**
+     * Creates a new ProtocolInfo having the given name and forms. The given
+     * collections of forms are used to describe the parameters for connections
+     * and sharing profiles respectively.
+     *
+     * @param name
+     *     The unique name associated with the protocol.
+     *
+     * @param connectionForms
+     *     A collection of forms describing all known parameters for a
+     *     connection using this protocol.
+     *
+     * @param sharingProfileForms
+     *     A collection of forms describing all known parameters relevant to a
+     *     sharing profile whose primary connection uses this protocol.
+     */
+    public ProtocolInfo(String name, Collection<Form> connectionForms,
+            Collection<Form> sharingProfileForms) {
+        this.name = name;
+        this.connectionForms = connectionForms;
+        this.sharingProfileForms = sharingProfileForms;
+    }
 
     /**
      * Creates a new ProtocolInfo with no associated name or forms.
      */
     public ProtocolInfo() {
-        this.forms = new ArrayList<Form>();
+        this(null);
     }
 
     /**
@@ -56,22 +87,24 @@ public class ProtocolInfo {
      *     The unique name associated with the protocol.
      */
     public ProtocolInfo(String name) {
-        this.name  = name;
-        this.forms = new ArrayList<Form>();
+        this(name, new ArrayList<Form>());
     }
 
     /**
-     * Creates a new ProtocolInfo having the given name and forms.
+     * Creates a new ProtocolInfo having the given name and forms. The given
+     * forms are used to describe the parameters for both connections and
+     * sharing profiles.
      *
      * @param name
      *     The unique name associated with the protocol.
      *
      * @param forms
-     *     The forms to associate with the protocol.
+     *     A collection of forms describing all known parameters for this
+     *     protocol, regardless of whether it is used in the context of a
+     *     connection or a sharing profile.
      */
     public ProtocolInfo(String name, Collection<Form> forms) {
-        this.name  = name;
-        this.forms = forms;
+        this(name, forms, new ArrayList<Form>(forms));
     }
 
     /**
@@ -95,25 +128,57 @@ public class ProtocolInfo {
     }
 
     /**
-     * Returns a mutable collection of the protocol forms associated with
-     * this protocol. Changes to this collection affect the forms exposed
-     * to the user.
+     * Returns a mutable collection of forms describing all known parameters for
+     * a connection using this protocol. Changes to this collection affect the
+     * forms exposed to the user.
      *
-     * @return A mutable collection of protocol forms.
+     * @return
+     *     A mutable collection of forms describing all known parameters for a
+     *     connection using this protocol.
      */
-    public Collection<Form> getForms() {
-        return forms;
+    public Collection<Form> getConnectionForms() {
+        return connectionForms;
     }
 
     /**
-     * Sets the collection of protocol forms associated with this
-     * protocol.
+     * Sets the collection of forms describing all known parameters for a
+     * connection using this protocol. The provided collection must be mutable.
      *
-     * @param forms
-     *     The collection of forms to associate with this protocol.
+     * @param connectionForms
+     *     A mutable collection of forms describing all known parameters for a
+     *     connection using this protocol.
      */
-    public void setForms(Collection<Form> forms) {
-        this.forms = forms;
+    public void setConnectionForms(Collection<Form> connectionForms) {
+        this.connectionForms = connectionForms;
     }
-    
+
+    /**
+     * Returns a mutable collection of forms describing all known parameters
+     * relevant to a sharing profile whose primary connection uses this
+     * protocol. Changes to this collection affect the forms exposed to the
+     * user.
+     *
+     * @return
+     *     A mutable collection of forms describing all known parameters
+     *     relevant to a sharing profile whose primary connection uses this
+     *     protocol.
+     */
+    public Collection<Form> getSharingProfileForms() {
+        return sharingProfileForms;
+    }
+
+    /**
+     * Sets the collection of forms describing all known parameters relevant to
+     * a sharing profile whose primary connection uses this protocol. The
+     * provided collection must be mutable.
+     *
+     * @param sharingProfileForms
+     *     A mutable collection of forms describing all known parameters
+     *     relevant to a sharing profile whose primary connection uses this
+     *     protocol.
+     */
+    public void setSharingProfileForms(Collection<Form> sharingProfileForms) {
+        this.sharingProfileForms = sharingProfileForms;
+    }
+
 }

@@ -1,6 +1,6 @@
 {
     "name"  : "vnc",
-    "forms" : [
+    "connectionForms" : [
 
         {
             "name"  : "network",
@@ -146,6 +146,20 @@
                 {
                     "name"  : "audio-servername",
                     "type"  : "TEXT"
+                }
+            ]
+        }
+
+    ],
+    "sharingProfileForms" : [
+
+        {
+            "name"  : "display",
+            "fields" : [
+                {
+                    "name"    : "read-only",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
                 }
             ]
         }
