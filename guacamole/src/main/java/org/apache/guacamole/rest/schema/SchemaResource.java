@@ -100,6 +100,26 @@ public class SchemaResource {
     }
 
     /**
+     * Retrieves the possible attributes of a sharing profile object.
+     *
+     * @return
+     *     A collection of forms which describe the possible attributes of a
+     *     sharing profile object.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the possible attributes.
+     */
+    @GET
+    @Path("sharingProfileAttributes")
+    public Collection<Form> getSharingProfileAttributes()
+            throws GuacamoleException {
+
+        // Retrieve all possible sharing profile attributes
+        return userContext.getSharingProfileAttributes();
+
+    }
+
+    /**
      * Retrieves the possible attributes of a connection group object.
      *
      * @return
