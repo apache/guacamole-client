@@ -29,7 +29,7 @@
     <h2 class="header">{{'MANAGE_SHARING_PROFILE.SECTION_HEADER_PARAMETERS' | translate}}</h2>
     <div class="section connection-parameters" ng-class="{loading: !parameters}">
         <guac-form namespace="getNamespace(primaryConnection.protocol)"
-                   content="protocols[primaryConnection.protocol].forms"
+                   content="protocols[primaryConnection.protocol].sharingProfileForms"
                    model="parameters"></guac-form>
     </div>
 
