@@ -54,6 +54,14 @@ angular.module('auth').factory('authenticationService', ['$injector',
     var service = {};
 
     /**
+     * The most recent authentication result, or null if no authentication
+     * result is cached.
+     *
+     * @type AuthenticationResult
+     */
+    var cachedResult = null;
+
+    /**
      * The unique identifier of the local cookie which stores the result of the
      * last authentication attempt.
      *
@@ -72,12 +80,17 @@ angular.module('auth').factory('authenticationService', ['$injector',
      */
     var getAuthenticationResult = function getAuthenticationResult() {
 
+        // Use cached result, if any
+        if (cachedResult)
+            return cachedResult;
+
         // Return explicit null if no auth data is currently stored
         var data = $cookieStore.get(AUTH_COOKIE_ID);
         if (!data)
             return null;
 
-        return new AuthenticationResult(data);
+        // Update cache and return retrieved auth result
+        return (cachedResult = new AuthenticationResult(data));
 
     };
 
@@ -92,12 +105,22 @@ angular.module('auth').factory('authenticationService', ['$injector',
     var setAuthenticationResult = function setAuthenticationResult(data) {
 
         // Clear the currently-stored result if the last attempt failed
-        if (!data)
+        if (!data) {
+            cachedResult = null;
             $cookieStore.remove(AUTH_COOKIE_ID);
+        }
 
         // Otherwise store the authentication attempt directly
-        else
-            $cookieStore.put(AUTH_COOKIE_ID, data);
+        else {
+
+            // Always store in cache
+            cachedResult = data;
+
+            // Store cookie ONLY if not anonymous
+            if (data.username !== AuthenticationResult.ANONYMOUS_USERNAME)
+                $cookieStore.put(AUTH_COOKIE_ID, data);
+
+        }
 
     };
 
