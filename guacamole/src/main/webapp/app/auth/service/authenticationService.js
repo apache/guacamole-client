@@ -257,6 +257,19 @@ angular.module('auth').factory('authenticationService', ['$injector',
     };
 
     /**
+     * Returns whether the current user has authenticated anonymously. An
+     * anonymous user is denoted by the identifier reserved by the Guacamole
+     * extension API for anonymous users (the empty string).
+     *
+     * @returns {Boolean}
+     *     true if the current user has authenticated anonymously, false
+     *     otherwise.
+     */
+    service.isAnonymous = function isAnonymous() {
+        return service.getCurrentUsername() === '';
+    };
+
+    /**
      * Returns the username of the current user. If the current user is not
      * logged in, this value may not be valid.
      *
