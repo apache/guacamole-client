@@ -42,7 +42,8 @@ angular.module('auth').factory('authenticationService', ['$injector',
         function authenticationService($injector) {
 
     // Required types
-    var Error = $injector.get('Error');
+    var AuthenticationResult = $injector.get('AuthenticationResult');
+    var Error                = $injector.get('Error');
 
     // Required services
     var $cookieStore = $injector.get('$cookieStore');
@@ -53,12 +54,60 @@ angular.module('auth').factory('authenticationService', ['$injector',
     var service = {};
 
     /**
-     * The unique identifier of the local cookie which stores the user's
-     * current authentication token and username.
+     * The unique identifier of the local cookie which stores the result of the
+     * last authentication attempt.
      *
      * @type String
      */
     var AUTH_COOKIE_ID = "GUAC_AUTH";
+
+    /**
+     * Retrieves the last successful authentication result. If the user has not
+     * yet authenticated, the user has logged out, or the last authentication
+     * attempt failed, null is returned.
+     *
+     * @returns {AuthenticationResult}
+     *     The last successful authentication result, or null if the user is not
+     *     currently authenticated.
+     */
+    var getAuthenticationResult = function getAuthenticationResult() {
+
+        // Return explicit null if no auth data is currently stored
+        var data = $cookieStore.get(AUTH_COOKIE_ID);
+        if (!data)
+            return null;
+
+        return new AuthenticationResult(data);
+
+    };
+
+    /**
+     * Stores the given authentication result for future retrieval. The given
+     * result MUST be the result of the most recent authentication attempt.
+     *
+     * @param {AuthenticationResult} data
+     *     The last successful authentication result, or null if the last
+     *     authentication attempt failed.
+     */
+    var setAuthenticationResult = function setAuthenticationResult(data) {
+
+        // Clear the currently-stored result if the last attempt failed
+        if (!data)
+            $cookieStore.remove(AUTH_COOKIE_ID);
+
+        // Otherwise store the authentication attempt directly
+        else
+            $cookieStore.put(AUTH_COOKIE_ID, data);
+
+    };
+
+    /**
+     * Clears the stored authentication result, if any. If no authentication
+     * result is currently stored, this function has no effect.
+     */
+    var clearAuthenticationResult = function clearAuthenticationResult() {
+        setAuthenticationResult(null);
+    };
 
     /**
      * Makes a request to authenticate a user using the token REST API endpoint
@@ -95,12 +144,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
         var completeAuthentication = function completeAuthentication(data) {
 
             // Store auth data
-            $cookieStore.put(AUTH_COOKIE_ID, {
-                'authToken'            : data.authToken,
-                'username'             : data.username,
-                'dataSource'           : data.dataSource,
-                'availableDataSources' : data.availableDataSources
-            });
+            setAuthenticationResult(new AuthenticationResult(data));
 
             // Process is complete
             authenticationProcess.resolve();
@@ -114,7 +158,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            data: $.param(parameters),
+            data: $.param(parameters)
         })
 
         // If authentication succeeds, handle received auth data
@@ -243,7 +287,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
         
         // Clear authentication data
         var token = service.getCurrentToken();
-        $cookieStore.remove(AUTH_COOKIE_ID);
+        clearAuthenticationResult();
 
         // Notify listeners that a token is being destroyed
         $rootScope.$broadcast('guacLogout', token);
@@ -280,7 +324,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
     service.getCurrentUsername = function getCurrentUsername() {
 
         // Return username, if available
-        var authData = $cookieStore.get(AUTH_COOKIE_ID);
+        var authData = getAuthenticationResult();
         if (authData)
             return authData.username;
 
@@ -300,7 +344,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
     service.getCurrentToken = function getCurrentToken() {
 
         // Return auth token, if available
-        var authData = $cookieStore.get(AUTH_COOKIE_ID);
+        var authData = getAuthenticationResult();
         if (authData)
             return authData.authToken;
 
@@ -320,7 +364,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
     service.getDataSource = function getDataSource() {
 
         // Return data source, if available
-        var authData = $cookieStore.get(AUTH_COOKIE_ID);
+        var authData = getAuthenticationResult();
         if (authData)
             return authData.dataSource;
 
@@ -340,7 +384,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
     service.getAvailableDataSources = function getAvailableDataSources() {
 
         // Return data sources, if available
-        var authData = $cookieStore.get(AUTH_COOKIE_ID);
+        var authData = getAuthenticationResult();
         if (authData)
             return authData.availableDataSources;
 
