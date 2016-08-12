@@ -68,7 +68,18 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
             .then(function retrievedMainPages(pages) {
                 $scope.pages = pages;
             });
-            
+
+            /**
+             * Returns whether the current user has authenticated anonymously.
+             *
+             * @returns {Boolean}
+             *     true if the current user has authenticated anonymously, false
+             *     otherwise.
+             */
+            $scope.isAnonymous = function isAnonymous() {
+                return authenticationService.isAnonymous();
+            };
+
             /**
              * Logs out the current user, redirecting them to back to the root
              * after logout completes.
