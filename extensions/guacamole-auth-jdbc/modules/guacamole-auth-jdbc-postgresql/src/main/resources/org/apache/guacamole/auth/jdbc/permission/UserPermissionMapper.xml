@@ -111,7 +111,11 @@
             permission,
             affected_user_id
         )
-        SELECT permissions.user_id, permissions.permission, guacamole_user.user_id FROM
+        SELECT DISTINCT
+            permissions.user_id,
+            permissions.permission,
+            guacamole_user.user_id
+        FROM
             <foreach collection="permissions" item="permission"
                      open="(" separator="UNION ALL" close=")">
                 SELECT #{permission.userID,jdbcType=INTEGER}                                 AS user_id,
@@ -119,7 +123,14 @@
                        #{permission.objectIdentifier,jdbcType=INTEGER}                       AS username
             </foreach>
         AS permissions
-        JOIN guacamole_user ON guacamole_user.username = permissions.username; 
+        JOIN guacamole_user ON guacamole_user.username = permissions.username
+        WHERE (permissions.user_id, permissions.permission, guacamole_user.user_id) NOT IN (
+            SELECT
+                guacamole_user_permission.user_id,
+                guacamole_user_permission.permission,
+                guacamole_user_permission.affected_user_id
+            FROM guacamole_user_permission
+        );
 
     </insert>
 
