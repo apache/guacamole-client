@@ -88,7 +88,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
 
                 // Otherwise, reject and reroute
                 else {
-                    $location.url(homePage.url);
+                    $location.path(homePage.url);
                     route.reject();
                 }
 
