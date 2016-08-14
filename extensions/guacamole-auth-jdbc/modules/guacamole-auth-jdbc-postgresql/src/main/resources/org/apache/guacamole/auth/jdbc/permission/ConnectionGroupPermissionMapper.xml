@@ -105,12 +105,25 @@
             permission,
             connection_group_id
         )
-        VALUES
-            <foreach collection="permissions" item="permission" separator=",">
-                (#{permission.userID,jdbcType=INTEGER},
-                 #{permission.type,jdbcType=VARCHAR}::guacamole_object_permission_type,
-                 #{permission.objectIdentifier,jdbcType=INTEGER}::integer)
+        SELECT DISTINCT
+            permissions.user_id,
+            permissions.permission,
+            permissions.connection_group_id
+        FROM
+            <foreach collection="permissions" item="permission"
+                     open="(" separator="UNION ALL" close=")">
+                SELECT #{permission.userID,jdbcType=INTEGER}                                 AS user_id,
+                       #{permission.type,jdbcType=VARCHAR}::guacamole_object_permission_type AS permission,
+                       #{permission.objectIdentifier,jdbcType=INTEGER}::integer              AS connection_group_id
             </foreach>
+        AS permissions
+        WHERE (user_id, permission, connection_group_id) NOT IN (
+            SELECT
+                guacamole_connection_group_permission.user_id,
+                guacamole_connection_group_permission.permission,
+                guacamole_connection_group_permission.connection_group_id
+            FROM guacamole_connection_group_permission
+        );
 
     </insert>
 

@@ -79,11 +79,22 @@
             user_id,
             permission
         )
-        VALUES
-            <foreach collection="permissions" item="permission" separator=",">
-                (#{permission.userID,jdbcType=INTEGER},
-                 #{permission.type,jdbcType=VARCHAR}::guacamole_system_permission_type)
+        SELECT DISTINCT
+            permissions.user_id,
+            permissions.permission
+        FROM
+            <foreach collection="permissions" item="permission"
+                     open="(" separator="UNION ALL" close=")">
+                SELECT #{permission.userID,jdbcType=INTEGER}                                 AS user_id,
+                       #{permission.type,jdbcType=VARCHAR}::guacamole_system_permission_type AS permission
             </foreach>
+        AS permissions
+        WHERE (user_id, permission) NOT IN (
+            SELECT
+                guacamole_system_permission.user_id,
+                guacamole_system_permission.permission
+            FROM guacamole_system_permission
+        );
 
     </insert>
 
