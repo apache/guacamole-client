@@ -29,6 +29,12 @@ package org.apache.guacamole.net.auth;
 public interface AuthenticatedUser extends Identifiable {
 
     /**
+     * The identifier reserved for representing a user that has authenticated
+     * anonymously.
+     */
+    public static final String ANONYMOUS_IDENTIFIER = "";
+
+    /**
      * Returns the AuthenticationProvider that authenticated this user.
      *
      * @return

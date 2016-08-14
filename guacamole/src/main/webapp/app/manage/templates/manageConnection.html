@@ -75,7 +75,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="wrapper in wrapperPage">
-                    <td class="username">{{wrapper.entry.username}}</td>
+                    <td class="username"><guac-user-item username="wrapper.entry.username"></guac-user-item></td>
                     <td class="start">{{wrapper.entry.startDate | date:historyDateFormat}}</td>
                     <td class="duration"
                         translate="{{wrapper.durationText}}"

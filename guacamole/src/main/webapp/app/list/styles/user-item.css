@@ -17,10 +17,7 @@
  * under the License.
  */
 
-/**
- * Module for displaying, sorting, and filtering the contents of a list, split
- * into multiple pages.
- */
-angular.module('list', [
-    'auth'
-]);
+.user-item.anonymous {
+    font-style: italic;
+    opacity: 0.5;
+}

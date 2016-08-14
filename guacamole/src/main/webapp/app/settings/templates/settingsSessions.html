@@ -37,7 +37,7 @@
                 <td class="select-session">
                     <input ng-change="wrapperSelectionChange(wrapper)" type="checkbox" ng-model="wrapper.checked" />
                 </td>
-                <td>{{wrapper.activeConnection.username}}</td>
+                <td><guac-user-item username="wrapper.activeConnection.username"></guac-user-item></td>
                 <td>{{wrapper.startDate}}</td>
                 <td>{{wrapper.activeConnection.remoteHost}}</td>
                 <td>{{wrapper.name}}</td>

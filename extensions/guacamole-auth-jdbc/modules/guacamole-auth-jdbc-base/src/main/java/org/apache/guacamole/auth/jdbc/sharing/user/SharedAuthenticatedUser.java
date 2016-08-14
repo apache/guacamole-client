@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.jdbc.sharing.user;
 
-import java.util.UUID;
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -61,7 +60,8 @@ public class SharedAuthenticatedUser extends RemoteAuthenticatedUser {
     /**
      * Creates a new SharedAuthenticatedUser associating the given user with
      * their corresponding credentials and share key. The identifier (username)
-     * of the user will be randomly generated.
+     * of the user will be the standard identifier for anonymous users as
+     * defined by the Guacamole extension API.
      *
      * @param authenticationProvider
      *     The AuthenticationProvider that has authenticated the given user.
@@ -77,7 +77,7 @@ public class SharedAuthenticatedUser extends RemoteAuthenticatedUser {
             Credentials credentials, String shareKey) {
         super(authenticationProvider, credentials);
         this.shareKey = shareKey;
-        this.identifier = UUID.randomUUID().toString();
+        this.identifier = AuthenticatedUser.ANONYMOUS_IDENTIFIER;
     }
 
     /**
