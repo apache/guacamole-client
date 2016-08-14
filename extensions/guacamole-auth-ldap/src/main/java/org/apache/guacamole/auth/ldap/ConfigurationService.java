@@ -206,4 +206,23 @@ public class ConfigurationService {
         );
     }
 
+    /**
+     * Returns maximum number of results a LDAP query can return,
+     * as configured with guacamole.properties.
+     * By default, this will be 1000.
+     *
+     * @return
+     *     The maximum number of results a LDAP query can return,
+     *     as configured with guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public int getMaxResults() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_MAX_SEARCH_RESULTS,
+            1000 
+        );
+    }
+
 }
