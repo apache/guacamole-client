@@ -24,6 +24,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.guacamole.GuacamoleClientException;
@@ -31,10 +33,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.apache.guacamole.rest.auth.AuthenticationService;
-import org.apache.guacamole.tunnel.GuacamoleStreamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,7 +147,7 @@ public class RESTExceptionWrapper implements MethodInterceptor {
     }
 
     @Override
-    public Object invoke(MethodInvocation invocation) throws Throwable {
+    public Object invoke(MethodInvocation invocation) throws WebApplicationException {
 
         try {
 
@@ -172,108 +171,27 @@ public class RESTExceptionWrapper implements MethodInterceptor {
 
             }
 
-            // Rethrow unchecked exceptions such that they are properly wrapped
-            catch (RuntimeException e) {
-                throw new GuacamoleException(e.getMessage(), e);
-            }
-
         }
 
-        // Additional credentials are needed
-        catch (GuacamoleInsufficientCredentialsException e) {
-
-            // Generate default message
-            String message = e.getMessage();
-            if (message == null)
-                message = "Permission denied.";
-
-            throw new APIException(
-                APIError.Type.INSUFFICIENT_CREDENTIALS,
-                message,
-                e.getCredentialsInfo().getFields()
-            );
-        }
-
-        // The provided credentials are wrong
-        catch (GuacamoleInvalidCredentialsException e) {
-
-            // Generate default message
-            String message = e.getMessage();
-            if (message == null)
-                message = "Permission denied.";
-
-            throw new APIException(
-                APIError.Type.INVALID_CREDENTIALS,
-                message,
-                e.getCredentialsInfo().getFields()
-            );
-        }
-
-        // Generic permission denied
+        // Translate GuacamoleException subclasses to HTTP error codes
         catch (GuacamoleSecurityException e) {
-
-            // Generate default message
-            String message = e.getMessage();
-            if (message == null)
-                message = "Permission denied.";
-
-            throw new APIException(
-                APIError.Type.PERMISSION_DENIED,
-                message
-            );
-
+            throw new APIException(Response.Status.FORBIDDEN, e);
         }
-
-        // Arbitrary resource not found
         catch (GuacamoleResourceNotFoundException e) {
-
-            // Generate default message
-            String message = e.getMessage();
-            if (message == null)
-                message = "Not found.";
-
-            throw new APIException(
-                APIError.Type.NOT_FOUND,
-                message
-            );
-
+            throw new APIException(Response.Status.NOT_FOUND, e);
         }
-        
-        // Arbitrary bad requests
         catch (GuacamoleClientException e) {
-
-            // Generate default message
-            String message = e.getMessage();
-            if (message == null)
-                message = "Invalid request.";
-
-            throw new APIException(
-                APIError.Type.BAD_REQUEST,
-                message
-            );
-
+            throw new APIException(Response.Status.BAD_REQUEST, e);
         }
-
-        // Errors from intercepted streams
-        catch (GuacamoleStreamException e) {
-
-            // Generate default message
-            String message = e.getMessage();
-            if (message == null)
-                message = "Error reported by stream.";
-
-            throw new APIException(
-                e.getStatus(),
-                message
-            );
-
-        }
-
-        // All other errors
         catch (GuacamoleException e) {
+            throw new APIException(Response.Status.INTERNAL_SERVER_ERROR, e);
+        }
 
-            // Log all reasonable details of exception
-            String message = e.getMessage();
+        // Rethrow unchecked exceptions such that they are properly wrapped
+        catch (Throwable t) {
+
+            // Log all reasonable details of error
+            String message = t.getMessage();
             if (message != null)
                 logger.error("Unexpected internal error: {}", message);
             else
@@ -282,12 +200,10 @@ public class RESTExceptionWrapper implements MethodInterceptor {
                            + "details.");
 
             // Ensure internal errors are fully logged at the debug level
-            logger.debug("Unexpected exception in REST endpoint.", e);
+            logger.debug("Unexpected error in REST endpoint.", t);
 
-            throw new APIException(
-                APIError.Type.INTERNAL_ERROR,
-                "Unexpected server error."
-            );
+            throw new APIException(Response.Status.INTERNAL_SERVER_ERROR,
+                    new GuacamoleException("Unexpected internal error.", t));
 
         }
 
