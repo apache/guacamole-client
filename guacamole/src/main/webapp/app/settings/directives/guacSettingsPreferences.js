@@ -127,7 +127,9 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                     guacNotification.showStatus({
                         className  : 'error',
                         title      : 'SETTINGS_PREFERENCES.DIALOG_HEADER_ERROR',
-                        text       : 'SETTINGS_PREFERENCES.ERROR_PASSWORD_MISMATCH',
+                        text       : {
+                            key : 'SETTINGS_PREFERENCES.ERROR_PASSWORD_MISMATCH'
+                        },
                         actions    : [ ACKNOWLEDGE_ACTION ]
                     });
                     return;
@@ -138,7 +140,9 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                     guacNotification.showStatus({
                         className  : 'error',
                         title      : 'SETTINGS_PREFERENCES.DIALOG_HEADER_ERROR',
-                        text       : 'SETTINGS_PREFERENCES.ERROR_PASSWORD_BLANK',
+                        text       : {
+                            key : 'SETTINGS_PREFERENCES.ERROR_PASSWORD_BLANK'
+                        },
                         actions    : [ ACKNOWLEDGE_ACTION ]
                     });
                     return;
@@ -155,7 +159,9 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
 
                     // Indicate that the password has been changed
                     guacNotification.showStatus({
-                        text    : 'SETTINGS_PREFERENCES.INFO_PASSWORD_CHANGED',
+                        text    : {
+                            key : 'SETTINGS_PREFERENCES.INFO_PASSWORD_CHANGED'
+                        },
                         actions : [ ACKNOWLEDGE_ACTION ]
                     });
                 })
@@ -165,7 +171,7 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                     guacNotification.showStatus({
                         className  : 'error',
                         title      : 'SETTINGS_PREFERENCES.DIALOG_HEADER_ERROR',
-                        'text'       : error.message,
+                        text       : error.translatableMessage,
                         actions    : [ ACKNOWLEDGE_ACTION ]
                     });
                 });

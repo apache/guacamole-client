@@ -36,7 +36,7 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
          * An optional instructional message to display within the login
          * dialog.
          *
-         * @type String
+         * @type TranslatableMessage
          */
         helpText : '=',
 
@@ -72,7 +72,7 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         /**
          * A description of the error that occurred during login, if any.
          *
-         * @type String
+         * @type TranslatableMessage
          */
         $scope.loginError = null;
 
@@ -160,11 +160,13 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
 
                     // Flag generic error for invalid login
                     if (error.type === Error.Type.INVALID_CREDENTIALS)
-                        $scope.loginError = 'LOGIN.ERROR_INVALID_LOGIN';
+                        $scope.loginError = {
+                            'key' : 'LOGIN.ERROR_INVALID_LOGIN'
+                        };
 
                     // Display error if anything else goes wrong
                     else
-                        $scope.loginError = error.message;
+                        $scope.loginError = error.translatableMessage;
 
                     // Clear all visible password fields
                     angular.forEach($scope.remainingFields, function clearEnteredValueIfPassword(field) {

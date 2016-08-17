@@ -578,7 +578,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
          || connectionState === ManagedClientState.ConnectionState.WAITING) {
             guacNotification.showStatus({
                 title: "CLIENT.DIALOG_HEADER_CONNECTING",
-                text: "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase()
+                text: {
+                    key : "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase()
+                }
             });
         }
 
@@ -595,7 +597,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             notifyConnectionClosed({
                 className : "error",
                 title     : "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
-                text      : "CLIENT.ERROR_CLIENT_" + errorName,
+                text      : {
+                    key : "CLIENT.ERROR_CLIENT_" + errorName
+                },
                 countdown : countdown,
                 actions   : actions
             });
@@ -615,7 +619,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             notifyConnectionClosed({
                 className : "error",
                 title     : "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
-                text      : "CLIENT.ERROR_TUNNEL_" + errorName,
+                text      : {
+                    key : "CLIENT.ERROR_TUNNEL_" + errorName
+                },
                 countdown : countdown,
                 actions   : actions
             });
@@ -626,7 +632,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         else if (connectionState === ManagedClientState.ConnectionState.DISCONNECTED) {
             notifyConnectionClosed({
                 title   : "CLIENT.DIALOG_HEADER_DISCONNECTED",
-                text    : "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase(),
+                text    : {
+                    key : "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase()
+                },
                 actions : actions
             });
         }

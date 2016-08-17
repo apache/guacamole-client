@@ -8,7 +8,9 @@
     <div class="body">
 
         <!-- Notification text -->
-        <p ng-show="notification.text" class="text">{{notification.text | translate}}</p>
+        <p ng-show="notification.text" class="text"
+           translate="{{notification.text.key}}"
+           translate-values="{{notification.text.variables}}"></p>
 
         <!-- Current progress -->
         <div class="progress" ng-show="notification.progress"><div class="bar" ng-show="progressPercent" ng-style="{'width': progressPercent + '%'}"></div><div

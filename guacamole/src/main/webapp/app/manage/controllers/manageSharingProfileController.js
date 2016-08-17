@@ -341,7 +341,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
             guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_SHARING_PROFILE.DIALOG_HEADER_ERROR',
-                'text'       : error.message,
+                'text'       : error.translatableMessage,
                 'actions'    : [ ACKNOWLEDGE_ACTION ]
             });
         });
@@ -379,7 +379,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
             guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_SHARING_PROFILE.DIALOG_HEADER_ERROR',
-                'text'       : error.message,
+                'text'       : error.translatableMessage,
                 'actions'    : [ ACKNOWLEDGE_ACTION ]
             });
         });
@@ -395,7 +395,9 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
         // Confirm deletion request
         guacNotification.showStatus({
             'title'      : 'MANAGE_SHARING_PROFILE.DIALOG_HEADER_CONFIRM_DELETE',
-            'text'       : 'MANAGE_SHARING_PROFILE.TEXT_CONFIRM_DELETE',
+            'text'       : {
+                'key' : 'MANAGE_SHARING_PROFILE.TEXT_CONFIRM_DELETE'
+            },
             'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
         });
 

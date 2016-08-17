@@ -1012,7 +1012,9 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
-                'text'       : 'MANAGE_USER.ERROR_PASSWORD_MISMATCH',
+                'text'       : {
+                    key : 'MANAGE_USER.ERROR_PASSWORD_MISMATCH'
+                },
                 'actions'    : [ ACKNOWLEDGE_ACTION ]
             });
             return;
@@ -1055,7 +1057,8 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
                 guacNotification.showStatus({
                     'className'  : 'error',
                     'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
-                    'text'       : error.message,
+                    'text'       : error.translatableMessage,
+                    'values'     : error.translationValues,
                     'actions'    : [ ACKNOWLEDGE_ACTION ]
                 });
             });
@@ -1067,7 +1070,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
-                'text'       : error.message,
+                'text'       : error.translatableMessage,
                 'actions'    : [ ACKNOWLEDGE_ACTION ]
             });
         });
@@ -1117,7 +1120,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
-                'text'       : error.message,
+                'text'       : error.translatableMessage,
                 'actions'    : [ ACKNOWLEDGE_ACTION ]
             });
         });
@@ -1133,7 +1136,9 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         // Confirm deletion request
         guacNotification.showStatus({
             'title'      : 'MANAGE_USER.DIALOG_HEADER_CONFIRM_DELETE',
-            'text'       : 'MANAGE_USER.TEXT_CONFIRM_DELETE',
+            'text'       : {
+                key : 'MANAGE_USER.TEXT_CONFIRM_DELETE'
+            },
             'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
         });
 

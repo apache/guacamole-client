@@ -380,7 +380,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
             guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_CONNECTION.DIALOG_HEADER_ERROR',
-                'text'       : error.message,
+                'text'       : error.translatableMessage,
                 'actions'    : [ ACKNOWLEDGE_ACTION ]
             });
         });
@@ -430,7 +430,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
             guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_CONNECTION.DIALOG_HEADER_ERROR',
-                'text'       : error.message,
+                'text'       : error.translatableMessage,
                 'actions'    : [ ACKNOWLEDGE_ACTION ]
             });
         });
@@ -446,7 +446,9 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         // Confirm deletion request
         guacNotification.showStatus({
             'title'      : 'MANAGE_CONNECTION.DIALOG_HEADER_CONFIRM_DELETE',
-            'text'       : 'MANAGE_CONNECTION.TEXT_CONFIRM_DELETE',
+            'text'       : {
+                key : 'MANAGE_CONNECTION.TEXT_CONFIRM_DELETE'
+            },
             'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
         });
 

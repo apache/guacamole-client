@@ -38,7 +38,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
      * The message to display to the user as instructions for the login
      * process.
      *
-     * @type String
+     * @type TranslatableMessage
      */
     $scope.loginHelpText = null;
 
@@ -160,7 +160,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $scope.$on('guacInsufficientCredentials', function loginInsufficient(event, parameters, error) {
         $scope.page.title = 'APP.NAME';
         $scope.page.bodyClassName = '';
-        $scope.loginHelpText = error.message;
+        $scope.loginHelpText = error.translatableMessage;
         $scope.acceptedCredentials = parameters;
         $scope.expectedCredentials = error.expected;
     });

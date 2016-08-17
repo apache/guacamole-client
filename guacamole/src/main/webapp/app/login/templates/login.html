@@ -1,7 +1,8 @@
 <div class="login-ui" ng-class="{error: loginError, continuation: isContinuation(), initial: !isContinuation()}" >
 
     <!-- Login error message -->
-    <p class="login-error">{{loginError | translate}}</p>
+    <p class="login-error" translate="{{loginError.key}}"
+       translate-values="{{loginError.variables}}"></p>
 
     <div class="login-dialog-middle">
 
@@ -17,7 +18,8 @@
                 </div>
 
                 <!-- Login message/instructions -->
-                <p ng-show="helpText">{{helpText | translate}}</p>
+                <p ng-show="helpText" translate="{{helpText.key}}"
+                   translate-values="{{helpText.variables}}"></p>
 
                 <!-- Login fields -->
                 <div class="login-fields">

@@ -60,7 +60,9 @@ angular.module('notification').factory('guacNotification', ['$injector',
      * // To show a status message with actions
      * guacNotification.showStatus({
      *     'title'      : 'Disconnected',
-     *     'text'       : 'You have been disconnected!',
+     *     'text'       : {
+     *         'key' : 'NAMESPACE.SOME_TRANSLATION_KEY'
+     *     },
      *     'actions'    : {
      *         'name'       : 'reconnect',
      *         'callback'   : function () {
