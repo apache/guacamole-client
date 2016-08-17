@@ -25,6 +25,8 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.form.Field;
+import org.apache.guacamole.language.Translatable;
+import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.credentials.GuacamoleCredentialsException;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
@@ -39,9 +41,14 @@ import org.apache.guacamole.tunnel.GuacamoleStreamException;
 public class APIError {
 
     /**
-     * The error message.
+     * The human-readable error message.
      */
     private final String message;
+
+    /**
+     * A translatable message representing the error that occurred.
+     */
+    private final TranslatableMessage translatableMessage;
 
     /**
      * The associated Guacamole protocol status code.
@@ -148,7 +155,9 @@ public class APIError {
 
     /**
      * Creates a new APIError which exposes the details of the given
-     * GuacamoleException.
+     * GuacamoleException. If the given GuacamoleException implements
+     * Translatable, then its translation string and values will be exposed as
+     * well.
      *
      * @param exception
      *     The GuacamoleException from which the details of the new APIError
@@ -175,6 +184,14 @@ public class APIError {
         }
         else
             this.statusCode = null;
+
+        // Pull translatable message and values if available
+        if (exception instanceof Translatable) {
+            Translatable translatable = (Translatable) exception;
+            this.translatableMessage = translatable.getTranslatableMessage();
+        }
+        else
+            this.translatableMessage = new TranslatableMessage(this.message);
 
     }
 
@@ -221,6 +238,18 @@ public class APIError {
      */
     public String getMessage() {
         return message;
+    }
+
+    /**
+     * Returns a translatable message describing the error that occurred. If no
+     * translatable message is associated with the error, this will be null.
+     *
+     * @return
+     *     A translatable message describing the error that occurred, or null
+     *     if there is no such message defined.
+     */
+    public TranslatableMessage getTranslatableMessage() {
+        return translatableMessage;
     }
 
 }
