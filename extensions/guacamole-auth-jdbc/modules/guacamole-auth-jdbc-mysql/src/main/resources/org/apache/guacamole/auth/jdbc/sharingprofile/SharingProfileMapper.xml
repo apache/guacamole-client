@@ -129,7 +129,7 @@
         )
         VALUES (
             #{object.name,jdbcType=VARCHAR},
-            #{object.primaryConnectionIdentifier,jdbcType=VARCHAR},
+            #{object.primaryConnectionIdentifier,jdbcType=VARCHAR}
         )
 
     </insert>
