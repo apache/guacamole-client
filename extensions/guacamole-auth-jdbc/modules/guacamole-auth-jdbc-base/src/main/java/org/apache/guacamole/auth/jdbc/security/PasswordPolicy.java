@@ -1,0 +1,103 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.guacamole.auth.jdbc.security;
+
+import org.apache.guacamole.GuacamoleException;
+
+/**
+ * A set of restrictions which define the level of complexity required for
+ * the passwords of Guacamole user accounts.
+ *
+ * @author Michael Jumper
+ */
+public interface PasswordPolicy {
+
+    /**
+     * Returns the minimum length of new passwords, in characters. Passwords
+     * which are shorter than this length cannot be used.
+     *
+     * @return
+     *     The minimum number of characters required for new passwords.
+     *
+     * @throws GuacamoleException
+     *     If the minimum password length cannot be parsed from
+     *     guacamole.properties.
+     */
+    int getMinimumLength() throws GuacamoleException;
+
+    /**
+     * Returns whether both uppercase and lowercase characters must be present
+     * in new passwords. If true, passwords which do not have at least one
+     * uppercase letter and one lowercase letter cannot be used.
+     *
+     * @return
+     *     true if both uppercase and lowercase characters must be present in
+     *     new passwords, false otherwise.
+     *
+     * @throws GuacamoleException
+     *     If the multiple case requirement cannot be parsed from
+     *     guacamole.properties.
+     */
+    boolean isMultipleCaseRequired() throws GuacamoleException;
+
+    /**
+     * Returns whether numeric characters (digits) must be present in new
+     * passwords. If true, passwords which do not have at least one numeric
+     * character cannot be used.
+     *
+     * @return
+     *     true if numeric characters must be present in new passwords,
+     *     false otherwise.
+     *
+     * @throws GuacamoleException
+     *     If the numeric character requirement cannot be parsed from
+     *     guacamole.properties.
+     */
+    boolean isNumericRequired() throws GuacamoleException;
+
+    /**
+     * Returns whether non-alphanumeric characters (symbols) must be present in
+     * new passwords. If true, passwords which do not have at least one
+     * non-alphanumeric character cannot be used.
+     *
+     * @return
+     *     true if non-alphanumeric characters must be present in new passwords,
+     *     false otherwise.
+     *
+     * @throws GuacamoleException
+     *     If the non-alphanumeric character requirement cannot be parsed from
+     *     guacamole.properties.
+     */
+    boolean isNonAlphanumericRequired() throws GuacamoleException;
+
+    /**
+     * Returns whether new passwords must not contain the user's own username.
+     *
+     * @return
+     *     true if new passwords must not contain the user's own username,
+     *     false otherwise.
+     *
+     * @throws GuacamoleException
+     *     If the username password restriction cannot be parsed from
+     *     guacamole.properties.
+     */
+    boolean isUsernameProhibited() throws GuacamoleException;
+
+}

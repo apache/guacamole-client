@@ -63,6 +63,7 @@ import org.apache.guacamole.auth.jdbc.connection.ConnectionParameterMapper;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionService;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionSet;
+import org.apache.guacamole.auth.jdbc.security.PasswordPolicyService;
 import org.apache.guacamole.auth.jdbc.sharing.ConnectionSharingService;
 import org.apache.guacamole.auth.jdbc.sharing.HashSharedConnectionMap;
 import org.apache.guacamole.auth.jdbc.sharing.SecureRandomShareKeyGenerator;
@@ -159,6 +160,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(ConnectionService.class);
         bind(GuacamoleTunnelService.class).to(RestrictedGuacamoleTunnelService.class);
         bind(PasswordEncryptionService.class).to(SHA256PasswordEncryptionService.class);
+        bind(PasswordPolicyService.class);
         bind(SaltService.class).to(SecureRandomSaltService.class);
         bind(SharedConnectionMap.class).to(HashSharedConnectionMap.class).in(Scopes.SINGLETON);
         bind(ShareKeyGenerator.class).to(SecureRandomShareKeyGenerator.class).in(Scopes.SINGLETON);

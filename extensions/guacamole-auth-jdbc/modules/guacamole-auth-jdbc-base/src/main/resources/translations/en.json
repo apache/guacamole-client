@@ -54,6 +54,16 @@
         "INFO_SHARED_BY" : "Shared by {USERNAME}"
     },
 
+    "PASSWORD_POLICY" : {
+
+        "ERROR_CONTAINS_USERNAME"      : "Passwords may not contain the username.",
+        "ERROR_REQUIRES_DIGIT"         : "Passwords must contain at least one digit.",
+        "ERROR_REQUIRES_MULTIPLE_CASE" : "Passwords must contain both uppercase and lowercase characters.",
+        "ERROR_REQUIRES_NON_ALNUM"     : "Passwords must contain at least one symbol.",
+        "ERROR_TOO_SHORT"              : "Passwords must be at least {LENGTH} {LENGTH, plural, one{character} other{characters}} long."
+
+    },
+
     "USER_ATTRIBUTES" : {
 
         "FIELD_HEADER_DISABLED"            : "Login disabled:",
