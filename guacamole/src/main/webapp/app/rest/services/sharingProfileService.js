@@ -127,6 +127,10 @@ angular.module('rest').factory('sharingProfileService', ['$injector',
             .success(function sharingProfileCreated(newSharingProfile){
                 sharingProfile.identifier = newSharingProfile.identifier;
                 cacheService.connections.removeAll();
+
+                // Clear users cache to force reload of permissions for this
+                // newly created sharing profile
+                cacheService.users.removeAll();
             });
         }
 
@@ -142,6 +146,10 @@ angular.module('rest').factory('sharingProfileService', ['$injector',
             // Clear the cache
             .success(function sharingProfileUpdated(){
                 cacheService.connections.removeAll();
+
+                // Clear users cache to force reload of permissions for this
+                // newly updated sharing profile
+                cacheService.users.removeAll();
             });
         }
 

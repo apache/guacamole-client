@@ -152,6 +152,10 @@ angular.module('rest').factory('connectionService', ['$injector',
             .success(function connectionCreated(newConnection){
                 connection.identifier = newConnection.identifier;
                 cacheService.connections.removeAll();
+
+                // Clear users cache to force reload of permissions for this
+                // newly created connection
+                cacheService.users.removeAll();
             });
         }
 
@@ -167,6 +171,10 @@ angular.module('rest').factory('connectionService', ['$injector',
             // Clear the cache
             .success(function connectionUpdated(){
                 cacheService.connections.removeAll();
+
+                // Clear users cache to force reload of permissions for this
+                // newly updated connection
+                cacheService.users.removeAll();
             });
         }
 
