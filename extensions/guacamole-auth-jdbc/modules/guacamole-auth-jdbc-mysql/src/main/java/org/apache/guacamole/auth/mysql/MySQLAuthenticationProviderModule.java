@@ -70,7 +70,7 @@ public class MySQLAuthenticationProviderModule implements Module {
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
 
         // Use UTF-8 in database
-        driverProperties.setProperty("characterEncoding","UTF-8");
+        driverProperties.setProperty("characterEncoding", "UTF-8");
 
         // Allow use of multiple statements within a single query
         driverProperties.setProperty("allowMultiQueries", "true");
@@ -86,7 +86,7 @@ public class MySQLAuthenticationProviderModule implements Module {
         // Bind MyBatis properties
         Names.bindProperties(binder, myBatisProperties);
 
-        // Bing JDBC driver properties
+        // Bind JDBC driver properties
         binder.bind(Properties.class)
             .annotatedWith(Names.named("JDBC.driverProperties"))
             .toInstance(driverProperties);
