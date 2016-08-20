@@ -39,7 +39,6 @@ import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionGroupDirectory;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionRecordSet;
 import org.apache.guacamole.net.auth.simple.SimpleDirectory;
-import org.apache.guacamole.net.auth.simple.SimpleUserDirectory;
 
 /**
  * The user context of a SharedUser, providing access ONLY to the user
@@ -114,9 +113,11 @@ public class SharedUserContext implements UserContext {
         this.connectionGroupDirectory = new SimpleConnectionGroupDirectory(
                 Collections.singletonList(this.rootGroup));
 
-        // The user directory contains only this user
+        // Create internal pseudo-account representing the authenticated user
         this.self = new SharedUser(user, this);
-        this.userDirectory = new SimpleUserDirectory(this.self);
+
+        // Do not provide access to any user accounts via the directory
+        this.userDirectory = new SimpleDirectory<User>();
 
     }
 

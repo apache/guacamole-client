@@ -38,6 +38,8 @@ import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.rest.activeconnection.APIActiveConnection;
 import org.apache.guacamole.rest.connection.APIConnection;
 import org.apache.guacamole.rest.connectiongroup.APIConnectionGroup;
+import org.apache.guacamole.rest.directory.DirectoryObjectResource;
+import org.apache.guacamole.rest.directory.DirectoryObjectResourceFactory;
 import org.apache.guacamole.rest.history.HistoryResource;
 import org.apache.guacamole.rest.schema.SchemaResource;
 import org.apache.guacamole.rest.sharingprofile.APISharingProfile;
@@ -56,6 +58,12 @@ public class UserContextResource {
      * The UserContext being exposed through this resource.
      */
     private final UserContext userContext;
+
+    /**
+     * Factory for creating DirectoryObjectResources which expose a given User.
+     */
+    @Inject
+    private DirectoryObjectResourceFactory<User, APIUser> userResourceFactory;
 
     /**
      * Factory for creating DirectoryResources which expose a given
@@ -107,6 +115,26 @@ public class UserContextResource {
     @AssistedInject
     public UserContextResource(@Assisted UserContext userContext) {
         this.userContext = userContext;
+    }
+
+    /**
+     * Returns a new resource which represents the User whose access rights
+     * control the operations of the UserContext exposed by this
+     * UserContextResource.
+     *
+     * @return
+     *     A new resource which represents the User whose access rights
+     *     control the operations of the UserContext exposed by this
+     *     UserContextResource.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the User.
+     */
+    @Path("self")
+    public DirectoryObjectResource<User, APIUser> getSelfResource()
+            throws GuacamoleException {
+        return userResourceFactory.create(userContext,
+                userContext.getUserDirectory(), userContext.self());
     }
 
     /**
