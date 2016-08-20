@@ -72,6 +72,8 @@ public class MySQLAuthenticationProviderModule implements Module {
         // Use UTF-8 in database
         driverProperties.setProperty("characterEncoding","UTF-8");
 
+        // Allow use of multiple statements within a single query
+        driverProperties.setProperty("allowMultiQueries", "true");
 
     }
 
