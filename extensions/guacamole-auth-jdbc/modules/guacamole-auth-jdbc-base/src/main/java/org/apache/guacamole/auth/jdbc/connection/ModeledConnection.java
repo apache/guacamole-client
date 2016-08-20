@@ -32,7 +32,6 @@ import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.ModeledGroupedDirectoryObject;
-import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileService;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.form.NumericField;
@@ -101,12 +100,6 @@ public class ModeledConnection extends ModeledGroupedDirectoryObject<ConnectionM
     private ConnectionService connectionService;
 
     /**
-     * Service for managing sharing profiles.
-     */
-    @Inject
-    private SharingProfileService sharingProfileService;
-
-    /**
      * Service for creating and tracking tunnels.
      */
     @Inject
@@ -167,7 +160,7 @@ public class ModeledConnection extends ModeledGroupedDirectoryObject<ConnectionM
     @Override
     public Set<String> getSharingProfileIdentifiers()
             throws GuacamoleException {
-        return sharingProfileService.getIdentifiersWithin(getCurrentUser(), getIdentifier());
+        return getModel().getSharingProfileIdentifiers();
     }
 
     @Override

@@ -19,9 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.sharingprofile;
 
-import java.util.Set;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
-import org.apache.guacamole.auth.jdbc.user.UserModel;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -31,43 +29,6 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface SharingProfileMapper
         extends ModeledDirectoryObjectMapper<SharingProfileModel> {
-
-    /**
-     * Selects the identifiers of all sharing profiles associated with the given
-     * primary connection, regardless of whether they are readable by any
-     * particular user. This should only be called on behalf of a system
-     * administrator. If identifiers are needed by a non-administrative user who
-     * must have explicit read rights, use selectReadableIdentifiersWithin()
-     * instead.
-     *
-     * @param primaryConnectionIdentifier
-     *     The identifier of the primary connection.
-     *
-     * @return
-     *     A Set containing all identifiers of all objects.
-     */
-    Set<String> selectIdentifiersWithin(
-            @Param("primaryConnectionIdentifier") String primaryConnectionIdentifier);
-    
-    /**
-     * Selects the identifiers of all sharing profiles associated with the given
-     * primary connection that are explicitly readable by the given user. If
-     * identifiers are needed by a system administrator (who, by definition,
-     * does not need explicit read rights), use selectIdentifiersWithin()
-     * instead.
-     *
-     * @param user
-     *    The user whose permissions should determine whether an identifier
-     *    is returned.
-     *
-     * @param primaryConnectionIdentifier
-     *     The identifier of the primary connection.
-     *
-     * @return
-     *     A Set containing all identifiers of all readable objects.
-     */
-    Set<String> selectReadableIdentifiersWithin(@Param("user") UserModel user,
-            @Param("primaryConnectionIdentifier") String primaryConnectionIdentifier);
 
     /**
      * Selects the sharing profile associated with the given primary connection
