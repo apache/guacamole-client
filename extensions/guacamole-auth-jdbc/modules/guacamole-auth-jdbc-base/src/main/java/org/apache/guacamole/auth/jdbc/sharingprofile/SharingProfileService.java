@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.guacamole.GuacamoleClientException;
@@ -242,43 +241,6 @@ public class SharingProfileService
         if (!parameterModels.isEmpty())
             parameterMapper.insert(parameterModels);
         
-    }
-
-    /**
-     * Returns the set of all identifiers for all sharing profiles associated
-     * with the given primary connection. Only sharing profiles that the user
-     * has read access to will be returned.
-     *
-     * Permission to read the primary connection having the given identifier is
-     * NOT checked.
-     *
-     * @param user
-     *     The user retrieving the identifiers.
-     * 
-     * @param identifier
-     *     The identifier of the primary connection.
-     *
-     * @return
-     *     The set of all identifiers for all sharing profiles associated with
-     *     the primary connection having the given identifier that the user has
-     *     read access to.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while reading identifiers.
-     */
-    public Set<String> getIdentifiersWithin(ModeledAuthenticatedUser user,
-            String identifier)
-            throws GuacamoleException {
-
-        // Bypass permission checks if the user is a system admin
-        if (user.getUser().isAdministrator())
-            return sharingProfileMapper.selectIdentifiersWithin(identifier);
-
-        // Otherwise only return explicitly readable identifiers
-        else
-            return sharingProfileMapper.selectReadableIdentifiersWithin(
-                    user.getUser().getModel(), identifier);
-
     }
 
     /**

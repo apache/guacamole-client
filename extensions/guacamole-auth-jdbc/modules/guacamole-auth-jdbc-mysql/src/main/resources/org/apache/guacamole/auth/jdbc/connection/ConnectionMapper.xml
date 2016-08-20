@@ -25,12 +25,21 @@
 
     <!-- Result mapper for connection objects -->
     <resultMap id="ConnectionResultMap" type="org.apache.guacamole.auth.jdbc.connection.ConnectionModel" >
+
+        <!-- Connection properties -->
         <id     column="connection_id"            property="objectID"              jdbcType="INTEGER"/>
         <result column="connection_name"          property="name"                  jdbcType="VARCHAR"/>
         <result column="parent_id"                property="parentIdentifier"      jdbcType="INTEGER"/>
         <result column="protocol"                 property="protocol"              jdbcType="VARCHAR"/>
         <result column="max_connections"          property="maxConnections"        jdbcType="INTEGER"/>
         <result column="max_connections_per_user" property="maxConnectionsPerUser" jdbcType="INTEGER"/>
+
+        <!-- Associated sharing profiles -->
+        <collection property="sharingProfileIdentifiers" resultSet="sharingProfiles" ofType="java.lang.String"
+                    column="connection_id" foreignColumn="primary_connection_id">
+            <result column="sharing_profile_id"/>
+        </collection>
+
     </resultMap>
 
     <!-- Select all connection identifiers -->
@@ -70,7 +79,8 @@
     </select>
 
     <!-- Select multiple connections by identifier -->
-    <select id="select" resultMap="ConnectionResultMap">
+    <select id="select" resultMap="ConnectionResultMap"
+            resultSets="connections,sharingProfiles">
 
         SELECT
             connection_id,
@@ -84,12 +94,21 @@
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
-            </foreach>
+            </foreach>;
+
+        SELECT primary_connection_id, sharing_profile_id
+        FROM guacamole_sharing_profile
+        WHERE primary_connection_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=VARCHAR}
+            </foreach>;
 
     </select>
 
     <!-- Select multiple connections by identifier only if readable -->
-    <select id="selectReadable" resultMap="ConnectionResultMap">
+    <select id="selectReadable" resultMap="ConnectionResultMap"
+            resultSets="connections,sharingProfiles">
 
         SELECT
             guacamole_connection.connection_id,
@@ -106,7 +125,18 @@
                 #{identifier,jdbcType=VARCHAR}
             </foreach>
             AND user_id = #{user.objectID,jdbcType=INTEGER}
-            AND permission = 'READ'
+            AND permission = 'READ';
+
+        SELECT primary_connection_id, guacamole_sharing_profile.sharing_profile_id
+        FROM guacamole_sharing_profile
+        JOIN guacamole_sharing_profile_permission ON guacamole_sharing_profile_permission.sharing_profile_id = guacamole_sharing_profile.sharing_profile_id
+        WHERE primary_connection_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=VARCHAR}
+            </foreach>
+            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND permission = 'READ';
 
     </select>
 

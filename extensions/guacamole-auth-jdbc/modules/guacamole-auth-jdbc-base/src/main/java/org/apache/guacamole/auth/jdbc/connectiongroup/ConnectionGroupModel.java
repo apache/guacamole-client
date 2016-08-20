@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.jdbc.connectiongroup;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.guacamole.auth.jdbc.base.GroupedObjectModel;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 
@@ -59,6 +61,18 @@ public class ConnectionGroupModel extends GroupedObjectModel {
      * connection within a balancing group until they log out.
      */
     private boolean sessionAffinityEnabled;
+
+    /**
+     * The identifiers of all readable child connections within this connection
+     * group.
+     */
+    private Set<String> connectionIdentifiers = new HashSet<String>();
+
+    /**
+     * The identifiers of all readable child connection groups within this
+     * connection group.
+     */
+    private Set<String> connectionGroupIdentifiers = new HashSet<String>();
 
     /**
      * Creates a new, empty connection group.
@@ -184,6 +198,62 @@ public class ConnectionGroupModel extends GroupedObjectModel {
      */
     public void setSessionAffinityEnabled(boolean sessionAffinityEnabled) {
         this.sessionAffinityEnabled = sessionAffinityEnabled;
+    }
+
+    /**
+     * Returns the identifiers of all readable child connections within this
+     * connection group. This is set only when the parent connection group is
+     * queried, and has no effect when a connection group is inserted, updated,
+     * or deleted.
+     *
+     * @return
+     *     The identifiers of all readable child connections within this
+     *     connection group.
+     */
+    public Set<String> getConnectionIdentifiers() {
+        return connectionIdentifiers;
+    }
+
+    /**
+     * Sets the identifiers of all readable child connections within this
+     * connection group. This should be set only when the parent connection
+     * group is queried, as it has no effect when a connection group is
+     * inserted, updated, or deleted.
+     *
+     * @param connectionIdentifiers
+     *     The identifiers of all readable child connections within this
+     *     connection group.
+     */
+    public void setConnectionIdentifiers(Set<String> connectionIdentifiers) {
+        this.connectionIdentifiers = connectionIdentifiers;
+    }
+
+    /**
+     * Returns the identifiers of all readable child connection groups within
+     * this connection group. This is set only when the parent connection group
+     * is queried, and has no effect when a connection group is inserted,
+     * updated, or deleted.
+     *
+     * @return
+     *     The identifiers of all readable child connection groups within this
+     *     connection group.
+     */
+    public Set<String> getConnectionGroupIdentifiers() {
+        return connectionGroupIdentifiers;
+    }
+
+    /**
+     * Sets the identifiers of all readable child connection groups within this
+     * connection group. This should be set only when the parent connection
+     * group is queried, as it has no effect when a connection group is
+     * inserted, updated, or deleted.
+     *
+     * @param connectionGroupIdentifiers
+     *     The identifiers of all readable child connection groups within this
+     *     connection group.
+     */
+    public void setConnectionGroupIdentifiers(Set<String> connectionGroupIdentifiers) {
+        this.connectionGroupIdentifiers = connectionGroupIdentifiers;
     }
 
     @Override

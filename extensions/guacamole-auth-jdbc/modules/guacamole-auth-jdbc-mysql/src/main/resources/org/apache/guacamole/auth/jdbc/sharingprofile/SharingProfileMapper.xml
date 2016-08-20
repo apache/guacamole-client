@@ -45,25 +45,6 @@
             AND permission = 'READ'
     </select>
 
-    <!-- Select all sharing profiles identifiers associated with a particular connection -->
-    <select id="selectIdentifiersWithin" resultType="string">
-        SELECT sharing_profile_id
-        FROM guacamole_sharing_profile
-        WHERE
-            primary_connection_id = #{primaryConnectionIdentifier,jdbcType=VARCHAR}
-    </select>
-
-    <!-- Select identifiers of all readable sharing profiles associated with a particular connection -->
-    <select id="selectReadableIdentifiersWithin" resultType="string">
-        SELECT guacamole_sharing_profile.sharing_profile_id
-        FROM guacamole_sharing_profile
-        JOIN guacamole_sharing_profile_permission ON guacamole_sharing_profile_permission.sharing_profile_id = guacamole_sharing_profile.sharing_profile_id
-        WHERE
-            primary_connection_id = #{primaryConnectionIdentifier,jdbcType=VARCHAR}
-            AND user_id = #{user.objectID,jdbcType=INTEGER}
-            AND permission = 'READ'
-    </select>
-
     <!-- Select multiple sharing profiles by identifier -->
     <select id="select" resultMap="SharingProfileResultMap">
 
@@ -129,7 +110,7 @@
         )
         VALUES (
             #{object.name,jdbcType=VARCHAR},
-            #{object.primaryConnectionIdentifier,jdbcType=VARCHAR},
+            #{object.primaryConnectionIdentifier,jdbcType=VARCHAR}
         )
 
     </insert>

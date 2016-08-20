@@ -25,6 +25,8 @@
 
     <!-- Result mapper for connection objects -->
     <resultMap id="ConnectionGroupResultMap" type="org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupModel" >
+
+        <!-- Connection group properties -->
         <id     column="connection_group_id"      property="objectID"               jdbcType="INTEGER"/>
         <result column="connection_group_name"    property="name"                   jdbcType="VARCHAR"/>
         <result column="parent_id"                property="parentIdentifier"       jdbcType="INTEGER"/>
@@ -33,6 +35,19 @@
         <result column="max_connections"          property="maxConnections"         jdbcType="INTEGER"/>
         <result column="max_connections_per_user" property="maxConnectionsPerUser"  jdbcType="INTEGER"/>
         <result column="enable_session_affinity"  property="sessionAffinityEnabled" jdbcType="BOOLEAN"/>
+
+        <!-- Child connection groups -->
+        <collection property="connectionGroupIdentifiers" resultSet="childConnectionGroups" ofType="java.lang.String"
+                    column="connection_group_id" foreignColumn="parent_id">
+            <result column="connection_group_id"/>
+        </collection>
+
+        <!-- Child connections -->
+        <collection property="connectionIdentifiers" resultSet="childConnections" ofType="java.lang.String"
+                    column="connection_group_id" foreignColumn="parent_id">
+            <result column="connection_id"/>
+        </collection>
+
     </resultMap>
 
     <!-- Select all connection group identifiers -->
@@ -72,7 +87,8 @@
     </select>
 
     <!-- Select multiple connection groups by identifier -->
-    <select id="select" resultMap="ConnectionGroupResultMap">
+    <select id="select" resultMap="ConnectionGroupResultMap"
+            resultSets="connectionGroups,childConnectionGroups,childConnections">
 
         SELECT
             connection_group_id,
@@ -87,12 +103,29 @@
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
-            </foreach>
+            </foreach>;
+
+        SELECT parent_id, connection_group_id
+        FROM guacamole_connection_group
+        WHERE parent_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=VARCHAR}
+            </foreach>;
+
+        SELECT parent_id, connection_id
+        FROM guacamole_connection
+        WHERE parent_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=VARCHAR}
+            </foreach>;
 
     </select>
 
     <!-- Select multiple connection groups by identifier only if readable -->
-    <select id="selectReadable" resultMap="ConnectionGroupResultMap">
+    <select id="selectReadable" resultMap="ConnectionGroupResultMap"
+            resultSets="connectionGroups,childConnectionGroups,childConnections">
 
         SELECT
             guacamole_connection_group.connection_group_id,
@@ -110,7 +143,29 @@
                 #{identifier,jdbcType=VARCHAR}
             </foreach>
             AND user_id = #{user.objectID,jdbcType=INTEGER}
-            AND permission = 'READ'
+            AND permission = 'READ';
+
+        SELECT parent_id, guacamole_connection_group.connection_group_id
+        FROM guacamole_connection_group
+        JOIN guacamole_connection_group_permission ON guacamole_connection_group_permission.connection_group_id = guacamole_connection_group.connection_group_id
+        WHERE parent_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=VARCHAR}
+            </foreach>
+            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND permission = 'READ';
+
+        SELECT parent_id, guacamole_connection.connection_id
+        FROM guacamole_connection
+        JOIN guacamole_connection_permission ON guacamole_connection_permission.connection_id = guacamole_connection.connection_id
+        WHERE parent_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=VARCHAR}
+            </foreach>
+            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND permission = 'READ';
 
     </select>
 

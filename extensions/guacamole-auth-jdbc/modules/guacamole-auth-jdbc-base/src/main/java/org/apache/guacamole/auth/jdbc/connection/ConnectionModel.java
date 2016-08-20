@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.jdbc.connection;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.guacamole.auth.jdbc.base.GroupedObjectModel;
 
 /**
@@ -52,6 +54,12 @@ public class ConnectionModel extends GroupedObjectModel {
      * or null if the default restrictions should be applied.
      */
     private Integer maxConnectionsPerUser;
+
+    /**
+     * The identifiers of all readable sharing profiles associated with this
+     * connection.
+     */
+    private Set<String> sharingProfileIdentifiers = new HashSet<String>();
 
     /**
      * Creates a new, empty connection.
@@ -150,6 +158,32 @@ public class ConnectionModel extends GroupedObjectModel {
      */
     public void setMaxConnectionsPerUser(Integer maxConnectionsPerUser) {
         this.maxConnectionsPerUser = maxConnectionsPerUser;
+    }
+
+    /**
+     * Returns the identifiers of all readable sharing profiles associated with
+     * this connection. This is set only when the connection is queried, and has
+     * no effect when a connection is inserted, updated, or deleted.
+     *
+     * @return
+     *     The identifiers of all readable sharing profiles associated with
+     *     this connection.
+     */
+    public Set<String> getSharingProfileIdentifiers() {
+        return sharingProfileIdentifiers;
+    }
+
+    /**
+     * Sets the identifiers of all readable sharing profiles associated with
+     * this connection. This should be set only when the connection is queried,
+     * as it has no effect when a connection is inserted, updated, or deleted.
+     *
+     * @param sharingProfileIdentifiers
+     *     The identifiers of all readable sharing profiles associated with
+     *     this connection.
+     */
+    public void setSharingProfileIdentifiers(Set<String> sharingProfileIdentifiers) {
+        this.sharingProfileIdentifiers = sharingProfileIdentifiers;
     }
 
     @Override

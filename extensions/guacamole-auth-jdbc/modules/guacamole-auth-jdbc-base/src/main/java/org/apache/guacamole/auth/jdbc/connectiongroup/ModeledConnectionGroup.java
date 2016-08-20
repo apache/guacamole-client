@@ -29,7 +29,6 @@ import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.ModeledGroupedDirectoryObject;
-import org.apache.guacamole.auth.jdbc.connection.ConnectionService;
 import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.form.BooleanField;
 import org.apache.guacamole.form.Field;
@@ -100,12 +99,6 @@ public class ModeledConnectionGroup extends ModeledGroupedDirectoryObject<Connec
     private JDBCEnvironment environment;
 
     /**
-     * Service for managing connections.
-     */
-    @Inject
-    private ConnectionService connectionService;
-
-    /**
      * Service for managing connection groups.
      */
     @Inject
@@ -157,13 +150,13 @@ public class ModeledConnectionGroup extends ModeledGroupedDirectoryObject<Connec
     @Override
     public Set<String> getConnectionIdentifiers()
             throws GuacamoleException {
-        return connectionService.getIdentifiersWithin(getCurrentUser(), getIdentifier());
+        return getModel().getConnectionIdentifiers();
     }
 
     @Override
     public Set<String> getConnectionGroupIdentifiers()
             throws GuacamoleException {
-        return connectionGroupService.getIdentifiersWithin(getCurrentUser(), getIdentifier());
+        return getModel().getConnectionGroupIdentifiers();
     }
 
     @Override

@@ -145,6 +145,10 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
             .success(function connectionGroupCreated(newConnectionGroup){
                 connectionGroup.identifier = newConnectionGroup.identifier;
                 cacheService.connections.removeAll();
+
+                // Clear users cache to force reload of permissions for this
+                // newly created connection group
+                cacheService.users.removeAll();
             });
         }
 
@@ -160,6 +164,10 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
             // Clear the cache
             .success(function connectionGroupUpdated(){
                 cacheService.connections.removeAll();
+
+                // Clear users cache to force reload of permissions for this
+                // newly updated connection group
+                cacheService.users.removeAll();
             });
         }
 
