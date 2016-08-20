@@ -35,6 +35,45 @@ angular.module('rest').factory('permissionService', ['$injector',
     var service = {};
 
     /**
+     * Returns the URL for the REST resource most appropriate for accessing
+     * the permissions of the user having the given username.
+     * 
+     * It is important to note that a particular data source can authenticate
+     * and provide permissions for a user, even if that user does not exist
+     * within that data source (and thus cannot be found beneath
+     * "api/session/data/{dataSource}/users")
+     *
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the user whose
+     *     permissions should be retrieved. This identifier corresponds to an
+     *     AuthenticationProvider within the Guacamole web application.
+     *
+     * @param {String} username
+     *     The username of the user for which the URL of the proper REST
+     *     resource should be derived.
+     *
+     * @returns {String}
+     *     The URL for the REST resource representing the user having the given
+     *     username.
+     */
+    var getPermissionsResourceURL = function getPermissionsResourceURL(dataSource, username) {
+
+        // Create base URL for data source
+        var base = 'api/session/data/' + encodeURIComponent(dataSource);
+
+        // If the username is that of the current user, do not rely on the
+        // user actually existing (they may not). Access their permissions via
+        // "self" rather than the collection of defined users.
+        if (username === authenticationService.getCurrentUsername())
+            return base + '/self/permissions';
+
+        // Otherwise, the user must exist for their permissions to be
+        // accessible. Use the collection of defined users.
+        return base + '/users/' + encodeURIComponent(username) + '/permissions';
+
+    };
+
+    /**
      * Makes a request to the REST API to get the list of permissions for a
      * given user, returning a promise that provides an array of
      * @link{Permission} objects if successful.
@@ -62,7 +101,7 @@ angular.module('rest').factory('permissionService', ['$injector',
         return $http({
             cache   : cacheService.users,
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(userID) + '/permissions',
+            url     : getPermissionsResourceURL(dataSource, userID),
             params  : httpParameters
         });
 
@@ -239,7 +278,7 @@ angular.module('rest').factory('permissionService', ['$injector',
         // Patch user permissions
         return $http({
             method  : 'PATCH', 
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(userID) + '/permissions',
+            url     : getPermissionsResourceURL(dataSource, userID),
             params  : httpParameters,
             data    : permissionPatch
         })
