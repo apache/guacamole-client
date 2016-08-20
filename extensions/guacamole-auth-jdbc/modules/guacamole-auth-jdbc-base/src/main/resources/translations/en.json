@@ -38,8 +38,16 @@
         "NAME" : "MySQL"
     },
 
+    "DATA_SOURCE_MYSQL_SHARED" : {
+        "NAME" : "Shared Connections (MySQL)"
+    },
+
     "DATA_SOURCE_POSTGRESQL" : {
         "NAME" : "PostgreSQL"
+    },
+
+    "DATA_SOURCE_POSTGRESQL_SHARED" : {
+        "NAME" : "Shared Connections (PostgreSQL)"
     },
 
     "HOME" : {
