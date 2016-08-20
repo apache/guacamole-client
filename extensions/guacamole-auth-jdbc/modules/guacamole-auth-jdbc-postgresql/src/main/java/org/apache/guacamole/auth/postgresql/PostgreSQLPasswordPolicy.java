@@ -46,6 +46,32 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
     };
 
     /**
+     * The property which specifies the minimum number of days which must
+     * elapse before a user may reset their password. If set to zero, the
+     * default, then this restriction does not apply.
+     */
+    private static final IntegerGuacamoleProperty MIN_AGE =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-user-password-min-age"; }
+
+    };
+
+    /**
+     * The property which specifies the maximum number of days which may
+     * elapse before a user is required to reset their password. If set to zero,
+     * the default, then this restriction does not apply.
+     */
+    private static final IntegerGuacamoleProperty MAX_AGE =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-user-password-max-age"; }
+
+    };
+
+    /**
      * The property which specifies whether all user passwords must have at
      * least one lowercase character and one uppercase character. By default,
      * no such restriction is imposed.
@@ -117,6 +143,16 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
     @Override
     public int getMinimumLength() throws GuacamoleException {
         return environment.getProperty(MIN_LENGTH, 0);
+    }
+
+    @Override
+    public int getMinimumAge() throws GuacamoleException {
+        return environment.getProperty(MIN_AGE, 0);
+    }
+
+    @Override
+    public int getMaximumAge() throws GuacamoleException {
+        return environment.getProperty(MAX_AGE, 0);
     }
 
     @Override
