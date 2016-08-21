@@ -58,104 +58,13 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
     config.controller = ['$scope', '$injector', '$element',
             function guacClipboardController($scope, $injector, $element) {
 
-        // Required services
-        var $window          = $injector.get('$window');
-        var clipboardService = $injector.get('clipboardService');
-
         /**
-         * The FileReader to use to read File or Blob data received from the
-         * clipboard.
-         *
-         * @type FileReader
-         */
-        var reader = new FileReader();
-
-        /**
-         * The content-editable DOM element which will contain the clipboard
-         * contents within the user interface provided by this directive.
+         * The DOM element which will contain the clipboard contents within the
+         * user interface provided by this directive.
          *
          * @type Element
          */
         var element = $element[0];
-
-        /**
-         * Returns all files currently contained within the local clipboard,
-         * given a ClipboardEvent which should contain the current clipboard
-         * data. If no files are contained within the local clipboard, null
-         * is returned.
-         *
-         * @param {ClipboardEvent} e
-         *     The ClipboardEvent which should contain the current clipboard
-         *     data.
-         *
-         * @returns {File[]}
-         *     An array of all files currently contained with the clipboard, as
-         *     provided by the given ClipboardEvent, or null if no files are
-         *     present.
-         */
-        var getClipboardFiles = function getClipboardFiles(e) {
-
-            // Pull the clipboard data object
-            var clipboardData = e.clipboardData || $window.clipboardData;
-
-            // Read from the standard clipboard API items collection first
-            var items = clipboardData.items;
-            if (items) {
-
-                var files = [];
-
-                // Produce array of all files from clipboard data
-                for (var i = 0; i < items.length; i++) {
-                    if (items[i].kind === 'file')
-                        files.push(items[i].getAsFile());
-                }
-
-                return files;
-
-            }
-
-            // Failing that, try the files collection
-            if (clipboardData.files)
-                return clipboardData.files;
-
-            // No files accessible within given data
-            return null;
-
-        };
-
-        // Intercept paste events, handling image data specifically
-        element.addEventListener('paste', function dataPasted(e) {
-
-            // Read all files from the clipboard data within the event
-            var files = getClipboardFiles(e);
-            if (!files)
-                return;
-
-            // For each item within the clipboard
-            for (var i = 0; i < files.length; i++) {
-
-                var file = files[i];
-
-                // If the file is an image, attempt to read that image
-                if (/^image\//.exec(file.type)) {
-
-                    // Set clipboard data to contents
-                    $scope.$apply(function setClipboardData() {
-                        $scope.data = new ClipboardData({
-                            type : file.type,
-                            data : file
-                        });
-                    });
-
-                    // Do not paste
-                    e.preventDefault();
-                    return;
-
-                }
-
-            } // end for each item
-
-        });
 
         /**
          * Rereads the contents of the clipboard field, updating the
@@ -165,35 +74,11 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
          */
         var updateClipboardData = function updateClipboardData() {
 
-            // If the clipboard contains a single image, parse and assign the
-            // image data to the internal clipboard
-            var currentImage = clipboardService.getImageContent(element);
-            if (currentImage) {
-
-                // Convert the image's data URL into a blob
-                var blob = clipboardService.parseDataURL(currentImage);
-                if (blob) {
-
-                    // Complete the assignment if conversion was successful
-                    $scope.$evalAsync(function assignClipboardData() {
-                        $scope.data = new ClipboardData({
-                            type : blob.type,
-                            data : blob
-                        });
-                    });
-
-                    return;
-
-                }
-
-            } // end if clipboard is an image
-
-            // If data does not appear to be an image, or image decoding fails,
-            // assume clipboard contents are text
+            // Read contents of clipboard textarea
             $scope.$evalAsync(function assignClipboardText() {
                 $scope.data = new ClipboardData({
                     type : 'text/plain',
-                    data : clipboardService.getTextContent(element)
+                    data : element.value
                 });
             });
 
@@ -201,36 +86,18 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
 
         // Update the internally-stored clipboard data when events are fired
         // that indicate the clipboard field may have been changed
-        element.addEventListener('input',                    updateClipboardData);
-        element.addEventListener('DOMCharacterDataModified', updateClipboardData);
-        element.addEventListener('DOMNodeInserted',          updateClipboardData);
-        element.addEventListener('DOMNodeRemoved',           updateClipboardData);
+        element.addEventListener('input', updateClipboardData);
+        element.addEventListener('change', updateClipboardData);
 
-        // Watch clipboard for new data, associating it with any pressed keys
+        // Watch clipboard for new data, updating the clipboard textarea as
+        // necessary
         $scope.$watch('data', function clipboardDataChanged(data) {
-
-            // Stop any current read process
-            if (reader.readyState === 1)
-                reader.abort();
 
             // If the clipboard data is a string, render it as text
             if (typeof data.data === 'string')
-                clipboardService.setTextContent(element, data.data);
+                element.value = data.data;
 
-            // Render Blob/File contents based on mimetype
-            else if (data.data instanceof Blob) {
-
-                // If the copied data was an image, display it as such
-                if (/^image\//.exec(data.type)) {
-                    reader.onload = function updateImageURL() {
-                        clipboardService.setImageContent(element, reader.result);
-                    };
-                    reader.readAsDataURL(data.data);
-                }
-
-                // Ignore other data types
-
-            }
+            // Ignore other data types for now
 
         }); // end $scope.data watch
 
