@@ -29,7 +29,7 @@ import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
-import org.apache.guacamole.auth.jdbc.base.ModeledGroupedDirectoryObjectService;
+import org.apache.guacamole.auth.jdbc.base.ModeledChildDirectoryObjectService;
 import org.apache.guacamole.auth.jdbc.permission.ConnectionGroupPermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -46,7 +46,7 @@ import org.apache.guacamole.protocol.GuacamoleClientInformation;
  *
  * @author Michael Jumper, James Muehlner
  */
-public class ConnectionGroupService extends ModeledGroupedDirectoryObjectService<ModeledConnectionGroup,
+public class ConnectionGroupService extends ModeledChildDirectoryObjectService<ModeledConnectionGroup,
         ConnectionGroup, ConnectionGroupModel> {
 
     /**
@@ -124,6 +124,15 @@ public class ConnectionGroupService extends ModeledGroupedDirectoryObjectService
             throws GuacamoleException {
 
         // Return permissions related to connection groups 
+        return user.getUser().getConnectionGroupPermissions();
+
+    }
+
+    @Override
+    protected ObjectPermissionSet getParentPermissionSet(ModeledAuthenticatedUser user)
+            throws GuacamoleException {
+
+        // Connection groups are contained by other connection groups
         return user.getUser().getConnectionGroupPermissions();
 
     }

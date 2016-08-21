@@ -23,7 +23,7 @@ import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObject;
+import org.apache.guacamole.auth.jdbc.base.ModeledChildDirectoryObject;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.SharingProfile;
 
@@ -34,7 +34,7 @@ import org.apache.guacamole.net.auth.SharingProfile;
  * @author Michael Jumper
  */
 public class ModeledSharingProfile
-        extends ModeledDirectoryObject<SharingProfileModel>
+        extends ModeledChildDirectoryObject<SharingProfileModel>
         implements SharingProfile {
 
     /**
@@ -72,12 +72,12 @@ public class ModeledSharingProfile
 
     @Override
     public String getPrimaryConnectionIdentifier() {
-        return getModel().getPrimaryConnectionIdentifier();
+        return getModel().getParentIdentifier();
     }
 
     @Override
     public void setPrimaryConnectionIdentifier(String identifier) {
-        getModel().setPrimaryConnectionIdentifier(identifier);
+        getModel().setParentIdentifier(identifier);
     }
 
     @Override

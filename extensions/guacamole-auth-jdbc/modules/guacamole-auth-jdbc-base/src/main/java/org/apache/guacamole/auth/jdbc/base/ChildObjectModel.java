@@ -20,12 +20,13 @@
 package org.apache.guacamole.auth.jdbc.base;
 
 /**
- * Object representation of a Guacamole object, such as a user or connection,
- * as represented in the database.
+ * Object representation of a Guacamole object which can be the child of another
+ * object, such as a connection or sharing profile, as represented in the
+ * database.
  *
  * @author Michael Jumper
  */
-public abstract class GroupedObjectModel extends ObjectModel {
+public abstract class ChildObjectModel extends ObjectModel {
 
     /**
      * The unique identifier which identifies the parent of this object.
@@ -35,7 +36,7 @@ public abstract class GroupedObjectModel extends ObjectModel {
     /**
      * Creates a new, empty object.
      */
-    public GroupedObjectModel() {
+    public ChildObjectModel() {
     }
 
     /**

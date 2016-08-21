@@ -21,7 +21,7 @@ package org.apache.guacamole.auth.jdbc.connectiongroup;
 
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.base.GroupedObjectModel;
+import org.apache.guacamole.auth.jdbc.base.ChildObjectModel;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 
 /**
@@ -30,7 +30,7 @@ import org.apache.guacamole.net.auth.ConnectionGroup;
  *
  * @author Michael Jumper
  */
-public class ConnectionGroupModel extends GroupedObjectModel {
+public class ConnectionGroupModel extends ChildObjectModel {
 
     /**
      * The human-readable name associated with this connection group.

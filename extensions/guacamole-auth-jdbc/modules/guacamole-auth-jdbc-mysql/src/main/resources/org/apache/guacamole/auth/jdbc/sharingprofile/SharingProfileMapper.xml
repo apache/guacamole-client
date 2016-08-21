@@ -25,9 +25,9 @@
 
     <!-- Result mapper for sharing profile objects -->
     <resultMap id="SharingProfileResultMap" type="org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileModel">
-        <id     column="sharing_profile_id"    property="objectID"                    jdbcType="INTEGER"/>
-        <result column="sharing_profile_name"  property="name"                        jdbcType="VARCHAR"/>
-        <result column="primary_connection_id" property="primaryConnectionIdentifier" jdbcType="INTEGER"/>
+        <id     column="sharing_profile_id"    property="objectID"         jdbcType="INTEGER"/>
+        <result column="sharing_profile_name"  property="name"             jdbcType="VARCHAR"/>
+        <result column="primary_connection_id" property="parentIdentifier" jdbcType="INTEGER"/>
     </resultMap>
 
     <!-- Select all sharing profile identifiers -->
@@ -89,7 +89,7 @@
             primary_connection_id
         FROM guacamole_sharing_profile
         WHERE 
-            primary_connection_id = #{primaryConnectionIdentifier,jdbcType=VARCHAR}
+            primary_connection_id = #{parentIdentifier,jdbcType=VARCHAR}
             AND sharing_profile_name = #{name,jdbcType=VARCHAR}
 
     </select>
@@ -110,7 +110,7 @@
         )
         VALUES (
             #{object.name,jdbcType=VARCHAR},
-            #{object.primaryConnectionIdentifier,jdbcType=VARCHAR}
+            #{object.parentIdentifier,jdbcType=VARCHAR}
         )
 
     </insert>
@@ -119,7 +119,7 @@
     <update id="update" parameterType="org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileModel">
         UPDATE guacamole_sharing_profile
         SET sharing_profile_name  = #{object.name,jdbcType=VARCHAR},
-            primary_connection_id = #{object.primaryConnectionIdentifier,jdbcType=VARCHAR}
+            primary_connection_id = #{object.parentIdentifier,jdbcType=VARCHAR}
         WHERE sharing_profile_id = #{object.objectID,jdbcType=INTEGER}
     </update>
 

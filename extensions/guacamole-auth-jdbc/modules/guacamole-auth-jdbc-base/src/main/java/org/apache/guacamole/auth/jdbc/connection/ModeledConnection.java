@@ -31,7 +31,7 @@ import java.util.Set;
 import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
-import org.apache.guacamole.auth.jdbc.base.ModeledGroupedDirectoryObject;
+import org.apache.guacamole.auth.jdbc.base.ModeledChildDirectoryObject;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.form.NumericField;
@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author James Muehlner
  * @author Michael Jumper
  */
-public class ModeledConnection extends ModeledGroupedDirectoryObject<ConnectionModel>
+public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionModel>
     implements Connection {
 
     /**

@@ -29,7 +29,7 @@ import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
+import org.apache.guacamole.auth.jdbc.base.ModeledChildDirectoryObjectService;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.apache.guacamole.net.auth.SharingProfile;
@@ -45,7 +45,7 @@ import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
  * @author Michael Jumper
  */
 public class SharingProfileService
-        extends ModeledDirectoryObjectService<ModeledSharingProfile,
+        extends ModeledChildDirectoryObjectService<ModeledSharingProfile,
             SharingProfile, SharingProfileModel> {
 
     /**
@@ -129,6 +129,15 @@ public class SharingProfileService
     }
 
     @Override
+    protected ObjectPermissionSet getParentPermissionSet(ModeledAuthenticatedUser user)
+            throws GuacamoleException {
+
+        // Sharing profiles are children of connections
+        return user.getUser().getConnectionPermissions();
+
+    }
+
+    @Override
     protected void beforeCreate(ModeledAuthenticatedUser user,
             SharingProfileModel model) throws GuacamoleException {
 
@@ -139,7 +148,7 @@ public class SharingProfileService
             throw new GuacamoleClientException("Sharing profile names must not be blank.");
 
         // Do not attempt to create duplicate sharing profiles
-        SharingProfileModel existing = sharingProfileMapper.selectOneByName(model.getPrimaryConnectionIdentifier(), model.getName());
+        SharingProfileModel existing = sharingProfileMapper.selectOneByName(model.getParentIdentifier(), model.getName());
         if (existing != null)
             throw new GuacamoleClientException("The sharing profile \"" + model.getName() + "\" already exists.");
 
@@ -156,7 +165,7 @@ public class SharingProfileService
             throw new GuacamoleClientException("Sharing profile names must not be blank.");
         
         // Check whether such a sharing profile is already present
-        SharingProfileModel existing = sharingProfileMapper.selectOneByName(model.getPrimaryConnectionIdentifier(), model.getName());
+        SharingProfileModel existing = sharingProfileMapper.selectOneByName(model.getParentIdentifier(), model.getName());
         if (existing != null) {
 
             // If the specified name matches a DIFFERENT existing sharing profile, the update cannot continue

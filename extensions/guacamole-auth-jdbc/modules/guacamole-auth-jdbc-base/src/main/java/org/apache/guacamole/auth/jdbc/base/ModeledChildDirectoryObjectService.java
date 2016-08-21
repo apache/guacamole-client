@@ -31,7 +31,7 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
- * manipulating objects that can be within connection groups. This service will
+ * manipulating objects that can be children of other objects. This service will
  * automatically enforce the permissions of the current user.
  *
  * @author Michael Jumper
@@ -47,15 +47,33 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
  *     The underlying model object used to represent InternalType in the
  *     database.
  */
-public abstract class ModeledGroupedDirectoryObjectService<InternalType extends ModeledGroupedDirectoryObject<ModelType>,
-        ExternalType extends Identifiable, ModelType extends GroupedObjectModel>
+public abstract class ModeledChildDirectoryObjectService<InternalType extends ModeledChildDirectoryObject<ModelType>,
+        ExternalType extends Identifiable, ModelType extends ChildObjectModel>
         extends ModeledDirectoryObjectService<InternalType, ExternalType, ModelType> {
 
     /**
-     * Returns the set of parent connection groups that are modified by the
-     * given model object (by virtue of the object changing parent groups). If
-     * the model is not changing parents, the resulting collection will be
-     * empty.
+     * Returns the permission set associated with the given user and related
+     * to the type of objects which can be parents of the child objects handled
+     * by this directory object service.
+     *
+     * @param user
+     *     The user whose permissions are being retrieved.
+     *
+     * @return
+     *     A permission set which contains the permissions associated with the
+     *     given user and related to the type of objects which can be parents
+     *     of the child objects handled by this directory object service.
+     *
+     * @throws GuacamoleException
+     *     If permission to read the user's permissions is denied.
+     */
+    protected abstract ObjectPermissionSet getParentPermissionSet(
+            ModeledAuthenticatedUser user) throws GuacamoleException;
+
+    /**
+     * Returns the set of parent objects that are modified by the given model
+     * object (by virtue of the object changing parents). If the model is not
+     * changing parents, the resulting collection will be empty.
      *
      * @param user
      *     The user making the given changes to the model.
@@ -69,14 +87,13 @@ public abstract class ModeledGroupedDirectoryObjectService<InternalType extends 
      *     deleted, this will be null.
      *
      * @return
-     *     A collection of the identifiers of all parent connection groups
-     *     that will be affected (updated) by the change.
+     *     A collection of the identifiers of all parents that will be affected
+     *     (updated) by the change.
      *
      * @throws GuacamoleException
-     *     If an error occurs while determining which parent connection groups
-     *     are affected.
+     *     If an error occurs while determining which parents are affected.
      */
-    protected Collection<String> getModifiedGroups(ModeledAuthenticatedUser user,
+    protected Collection<String> getModifiedParents(ModeledAuthenticatedUser user,
             String identifier, ModelType model) throws GuacamoleException {
 
         // Get old parent identifier
@@ -98,18 +115,17 @@ public abstract class ModeledGroupedDirectoryObjectService<InternalType extends 
 
         }
 
-        // Return collection of all non-root groups involved
-        Collection<String> groups = new ArrayList<String>(2);
-        if (oldParentIdentifier != null) groups.add(oldParentIdentifier);
-        if (parentIdentifier    != null) groups.add(parentIdentifier);
-        return groups;
+        // Return collection of all non-root parents involved
+        Collection<String> parents = new ArrayList<String>(2);
+        if (oldParentIdentifier != null) parents.add(oldParentIdentifier);
+        if (parentIdentifier    != null) parents.add(parentIdentifier);
+        return parents;
 
     }
 
     /**
-     * Returns whether the given user has permission to modify the parent
-     * connection groups affected by the modifications made to the given model
-     * object.
+     * Returns whether the given user has permission to modify the parents
+     * affected by the modifications made to the given model object.
      *
      * @param user
      *     The user who changed the model object.
@@ -123,31 +139,30 @@ public abstract class ModeledGroupedDirectoryObjectService<InternalType extends 
      *     deleted, this will be null.
      *
      * @return
-     *     true if the user has update permission for all modified groups,
+     *     true if the user has update permission for all modified parents,
      *     false otherwise.
      *
      * @throws GuacamoleException
-     *     If an error occurs while determining which parent connection groups
-     *     are affected.
+     *     If an error occurs while determining which parents are affected.
      */
-    protected boolean canUpdateModifiedGroups(ModeledAuthenticatedUser user,
+    protected boolean canUpdateModifiedParents(ModeledAuthenticatedUser user,
             String identifier, ModelType model) throws GuacamoleException {
 
         // If user is an administrator, no need to check
         if (user.getUser().isAdministrator())
             return true;
         
-        // Verify that we have permission to modify any modified groups
-        Collection<String> modifiedGroups = getModifiedGroups(user, identifier, model);
-        if (!modifiedGroups.isEmpty()) {
+        // Verify that we have permission to modify any modified parents
+        Collection<String> modifiedParents = getModifiedParents(user, identifier, model);
+        if (!modifiedParents.isEmpty()) {
 
-            ObjectPermissionSet permissionSet = user.getUser().getConnectionGroupPermissions();
-            Collection<String> updateableGroups = permissionSet.getAccessibleObjects(
+            ObjectPermissionSet permissionSet = getParentPermissionSet(user);
+            Collection<String> updateableParents = permissionSet.getAccessibleObjects(
                 Collections.singleton(ObjectPermission.Type.UPDATE),
-                modifiedGroups
+                modifiedParents
             );
 
-            return updateableGroups.size() == modifiedGroups.size();
+            return updateableParents.size() == modifiedParents.size();
             
         }
 
@@ -161,8 +176,8 @@ public abstract class ModeledGroupedDirectoryObjectService<InternalType extends 
 
         super.beforeCreate(user, model);
         
-        // Validate that we can update all applicable parent groups
-        if (!canUpdateModifiedGroups(user, null, model))
+        // Validate that we can update all applicable parents
+        if (!canUpdateModifiedParents(user, null, model))
             throw new GuacamoleSecurityException("Permission denied.");
         
     }
@@ -173,8 +188,8 @@ public abstract class ModeledGroupedDirectoryObjectService<InternalType extends 
 
         super.beforeUpdate(user, model);
 
-        // Validate that we can update all applicable parent groups
-        if (!canUpdateModifiedGroups(user, model.getIdentifier(), model))
+        // Validate that we can update all applicable parents
+        if (!canUpdateModifiedParents(user, model.getIdentifier(), model))
             throw new GuacamoleSecurityException("Permission denied.");
         
     }
@@ -185,8 +200,8 @@ public abstract class ModeledGroupedDirectoryObjectService<InternalType extends 
 
         super.beforeDelete(user, identifier);
 
-        // Validate that we can update all applicable parent groups
-        if (!canUpdateModifiedGroups(user, identifier, null))
+        // Validate that we can update all applicable parents
+        if (!canUpdateModifiedParents(user, identifier, null))
             throw new GuacamoleSecurityException("Permission denied.");
         
     }
