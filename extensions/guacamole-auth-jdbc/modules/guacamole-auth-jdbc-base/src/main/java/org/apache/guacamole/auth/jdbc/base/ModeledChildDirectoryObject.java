@@ -30,7 +30,7 @@ import org.apache.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
  * @param <ModelType>
  *     The type of model object that corresponds to this object.
  */
-public abstract class ModeledGroupedDirectoryObject<ModelType extends GroupedObjectModel>
+public abstract class ModeledChildDirectoryObject<ModelType extends ChildObjectModel>
     extends ModeledDirectoryObject<ModelType> {
 
     /**

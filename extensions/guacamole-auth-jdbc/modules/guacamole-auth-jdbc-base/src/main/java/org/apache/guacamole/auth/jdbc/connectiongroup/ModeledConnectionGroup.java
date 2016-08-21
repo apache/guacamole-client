@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
-import org.apache.guacamole.auth.jdbc.base.ModeledGroupedDirectoryObject;
+import org.apache.guacamole.auth.jdbc.base.ModeledChildDirectoryObject;
 import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.form.BooleanField;
 import org.apache.guacamole.form.Field;
@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author James Muehlner
  * @author Michael Jumper
  */
-public class ModeledConnectionGroup extends ModeledGroupedDirectoryObject<ConnectionGroupModel>
+public class ModeledConnectionGroup extends ModeledChildDirectoryObject<ConnectionGroupModel>
     implements ConnectionGroup {
 
     /**
