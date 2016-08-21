@@ -35,7 +35,7 @@ public interface SharingProfileMapper
      * and having the given name. If no such sharing profile exists, null is
      * returned.
      *
-     * @param primaryConnectionIdentifier
+     * @param parentIdentifier
      *     The identifier of the primary connection to search against.
      *
      * @param name
@@ -46,7 +46,7 @@ public interface SharingProfileMapper
      *     given primary connection, or null if no such sharing profile exists.
      */
     SharingProfileModel selectOneByName(
-            @Param("primaryConnectionIdentifier") String primaryConnectionIdentifier,
+            @Param("parentIdentifier") String parentIdentifier,
             @Param("name") String name);
     
 }

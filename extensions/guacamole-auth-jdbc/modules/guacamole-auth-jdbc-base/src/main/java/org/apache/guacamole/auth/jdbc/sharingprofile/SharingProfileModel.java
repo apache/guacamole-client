@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.sharingprofile;
 
-import org.apache.guacamole.auth.jdbc.base.ObjectModel;
+import org.apache.guacamole.auth.jdbc.base.ChildObjectModel;
 
 /**
  * Object representation of a Guacamole sharing profile, as represented in the
@@ -27,18 +27,12 @@ import org.apache.guacamole.auth.jdbc.base.ObjectModel;
  *
  * @author Michael Jumper
  */
-public class SharingProfileModel extends ObjectModel {
+public class SharingProfileModel extends ChildObjectModel {
 
     /**
      * The human-readable name associated with this sharing profile.
      */
     private String name;
-
-    /**
-     * The identifier of the primary connection associated with this
-     * sharing profile.
-     */
-    private String primaryConnectionIdentifier;
 
     /**
      * Creates a new, empty sharing profile.
@@ -64,30 +58,6 @@ public class SharingProfileModel extends ObjectModel {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * Returns the identifier of the primary connection associated with this
-     * sharing profile.
-     *
-     * @return
-     *     The identifier of the primary connection associated with this
-     *     sharing profile.
-     */
-    public String getPrimaryConnectionIdentifier() {
-        return primaryConnectionIdentifier;
-    }
-
-    /**
-     * Sets the identifier of the primary connection associated with this
-     * sharing profile.
-     *
-     * @param primaryConnectionIdentifier
-     *     The identifier of the primary connection associated with this
-     *     sharing profile.
-     */
-    public void setPrimaryConnectionIdentifier(String primaryConnectionIdentifier) {
-        this.primaryConnectionIdentifier = primaryConnectionIdentifier;
     }
 
     @Override
