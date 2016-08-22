@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
+import org.apache.guacamole.auth.jdbc.user.PasswordRecordModel;
 
 /**
  * Service which verifies compliance with the password policy configured via
@@ -161,9 +162,14 @@ public class PasswordPolicyService {
      */
     private long getPasswordAge(ModeledUser user) {
 
+        // If no password was set, then no time has elapsed
+        PasswordRecordModel previousPassword = user.getPreviousPassword();
+        if (previousPassword == null)
+            return 0;
+
         // Pull both current time and the time the password was last reset
         long currentTime = System.currentTimeMillis();
-        long lastResetTime = user.getPreviousPasswordDate().getTime();
+        long lastResetTime = previousPassword.getPasswordDate().getTime();
 
         // Calculate the number of days elapsed since the password was last reset
         return TimeUnit.DAYS.convert(currentTime - lastResetTime, TimeUnit.MILLISECONDS);
