@@ -250,6 +250,9 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      * @param user
      *     The user updating the existing object.
      *
+     * @param object
+     *     The object being updated.
+     *
      * @param model
      *     The model of the object being updated.
      *
@@ -258,7 +261,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      *     object.
      */
     protected void beforeUpdate(ModeledAuthenticatedUser user,
-            ModelType model) throws GuacamoleException {
+            InternalType object, ModelType model) throws GuacamoleException {
 
         // By default, do nothing.
         if (!hasObjectPermission(user, model.getIdentifier(), ObjectPermission.Type.UPDATE))
@@ -470,7 +473,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
         throws GuacamoleException {
 
         ModelType model = object.getModel();
-        beforeUpdate(user, model);
+        beforeUpdate(user, object, model);
         
         // Update object
         getObjectMapper().update(model);

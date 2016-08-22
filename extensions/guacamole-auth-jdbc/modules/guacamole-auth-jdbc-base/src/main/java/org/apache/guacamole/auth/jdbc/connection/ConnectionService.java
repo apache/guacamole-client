@@ -174,10 +174,11 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
 
     @Override
     protected void beforeUpdate(ModeledAuthenticatedUser user,
-            ConnectionModel model) throws GuacamoleException {
+            ModeledConnection object, ConnectionModel model)
+            throws GuacamoleException {
 
-        super.beforeUpdate(user, model);
-        
+        super.beforeUpdate(user, object, model);
+
         // Name must not be blank
         if (model.getName() == null || model.getName().trim().isEmpty())
             throw new GuacamoleClientException("Connection names must not be blank.");

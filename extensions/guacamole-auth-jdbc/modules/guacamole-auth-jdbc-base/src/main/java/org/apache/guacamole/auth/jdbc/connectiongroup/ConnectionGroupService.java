@@ -157,9 +157,10 @@ public class ConnectionGroupService extends ModeledChildDirectoryObjectService<M
 
     @Override
     protected void beforeUpdate(ModeledAuthenticatedUser user,
-            ConnectionGroupModel model) throws GuacamoleException {
+            ModeledConnectionGroup object, ConnectionGroupModel model)
+            throws GuacamoleException {
 
-        super.beforeUpdate(user, model);
+        super.beforeUpdate(user, object, model);
         
         // Name must not be blank
         if (model.getName() == null || model.getName().trim().isEmpty())

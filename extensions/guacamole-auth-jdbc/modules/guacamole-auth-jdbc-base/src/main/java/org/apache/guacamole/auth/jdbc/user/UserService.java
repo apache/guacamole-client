@@ -203,9 +203,9 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
     @Override
     protected void beforeUpdate(ModeledAuthenticatedUser user,
-            UserModel model) throws GuacamoleException {
+            ModeledUser object, UserModel model) throws GuacamoleException {
 
-        super.beforeUpdate(user, model);
+        super.beforeUpdate(user, object, model);
         
         // Username must not be blank
         if (model.getIdentifier() == null || model.getIdentifier().trim().isEmpty())

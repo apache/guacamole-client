@@ -157,9 +157,10 @@ public class SharingProfileService
 
     @Override
     protected void beforeUpdate(ModeledAuthenticatedUser user,
-            SharingProfileModel model) throws GuacamoleException {
+            ModeledSharingProfile object, SharingProfileModel model)
+            throws GuacamoleException {
 
-        super.beforeUpdate(user, model);
+        super.beforeUpdate(user, object, model);
         
         // Name must not be blank
         if (model.getName() == null || model.getName().trim().isEmpty())
