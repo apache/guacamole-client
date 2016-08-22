@@ -206,10 +206,10 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
         // Store plaintext password internally
         this.password = password;
 
-        // If no password provided, clear password salt and hash
+        // If no password provided, set random password
         if (password == null) {
-            userModel.setPasswordSalt(null);
-            userModel.setPasswordHash(null);
+            userModel.setPasswordSalt(saltService.generateSalt());
+            userModel.setPasswordHash(saltService.generateSalt());
         }
 
         // Otherwise generate new salt and hash given password using newly-generated salt
