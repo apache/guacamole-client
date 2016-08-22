@@ -25,7 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
-import org.apache.guacamole.auth.jdbc.user.UserModel;
+import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 
 /**
  * Service which verifies compliance with the password policy configured via
@@ -159,11 +159,11 @@ public class PasswordPolicyService {
      * @return
      *     The age of the given user's password, in days.
      */
-    private long getPasswordAge(UserModel user) {
+    private long getPasswordAge(ModeledUser user) {
 
         // Pull both current time and the time the password was last reset
         long currentTime = System.currentTimeMillis();
-        long lastResetTime = user.getPasswordDate().getTime();
+        long lastResetTime = user.getPreviousPasswordDate().getTime();
 
         // Calculate the number of days elapsed since the password was last reset
         return TimeUnit.DAYS.convert(currentTime - lastResetTime, TimeUnit.MILLISECONDS);
@@ -183,7 +183,7 @@ public class PasswordPolicyService {
      *     policy, or of the password policy cannot be parsed from
      *     guacamole.properties.
      */
-    public void verifyPasswordAge(UserModel user) throws GuacamoleException {
+    public void verifyPasswordAge(ModeledUser user) throws GuacamoleException {
 
         // Retrieve password policy from environment
         PasswordPolicy policy = environment.getPasswordPolicy();
@@ -213,7 +213,7 @@ public class PasswordPolicyService {
      * @throws GuacamoleException
      *     If the password policy cannot be parsed.
      */
-    public boolean isPasswordExpired(UserModel user)
+    public boolean isPasswordExpired(ModeledUser user)
             throws GuacamoleException {
 
         // Retrieve password policy from environment

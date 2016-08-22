@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.jdbc.user;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -211,9 +210,6 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         if (object.getPassword() != null)
             passwordPolicyService.verifyPassword(object.getIdentifier(), object.getPassword());
 
-        // Update password reset date
-        model.setPasswordDate(new Timestamp(System.currentTimeMillis()));
-
     }
 
     @Override
@@ -241,13 +237,10 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
             // Enforce password age only for non-adminstrators
             if (!user.getUser().isAdministrator())
-                passwordPolicyService.verifyPasswordAge(model);
+                passwordPolicyService.verifyPasswordAge(object);
 
             // Always verify password complexity
             passwordPolicyService.verifyPassword(object.getIdentifier(), object.getPassword());
-
-            // Update password reset date
-            model.setPasswordDate(new Timestamp(System.currentTimeMillis()));
 
         }
 

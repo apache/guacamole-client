@@ -108,7 +108,7 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
 
         // Update password if password is expired
         UserModel userModel = user.getModel();
-        if (userModel.isExpired() || passwordPolicyService.isPasswordExpired(userModel))
+        if (userModel.isExpired() || passwordPolicyService.isPasswordExpired(user))
             userService.resetExpiredPassword(user, authenticatedUser.getCredentials());
 
         // Link to user context
