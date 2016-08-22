@@ -222,6 +222,9 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      * @param user
      *     The user creating the object.
      *
+     * @param object
+     *     The object being created.
+     *
      * @param model
      *     The model of the object being created.
      *
@@ -230,7 +233,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      *     object.
      */
     protected void beforeCreate(ModeledAuthenticatedUser user,
-            ModelType model ) throws GuacamoleException {
+            ExternalType object, ModelType model) throws GuacamoleException {
 
         // Verify permission to create objects
         if (!user.getUser().isAdministrator() && !hasCreatePermission(user))
@@ -436,7 +439,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
         throws GuacamoleException {
 
         ModelType model = getModelInstance(user, object);
-        beforeCreate(user, model);
+        beforeCreate(user, object, model);
         
         // Create object
         getObjectMapper().insert(model);
