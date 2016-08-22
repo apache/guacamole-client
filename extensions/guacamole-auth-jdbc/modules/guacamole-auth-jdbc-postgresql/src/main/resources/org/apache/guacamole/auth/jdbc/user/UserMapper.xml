@@ -29,6 +29,7 @@
         <result column="username"            property="identifier"        jdbcType="VARCHAR"/>
         <result column="password_hash"       property="passwordHash"      jdbcType="BINARY"/>
         <result column="password_salt"       property="passwordSalt"      jdbcType="BINARY"/>
+        <result column="password_date"       property="passwordDate"      jdbcType="TIMESTAMP"/>
         <result column="disabled"            property="disabled"          jdbcType="BOOLEAN"/>
         <result column="expired"             property="expired"           jdbcType="BOOLEAN"/>
         <result column="access_window_start" property="accessWindowStart" jdbcType="TIME"/>
@@ -62,6 +63,7 @@
             username,
             password_hash,
             password_salt,
+            password_date,
             disabled,
             expired,
             access_window_start,
@@ -86,6 +88,7 @@
             username,
             password_hash,
             password_salt,
+            password_date,
             disabled,
             expired,
             access_window_start,
@@ -113,6 +116,7 @@
             username,
             password_hash,
             password_salt,
+            password_date,
             disabled,
             expired,
             access_window_start,
@@ -140,6 +144,7 @@
             username,
             password_hash,
             password_salt,
+            password_date,
             disabled,
             expired,
             access_window_start,
@@ -152,6 +157,7 @@
             #{object.identifier,jdbcType=VARCHAR},
             #{object.passwordHash,jdbcType=BINARY},
             #{object.passwordSalt,jdbcType=BINARY},
+            #{object.passwordDate,jdbcType=TIMESTAMP},
             #{object.disabled,jdbcType=BOOLEAN},
             #{object.expired,jdbcType=BOOLEAN},
             #{object.accessWindowStart,jdbcType=TIME},
@@ -168,6 +174,7 @@
         UPDATE guacamole_user
         SET password_hash = #{object.passwordHash,jdbcType=BINARY},
             password_salt = #{object.passwordSalt,jdbcType=BINARY},
+            password_date = #{object.passwordDate,jdbcType=TIMESTAMP},
             disabled = #{object.disabled,jdbcType=BOOLEAN},
             expired = #{object.expired,jdbcType=BOOLEAN},
             access_window_start = #{object.accessWindowStart,jdbcType=TIME},
