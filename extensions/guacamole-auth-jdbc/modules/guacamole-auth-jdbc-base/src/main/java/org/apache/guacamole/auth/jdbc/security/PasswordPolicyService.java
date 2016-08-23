@@ -20,6 +20,8 @@
 package org.apache.guacamole.auth.jdbc.security;
 
 import com.google.inject.Inject;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,6 +50,12 @@ public class PasswordPolicyService {
      */
     @Inject
     private PasswordRecordMapper passwordRecordMapper;
+
+    /**
+     * Service for hashing passwords.
+     */
+    @Inject
+    private PasswordEncryptionService encryptionService;
 
     /**
      * Regular expression which matches only if the string contains at least one
@@ -106,6 +114,49 @@ public class PasswordPolicyService {
     }
 
     /**
+     * Returns whether the given password matches any of the user's previous
+     * passwords. Regardless of the value specified here, the maximum number of
+     * passwords involved in this check depends on how many previous passwords
+     * were actually recorded, which depends on the password policy.
+     *
+     * @param password
+     *     The password to check.
+     *
+     * @param username
+     *     The username of the user whose history should be compared against
+     *     the given password.
+     *
+     * @param historySize
+     *     The maximum number of history records to compare the password
+     *     against.
+     *
+     * @return
+     *     true if the given password matches any of the user's previous
+     *     passwords, up to the specified limit, false otherwise.
+     */
+    private boolean matchesPreviousPasswords(String password, String username,
+            int historySize) {
+
+        // No need to compare if no history is relevant
+        if (historySize <= 0)
+            return false;
+
+        // Check password against all recorded hashes
+        List<PasswordRecordModel> history = passwordRecordMapper.select(username, historySize);
+        for (PasswordRecordModel record : history) {
+
+            byte[] hash = encryptionService.createPasswordHash(password, record.getPasswordSalt());
+            if (Arrays.equals(hash, record.getPasswordHash()))
+                return true;
+            
+        }
+
+        // No passwords match
+        return false;
+        
+    }
+
+    /**
      * Verifies that the given new password complies with the password policy
      * configured within guacamole.properties, throwing a GuacamoleException if
      * the policy is violated in any way.
@@ -151,6 +202,12 @@ public class PasswordPolicyService {
         if (policy.isNonAlphanumericRequired() && !matches(password, CONTAINS_NON_ALPHANUMERIC))
             throw new PasswordRequiresSymbolException(
                     "Passwords must contain at least one non-alphanumeric character.");
+
+        // Prohibit password reuse
+        int historySize = policy.getHistorySize();
+        if (matchesPreviousPasswords(password, username, historySize))
+            throw new PasswordReusedException(
+                    "Password matches a previously-used password.", historySize);
 
         // Password passes all defined restrictions
 
