@@ -23,3 +23,27 @@
 
 ALTER TABLE guacamole_user
     ADD COLUMN password_date timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+--
+-- User password history
+--
+
+CREATE TABLE guacamole_user_password_history (
+
+  password_history_id serial  NOT NULL,
+  user_id             integer NOT NULL,
+
+  -- Salted password
+  password_hash bytea        NOT NULL,
+  password_salt bytea,
+  password_date timestamptz  NOT NULL,
+
+  PRIMARY KEY (password_history_id),
+
+  CONSTRAINT guacamole_user_password_history_ibfk_1
+    FOREIGN KEY (user_id)
+    REFERENCES guacamole_user (user_id) ON DELETE CASCADE
+
+);
+
+CREATE INDEX ON guacamole_user_password_history(user_id);
