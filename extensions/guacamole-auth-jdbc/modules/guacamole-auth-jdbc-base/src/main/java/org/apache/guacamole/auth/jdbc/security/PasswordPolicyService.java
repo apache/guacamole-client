@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
+import org.apache.guacamole.auth.jdbc.user.PasswordRecordMapper;
 import org.apache.guacamole.auth.jdbc.user.PasswordRecordModel;
 
 /**
@@ -41,6 +42,12 @@ public class PasswordPolicyService {
      */
     @Inject
     private JDBCEnvironment environment;
+
+    /**
+     * Mapper for creating/retrieving previously-set passwords.
+     */
+    @Inject
+    private PasswordRecordMapper passwordRecordMapper;
 
     /**
      * Regular expression which matches only if the string contains at least one
@@ -232,6 +239,34 @@ public class PasswordPolicyService {
 
         // Determine whether password is expired based on maximum age
         return getPasswordAge(user) >= maxPasswordAge;
+
+    }
+
+    /**
+     * Records the password that was associated with the given user at the time
+     * the user was queried, such that future attempts to set that same password
+     * for that user will be denied. The number of passwords remembered for each
+     * user is limited by the password policy.
+     *
+     * @param user
+     *     The user whose previous password should be recorded.
+     *
+     * @throws GuacamoleException
+     *     If the password policy cannot be parsed.
+     */
+    public void recordPreviousPassword(ModeledUser user)
+            throws GuacamoleException {
+
+        // Retrieve password policy from environment
+        PasswordPolicy policy = environment.getPasswordPolicy();
+
+        // Nothing to do if history is not being recorded
+        int historySize = policy.getHistorySize();
+        if (historySize <= 0)
+            return;
+        
+        // Store previous password in history
+        passwordRecordMapper.insert(user.getPreviousPassword(), historySize);
 
     }
 
