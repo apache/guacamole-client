@@ -5,7 +5,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-client</artifactId>
     <packaging>pom</packaging>
-    <version>0.9.9-incubating</version>
+    <version>0.9.10-incubating</version>
     <name>guacamole-client</name>
     <url>http://guac-dev.org/</url>
 
