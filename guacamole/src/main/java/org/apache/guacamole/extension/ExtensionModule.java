@@ -61,7 +61,7 @@ public class ExtensionModule extends ServletModule {
     private static final List<String> ALLOWED_GUACAMOLE_VERSIONS =
         Collections.unmodifiableList(Arrays.asList(
             "*",
-            "0.9.9-incubating"
+            "0.9.10-incubating"
         ));
 
     /**
