@@ -359,7 +359,7 @@ CREATE TABLE guacamole_connection_history (
   connection_id        integer      DEFAULT NULL,
   connection_name      varchar(128) NOT NULL,
   sharing_profile_id   integer      DEFAULT NULL,
-  sharing_profile_name varchar(128) NOT NULL,
+  sharing_profile_name varchar(128) DEFAULT NULL,
   start_date           timestamptz  NOT NULL,
   end_date             timestamptz  DEFAULT NULL,
 
