@@ -1,0 +1,9 @@
+
+.git
+**/.gitignore
+
+**/*~
+**/target/
+**/nb-configuration.xml
+guacamole/customs.json
+
