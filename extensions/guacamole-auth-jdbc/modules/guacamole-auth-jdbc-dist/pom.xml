@@ -1,0 +1,68 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.guacamole</groupId>
+    <artifactId>guacamole-auth-jdbc-dist</artifactId>
+    <packaging>jar</packaging>
+    <name>guacamole-auth-jdbc-dist</name>
+    <url>http://guac-dev.org/</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <parent>
+        <groupId>org.apache.guacamole</groupId>
+        <artifactId>guacamole-auth-jdbc</artifactId>
+        <version>0.9.10-incubating</version>
+        <relativePath>../../</relativePath>
+    </parent>
+
+    <build>
+        <plugins>
+
+            <!-- Assembly plugin - for easy distribution -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <finalName>${project.parent.artifactId}-${project.parent.version}</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptors>
+                        <descriptor>project-assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-dist-archive</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <dependencies>
+
+        <!-- MySQL Authentication Extension -->
+        <dependency>
+            <groupId>org.apache.guacamole</groupId>
+            <artifactId>guacamole-auth-jdbc-mysql</artifactId>
+            <version>0.9.10-incubating</version>
+        </dependency>
+
+        <!-- PostgreSQL Authentication Extension -->
+        <dependency>
+            <groupId>org.apache.guacamole</groupId>
+            <artifactId>guacamole-auth-jdbc-postgresql</artifactId>
+            <version>0.9.10-incubating</version>
+        </dependency>
+
+    </dependencies>
+
+</project>

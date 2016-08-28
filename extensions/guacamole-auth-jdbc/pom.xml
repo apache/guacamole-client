@@ -17,6 +17,9 @@
 
     <modules>
 
+        <!-- Distribution .tar.gz -->
+        <module>modules/guacamole-auth-jdbc-dist</module>
+
         <!-- Base JDBC classes -->
         <module>modules/guacamole-auth-jdbc-base</module>
 
@@ -25,35 +28,6 @@
         <module>modules/guacamole-auth-jdbc-postgresql</module>
 
     </modules>
-
-    <build>
-        <plugins>
-
-            <!-- Assembly plugin - for easy distribution -->
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.3</version>
-                <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <id>make-dist-archive</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>${project.artifactId}-${project.version}</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptors>
-                                <descriptor>src/main/assembly/dist.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-        </plugins>
-    </build>
 
     <dependencyManagement>
         <dependencies>
