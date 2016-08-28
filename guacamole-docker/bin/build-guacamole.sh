@@ -66,7 +66,7 @@ cp guacamole/target/*.war "$DESTINATION/guacamole.war"
 # Copy JDBC auth extensions and SQL scripts
 #
 
-tar -xzf extensions/guacamole-auth-jdbc/target/*.tar.gz \
+tar -xzf extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-dist/target/*.tar.gz \
     -C "$DESTINATION"                                   \
     --wildcards                                         \
     --no-anchored                                       \
