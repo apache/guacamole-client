@@ -352,20 +352,42 @@ mkdir -p "$GUACAMOLE_LIB"
 # Point to associated guacd
 #
 
-# Verify required link is present
-if [ -z "$GUACD_PORT_4822_TCP_ADDR" -o -z "$GUACD_PORT_4822_TCP_PORT" ]; then
+# Use linked container for guacd if specified
+if [ -n "$GUACD_NAME" ]; then
+    GUACD_HOSTNAME="$GUACD_PORT_4822_TCP_ADDR"
+    GUACD_PORT="$GUACD_PORT_4822_TCP_PORT"
+fi
+
+# Use default guacd port if none specified
+GUACD_PORT="${GUACD_PORT-4822}"
+
+# Verify required guacd connection information is present
+if [ -z "$GUACD_HOSTNAME" -o -z "$GUACD_PORT" ]; then
     cat <<END
-FATAL: Missing "guacd" link.
+FATAL: Missing GUACD_HOSTNAME or "guacd" link.
 -------------------------------------------------------------------------------
-Every Guacamole instance needs a corresponding copy of guacd running. Link a
-container to the link named "guacd" to provide this.
+Every Guacamole instance needs a corresponding copy of guacd running. To
+provide this, you must either:
+
+(a) Explicitly link that container with the link named "guacd".
+
+(b) If not using a Docker container for guacd, explicitly specify the TCP
+    connection information using the following environment variables:
+
+GUACD_HOSTNAME     The hostname or IP address of guacd. If not using a guacd
+                   Docker container and corresponding link, this environment
+                   variable is *REQUIRED*.
+
+GUACD_PORT         The port on which guacd is listening for TCP connections.
+                   This environment variable is optional. If omitted, the
+                   standard guacd port of 4822 will be used.
 END
     exit 1;
 fi
 
 # Update config file
-set_property "guacd-hostname" "$GUACD_PORT_4822_TCP_ADDR"
-set_property "guacd-port"     "$GUACD_PORT_4822_TCP_PORT"
+set_property "guacd-hostname" "$GUACD_HOSTNAME"
+set_property "guacd-port"     "$GUACD_PORT"
 
 #
 # Track which authentication backends are installed
