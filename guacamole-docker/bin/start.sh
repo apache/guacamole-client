@@ -28,6 +28,8 @@
 ## script, running in the foreground until terminated.
 ##
 
+GUACAMOLE_HOME_TEMPLATE="$GUACAMOLE_HOME"
+
 GUACAMOLE_HOME="$HOME/.guacamole"
 GUACAMOLE_EXT="$GUACAMOLE_HOME/extensions"
 GUACAMOLE_LIB="$GUACAMOLE_HOME/lib"
@@ -340,6 +342,14 @@ start_guacamole() {
 #
 
 rm -Rf "$GUACAMOLE_HOME"
+
+#
+# Copy contents of provided GUACAMOLE_HOME template, if any
+#
+
+if [ -n "$GUACAMOLE_HOME_TEMPLATE" ]; then
+    cp -a "$GUACAMOLE_HOME_TEMPLATE/." "$GUACAMOLE_HOME/"
+fi
 
 #
 # Create and define Guacamole lib and extensions directories
