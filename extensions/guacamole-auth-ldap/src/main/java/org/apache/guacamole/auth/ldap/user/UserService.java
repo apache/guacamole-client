@@ -84,14 +84,17 @@ public class UserService {
      */
     private void putAllUsers(Map<String, User> users, LDAPConnection ldapConnection,
             String usernameAttribute) throws GuacamoleException {
-
+    
         try {
-
+        	String ldapSearchFilter= "(&(objectClass=*)(" + escapingService.escapeLDAPSearchFilter(usernameAttribute) + "=*)"
+        			+confService.getAdditionalSearchFilter().trim()+")";
+        	
+        	logger.debug("list all user using ldap search filter:"+ldapSearchFilter);
             // Find all Guacamole users underneath base DN
             LDAPSearchResults results = ldapConnection.search(
                 confService.getUserBaseDN(),
                 LDAPConnection.SCOPE_SUB,
-                "(&(objectClass=*)(" + escapingService.escapeLDAPSearchFilter(usernameAttribute) + "=*))",
+                ldapSearchFilter,
                 null,
                 false
             );

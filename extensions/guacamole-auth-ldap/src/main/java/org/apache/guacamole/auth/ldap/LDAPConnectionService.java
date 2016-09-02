@@ -154,6 +154,7 @@ public class LDAPConnectionService {
 
             // Bind as user
             ldapConnection.bind(LDAPConnection.LDAP_V3, userDN, passwordBytes);
+           
 
         }
 

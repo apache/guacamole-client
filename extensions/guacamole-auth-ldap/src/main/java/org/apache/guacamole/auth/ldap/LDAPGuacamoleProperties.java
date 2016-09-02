@@ -144,5 +144,8 @@ public class LDAPGuacamoleProperties {
         public String getName() { return "ldap-encryption-method"; }
 
     };
-
+    public static final StringGuacamoleProperty ADDITIONAL_LDAP_SEARCH_FILTERS = new StringGuacamoleProperty(){
+    	  @Override
+          public String getName() { return "ldap-additional-search-filter"; }
+    };
 }

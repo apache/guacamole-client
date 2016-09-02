@@ -205,5 +205,12 @@ public class ConfigurationService {
             EncryptionMethod.NONE
         );
     }
+    
+    public String getAdditionalSearchFilter() throws GuacamoleException{
+    	 return environment.getProperty(
+    	        LDAPGuacamoleProperties.ADDITIONAL_LDAP_SEARCH_FILTERS,
+    	        ""
+    	 );
+    }
 
 }
