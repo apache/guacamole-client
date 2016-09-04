@@ -144,8 +144,14 @@ public class LDAPGuacamoleProperties {
         public String getName() { return "ldap-encryption-method"; }
 
     };
-    public static final StringGuacamoleProperty ADDITIONAL_LDAP_SEARCH_FILTERS = new StringGuacamoleProperty(){
-    	  @Override
-          public String getName() { return "ldap-additional-search-filter"; }
+    
+    /**
+     * The user filter provided to LDAP server which appended to the base DN and user identifier attribute,
+     * produces the full DN of the user being authenticated. 
+     */
+    public static final StringGuacamoleProperty LDAP_USER_FILTER = new StringGuacamoleProperty(){
+    	  
+    	@Override
+        public String getName() { return "ldap-user-filter"; }
     };
 }

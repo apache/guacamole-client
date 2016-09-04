@@ -92,10 +92,10 @@ guacamole.properties such that the authentication provider is available.
     # The base DN within which all role based groups can be found.
     ldap-group-base-dn:      ou=groups,dc=example,dc=net
     
-    # The additional search filter for the user to be authenticated. 
-    # for example , following filter indicate user have to be memeberof exampleGroup. otherwise, authentication will failed.
-    #the filter is also used to filter out all users visible to guacadmin
-    ldap-additional-search-filter: (memberOf=cn=exampleGroup,ou=groups,dc=example,dc=net) 
+    
+    # The ldap filter which appended to the base DN and user identifier attribute,
+    # produces the full DN of the user being authenticated.
+    ldap-user-filter: (memberOf=cn=exampleGroup,ou=groups,dc=example,dc=net) 
 
 ------------------------------------------------------------
  Reporting problems

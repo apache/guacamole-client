@@ -80,8 +80,8 @@ public class AuthenticationProviderService {
     private Provider<UserContext> userContextProvider;
 
     /**
-     * Service for escaping parts of LDAP queries.
-     */
+    * Service for escaping parts of LDAP queries.
+    */
     @Inject
     private EscapingService escapingService;
     
@@ -214,36 +214,37 @@ public class AuthenticationProviderService {
      *     denied.
      */
     public AuthenticatedUser authenticateUser(Credentials credentials)
-    		throws GuacamoleException {
+            throws GuacamoleException {
 
-    	// Attempt bind
-    	LDAPConnection ldapConnection;
-    	try {
-    		ldapConnection = bindAs(credentials);
-    	}
-    	catch (GuacamoleException e) {
-    		logger.error("Cannot bind with LDAP server: {}", e.getMessage());
-    		logger.debug("Error binding with LDAP server.", e);
-    		ldapConnection = null;
-    	}
+        // Attempt bind
+        LDAPConnection ldapConnection;
+        try {
+            ldapConnection = bindAs(credentials);
+        }
+        catch (GuacamoleException e) {
+            logger.error("Cannot bind with LDAP server: {}", e.getMessage());
+            logger.debug("Error binding with LDAP server.", e);
+            ldapConnection = null;
+        }
 
-    	// If bind fails, permission to login is denied
-    	if (ldapConnection == null)
-    		throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
+        // If bind fails, permission to login is denied
+        if (ldapConnection == null)
+            throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
 
-    	boolean authenticated=true;
-    	// check if login in user also meet additional search filter.
-    	if(confService.getAdditionalSearchFilter().length()>0)
-    	{
-    		authenticated=false;
-    		for (String usernameAttribute : confService.getUsernameAttributes()) {
-    			try{
-    				String ldapSearchFilter= "(&(objectClass=*)(" + escapingService.escapeLDAPSearchFilter(usernameAttribute) + "="+credentials.getUsername()+")"
-    						+confService.getAdditionalSearchFilter().trim()+")";
 
-    				logger.debug("ldap search filter is :"+ldapSearchFilter);
-    				// Find all Guacamole users underneath base DN
-    				LDAPSearchResults results = ldapConnection.search(
+        boolean authenticated=true;
+        // Check if login in user also meet additional search filter.
+        if(confService.getUserSearchFilter() !=null)
+        {
+            authenticated=false;
+    	    for (String usernameAttribute : confService.getUsernameAttributes()) {
+                try {
+    			     String ldapSearchFilter= "(&(objectClass=*)(" + escapingService.escapeLDAPSearchFilter(usernameAttribute) + "="+credentials.getUsername()+")"
+    						+confService.getUserSearchFilter().trim()+")";
+
+    				 logger.debug("ldap search filter is :"+ldapSearchFilter);
+    				 // Find all Guacamole users underneath base DN
+    				 LDAPSearchResults results = ldapConnection.search(
     						confService.getUserBaseDN(),
     						LDAPConnection.SCOPE_SUB,
     						ldapSearchFilter,
@@ -251,43 +252,42 @@ public class AuthenticationProviderService {
     						false
     						);
 
-    				// Read all visible users
-    				while (results.hasMore()) {	
-    					authenticated=true;
-    					logger.debug("ldap search find at least one match with filter: "+ldapSearchFilter);
-    					break;
-    				}
+    				 // Read all visible users
+    				 if (results.hasMore()) {	
+    					 authenticated=true;
+    					 logger.debug("LDAP search find at least one match with filter: "+ldapSearchFilter);
+    					
+    				 }
     			}
     			catch (LDAPException e) {
-    				logger.warn("ldap search failed with additional filter"+confService.getAdditionalSearchFilter());
+    				logger.warn("LDAP search failed with user filter: {} ", e.getMessage());
     				throw new GuacamoleServerException("Error while querying users with additional filter", e);
     			}
     		}
     	}
 
 
-    try{
-    	if(authenticated)
-    	{
-    		// Return AuthenticatedUser if bind succeeds
-    		AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-    		authenticatedUser.init(credentials);
-    		return authenticatedUser;
-    	}
-    	else
-    	{
-    		throw new GuacamoleInvalidCredentialsException("Permission denied. doesn't meet additional filter"+confService.getAdditionalSearchFilter(),
+        try {
+             if (authenticated)
+    	     {
+    		    // Return AuthenticatedUser if bind succeeds
+    		     AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+    		     authenticatedUser.init(credentials);
+    		     return authenticatedUser;
+    	     }
+    	     else
+    	     {
+    		     throw new GuacamoleInvalidCredentialsException("Permission denied. doesn't meet additional filter"+confService.getUserSearchFilter(),
     				CredentialsInfo.USERNAME_PASSWORD);
-    	}
+    	     }
+        }
 
-    
-    }
-    // Always disconnect
-    finally {
-    	ldapService.disconnect(ldapConnection);
-    }
+        // Always disconnect
+        finally {
+            ldapService.disconnect(ldapConnection);
+        }
 
-}
+    }
 
     /**
      * Returns a UserContext object initialized with data accessible to the
