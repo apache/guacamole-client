@@ -219,9 +219,9 @@ public class ConfigurationService {
      *     if guqacamole.properties cannot be parsed.
      */
     public String getUserSearchFilter() throws GuacamoleException{
-    	 return environment.getProperty(
-    	        LDAPGuacamoleProperties.LDAP_USER_FILTER
-    	 );
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_USER_FILTER
+        );
     }
 
 }

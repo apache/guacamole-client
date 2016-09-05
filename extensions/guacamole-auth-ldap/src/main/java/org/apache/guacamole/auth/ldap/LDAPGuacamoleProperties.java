@@ -150,8 +150,8 @@ public class LDAPGuacamoleProperties {
      * produces the full DN of the user being authenticated. 
      */
     public static final StringGuacamoleProperty LDAP_USER_FILTER = new StringGuacamoleProperty(){
-    	  
-    	@Override
+
+        @Override
         public String getName() { return "ldap-user-filter"; }
     };
 }
