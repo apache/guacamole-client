@@ -239,9 +239,11 @@ public class AuthenticationProviderService {
             authenticated=false;
             for (String usernameAttribute : confService.getUsernameAttributes()) {
                 try {
-                    String ldapSearchFilter= "(&(objectClass=*)(" + escapingService.escapeLDAPSearchFilter(usernameAttribute) + "="+credentials.getUsername()+")"
-                            +confService.getUserSearchFilter().trim()+")";
-
+                    String ldapSearchFilter= "(&(objectClass=*)(" + escapingService.escapeLDAPSearchFilter(usernameAttribute) + "="+credentials.getUsername()+")";
+                    if ( confService.getUserSearchFilter() != null )
+                        ldapSearchFilter+=confService.getUserSearchFilter().trim() ;                    
+                    ldapSearchFilter+= ")";
+                    
                     logger.debug("ldap search filter is :"+ldapSearchFilter);
                     // Find all Guacamole users underneath base DN
                     LDAPSearchResults results = ldapConnection.search(
