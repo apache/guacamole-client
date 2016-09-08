@@ -136,6 +136,20 @@ angular.module('rest').factory('tunnelService', ['$injector',
     };
 
     /**
+     * Sanitize a filename, replacing all URL path seperators with safe
+     * characters.
+     *
+     * @param {String} filename
+     *     An unsanitized filename that may need cleanup.
+     *
+     * @returns {String}
+     *     The sanitized filename.
+     */
+    var sanitizeFilename = function sanitizeFilename(filename) {
+        return filename.replace(/\/+/g, '_');
+    };
+
+    /**
      * Makes a request to the REST API to retrieve the contents of a stream
      * which has been created within the active Guacamole connection associated
      * with the given tunnel. The contents of the stream will automatically be
@@ -169,7 +183,7 @@ angular.module('rest').factory('tunnelService', ['$injector',
                 + $window.location.pathname
                 + 'api/session/tunnels/' + encodeURIComponent(tunnel)
                 + '/streams/' + encodeURIComponent(stream.index)
-                + '/' + encodeURIComponent(filename)
+                + '/' + encodeURIComponent(sanitizeFilename(filename))
                 + '?token=' + encodeURIComponent(authenticationService.getCurrentToken());
 
         // Create temporary hidden iframe to facilitate download
@@ -232,7 +246,7 @@ angular.module('rest').factory('tunnelService', ['$injector',
                 + $window.location.pathname
                 + 'api/session/tunnels/' + encodeURIComponent(tunnel)
                 + '/streams/' + encodeURIComponent(stream.index)
-                + '/' + encodeURIComponent(file.name)
+                + '/' + encodeURIComponent(sanitizeFilename(file.name))
                 + '?token=' + encodeURIComponent(authenticationService.getCurrentToken());
 
         var xhr = new XMLHttpRequest();
