@@ -7,7 +7,7 @@
     <packaging>jar</packaging>
     <version>0.9.10-incubating</version>
     <name>guacamole-common</name>
-    <url>http://guac-dev.org/</url>
+    <url>http://guacamole.incubator.apache.org/</url>
 
     <description>
         The base Java API of the Guacamole project, providing Java support for

@@ -7,7 +7,7 @@
     <packaging>war</packaging>
     <version>0.9.10-incubating</version>
     <name>guacamole</name>
-    <url>http://guac-dev.org/</url>
+    <url>http://guacamole.incubator.apache.org/</url>
 
     <description>
         The Guacamole web application, providing authentication and an HTML5

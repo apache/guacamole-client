@@ -6,7 +6,7 @@
     <artifactId>guacamole-auth-jdbc-base</artifactId>
     <packaging>jar</packaging>
     <name>guacamole-auth-jdbc-base</name>
-    <url>http://guac-dev.org/</url>
+    <url>http://guacamole.incubator.apache.org/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

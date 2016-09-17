@@ -7,7 +7,7 @@
     <packaging>war</packaging>
     <version>0.9.10-incubating</version>
     <name>guacamole-example</name>
-    <url>http://guac-dev.org/</url>
+    <url>http://guacamole.incubator.apache.org/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
