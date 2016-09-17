@@ -6,14 +6,14 @@
 This README is intended to provide quick and to-the-point documentation for
 technical users intending to compile parts of Guacamole themselves.
 
-Distribution-specific packages are available from the files section of the main
-project page:
+Source archives and pre-built .jar files are available from the downloads
+section of the project website:
  
-    http://sourceforge.net/projects/guacamole/files/
+    http://guacamole.incubator.apache.org/
 
-Distribution-specific documentation is provided on the Guacamole wiki:
+A full manual is available as well:
 
-    http://guac-dev.org/
+    http://guacamole.incubator.apache.org/doc/gug/
 
 
 ------------------------------------------------------------
@@ -109,5 +109,5 @@ in the library directory configured in guacamole.properties.
 Please report any bugs encountered by opening a new issue in the JIRA system
 hosted at:
     
-    http://glyptodon.org/jira/
+    https://issues.apache.org/jira/browse/GUACAMOLE/
 
