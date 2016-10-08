@@ -67,6 +67,16 @@ Guacamole.Layer = function(width, height) {
     context.save();
 
     /**
+     * Whether the layer has not yet been drawn to. Once any draw operation
+     * which affects the underlying canvas is invoked, this flag will be set to
+     * false.
+     *
+     * @private
+     * @type Boolean
+     */
+    var empty = true;
+
+    /**
      * Whether a new path should be started with the next path drawing
      * operations.
      * @private
@@ -132,9 +142,9 @@ Guacamole.Layer = function(width, height) {
         // Resize only if canvas dimensions are actually changing
         if (canvas.width !== canvasWidth || canvas.height !== canvasHeight) {
 
-            // Copy old data only if relevant
+            // Copy old data only if relevant and non-empty
             var oldData = null;
-            if (canvas.width !== 0 && canvas.height !== 0) {
+            if (!empty && canvas.width !== 0 && canvas.height !== 0) {
 
                 // Create canvas and context for holding old data
                 oldData = document.createElement("canvas");
@@ -289,6 +299,7 @@ Guacamole.Layer = function(width, height) {
     this.drawImage = function(x, y, image) {
         if (layer.autosize) fitRect(x, y, image.width, image.height);
         context.drawImage(image, x, y);
+        empty = false;
     };
 
     /**
@@ -367,6 +378,7 @@ Guacamole.Layer = function(width, height) {
 
         // Draw image data
         context.putImageData(dst, x, y);
+        empty = false;
 
     };
 
@@ -410,6 +422,7 @@ Guacamole.Layer = function(width, height) {
         // Get image data from src and dst
         var src = srcLayer.getCanvas().getContext("2d").getImageData(srcx, srcy, srcw, srch);
         context.putImageData(src, x, y);
+        empty = false;
 
     };
 
@@ -453,6 +466,7 @@ Guacamole.Layer = function(width, height) {
 
         if (layer.autosize) fitRect(x, y, srcw, srch);
         context.drawImage(srcCanvas, srcx, srcy, srcw, srch, x, y, srcw, srch);
+        empty = false;
 
     };
 
@@ -615,6 +629,7 @@ Guacamole.Layer = function(width, height) {
         context.lineWidth = thickness;
         context.strokeStyle = "rgba(" + r + "," + g + "," + b + "," + a/255.0 + ")";
         context.stroke();
+        empty = false;
 
         // Path now implicitly closed
         pathClosed = true;
@@ -637,6 +652,7 @@ Guacamole.Layer = function(width, height) {
         // Fill with color
         context.fillStyle = "rgba(" + r + "," + g + "," + b + "," + a/255.0 + ")";
         context.fill();
+        empty = false;
 
         // Path now implicitly closed
         pathClosed = true;
@@ -669,6 +685,7 @@ Guacamole.Layer = function(width, height) {
             "repeat"
         );
         context.stroke();
+        empty = false;
 
         // Path now implicitly closed
         pathClosed = true;
@@ -693,6 +710,7 @@ Guacamole.Layer = function(width, height) {
             "repeat"
         );
         context.fill();
+        empty = false;
 
         // Path now implicitly closed
         pathClosed = true;
