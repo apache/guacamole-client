@@ -43,6 +43,17 @@ Guacamole.Layer = function(width, height) {
     var layer = this;
 
     /**
+     * The number of pixels the width or height of a layer must change before
+     * the underlying canvas is resized. The underlying canvas will be kept at
+     * dimensions which are integer multiples of this factor.
+     *
+     * @private
+     * @constant
+     * @type Number
+     */
+    var CANVAS_SIZE_FACTOR = 64;
+
+    /**
      * The canvas element backing this Layer.
      * @private
      */
@@ -98,57 +109,78 @@ Guacamole.Layer = function(width, height) {
     };
 
     /**
-     * Resizes the canvas element backing this Layer without testing the
-     * new size. This function should only be used internally.
+     * Resizes the canvas element backing this Layer. This function should only
+     * be used internally.
      * 
      * @private
-     * @param {Number} newWidth The new width to assign to this Layer.
-     * @param {Number} newHeight The new height to assign to this Layer.
+     * @param {Number} [newWidth=0]
+     *     The new width to assign to this Layer.
+     *
+     * @param {Number} [newHeight=0]
+     *     The new height to assign to this Layer.
      */
-    function resize(newWidth, newHeight) {
+    var resize = function resize(newWidth, newHeight) {
 
-        // Only preserve old data if width/height are both non-zero
-        var oldData = null;
-        if (layer.width !== 0 && layer.height !== 0) {
+        // Default size to zero
+        newWidth = newWidth || 0;
+        newHeight = newHeight || 0;
 
-            // Create canvas and context for holding old data
-            oldData = document.createElement("canvas");
-            oldData.width = layer.width;
-            oldData.height = layer.height;
+        // Calculate new dimensions of internal canvas
+        var canvasWidth  = Math.ceil(newWidth  / CANVAS_SIZE_FACTOR) * CANVAS_SIZE_FACTOR;
+        var canvasHeight = Math.ceil(newHeight / CANVAS_SIZE_FACTOR) * CANVAS_SIZE_FACTOR;
 
-            var oldDataContext = oldData.getContext("2d");
+        // Resize only if canvas dimensions are actually changing
+        if (canvas.width !== canvasWidth || canvas.height !== canvasHeight) {
 
-            // Copy image data from current
-            oldDataContext.drawImage(canvas,
-                    0, 0, layer.width, layer.height,
-                    0, 0, layer.width, layer.height);
+            // Copy old data only if relevant
+            var oldData = null;
+            if (canvas.width !== 0 && canvas.height !== 0) {
+
+                // Create canvas and context for holding old data
+                oldData = document.createElement("canvas");
+                oldData.width = Math.min(layer.width, newWidth);
+                oldData.height = Math.min(layer.height, newHeight);
+
+                var oldDataContext = oldData.getContext("2d");
+
+                // Copy image data from current
+                oldDataContext.drawImage(canvas,
+                        0, 0, oldData.width, oldData.height,
+                        0, 0, oldData.width, oldData.height);
+
+            }
+
+            // Preserve composite operation
+            var oldCompositeOperation = context.globalCompositeOperation;
+
+            // Resize canvas
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+
+            // Redraw old data, if any
+            if (oldData)
+                context.drawImage(oldData,
+                    0, 0, oldData.width, oldData.height,
+                    0, 0, oldData.width, oldData.height);
+
+            // Restore composite operation
+            context.globalCompositeOperation = oldCompositeOperation;
+
+            // Acknowledge reset of stack (happens on resize of canvas)
+            stackSize = 0;
+            context.save();
 
         }
 
-        // Preserve composite operation
-        var oldCompositeOperation = context.globalCompositeOperation;
+        // If the canvas size is not changing, manually force state reset
+        else
+            layer.reset();
 
-        // Resize canvas
-        canvas.width = newWidth;
-        canvas.height = newHeight;
-
-        // Redraw old data, if any
-        if (oldData)
-                context.drawImage(oldData, 
-                    0, 0, layer.width, layer.height,
-                    0, 0, layer.width, layer.height);
-
-        // Restore composite operation
-        context.globalCompositeOperation = oldCompositeOperation;
-
+        // Assign new layer dimensions
         layer.width = newWidth;
         layer.height = newHeight;
 
-        // Acknowledge reset of stack (happens on resize of canvas)
-        stackSize = 0;
-        context.save();
-
-    }
+    };
 
     /**
      * Given the X and Y coordinates of the upper-left corner of a rectangle
@@ -781,8 +813,7 @@ Guacamole.Layer = function(width, height) {
     };
 
     // Initialize canvas dimensions
-    canvas.width = width;
-    canvas.height = height;
+    resize(width, height);
 
     // Explicitly render canvas below other elements in the layer (such as
     // child layers). Chrome and others may fail to render layers properly
