@@ -87,14 +87,19 @@ public class UserService {
 
         try {
 
+            String ldapSearchFilter = "(&(objectClass=*)(" + escapingService.escapeLDAPSearchFilter(usernameAttribute)+ "=*)";
+            if ( confService.getUserSearchFilter() != null )
+                ldapSearchFilter+=confService.getUserSearchFilter().trim() ;            
+            ldapSearchFilter+= ")";
+
+            logger.debug("list all user using ldap search filter: " + ldapSearchFilter);
             // Find all Guacamole users underneath base DN
             LDAPSearchResults results = ldapConnection.search(
-                confService.getUserBaseDN(),
+                confService.getUserBaseDN(), 
                 LDAPConnection.SCOPE_SUB,
-                "(&(objectClass=*)(" + escapingService.escapeLDAPSearchFilter(usernameAttribute) + "=*))",
-                null,
-                false
-            );
+                ldapSearchFilter, 
+                null, 
+                false);
 
             // Read all visible users
             while (results.hasMore()) {

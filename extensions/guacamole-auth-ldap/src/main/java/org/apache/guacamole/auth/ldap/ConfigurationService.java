@@ -205,5 +205,23 @@ public class ConfigurationService {
             EncryptionMethod.NONE
         );
     }
+    
+    /**
+     * Returns the user filter which should be appended to the user identifier attributes
+     * to query and authenticate users using the LDAP directory. If no filter is provided, null is
+     * returned. 
+     * 
+     * @return
+     *     the user filter which should be appended to the user identifier attributes
+     *     to query and authenticate users using the LDAP directory. If no filter is provided, null is
+     *     returned.
+     * @throws GuacamoleException
+     *     if guqacamole.properties cannot be parsed.
+     */
+    public String getUserSearchFilter() throws GuacamoleException{
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_USER_FILTER
+        );
+    }
 
 }
