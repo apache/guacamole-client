@@ -12,7 +12,7 @@ How to use this image
 =====================
 
 Using this image will require an existing, running Docker container with the
-[guacd image](https://registry.hub.docker.com/u/glyptodon/guacd/), and another
+[guacd image](https://registry.hub.docker.com/u/guacamole/guacd/), and another
 Docker container providing either a PostgreSQL or MySQL database.
 
 The name of the database and all associated credentials are specified with
@@ -36,7 +36,7 @@ Deploying Guacamole with PostgreSQL authentication
         -e POSTGRES_DATABASE=guacamole_db  \
         -e POSTGRES_USER=guacamole_user    \
         -e POSTGRES_PASSWORD=some_password \
-        -d -p 8080:8080 glyptodon/guacamole
+        -d -p 8080:8080 guacamole/guacamole
 
 Linking Guacamole to PostgreSQL requires three environment variables. If any of
 these environment variables are omitted, you will receive an error message, and
@@ -56,10 +56,10 @@ To generate a SQL script which can be used to initialize a fresh PostgreSQL
 database
 [as documented in the Guacamole manual](http://guacamole.incubator.apache.org/doc/gug/jdbc-auth.html#jdbc-auth-postgresql):
 
-    docker run --rm glyptodon/guacamole /opt/guacamole/bin/initdb.sh --postgres > initdb.sql
+    docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgres > initdb.sql
 
 Alternatively, you can use the SQL scripts included with
-[guacamole-auth-jdbc](http://sourceforge.net/projects/guacamole/files/current/extensions/guacamole-auth-jdbc-0.9.6.tar.gz/download).
+[guacamole-auth-jdbc](https://github.com/apache/incubator-guacamole-client/tree/0.9.10-incubating/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-postgresql/schema).
 
 Once this script is generated, you must:
 
@@ -80,7 +80,7 @@ Deploying Guacamole with MySQL authentication
         -e MYSQL_DATABASE=guacamole_db  \
         -e MYSQL_USER=guacamole_user    \
         -e MYSQL_PASSWORD=some_password \
-        -d -p 8080:8080 glyptodon/guacamole
+        -d -p 8080:8080 guacamole/guacamole
 
 Linking Guacamole to MySQL requires three environment variables. If any of
 these environment variables are omitted, you will receive an error message, and
@@ -99,10 +99,10 @@ necessary SQL to do this is included in the Guacamole image.
 To generate a SQL script which can be used to initialize a fresh MySQL database
 [as documented in the Guacamole manual](http://guacamole.incubator.apache.org/doc/gug/jdbc-auth.html#jdbc-auth-mysql):
 
-    docker run --rm glyptodon/guacamole /opt/guacamole/bin/initdb.sh --mysql > initdb.sql
+    docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --mysql > initdb.sql
 
 Alternatively, you can use the SQL scripts included with
-[guacamole-auth-jdbc](http://sourceforge.net/projects/guacamole/files/current/extensions/guacamole-auth-jdbc-0.9.6.tar.gz/download).
+[guacamole-auth-jdbc](https://github.com/apache/incubator-guacamole-client/tree/0.9.10-incubating/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql/schema).
 
 Once this script is generated, you must:
 
