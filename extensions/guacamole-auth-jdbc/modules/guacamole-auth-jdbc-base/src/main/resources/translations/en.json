@@ -20,7 +20,16 @@
         "FIELD_HEADER_MAX_CONNECTIONS"          : "Maximum number of connections:",
         "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Maximum number of connections per user:",
 
-        "SECTION_HEADER_CONCURRENCY" : "Concurrency Limits"
+        "FIELD_HEADER_GUACD_HOSTNAME"   : "Hostname:",
+        "FIELD_HEADER_GUACD_ENCRYPTION" : "Encryption:",
+        "FIELD_HEADER_GUACD_PORT"       : "Port:",
+
+        "FIELD_OPTION_GUACD_ENCRYPTION_EMPTY" : "",
+        "FIELD_OPTION_GUACD_ENCRYPTION_NONE"  : "None (unencrypted)",
+        "FIELD_OPTION_GUACD_ENCRYPTION_SSL"   : "SSL / TLS",
+
+        "SECTION_HEADER_CONCURRENCY" : "Concurrency Limits",
+        "SECTION_HEADER_GUACD"       : "Guacamole Proxy Parameters (guacd)"
 
     },
 

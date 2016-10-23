@@ -32,9 +32,12 @@ import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.ModeledChildDirectoryObject;
+import org.apache.guacamole.auth.jdbc.connection.GuacamoleProxyConfiguration.EncryptionMethod;
+import org.apache.guacamole.form.EnumField;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.form.NumericField;
+import org.apache.guacamole.form.TextField;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionRecord;
@@ -54,6 +57,51 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(ModeledConnection.class);
+
+    /**
+     * The name of the attribute which overrides the hostname used to connect
+     * to guacd for this connection.
+     */
+    public static final String GUACD_HOSTNAME_NAME = "guacd-hostname";
+
+    /**
+     * The name of the attribute which overrides the port used to connect to
+     * guacd for this connection.
+     */
+    public static final String GUACD_PORT_NAME = "guacd-port";
+
+    /**
+     * The name of the attribute which overrides the encryption method used to
+     * connect to guacd for this connection.
+     */
+    public static final String GUACD_ENCRYPTION_NAME = "guacd-encryption";
+
+    /**
+     * The value specified for the "guacd-encryption" attribute if encryption
+     * should not be used to connect to guacd.
+     */
+    public static final String GUACD_ENCRYPTION_VALUE_NONE = "none";
+
+    /**
+     * The value specified for the "guacd-encryption" attribute if SSL/TLS
+     * encryption should be used to connect to guacd.
+     */
+    public static final String GUACD_ENCRYPTION_VALUE_SSL = "ssl";
+
+    /**
+     * All attributes which describe the configuration of the guacd instance
+     * which will be used to connect to the remote desktop described by this
+     * connection.
+     */
+    public static final Form GUACD_PARAMETERS = new Form("guacd", Arrays.<Field>asList(
+        new TextField(GUACD_HOSTNAME_NAME),
+        new NumericField(GUACD_PORT_NAME),
+        new EnumField(GUACD_ENCRYPTION_NAME, Arrays.asList(
+            "",
+            GUACD_ENCRYPTION_VALUE_NONE,
+            GUACD_ENCRYPTION_VALUE_SSL
+        ))
+    ));
 
     /**
      * The name of the attribute which controls the maximum number of
@@ -81,7 +129,8 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      * logical forms.
      */
     public static final Collection<Form> ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(
-        CONCURRENCY_LIMITS
+        CONCURRENCY_LIMITS,
+        GUACD_PARAMETERS
     ));
 
     /**
@@ -186,6 +235,35 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
         // Set per-user connection limit attribute
         attributes.put(MAX_CONNECTIONS_PER_USER_NAME, NumericField.format(getModel().getMaxConnectionsPerUser()));
 
+        // Set guacd (proxy) hostname and port
+        attributes.put(GUACD_HOSTNAME_NAME, getModel().getProxyHostname());
+        attributes.put(GUACD_PORT_NAME, NumericField.format(getModel().getProxyPort()));
+
+        // Set guacd (proxy) encryption method
+        EncryptionMethod encryptionMethod = getModel().getProxyEncryptionMethod();
+        if (encryptionMethod == null)
+            attributes.put(GUACD_ENCRYPTION_NAME, null);
+
+        else {
+            switch (encryptionMethod) {
+
+                // Unencrypted
+                case NONE:
+                    attributes.put(GUACD_ENCRYPTION_NAME, GUACD_ENCRYPTION_VALUE_NONE);
+                    break;
+
+                // SSL / TLS encryption
+                case SSL:
+                    attributes.put(GUACD_ENCRYPTION_NAME, GUACD_ENCRYPTION_VALUE_SSL);
+                    break;
+
+                // Unimplemented / unspecified
+                default:
+                    attributes.put(GUACD_ENCRYPTION_NAME, null);
+
+            }
+        }
+
         return attributes;
     }
 
@@ -205,6 +283,31 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
             logger.warn("Not setting maximum connections per user: {}", e.getMessage());
             logger.debug("Unable to parse numeric attribute.", e);
         }
+
+        // Set guacd hostname (no translation necessary)
+        getModel().setProxyHostname(attributes.get(GUACD_HOSTNAME_NAME));
+
+        // Translate guacd port
+        try { getModel().setProxyPort(NumericField.parse(attributes.get(GUACD_PORT_NAME))); }
+        catch (NumberFormatException e) {
+            logger.warn("Not setting guacd port: {}", e.getMessage());
+            logger.debug("Unable to parse numeric attribute.", e);
+        }
+
+        // Translate guacd encryption method
+        String encryptionMethod = attributes.get(GUACD_ENCRYPTION_NAME);
+
+        // Unencrypted
+        if (GUACD_ENCRYPTION_VALUE_NONE.equals(encryptionMethod))
+            getModel().setProxyEncryptionMethod(EncryptionMethod.NONE);
+
+        // SSL / TLS
+        else if (GUACD_ENCRYPTION_VALUE_SSL.equals(encryptionMethod))
+            getModel().setProxyEncryptionMethod(EncryptionMethod.SSL);
+
+        // Unimplemented / unspecified
+        else
+            getModel().setProxyEncryptionMethod(null);
 
     }
 
@@ -254,6 +357,41 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
 
         // Otherwise use defined value
         return value;
+
+    }
+
+    /**
+     * Returns the connection information which should be used to connect to
+     * guacd when establishing a connection to the remote desktop described by
+     * this connection. If no such information is defined for this specific
+     * remote desktop connection, the default guacd connection information will
+     * be used instead, as defined by JDBCEnvironment.
+     *
+     * @return
+     *     The connection information which should be used to connect to guacd
+     *     when establishing a connection to the remote desktop described by
+     *     this connection.
+     *
+     * @throws GuacamoleException
+     *     If the connection information for guacd cannot be parsed.
+     */
+    public GuacamoleProxyConfiguration getGuacamoleProxyConfiguration()
+            throws GuacamoleException {
+
+        // Retrieve default proxy configuration from environment
+        GuacamoleProxyConfiguration defaultConfig = environment.getDefaultGuacamoleProxyConfiguration();
+
+        // Retrieve proxy configuration overrides from model
+        String hostname = getModel().getProxyHostname();
+        Integer port = getModel().getProxyPort();
+        EncryptionMethod encryptionMethod = getModel().getProxyEncryptionMethod();
+
+        // Produce new proxy configuration from model, using defaults where unspecified
+        return new GuacamoleProxyConfiguration(
+            hostname         != null ? hostname         : defaultConfig.getHostname(),
+            port             != null ? port             : defaultConfig.getPort(),
+            encryptionMethod != null ? encryptionMethod : defaultConfig.getEncryptionMethod()
+        );
 
     }
 

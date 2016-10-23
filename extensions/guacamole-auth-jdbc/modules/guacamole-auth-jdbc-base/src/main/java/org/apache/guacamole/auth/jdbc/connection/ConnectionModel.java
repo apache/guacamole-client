@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.jdbc.connection;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.base.ChildObjectModel;
+import org.apache.guacamole.auth.jdbc.connection.GuacamoleProxyConfiguration.EncryptionMethod;
 
 /**
  * Object representation of a Guacamole connection, as represented in the
@@ -58,6 +59,24 @@ public class ConnectionModel extends ChildObjectModel {
      * connection.
      */
     private Set<String> sharingProfileIdentifiers = new HashSet<String>();
+
+    /**
+     * The hostname of the guacd instance to use, or null if the hostname of the
+     * default guacd instance should be used.
+     */
+    private String proxyHostname;
+
+    /**
+     * The port of the guacd instance to use, or null if the port of the default
+     * guacd instance should be used.
+     */
+    private Integer proxyPort;
+
+    /**
+     * The encryption method required by the desired guacd instance, or null if
+     * the encryption method of the default guacd instance should be used.
+     */
+    private EncryptionMethod proxyEncryptionMethod;
 
     /**
      * Creates a new, empty connection.
@@ -156,6 +175,79 @@ public class ConnectionModel extends ChildObjectModel {
      */
     public void setMaxConnectionsPerUser(Integer maxConnectionsPerUser) {
         this.maxConnectionsPerUser = maxConnectionsPerUser;
+    }
+
+    /**
+     * Returns the hostname of the guacd instance to use. If the hostname of the
+     * default guacd instance should be used instead, null is returned.
+     *
+     * @return
+     *     The hostname of the guacd instance to use, or null if the hostname
+     *     of the default guacd instance should be used.
+     */
+    public String getProxyHostname() {
+        return proxyHostname;
+    }
+
+    /**
+     * Sets the hostname of the guacd instance to use.
+     *
+     * @param proxyHostname
+     *     The hostname of the guacd instance to use, or null if the hostname
+     *     of the default guacd instance should be used.
+     */
+    public void setProxyHostname(String proxyHostname) {
+        this.proxyHostname = proxyHostname;
+    }
+
+    /**
+     * Returns the port of the guacd instance to use. If the port of the default
+     * guacd instance should be used instead, null is returned.
+     *
+     * @return
+     *     The port of the guacd instance to use, or null if the port of the
+     *     default guacd instance should be used.
+     */
+    public Integer getProxyPort() {
+        return proxyPort;
+    }
+
+    /**
+     * Sets the port of the guacd instance to use.
+     *
+     * @param proxyPort
+     *     The port of the guacd instance to use, or null if the port of the
+     *     default guacd instance should be used.
+     */
+    public void setProxyPort(Integer proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
+    /**
+     * Returns the type of encryption required by the desired guacd instance.
+     * If the encryption method of the default guacd instance should be used
+     * instead, null is returned.
+     *
+     * @return
+     *     The type of encryption required by the desired guacd instance, or
+     *     null if the encryption method of the default guacd instance should
+     *     be used.
+     */
+    public EncryptionMethod getProxyEncryptionMethod() {
+        return proxyEncryptionMethod;
+    }
+
+    /**
+     * Sets the type of encryption which should be used when connecting to
+     * guacd, if any.
+     *
+     * @param proxyEncryptionMethod
+     *     The type of encryption required by the desired guacd instance, or
+     *     null if the encryption method of the default guacd instance should
+     *     be used.
+     */
+    public void setProxyEncryptionMethod(EncryptionMethod proxyEncryptionMethod) {
+        this.proxyEncryptionMethod = proxyEncryptionMethod;
     }
 
     /**
