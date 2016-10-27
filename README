@@ -4,16 +4,16 @@
 ------------------------------------------------------------
 
 This README is intended to provide quick and to-the-point documentation for
-technical users intending to compile parts of Guacamole themselves.
+technical users intending to compile parts of Apache Guacamole themselves.
 
-Source archives and pre-built .war files are available from the files section
-of the main project page:
+Source archives and pre-built .war files are available from the downloads
+section of the project website:
  
-    http://sourceforge.net/projects/guacamole/files/
+    http://guacamole.incubator.apache.org/
 
-A full manual is provided on the Guacamole web site:
+A full manual is available as well:
 
-    http://guac-dev.org/
+    http://guacamole.incubator.apache.org/doc/gug/
 
 
 ------------------------------------------------------------
@@ -21,8 +21,8 @@ A full manual is provided on the Guacamole web site:
 ------------------------------------------------------------
 
 guacamole-client is the superproject containing all Maven-based projects that
-make Guacamole, an HTML5 web application that provides access to your desktop
-using remote desktop protocols.
+make Apache Guacamole, an HTML5 web application that provides access to your
+desktop using remote desktop protocols.
 
 guacamole-client is used to build the subprojects that make up Guacamole, and
 to provide a common central repository. Each project contained here is
@@ -32,11 +32,11 @@ guacamole-client, Maven will take care of the proper build order.
 
 
 ------------------------------------------------------------
- Compiling and installing Guacamole
+ Compiling and installing Apache Guacamole
 ------------------------------------------------------------
 
-Guacamole is built using Maven. Building Guacamole compiles all classes and
-packages them into a deployable .war file. This .war file can be installed
+Apache Guacamole is built using Maven. Building Guacamole compiles all classes
+and packages them into a deployable .war file. This .war file can be installed
 and deployed under servlet containers like Apache Tomcat or Jetty.
 
 1) Run mvn package
@@ -64,5 +64,5 @@ and deployed under servlet containers like Apache Tomcat or Jetty.
 Please report any bugs encountered by opening a new issue in the JIRA system
 hosted at:
     
-    http://glyptodon.org/jira/
+    https://issues.apache.org/jira/browse/GUACAMOLE/
 
