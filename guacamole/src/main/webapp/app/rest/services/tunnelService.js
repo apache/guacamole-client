@@ -44,6 +44,17 @@ angular.module('rest').factory('tunnelService', ['$injector',
     var document = $window.document;
 
     /**
+     * The number of milliseconds to wait after a stream download has completed
+     * before cleaning up related DOM resources, if the browser does not
+     * otherwise notify us that cleanup is safe.
+     *
+     * @private
+     * @constant
+     * @type Number
+     */
+    var DOWNLOAD_CLEANUP_WAIT = 5000;
+
+    /**
      * Makes a request to the REST API to get the list of all tunnels
      * associated with in-progress connections, returning a promise that
      * provides an array of their UUIDs (strings) if successful.
@@ -189,6 +200,7 @@ angular.module('rest').factory('tunnelService', ['$injector',
         // Create temporary hidden iframe to facilitate download
         var iframe = document.createElement('iframe');
         iframe.style.position = 'fixed';
+        iframe.style.border = 'none';
         iframe.style.width = '1px';
         iframe.style.height = '1px';
         iframe.style.left = '-1px';
@@ -197,9 +209,18 @@ angular.module('rest').factory('tunnelService', ['$injector',
         // The iframe MUST be part of the DOM for the download to occur
         document.body.appendChild(iframe);
 
-        // Automatically remove iframe from DOM when download completes
-        stream.onend = function downloadComplete() {
+        // Automatically remove iframe from DOM when download completes, if
+        // browser supports tracking of iframe downloads via the "load" event
+        iframe.onload = function downloadComplete() {
             document.body.removeChild(iframe);
+        };
+
+        // Automatically remove iframe from DOM a few seconds after the stream
+        // ends, in the browser does NOT fire the "load" event for downloads
+        stream.onend = function downloadComplete() {
+            $window.setTimeout(function cleanupIframe() {
+                document.body.removeChild(iframe);
+            }, DOWNLOAD_CLEANUP_WAIT);
         };
 
         // Begin download
