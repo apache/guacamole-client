@@ -849,6 +849,13 @@ Guacamole.Client = function(tunnel) {
 
         },
 
+        "disconnect" : function handleDisconnect(parameters) {
+
+            // Explicitly tear down connection
+            guac_client.disconnect();
+
+        },
+
         "dispose": function(parameters) {
             
             var layer_index = parseInt(parameters[0]);
