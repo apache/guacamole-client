@@ -130,7 +130,7 @@
             <plugin>
                 <groupId>com.samaxes.maven</groupId>
                 <artifactId>minify-maven-plugin</artifactId>
-                <version>1.6.1</version>
+                <version>1.7.5</version>
                 <executions>
                     <execution>
                         <id>default-cli</id>
@@ -157,7 +157,7 @@
                             
                             <jsSourceFiles>
                                 <jsSourceFile>lib/jquery/jquery.js</jsSourceFile>
-                                <jsSourceFile>lib/angular/angular.min.js</jsSourceFile>
+                                <jsSourceFile>lib/angular/angular.js</jsSourceFile>
                                 <jsSourceFile>lib/angular-module-shim/angular-module-shim.js</jsSourceFile>
                                 <jsSourceFile>lib/messageformat/messageformat.js</jsSourceFile>
                                 <jsSourceFile>license.txt</jsSourceFile>
@@ -175,7 +175,13 @@
                                 <jsSourceExclude>**/*.test.js</jsSourceExclude>
                             </jsSourceExcludes>
                             <jsEngine>CLOSURE</jsEngine>
-                            
+
+                            <!-- Disable warnings for JSDoc annotations -->
+                            <closureWarningLevels>
+                                <misplacedTypeAnnotation>OFF</misplacedTypeAnnotation>
+                                <nonStandardJsDocs>OFF</nonStandardJsDocs>
+                            </closureWarningLevels>
+
                         </configuration>
                         <goals>
                             <goal>minify</goal>
