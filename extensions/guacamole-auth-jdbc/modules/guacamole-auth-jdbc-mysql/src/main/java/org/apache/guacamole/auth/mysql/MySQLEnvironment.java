@@ -49,6 +49,12 @@ public class MySQLEnvironment extends JDBCEnvironment {
     private static final int DEFAULT_PORT = 3306;
 
     /**
+     * Whether a database user account is required by default for authentication
+     * to succeed.
+     */
+    private static final boolean DEFAULT_USER_REQUIRED = false;
+
+    /**
      * The default value for the maximum number of connections to be
      * allowed to the Guacamole server overall.
      */
@@ -165,6 +171,14 @@ public class MySQLEnvironment extends JDBCEnvironment {
 
         }
 
+    }
+
+    @Override
+    public boolean isUserRequired() throws GuacamoleException {
+        return getProperty(
+            MySQLGuacamoleProperties.MYSQL_USER_REQUIRED,
+            DEFAULT_USER_REQUIRED
+        );
     }
 
     @Override

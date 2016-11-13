@@ -60,8 +60,7 @@ public interface AuthenticationProviderService  {
 
     /**
      * Returning a new UserContext instance for the given already-authenticated
-     * user. A new placeholder account will be created for any user that does
-     * not already exist within the database.
+     * user.
      *
      * @param authenticationProvider
      *     The AuthenticationProvider on behalf of which the UserContext is
@@ -72,7 +71,7 @@ public interface AuthenticationProviderService  {
      *
      * @return
      *     A new UserContext instance for the user identified by the given
-     *     credentials.
+     *     credentials, or null if no such user exists within the database.
      *
      * @throws GuacamoleException
      *     If an error occurs during authentication, or if the given

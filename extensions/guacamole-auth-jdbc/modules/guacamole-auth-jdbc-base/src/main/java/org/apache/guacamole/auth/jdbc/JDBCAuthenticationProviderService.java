@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.jdbc;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.sharing.user.SharedAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUserContext;
 import org.apache.guacamole.auth.jdbc.user.UserService;
@@ -40,6 +41,12 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsExce
  * @author Michael Jumper
  */
 public class JDBCAuthenticationProviderService implements AuthenticationProviderService  {
+
+    /**
+     * The environment of the Guacamole server.
+     */
+    @Inject
+    private JDBCEnvironment environment;
 
     /**
      * Service for accessing users.
@@ -73,8 +80,23 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
 
         // Retrieve user account for already-authenticated user
         ModeledUser user = userService.retrieveUser(authenticationProvider, authenticatedUser);
-        if (user == null)
-            return null;
+        if (user == null) {
+
+            // Do not invalidate the authentication result of users who were
+            // authenticated via our own connection sharing links
+            if (authenticatedUser instanceof SharedAuthenticatedUser)
+                return null;
+
+            // Simply return no data if a database user account is not required
+            if (!environment.isUserRequired())
+                return null;
+
+            // Otherwise, invalidate the authentication result, as database user
+            // accounts are absolutely required
+            throw new GuacamoleInvalidCredentialsException("Invalid login",
+                    CredentialsInfo.USERNAME_PASSWORD);
+
+        }
 
         // Link to user context
         ModeledUserContext context = userContextProvider.get();

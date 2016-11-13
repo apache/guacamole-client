@@ -42,6 +42,20 @@ public abstract class JDBCEnvironment extends LocalEnvironment {
     }
 
     /**
+     * Returns whether a database user account is required for authentication to
+     * succeed, even if another authentication provider has already
+     * authenticated the user.
+     *
+     * @return
+     *     true if database user accounts are required for absolutely all
+     *     authentication attempts, false otherwise.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the property.
+     */
+    public abstract boolean isUserRequired() throws GuacamoleException;
+
+    /**
      * Returns the maximum number of concurrent connections to allow overall.
      * As this limit applies globally (independent of which connection is in
      * use or which user is using it), this setting cannot be overridden at the
