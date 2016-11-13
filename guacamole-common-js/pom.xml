@@ -106,6 +106,31 @@
                 </executions>
             </plugin>
 
+            <!-- Verify format using Apache RAT -->
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <version>0.12</version>
+
+                <configuration>
+                    <excludes>
+                        <exclude>**/*.json</exclude>
+                    </excludes>
+                </configuration>
+
+                <!-- Bind RAT to validate phase -->
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+            </plugin>
+
         </plugins>
     </build>
 
