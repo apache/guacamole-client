@@ -126,9 +126,7 @@
         "TEXT_CLIENT_STATUS_DISCONNECTED" : "Du er frakoblet.",
         "TEXT_CLIENT_STATUS_WAITING"      : "Tilkoblet Guacamole. Venter på svar...",
         "TEXT_RECONNECT_COUNTDOWN"        : "Kobler til på nytt om {REMAINING} {REMAINING, plural, one{second} other{seconds}}...",
-        "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
-
-        "URL_OSK_LAYOUT" : "layouts/no-no-qwerty.json"
+        "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}"
 
     },
 
