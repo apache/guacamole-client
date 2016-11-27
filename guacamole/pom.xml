@@ -177,16 +177,11 @@
                             <jsFinalFile>guacamole.js</jsFinalFile>
                             
                             <jsSourceFiles>
-                                <jsSourceFile>lib/jquery/jquery.js</jsSourceFile>
-                                <jsSourceFile>lib/angular/angular.min.js</jsSourceFile>
-                                <jsSourceFile>lib/angular-module-shim/angular-module-shim.js</jsSourceFile>
-                                <jsSourceFile>lib/messageformat/messageformat.js</jsSourceFile>
                                 <jsSourceFile>license.txt</jsSourceFile>
                                 <jsSourceFile>guacamole-common-js/all.js</jsSourceFile>
                             </jsSourceFiles>
 
                             <jsSourceIncludes>
-                                <jsSourceInclude>lib/**/*.js</jsSourceInclude>
                                 <jsSourceInclude>app/**/*.js</jsSourceInclude>
                                 <jsSourceInclude>generated/**/*.js</jsSourceInclude>
                             </jsSourceIncludes>
@@ -214,7 +209,6 @@
                 <configuration>
                     <excludes>
                         <exclude>src/main/webapp/app/*/templates/*.html</exclude>
-                        <exclude>src/main/webapp/lib/**/*.js</exclude>
                         <exclude>**/*.json</exclude>
                     </excludes>
                 </configuration>
@@ -285,6 +279,115 @@
             <artifactId>guacamole-common-js</artifactId>
             <version>0.9.10-incubating</version>
             <type>zip</type>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- WebJars servlet (for serving org.webjars.* resources) -->
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>webjars-servlet-2.x</artifactId>
+            <version>1.1</version>
+        </dependency>
+
+        <!-- Polyfills for the Blob and FileSaver APIs -->
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>blob-polyfill</artifactId>
+            <version>1.0.20150320</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>filesaver</artifactId>
+            <version>1.3.3</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Lodash -->
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>lodash</artifactId>
+            <version>2.4.1</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- jQuery -->
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>jquery</artifactId>
+            <version>2.1.3</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- AngularJS -->
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>angular</artifactId>
+            <version>1.3.16</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>angular-cookies</artifactId>
+            <version>1.3.16</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>angular-route</artifactId>
+            <version>1.3.16</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>angular-touch</artifactId>
+            <version>1.3.16</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Shim allowing arbitrary retrieval/creation order for AngularJS modules -->
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>angular-module-shim</artifactId>
+            <version>0.0.4</version>
+            <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.webjars.bower</groupId>
+                    <artifactId>angular</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Translation support for AngularJS -->
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>angular-translate</artifactId>
+            <version>2.8.0</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>angular-translate-interpolation-messageformat</artifactId>
+            <version>2.8.0</version>
+            <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.webjars.bower</groupId>
+                    <artifactId>messageformat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>messageformat</artifactId>
+            <version>1.0.2</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>angular-translate-loader-static-files</artifactId>
+            <version>2.8.0</version>
             <scope>runtime</scope>
         </dependency>
 
