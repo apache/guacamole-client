@@ -43,6 +43,7 @@ import org.apache.guacamole.rest.sharingprofile.SharingProfileModule;
 import org.apache.guacamole.rest.tunnel.TunnelCollectionResourceFactory;
 import org.apache.guacamole.rest.tunnel.TunnelResourceFactory;
 import org.apache.guacamole.rest.user.UserModule;
+import org.webjars.servlet.WebjarsServlet;
 
 /**
  * A Guice Module to set up the servlet mappings and authentication-specific
@@ -108,6 +109,10 @@ public class RESTServiceModule extends ServletModule {
         bind(GuiceContainer.class);
         bind(JacksonJsonProvider.class).in(Scopes.SINGLETON);
         serve("/api/*").with(GuiceContainer.class);
+
+        // Serve Webjar JavaScript dependencies
+        bind(WebjarsServlet.class).in(Scopes.SINGLETON);
+        serve("/webjars/*").with(WebjarsServlet.class);
 
     }
 
