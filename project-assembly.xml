@@ -29,6 +29,8 @@
     </formats>
 
     <fileSets>
+
+        <!-- Include everything except generated files / VCS metadata  -->
         <fileSet>
             <directory>${project.basedir}</directory>
             <useDefaultExcludes>true</useDefaultExcludes>
@@ -37,6 +39,16 @@
                 <exclude>**/${project.build.directory}/**</exclude>
             </excludes>
         </fileSet>
+
+        <!-- Explicitly include .gitignore (parsed by RAT) -->
+        <fileSet>
+            <directory>${project.basedir}</directory>
+            <useDefaultExcludes>false</useDefaultExcludes>
+            <includes>
+                <include>.gitignore</include>
+            </includes>
+        </fileSet>
+
     </fileSets>
 
 </assembly>
