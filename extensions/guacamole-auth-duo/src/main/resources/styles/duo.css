@@ -17,6 +17,10 @@
  * under the License.
  */
 
+.duo-signature-response-field input[type="submit"] {
+    display: none !important;
+}
+
 .duo-signature-response-field iframe {
     width: 100%;
     max-width: 620px;

@@ -56,7 +56,7 @@ angular.module('guacDuo').controller('duoSignedResponseController', ['$scope',
         });
 
         // Submit updated credentials
-        $(iframe).parents('form').submit();
+        $('.duo-signature-response-field input[type="submit"]').click();
 
     };
 
