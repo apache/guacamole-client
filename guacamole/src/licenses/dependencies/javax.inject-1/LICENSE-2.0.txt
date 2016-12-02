@@ -200,22 +200,3 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
-
-==============================================================================
-
-APACHE GUACAMOLE SUBCOMPONENTS
-
-Apache Guacamole includes a number of subcomponents with separate copyright
-notices and license terms. Your use of these subcomponents is subject to the
-terms and conditions of the following licenses.
-
-
-Carlito (http://code.google.com/p/chromium/issues/detail?id=280557)
--------------------------------------------------------------------
-
-    Version: N/A
-    From: 'tyPoland Lukasz Dziedzic' (http://www.lukaszdziedzic.eu/)
-    License(s):
-        SIL Open Font (guacamole/src/dependencies/carlito/LICENSE)
-
