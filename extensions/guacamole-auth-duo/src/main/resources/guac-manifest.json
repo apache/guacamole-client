@@ -1,0 +1,35 @@
+{
+
+    "guacamoleVersion" : "0.9.10-incubating",
+
+    "name"      : "Duo TFA Authentication Backend",
+    "namespace" : "duo",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.duo.DuoAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/en.json"
+    ],
+
+    "js" : [
+
+        "duoModule.js",
+        "controllers/duoSignedResponseController.js",
+        "config/duoConfig.js",
+
+        "lib/DuoWeb/LICENSE.js",
+        "lib/DuoWeb/Duo-Web-v2.js"
+
+    ],
+
+    "css" : [
+        "styles/duo.css"
+    ],
+
+    "resources" : {
+        "templates/duoSignedResponseField.html" : "text/html"
+    }
+
+}
