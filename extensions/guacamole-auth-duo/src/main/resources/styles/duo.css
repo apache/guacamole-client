@@ -17,6 +17,23 @@
  * under the License.
  */
 
+
+.duo-signature-response-field-container {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: table;
+    background: white;
+}
+
+.duo-signature-response-field {
+    width: 100%;
+    display: table-cell;
+    vertical-align: middle;
+}
+
 .duo-signature-response-field input[type="submit"] {
     display: none !important;
 }
@@ -26,6 +43,9 @@
     max-width: 620px;
     height: 330px;
     border: none;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+    display: block;
+    margin: 1.5em auto;
 }
 
 .duo-signature-response-field iframe {
