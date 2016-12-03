@@ -14,18 +14,11 @@
     ],
 
     "js" : [
-
-        "duoModule.js",
-        "controllers/duoSignedResponseController.js",
-        "config/duoConfig.js",
-
-        "lib/DuoWeb/LICENSE.js",
-        "lib/DuoWeb/Duo-Web-v2.js"
-
+        "duo.min.js"
     ],
 
     "css" : [
-        "styles/duo.css"
+        "duo.min.css"
     ],
 
     "resources" : {
