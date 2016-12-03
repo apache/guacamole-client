@@ -217,7 +217,7 @@ AngularJS (https://angularjs.org/)
     Version: 1.3.16
     From: 'Google Inc.' (http://www.google.com/)
     License(s):
-        MIT (dependencies/angular-1.3.16/LICENSE)
+        MIT (bundled/angular-1.3.16/LICENSE)
 
 The MIT License
 
@@ -248,7 +248,7 @@ angular-module-shim (https://github.com/jedrichards/angular-module-shim)
     Version: 0.0.4
     From: 'Jed Richards' (https://github.com/jedrichards)
     License(s):
-        MIT (dependencies/angular-module-shim-0.0.4/LICENSE)
+        MIT (bundled/angular-module-shim-0.0.4/LICENSE)
 
 The MIT License (MIT)
 
@@ -279,7 +279,7 @@ angular-translate (https://angular-translate.github.io/)
     Version: 2.8.0
     From: 'Pascal Precht' (https://github.com/PascalPrecht)
     License(s):
-        MIT (dependencies/angular-translate-2.8.0/LICENSE)
+        MIT (bundled/angular-translate-2.8.0/LICENSE)
 
 The MIT License (MIT)
 
@@ -310,7 +310,7 @@ AOP Alliance (http://aopalliance.sourceforge.net/)
     Version: 1.0
     From: 'AOP Alliance' (http://aopalliance.sourceforge.net/members.html)
     License(s):
-        Public Domain (dependencies/aopalliance-1.0/LICENSE)
+        Public Domain (bundled/aopalliance-1.0/LICENSE)
 
 
 ASM (http://asm.ow2.org/)
@@ -319,7 +319,7 @@ ASM (http://asm.ow2.org/)
     Version: 3.1
     From: 'INRIA, France Telecom'
     License(s):
-        BSD 3-clause (dependencies/asm-3.1/LICENSE)
+        BSD 3-clause (bundled/asm-3.1/LICENSE)
 
 Copyright (c) 2000-2011 INRIA, France Telecom
 All rights reserved.
@@ -358,7 +358,7 @@ Blob.js (https://github.com/eligrey/Blob.js/)
     Version: 1.0.20150320
     From: 'Eli Grey' (https://github.com/eligrey)
     License(s):
-        MIT (dependencies/blob-polyfill-1.0.20150320/LICENSE.md)
+        MIT (bundled/blob-polyfill-1.0.20150320/LICENSE.md)
 
 Copyright © 2014 Eli Grey.
 
@@ -387,7 +387,7 @@ Carlito (http://code.google.com/p/chromium/issues/detail?id=280557)
     Version: N/A
     From: 'tyPoland Lukasz Dziedzic' (http://www.lukaszdziedzic.eu/)
     License(s):
-        SIL Open Font (dependencies/carlito/LICENSE)
+        SIL Open Font (bundled/carlito/LICENSE)
 
 
 FileSaver.js (https://github.com/eligrey/FileSaver.js)
@@ -396,7 +396,7 @@ FileSaver.js (https://github.com/eligrey/FileSaver.js)
     Version: 1.3.3
     From: 'Eli Grey' (https://github.com/eligrey)
     License(s):
-        MIT (dependencies/filesaver-1.3.3/LICENSE.md)
+        MIT (bundled/filesaver-1.3.3/LICENSE.md)
 
 Copyright © 2014 Eli Grey.
 
@@ -425,7 +425,7 @@ Google Guice (https://github.com/google/guice)
     Version: 3.0
     From: 'Google Inc.' (http://www.google.com/)
     License(s):
-        Apache v2.0 (dependencies/guice-3.0/COPYING)
+        Apache v2.0 (bundled/guice-3.0/COPYING)
 
 
 Jackson (https://github.com/FasterXML/jackson)
@@ -434,7 +434,7 @@ Jackson (https://github.com/FasterXML/jackson)
     Version: 1.9.2
     From: 'FasterXML, LLC' (https://github.com/FasterXML)
     License(s):
-        Apache v2.0 (dependencies/jackson-1.9.2/LICENSE-2.0.txt)
+        Apache v2.0 (bundled/jackson-1.9.2/LICENSE-2.0.txt)
 
 
 JavaBeans Activation Framework
@@ -444,7 +444,7 @@ JavaBeans Activation Framework
     Version: 1.1
     From: 'Oracle Corporation' (http://www.oracle.com/)
     License(s):
-        CDDL v1.0 (dependencies/activation-1.1/CDDLv1.0.text)
+        CDDL v1.0 (bundled/activation-1.1/CDDLv1.0.text)
 
 
 JAXB (https://jaxb.java.net/)
@@ -453,8 +453,8 @@ JAXB (https://jaxb.java.net/)
     Version: 2.2.3-1
     From: 'Oracle Corporation' (http://www.oracle.com/)
     License(s):
-        CDDL v1.1 (dependencies/jaxb-impl-2.2.3-1/License.txt)
-        GPL v2 with "Classpath" exception (dependencies/jaxb-impl-2.2.3-1/License.txt)
+        CDDL v1.1 (bundled/jaxb-impl-2.2.3-1/License.txt)
+        GPL v2 with "Classpath" exception (bundled/jaxb-impl-2.2.3-1/License.txt)
 
 
 Jersey (https://jersey.java.net/)
@@ -463,8 +463,8 @@ Jersey (https://jersey.java.net/)
     Version: 1.17.1
     From: 'Oracle Corporation' (http://www.oracle.com/)
     License(s):
-        CDDL v1.1 (dependencies/jersey-1.17.1/LICENSE.txt)
-        GPL v2 with "Classpath" exception (dependencies/jersey-1.17.1/LICENSE.txt)
+        CDDL v1.1 (bundled/jersey-1.17.1/LICENSE.txt)
+        GPL v2 with "Classpath" exception (bundled/jersey-1.17.1/LICENSE.txt)
 
 
 Jettison (https://github.com/jettison-json/jettison)
@@ -473,7 +473,7 @@ Jettison (https://github.com/jettison-json/jettison)
     Version: 1.1
     From: 'Envoi Solutions LLC'
     License(s):
-        Apache v2.0 (dependencies/jettison-1.1/LICENSE-2.0.txt)
+        Apache v2.0 (bundled/jettison-1.1/LICENSE-2.0.txt)
 
 
 jQuery (http://jquery.com/)
@@ -482,7 +482,7 @@ jQuery (http://jquery.com/)
     Version: 2.1.3
     From: 'jQuery Foundation' (http://jquery.com/)
     License(s):
-        MIT (dependencies/jquery-2.1.3/MIT-LICENSE.txt)
+        MIT (bundled/jquery-2.1.3/MIT-LICENSE.txt)
 
 Copyright 2014 jQuery Foundation and other contributors
 http://jquery.com/
@@ -514,7 +514,7 @@ JSR-250 Reference Implementation
     Version: 1.0
     From: 'Oracle Corporation' (http://www.oracle.com/)
     License(s):
-        CDDL v1.0 (dependencies/jsr250-api-1.0/CDDLv1.0.txt)
+        CDDL v1.0 (bundled/jsr250-api-1.0/CDDLv1.0.txt)
 
 
 JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
@@ -523,7 +523,7 @@ JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
     Version: 1
     From: 'JSR-330 Expert Group' (https://jcp.org/en/jsr/detail?id=330)
     License(s):
-        Apache v2.0 (dependencies/javax.inject-1/LICENSE-2.0.txt)
+        Apache v2.0 (bundled/javax.inject-1/LICENSE-2.0.txt)
 
 
 Lodash (https://lodash.com/)
@@ -532,7 +532,7 @@ Lodash (https://lodash.com/)
     Version: 2.4.1
     From: 'The Dojo Foundation' (http://dojofoundation.org/)
     License(s):
-        MIT (dependencies/lodash-2.4.1/LICENSE.txt)
+        MIT (bundled/lodash-2.4.1/LICENSE.txt)
 
 Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
 Based on Underscore.js 1.5.2, copyright 2009-2013 Jeremy Ashkenas,
@@ -564,8 +564,8 @@ Logback (http://logback.qos.ch/)
     Version: 1.1.2
     From: 'QOS.ch Sàrl' (http://qos.ch/)
     License(s):
-        EPL v1.0 (dependencies/logback-1.1.2/LICENSE.txt)
-        LGPL v2.1 (dependencies/logback-1.1.2/LICENSE.txt)
+        EPL v1.0 (bundled/logback-1.1.2/LICENSE.txt)
+        LGPL v2.1 (bundled/logback-1.1.2/LICENSE.txt)
 
 Logback: the reliable, generic, fast and flexible logging framework.
 Copyright (C) 1999-2012, QOS.ch. All rights reserved.
@@ -586,7 +586,7 @@ messageformat.js (https://messageformat.github.io/)
     Version: 1.0.2
     From: 'Alex Sexton, Eemeli Aro, and Contributors'
     License(s):
-        MIT (dependencies/messageformat-1.0.2/LICENSE)
+        MIT (bundled/messageformat-1.0.2/LICENSE)
 
 Copyright 2012-2016 Alex Sexton, Eemeli Aro, and Contributors
 
@@ -616,7 +616,7 @@ Simple Logging Facade for Java (http://slf4j.org/)
     Version: 1.7.7
     From: 'QOS.ch Sàrl' (http://qos.ch/)
     License(s):
-        MIT (dependencies/slf4j-api-1.7.7/LICENSE)
+        MIT (bundled/slf4j-api-1.7.7/LICENSE)
 
  Copyright (c) 2004-2013 QOS.ch
  All rights reserved.
@@ -647,7 +647,7 @@ webjars-servlet-2.x (https://github.com/webjars/webjars-servlet-2.x)
     Version: 1.1
     From: 'Angel Ruiz Calvo' (https://github.com/aruizca)
     License(s):
-        MIT (dependencies/webjars-servlet-2.x-1.1/LICENSE)
+        MIT (bundled/webjars-servlet-2.x-1.1/LICENSE)
 
 The MIT License (MIT)
 
