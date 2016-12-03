@@ -93,8 +93,9 @@
                 <version>2.6</version>
                 <configuration>
 
-                    <!-- Filter translation strings -->
                     <webResources>
+
+                        <!-- Filter translation strings -->
                         <resource>
                             <directory>src/main/webapp</directory>
                             <filtering>true</filtering>
@@ -103,6 +104,13 @@
                                 <include>index.html</include>
                             </includes>
                         </resource>
+
+                        <!-- Include all licenses within META-INF -->
+                        <resource>
+                            <directory>src/licenses</directory>
+                            <targetPath>META-INF</targetPath>
+                        </resource>
+
                     </webResources>
 
                     <!-- Add files from guacamole-common-js -->
@@ -216,6 +224,7 @@
                     <excludes>
                         <exclude>src/main/webapp/app/*/templates/*.html</exclude>
                         <exclude>**/*.json</exclude>
+                        <exclude>src/licenses/**/*</exclude>
                     </excludes>
                 </configuration>
 
