@@ -54,6 +54,12 @@
     <!-- Include extension schema scripts -->
     <fileSets>
 
+        <!-- Licenses -->
+        <fileSet>
+            <outputDirectory></outputDirectory>
+            <directory>src/licenses</directory>
+        </fileSet>
+
         <!-- MySQL schema scripts -->
         <fileSet>
             <outputDirectory>mysql/schema</outputDirectory>
