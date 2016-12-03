@@ -25,6 +25,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.sharing.user.SharedAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUserContext;
+import org.apache.guacamole.auth.jdbc.user.UserModel;
 import org.apache.guacamole.auth.jdbc.user.UserService;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -97,6 +98,11 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
                     CredentialsInfo.USERNAME_PASSWORD);
 
         }
+
+        // Update password if password is expired
+        UserModel userModel = user.getModel();
+        if (userModel.isExpired())
+            userService.resetExpiredPassword(user, authenticatedUser.getCredentials());
 
         // Link to user context
         ModeledUserContext context = userContextProvider.get();
