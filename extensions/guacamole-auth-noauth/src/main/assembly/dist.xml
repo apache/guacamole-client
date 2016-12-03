@@ -38,6 +38,12 @@
             <directory>doc</directory>
         </fileSet>
 
+        <!-- Include licenses -->
+        <fileSet>
+            <outputDirectory></outputDirectory>
+            <directory>src/licenses</directory>
+        </fileSet>
+
         <!-- Include extension .jar -->
         <fileSet>
             <directory>target</directory>

@@ -104,6 +104,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/*.json</exclude>
+                        <exclude>src/licenses/**/*</exclude>
                     </excludes>
                 </configuration>
 
