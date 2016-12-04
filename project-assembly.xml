@@ -45,7 +45,7 @@
             <directory>${project.basedir}</directory>
             <useDefaultExcludes>false</useDefaultExcludes>
             <includes>
-                <include>.gitignore</include>
+                <include>**/.gitignore</include>
             </includes>
         </fileSet>
 
