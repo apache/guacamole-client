@@ -33,10 +33,9 @@ import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 
 /**
- * Service providing convenience functions for the Duo AuthenticationProvider
- * implementation.
+ * Service for verifying the identity of a user against Duo.
  */
-public class AuthenticationProviderService {
+public class UserVerificationService {
 
     /**
      * Service for retrieving Duo configuration information.

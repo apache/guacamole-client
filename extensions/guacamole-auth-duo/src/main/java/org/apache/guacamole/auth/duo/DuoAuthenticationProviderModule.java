@@ -72,9 +72,9 @@ public class DuoAuthenticationProviderModule extends AbstractModule {
         bind(Environment.class).toInstance(environment);
 
         // Bind Duo-specific services
-        bind(AuthenticationProviderService.class);
         bind(ConfigurationService.class);
         bind(DuoWebService.class);
+        bind(UserVerificationService.class);
 
     }
 

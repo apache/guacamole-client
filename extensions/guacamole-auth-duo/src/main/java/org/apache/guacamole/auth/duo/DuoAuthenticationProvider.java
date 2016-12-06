@@ -78,11 +78,11 @@ public class DuoAuthenticationProvider implements AuthenticationProvider {
     public UserContext getUserContext(AuthenticatedUser authenticatedUser)
             throws GuacamoleException {
 
-        AuthenticationProviderService authProviderService =
-                injector.getInstance(AuthenticationProviderService.class);
+        UserVerificationService verificationService =
+                injector.getInstance(UserVerificationService.class);
 
         // Verify user against Duo service
-        authProviderService.verifyAuthenticatedUser(authenticatedUser);
+        verificationService.verifyAuthenticatedUser(authenticatedUser);
 
         // User has been verified, and authentication should be allowed to
         // continue
