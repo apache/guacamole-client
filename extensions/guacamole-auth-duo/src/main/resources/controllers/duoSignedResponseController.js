@@ -22,15 +22,23 @@
  * API to prompt the user for additional credentials, ultimately receiving a
  * signed response from the Duo service.
  */
-angular.module('guacDuo').controller('duoSignedResponseController', ['$scope',
-    function duoSignedResponseController($scope) {
+angular.module('guacDuo').controller('duoSignedResponseController', ['$scope', '$element',
+    function duoSignedResponseController($scope, $element) {
 
     /**
      * The iframe which contains the Duo authentication interface.
      *
      * @type HTMLIFrameElement
      */
-    var iframe = $('.duo-signature-response-field iframe')[0];
+    var iframe = $element.find('iframe')[0];
+
+    /**
+     * The submit button which should be used to submit the login form once
+     * the Duo response has been received.
+     *
+     * @type HTMLInputElement
+     */
+    var submit = $element.find('input[type="submit"]')[0];
 
     /**
      * Whether the Duo interface has finished loading within the iframe.
@@ -56,7 +64,7 @@ angular.module('guacDuo').controller('duoSignedResponseController', ['$scope',
         });
 
         // Submit updated credentials
-        $('.duo-signature-response-field input[type="submit"]').click();
+        submit.click();
 
     };
 
