@@ -249,7 +249,10 @@ angular.module('form').provider('formService', function formServiceProvider() {
                 // Populate scope using defined controller
                 if (fieldType.module && fieldType.controller) {
                     var $controller = angular.injector(['ng', fieldType.module]).get('$controller');
-                    $controller(fieldType.controller, {'$scope' : scope});
+                    $controller(fieldType.controller, {
+                        '$scope'   : scope,
+                        '$element' : angular.element(fieldContainer.childNodes)
+                    });
                 }
 
                 // Compile DOM with populated scope
