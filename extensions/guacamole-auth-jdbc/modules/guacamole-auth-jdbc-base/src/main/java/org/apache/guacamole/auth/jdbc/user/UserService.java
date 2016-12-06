@@ -319,40 +319,6 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         if (!user.isAccountAccessible())
             throw new GuacamoleClientException("LOGIN.ERROR_NOT_ACCESSIBLE");
 
-        // Update password if password is expired
-        if (userModel.isExpired()) {
-
-            // Pull new password from HTTP request
-            HttpServletRequest request = credentials.getRequest();
-            String newPassword = request.getParameter(NEW_PASSWORD_PARAMETER);
-            String confirmNewPassword = request.getParameter(CONFIRM_NEW_PASSWORD_PARAMETER);
-
-            // Require new password if account is expired
-            if (newPassword == null || confirmNewPassword == null) {
-                logger.info("The password of user \"{}\" has expired and must be reset.", username);
-                throw new GuacamoleInsufficientCredentialsException("LOGIN.INFO_PASSWORD_EXPIRED", EXPIRED_PASSWORD);
-            }
-
-            // New password must be different from old password
-            if (newPassword.equals(credentials.getPassword()))
-                throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_SAME");
-
-            // New password must not be blank
-            if (newPassword.isEmpty())
-                throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_BLANK");
-
-            // Confirm that the password was entered correctly twice
-            if (!newPassword.equals(confirmNewPassword))
-                throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_MISMATCH");
-
-            // Change password and reset expiration flag
-            userModel.setExpired(false);
-            user.setPassword(newPassword);
-            userMapper.update(userModel);
-            logger.info("Expired password of user \"{}\" has been reset.", username);
-
-        }
-
         // Return now-authenticated user
         return user.getCurrentUser();
 
@@ -395,6 +361,62 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
         // Return already-authenticated user
         return user;
+
+    }
+
+    /**
+     * Resets the password of the given user to the new password specified via
+     * the "new-password" and "confirm-new-password" parameters from the
+     * provided credentials. If these parameters are missing or invalid,
+     * additional credentials will be requested.
+     *
+     * @param user
+     *     The user whose password should be reset.
+     *
+     * @param credentials
+     *     The credentials from which the parameters required for password
+     *     reset should be retrieved.
+     *
+     * @throws GuacamoleException
+     *     If the password reset parameters within the given credentials are
+     *     invalid or missing.
+     */
+    public void resetExpiredPassword(ModeledUser user, Credentials credentials)
+            throws GuacamoleException {
+
+        UserModel userModel = user.getModel();
+
+        // Get username
+        String username = user.getIdentifier();
+
+        // Pull new password from HTTP request
+        HttpServletRequest request = credentials.getRequest();
+        String newPassword = request.getParameter(NEW_PASSWORD_PARAMETER);
+        String confirmNewPassword = request.getParameter(CONFIRM_NEW_PASSWORD_PARAMETER);
+
+        // Require new password if account is expired
+        if (newPassword == null || confirmNewPassword == null) {
+            logger.info("The password of user \"{}\" has expired and must be reset.", username);
+            throw new GuacamoleInsufficientCredentialsException("LOGIN.INFO_PASSWORD_EXPIRED", EXPIRED_PASSWORD);
+        }
+
+        // New password must be different from old password
+        if (newPassword.equals(credentials.getPassword()))
+            throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_SAME");
+
+        // New password must not be blank
+        if (newPassword.isEmpty())
+            throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_BLANK");
+
+        // Confirm that the password was entered correctly twice
+        if (!newPassword.equals(confirmNewPassword))
+            throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_MISMATCH");
+
+        // Change password and reset expiration flag
+        userModel.setExpired(false);
+        user.setPassword(newPassword);
+        userMapper.update(userModel);
+        logger.info("Expired password of user \"{}\" has been reset.", username);
 
     }
 
