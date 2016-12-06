@@ -104,10 +104,8 @@ angular.module('form').directive('guacFormField', [function formField() {
 
                 // Append field content
                 if (field) {
-                    formService.createFieldElement(field.type, $scope)
-                    .then(function fieldElementCreated(element) {
-                        fieldContent.append(element);
-                    });
+                    formService.insertFieldElement(fieldContent[0],
+                        field.type, $scope);
                 }
 
             });
