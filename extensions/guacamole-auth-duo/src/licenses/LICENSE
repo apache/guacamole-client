@@ -211,13 +211,13 @@ notices and license terms. Your use of these subcomponents is subject to the
 terms and conditions of the following licenses.
 
 
-Carlito (http://code.google.com/p/chromium/issues/detail?id=280557)
--------------------------------------------------------------------
+AOP Alliance (http://aopalliance.sourceforge.net/)
+--------------------------------------------------
 
-    Version: N/A
-    From: 'tyPoland Lukasz Dziedzic' (http://www.lukaszdziedzic.eu/)
+    Version: 1.0
+    From: 'AOP Alliance' (http://aopalliance.sourceforge.net/members.html)
     License(s):
-        SIL Open Font (guacamole/src/licenses/bundled/carlito/LICENSE)
+        Public Domain (bundled/aopalliance-1.0/LICENSE)
 
 
 DuoWeb Java SDK (https://github.com/duosecurity/duo_java)
@@ -226,7 +226,7 @@ DuoWeb Java SDK (https://github.com/duosecurity/duo_java)
     Verson: commit 56570d18a1f98642500e6c1158a3f41e448963ff
     From: `Duo Security, Inc.' (https://duo.com/)
     License(s):
-        BSD 3-clause (extensions/guacamole-auth-duo/src/licenses/bundled/duo-java-56570d1/LICENSE)
+        BSD 3-clause (bundled/duo-java-56570d1/LICENSE)
 
 Copyright (c) 2011, Duo Security, Inc.
 All rights reserved.
@@ -253,4 +253,22 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+Google Guice (https://github.com/google/guice)
+----------------------------------------------
+
+    Version: 3.0
+    From: 'Google Inc.' (http://www.google.com/)
+    License(s):
+        Apache v2.0 (bundled/guice-3.0/COPYING)
+
+
+JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
+----------------------------------------------------------------------------
+
+    Version: 1
+    From: 'JSR-330 Expert Group' (https://jcp.org/en/jsr/detail?id=330)
+    License(s):
+        Apache v2.0 (bundled/javax.inject-1/LICENSE-2.0.txt)
 
