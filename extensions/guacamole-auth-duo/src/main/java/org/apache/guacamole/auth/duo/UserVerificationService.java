@@ -24,6 +24,7 @@ import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.duo.api.DuoService;
 import org.apache.guacamole.auth.duo.conf.ConfigurationService;
 import org.apache.guacamole.auth.duo.form.DuoSignedResponseField;
 import org.apache.guacamole.form.Field;
@@ -44,10 +45,10 @@ public class UserVerificationService {
     private ConfigurationService confService;
 
     /**
-     * Service for verifying users with the DuoWeb API.
+     * Service for verifying users against Duo.
      */
     @Inject
-    private DuoWebService duoWebService;
+    private DuoService duoService;
 
     /**
      * Verifies the identity of the given user via the Duo multi-factor
@@ -86,7 +87,7 @@ public class UserVerificationService {
             // Duo API endpoint
             Field signedResponseField = new DuoSignedResponseField(
                     confService.getAPIHostname(),
-                    duoWebService.createSignedRequest(authenticatedUser));
+                    duoService.createSignedRequest(authenticatedUser));
 
             // Create an overall description of the additional credentials
             // required to verify identity
@@ -100,7 +101,7 @@ public class UserVerificationService {
         }
 
         // If signed response does not verify this user's identity, abort auth
-        if (!duoWebService.isValidSignedResponse(authenticatedUser, signedResponse))
+        if (!duoService.isValidSignedResponse(authenticatedUser, signedResponse))
             throw new GuacamoleClientException("LOGIN.INFO_DUO_VALIDATION_CODE_INCORRECT");
 
     }
