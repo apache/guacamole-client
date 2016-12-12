@@ -201,6 +201,10 @@ angular.module('form').provider('formService', function formServiceProvider() {
          * model:
          *     The current String value of the field, if any.
          *
+         * @param {Element} fieldContainer
+         *     The DOM Element whose contents should be replaced with the
+         *     compiled field template.
+         *
          * @param {String} fieldTypeName
          *     The name of the field type defining the nature of the element to be
          *     created.
@@ -212,43 +216,54 @@ angular.module('form').provider('formService', function formServiceProvider() {
          *     A Promise which resolves to the compiled Element. If an error occurs
          *     while retrieving the field type, this Promise will be rejected.
          */
-        service.createFieldElement = function createFieldElement(fieldTypeName, scope) {
+        service.insertFieldElement = function insertFieldElement(fieldContainer,
+            fieldTypeName, scope) {
 
             // Ensure field type is defined
             var fieldType = provider.fieldTypes[fieldTypeName];
             if (!fieldType)
                 return $q.reject();
 
-            // Populate scope using defined controller
-            if (fieldType.module && fieldType.controller) {
-                var $controller = angular.injector(['ng', fieldType.module]).get('$controller');
-                $controller(fieldType.controller, {'$scope' : scope});
+            var templateRequest;
+
+            // Use raw HTML template if provided
+            if (fieldType.template) {
+                var deferredTemplate = $q.defer();
+                deferredTemplate.resolve(fieldType.template);
+                templateRequest = deferredTemplate.promise;
             }
+
+            // If no raw HTML template is provided, retrieve template from URL
+            else
+                templateRequest = $templateRequest(fieldType.templateUrl);
 
             // Defer compilation of template pending successful retrieval
             var compiledTemplate = $q.defer();
 
-            // Use raw HTML template if provided
-            if (fieldType.template)
-                compiledTemplate.resolve($compile(fieldType.template)(scope));
+            // Resolve with compiled HTML upon success
+            templateRequest.then(function templateRetrieved(html) {
 
-            // If no raw HTML template is provided, retrieve template from URL
-            else {
+                // Insert template into DOM
+                fieldContainer.innerHTML = html;
 
-                // Attempt to retrieve template HTML
-                $templateRequest(fieldType.templateUrl)
+                // Populate scope using defined controller
+                if (fieldType.module && fieldType.controller) {
+                    var $controller = angular.injector(['ng', fieldType.module]).get('$controller');
+                    $controller(fieldType.controller, {
+                        '$scope'   : scope,
+                        '$element' : angular.element(fieldContainer.childNodes)
+                    });
+                }
 
-                // Resolve with compiled HTML upon success
-                .then(function templateRetrieved(html) {
-                    compiledTemplate.resolve($compile(html)(scope));
-                })
+                // Compile DOM with populated scope
+                compiledTemplate.resolve($compile(fieldContainer.childNodes)(scope));
 
-                // Reject on failure
-                ['catch'](function templateError() {
-                    compiledTemplate.reject();
-                });
+            })
 
-            }
+            // Reject on failure
+            ['catch'](function templateError() {
+                compiledTemplate.reject();
+            });
 
             // Return promise which resolves to the compiled template
             return compiledTemplate.promise;
