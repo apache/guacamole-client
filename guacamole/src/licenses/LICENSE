@@ -454,7 +454,6 @@ JAXB (https://jaxb.java.net/)
     From: 'Oracle Corporation' (http://www.oracle.com/)
     License(s):
         CDDL v1.1 (bundled/jaxb-impl-2.2.3-1/License.txt)
-        GPL v2 with "Classpath" exception (bundled/jaxb-impl-2.2.3-1/License.txt)
 
 
 Jersey (https://jersey.java.net/)
@@ -464,7 +463,6 @@ Jersey (https://jersey.java.net/)
     From: 'Oracle Corporation' (http://www.oracle.com/)
     License(s):
         CDDL v1.1 (bundled/jersey-1.17.1/LICENSE.txt)
-        GPL v2 with "Classpath" exception (bundled/jersey-1.17.1/LICENSE.txt)
 
 
 Jettison (https://github.com/jettison-json/jettison)
@@ -565,7 +563,6 @@ Logback (http://logback.qos.ch/)
     From: 'QOS.ch Sàrl' (http://qos.ch/)
     License(s):
         EPL v1.0 (bundled/logback-1.1.2/LICENSE.txt)
-        LGPL v2.1 (bundled/logback-1.1.2/LICENSE.txt)
 
 Logback: the reliable, generic, fast and flexible logging framework.
 Copyright (C) 1999-2012, QOS.ch. All rights reserved.
@@ -578,6 +575,8 @@ the Eclipse Foundation
 
 under the terms of the GNU Lesser General Public License version 2.1
 as published by the Free Software Foundation.
+
+** ECLIPSE PUBLIC LICENSE v1.0 CHOSEN. **
 
 
 messageformat.js (https://messageformat.github.io/)
