@@ -334,7 +334,7 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
                     guacNotification.showStatus({
                         'className'  : 'error',
                         'title'      : 'SETTINGS_SESSIONS.DIALOG_HEADER_ERROR',
-                        'text'       : error.message,
+                        'text'       : error.translatableMessage,
                         'actions'    : [ ACKNOWLEDGE_ACTION ]
                     });
                 });
@@ -349,7 +349,9 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
                 // Confirm deletion request
                 guacNotification.showStatus({
                     'title'      : 'SETTINGS_SESSIONS.DIALOG_HEADER_CONFIRM_DELETE',
-                    'text'       : 'SETTINGS_SESSIONS.TEXT_CONFIRM_DELETE',
+                    'text'       : {
+                        'key' : 'SETTINGS_SESSIONS.TEXT_CONFIRM_DELETE'
+                    },
                     'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
                 });
             };

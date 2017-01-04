@@ -53,7 +53,7 @@ angular.module('notification').factory('Notification', [function defineNotificat
         /**
          * The body text of the notification.
          *
-         * @type String
+         * @type TranslatableMessage
          */
         this.text = template.text;
 

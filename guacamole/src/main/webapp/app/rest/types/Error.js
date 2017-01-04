@@ -43,6 +43,15 @@ angular.module('rest').factory('Error', [function defineError() {
         this.message = template.message;
 
         /**
+         * A message which can be translated using the translation service,
+         * consisting of a translation key and optional set of substitution
+         * variables.
+         *
+         * @type TranslatableMessage
+         */
+        this.translatableMessage = template.translatableMessage;
+
+        /**
          * The Guacamole protocol status code associated with the error that
          * occurred. This is only valid for errors of type STREAM_ERROR.
          *

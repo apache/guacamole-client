@@ -20,8 +20,17 @@
 package org.apache.guacamole.rest;
 
 import java.util.Collection;
-import javax.ws.rs.core.Response;
+import org.apache.guacamole.GuacamoleClientException;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleResourceNotFoundException;
+import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.form.Field;
+import org.apache.guacamole.language.Translatable;
+import org.apache.guacamole.language.TranslatableMessage;
+import org.apache.guacamole.net.auth.credentials.GuacamoleCredentialsException;
+import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
+import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
+import org.apache.guacamole.tunnel.GuacamoleStreamException;
 
 /**
  * Describes an error that occurred within a REST endpoint.
@@ -32,9 +41,14 @@ import org.apache.guacamole.form.Field;
 public class APIError {
 
     /**
-     * The error message.
+     * The human-readable error message.
      */
     private final String message;
+
+    /**
+     * A translatable message representing the error that occurred.
+     */
+    private final TranslatableMessage translatableMessage;
 
     /**
      * The associated Guacamole protocol status code.
@@ -60,124 +74,125 @@ public class APIError {
          * The requested operation could not be performed because the request
          * itself was malformed.
          */
-        BAD_REQUEST(Response.Status.BAD_REQUEST),
+        BAD_REQUEST,
 
         /**
          * The credentials provided were invalid.
          */
-        INVALID_CREDENTIALS(Response.Status.FORBIDDEN),
+        INVALID_CREDENTIALS,
 
         /**
          * The credentials provided were not necessarily invalid, but were not
          * sufficient to determine validity.
          */
-        INSUFFICIENT_CREDENTIALS(Response.Status.FORBIDDEN),
+        INSUFFICIENT_CREDENTIALS,
 
         /**
          * An internal server error has occurred.
          */
-        INTERNAL_ERROR(Response.Status.INTERNAL_SERVER_ERROR),
+        INTERNAL_ERROR,
 
         /**
          * An object related to the request does not exist.
          */
-        NOT_FOUND(Response.Status.NOT_FOUND),
+        NOT_FOUND,
 
         /**
          * Permission was denied to perform the requested operation.
          */
-        PERMISSION_DENIED(Response.Status.FORBIDDEN),
+        PERMISSION_DENIED,
 
         /**
          * An error occurred within an intercepted stream, terminating that
          * stream. The Guacamole protocol status code of that error can be
          * retrieved with getStatusCode().
          */
-        STREAM_ERROR(Response.Status.BAD_REQUEST);
+        STREAM_ERROR;
 
         /**
-         * The HTTP status associated with this error type.
-         */
-        private final Response.Status status;
-
-        /**
-         * Defines a new error type associated with the given HTTP status.
+         * Returns the REST API error type which corresponds to the type of the
+         * given exception.
          *
-         * @param status
-         *     The HTTP status to associate with the error type.
-         */
-        Type(Response.Status status) {
-            this.status = status;
-        }
-
-        /**
-         * Returns the HTTP status associated with this error type.
+         * @param exception
+         *     The exception to use to derive the API error type.
          *
          * @return
-         *     The HTTP status associated with this error type.
+         *     The API error type which corresponds to the type of the given
+         *     exception.
          */
-        public Response.Status getStatus() {
-            return status;
+        public static Type fromGuacamoleException(GuacamoleException exception) {
+
+            // Additional credentials are needed
+            if (exception instanceof GuacamoleInsufficientCredentialsException)
+                return INSUFFICIENT_CREDENTIALS;
+
+            // The provided credentials are wrong
+            if (exception instanceof GuacamoleInvalidCredentialsException)
+                return INVALID_CREDENTIALS;
+
+            // Generic permission denied
+            if (exception instanceof GuacamoleSecurityException)
+                return PERMISSION_DENIED;
+
+            // Arbitrary resource not found
+            if (exception instanceof GuacamoleResourceNotFoundException)
+                return NOT_FOUND;
+
+            // Arbitrary bad requests
+            if (exception instanceof GuacamoleClientException)
+                return BAD_REQUEST;
+
+            // Errors from intercepted streams
+            if (exception instanceof GuacamoleStreamException)
+                return STREAM_ERROR;
+
+            // All other errors
+            return INTERNAL_ERROR;
+
         }
 
     }
 
     /**
-     * Creates a new APIError of type STREAM_ERROR and having the given
-     * Guacamole protocol status code and human-readable message. The status
-     * code and message should be taken directly from the "ack" instruction
-     * causing the error.
+     * Creates a new APIError which exposes the details of the given
+     * GuacamoleException. If the given GuacamoleException implements
+     * Translatable, then its translation string and values will be exposed as
+     * well.
      *
-     * @param statusCode
-     *     The Guacamole protocol status code describing the error that
-     *     occurred within the intercepted stream.
-     *
-     * @param message
-     *     An arbitrary human-readable message describing the error that
-     *     occurred.
+     * @param exception
+     *     The GuacamoleException from which the details of the new APIError
+     *     should be derived.
      */
-    public APIError(int statusCode, String message) {
-        this.type       = Type.STREAM_ERROR;
-        this.message    = message;
-        this.statusCode = statusCode;
-        this.expected   = null;
-    }
+    public APIError(GuacamoleException exception) {
 
-    /**
-     * Create a new APIError with the specified error message.
-     *
-     * @param type
-     *     The type of error that occurred.
-     *
-     * @param message
-     *     The error message.
-     */
-    public APIError(Type type, String message) {
-        this.type       = type;
-        this.message    = message;
-        this.statusCode = null;
-        this.expected   = null;
-    }
+        // Build base REST service error
+        this.type = Type.fromGuacamoleException(exception);
+        this.message = exception.getMessage();
 
-    /**
-     * Create a new APIError with the specified error message and parameter
-     * information.
-     *
-     * @param type
-     *     The type of error that occurred.
-     *
-     * @param message
-     *     The error message.
-     *
-     * @param expected
-     *     All parameters expected in the original request, or now required as
-     *     a result of the original request, as a collection of fields.
-     */
-    public APIError(Type type, String message, Collection<Field> expected) {
-        this.type       = type;
-        this.message    = message;
-        this.statusCode = null;
-        this.expected   = expected;
+        // Add expected credentials if applicable
+        if (exception instanceof GuacamoleCredentialsException) {
+            GuacamoleCredentialsException credentialsException = (GuacamoleCredentialsException) exception;
+            this.expected = credentialsException.getCredentialsInfo().getFields();
+        }
+        else
+            this.expected = null;
+
+        // Add stream status code if applicable
+        if (exception instanceof GuacamoleStreamException) {
+            GuacamoleStreamException streamException = (GuacamoleStreamException) exception;
+            this.statusCode = streamException.getStatus().getGuacamoleStatusCode();
+        }
+        else
+            this.statusCode = null;
+
+        // Pull translatable message and values if available
+        if (exception instanceof Translatable) {
+            Translatable translatable = (Translatable) exception;
+            this.translatableMessage = translatable.getTranslatableMessage();
+        }
+        else
+            this.translatableMessage = new TranslatableMessage(this.message);
+
     }
 
     /**
@@ -223,6 +238,18 @@ public class APIError {
      */
     public String getMessage() {
         return message;
+    }
+
+    /**
+     * Returns a translatable message describing the error that occurred. If no
+     * translatable message is associated with the error, this will be null.
+     *
+     * @return
+     *     A translatable message describing the error that occurred, or null
+     *     if there is no such message defined.
+     */
+    public TranslatableMessage getTranslatableMessage() {
+        return translatableMessage;
     }
 
 }
