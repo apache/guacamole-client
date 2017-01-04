@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.jdbc;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.LocalEnvironment;
+import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
 
 /**
  * A JDBC-specific implementation of Environment that defines generic properties
@@ -127,5 +128,15 @@ public abstract class JDBCEnvironment extends LocalEnvironment {
      */
     public abstract int getDefaultMaxGroupConnectionsPerUser()
             throws GuacamoleException;
+
+    /**
+     * Returns the policy which applies to newly-set passwords. Passwords which
+     * apply to Guacamole user accounts will be required to conform to this
+     * policy.
+     *
+     * @return
+     *     The password policy which applies to Guacamole user accounts.
+     */
+    public abstract PasswordPolicy getPasswordPolicy();
 
 }

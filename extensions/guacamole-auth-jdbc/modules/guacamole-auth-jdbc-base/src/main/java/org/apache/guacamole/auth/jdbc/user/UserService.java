@@ -35,6 +35,7 @@ import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.apache.guacamole.auth.jdbc.permission.UserPermissionMapper;
 import org.apache.guacamole.auth.jdbc.security.PasswordEncryptionService;
+import org.apache.guacamole.auth.jdbc.security.PasswordPolicyService;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.PasswordField;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
@@ -130,6 +131,12 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     @Inject
     private PasswordEncryptionService encryptionService;
 
+    /**
+     * Service for enforcing password complexity policies.
+     */
+    @Inject
+    private PasswordPolicyService passwordPolicyService;
+
     @Override
     protected ModeledDirectoryObjectMapper<UserModel> getObjectMapper() {
         return userMapper;
@@ -185,10 +192,10 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     }
 
     @Override
-    protected void beforeCreate(ModeledAuthenticatedUser user, UserModel model)
-            throws GuacamoleException {
+    protected void beforeCreate(ModeledAuthenticatedUser user, User object,
+            UserModel model) throws GuacamoleException {
 
-        super.beforeCreate(user, model);
+        super.beforeCreate(user, object, model);
         
         // Username must not be blank
         if (model.getIdentifier() == null || model.getIdentifier().trim().isEmpty())
@@ -199,13 +206,17 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         if (!existing.isEmpty())
             throw new GuacamoleClientException("User \"" + model.getIdentifier() + "\" already exists.");
 
+        // Verify new password does not violate defined policies (if specified)
+        if (object.getPassword() != null)
+            passwordPolicyService.verifyPassword(object.getIdentifier(), object.getPassword());
+
     }
 
     @Override
     protected void beforeUpdate(ModeledAuthenticatedUser user,
-            UserModel model) throws GuacamoleException {
+            ModeledUser object, UserModel model) throws GuacamoleException {
 
-        super.beforeUpdate(user, model);
+        super.beforeUpdate(user, object, model);
         
         // Username must not be blank
         if (model.getIdentifier() == null || model.getIdentifier().trim().isEmpty())
@@ -220,7 +231,11 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
                 throw new GuacamoleClientException("User \"" + model.getIdentifier() + "\" already exists.");
             
         }
-        
+
+        // Verify new password does not violate defined policies (if specified)
+        if (object.getPassword() != null)
+            passwordPolicyService.verifyPassword(object.getIdentifier(), object.getPassword());
+
     }
 
     @Override
@@ -411,6 +426,9 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         // Confirm that the password was entered correctly twice
         if (!newPassword.equals(confirmNewPassword))
             throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_MISMATCH");
+
+        // Verify new password does not violate defined policies
+        passwordPolicyService.verifyPassword(username, newPassword);
 
         // Change password and reset expiration flag
         userModel.setExpired(false);

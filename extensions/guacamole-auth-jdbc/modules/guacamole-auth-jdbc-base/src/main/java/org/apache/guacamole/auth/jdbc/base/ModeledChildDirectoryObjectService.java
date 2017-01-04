@@ -172,9 +172,9 @@ public abstract class ModeledChildDirectoryObjectService<InternalType extends Mo
 
     @Override
     protected void beforeCreate(ModeledAuthenticatedUser user,
-            ModelType model) throws GuacamoleException {
+            ExternalType object, ModelType model) throws GuacamoleException {
 
-        super.beforeCreate(user, model);
+        super.beforeCreate(user, object, model);
         
         // Validate that we can update all applicable parents
         if (!canUpdateModifiedParents(user, null, model))
@@ -184,9 +184,9 @@ public abstract class ModeledChildDirectoryObjectService<InternalType extends Mo
 
     @Override
     protected void beforeUpdate(ModeledAuthenticatedUser user,
-            ModelType model) throws GuacamoleException {
+            InternalType object, ModelType model) throws GuacamoleException {
 
-        super.beforeUpdate(user, model);
+        super.beforeUpdate(user, object, model);
 
         // Validate that we can update all applicable parents
         if (!canUpdateModifiedParents(user, model.getIdentifier(), model))
