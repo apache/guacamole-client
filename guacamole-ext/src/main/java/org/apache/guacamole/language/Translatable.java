@@ -20,9 +20,9 @@
 package org.apache.guacamole.language;
 
 /**
- * An interface which requires the definition of a translatable message that
- * can be passed through an arbitrary translation service, producing a
- * human-readable message in the user's native language.
+ * An object which is associated with a translatable message that can be passed
+ * through an arbitrary translation service, producing a human-readable message
+ * in the user's native language.
  *
  * @author Michael Jumper
  */
