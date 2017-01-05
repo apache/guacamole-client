@@ -243,7 +243,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
             passwordPolicyService.verifyPassword(object.getIdentifier(), object.getPassword());
 
             // Store previous password in history
-            passwordPolicyService.recordPreviousPassword(object);
+            passwordPolicyService.recordPassword(object);
 
         }
 

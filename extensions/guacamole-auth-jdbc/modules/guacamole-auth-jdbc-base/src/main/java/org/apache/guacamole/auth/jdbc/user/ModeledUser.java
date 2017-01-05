@@ -192,7 +192,7 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
      * The data associated with this user's password at the time this user was
      * queried. If the user is new, this will be null.
      */
-    private PasswordRecordModel previousPassword = null;
+    private PasswordRecordModel passwordRecord = null;
     
     /**
      * Creates a new, empty ModeledUser.
@@ -207,7 +207,7 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
 
         // Store previous password, if any
         if (model.getPasswordHash() != null)
-            this.previousPassword = new PasswordRecordModel(model);
+            this.passwordRecord = new PasswordRecordModel(model);
 
     }
 
@@ -245,19 +245,19 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     }
 
     /**
-     * Returns the data associated with this user's previous password as a
-     * password record. If the user is new, this will be null. Unlike the other
-     * password-related functions of UserModel, this data returned by this
-     * function is historical and is unaffected by calls to setPassword(). It
-     * will always return the values stored in the database at the time this
-     * user was queried.
+     * Returns the this user's current password record. If the user is new, this
+     * will be null. Note that this may represent a different password than what
+     * is returned by getPassword(): unlike the other password-related functions
+     * of ModeledUser, the data returned by this function is historical and is
+     * unaffected by calls to setPassword(). It will always return the values
+     * stored in the database at the time this user was queried.
      *
      * @return
-     *     The data associated with this user's previous password, or null if
+     *     The historical data associated with this user's password, or null if
      *     the user is new.
      */
-    public PasswordRecordModel getPreviousPassword() {
-        return previousPassword;
+    public PasswordRecordModel getPasswordRecord() {
+        return passwordRecord;
     }
 
     /**

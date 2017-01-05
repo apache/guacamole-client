@@ -227,13 +227,13 @@ public class PasswordPolicyService {
     private long getPasswordAge(ModeledUser user) {
 
         // If no password was set, then no time has elapsed
-        PasswordRecordModel previousPassword = user.getPreviousPassword();
-        if (previousPassword == null)
+        PasswordRecordModel passwordRecord = user.getPasswordRecord();
+        if (passwordRecord == null)
             return 0;
 
         // Pull both current time and the time the password was last reset
         long currentTime = System.currentTimeMillis();
-        long lastResetTime = previousPassword.getPasswordDate().getTime();
+        long lastResetTime = passwordRecord.getPasswordDate().getTime();
 
         // Calculate the number of days elapsed since the password was last reset
         return TimeUnit.DAYS.convert(currentTime - lastResetTime, TimeUnit.MILLISECONDS);
@@ -306,12 +306,13 @@ public class PasswordPolicyService {
      * user is limited by the password policy.
      *
      * @param user
-     *     The user whose previous password should be recorded.
+     *     The user whose password should be recorded within the password
+     *     history.
      *
      * @throws GuacamoleException
      *     If the password policy cannot be parsed.
      */
-    public void recordPreviousPassword(ModeledUser user)
+    public void recordPassword(ModeledUser user)
             throws GuacamoleException {
 
         // Retrieve password policy from environment
@@ -323,7 +324,7 @@ public class PasswordPolicyService {
             return;
         
         // Store previous password in history
-        passwordRecordMapper.insert(user.getPreviousPassword(), historySize);
+        passwordRecordMapper.insert(user.getPasswordRecord(), historySize);
 
     }
 
