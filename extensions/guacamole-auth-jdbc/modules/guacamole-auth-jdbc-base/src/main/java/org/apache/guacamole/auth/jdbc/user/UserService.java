@@ -233,8 +233,16 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         }
 
         // Verify new password does not violate defined policies (if specified)
-        if (object.getPassword() != null)
+        if (object.getPassword() != null) {
+
+            // Enforce password age only for non-adminstrators
+            if (!user.getUser().isAdministrator())
+                passwordPolicyService.verifyPasswordAge(object);
+
+            // Always verify password complexity
             passwordPolicyService.verifyPassword(object.getIdentifier(), object.getPassword());
+
+        }
 
     }
 

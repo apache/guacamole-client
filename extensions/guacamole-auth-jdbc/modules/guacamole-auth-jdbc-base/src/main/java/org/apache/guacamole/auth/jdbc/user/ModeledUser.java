@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.jdbc.user;
 import com.google.inject.Inject;
 import java.sql.Date;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -186,11 +187,23 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
      * user was retrieved from the database, this will be null.
      */
     private String password = null;
+
+    /**
+     * The time and date that this user's password was previously set (prior to
+     * being queried). If the user is new, this will be null.
+     */
+    private Timestamp previousPasswordDate = null;
     
     /**
      * Creates a new, empty ModeledUser.
      */
     public ModeledUser() {
+    }
+
+    @Override
+    public void setModel(UserModel model) {
+        super.setModel(model);
+        this.previousPasswordDate = model.getPasswordDate();
     }
 
     @Override
@@ -222,6 +235,24 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
             userModel.setPasswordHash(hash);
         }
 
+        userModel.setPasswordDate(new Timestamp(System.currentTimeMillis()));
+
+    }
+
+    /**
+     * Returns the time and date that this user's password was previously set.
+     * If the user is new, this will be null. Unlike getPasswordDate() of
+     * UserModel (which is updated automatically along with the password salt
+     * and hash whenever setPassword() is invoked), this value is unaffected by
+     * calls to setPassword(), and will always be the value stored in the
+     * database at the time this user was queried.
+     *
+     * @return
+     *     The time and date that this user's password was previously set, or
+     *     null if the user is new.
+     */
+    public Timestamp getPreviousPasswordDate() {
+        return previousPasswordDate;
     }
 
     /**

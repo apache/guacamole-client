@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.jdbc;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.security.PasswordPolicyService;
 import org.apache.guacamole.auth.jdbc.sharing.user.SharedAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUserContext;
@@ -54,6 +55,12 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
      */
     @Inject
     private UserService userService;
+
+    /**
+     * Service for enforcing password complexity policies.
+     */
+    @Inject
+    private PasswordPolicyService passwordPolicyService;
 
     /**
      * Provider for retrieving UserContext instances.
@@ -101,7 +108,7 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
 
         // Update password if password is expired
         UserModel userModel = user.getModel();
-        if (userModel.isExpired())
+        if (userModel.isExpired() || passwordPolicyService.isPasswordExpired(user))
             userService.resetExpiredPassword(user, authenticatedUser.getCredentials());
 
         // Link to user context

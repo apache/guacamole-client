@@ -43,6 +43,36 @@ public interface PasswordPolicy {
     int getMinimumLength() throws GuacamoleException;
 
     /**
+     * Returns the minimum number of days which must elapse before the user's
+     * password may be reset. If this restriction does not apply, this will be
+     * zero.
+     *
+     * @return
+     *     The minimum number of days which must elapse before the user's
+     *     password may be reset, or zero if this restriction does not apply.
+     *
+     * @throws GuacamoleException
+     *     If the minimum password age cannot be parsed from
+     *     guacamole.properties.
+     */
+    int getMinimumAge() throws GuacamoleException;
+
+    /**
+     * Returns the maximum number of days which may elapse before the user's
+     * password must be reset. If this restriction does not apply, this will be
+     * zero.
+     *
+     * @return
+     *     The maximum number of days which may elapse before the user's
+     *     password must be reset, or zero if this restriction does not apply.
+     *
+     * @throws GuacamoleException
+     *     If the maximum password age cannot be parsed from
+     *     guacamole.properties.
+     */
+    int getMaximumAge() throws GuacamoleException;
+
+    /**
      * Returns whether both uppercase and lowercase characters must be present
      * in new passwords. If true, passwords which do not have at least one
      * uppercase letter and one lowercase letter cannot be used.
