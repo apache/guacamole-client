@@ -73,6 +73,20 @@ public interface PasswordPolicy {
     int getMaximumAge() throws GuacamoleException;
 
     /**
+     * Returns the number of previous passwords remembered for each user. If
+     * greater than zero, users will be prohibited from reusing those passwords.
+     *
+     *
+     * @return
+     *     The number of previous passwords remembered for each user.
+     *
+     * @throws GuacamoleException
+     *     If the password history size cannot be parsed from
+     *     guacamole.properties.
+     */
+    int getHistorySize() throws GuacamoleException;
+
+    /**
      * Returns whether both uppercase and lowercase characters must be present
      * in new passwords. If true, passwords which do not have at least one
      * uppercase letter and one lowercase letter cannot be used.

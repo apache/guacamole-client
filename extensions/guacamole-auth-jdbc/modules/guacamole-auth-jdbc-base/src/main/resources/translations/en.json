@@ -60,6 +60,7 @@
         "ERROR_REQUIRES_DIGIT"         : "Passwords must contain at least one digit.",
         "ERROR_REQUIRES_MULTIPLE_CASE" : "Passwords must contain both uppercase and lowercase characters.",
         "ERROR_REQUIRES_NON_ALNUM"     : "Passwords must contain at least one symbol.",
+        "ERROR_REUSED"                 : "This password has already been used. Please do not reuse any of the previous {HISTORY_SIZE} {HISTORY_SIZE, plural, one{password} other{passwords}}.",
         "ERROR_TOO_SHORT"              : "Passwords must be at least {LENGTH} {LENGTH, plural, one{character} other{characters}} long.",
         "ERROR_TOO_YOUNG"              : "The password for this account has already been reset. Please wait at least {WAIT} more {WAIT, plural, one{day} other{days}} before changing the password again."
 

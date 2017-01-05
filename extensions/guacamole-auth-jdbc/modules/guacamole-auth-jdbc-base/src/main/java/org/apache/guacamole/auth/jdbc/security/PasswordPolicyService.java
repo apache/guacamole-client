@@ -20,12 +20,16 @@
 package org.apache.guacamole.auth.jdbc.security;
 
 import com.google.inject.Inject;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
+import org.apache.guacamole.auth.jdbc.user.PasswordRecordMapper;
+import org.apache.guacamole.auth.jdbc.user.PasswordRecordModel;
 
 /**
  * Service which verifies compliance with the password policy configured via
@@ -40,6 +44,18 @@ public class PasswordPolicyService {
      */
     @Inject
     private JDBCEnvironment environment;
+
+    /**
+     * Mapper for creating/retrieving previously-set passwords.
+     */
+    @Inject
+    private PasswordRecordMapper passwordRecordMapper;
+
+    /**
+     * Service for hashing passwords.
+     */
+    @Inject
+    private PasswordEncryptionService encryptionService;
 
     /**
      * Regular expression which matches only if the string contains at least one
@@ -98,6 +114,49 @@ public class PasswordPolicyService {
     }
 
     /**
+     * Returns whether the given password matches any of the user's previous
+     * passwords. Regardless of the value specified here, the maximum number of
+     * passwords involved in this check depends on how many previous passwords
+     * were actually recorded, which depends on the password policy.
+     *
+     * @param password
+     *     The password to check.
+     *
+     * @param username
+     *     The username of the user whose history should be compared against
+     *     the given password.
+     *
+     * @param historySize
+     *     The maximum number of history records to compare the password
+     *     against.
+     *
+     * @return
+     *     true if the given password matches any of the user's previous
+     *     passwords, up to the specified limit, false otherwise.
+     */
+    private boolean matchesPreviousPasswords(String password, String username,
+            int historySize) {
+
+        // No need to compare if no history is relevant
+        if (historySize <= 0)
+            return false;
+
+        // Check password against all recorded hashes
+        List<PasswordRecordModel> history = passwordRecordMapper.select(username, historySize);
+        for (PasswordRecordModel record : history) {
+
+            byte[] hash = encryptionService.createPasswordHash(password, record.getPasswordSalt());
+            if (Arrays.equals(hash, record.getPasswordHash()))
+                return true;
+            
+        }
+
+        // No passwords match
+        return false;
+        
+    }
+
+    /**
      * Verifies that the given new password complies with the password policy
      * configured within guacamole.properties, throwing a GuacamoleException if
      * the policy is violated in any way.
@@ -144,6 +203,12 @@ public class PasswordPolicyService {
             throw new PasswordRequiresSymbolException(
                     "Passwords must contain at least one non-alphanumeric character.");
 
+        // Prohibit password reuse
+        int historySize = policy.getHistorySize();
+        if (matchesPreviousPasswords(password, username, historySize))
+            throw new PasswordReusedException(
+                    "Password matches a previously-used password.", historySize);
+
         // Password passes all defined restrictions
 
     }
@@ -161,9 +226,14 @@ public class PasswordPolicyService {
      */
     private long getPasswordAge(ModeledUser user) {
 
+        // If no password was set, then no time has elapsed
+        PasswordRecordModel passwordRecord = user.getPasswordRecord();
+        if (passwordRecord == null)
+            return 0;
+
         // Pull both current time and the time the password was last reset
         long currentTime = System.currentTimeMillis();
-        long lastResetTime = user.getPreviousPasswordDate().getTime();
+        long lastResetTime = passwordRecord.getPasswordDate().getTime();
 
         // Calculate the number of days elapsed since the password was last reset
         return TimeUnit.DAYS.convert(currentTime - lastResetTime, TimeUnit.MILLISECONDS);
@@ -226,6 +296,35 @@ public class PasswordPolicyService {
 
         // Determine whether password is expired based on maximum age
         return getPasswordAge(user) >= maxPasswordAge;
+
+    }
+
+    /**
+     * Records the password that was associated with the given user at the time
+     * the user was queried, such that future attempts to set that same password
+     * for that user will be denied. The number of passwords remembered for each
+     * user is limited by the password policy.
+     *
+     * @param user
+     *     The user whose password should be recorded within the password
+     *     history.
+     *
+     * @throws GuacamoleException
+     *     If the password policy cannot be parsed.
+     */
+    public void recordPassword(ModeledUser user)
+            throws GuacamoleException {
+
+        // Retrieve password policy from environment
+        PasswordPolicy policy = environment.getPasswordPolicy();
+
+        // Nothing to do if history is not being recorded
+        int historySize = policy.getHistorySize();
+        if (historySize <= 0)
+            return;
+        
+        // Store previous password in history
+        passwordRecordMapper.insert(user.getPasswordRecord(), historySize);
 
     }
 

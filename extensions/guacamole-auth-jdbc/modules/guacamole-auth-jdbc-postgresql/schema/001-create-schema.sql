@@ -385,3 +385,27 @@ CREATE INDEX ON guacamole_connection_history(connection_id);
 CREATE INDEX ON guacamole_connection_history(sharing_profile_id);
 CREATE INDEX ON guacamole_connection_history(start_date);
 CREATE INDEX ON guacamole_connection_history(end_date);
+
+--
+-- User password history
+--
+
+CREATE TABLE guacamole_user_password_history (
+
+  password_history_id serial  NOT NULL,
+  user_id             integer NOT NULL,
+
+  -- Salted password
+  password_hash bytea        NOT NULL,
+  password_salt bytea,
+  password_date timestamptz  NOT NULL,
+
+  PRIMARY KEY (password_history_id),
+
+  CONSTRAINT guacamole_user_password_history_ibfk_1
+    FOREIGN KEY (user_id)
+    REFERENCES guacamole_user (user_id) ON DELETE CASCADE
+
+);
+
+CREATE INDEX ON guacamole_user_password_history(user_id);

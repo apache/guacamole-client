@@ -72,6 +72,19 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
     };
 
     /**
+     * The property which specifies the number of previous passwords remembered
+     * for each user. If set to zero, the default, then this restriction does
+     * not apply.
+     */
+    private static final IntegerGuacamoleProperty HISTORY_SIZE =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-user-password-history-size"; }
+
+    };
+
+    /**
      * The property which specifies whether all user passwords must have at
      * least one lowercase character and one uppercase character. By default,
      * no such restriction is imposed.
@@ -153,6 +166,11 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
     @Override
     public int getMaximumAge() throws GuacamoleException {
         return environment.getProperty(MAX_AGE, 0);
+    }
+
+    @Override
+    public int getHistorySize() throws GuacamoleException {
+        return environment.getProperty(HISTORY_SIZE, 0);
     }
 
     @Override

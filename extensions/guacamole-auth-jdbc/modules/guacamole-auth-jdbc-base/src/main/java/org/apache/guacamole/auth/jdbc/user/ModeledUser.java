@@ -189,10 +189,10 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     private String password = null;
 
     /**
-     * The time and date that this user's password was previously set (prior to
-     * being queried). If the user is new, this will be null.
+     * The data associated with this user's password at the time this user was
+     * queried. If the user is new, this will be null.
      */
-    private Timestamp previousPasswordDate = null;
+    private PasswordRecordModel passwordRecord = null;
     
     /**
      * Creates a new, empty ModeledUser.
@@ -202,8 +202,13 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
 
     @Override
     public void setModel(UserModel model) {
+
         super.setModel(model);
-        this.previousPasswordDate = model.getPasswordDate();
+
+        // Store previous password, if any
+        if (model.getPasswordHash() != null)
+            this.passwordRecord = new PasswordRecordModel(model);
+
     }
 
     @Override
@@ -240,19 +245,19 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     }
 
     /**
-     * Returns the time and date that this user's password was previously set.
-     * If the user is new, this will be null. Unlike getPasswordDate() of
-     * UserModel (which is updated automatically along with the password salt
-     * and hash whenever setPassword() is invoked), this value is unaffected by
-     * calls to setPassword(), and will always be the value stored in the
-     * database at the time this user was queried.
+     * Returns the this user's current password record. If the user is new, this
+     * will be null. Note that this may represent a different password than what
+     * is returned by getPassword(): unlike the other password-related functions
+     * of ModeledUser, the data returned by this function is historical and is
+     * unaffected by calls to setPassword(). It will always return the values
+     * stored in the database at the time this user was queried.
      *
      * @return
-     *     The time and date that this user's password was previously set, or
-     *     null if the user is new.
+     *     The historical data associated with this user's password, or null if
+     *     the user is new.
      */
-    public Timestamp getPreviousPasswordDate() {
-        return previousPasswordDate;
+    public PasswordRecordModel getPasswordRecord() {
+        return passwordRecord;
     }
 
     /**
