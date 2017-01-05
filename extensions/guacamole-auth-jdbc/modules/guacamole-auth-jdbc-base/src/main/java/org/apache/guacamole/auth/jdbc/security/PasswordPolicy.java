@@ -49,7 +49,7 @@ public interface PasswordPolicy {
      *
      * @return
      *     The minimum number of days which must elapse before the user's
-     *     password must be reset, or zero if this restriction does not apply.
+     *     password may be reset, or zero if this restriction does not apply.
      *
      * @throws GuacamoleException
      *     If the minimum password age cannot be parsed from
