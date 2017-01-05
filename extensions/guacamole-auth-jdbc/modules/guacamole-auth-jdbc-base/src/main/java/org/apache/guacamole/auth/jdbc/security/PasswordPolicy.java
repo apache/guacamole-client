@@ -74,8 +74,8 @@ public interface PasswordPolicy {
 
     /**
      * Returns the number of previous passwords remembered for each user. If
-     * greater than zero, users will be prohibited from reusing their past
-     * passwords.
+     * greater than zero, users will be prohibited from reusing those passwords.
+     *
      *
      * @return
      *     The number of previous passwords remembered for each user.
