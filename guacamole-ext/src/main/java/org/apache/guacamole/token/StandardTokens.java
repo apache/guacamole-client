@@ -22,6 +22,7 @@ package org.apache.guacamole.token;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.apache.guacamole.net.auth.Credentials;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Utility class which provides access to standardized token names, as well as
