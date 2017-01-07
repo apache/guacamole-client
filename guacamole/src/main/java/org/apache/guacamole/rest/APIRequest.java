@@ -69,21 +69,23 @@ public class APIRequest extends HttpServletRequestWrapper {
         super(request);
 
         // Try a few methods to get client info.
-        if(request.getHeader("X-Guacamole-Client-Hostname") != null && request.getHeader("X-Guacamole-Client-Hostname") != "") {
+        String clientHostname = "";
+        String clientAddress = "";
+        if(request.getHeader("X-Guacamole-Client-Hostname") != "") {
             this.remoteHost = request.getHeader("X-Guacamole-Client-Hostname");
-        } else if(request.getHeader("X-Forwarded-For") != null && request.getHeader("X-Forwarded-For") != "") {
+        } else if(request.getHeader("X-Forwarded-For") != "") {
             this.remoteHost = request.getHeader("X-Forwarded-For");
-        } else if(request.getRemoteHost() != null && request.getRemoteHost() != "") {
+        } else if(request.getRemoteHost() != "") {
             this.remoteHost = request.getRemoteHost();
         } else {
             this.remoteHost = "";
         }
 
-        if(request.getHeader("X-Guacamole-Client-IP") != null && request.getHeader("X-Guacamole-Client-IP") != "") {
+        if(request.getHeader("X-Guacamole-Client-IP") != "") {
             this.remoteAddr = request.getHeader("X-Guacamole-Client-IP");
-        } else if(request.getHeader("X-Forwarded-For") != null && request.getHeader("X-Forwarded-For") != "") {
+        } else if(request.getHeader("X-Forwarded-For") != "") {
             this.remoteAddr = request.getHeader("X-Forwarded-For");
-        } else if(request.getRemoteHost() != null && request.getRemoteAddr() != "") {
+        } else if(request.getRemoteAddr() != "") {
             this.remoteAddr = request.getRemoteAddr();
         } else {
             this.remoteAddr = "";
