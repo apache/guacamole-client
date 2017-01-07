@@ -45,12 +45,12 @@ public class StandardTokens {
     /**
      * The name of the client token added via addStandardTokens().
      */
-    public static final String CLIENT_HOST_TOKEN = "GUAC_REMHOST";
+    public static final String REMHOST_TOKEN = "GUAC_REMHOST";
 
     /**
      * The IP of the client token added via addStandardTokens().
      */
-    public static final String CLIENT_IP_TOKEN = "GUAC_REMIP";
+    public static final String REMIP_TOKEN = "GUAC_REMIP";
 
     /**
      * The name of the date token (server-local time) added via
@@ -129,8 +129,8 @@ public class StandardTokens {
         // Add client hostname and ip tokens
         HttpServletRequest request = credentials.getRequest();
         if (request != null) {
-            filter.setToken(CLIENT_HOST_TOKEN, request.getRemoteHost());
-            filter.setToken(CLIENT_IP_TOKEN, request.getRemoteAddr());
+            filter.setToken(REMHOST_TOKEN, request.getRemoteHost());
+            filter.setToken(REMIP_TOKEN, request.getRemoteAddr());
         }
 
         // Add any tokens which do not require credentials
