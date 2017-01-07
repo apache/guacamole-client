@@ -42,16 +42,6 @@ public class APIRequest extends HttpServletRequestWrapper {
     private final Map<String, String[]> parameters;
 
     /**
-     * The remote hostname that initiated the request.
-     */
-    private final String remoteHost;
-
-    /**
-     * The remote ip address that initiated the request.
-     */
-    private final String remoteAddr;
-
-    /**
      * Wraps the given HttpServletRequest, using the given MultivaluedMap to
      * provide all request parameters. All HttpServletRequest functions which
      * do not deal with parameter names and values are delegated to the wrapped
@@ -67,29 +57,6 @@ public class APIRequest extends HttpServletRequestWrapper {
             MultivaluedMap<String, String> parameters) {
 
         super(request);
-
-        // Try a few methods to get client info.
-        String clientHostname = "";
-        String clientAddress = "";
-        if(request.getHeader("X-Guacamole-Client-Hostname") != "") {
-            this.remoteHost = request.getHeader("X-Guacamole-Client-Hostname");
-        } else if(request.getHeader("X-Forwarded-For") != "") {
-            this.remoteHost = request.getHeader("X-Forwarded-For");
-        } else if(request.getRemoteHost() != "") {
-            this.remoteHost = request.getRemoteHost();
-        } else {
-            this.remoteHost = "";
-        }
-
-        if(request.getHeader("X-Guacamole-Client-IP") != "") {
-            this.remoteAddr = request.getHeader("X-Guacamole-Client-IP");
-        } else if(request.getHeader("X-Forwarded-For") != "") {
-            this.remoteAddr = request.getHeader("X-Forwarded-For");
-        } else if(request.getRemoteAddr() != "") {
-            this.remoteAddr = request.getRemoteAddr();
-        } else {
-            this.remoteAddr = "";
-        }
 
         // Copy parameters from given MultivaluedMap 
         this.parameters = new HashMap<String, String[]>(parameters.size());
@@ -132,16 +99,6 @@ public class APIRequest extends HttpServletRequestWrapper {
         // Otherwise, return first value
         return values[0];
 
-    }
-
-    @Override
-    public String getRemoteHost() {
-        return this.remoteHost;
-    }
-
-    @Override
-    public String getRemoteAddr() {
-        return this.remoteAddr;
     }
 
 }

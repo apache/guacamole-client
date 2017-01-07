@@ -42,16 +42,6 @@ public class StandardTokens {
     public static final String PASSWORD_TOKEN = "GUAC_PASSWORD";
 
     /**
-     * The name of the client token added via addStandardTokens().
-     */
-    public static final String CLIENT_HOST_TOKEN = "GUAC_CLIENT_HOST";
-
-    /**
-     * The IP of the client token added via addStandardTokens().
-     */
-    public static final String CLIENT_IP_TOKEN = "GUAC_CLIENT_IP";
-
-    /**
      * The name of the date token (server-local time) added via
      * addStandardTokens().
      */
@@ -124,13 +114,6 @@ public class StandardTokens {
         String password = credentials.getPassword();
         if (password != null)
             filter.setToken(PASSWORD_TOKEN, password);
-
-        // Add client hostname and ip tokens
-        HttpServletRequest request = credentials.getRequest();
-        if (request != null) {
-            filter.setToken(CLIENT_HOST_TOKEN, request.getRemoteHost());
-            filter.setToken(CLIENT_IP_TOKEN, request.getRemoteAddr());
-        }
 
         // Add any tokens which do not require credentials
         addStandardTokens(filter);
