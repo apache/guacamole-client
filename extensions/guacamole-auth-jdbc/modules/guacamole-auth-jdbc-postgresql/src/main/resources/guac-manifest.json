@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "0.9.10-incubating",
+    "guacamoleVersion" : "0.9.11-incubating",
 
     "name"      : "PostgreSQL Authentication",
     "namespace" : "guac-postgresql",
