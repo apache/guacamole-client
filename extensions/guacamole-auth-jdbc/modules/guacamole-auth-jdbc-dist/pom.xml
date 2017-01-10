@@ -36,7 +36,7 @@
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-auth-jdbc</artifactId>
-        <version>0.9.10-incubating</version>
+        <version>0.9.11-incubating</version>
         <relativePath>../../</relativePath>
     </parent>
 
@@ -99,14 +99,14 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-auth-jdbc-mysql</artifactId>
-            <version>0.9.10-incubating</version>
+            <version>0.9.11-incubating</version>
         </dependency>
 
         <!-- PostgreSQL Authentication Extension -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-auth-jdbc-postgresql</artifactId>
-            <version>0.9.10-incubating</version>
+            <version>0.9.11-incubating</version>
         </dependency>
 
     </dependencies>
