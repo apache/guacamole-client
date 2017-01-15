@@ -1346,7 +1346,7 @@ Guacamole.Client = function(tunnel) {
 
         // Ping every 5 seconds (ensure connection alive)
         pingInterval = window.setInterval(function() {
-            tunnel.sendMessage("sync", currentTimestamp);
+            tunnel.sendMessage("nop");
         }, 5000);
 
         setState(STATE_WAITING);
