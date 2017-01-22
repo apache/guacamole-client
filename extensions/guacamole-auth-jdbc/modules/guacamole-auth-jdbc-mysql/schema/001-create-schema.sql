@@ -85,7 +85,7 @@ CREATE TABLE `guacamole_user` (
   `username`      varchar(128) NOT NULL,
   `password_hash` binary(32)   NOT NULL,
   `password_salt` binary(32),
-  `password_date` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `password_date` datetime     NOT NULL,
 
   -- Account disabled/expired status
   `disabled`      boolean      NOT NULL DEFAULT 0,
