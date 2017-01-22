@@ -126,7 +126,7 @@ CREATE TABLE guacamole_user (
   username      varchar(128) NOT NULL,
   password_hash bytea        NOT NULL,
   password_salt bytea,
-  password_date timestamptz  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  password_date timestamptz  NOT NULL,
 
   -- Account disabled/expired status
   disabled      boolean      NOT NULL DEFAULT FALSE,
