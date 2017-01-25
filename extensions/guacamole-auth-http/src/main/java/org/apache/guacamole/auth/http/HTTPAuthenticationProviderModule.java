@@ -27,13 +27,11 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 
 /**
  * Guice module which configures HTTP-specific injections.
  *
- * @author Michael Jumper
+ * @author Nick Couchman
  */
 public class HTTPAuthenticationProviderModule extends AbstractModule {
 
@@ -41,8 +39,6 @@ public class HTTPAuthenticationProviderModule extends AbstractModule {
      * Guacamole server environment.
      */
     private final Environment environment;
-
-    private Logger logger = LoggerFactory.getLogger(HTTPAuthenticationProviderModule.class);
 
     /**
      * A reference to the HTTPAuthenticationProvider on behalf of which this

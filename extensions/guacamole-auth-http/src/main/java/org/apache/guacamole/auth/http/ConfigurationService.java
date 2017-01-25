@@ -20,15 +20,13 @@
 package org.apache.guacamole.auth.http;
 
 import com.google.inject.Inject;
-import java.util.Collections;
-import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 
 /**
  * Service for retrieving configuration information regarding the LDAP server.
  *
- * @author Michael Jumper
+ * @author Nick Couchman
  */
 public class ConfigurationService {
 

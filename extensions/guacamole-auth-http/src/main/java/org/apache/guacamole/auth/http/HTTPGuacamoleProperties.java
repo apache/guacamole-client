@@ -28,7 +28,7 @@ import org.apache.guacamole.properties.StringGuacamoleProperty;
  * These properties will be read from guacamole.properties when the HTTP
  * authentication provider is used.
  *
- * @author Michael Jumper
+ * @author Nick Couchman
  */
 public class HTTPGuacamoleProperties {
 

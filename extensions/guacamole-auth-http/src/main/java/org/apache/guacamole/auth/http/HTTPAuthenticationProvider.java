@@ -36,7 +36,7 @@ import org.apache.guacamole.net.auth.UserContext;
  * provided - only authentication. Storage must be provided by some other
  * extension.
  *
- * @author Michael Jumper
+ * @author Nick Couchman
  */
 public class HTTPAuthenticationProvider implements AuthenticationProvider {
 

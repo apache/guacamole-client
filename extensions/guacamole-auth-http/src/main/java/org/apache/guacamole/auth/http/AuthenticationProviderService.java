@@ -24,32 +24,21 @@ package org.apache.guacamole.auth.http;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import java.util.Arrays;
-import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.form.Field;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.apache.guacamole.auth.http.user.AuthenticatedUser;
 import java.security.Principal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Service providing convenience functions for the HTTP AuthenticationProvider
  * implementation.
  *
- * @author Michael Jumper
+ * @author Nick Couchman
  */
 public class AuthenticationProviderService {
-
-    /**
-     * Logger for this class.
-     */
-    private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
 
     /**
      * Service for retrieving LDAP server configuration information.
@@ -84,20 +73,16 @@ public class AuthenticationProviderService {
         // Pull HTTP ticket from request if present
         HttpServletRequest request = credentials.getRequest();
         if (request != null) {
-            logger.debug("We have a request object.");
             String username = request.getRemoteUser();
             if(username == null || username == "") {
-                logger.debug("No username from getRemoteUser(), trying the configured header.");
                 username = request.getHeader(confService.getHttpAuthHeader());
             }
             if (username != null) {
-                logger.debug("We have a username: {}", username);
                 AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
                 authenticatedUser.init(username, credentials);
                 return authenticatedUser;
             }
         }
-        logger.debug("We're going to throw a login exception.");
 
         // Request HTTP authentication
         throw new GuacamoleInvalidCredentialsException("Invalid login.", CredentialsInfo.USERNAME_PASSWORD);
