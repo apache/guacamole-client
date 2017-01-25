@@ -69,25 +69,23 @@ public class APIRequest extends HttpServletRequestWrapper {
         super(request);
 
         // Try a few methods to get client info.
-        if(request.getHeader("X-Guacamole-Client-Hostname") != null && !request.getHeader("X-Guacamole-Client-Hostname").isEmpty()) {
+        if (request.getHeader("X-Guacamole-Client-Hostname") != null && !request.getHeader("X-Guacamole-Client-Hostname").isEmpty())
             this.remoteHost = request.getHeader("X-Guacamole-Client-Hostname");
-        } else if(request.getHeader("X-Forwarded-For") != null && !request.getHeader("X-Forwarded-For").isEmpty()) {
+        else if (request.getHeader("X-Forwarded-For") != null && !request.getHeader("X-Forwarded-For").isEmpty())
             this.remoteHost = request.getHeader("X-Forwarded-For");
-        } else if(request.getRemoteHost() != null && !request.getRemoteHost().isEmpty()) {
+        else if (request.getRemoteHost() != null && !request.getRemoteHost().isEmpty())
             this.remoteHost = request.getRemoteHost();
-        } else {
+        else
             this.remoteHost = null;
-        }
 
-        if(request.getHeader("X-Guacamole-Client-IP") != null && !request.getHeader("X-Guacamole-Client-IP").isEmpty()) {
+        if (request.getHeader("X-Guacamole-Client-IP") != null && !request.getHeader("X-Guacamole-Client-IP").isEmpty())
             this.remoteAddr = request.getHeader("X-Guacamole-Client-IP");
-        } else if(request.getHeader("X-Forwarded-For") != null && !request.getHeader("X-Forwarded-For").isEmpty()) {
+        else if(request.getHeader("X-Forwarded-For") != null && !request.getHeader("X-Forwarded-For").isEmpty())
             this.remoteAddr = request.getHeader("X-Forwarded-For");
-        } else if(request.getRemoteHost() != null && !request.getRemoteAddr().isEmpty()) {
+        else if(request.getRemoteHost() != null && !request.getRemoteAddr().isEmpty())
             this.remoteAddr = request.getRemoteAddr();
-        } else {
+        else
             this.remoteAddr = null;
-        }
 
         // Copy parameters from given MultivaluedMap 
         this.parameters = new HashMap<String, String[]>(parameters.size());
