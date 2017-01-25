@@ -69,24 +69,24 @@ public class APIRequest extends HttpServletRequestWrapper {
         super(request);
 
         // Try a few methods to get client info.
-        if(request.getHeader("X-Guacamole-Client-Hostname") != null && request.getHeader("X-Guacamole-Client-Hostname") != "") {
+        if(request.getHeader("X-Guacamole-Client-Hostname") != null && !request.getHeader("X-Guacamole-Client-Hostname").isEmpty()) {
             this.remoteHost = request.getHeader("X-Guacamole-Client-Hostname");
-        } else if(request.getHeader("X-Forwarded-For") != null && request.getHeader("X-Forwarded-For") != "") {
+        } else if(request.getHeader("X-Forwarded-For") != null && !request.getHeader("X-Forwarded-For").isEmpty()) {
             this.remoteHost = request.getHeader("X-Forwarded-For");
-        } else if(request.getRemoteHost() != null && request.getRemoteHost() != "") {
+        } else if(request.getRemoteHost() != null && !request.getRemoteHost().isEmpty()) {
             this.remoteHost = request.getRemoteHost();
         } else {
-            this.remoteHost = "";
+            this.remoteHost = null;
         }
 
-        if(request.getHeader("X-Guacamole-Client-IP") != null && request.getHeader("X-Guacamole-Client-IP") != "") {
+        if(request.getHeader("X-Guacamole-Client-IP") != null && !request.getHeader("X-Guacamole-Client-IP").isEmpty()) {
             this.remoteAddr = request.getHeader("X-Guacamole-Client-IP");
-        } else if(request.getHeader("X-Forwarded-For") != null && request.getHeader("X-Forwarded-For") != "") {
+        } else if(request.getHeader("X-Forwarded-For") != null && !request.getHeader("X-Forwarded-For").isEmpty()) {
             this.remoteAddr = request.getHeader("X-Forwarded-For");
-        } else if(request.getRemoteHost() != null && request.getRemoteAddr() != "") {
+        } else if(request.getRemoteHost() != null && !request.getRemoteAddr().isEmpty()) {
             this.remoteAddr = request.getRemoteAddr();
         } else {
-            this.remoteAddr = "";
+            this.remoteAddr = null;
         }
 
         // Copy parameters from given MultivaluedMap 
