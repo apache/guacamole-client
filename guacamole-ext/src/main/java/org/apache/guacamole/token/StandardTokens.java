@@ -45,12 +45,12 @@ public class StandardTokens {
     /**
      * The name of the client token added via addStandardTokens().
      */
-    public static final String REMHOST_TOKEN = "GUAC_REMHOST";
+    public static final String REMHOST_TOKEN = "GUAC_CLIENT_HOSTNAME";
 
     /**
      * The IP of the client token added via addStandardTokens().
      */
-    public static final String REMIP_TOKEN = "GUAC_REMIP";
+    public static final String REMIP_TOKEN = "GUAC_CLIENT_ADDRESS";
 
     /**
      * The name of the date token (server-local time) added via
