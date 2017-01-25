@@ -22,7 +22,12 @@
 --
 
 ALTER TABLE guacamole_user
-    ADD COLUMN password_date timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP;
+    ADD COLUMN password_date timestamptz;
+
+UPDATE guacamole_user SET password_date = CURRENT_TIMESTAMP;
+
+ALTER TABLE guacamole_user
+    ALTER COLUMN password_date SET NOT NULL;
 
 --
 -- User password history
