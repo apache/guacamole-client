@@ -22,7 +22,7 @@ package org.apache.guacamole.auth.jdbc.connection;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.base.ChildObjectModel;
-import org.apache.guacamole.auth.jdbc.connection.GuacamoleProxyConfiguration.EncryptionMethod;
+import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration.EncryptionMethod;
 
 /**
  * Object representation of a Guacamole connection, as represented in the

@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.GuacamoleSocket;
@@ -32,6 +33,7 @@ import org.apache.guacamole.net.SSLGuacamoleSocket;
 import org.apache.guacamole.net.SimpleGuacamoleTunnel;
 import org.apache.guacamole.net.auth.AbstractConnection;
 import org.apache.guacamole.net.auth.ConnectionRecord;
+import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
 import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
@@ -40,18 +42,6 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
  * An extremely basic Connection implementation.
  */
 public class SimpleConnection extends AbstractConnection {
-
-    /**
-     * The hostname to use when connecting to guacd if no hostname is provided
-     * within guacamole.properties.
-     */
-    private static final String DEFAULT_GUACD_HOSTNAME = "localhost";
-
-    /**
-     * The port to use when connecting to guacd if no port is provided within
-     * guacamole.properties.
-     */
-    private static final int DEFAULT_GUACD_PORT = 4822;
 
     /**
      * Backing configuration, containing all sensitive information.
@@ -107,27 +97,40 @@ public class SimpleConnection extends AbstractConnection {
     public GuacamoleTunnel connect(GuacamoleClientInformation info)
             throws GuacamoleException {
 
-        Environment env = new LocalEnvironment();
-        
+        // Retrieve proxy configuration from environment
+        Environment environment = new LocalEnvironment();
+        GuacamoleProxyConfiguration proxyConfig = environment.getDefaultGuacamoleProxyConfiguration();
+
         // Get guacd connection parameters
-        String hostname = env.getProperty(Environment.GUACD_HOSTNAME, DEFAULT_GUACD_HOSTNAME);
-        int port = env.getProperty(Environment.GUACD_PORT, DEFAULT_GUACD_PORT);
+        String hostname = proxyConfig.getHostname();
+        int port = proxyConfig.getPort();
 
         GuacamoleSocket socket;
-        
-        // If guacd requires SSL, use it
-        if (env.getProperty(Environment.GUACD_SSL, false))
-            socket = new ConfiguredGuacamoleSocket(
-                new SSLGuacamoleSocket(hostname, port),
-                config, info
-            );
 
-        // Otherwise, just connect directly via TCP
-        else
-            socket = new ConfiguredGuacamoleSocket(
-                new InetGuacamoleSocket(hostname, port),
-                config, info
-            );
+        // Determine socket type based on required encryption method
+        switch (proxyConfig.getEncryptionMethod()) {
+
+            // If guacd requires SSL, use it
+            case SSL:
+                socket = new ConfiguredGuacamoleSocket(
+                    new SSLGuacamoleSocket(hostname, port),
+                    config, info
+                );
+                break;
+
+            // Connect directly via TCP if encryption is not enabled
+            case NONE:
+                socket = new ConfiguredGuacamoleSocket(
+                    new InetGuacamoleSocket(hostname, port),
+                    config, info
+                );
+                break;
+
+            // Abort if encryption method is unknown
+            default:
+                throw new GuacamoleServerException("Unimplemented encryption method.");
+
+        }
 
         return new SimpleGuacamoleTunnel(socket);
         

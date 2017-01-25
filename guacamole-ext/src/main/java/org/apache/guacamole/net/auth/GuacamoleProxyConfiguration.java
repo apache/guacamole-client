@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.jdbc.connection;
+package org.apache.guacamole.net.auth;
 
 /**
  * Information which describes how the connection to guacd should be

@@ -20,8 +20,6 @@
 package org.apache.guacamole.auth.jdbc;
 
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.connection.GuacamoleProxyConfiguration;
-import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
 
@@ -32,18 +30,6 @@ import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
 public abstract class JDBCEnvironment extends LocalEnvironment {
     
     /**
-     * The hostname to use when connecting to guacd if no hostname is provided
-     * within guacamole.properties.
-     */
-    private static final String DEFAULT_GUACD_HOSTNAME = "localhost";
-
-    /**
-     * The port to use when connecting to guacd if no port is provided within
-     * guacamole.properties.
-     */
-    private static final int DEFAULT_GUACD_PORT = 4822;
-
-    /**
      * Constructs a new JDBCEnvironment using an underlying LocalEnviroment to
      * read properties from the file system.
      * 
@@ -52,30 +38,6 @@ public abstract class JDBCEnvironment extends LocalEnvironment {
      */
     public JDBCEnvironment() throws GuacamoleException {
         super();
-    }
-
-    /**
-     * Returns the connection information which should be used, by default, to
-     * connect to guacd when establishing a remote desktop connection.
-     *
-     * @return
-     *     The connection information which should be used, by default, to
-     *     connect to guacd.
-     *
-     * @throws GuacamoleException
-     *     If the properties describing the connection information for guacd
-     *     cannot be parsed.
-     */
-    public GuacamoleProxyConfiguration getDefaultGuacamoleProxyConfiguration()
-            throws GuacamoleException {
-
-        // Parse guacd hostname/port/ssl properties
-        return new GuacamoleProxyConfiguration(
-            getProperty(Environment.GUACD_HOSTNAME, DEFAULT_GUACD_HOSTNAME),
-            getProperty(Environment.GUACD_PORT, DEFAULT_GUACD_PORT),
-            getProperty(Environment.GUACD_SSL, false)
-        );
-
     }
 
     /**
