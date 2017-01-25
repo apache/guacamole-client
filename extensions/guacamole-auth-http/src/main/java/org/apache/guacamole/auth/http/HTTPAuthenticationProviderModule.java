@@ -31,7 +31,7 @@ import org.apache.guacamole.net.auth.AuthenticationProvider;
 /**
  * Guice module which configures HTTP-specific injections.
  *
- * @author Nick Couchman
+ * @author Michael Jumper
  */
 public class HTTPAuthenticationProviderModule extends AbstractModule {
 
