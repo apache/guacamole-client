@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-http</artifactId>
     <packaging>jar</packaging>
-    <version>0.9.10-incubating</version>
+    <version>0.9.11-incubating</version>
     <name>guacamole-auth-http</name>
     <url>http://guacamole.incubator.apache.org/</url>
 
@@ -104,7 +104,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-common</artifactId>
-            <version>0.9.10-incubating</version>
+            <version>0.9.11-incubating</version>
             <scope>provided</scope>
         </dependency>
 
@@ -112,7 +112,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.9.10-incubating</version>
+            <version>0.9.11-incubating</version>
             <scope>provided</scope>
         </dependency>
         <!-- Guice -->
