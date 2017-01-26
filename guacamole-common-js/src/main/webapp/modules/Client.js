@@ -865,7 +865,7 @@ Guacamole.Client = function(tunnel) {
 
                 // Remove from parent
                 var layer = getLayer(layer_index);
-                layer.dispose();
+                display.dispose(layer);
 
                 // Delete reference
                 delete layers[layer_index];
@@ -893,7 +893,7 @@ Guacamole.Client = function(tunnel) {
             // Only valid for visible layers (not buffers)
             if (layer_index >= 0) {
                 var layer = getLayer(layer_index);
-                layer.distort(a, b, c, d, e, f);
+                display.distort(layer, a, b, c, d, e, f);
             }
 
         },
@@ -1049,7 +1049,7 @@ Guacamole.Client = function(tunnel) {
             if (layer_index > 0 && parent_index >= 0) {
                 var layer = getLayer(layer_index);
                 var parent = getLayer(parent_index);
-                layer.move(parent, x, y, z);
+                display.move(layer, parent, x, y, z);
             }
 
         },
@@ -1151,7 +1151,7 @@ Guacamole.Client = function(tunnel) {
             // Only valid for visible layers (not buffers)
             if (layer_index >= 0) {
                 var layer = getLayer(layer_index);
-                layer.shade(a);
+                display.shade(layer, a);
             }
 
         },

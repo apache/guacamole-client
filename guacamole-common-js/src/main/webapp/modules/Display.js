@@ -989,6 +989,92 @@ Guacamole.Display = function() {
     };
 
     /**
+     * Removes the given layer container entirely, such that it is no longer
+     * contained within its parent layer, if any.
+     *
+     * @param {Guacamole.Display.VisibleLayer} layer
+     *     The layer being removed from its parent.
+     */
+    this.dispose = function dispose(layer) {
+        scheduleTask(function disposeLayer() {
+            layer.dispose();
+        });
+    };
+
+    /**
+     * Applies the given affine transform (defined with six values from the
+     * transform's matrix) to the given layer.
+     *
+     * @param {Guacamole.Display.VisibleLayer} layer
+     *     The layer being distorted.
+     *
+     * @param {Number} a
+     *     The first value in the affine transform's matrix.
+     *
+     * @param {Number} b
+     *     The second value in the affine transform's matrix.
+     *
+     * @param {Number} c
+     *     The third value in the affine transform's matrix.
+     *
+     * @param {Number} d
+     *     The fourth value in the affine transform's matrix.
+     *
+     * @param {Number} e
+     *     The fifth value in the affine transform's matrix.
+     *
+     * @param {Number} f
+     *     The sixth value in the affine transform's matrix.
+     */
+    this.distort = function distort(layer, a, b, c, d, e, f) {
+        scheduleTask(function distortLayer() {
+            layer.distort(a, b, c, d, e, f);
+        });
+    };
+
+    /**
+     * Moves the upper-left corner of the given layer to the given X and Y
+     * coordinate, sets the Z stacking order, and reparents the layer
+     * to the given parent layer.
+     *
+     * @param {Guacamole.Display.VisibleLayer} layer
+     *     The layer being moved.
+     *
+     * @param {Guacamole.Display.VisibleLayer} parent
+     *     The parent to set.
+     *
+     * @param {Number} x
+     *     The X coordinate to move to.
+     *
+     * @param {Number} y
+     *     The Y coordinate to move to.
+     *
+     * @param {Number} z
+     *     The Z coordinate to move to.
+     */
+    this.move = function move(layer, parent, x, y, z) {
+        scheduleTask(function moveLayer() {
+            layer.move(parent, x, y, z);
+        });
+    };
+
+    /**
+     * Sets the opacity of the given layer to the given value, where 255 is
+     * fully opaque and 0 is fully transparent.
+     *
+     * @param {Guacamole.Display.VisibleLayer} layer
+     *     The layer whose opacity should be set.
+     *
+     * @param {Number} alpha
+     *     The opacity to set.
+     */
+    this.shade = function shade(layer, alpha) {
+        scheduleTask(function shadeLayer() {
+            layer.shade(alpha);
+        });
+    };
+
+    /**
      * Sets the scale of the client display element such that it renders at
      * a relatively smaller or larger size, without affecting the true
      * resolution of the display.
