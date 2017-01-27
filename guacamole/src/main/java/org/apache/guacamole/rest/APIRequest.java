@@ -72,7 +72,7 @@ public class APIRequest extends HttpServletRequestWrapper {
         if (request.getHeader("X-Guacamole-Client-Hostname") != null && !request.getHeader("X-Guacamole-Client-Hostname").isEmpty())
             this.remoteHost = request.getHeader("X-Guacamole-Client-Hostname");
         else if (request.getHeader("X-Forwarded-For") != null && !request.getHeader("X-Forwarded-For").isEmpty())
-            this.remoteHost = request.getHeader("X-Forwarded-For");
+            this.remoteHost = null;
         else if (request.getRemoteHost() != null && !request.getRemoteHost().isEmpty())
             this.remoteHost = request.getRemoteHost();
         else
