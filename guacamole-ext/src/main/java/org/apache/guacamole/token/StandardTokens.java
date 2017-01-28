@@ -21,7 +21,6 @@ package org.apache.guacamole.token;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
@@ -126,12 +125,15 @@ public class StandardTokens {
         if (password != null)
             filter.setToken(PASSWORD_TOKEN, password);
 
-        // Add client hostname and ip tokens
-        HttpServletRequest request = credentials.getRequest();
-        if (request != null) {
-            filter.setToken(CLIENT_HOSTNAME_TOKEN, request.getRemoteHost());
-            filter.setToken(CLIENT_ADDRESS_TOKEN, request.getRemoteAddr());
-        }
+        // Add client hostname token
+        String hostname = credentials.getRemoteHostname();
+        if (hostname != null)
+            filter.setToken(CLIENT_HOSTNAME_TOKEN, hostname);
+
+        // Add client address token
+        String address = credentials.getRemoteAddress();
+        if (address != null)
+            filter.setToken(CLIENT_ADDRESS_TOKEN, address);
 
         // Add any tokens which do not require credentials
         addStandardTokens(filter);

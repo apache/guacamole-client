@@ -125,6 +125,8 @@ public class TokenRESTService {
         credentials.setPassword(password);
         credentials.setRequest(request);
         credentials.setSession(request.getSession(true));
+        credentials.setRemoteAddress(request.getRemoteAddr());
+        credentials.setRemoteHostname(request.getRemoteHost());
 
         return credentials;
 
