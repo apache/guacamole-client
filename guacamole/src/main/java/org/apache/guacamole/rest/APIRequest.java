@@ -68,17 +68,14 @@ public class APIRequest extends HttpServletRequestWrapper {
 
         super(request);
 
-        // Try a few methods to get client info.
-        if (request.getHeader("X-Forwarded-For") != null && !request.getHeader("X-Forwarded-For").isEmpty())
-            this.remoteHost = null;
-        else if (request.getRemoteHost() != null && !request.getRemoteHost().isEmpty())
+        // Grab the remote host info.
+        if (request.getRemoteHost() != null && !request.getRemoteHost().isEmpty())
             this.remoteHost = request.getRemoteHost();
         else
             this.remoteHost = null;
 
-        if(request.getHeader("X-Forwarded-For") != null && !request.getHeader("X-Forwarded-For").isEmpty())
-            this.remoteAddr = request.getHeader("X-Forwarded-For");
-        else if(request.getRemoteHost() != null && !request.getRemoteAddr().isEmpty())
+	// Grab the remote ip info.
+        if(request.getRemoteHost() != null && !request.getRemoteAddr().isEmpty())
             this.remoteAddr = request.getRemoteAddr();
         else
             this.remoteAddr = null;
