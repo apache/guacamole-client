@@ -42,12 +42,12 @@ public class APIRequest extends HttpServletRequestWrapper {
     private final Map<String, String[]> parameters;
 
     /**
-     * The remote hostname that initiated the request.
+     * The hostname of the client that initiated the request.
      */
     private final String remoteHost;
 
     /**
-     * The remote ip address that initiated the request.
+     * The ip address of the client that initiated the request.
      */
     private final String remoteAddr;
 
@@ -68,10 +68,10 @@ public class APIRequest extends HttpServletRequestWrapper {
 
         super(request);
 
-        // Grab the remote host info.
+        // Grab the remote host info
         this.remoteHost = request.getRemoteHost();
 
-	// Grab the remote ip info.
+        // Grab the remote ip info
         this.remoteAddr = request.getRemoteAddr();
 
         // Copy parameters from given MultivaluedMap 
