@@ -21,8 +21,8 @@ package org.apache.guacamole.token;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.apache.guacamole.net.auth.Credentials;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.guacamole.net.auth.Credentials;
 
 /**
  * Utility class which provides access to standardized token names, as well as
@@ -43,14 +43,14 @@ public class StandardTokens {
     public static final String PASSWORD_TOKEN = "GUAC_PASSWORD";
 
     /**
-     * The name of the client token added via addStandardTokens().
+     * The name of the client hostname token added via addStandardTokens().
      */
-    public static final String REMHOST_TOKEN = "GUAC_CLIENT_HOSTNAME";
+    public static final String CLIENT_HOSTNAME_TOKEN = "GUAC_CLIENT_HOSTNAME";
 
     /**
-     * The IP of the client token added via addStandardTokens().
+     * The name of the client address token added via addStandardTokens().
      */
-    public static final String REMIP_TOKEN = "GUAC_CLIENT_ADDRESS";
+    public static final String CLIENT_ADDRESS_TOKEN = "GUAC_CLIENT_ADDRESS";
 
     /**
      * The name of the date token (server-local time) added via
@@ -129,8 +129,8 @@ public class StandardTokens {
         // Add client hostname and ip tokens
         HttpServletRequest request = credentials.getRequest();
         if (request != null) {
-            filter.setToken(REMHOST_TOKEN, request.getRemoteHost());
-            filter.setToken(REMIP_TOKEN, request.getRemoteAddr());
+            filter.setToken(CLIENT_HOSTNAME_TOKEN, request.getRemoteHost());
+            filter.setToken(CLIENT_ADDRESS_TOKEN, request.getRemoteAddr());
         }
 
         // Add any tokens which do not require credentials
