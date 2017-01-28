@@ -28,6 +28,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.tunnel.StreamInterceptingTunnel;
@@ -103,7 +104,14 @@ public class StreamResource {
 
         };
 
-        return Response.ok(stream, mediaType).build();
+        // Begin successful response
+        ResponseBuilder responseBuilder = Response.ok(stream, mediaType);
+
+        // Set Content-Disposition header for "application/octet-stream"
+        if (mediaType.equals(MediaType.APPLICATION_OCTET_STREAM))
+            responseBuilder.header("Content-Disposition", "attachment");
+
+        return responseBuilder.build();
 
     }
 
