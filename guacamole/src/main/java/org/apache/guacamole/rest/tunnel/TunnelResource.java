@@ -52,7 +52,7 @@ public class TunnelResource {
      * The media type to send as the content type of stream contents if no
      * other media type is specified.
      */
-    private static final String DEFAULT_MEDIA_TYPE = "application/octet-stream";
+    private static final String DEFAULT_MEDIA_TYPE = MediaType.APPLICATION_OCTET_STREAM;
 
     /**
      * The tunnel that this TunnelResource represents.
