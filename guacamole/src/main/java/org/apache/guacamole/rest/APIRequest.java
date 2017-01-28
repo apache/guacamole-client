@@ -69,16 +69,10 @@ public class APIRequest extends HttpServletRequestWrapper {
         super(request);
 
         // Grab the remote host info.
-        if (request.getRemoteHost() != null && !request.getRemoteHost().isEmpty())
-            this.remoteHost = request.getRemoteHost();
-        else
-            this.remoteHost = null;
+        this.remoteHost = request.getRemoteHost();
 
 	// Grab the remote ip info.
-        if(request.getRemoteHost() != null && !request.getRemoteAddr().isEmpty())
-            this.remoteAddr = request.getRemoteAddr();
-        else
-            this.remoteAddr = null;
+        this.remoteAddr = request.getRemoteAddr();
 
         // Copy parameters from given MultivaluedMap 
         this.parameters = new HashMap<String, String[]>(parameters.size());
