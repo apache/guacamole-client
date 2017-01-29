@@ -130,6 +130,8 @@ public class UserResource
         credentials.setPassword(userPasswordUpdate.getOldPassword());
         credentials.setRequest(request);
         credentials.setSession(request.getSession(true));
+        credentials.setRemoteAddress(request.getRemoteAddr());
+        credentials.setRemoteHostname(request.getRemoteHost());
 
         // Verify that the old password was correct
         try {
