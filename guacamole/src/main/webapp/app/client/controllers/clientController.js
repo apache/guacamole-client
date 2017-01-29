@@ -35,6 +35,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var clipboardService      = $injector.get('clipboardService');
     var guacClientManager     = $injector.get('guacClientManager');
     var guacNotification      = $injector.get('guacNotification');
+    var iconService           = $injector.get('iconService');
     var preferenceService     = $injector.get('preferenceService');
     var tunnelService         = $injector.get('tunnelService');
     var userPageService       = $injector.get('userPageService');
@@ -401,6 +402,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Disable client keyboard if the menu is shown
         $scope.client.clientProperties.keyboardEnabled = !menuShown;
 
+    });
+
+    // Update page icon when thumbnail changes
+    $scope.$watch('client.thumbnail.canvas', function thumbnailChanged(canvas) {
+        iconService.setIcons(canvas);
     });
 
     // Watch clipboard for new data, associating it with any pressed keys

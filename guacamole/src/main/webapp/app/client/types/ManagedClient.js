@@ -24,14 +24,15 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     function defineManagedClient($rootScope, $injector) {
 
     // Required types
-    var ClientProperties     = $injector.get('ClientProperties');
-    var ClientIdentifier     = $injector.get('ClientIdentifier');
-    var ClipboardData        = $injector.get('ClipboardData');
-    var ManagedClientState   = $injector.get('ManagedClientState');
-    var ManagedDisplay       = $injector.get('ManagedDisplay');
-    var ManagedFilesystem    = $injector.get('ManagedFilesystem');
-    var ManagedFileUpload    = $injector.get('ManagedFileUpload');
-    var ManagedShareLink     = $injector.get('ManagedShareLink');
+    var ClientProperties       = $injector.get('ClientProperties');
+    var ClientIdentifier       = $injector.get('ClientIdentifier');
+    var ClipboardData          = $injector.get('ClipboardData');
+    var ManagedClientState     = $injector.get('ManagedClientState');
+    var ManagedClientThumbnail = $injector.get('ManagedClientThumbnail');
+    var ManagedDisplay         = $injector.get('ManagedDisplay');
+    var ManagedFilesystem      = $injector.get('ManagedFilesystem');
+    var ManagedFileUpload      = $injector.get('ManagedFileUpload');
+    var ManagedShareLink       = $injector.get('ManagedShareLink');
 
     // Required services
     var $document              = $injector.get('$document');
@@ -46,7 +47,15 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var guacHistory            = $injector.get('guacHistory');
     var guacImage              = $injector.get('guacImage');
     var guacVideo              = $injector.get('guacVideo');
-        
+
+    /**
+     * The minimum amount of time to wait between updates to the client
+     * thumbnail, in milliseconds.
+     *
+     * @type Number
+     */
+    var THUMBNAIL_UPDATE_FREQUENCY = 5000;
+
     /**
      * Object which serves as a surrogate interface, encapsulating a Guacamole
      * client while it is active, allowing it to be detached and reattached
@@ -97,6 +106,15 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * @type String
          */
         this.name = template.name;
+
+        /**
+         * The most recently-generated thumbnail for this connection, as
+         * stored within the local connection history. If no thumbnail is
+         * stored, this will be null.
+         *
+         * @type ManagedClientThumbnail
+         */
+        this.thumbnail = template.thumbnail;
 
         /**
          * The current clipboard contents.
@@ -224,45 +242,6 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         });
 
         return deferred.promise;
-
-    };
-
-    /**
-     * Store the thumbnail of the given managed client within the connection
-     * history under its associated ID. If the client is not connected, this
-     * function has no effect.
-     *
-     * @param {String} managedClient
-     *     The client whose history entry should be updated.
-     */
-    var updateHistoryEntry = function updateHistoryEntry(managedClient) {
-
-        var display = managedClient.client.getDisplay();
-
-        // Update stored thumbnail of previous connection 
-        if (display && display.getWidth() > 0 && display.getHeight() > 0) {
-
-            // Get screenshot
-            var canvas = display.flatten();
-            
-            // Calculate scale of thumbnail (max 320x240, max zoom 100%)
-            var scale = Math.min(320 / canvas.width, 240 / canvas.height, 1);
-            
-            // Create thumbnail canvas
-            var thumbnail = $document[0].createElement("canvas");
-            thumbnail.width  = canvas.width*scale;
-            thumbnail.height = canvas.height*scale;
-            
-            // Scale screenshot to thumbnail
-            var context = thumbnail.getContext("2d");
-            context.drawImage(canvas,
-                0, 0, canvas.width, canvas.height,
-                0, 0, thumbnail.width, thumbnail.height
-            );
-
-            guacHistory.updateThumbnail(managedClient.id, thumbnail.toDataURL("image/png"));
-
-        }
 
     };
 
@@ -403,12 +382,14 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                         // Begin streaming audio input if possible
                         requestAudioStream(client);
 
+                        // Update thumbnail with initial display contents
+                        ManagedClient.updateThumbnail(managedClient);
                         break;
 
                     // Update history when disconnecting
                     case 4: // Disconnecting
                     case 5: // Disconnected
-                        updateHistoryEntry(managedClient);
+                        ManagedClient.updateThumbnail(managedClient);
                         break;
 
                 }
@@ -429,6 +410,21 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                     status.code);
 
             });
+        };
+
+        // Automatically update the client thumbnail
+        client.onsync = function syncReceived() {
+
+            var thumbnail = managedClient.thumbnail;
+            var timestamp = new Date().getTime();
+
+            // Update thumbnail if it doesn't exist or is old
+            if (!thumbnail || timestamp - thumbnail.timestamp >= THUMBNAIL_UPDATE_FREQUENCY) {
+                $rootScope.$apply(function updateClientThumbnail() {
+                    ManagedClient.updateThumbnail(managedClient);
+                });
+            }
+
         };
 
         // Handle any received clipboard data
@@ -648,6 +644,52 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
         // No share links currently exist
         return false;
+
+    };
+
+    /**
+     * Store the thumbnail of the given managed client within the connection
+     * history under its associated ID. If the client is not connected, this
+     * function has no effect.
+     *
+     * @param {ManagedClient} managedClient
+     *     The client whose history entry should be updated.
+     */
+    ManagedClient.updateThumbnail = function updateThumbnail(managedClient) {
+
+        var display = managedClient.client.getDisplay();
+
+        // Update stored thumbnail of previous connection
+        if (display && display.getWidth() > 0 && display.getHeight() > 0) {
+
+            // Get screenshot
+            var canvas = display.flatten();
+
+            // Calculate scale of thumbnail (max 320x240, max zoom 100%)
+            var scale = Math.min(320 / canvas.width, 240 / canvas.height, 1);
+
+            // Create thumbnail canvas
+            var thumbnail = $document[0].createElement("canvas");
+            thumbnail.width  = canvas.width*scale;
+            thumbnail.height = canvas.height*scale;
+
+            // Scale screenshot to thumbnail
+            var context = thumbnail.getContext("2d");
+            context.drawImage(canvas,
+                0, 0, canvas.width, canvas.height,
+                0, 0, thumbnail.width, thumbnail.height
+            );
+
+            // Store updated thumbnail within client
+            managedClient.thumbnail = new ManagedClientThumbnail({
+                timestamp : new Date().getTime(),
+                canvas    : thumbnail
+            });
+
+            // Update historical thumbnail
+            guacHistory.updateThumbnail(managedClient.id, thumbnail.toDataURL("image/png"));
+
+        }
 
     };
 
