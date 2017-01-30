@@ -38,7 +38,7 @@ public class HTTPGuacamoleProperties {
     private HTTPGuacamoleProperties() {}
 
     /**
-     * The header used for HTTP basic authentication.
+     * The header used for HTTP authentication.
      */
     public static final StringGuacamoleProperty HTTP_AUTH_HEADER = new StringGuacamoleProperty() {
 

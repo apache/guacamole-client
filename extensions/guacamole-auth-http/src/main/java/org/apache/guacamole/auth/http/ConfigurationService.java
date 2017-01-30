@@ -38,11 +38,11 @@ public class ConfigurationService {
 
     /**
      * Returns the header of the HTTP server as configured with
-     * guacamole.properties used for HTTP basic authentication.
+     * guacamole.properties used for HTTP authentication.
      * By default, this will be "REMOTE_USER".
      *
      * @return
-     *     The header used for HTTP basic authentication, as configured with
+     *     The header used for HTTP authentication, as configured with
      *     guacamole.properties.
      *
      * @throws GuacamoleException
