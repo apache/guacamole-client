@@ -50,10 +50,10 @@
 
         <!-- Authentication extensions -->
         <module>extensions/guacamole-auth-duo</module>
+        <module>extensions/guacamole-auth-http</module>
         <module>extensions/guacamole-auth-jdbc</module>
         <module>extensions/guacamole-auth-ldap</module>
         <module>extensions/guacamole-auth-noauth</module>
-        <module>extensions/guacamole-auth-http</module>
 
         <!-- Example web application using the Guacamole APIs -->
         <module>doc/guacamole-example</module>
