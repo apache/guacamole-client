@@ -34,10 +34,10 @@
     <fileSets>
 
         <!-- Include licenses -->
-        <!--<fileSet>
+        <fileSet>
             <outputDirectory></outputDirectory>
             <directory>src/licenses</directory>
-        </fileSet>-->
+        </fileSet>
 
         <!-- Include extension .jar -->
         <fileSet>
