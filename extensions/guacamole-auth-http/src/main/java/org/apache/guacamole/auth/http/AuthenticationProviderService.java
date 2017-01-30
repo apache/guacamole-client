@@ -75,7 +75,6 @@ public class AuthenticationProviderService {
                 username = request.getHeader(confService.getHttpAuthHeader());
 
             if (username != null) {
-                logger.debug("Authenticating with user {}", username);
                 AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
                 authenticatedUser.init(username, credentials);
                 return authenticatedUser;
