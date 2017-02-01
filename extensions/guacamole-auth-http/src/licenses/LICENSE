@@ -229,20 +229,6 @@ Google Guice (https://github.com/google/guice)
         Apache v2.0 (bundled/guice-3.0/COPYING)
 
 
-JLDAP (http://www.openldap.org/jldap/)
---------------------------------------
-
-    Version: 4.3
-    From: 'The OpenLDAP Foundation' (http://www.openldap.org/)
-    License(s):
-        OpenLDAP Public License v2.8 (bundled/jldap-4.3/LICENSE)
-        OpenLDAP Public License v2.0.1 (bundled/jldap-4.3/LICENSE-2.0.1)
-
-NOTE: JLDAP is *NOT* dual-licensed. Whether a particular source file is under
-version 2.8 or 2.0.1 of the OpenLDAP Public License depends on the license
-header of the file in question.
-
-
 JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
 ----------------------------------------------------------------------------
 
