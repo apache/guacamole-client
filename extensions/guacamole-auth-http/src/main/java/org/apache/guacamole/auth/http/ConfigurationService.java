@@ -24,7 +24,8 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 
 /**
- * Service for retrieving configuration information regarding the LDAP server.
+ * Service for retrieving configuration information for HTTP header-based 
+ * authentication.
  *
  * @author Nick Couchman
  */

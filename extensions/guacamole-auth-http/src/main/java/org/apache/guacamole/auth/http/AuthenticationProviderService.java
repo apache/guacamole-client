@@ -38,7 +38,7 @@ import java.security.Principal;
 public class AuthenticationProviderService {
 
     /**
-     * Service for retrieving LDAP server configuration information.
+     * Service for retrieving header configuration information.
      */
     @Inject
     private ConfigurationService confService;
@@ -67,7 +67,7 @@ public class AuthenticationProviderService {
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 
-        // Pull HTTP ticket from request if present
+        // Pull HTTP header from request if present
         HttpServletRequest request = credentials.getRequest();
         if (request != null) {
             String username = request.getRemoteUser();

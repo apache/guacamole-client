@@ -25,7 +25,7 @@ import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
- * An HTTP-specific implementation of AuthenticatedUser, associating a
+ * An HTTP header implementation of AuthenticatedUser, associating a
  * username and particular set of credentials with the HTTP authentication
  * provider.
  *

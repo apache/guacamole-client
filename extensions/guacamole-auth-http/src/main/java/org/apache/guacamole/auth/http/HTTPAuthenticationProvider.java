@@ -29,7 +29,7 @@ import org.apache.guacamole.net.auth.UserContext;
 
 /**
  * Guacamole authentication backend which authenticates users using an
- * arbitrary external system implementing HTTP. No storage for connections is
+ * arbitrary external HTTP header. No storage for connections is
  * provided - only authentication. Storage must be provided by some other
  * extension.
  *
@@ -45,7 +45,7 @@ public class HTTPAuthenticationProvider implements AuthenticationProvider {
 
     /**
      * Creates a new HTTPAuthenticationProvider that authenticates users
-     * against an HTTP service
+     * using HTTP headers.
      *
      * @throws GuacamoleException
      *     If a required property is missing, or an error occurs while parsing
@@ -69,7 +69,7 @@ public class HTTPAuthenticationProvider implements AuthenticationProvider {
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 
-        // Attempt to authenticate user with given credentials
+        // Pass credentials to authentication service.
         AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
         return authProviderService.authenticateUser(credentials);
 

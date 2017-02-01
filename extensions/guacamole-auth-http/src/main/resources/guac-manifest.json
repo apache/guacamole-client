@@ -2,7 +2,7 @@
 
     "guacamoleVersion" : "0.9.11-incubating",
 
-    "name"      : "HTTP Authentication Extension",
+    "name"      : "HTTP Header Authentication Extension",
     "namespace" : "guac-http",
 
     "authProviders" : [
