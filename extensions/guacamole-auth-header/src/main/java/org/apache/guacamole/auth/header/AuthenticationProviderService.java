@@ -70,13 +70,10 @@ public class AuthenticationProviderService {
         // Pull HTTP header from request if present
         HttpServletRequest request = credentials.getRequest();
         if(request != null) {
-            // Try getRemoteUser(), first
-            String username = request.getRemoteUser();
-            // Check if that worked, if not, try the configured header.
-            if(username == null)
-                username = request.getHeader(confService.getHttpAuthHeader());
+            // Get the username from the header configured in guacamole.properties
+            String username = request.getHeader(confService.getHttpAuthHeader());
 
-            if (username != null) {
+            if(username != null) {
                 AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
                 authenticatedUser.init(username, credentials);
                 return authenticatedUser;
