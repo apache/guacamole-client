@@ -70,6 +70,7 @@ public class AuthenticationProviderService {
         // Pull HTTP header from request if present
         HttpServletRequest request = credentials.getRequest();
         if (request != null) {
+
             // Get the username from the header configured in guacamole.properties
             String username = request.getHeader(confService.getHttpAuthHeader());
 
@@ -78,6 +79,7 @@ public class AuthenticationProviderService {
                 authenticatedUser.init(username, credentials);
                 return authenticatedUser;
             }
+
         }
 
         // Authentication not provided via header, yet, so we request it.
