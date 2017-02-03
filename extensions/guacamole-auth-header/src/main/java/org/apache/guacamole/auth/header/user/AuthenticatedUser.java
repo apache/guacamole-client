@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.http.user;
+package org.apache.guacamole.auth.header.user;
 
 import com.google.inject.Inject;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;

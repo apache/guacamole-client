@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.http;
+package org.apache.guacamole.auth.header;
 
 import com.google.inject.Inject;
 import org.apache.guacamole.GuacamoleException;
@@ -51,7 +51,7 @@ public class ConfigurationService {
      */
     public String getHttpAuthHeader() throws GuacamoleException {
         return environment.getProperty(
-            HTTPGuacamoleProperties.HTTP_AUTH_HEADER,
+            HTTPHeaderGuacamoleProperties.HTTP_AUTH_HEADER,
             "REMOTE_USER"
         );
     }

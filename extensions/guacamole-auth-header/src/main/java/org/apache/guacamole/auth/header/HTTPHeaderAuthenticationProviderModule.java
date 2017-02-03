@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.http;
+package org.apache.guacamole.auth.header;
 
 import com.google.inject.AbstractModule;
 import org.apache.guacamole.GuacamoleException;
@@ -26,11 +26,11 @@ import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 
 /**
- * Guice module which configures HTTP-specific injections.
+ * Guice module which configures HTTP header-specific injections.
  *
  * @author Michael Jumper
  */
-public class HTTPAuthenticationProviderModule extends AbstractModule {
+public class HTTPHeaderAuthenticationProviderModule extends AbstractModule {
 
     /**
      * Guacamole server environment.
@@ -38,14 +38,14 @@ public class HTTPAuthenticationProviderModule extends AbstractModule {
     private final Environment environment;
 
     /**
-     * A reference to the HTTPAuthenticationProvider on behalf of which this
+     * A reference to the HTTPHeaderAuthenticationProvider on behalf of which this
      * module has configured injection.
      */
     private final AuthenticationProvider authProvider;
 
     /**
-     * Creates a new HTTP authentication provider module which configures
-     * injection for the HTTPAuthenticationProvider.
+     * Creates a new HTTP header authentication provider module which configures
+     * injection for the HTTPHeaderAuthenticationProvider.
      *
      * @param authProvider
      *     The AuthenticationProvider for which injection is being configured.
@@ -54,7 +54,7 @@ public class HTTPAuthenticationProviderModule extends AbstractModule {
      *     If an error occurs while retrieving the Guacamole server
      *     environment.
      */
-    public HTTPAuthenticationProviderModule(AuthenticationProvider authProvider)
+    public HTTPHeaderAuthenticationProviderModule(AuthenticationProvider authProvider)
             throws GuacamoleException {
 
         // Get local environment
@@ -72,7 +72,7 @@ public class HTTPAuthenticationProviderModule extends AbstractModule {
         bind(AuthenticationProvider.class).toInstance(authProvider);
         bind(Environment.class).toInstance(environment);
 
-        // Bind HTTP-specific classes
+        // Bind HTTPHeader-specific classes
         bind(ConfigurationService.class);
 
     }

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.http;
+package org.apache.guacamole.auth.header;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -35,7 +35,7 @@ import org.apache.guacamole.net.auth.UserContext;
  *
  * @author Nick Couchman
  */
-public class HTTPAuthenticationProvider implements AuthenticationProvider {
+public class HTTPHeaderAuthenticationProvider implements AuthenticationProvider {
 
     /**
      * Injector which will manage the object graph of this authentication
@@ -44,25 +44,25 @@ public class HTTPAuthenticationProvider implements AuthenticationProvider {
     private final Injector injector;
 
     /**
-     * Creates a new HTTPAuthenticationProvider that authenticates users
+     * Creates a new HTTPHeaderAuthenticationProvider that authenticates users
      * using HTTP headers.
      *
      * @throws GuacamoleException
      *     If a required property is missing, or an error occurs while parsing
      *     a property.
      */
-    public HTTPAuthenticationProvider() throws GuacamoleException {
+    public HTTPHeaderAuthenticationProvider() throws GuacamoleException {
 
         // Set up Guice injector.
         injector = Guice.createInjector(
-            new HTTPAuthenticationProviderModule(this)
+            new HTTPHeaderAuthenticationProviderModule(this)
         );
 
     }
 
     @Override
     public String getIdentifier() {
-        return "http";
+        return "header";
     }
 
     @Override

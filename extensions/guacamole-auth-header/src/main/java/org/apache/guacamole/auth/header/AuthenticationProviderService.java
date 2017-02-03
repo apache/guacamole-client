@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.http;
+package org.apache.guacamole.auth.header;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -26,12 +26,12 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
-import org.apache.guacamole.auth.http.user.AuthenticatedUser;
+import org.apache.guacamole.auth.header.user.AuthenticatedUser;
 import java.security.Principal;
 
 /**
- * Service providing convenience functions for the HTTP AuthenticationProvider
- * implementation.
+ * Service providing convenience functions for the HTTP Header
+ * AuthenticationProvider implementation.
  *
  * @author Nick Couchman
  */
@@ -69,8 +69,10 @@ public class AuthenticationProviderService {
 
         // Pull HTTP header from request if present
         HttpServletRequest request = credentials.getRequest();
-        if (request != null) {
+        if(request != null) {
+            // Try getRemoteUser(), first
             String username = request.getRemoteUser();
+            // Check if that worked, if not, try the configured header.
             if(username == null)
                 username = request.getHeader(confService.getHttpAuthHeader());
 
@@ -81,7 +83,7 @@ public class AuthenticationProviderService {
             }
         }
 
-        // Request HTTP authentication
+        // Authentication not provided via header, yet, so we request it.
         throw new GuacamoleInvalidCredentialsException("Invalid login.", CredentialsInfo.USERNAME_PASSWORD);
 
     }

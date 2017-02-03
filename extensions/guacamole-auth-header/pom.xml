@@ -24,10 +24,10 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-auth-http</artifactId>
+    <artifactId>guacamole-auth-header</artifactId>
     <packaging>jar</packaging>
     <version>0.9.11-incubating</version>
-    <name>guacamole-auth-http</name>
+    <name>guacamole-auth-header</name>
     <url>http://guacamole.incubator.apache.org/</url>
 
     <properties>
