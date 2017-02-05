@@ -56,6 +56,7 @@
         <module>extensions/guacamole-auth-ldap</module>
         <module>extensions/guacamole-auth-noauth</module>
         <module>extensions/guacamole-auth-openid</module>
+        <module>extensions/guacamole-auth-radius</module>
 
         <!-- Example web applications using the Guacamole APIs -->
         <module>doc/guacamole-example</module>

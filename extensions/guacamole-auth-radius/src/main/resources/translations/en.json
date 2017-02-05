@@ -1,0 +1,14 @@
+{
+
+    "DATA_SOURCE_RADIUS" : {
+        "NAME" : "RADIUS Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_RADIUS_RESPONSE"       : "",
+        "INFO_RADIUS_RESPONSE_INCORRECT"     : "RADIUS response incorrect.",
+        "INFO_RADIUS_AUTH_REQUIRED"          : "Please authenticate with RADIUS to continue.",
+        "INFO_RADIUS_ADDL_REQUIRED"          : "Additional credentials required."
+    }
+
+}
