@@ -124,9 +124,9 @@ public class AuthenticationProviderService {
                 String radState = radPack.getAttributeValue("State").toString();
                 logger.debug("RADIUS sent challenge response: {}", replyMsg);
                 logger.debug("RADIUS sent state: {}", radState);
-                Field radiusResponseField = new RadiusChallengeResponseField(replyMsg, radState);
-                CredentialsInfo responseCredentials = new CredentialsInfo(Collections.singletonList(radiusResponseField));
-                throw new GuacamoleInsufficientCredentialsException("LOGIN.INFO_RADIUS_ADDL_REQUIRED", responseCredentials);
+                Field radiusResponseField = new RadiusChallengeResponseField(credentials.getUsername(), replyMsg, radState);
+                CredentialsInfo expectedCredentials = new CredentialsInfo(Collections.singletonList(radiusResponseField));
+                throw new GuacamoleInsufficientCredentialsException("LOGIN.INFO_RADIUS_ADDL_REQUIRED", expectedCredentials);
            }
            catch(UnknownAttributeException e) {
                 logger.error("Error in talks with RADIUS server.");

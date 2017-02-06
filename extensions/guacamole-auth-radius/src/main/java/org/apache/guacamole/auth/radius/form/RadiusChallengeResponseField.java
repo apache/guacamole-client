@@ -42,6 +42,10 @@ public class RadiusChallengeResponseField extends Field {
     private static final String RADIUS_FIELD_TYPE = "GUAC_RADIUS_CHALLENGE_RESPONSE";
 
     /**
+     * The username used for the RADIUS authentication attempt.
+     */
+
+    /**
      * The state of the connection passed by the previous RADIUS attempt.
      */
     private final String radiusState;
@@ -54,13 +58,18 @@ public class RadiusChallengeResponseField extends Field {
     /**
      * Initialize the field with the reply message and the state.
      */
-    public RadiusChallengeResponseField(String replyMsg, String radiusState) {
+    public RadiusChallengeResponseField(String username, String replyMsg, String radiusState) {
         super(RADIUS_FIELD_NAME, RADIUS_FIELD_TYPE);
         logger.debug("Initializing the RADIUS challenge/response field: {}", replyMsg);
 
+        this.username = username;
         this.replyMsg = replyMsg;
         this.radiusState = radiusState;
 
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public String getRadiusState() {
