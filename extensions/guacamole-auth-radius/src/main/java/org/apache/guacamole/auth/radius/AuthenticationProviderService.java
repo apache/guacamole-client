@@ -103,15 +103,15 @@ public class AuthenticationProviderService {
         }
 
         // If configure fails, permission to login is denied
-        if(radPack == null) {
+        if (radPack == null) {
             logger.debug("Nothing in the RADIUS packet.");
             throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
         }
-        else if(radPack instanceof AccessReject) {
+        else if (radPack instanceof AccessReject) {
             logger.debug("Login has been rejected by RADIUS server.");
             throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
         }
-        else if(radPack instanceof AccessChallenge) {
+        else if (radPack instanceof AccessChallenge) {
             try {
                 String replyMsg = radPack.getAttributeValue("Reply-Message").toString();
                 String radState = radPack.getAttributeValue("State").toString();
@@ -127,7 +127,7 @@ public class AuthenticationProviderService {
                 throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
            }
         }
-        else if(radPack instanceof AccessAccept) {
+        else if (radPack instanceof AccessAccept) {
             try {
 
                 // Return AuthenticatedUser if bind succeeds

@@ -132,20 +132,20 @@ public class RadiusConnectionService {
 	createRadiusConnection();
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
 
-        if(radiusClient == null)
+        if (radiusClient == null)
             return null;
 
-        if(username == null || username.isEmpty()) {
+        if (username == null || username.isEmpty()) {
             logger.warn("Anonymous access not allowed with RADIUS client.");
             return null;
         }
-        if(password == null || password.isEmpty()) {
+        if (password == null || password.isEmpty()) {
             logger.warn("Password required for RADIUS authentication.");
             return null;
         }
 
         RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(confService.getRadiusAuthProtocol());
-        if(radAuth == null)
+        if (radAuth == null)
             throw new GuacamoleException("Unknown RADIUS authentication protocol.");
         try { 
             AttributeList radAttrs = new AttributeList();
@@ -175,24 +175,24 @@ public class RadiusConnectionService {
         createRadiusConnection();
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
 
-        if(radiusClient == null)
+        if (radiusClient == null)
             return null;
 
-        if(username == null || username.isEmpty()) {
+        if (username == null || username.isEmpty()) {
             logger.warn("Anonymous access not allowed with RADIUS client.");
             return null;
         }
-        if(state == null || state.isEmpty()) {
+        if (state == null || state.isEmpty()) {
             logger.warn("This method needs a previous RADIUS state to respond to.");
             return null;
         }
-        if(response == null || response.isEmpty()) {
+        if (response == null || response.isEmpty()) {
             logger.warn("Response required for RADIUS authentication.");
             return null;
         }
 
         RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(confService.getRadiusAuthProtocol());
-        if(radAuth == null)
+        if (radAuth == null)
             throw new GuacamoleException("Unknown RADIUS authentication protocol.");
         try {
             AttributeList radAttrs = new AttributeList();
