@@ -44,6 +44,7 @@ public class RadiusChallengeResponseField extends Field {
     /**
      * The username used for the RADIUS authentication attempt.
      */
+    private final String username;
 
     /**
      * The state of the connection passed by the previous RADIUS attempt.
