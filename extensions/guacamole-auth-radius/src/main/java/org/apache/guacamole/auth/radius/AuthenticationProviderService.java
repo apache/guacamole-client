@@ -132,7 +132,7 @@ public class AuthenticationProviderService {
                 logger.error("Error in talks with RADIUS server.");
                 logger.debug("RADIUS challenged by didn't provide right attributes.");
                 return null;
-                // throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
+                throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
             }
         }
 
