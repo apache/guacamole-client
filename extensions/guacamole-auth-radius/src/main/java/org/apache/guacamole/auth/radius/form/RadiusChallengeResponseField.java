@@ -31,11 +31,29 @@ public class RadiusChallengeResponseField extends Field {
      */
     private final Logger logger = LoggerFactory.getLogger(RadiusChallengeResponseField.class);
 
+    /**
+     * The field returned by the RADIUS challenge/response.
+     */
     private static final String RADIUS_FIELD_NAME = "guac-radius-challenge-response";
+
+    /**
+     * The type of field to initialize for the challenge/response.
+     */
     private static final String RADIUS_FIELD_TYPE = "GUAC_RADIUS_CHALLENGE_RESPONSE";
+
+    /**
+     * The state of the connection passed by the previous RADIUS attempt.
+     */
     private final String radiusState;
+
+    /**
+     * The message the RADIUS server sent back in the challenge.
+     */
     private final String replyMsg;
 
+    /**
+     * Initialize the field with the reply message and the state.
+     */
     public RadiusChallengeResponseField(String replyMsg, String radiusState) {
         super(RADIUS_FIELD_NAME, RADIUS_FIELD_TYPE);
         logger.debug("Initializing the RADIUS challenge/response field: {}", replyMsg);

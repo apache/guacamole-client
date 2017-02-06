@@ -90,7 +90,7 @@ public class AuthenticationProviderService {
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 
-        // Attempt bind
+        // Initialize Radius Packet and try to authenticate
         RadiusPacket radPack;
         try {
             radPack = radiusService.authenticate(credentials.getUsername(),
@@ -107,10 +107,17 @@ public class AuthenticationProviderService {
             logger.debug("Nothing in the RADIUS packet.");
             throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
         }
+
+        // If we get back an AccessReject packet, login is denied.
         else if (radPack instanceof AccessReject) {
             logger.debug("Login has been rejected by RADIUS server.");
             throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
         }
+
+        /**
+         * If we receive an AccessChallenge package, the server needs more information -
+         * We create a new form/field with the challenge message.
+         */
         else if (radPack instanceof AccessChallenge) {
             try {
                 String replyMsg = radPack.getAttributeValue("Reply-Message").toString();
@@ -127,6 +134,8 @@ public class AuthenticationProviderService {
                 throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
            }
         }
+
+        // If we receive AccessAccept, authentication has succeeded
         else if (radPack instanceof AccessAccept) {
             try {
 
@@ -139,6 +148,8 @@ public class AuthenticationProviderService {
                 radiusService.disconnect();
             }
         }
+
+        // Something else we haven't thought of has happened, so we throw an error
         else
             throw new GuacamoleInvalidCredentialsException("Unknown error trying to authenticate.", CredentialsInfo.USERNAME_PASSWORD);
 

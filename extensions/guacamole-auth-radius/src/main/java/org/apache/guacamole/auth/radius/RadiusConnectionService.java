@@ -77,6 +77,7 @@ public class RadiusConnectionService {
     private void createRadiusConnection() {
 
         /*
+         * This is commented out right now because it isn't implemented, yet.
         // Map encryption method to proper connection and socket factory
         EncryptionMethod encryptionMethod = confService.getEncryptionMethod();
         switch (encryptionMethod) {
@@ -101,6 +102,8 @@ public class RadiusConnectionService {
 
         }
         */
+
+        // Create the RADIUS client with the configuration parameters
         try {
             radiusClient = new RadiusClient(InetAddress.getByName(confService.getRadiusServer()),
                                             confService.getRadiusSharedSecret(),
@@ -126,27 +129,50 @@ public class RadiusConnectionService {
 
     }
 
+    /**
+     * Authenticate to the RADIUS server and return the response from the
+     * server.
+     *
+     * @param username
+     *     The username for authentication.
+     * @param password
+     *     The password for authentication.
+     *
+     * @return
+     *     A RadiusPacket with the response of the server.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while talking to the server. 
+     */
     public RadiusPacket authenticate(String username, String password) 
             throws GuacamoleException {
 
+        // Create the connection and load the attribute dictionary
 	createRadiusConnection();
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
 
+        // If the client is null, we return null - something has gone wrong
         if (radiusClient == null)
             return null;
 
+        // If a username hasn't been provided, stop
         if (username == null || username.isEmpty()) {
             logger.warn("Anonymous access not allowed with RADIUS client.");
             return null;
         }
+
+        // If a password hasn't been provided, stop
         if (password == null || password.isEmpty()) {
             logger.warn("Password required for RADIUS authentication.");
             return null;
         }
 
+        // Set up the authentication protocol as configured
         RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(confService.getRadiusAuthProtocol());
         if (radAuth == null)
             throw new GuacamoleException("Unknown RADIUS authentication protocol.");
+
+        // Set up attributes, create the access request, and send the packet
         try { 
             AttributeList radAttrs = new AttributeList();
             radAttrs.add(new Attr_UserName(username));
@@ -157,11 +183,13 @@ public class RadiusConnectionService {
             radAuth.processRequest(radAcc);
             return radiusClient.sendReceive(radAcc, confService.getRadiusRetries());
         }
+
         catch (RadiusException e) {
             logger.error("Unable to complete authentication.", e.getMessage());
             logger.debug("Authentication with RADIUS failed.", e);
             return null;
         }
+
         catch (NoSuchAlgorithmException e) {
             logger.error("No such RADIUS algorithm: {}", e.getMessage());
             logger.debug("Unknown RADIUS algorithm.", e);
@@ -169,28 +197,56 @@ public class RadiusConnectionService {
         }
     }
 
+    /**
+     * Authenticate to the RADIUS server using existing state and a response
+     *
+     * @param username
+     *     The username for the authentication
+     * @param state
+     *     The previous state of the RADIUS connection
+     * @param response
+     *     The response to the RADIUS challenge
+     *
+     * @return
+     *     A RadiusPacket with the response of the server.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while talking to the server.
+     */
     public RadiusPacket authenticate(String username, String state, String response)
             throws GuacamoleException {
 
+        // Create the RADIUS connection and set up the dictionary
         createRadiusConnection();
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
 
+        // Client failed to set up, so we return null
         if (radiusClient == null)
             return null;
 
+        // If a username wasn't passed, we quit
         if (username == null || username.isEmpty()) {
             logger.warn("Anonymous access not allowed with RADIUS client.");
             return null;
         }
+
+        // If the state wasn't passed, we quit
         if (state == null || state.isEmpty()) {
             logger.warn("This method needs a previous RADIUS state to respond to.");
             return null;
         }
+
+        // If the response wasn't passed, we quit
         if (response == null || response.isEmpty()) {
             logger.warn("Response required for RADIUS authentication.");
             return null;
         }
 
+        /**
+         * Set up the authenticator based on the configured protocol.
+         * Unless that fails, add the attributes to the packet, set up the packet
+         * and send the packet.
+         */
         RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(confService.getRadiusAuthProtocol());
         if (radAuth == null)
             throw new GuacamoleException("Unknown RADIUS authentication protocol.");
@@ -221,8 +277,6 @@ public class RadiusConnectionService {
      * Disconnects the given RADIUS connection, logging any failure to do so
      * appropriately.
      *
-     * @param radiusConnection
-     *     The RADIUS connection to disconnect.
      */
     public void disconnect() {
 

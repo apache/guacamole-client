@@ -128,6 +128,17 @@ public class ConfigurationService {
         );
     }
 
+    /**
+     * Returns the number of retries for connecting to the RADIUS server
+     * from guacamole.properties.
+     *
+     * @return
+     *     The number of retries for connection to the RADIUS server,
+     *     from guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
     public int getRadiusRetries() throws GuacamoleException {
         return environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_RETRIES,
@@ -135,6 +146,17 @@ public class ConfigurationService {
         );
     }
 
+    /**
+     * Returns the timeout for connecting to the RADIUS server
+     * from guacamole.properties.
+     *
+     * @return
+     *     The timeout for connection to the RADIUS server,
+     *     from guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
     public int getRadiusTimeout() throws GuacamoleException {
         return environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_TIMEOUT,
