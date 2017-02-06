@@ -21,10 +21,10 @@
  * Config block which registers Radius-specific field types.
  */
 angular.module('guacRadius').config(['formServiceProvider',
-    function guacRadiusConfig(formServiceProvider) {
-        console.log("In guacRadiusConfig() method.");
+        function guacRadiusConfig(formServiceProvider) {
+    console.log("In guacRadiusConfig() method.");
 
-    // Define field for the signed response from the RADIUS service
+    // Define field for the challenge from the RADIUS service
     formServiceProvider.registerFieldType('GUAC_RADIUS_CHALLENGE_RESPONSE', {
         module      : 'guacRadius',
         controller  : 'guacRadiusController',

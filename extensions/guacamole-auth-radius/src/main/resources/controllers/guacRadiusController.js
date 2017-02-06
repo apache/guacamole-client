@@ -23,14 +23,21 @@
  * signed response from the Duo service.
  */
 angular.module('guacRadius').controller('guacRadiusController', ['$scope', '$element',
-    function guacRadiusController($scope, $element) {
-        console.log("In guacRadiusController() method.");
+        function guacRadiusController($scope, $element) {
+    console.log("In guacRadiusController() method.");
 
-        var radiusChallenge = $element.find(document.querySelector('#radius-challenge-text'));
-        var radiusState = $element.find(document.querySelector('#radius-state'));
-        console.log("RADIUS Reply Message: " + $scope.field.replyMsg);
-        radiusChellenge.html($scope.field.replyMsg);
-        console.log("RADIUS State: " + scope.field.radiusState);
-        radiusState.value = $scope.field.radiusState;
+    // Find the area to display the challenge message
+    var radiusChallenge = $element.find(document.querySelector('#radius-challenge-text'));
+
+    // Find the hidden input to put the state in
+    var radiusState = $element.find(document.querySelector('#radius-state'));
+
+    // Populate the reply message field
+    console.log("RADIUS Reply Message: " + $scope.field.replyMsg);
+    radiusChellenge.html($scope.field.replyMsg);
+
+    // Populate the input area for the connection state
+    console.log("RADIUS State: " + scope.field.radiusState);
+    radiusState.value = $scope.field.radiusState;
 
 }]);

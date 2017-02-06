@@ -27,5 +27,5 @@ angular.module('guacRadius', [
     'form'
 ]);
 
-// Ensure the guacDuo module is loaded along with the rest of the app
+// Ensure the guacRadius module is loaded along with the rest of the app
 angular.module('index').requires.push('guacRadius');
