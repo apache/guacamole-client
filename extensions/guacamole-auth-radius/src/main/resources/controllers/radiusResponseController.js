@@ -29,7 +29,6 @@ angular.module('guacRadius').controller('radiusResponseController', ['$scope', '
     var radiusChallenge = $element.find(document.querySelector('#radius-challenge-text'));
 
     // Populate the reply message field
-    console.log("RADIUS Reply Message: " + $scope.field.replyMsg);
     radiusChallenge.html($scope.field.replyMsg);
 
 }]);
