@@ -17,8 +17,6 @@
  * under the License.
  */
 
-console.log("Loading guac-radius Angular module.");
-
 /**
  * Module which provides handling for RADIUS challenge-response 
  * authentication.

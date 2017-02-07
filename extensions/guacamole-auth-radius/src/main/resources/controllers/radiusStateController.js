@@ -24,10 +24,8 @@
  */
 angular.module('guacRadius').controller('radiusStateController', ['$scope', '$element',
         function radiusStateController($scope, $element) {
-    console.log("In radiusStateController() method.");
 
-    // Populate the input area for the connection state
-    console.log("RADIUS State: " + $scope.field.radiusState);
+    // Populate the hidden field for the connection state
     $scope.model = $scope.field.radiusState;
 
 }]);

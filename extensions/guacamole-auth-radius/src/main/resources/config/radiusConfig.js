@@ -22,7 +22,6 @@
  */
 angular.module('guacRadius').config(['formServiceProvider',
         function guacRadiusConfig(formServiceProvider) {
-    console.log("In guacRadiusConfig() method.");
 
     // Define field for the challenge from the RADIUS service
     formServiceProvider.registerFieldType('GUAC_RADIUS_CHALLENGE_RESPONSE', {
@@ -30,6 +29,8 @@ angular.module('guacRadius').config(['formServiceProvider',
         controller  : 'radiusResponseController',
         templateUrl : 'app/ext/radius/templates/radiusResponseField.html'
     });
+
+    // Define the hidden field for the RADIUS state
     formServiceProvider.registerFieldType('GUAC_RADIUS_STATE', {
         module      : 'guacRadius',
         controller  : 'radiusStateController',

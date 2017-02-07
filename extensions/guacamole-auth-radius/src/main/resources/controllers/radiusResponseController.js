@@ -24,7 +24,6 @@
  */
 angular.module('guacRadius').controller('radiusResponseController', ['$scope', '$element',
         function radiusResponseController($scope, $element) {
-    console.log("In radiusResponseController() method.");
 
     // Find the area to display the challenge message
     var radiusChallenge = $element.find(document.querySelector('#radius-challenge-text'));
