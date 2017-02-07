@@ -24,40 +24,41 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RadiusChallengeResponseField extends Field {
+public class RadiusStateField extends Field {
 
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(RadiusChallengeResponseField.class);
+    private final Logger logger = LoggerFactory.getLogger(RadiusStateField.class);
 
     /**
-     * The field returned by the RADIUS challenge/response.
+     * The parameter returned by the RADIUS state.
      */
-    public static final String PARAMETER_NAME = "guac-radius-challenge-response";
+    public static final String PARAMETER_NAME = "guac-radius-state";
 
     /**
-     * The type of field to initialize for the challenge/response.
+     * The type of field to initialize for the state.
      */
-    private static final String RADIUS_FIELD_TYPE = "GUAC_RADIUS_CHALLENGE_RESPONSE";
+    private static final String RADIUS_FIELD_TYPE = "GUAC_RADIUS_STATE";
 
     /**
-     * The message the RADIUS server sent back in the challenge.
+     * The state of the connection passed by the previous RADIUS attempt.
      */
-    private final String replyMsg;
+    private final String radiusState;
 
     /**
      * Initialize the field with the reply message and the state.
      */
-    public RadiusChallengeResponseField(String replyMsg) {
+    public RadiusStateField(String radiusState) {
         super(PARAMETER_NAME, RADIUS_FIELD_TYPE);
-        logger.debug("Initializing the RADIUS challenge/response field: {}", replyMsg);
+        logger.debug("Initializing the RADIUS state field: {}", radiusState);
 
-        this.replyMsg = replyMsg;
+        this.radiusState = radiusState;
 
     }
 
-    public String getReplyMsg() {
-        return replyMsg;
+    public String getRadiusState() {
+        return radiusState;
     }
+
 }

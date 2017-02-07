@@ -18,22 +18,16 @@
  */
 
 /**
- * Config block which registers Radius-specific field types.
+ * Controller for the "GUAC_RADIUS_CHALLENGE_RESPONSE" field which uses the DuoWeb
+ * API to prompt the user for additional credentials, ultimately receiving a
+ * signed response from the Duo service.
  */
-angular.module('guacRadius').config(['formServiceProvider',
-        function guacRadiusConfig(formServiceProvider) {
-    console.log("In guacRadiusConfig() method.");
+angular.module('guacRadius').controller('radiusStateController', ['$scope', '$element',
+        function radiusStateController($scope, $element) {
+    console.log("In radiusStateController() method.");
 
-    // Define field for the challenge from the RADIUS service
-    formServiceProvider.registerFieldType('GUAC_RADIUS_CHALLENGE_RESPONSE', {
-        module      : 'guacRadius',
-        controller  : 'radiusResponseController',
-        templateUrl : 'app/ext/radius/templates/radiusResponseField.html'
-    });
-    formServiceProvider.registerFieldType('GUAC_RADIUS_STATE', {
-        module      : 'guacRadius',
-        controller  : 'radiusStateController',
-        template    : '<input type=hidden ng-model="model" />'
-    });
+    // Populate the input area for the connection state
+    console.log("RADIUS State: " + $scope.field.radiusState);
+    $scope.model = $scope.field.radiusState;
 
 }]);

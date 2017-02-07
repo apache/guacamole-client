@@ -178,7 +178,6 @@ public class RadiusConnectionService {
             radAttrs.add(new Attr_UserName(username));
             radAttrs.add(new Attr_UserPassword(password));
             AccessRequest radAcc = new AccessRequest(radiusClient, radAttrs);
-            logger.debug("Sending authentication request to radius server for user {}.", username);
             radAuth.setupRequest(radiusClient, radAcc);
             radAuth.processRequest(radAcc);
             return radiusClient.sendReceive(radAcc, confService.getRadiusRetries());
@@ -256,7 +255,6 @@ public class RadiusConnectionService {
             radAttrs.add(new Attr_State(state));
             radAttrs.add(new Attr_UserPassword(response));
             AccessRequest radAcc = new AccessRequest(radiusClient, radAttrs);
-            logger.debug("Sending authentication response to radius server for user {}.", username);
             radAuth.setupRequest(radiusClient, radAcc);
             radAuth.processRequest(radAcc);
             return radiusClient.sendReceive(radAcc, confService.getRadiusRetries());
