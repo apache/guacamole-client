@@ -157,7 +157,7 @@ angular.module('rest').factory('tunnelService', ['$injector',
      *     The sanitized filename.
      */
     var sanitizeFilename = function sanitizeFilename(filename) {
-        return filename.replace(/\/+/g, '_');
+        return filename.replace(/[\\\/]+/g, '_');
     };
 
     /**
