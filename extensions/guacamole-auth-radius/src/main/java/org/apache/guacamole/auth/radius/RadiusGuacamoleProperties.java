@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.radius;
 
+import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
@@ -105,6 +106,62 @@ public class RadiusGuacamoleProperties {
 
         @Override
         public String getName() { return "radius-timeout"; }
+
+    };
+
+    public static final StringGuacamoleProperty RADIUS_CA_FILE = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "radius-ca-file"; }
+
+    };
+
+    public static final StringGuacamoleProperty RADIUS_CA_TYPE = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "radius-ca-type"; }
+
+    };
+
+    public static final StringGuacamoleProperty RADIUS_CA_PASSWORD = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "radius-ca-password"; }
+
+    };
+
+    public static final StringGuacamoleProperty RADIUS_KEY_FILE = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "radius-key-file"; }
+
+    };
+
+    public static final StringGuacamoleProperty RADIUS_KEY_TYPE = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "radius-key-type"; }
+
+    };
+
+    public static final StringGuacamoleProperty RADIUS_KEY_PASSWORD = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "radius-key-password"; }
+
+    };
+
+    public static final BooleanGuacamoleProperty RADIUS_TRUST_ALL = new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "radius-trust-all"; }
+
+    };
+
+    public static final StringGuacamoleProperty RADIUS_EAP_TTLS_INNER_PROTOCOL = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "radius-eap-ttls-inner-protocol"; }
 
     };
 

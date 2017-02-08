@@ -164,4 +164,60 @@ public class ConfigurationService {
         );
     }
 
+    public String getRadiusCAFile() throws GuacamoleException {
+        return environment.getProperty(
+            RadiusGuacamoleProperties.RADIUS_CA_FILE,
+            "radius-ca.pem"
+        );
+    }
+
+    public String getRadiusKeyFile() throws GuacamoleException {
+        return environment.getProperty(
+            RadiusGuacamoleProperties.RADIUS_KEY_FILE,
+            "radius-key.pem"
+        );
+    }
+
+    public String getRadiusCAPassword() throws GuacamoleException {
+        return environment.getProperty(
+            RadiusGuacamoleProperties.RADIUS_CA_PASSWORD,
+            null
+        );
+    }
+
+    public String getRadiusCAType() throws GuacamoleException {
+        return environment.getProperty(
+            RadiusGuacamoleProperties.RADIUS_CA_TYPE,
+            null
+        );
+    }
+
+    public String getRadiusKeyPassword() throws GuacamoleException {
+        return environment.getProperty(
+            RadiusGuacamoleProperties.RADIUS_KEY_PASSWORD,
+            null
+        );
+    }
+
+    public String getRadiusKeyType() throws GuacamoleException {
+        return environment.getProperty(
+            RadiusGuacamoleProperties.RADIUS_KEY_PASSWORD,
+            null
+        );
+    }
+
+    public Boolean getRadiusTrustAll() throws GuacamoleException {
+        return environment.getProperty(
+            RadiusGuacamoleProperties.RADIUS_TRUST_ALL,
+            false
+        );
+    }
+
+    public String getRadiusEAPTTLSInnerProtocol() throws GuacamoleException {
+        return environment.getProperty(
+            RadiusGuacamoleProperties.RADIUS_EAP_TTLS_INNER_PROTOCOL,
+            null
+        );
+    }
+
 }
