@@ -5,10 +5,11 @@
     },
 
     "LOGIN" : {
-        "FIELD_HEADER_RADIUS_RESPONSE"       : "",
-        "INFO_RADIUS_RESPONSE_INCORRECT"     : "RADIUS response incorrect.",
-        "INFO_RADIUS_AUTH_REQUIRED"          : "Please authenticate with RADIUS to continue.",
-        "INFO_RADIUS_ADDL_REQUIRED"          : "Additional credentials required."
+        "FIELD_HEADER_GUAC_RADIUS_CHALLENGE_RESPONSE" : "",
+        "FIELD_HEADER_GUAC_RADIUS_STATE"              : "",
+        "INFO_RADIUS_RESPONSE_INCORRECT"              : "RADIUS response incorrect.",
+        "INFO_RADIUS_AUTH_REQUIRED"                   : "Please authenticate with RADIUS to continue.",
+        "INFO_RADIUS_ADDL_REQUIRED"                   : "Please supply additional credentials"
     }
 
 }

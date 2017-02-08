@@ -34,7 +34,7 @@ angular.module('guacRadius').config(['formServiceProvider',
     formServiceProvider.registerFieldType('GUAC_RADIUS_STATE', {
         module      : 'guacRadius',
         controller  : 'radiusStateController',
-        template    : '<input type=hidden ng-model="model" />'
+        template    : '<input class="ng-hide" type=hidden ng-model="model" />'
     });
 
 }]);
