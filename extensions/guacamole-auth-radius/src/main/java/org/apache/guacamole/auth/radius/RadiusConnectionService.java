@@ -117,7 +117,8 @@ public class RadiusConnectionService {
      */
     private RadiusAuthenticator setupRadiusAuthenticator() {
 
-        if(radiusClient == null) {
+        // If we don't have a radiusClient object, yet, don't go any further.
+        if (radiusClient == null) {
             logger.error("RADIUS client hasn't been set up, yet.");
             logger.debug("We can't run this method until the RADIUS client has been set up.");
             return null;
@@ -153,7 +154,7 @@ public class RadiusConnectionService {
         }
 
         RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(radAuthName);
-        if(radAuth == null)
+        if (radAuth == null)
             return null;
 
         // If we're using any of the TLS protocols, we need to configure them
