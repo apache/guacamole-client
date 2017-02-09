@@ -48,6 +48,14 @@ public class OutputStreamInterceptingFilter
             LoggerFactory.getLogger(OutputStreamInterceptingFilter.class);
 
     /**
+     * Whether this OutputStreamInterceptingFilter should respond to received
+     * blobs with "ack" messages on behalf of the client. If false, blobs will
+     * still be handled by this filter, but empty blobs will be sent to the
+     * client, forcing the client to respond on its own.
+     */
+    private boolean acknowledgeBlobs = true;
+
+    /**
      * Creates a new OutputStreamInterceptingFilter which selectively intercepts
      * "blob" and "end" instructions. The required "ack" responses will
      * automatically be sent over the given tunnel.
@@ -129,10 +137,22 @@ public class OutputStreamInterceptingFilter
             return null;
         }
 
-        // Attempt to write data to stream
         try {
+
+            // Attempt to write data to stream
             stream.getStream().write(blob);
+
+            // Force client to respond with their own "ack" if we need to
+            // confirm that they are not falling behind with respect to the
+            // graphical session
+            if (!acknowledgeBlobs) {
+                acknowledgeBlobs = true;
+                return new GuacamoleInstruction("blob", index, "");
+            }
+
+            // Otherwise, acknowledge the blob on the client's behalf
             sendAck(index, "OK", GuacamoleStatus.SUCCESS);
+
         }
         catch (IOException e) {
             sendAck(index, "FAIL", GuacamoleStatus.SERVER_ERROR);
@@ -164,6 +184,17 @@ public class OutputStreamInterceptingFilter
 
     }
 
+    /**
+     * Handles a single "sync" instruction, updating internal tracking of
+     * client render state.
+     *
+     * @param instruction
+     *     The "sync" instruction being handled.
+     */
+    private void handleSync(GuacamoleInstruction instruction) {
+        acknowledgeBlobs = false;
+    }
+
     @Override
     public GuacamoleInstruction filter(GuacamoleInstruction instruction)
             throws GuacamoleException {
@@ -175,6 +206,13 @@ public class OutputStreamInterceptingFilter
         // Intercept "end" instructions for in-progress streams
         if (instruction.getOpcode().equals("end")) {
             handleEnd(instruction);
+            return instruction;
+        }
+
+        // Monitor "sync" instructions to ensure the client does not starve
+        // from lack of graphical updates
+        if (instruction.getOpcode().equals("sync")) {
+            handleSync(instruction);
             return instruction;
         }
 
