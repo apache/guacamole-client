@@ -40,6 +40,8 @@ import net.jradius.client.auth.EAPTTLSAuthenticator;
 import net.jradius.client.auth.RadiusAuthenticator;
 import net.jradius.client.auth.PEAPAuthenticator;
 import net.jradius.packet.attribute.AttributeFactory;
+import net.jradius.packet.AccessChallenge;
+import net.jradius.packet.RadiusResponse;
 
 /**
  * Service for creating and managing connections to RADIUS servers.
@@ -255,7 +257,13 @@ public class RadiusConnectionService {
 
             radAuth.setupRequest(radiusClient, radAcc);
             radAuth.processRequest(radAcc);
-            return radiusClient.sendReceive(radAcc, confService.getRadiusRetries());
+            RadiusResponse reply = radiusClient.sendReceive(radAcc, confService.getRadiusRetries());
+            if ((reply instanceof AccessChallenge) && (reply.findAttribute(Attr_EAPMessage.TYPE) != null)) {
+                logger.debug("We got an AccessChallenge message, and it appears to be an EAP mechanism, trying to process.");
+                radAuth.processChallenge(radAcc, reply);
+                reply = radiusClient.sendReceive(radAcc, confService.getRadiusRetries());
+            }
+            return reply;
         }
 
         catch (RadiusException e) {
