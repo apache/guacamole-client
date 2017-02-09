@@ -35,13 +35,16 @@ import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.AccessRequest;
 import net.jradius.dictionary.*;
 import net.jradius.packet.attribute.AttributeList;
+import net.jradius.client.auth.EAPTLSAuthenticator;
+import net.jradius.client.auth.EAPTTLSAuthenticator;
 import net.jradius.client.auth.RadiusAuthenticator;
+import net.jradius.client.auth.PEAPAuthenticator;
 import net.jradius.packet.attribute.AttributeFactory;
 
 /**
  * Service for creating and managing connections to RADIUS servers.
  *
- * @author Michael Jumper
+ * @author Nick Couchman
  */
 public class RadiusConnectionService {
 
@@ -63,45 +66,18 @@ public class RadiusConnectionService {
     private RadiusClient radiusClient;
 
     /**
-     * Creates a new instance of RadiusConnection, configured as required to use
-     * whichever encryption method is requested within guacamole.properties.
+     * Creates a new instance of RadiusConnection, configured with parameters
+     * from guacamole.properties.
      *
      * @return
-     *     A new RadiusConnection instance which has already been configured to
-     *     use the encryption method requested within guacamole.properties.
+     *     A new RadiusConnection instance which has already been configured 
+     *     with parameters from guacamole.properties.
      *
      * @throws GuacamoleException
      *     If an error occurs while parsing guacamole.properties, or if the
      *     requested encryption method is actually not implemented (a bug).
      */
     private void createRadiusConnection() {
-
-        /*
-         * This is commented out right now because it isn't implemented, yet.
-        // Map encryption method to proper connection and socket factory
-        EncryptionMethod encryptionMethod = confService.getEncryptionMethod();
-        switch (encryptionMethod) {
-
-            // Unencrypted RADIUS connection
-            case NONE:
-                logger.debug("Connection to RADIUS server without encryption.");
-                radiusClient = new RadiusClient();
-                return radiusClient;
-
-            // Radius over TTLS (EAP-TTLS)
-            case TTLS:
-                logger.debug("Connecting to RADIUS server using TTLS.");
-                radiusClient = new RadiusClient();
-                return radiusClient;
-
-            // We default to unencrypted connections.
-            default:
-                logger.debug("Defaulting an unencrypted RADIUS connection.");
-                radiusClient = new RadiusClient();
-                return radiusClient;
-
-        }
-        */
 
         // Create the RADIUS client with the configuration parameters
         try {
@@ -126,6 +102,98 @@ public class RadiusConnectionService {
             logger.debug("Failed to communicate with host.", e);
             return;
         }
+
+    }
+
+    /**
+     * Creates a new instance of RadiusAuthentictor, configured with
+     * parameters specified within guacamole.properties.
+     *
+     * @return
+     *     A new RadiusAuthenticator instance which has been configured
+     *     with parameters from guacamole.properties, or null if
+     *     configuration fails.
+     *
+     */
+    private RadiusAuthenticator setupRadiusAuthenticator() {
+
+        if(radiusClient == null) {
+            logger.error("RADIUS client hasn't been set up, yet.");
+            logger.debug("We can't run this method until the RADIUS client has been set up.");
+            return null;
+        }
+
+        String radAuthName;
+        String caFile;
+        String caPassword;
+        String caType;
+        String keyFile;
+        String keyPassword;
+        String keyType;
+        Boolean trustAll;
+        String innerProtocol;
+
+        // Pull configuration parameters from guacamole.properties
+        try {
+            radAuthName = confService.getRadiusAuthProtocol();
+            caFile = confService.getRadiusCAFile();
+            caPassword = confService.getRadiusCAPassword();
+            caType = confService.getRadiusCAType();
+            keyFile = confService.getRadiusKeyFile();
+            keyPassword = confService.getRadiusKeyPassword();
+            keyType = confService.getRadiusKeyType();
+            trustAll = confService.getRadiusTrustAll();
+            innerProtocol = confService.getRadiusEAPTTLSInnerProtocol();
+            
+        }
+        catch (GuacamoleException e) {
+            logger.error("Error retrieving configuration.");
+            logger.debug("Error getting config parameters from file.");
+            return null;
+        }
+
+        RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(radAuthName);
+        if(radAuth == null)
+            return null;
+
+        // If we're using any of the TLS protocols, we need to configure them
+        if (radAuth instanceof PEAPAuthenticator || 
+            radAuth instanceof EAPTLSAuthenticator || 
+            radAuth instanceof EAPTTLSAuthenticator) {
+
+            if (caFile != null && !caFile.isEmpty())
+                ((EAPTLSAuthenticator)radAuth).setCaFile(caFile);
+
+            if (caType != null && !caType.isEmpty())
+                ((EAPTLSAuthenticator)radAuth).setCaFileType(caType);
+
+            if (caPassword != null && !caPassword.isEmpty())
+                ((EAPTLSAuthenticator)radAuth).setCaPassword(caPassword);
+
+            if (keyFile != null && !keyFile.isEmpty())
+                ((EAPTLSAuthenticator)radAuth).setKeyFile(keyFile);
+
+            if (keyType != null && !keyType.isEmpty())
+                ((EAPTLSAuthenticator)radAuth).setKeyFileType(keyType);
+
+            if (keyPassword != null && !keyPassword.isEmpty())
+                ((EAPTLSAuthenticator)radAuth).setKeyPassword(keyPassword);
+
+            ((EAPTLSAuthenticator)radAuth).setTrustAll(trustAll);
+
+        }
+
+        // If we're using EAP-TTLS, we need to define tunneled protocol
+        if (radAuth instanceof EAPTTLSAuthenticator) {
+
+            if (innerProtocol == null || innerProtocol.isEmpty())
+                return null;
+
+            ((EAPTTLSAuthenticator)radAuth).setInnerProtocol(innerProtocol);
+
+        }
+
+        return radAuth;
 
     }
 
@@ -167,8 +235,8 @@ public class RadiusConnectionService {
             return null;
         }
 
-        // Set up the authentication protocol as configured
-        RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(confService.getRadiusAuthProtocol());
+        RadiusAuthenticator radAuth = setupRadiusAuthenticator();
+
         if (radAuth == null)
             throw new GuacamoleException("Unknown RADIUS authentication protocol.");
 
@@ -177,7 +245,13 @@ public class RadiusConnectionService {
             AttributeList radAttrs = new AttributeList();
             radAttrs.add(new Attr_UserName(username));
             radAttrs.add(new Attr_UserPassword(password));
-            AccessRequest radAcc = new AccessRequest(radiusClient, radAttrs);
+            AccessRequest radAcc = new AccessRequest(radiusClient);
+
+            if (radAuth instanceof EAPTTLSAuthenticator)
+                ((EAPTTLSAuthenticator)radAuth).setTunneledAttributes(radAttrs);
+            else
+                radAcc.addAttributes(radAttrs);
+
             radAuth.setupRequest(radiusClient, radAcc);
             radAuth.processRequest(radAcc);
             return radiusClient.sendReceive(radAcc, confService.getRadiusRetries());
@@ -241,20 +315,24 @@ public class RadiusConnectionService {
             return null;
         }
 
-        /**
-         * Set up the authenticator based on the configured protocol.
-         * Unless that fails, add the attributes to the packet, set up the packet
-         * and send the packet.
-         */
-        RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(confService.getRadiusAuthProtocol());
+        // Set up the RadiusAuthenticator
+        RadiusAuthenticator radAuth = setupRadiusAuthenticator();
         if (radAuth == null)
             throw new GuacamoleException("Unknown RADIUS authentication protocol.");
+
+        // Add attributes to the connection and send the packet
         try {
             AttributeList radAttrs = new AttributeList();
             radAttrs.add(new Attr_UserName(username));
             radAttrs.add(new Attr_State(state));
             radAttrs.add(new Attr_UserPassword(response));
-            AccessRequest radAcc = new AccessRequest(radiusClient, radAttrs);
+            AccessRequest radAcc = new AccessRequest(radiusClient);
+
+            if (radAuth instanceof EAPTTLSAuthenticator)
+                ((EAPTTLSAuthenticator)radAuth).setTunneledAttributes(radAttrs);
+            else
+                radAcc.addAttributes(radAttrs);
+
             radAuth.setupRequest(radiusClient, radAcc);
             radAuth.processRequest(radAcc);
             return radiusClient.sendReceive(radAcc, confService.getRadiusRetries());

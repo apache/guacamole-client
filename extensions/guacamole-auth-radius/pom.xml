@@ -175,6 +175,41 @@
                 </executions>
             </plugin>
 
+            <!--<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <createDependencyReducedPom>true</createDependencyReducedPom>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>org.apache.guacamole.auth.radius.RadiusAuthenticationProvider</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>-->
+
             <!-- Verify format using Apache RAT -->
             <plugin>
                 <groupId>org.apache.rat</groupId>
@@ -245,11 +280,11 @@
 
         <!-- JRadius Library -->
         <!-- https://mvnrepository.com/artifact/net.jradius/jradius-core -->
-        <dependency>
+        <!--<dependency>
             <groupId>net.jradius</groupId>
             <artifactId>jradius-core</artifactId>
             <version>1.1.5</version>
-        </dependency>
+        </dependency>-->
 
         <!-- https://mvnrepository.com/artifact/net.jradius/jradius-dictionary -->
         <dependency>
@@ -259,17 +294,17 @@
         </dependency>
 
         <dependency>
-	    <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15</artifactId>
+            <version>1.44</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/net.jradius/jradius-extended -->
         <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.10</version>
+            <groupId>net.jradius</groupId>
+            <artifactId>jradius-extended</artifactId>
+            <version>1.1.5</version>
         </dependency>
-
-
 
     </dependencies>
 
