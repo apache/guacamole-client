@@ -42,10 +42,10 @@ angular.module('index').config(['$routeProvider',
     var curPath = window.location.href;
     var ticketPos = curPath.indexOf("?ticket=") + 8;
     var hashPos = curPath.indexOf("#/");
-    if(ticketPos > 0 && ticketPos < hashPos) {
+    if (ticketPos > 0 && ticketPos < hashPos) {
         var ticket = curPath.substring(ticketPos, hashPos);
         var newPath = curPath.substring(0,ticketPos - 8) + '#/?ticket=' + ticket;
-        window.location=newPath;
+        window.location = newPath;
     }
 
 }]);
