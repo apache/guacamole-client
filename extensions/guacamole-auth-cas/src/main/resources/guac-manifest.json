@@ -13,10 +13,6 @@
         "casModule.js",
         "casController.js",
         "casConfig.js"
-    ],
-
-    "css" : [
-        "cas.css"
     ]
 
 }
