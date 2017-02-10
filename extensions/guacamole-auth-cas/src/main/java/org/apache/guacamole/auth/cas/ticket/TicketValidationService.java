@@ -71,8 +71,9 @@ public class TicketValidationService {
             Assertion a = sv.validate(ticket, confRedirectURI);
             principal = a.getPrincipal();
         } 
-        catch (TicketValidationException e)
-            Throw new GuacamoleException("Ticket validation failed.", e);
+        catch (TicketValidationException e) {
+            throw new GuacamoleException("Ticket validation failed.", e);
+        }
 
         return principal.getName();
 
