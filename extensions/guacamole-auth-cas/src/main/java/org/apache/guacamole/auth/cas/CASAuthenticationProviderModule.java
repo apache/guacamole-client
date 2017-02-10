@@ -30,7 +30,7 @@ import org.apache.guacamole.auth.cas.ticket.TicketValidationService;
 /**
  * Guice module which configures CAS-specific injections.
  *
- * @author Michael Jumper
+ * @author Nick Couchman
  */
 public class CASAuthenticationProviderModule extends AbstractModule {
 
