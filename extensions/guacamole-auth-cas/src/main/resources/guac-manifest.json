@@ -1,0 +1,22 @@
+{
+
+    "guacamoleVersion" : "0.9.11-incubating",
+
+    "name"      : "CAS Authentication Extension",
+    "namespace" : "guac-cas",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.cas.CASAuthenticationProvider"
+    ],
+
+    "js" : [
+        "casModule.js",
+        "casController.js",
+        "casConfig.js"
+    ],
+
+    "css" : [
+        "cas.css"
+    ]
+
+}
