@@ -13,6 +13,10 @@
         "casModule.js",
         "casController.js",
         "casConfig.js"
+    ],
+
+    "translations" : [
+        "translations/en.json"
     ]
 
 }
