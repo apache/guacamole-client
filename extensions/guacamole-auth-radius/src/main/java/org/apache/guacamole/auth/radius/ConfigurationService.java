@@ -167,14 +167,14 @@ public class ConfigurationService {
     public String getRadiusCAFile() throws GuacamoleException {
         return environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_CA_FILE,
-            "radius-ca.pem"
+            null 
         );
     }
 
     public String getRadiusKeyFile() throws GuacamoleException {
         return environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_KEY_FILE,
-            "radius-key.pem"
+            "radius.pem"
         );
     }
 
@@ -188,7 +188,7 @@ public class ConfigurationService {
     public String getRadiusCAType() throws GuacamoleException {
         return environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_CA_TYPE,
-            null
+            "pkcs12"
         );
     }
 
@@ -201,8 +201,8 @@ public class ConfigurationService {
 
     public String getRadiusKeyType() throws GuacamoleException {
         return environment.getProperty(
-            RadiusGuacamoleProperties.RADIUS_KEY_PASSWORD,
-            null
+            RadiusGuacamoleProperties.RADIUS_KEY_TYPE,
+            "pkcs12"
         );
     }
 

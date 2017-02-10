@@ -27,6 +27,7 @@ import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
+import org.apache.guacamole.environment.LocalEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.jradius.client.RadiusClient;
@@ -35,6 +36,7 @@ import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.AccessRequest;
 import net.jradius.dictionary.*;
 import net.jradius.packet.attribute.AttributeList;
+import net.jradius.packet.attribute.RadiusAttribute;
 import net.jradius.client.auth.EAPTLSAuthenticator;
 import net.jradius.client.auth.EAPTTLSAuthenticator;
 import net.jradius.client.auth.RadiusAuthenticator;
@@ -135,9 +137,13 @@ public class RadiusConnectionService {
         String keyType;
         Boolean trustAll;
         String innerProtocol;
+        LocalEnvironment guacEnv;
+        String basePath;
 
         // Pull configuration parameters from guacamole.properties
         try {
+            guacEnv = new LocalEnvironment();
+            basePath = guacEnv.getGuacamoleHome().getAbsolutePath() + '/';
             radAuthName = confService.getRadiusAuthProtocol();
             caFile = confService.getRadiusCAFile();
             caPassword = confService.getRadiusCAPassword();
@@ -165,7 +171,7 @@ public class RadiusConnectionService {
             radAuth instanceof EAPTTLSAuthenticator) {
 
             if (caFile != null && !caFile.isEmpty())
-                ((EAPTLSAuthenticator)radAuth).setCaFile(caFile);
+                ((EAPTLSAuthenticator)radAuth).setCaFile(basePath + caFile);
 
             if (caType != null && !caType.isEmpty())
                 ((EAPTLSAuthenticator)radAuth).setCaFileType(caType);
@@ -174,7 +180,7 @@ public class RadiusConnectionService {
                 ((EAPTLSAuthenticator)radAuth).setCaPassword(caPassword);
 
             if (keyFile != null && !keyFile.isEmpty())
-                ((EAPTLSAuthenticator)radAuth).setKeyFile(keyFile);
+                ((EAPTLSAuthenticator)radAuth).setKeyFile(basePath + keyFile);
 
             if (keyType != null && !keyType.isEmpty())
                 ((EAPTLSAuthenticator)radAuth).setKeyFileType(keyType);
@@ -248,18 +254,24 @@ public class RadiusConnectionService {
             AttributeList radAttrs = new AttributeList();
             radAttrs.add(new Attr_UserName(username));
             radAttrs.add(new Attr_UserPassword(password));
+            radAttrs.add(new Attr_CleartextPassword(password));
+
             AccessRequest radAcc = new AccessRequest(radiusClient);
 
-            if (radAuth instanceof EAPTTLSAuthenticator)
+            // EAP-TTLS tunnels protected attributes inside the TLS layer
+            if (radAuth instanceof EAPTTLSAuthenticator) {
+                radAuth.setUsername(new Attr_UserName(username));
                 ((EAPTTLSAuthenticator)radAuth).setTunneledAttributes(radAttrs);
+            }
             else
                 radAcc.addAttributes(radAttrs);
 
             radAuth.setupRequest(radiusClient, radAcc);
             radAuth.processRequest(radAcc);
             RadiusResponse reply = radiusClient.sendReceive(radAcc, confService.getRadiusRetries());
-            if ((reply instanceof AccessChallenge) && (reply.findAttribute(Attr_EAPMessage.TYPE) != null)) {
-                logger.debug("We got an AccessChallenge message, and it appears to be an EAP mechanism, trying to process.");
+
+            // We receive a Challenge not asking for user input, so silently process the challenge
+            while((reply instanceof AccessChallenge) && (reply.findAttribute(Attr_ReplyMessage.TYPE) == null)) {
                 radAuth.processChallenge(radAcc, reply);
                 reply = radiusClient.sendReceive(radAcc, confService.getRadiusRetries());
             }
@@ -335,16 +347,28 @@ public class RadiusConnectionService {
             radAttrs.add(new Attr_UserName(username));
             radAttrs.add(new Attr_State(state));
             radAttrs.add(new Attr_UserPassword(response));
+            radAttrs.add(new Attr_CleartextPassword(response));
+
             AccessRequest radAcc = new AccessRequest(radiusClient);
 
-            if (radAuth instanceof EAPTTLSAuthenticator)
+            // EAP-TTLS tunnels protected attributes inside the TLS layer
+            if (radAuth instanceof EAPTTLSAuthenticator) {
+                radAuth.setUsername(new Attr_UserName(username));
                 ((EAPTTLSAuthenticator)radAuth).setTunneledAttributes(radAttrs);
+            }
             else
                 radAcc.addAttributes(radAttrs);
 
             radAuth.setupRequest(radiusClient, radAcc);
             radAuth.processRequest(radAcc);
-            return radiusClient.sendReceive(radAcc, confService.getRadiusRetries());
+            RadiusResponse reply = radiusClient.sendReceive(radAcc, confService.getRadiusRetries());
+
+            // We receive a Challenge not asking for user input, so silently process the challenge
+            while((reply instanceof AccessChallenge) && (reply.findAttribute(Attr_ReplyMessage.TYPE) == null)) {
+                radAuth.processChallenge(radAcc, reply);
+                reply = radiusClient.sendReceive(radAcc, confService.getRadiusRetries());
+            }
+            return reply;
         }
         catch (RadiusException e) {
             logger.error("Unable to complete authentication.", e.getMessage());

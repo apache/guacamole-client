@@ -42,6 +42,7 @@ import net.jradius.packet.AccessChallenge;
 import net.jradius.packet.AccessReject;
 import net.jradius.packet.AccessRequest;
 import net.jradius.packet.AccessResponse;
+import net.jradius.packet.attribute.AttributeList;
 import net.jradius.packet.attribute.RadiusAttribute;
 
 /**
@@ -141,6 +142,12 @@ public class AuthenticationProviderService {
              * We create a new form/field with the challenge message.
              */
             else if (radPack instanceof AccessChallenge) {
+                AttributeList radAttrs = radPack.getAttributes();
+                logger.debug("===BEGIN ATTRIBUTE DEBUG===");
+                for(RadiusAttribute attr : radAttrs.getAttributeList()) {
+                    logger.debug("Attribute: {}; Value: {}", attr.getAttributeName(), attr.getValue());
+                }
+                logger.debug("==END ATTRIBUTE DEBUG===");
                 try {
                     RadiusAttribute stateAttr = radPack.findAttribute(Attr_State.TYPE);
                     // We should have a state attribute at this point, if not, we need to quit.
