@@ -79,12 +79,10 @@ public class AuthenticationProviderService {
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 
-        String ticket = null;
-
         // Pull CAS ticket from request if present
         HttpServletRequest request = credentials.getRequest();
         if (request != null) {
-            ticket = request.getParameter(CASTicketField.PARAMETER_NAME);
+            String ticket = request.getParameter(CASTicketField.PARAMETER_NAME);
             if (ticket != null) {
                 AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
                 authenticatedUser.init(ticketService.processUsername(ticket), credentials);
