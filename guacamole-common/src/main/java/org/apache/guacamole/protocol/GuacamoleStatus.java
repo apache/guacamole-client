@@ -72,6 +72,12 @@ public enum GuacamoleStatus {
     RESOURCE_CONFLICT(409, 1008, 0x0205),
 
     /**
+     * The operation could not be performed as the requested resource is now
+     * closed.
+     */
+    RESOURCE_CLOSED(404, 1002, 0x0206),
+
+    /**
      * The operation could not be performed because the upstream server does
      * not appear to exist.
      */
