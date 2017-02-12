@@ -83,6 +83,8 @@
         "ERROR_TUNNEL_203"     : "The server encountered an error and has closed the connection. Please try again or contact your system administrator.",
         "ERROR_TUNNEL_204"     : "The requested connection does not exist. Please check the connection name and try again.",
         "ERROR_TUNNEL_205"     : "This connection is currently in use, and concurrent access to this connection is not allowed. Please try again later.",
+        "ERROR_TUNNEL_207"     : "The Guacamole server is not currently reachable. Please check your network and try again.",
+        "ERROR_TUNNEL_208"     : "The Guacamole server is not accepting connections. Please check your network and try again.",
         "ERROR_TUNNEL_301"     : "You do not have permission to access this connection because you are not logged in. Please log in and try again.",
         "ERROR_TUNNEL_303"     : "You do not have permission to access this connection. If you require access, please ask your system administrator to add you the list of allowed users, or check your system settings.",
         "ERROR_TUNNEL_308"     : "The Guacamole server has closed the connection because there has been no response from your browser for long enough that it appeared to be disconnected. This is commonly caused by network problems, such as spotty wireless signal, or simply very slow network speeds. Please check your network and try again.",

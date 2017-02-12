@@ -117,6 +117,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         0x0203: true,
         0x0204: true,
         0x0205: true,
+        0x0207: true,
+        0x0208: true,
         0x0301: true,
         0x0303: true,
         0x0308: true,
