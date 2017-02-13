@@ -188,7 +188,7 @@ public class ConfigurationService {
     public String getRadiusCAType() throws GuacamoleException {
         return environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_CA_TYPE,
-            "pkcs12"
+            "pem"
         );
     }
 
@@ -202,7 +202,7 @@ public class ConfigurationService {
     public String getRadiusKeyType() throws GuacamoleException {
         return environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_KEY_TYPE,
-            "pkcs12"
+            "pem"
         );
     }
 
