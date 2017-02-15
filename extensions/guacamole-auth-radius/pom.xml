@@ -293,12 +293,6 @@
             <version>1.1.5</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15</artifactId>
-            <version>1.44</version>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/net.jradius/jradius-extended -->
         <dependency>
             <groupId>net.jradius</groupId>
