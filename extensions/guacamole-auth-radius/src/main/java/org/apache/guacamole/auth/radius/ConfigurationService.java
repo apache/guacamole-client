@@ -164,6 +164,17 @@ public class ConfigurationService {
         );
     }
 
+    /**
+     * Returns the CA file for validating certificates for
+     * encrypted connections as specified in guacamole.properties
+     *
+     * @return
+     *     The file name for the CA file for validating
+     *     RADIUS server certificates
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
     public String getRadiusCAFile() throws GuacamoleException {
         return environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_CA_FILE,
@@ -171,6 +182,18 @@ public class ConfigurationService {
         );
     }
 
+    /**
+     * Returns the key file for the client for creating encrypted
+     * connections to RADIUS servers as specified in
+     * guacamole.properties.
+     *
+     * @return
+     *     The file name for the client certificate/key pair
+     *     for making encrypted RADIUS connections.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
     public String getRadiusKeyFile() throws GuacamoleException {
         return environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_KEY_FILE,
@@ -178,6 +201,16 @@ public class ConfigurationService {
         );
     }
 
+    /**
+     * Returns the password for the CA file, if it is
+     * password-protected, as configured in guacamole.properties.
+     *
+     * @return
+     *     The password for the CA file
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
     public String getRadiusCAPassword() throws GuacamoleException {
         return environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_CA_PASSWORD,
@@ -185,6 +218,18 @@ public class ConfigurationService {
         );
     }
 
+    /**
+     * Returns the type of store that the CA file represents
+     * so that it can be correctly processed by the RADIUS
+     * library, as configured in guacamole.properties.
+     *
+     * @return
+     *     The type of store that the CA file is encoded
+     *     as, as configured in guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
     public String getRadiusCAType() throws GuacamoleException {
         return environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_CA_TYPE,
@@ -192,6 +237,16 @@ public class ConfigurationService {
         );
     }
 
+    /**
+     * Returns the password for the key file, if it is
+     * password-protected, as configured in guacamole.properties.
+     *
+     * @return
+     *     The password for the key file
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
     public String getRadiusKeyPassword() throws GuacamoleException {
         return environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_KEY_PASSWORD,
@@ -199,6 +254,18 @@ public class ConfigurationService {
         );
     }
 
+    /**
+     * Returns the type of store that the key file represents
+     * so that it can be correctly processed by the RADIUS
+     * library, as configured in guacamole.properties.
+     *
+     * @return
+     *     The type of store that the key file is encoded
+     *     as, as configured in guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
     public String getRadiusKeyType() throws GuacamoleException {
         return environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_KEY_TYPE,
@@ -206,6 +273,20 @@ public class ConfigurationService {
         );
     }
 
+    /**
+     * Returns the boolean value of whether or not the
+     * RADIUS library should trust all server certificates
+     * or should validate them against known CA certificates,
+     * as configured in guacamole.properties.
+     *
+     * @return
+     *     True if the RADIUS client should trust all
+     *     server certificates; false if it should
+     *     validate against known good CA certificates.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
     public Boolean getRadiusTrustAll() throws GuacamoleException {
         return environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_TRUST_ALL,
@@ -213,6 +294,18 @@ public class ConfigurationService {
         );
     }
 
+    /**
+     * Returns the tunneled protocol that RADIUS should use
+     * when the authentication protocol is set to EAP-TTLS, as
+     * configured in the guacamole.properties file.
+     *
+     * @return
+     *     The tunneled protocol that should be used inside
+     *     an EAP-TTLS RADIUS connection. 
+     *     
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
     public String getRadiusEAPTTLSInnerProtocol() throws GuacamoleException {
         return environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_EAP_TTLS_INNER_PROTOCOL,
