@@ -278,22 +278,21 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- JRadius Library -->
-        <!-- https://mvnrepository.com/artifact/net.jradius/jradius-core -->
+        <!-- JRadius Core Library -->
         <dependency>
             <groupId>net.jradius</groupId>
             <artifactId>jradius-core</artifactId>
             <version>1.1.5</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/net.jradius/jradius-dictionary -->
+        <!-- JRadius Dictionary, for accessing packet attributes -->
         <dependency>
             <groupId>net.jradius</groupId>
             <artifactId>jradius-dictionary</artifactId>
             <version>1.1.5</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/net.jradius/jradius-extended -->
+        <!-- JRadius Extended, which inlcudes the SSL/TLS protocols -->
         <dependency>
             <groupId>net.jradius</groupId>
             <artifactId>jradius-extended</artifactId>
