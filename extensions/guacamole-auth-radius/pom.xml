@@ -280,11 +280,11 @@
 
         <!-- JRadius Library -->
         <!-- https://mvnrepository.com/artifact/net.jradius/jradius-core -->
-        <!--<dependency>
+        <dependency>
             <groupId>net.jradius</groupId>
             <artifactId>jradius-core</artifactId>
             <version>1.1.5</version>
-        </dependency>-->
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/net.jradius/jradius-dictionary -->
         <dependency>
