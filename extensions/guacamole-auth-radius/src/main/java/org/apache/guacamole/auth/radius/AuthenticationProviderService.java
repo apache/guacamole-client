@@ -108,6 +108,7 @@ public class AuthenticationProviderService {
         if (credentials.getPassword() == null || credentials.getPassword().isEmpty())
             return null;
 
+        // Try to get parameters to see if this is a post-challenge attempt
         String challengeResponse = request.getParameter(RadiusChallengeResponseField.PARAMETER_NAME);
         String radiusState = request.getParameter(RadiusStateField.PARAMETER_NAME);
 
@@ -128,7 +129,7 @@ public class AuthenticationProviderService {
             // If configure fails, permission to login is denied
             if (radPack == null) {
                 logger.debug("Nothing in the RADIUS packet.");
-                throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
+                throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
             }
 
             // If we get back an AccessReject packet, login is denied.
@@ -137,26 +138,29 @@ public class AuthenticationProviderService {
                 throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
             }
 
-            /**
-             * If we receive an AccessChallenge package, the server needs more information -
-             * We create a new form/field with the challenge message.
-             */
+            // If we receive an AccessChallenge package, the server needs more information -
+            // We create a new form/field with the challenge message.
             else if (radPack instanceof AccessChallenge) {
-                AttributeList radAttrs = radPack.getAttributes();
-                logger.debug("===BEGIN ATTRIBUTE DEBUG===");
-                for(RadiusAttribute attr : radAttrs.getAttributeList()) {
-                    logger.debug("Attribute: {}; Value: {}", attr.getAttributeName(), attr.getValue());
-                }
-                logger.debug("==END ATTRIBUTE DEBUG===");
+
                 try {
+                    // Try to get the state attribute - if it's not there, we have a problem
                     RadiusAttribute stateAttr = radPack.findAttribute(Attr_State.TYPE);
-                    // We should have a state attribute at this point, if not, we need to quit.
                     if (stateAttr == null) {
                         logger.error("Something went wrong, state attribute not present.");
                         logger.debug("State Attribute turned up null, which shouldn't happen in AccessChallenge.");
                         throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
                     }
-                    String replyMsg = radPack.getAttributeValue("Reply-Message").toString();
+
+                    // We need to get the reply message so we know what to ask the user
+                    RadiusAttribute replyAttr = radPack.findAttribute(Attr_ReplyMessage.TYPE);
+                    if (replyAttr == null) {
+                        logger.error("No reply message received from the server.");
+                        logger.debug("Expecting a Attr_ReplyMessage attribute on this packet, and did not get one.");
+                        throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
+                    }
+
+                    // We have the required attributes - convert to strings and then generate the additional login box/field
+                    String replyMsg = replyAttr.toString();
                     radiusState = new String(stateAttr.getValue().getBytes());
                     Field radiusResponseField = new RadiusChallengeResponseField(replyMsg);
                     Field radiusStateField = new RadiusStateField(radiusState);
@@ -172,6 +176,7 @@ public class AuthenticationProviderService {
 
             // If we receive AccessAccept, authentication has succeeded
             else if (radPack instanceof AccessAccept) {
+
                 try {
 
                     // Return AuthenticatedUser if bind succeeds
@@ -189,8 +194,9 @@ public class AuthenticationProviderService {
                 throw new GuacamoleInvalidCredentialsException("Unknown error trying to authenticate.", CredentialsInfo.USERNAME_PASSWORD);
         }
 
-        // We did receive a challenge response, so we're going to send that back to the server
+        // The user responded to the challenge, send that back to the server
         else {
+
             // Initialize Radius Packet and try to authenticate
             try {
                 radPack = radiusService.authenticate(credentials.getUsername(),
@@ -206,12 +212,14 @@ public class AuthenticationProviderService {
                 radiusService.disconnect();
             }
 
+            // Check the server response, see if we get accepted or not
             if (radPack instanceof AccessAccept) {
                 AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
                 authenticatedUser.init(credentials);
                 return authenticatedUser;
             }
 
+            // Authentication failed
             else {
                 logger.warn("RADIUS Challenge/Response authentication failed.");
                 logger.debug("Did not receive a RADIUS AccessAccept packet back from server.");
