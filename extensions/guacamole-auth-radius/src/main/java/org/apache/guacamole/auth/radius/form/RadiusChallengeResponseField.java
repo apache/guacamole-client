@@ -24,12 +24,12 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A form used to prompt the user for additional information when
+ * the RADIUS server sends a challenge back to the user with a reply
+ * message.
+ */
 public class RadiusChallengeResponseField extends Field {
-
-    /**
-     * Logger for this class.
-     */
-    private final Logger logger = LoggerFactory.getLogger(RadiusChallengeResponseField.class);
 
     /**
      * The field returned by the RADIUS challenge/response.
@@ -51,12 +51,13 @@ public class RadiusChallengeResponseField extends Field {
      */
     public RadiusChallengeResponseField(String replyMsg) {
         super(PARAMETER_NAME, RADIUS_FIELD_TYPE);
-        logger.debug("Initializing the RADIUS challenge/response field: {}", replyMsg);
-
         this.replyMsg = replyMsg;
 
     }
 
+    /**
+     * Get the value of the replyMsg field.
+     */
     public String getReplyMsg() {
         return replyMsg;
     }
