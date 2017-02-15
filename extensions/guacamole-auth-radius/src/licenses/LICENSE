@@ -222,10 +222,19 @@ AOP Alliance (http://aopalliance.sourceforge.net/)
 
 JRadius (https://github.com/coova/jradius)
 ------------------------------------------
+
     Version: 1.1.5
     From: 'Coova Technologies, LLC' (https://coova.github.io)
     License(s):
         LGPL-2.1 (bundled/jradius-1.1.5/LICENSE)
+
+BouncyCastle Crypto (https://www.bouncycastle.org/java.html)
+------------------------------------------------------------
+
+    Version: 1.44
+    From: 'The Legion of Bouncy Caslte' (https://www.bouncycastle.org)
+    License(s):
+        The Bouncy Castle License (bundled/bouncycastle-1.44/LICENSE
 
 Google Guice (https://github.com/google/guice)
 ----------------------------------------------
