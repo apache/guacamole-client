@@ -109,6 +109,9 @@ public class RadiusGuacamoleProperties {
 
     };
 
+    /**
+     * The CA file to use to validate RADIUS server certificates.
+     */
     public static final StringGuacamoleProperty RADIUS_CA_FILE = new StringGuacamoleProperty() {
 
         @Override
@@ -116,6 +119,9 @@ public class RadiusGuacamoleProperties {
 
     };
 
+    /**
+     * The type of file the RADIUS CA file is (PEM, PKCS12, DER).
+     */
     public static final StringGuacamoleProperty RADIUS_CA_TYPE = new StringGuacamoleProperty() {
 
         @Override
@@ -123,6 +129,9 @@ public class RadiusGuacamoleProperties {
 
     };
 
+    /**
+     * The password for the CA file.
+     */
     public static final StringGuacamoleProperty RADIUS_CA_PASSWORD = new StringGuacamoleProperty() {
 
         @Override
@@ -130,6 +139,9 @@ public class RadiusGuacamoleProperties {
 
     };
 
+    /**
+     * The file that stores the key/certificate pair to use for the RADIUS client connection.
+     */
     public static final StringGuacamoleProperty RADIUS_KEY_FILE = new StringGuacamoleProperty() {
 
         @Override
@@ -137,6 +149,9 @@ public class RadiusGuacamoleProperties {
 
     };
 
+    /**
+     * The type of file the RADIUS key file is (PEM, PKCS12, DER).
+     */
     public static final StringGuacamoleProperty RADIUS_KEY_TYPE = new StringGuacamoleProperty() {
 
         @Override
@@ -144,6 +159,9 @@ public class RadiusGuacamoleProperties {
 
     };
 
+    /**
+     * The password for the key file.
+     */
     public static final StringGuacamoleProperty RADIUS_KEY_PASSWORD = new StringGuacamoleProperty() {
 
         @Override
@@ -151,6 +169,9 @@ public class RadiusGuacamoleProperties {
 
     };
 
+    /**
+     * Whether or not to trust all RADIUS server certificates.
+     */
     public static final BooleanGuacamoleProperty RADIUS_TRUST_ALL = new BooleanGuacamoleProperty() {
 
         @Override
@@ -158,6 +179,9 @@ public class RadiusGuacamoleProperties {
 
     };
 
+    /**
+     * The tunneled protocol to use inside a RADIUS EAP-TTLS connection.
+     */
     public static final StringGuacamoleProperty RADIUS_EAP_TTLS_INNER_PROTOCOL = new StringGuacamoleProperty() {
 
         @Override
