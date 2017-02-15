@@ -24,13 +24,14 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The invisible field that stores the state of the RADIUS
+ * connection.  The state is simply a placeholder that helps
+ * the client and server pick back up the conversation
+ * at the correct spot during challenge/response.
+ */
 public class RadiusStateField extends Field {
-
-    /**
-     * Logger for this class.
-     */
-    private final Logger logger = LoggerFactory.getLogger(RadiusStateField.class);
-
+    
     /**
      * The parameter returned by the RADIUS state.
      */
@@ -51,8 +52,6 @@ public class RadiusStateField extends Field {
      */
     public RadiusStateField(String radiusState) {
         super(PARAMETER_NAME, RADIUS_FIELD_TYPE);
-        logger.debug("Initializing the RADIUS state field: {}", radiusState);
-
         this.radiusState = radiusState;
 
     }
