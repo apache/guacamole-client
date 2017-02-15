@@ -28,7 +28,7 @@ import org.apache.guacamole.environment.Environment;
 /**
  * Service for retrieving configuration information regarding the RADIUS server.
  *
- * @author Michael Jumper
+ * @author Nick Couchman
  */
 public class ConfigurationService {
 

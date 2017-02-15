@@ -29,7 +29,7 @@ import org.apache.guacamole.properties.StringGuacamoleProperty;
  * These properties will be read from guacamole.properties when the RADIUS
  * authentication provider is used.
  *
- * @author Michael Jumper
+ * @author Nick Couchman
  */
 public class RadiusGuacamoleProperties {
 
