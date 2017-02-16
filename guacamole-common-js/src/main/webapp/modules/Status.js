@@ -141,6 +141,45 @@ Guacamole.Status.Code = {
     "RESOURCE_CLOSED": 0x0206,
 
     /**
+     * The operation could not be performed because the upstream server does
+     * not appear to exist.
+     *
+     * @type {Number}
+     */
+    "UPSTREAM_NOT_FOUND": 0x0207,
+
+    /**
+     * The operation could not be performed because the upstream server is not
+     * available to service the request.
+     *
+     * @type {Number}
+     */
+    "UPSTREAM_UNAVAILABLE": 0x0208,
+
+    /**
+     * The session within the upstream server has ended because it conflicted
+     * with another session.
+     *
+     * @type {Number}
+     */
+    "SESSION_CONFLICT": 0x0209,
+
+    /**
+     * The session within the upstream server has ended because it appeared to
+     * be inactive.
+     *
+     * @type {Number}
+     */
+    "SESSION_TIMEOUT": 0x020A,
+
+    /**
+     * The session within the upstream server has been forcibly terminated.
+     *
+     * @type {Number}
+     */
+    "SESSION_CLOSED": 0x020B,
+
+    /**
      * The operation could not be performed because bad parameters were given.
      *
      * @type {Number}

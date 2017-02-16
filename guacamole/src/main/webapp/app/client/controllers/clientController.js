@@ -83,7 +83,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         0x0201: true,
         0x0202: true,
         0x0203: true,
-        0x0205: true,
+        0x0207: true,
+        0x0208: true,
+        0x0209: true,
+        0x020A: true,
+        0x020B: true,
         0x0301: true,
         0x0303: true,
         0x0308: true,
@@ -98,6 +102,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         0x0200: true,
         0x0202: true,
         0x0203: true,
+        0x0207: true,
+        0x0208: true,
         0x0301: true,
         0x0308: true
     };
@@ -113,6 +119,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         0x0203: true,
         0x0204: true,
         0x0205: true,
+        0x0207: true,
+        0x0208: true,
         0x0301: true,
         0x0303: true,
         0x0308: true,
@@ -127,6 +135,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         0x0200: true,
         0x0202: true,
         0x0203: true,
+        0x0207: true,
+        0x0208: true,
         0x0308: true
     };
 
