@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "0.9.9-incubating",
+    "guacamoleVersion" : "0.9.11-incubating",
 
     "name"      : "OAuth Authentication Extension",
     "namespace" : "guac-oauth",
