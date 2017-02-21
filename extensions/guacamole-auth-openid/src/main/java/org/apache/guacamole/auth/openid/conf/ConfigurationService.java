@@ -22,12 +22,85 @@ package org.apache.guacamole.auth.openid.conf;
 import com.google.inject.Inject;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.properties.StringGuacamoleProperty;
 
 /**
  * Service for retrieving configuration information regarding the OpenID
  * service.
  */
 public class ConfigurationService {
+
+    /**
+     * The authorization endpoint (URI) of the OpenID service.
+     */
+    private static final StringGuacamoleProperty OPENID_AUTHORIZATION_ENDPOINT =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "openid-authorization-endpoint"; }
+
+    };
+
+    /**
+     * The endpoint (URI) of the JWKS service which defines how received ID
+     * tokens (JWTs) shall be validated.
+     */
+    private static final StringGuacamoleProperty OPENID_JWKS_ENDPOINT =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "openid-jwks-endpoint"; }
+
+    };
+
+    /**
+     * The issuer to expect for all received ID tokens.
+     */
+    private static final StringGuacamoleProperty OPENID_ISSUER =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "openid-issuer"; }
+
+    };
+
+    /**
+     * The claim type which contains the authenticated user's username within
+     * any valid JWT.
+     */
+    private static final StringGuacamoleProperty OPENID_USERNAME_CLAIM_TYPE =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "openid-username-claim-type"; }
+
+    };
+
+    /**
+     * OpenID client ID which should be submitted to the OpenID service when
+     * necessary. This value is typically provided by the OpenID service when
+     * OpenID credentials are generated for your application.
+     */
+    private static final StringGuacamoleProperty OPENID_CLIENT_ID =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "openid-client-id"; }
+
+    };
+
+    /**
+     * The URI that the OpenID service should redirect to after the
+     * authentication process is complete. This must be the full URL that a
+     * user would enter into their browser to access Guacamole.
+     */
+    private static final StringGuacamoleProperty OPENID_REDIRECT_URI =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "openid-redirect-uri"; }
+
+    };
 
     /**
      * The Guacamole server environment.
@@ -48,7 +121,7 @@ public class ConfigurationService {
      *     endpoint property is missing.
      */
     public String getAuthorizationEndpoint() throws GuacamoleException {
-        return environment.getRequiredProperty(OpenIDGuacamoleProperties.OPENID_AUTHORIZATION_ENDPOINT);
+        return environment.getRequiredProperty(OPENID_AUTHORIZATION_ENDPOINT);
     }
 
     /**
@@ -66,7 +139,7 @@ public class ConfigurationService {
      *     property is missing.
      */
     public String getClientID() throws GuacamoleException {
-        return environment.getRequiredProperty(OpenIDGuacamoleProperties.OPENID_CLIENT_ID);
+        return environment.getRequiredProperty(OPENID_CLIENT_ID);
     }
 
     /**
@@ -84,7 +157,7 @@ public class ConfigurationService {
      *     property is missing.
      */
     public String getRedirectURI() throws GuacamoleException {
-        return environment.getRequiredProperty(OpenIDGuacamoleProperties.OPENID_REDIRECT_URI);
+        return environment.getRequiredProperty(OPENID_REDIRECT_URI);
     }
 
     /**
@@ -100,7 +173,7 @@ public class ConfigurationService {
      *     is missing.
      */
     public String getIssuer() throws GuacamoleException {
-        return environment.getRequiredProperty(OpenIDGuacamoleProperties.OPENID_ISSUER);
+        return environment.getRequiredProperty(OPENID_ISSUER);
     }
 
     /**
@@ -118,7 +191,7 @@ public class ConfigurationService {
      *     property is missing.
      */
     public String getJWKSEndpoint() throws GuacamoleException {
-        return environment.getRequiredProperty(OpenIDGuacamoleProperties.OPENID_JWKS_ENDPOINT);
+        return environment.getRequiredProperty(OPENID_JWKS_ENDPOINT);
     }
 
     /**
@@ -134,7 +207,7 @@ public class ConfigurationService {
      *     type property is missing.
      */
     public String getUsernameClaimType() throws GuacamoleException {
-        return environment.getRequiredProperty(OpenIDGuacamoleProperties.OPENID_USERNAME_CLAIM_TYPE);
+        return environment.getRequiredProperty(OPENID_USERNAME_CLAIM_TYPE);
     }
 
 }
