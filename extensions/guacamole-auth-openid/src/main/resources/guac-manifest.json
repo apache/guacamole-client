@@ -2,17 +2,17 @@
 
     "guacamoleVersion" : "0.9.11-incubating",
 
-    "name"      : "OAuth Authentication Extension",
-    "namespace" : "guac-oauth",
+    "name"      : "OpenID Authentication Extension",
+    "namespace" : "guac-openid",
 
     "authProviders" : [
-        "org.apache.guacamole.auth.oauth.OAuthAuthenticationProvider"
+        "org.apache.guacamole.auth.openid.OpenIDAuthenticationProvider"
     ],
 
     "js" : [
-        "oauthModule.js",
-        "oauthController.js",
-        "oauthConfig.js"
+        "openidModule.js",
+        "openidController.js",
+        "openidConfig.js"
     ]
 
 }

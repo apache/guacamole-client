@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.oauth.user;
+package org.apache.guacamole.auth.openid.user;
 
 import com.google.inject.Inject;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
@@ -25,8 +25,8 @@ import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
- * An OAuth-specific implementation of AuthenticatedUser, associating a
- * username and particular set of credentials with the OAuth authentication
+ * An openid-specific implementation of AuthenticatedUser, associating a
+ * username and particular set of credentials with the OpenID authentication
  * provider.
  */
 public class AuthenticatedUser extends AbstractAuthenticatedUser {

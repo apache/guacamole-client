@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.oauth.form;
+package org.apache.guacamole.auth.openid.form;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -26,15 +26,15 @@ import java.security.SecureRandom;
 import org.apache.guacamole.form.Field;
 
 /**
- * Field definition which represents the token returned by an OAuth service.
+ * Field definition which represents the token returned by an OpenID service.
  * Within the user interface, this will be rendered as an appropriate "Log in
- * with ..." button which links to the OAuth service.
+ * with ..." button which links to the OpenID service.
  */
-public class OAuthTokenField extends Field {
+public class TokenField extends Field {
 
     /**
      * The standard HTTP parameter which will be included within the URL by all
-     * OAuth services upon successful authentication and redirect.
+     * OpenID services upon successful authentication and redirect.
      */
     public static final String PARAMETER_NAME = "id_token";
 
@@ -61,31 +61,31 @@ public class OAuthTokenField extends Field {
     }
 
     /**
-     * Creates a new OAuth "id_token" field which links to the given OAuth
+     * Creates a new OpenID "id_token" field which links to the given OpenID
      * service using the provided client ID. Successful authentication at the
-     * OAuth service will result in the client being redirected to the specified
-     * redirect URI. The OAuth token will be embedded in the fragment (the part
+     * OpenID service will result in the client being redirected to the specified
+     * redirect URI. The OpenID token will be embedded in the fragment (the part
      * following the hash symbol) of that URI, which the JavaScript side of
      * this extension will move to the query parameters.
      *
      * @param authorizationEndpoint
-     *     The full URL of the endpoint accepting OAuth authentication
+     *     The full URL of the endpoint accepting OpenID authentication
      *     requests.
      *
      * @param clientID
-     *     The ID of the OAuth client. This is normally determined ahead of
-     *     time by the OAuth service through some manual credential request
+     *     The ID of the OpenID client. This is normally determined ahead of
+     *     time by the OpenID service through some manual credential request
      *     procedure.
      *
      * @param redirectURI
-     *     The URI that the OAuth service should redirect to upon successful
+     *     The URI that the OpenID service should redirect to upon successful
      *     authentication.
      */
-    public OAuthTokenField(String authorizationEndpoint, String clientID,
+    public TokenField(String authorizationEndpoint, String clientID,
             String redirectURI) {
 
         // Init base field properties
-        super(PARAMETER_NAME, "GUAC_OAUTH_TOKEN");
+        super(PARAMETER_NAME, "GUAC_OPENID_TOKEN");
 
         // Build authorization URI from given values
         try {
@@ -106,7 +106,7 @@ public class OAuthTokenField extends Field {
 
     /**
      * Returns the full URI that this field should link to when a new token
-     * needs to be obtained from the OAuth service.
+     * needs to be obtained from the OpenID service.
      *
      * @return
      *     The full URI that this field should link to.

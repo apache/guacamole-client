@@ -17,16 +17,16 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.oauth;
+package org.apache.guacamole.auth.openid;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.guacamole.auth.oauth.conf.ConfigurationService;
-import org.apache.guacamole.auth.oauth.form.OAuthTokenField;
-import org.apache.guacamole.auth.oauth.token.TokenValidationService;
-import org.apache.guacamole.auth.oauth.user.AuthenticatedUser;
+import org.apache.guacamole.auth.openid.conf.ConfigurationService;
+import org.apache.guacamole.auth.openid.form.TokenField;
+import org.apache.guacamole.auth.openid.token.TokenValidationService;
+import org.apache.guacamole.auth.openid.user.AuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.net.auth.Credentials;
@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Service providing convenience functions for the OAuth AuthenticationProvider
+ * Service providing convenience functions for the OpenID AuthenticationProvider
  * implementation.
  */
 public class AuthenticationProviderService {
@@ -47,7 +47,7 @@ public class AuthenticationProviderService {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
 
     /**
-     * Service for retrieving OAuth configuration information.
+     * Service for retrieving OpenID configuration information.
      */
     @Inject
     private ConfigurationService confService;
@@ -84,10 +84,10 @@ public class AuthenticationProviderService {
 
         String token = null;
 
-        // Pull OAuth token from request if present
+        // Pull OpenID token from request if present
         HttpServletRequest request = credentials.getRequest();
         if (request != null)
-            token = request.getParameter(OAuthTokenField.PARAMETER_NAME);
+            token = request.getParameter(TokenField.PARAMETER_NAME);
 
         // If token provided, validate and produce authenticated user
         if (token != null) {
@@ -99,13 +99,13 @@ public class AuthenticationProviderService {
 
         }
 
-        // Request OAuth token
+        // Request OpenID token
         throw new GuacamoleInvalidCredentialsException("Invalid login.",
             new CredentialsInfo(Arrays.asList(new Field[] {
 
-                // OAuth-specific token (will automatically redirect the user
+                // OpenID-specific token (will automatically redirect the user
                 // to the authorization page via JavaScript)
-                new OAuthTokenField(
+                new TokenField(
                     confService.getAuthorizationEndpoint(),
                     confService.getClientID(),
                     confService.getRedirectURI()

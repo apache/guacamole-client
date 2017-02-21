@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.oauth;
+package org.apache.guacamole.auth.openid;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -29,11 +29,11 @@ import org.apache.guacamole.net.auth.UserContext;
 
 /**
  * Guacamole authentication backend which authenticates users using an
- * arbitrary external system implementing OAuth. No storage for connections is
+ * arbitrary external system implementing OpenID. No storage for connections is
  * provided - only authentication. Storage must be provided by some other
  * extension.
  */
-public class OAuthAuthenticationProvider implements AuthenticationProvider {
+public class OpenIDAuthenticationProvider implements AuthenticationProvider {
 
     /**
      * Injector which will manage the object graph of this authentication
@@ -42,25 +42,25 @@ public class OAuthAuthenticationProvider implements AuthenticationProvider {
     private final Injector injector;
 
     /**
-     * Creates a new OAuthAuthenticationProvider that authenticates users
-     * against an OAuth service
+     * Creates a new OpenIDAuthenticationProvider that authenticates users
+     * against an OpenID service.
      *
      * @throws GuacamoleException
      *     If a required property is missing, or an error occurs while parsing
      *     a property.
      */
-    public OAuthAuthenticationProvider() throws GuacamoleException {
+    public OpenIDAuthenticationProvider() throws GuacamoleException {
 
         // Set up Guice injector.
         injector = Guice.createInjector(
-            new OAuthAuthenticationProviderModule(this)
+            new OpenIDAuthenticationProviderModule(this)
         );
 
     }
 
     @Override
     public String getIdentifier() {
-        return "oauth";
+        return "openid";
     }
 
     @Override

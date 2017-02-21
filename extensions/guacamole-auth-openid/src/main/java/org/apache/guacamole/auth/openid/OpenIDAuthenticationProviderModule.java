@@ -17,20 +17,20 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.oauth;
+package org.apache.guacamole.auth.openid;
 
 import com.google.inject.AbstractModule;
-import org.apache.guacamole.auth.oauth.conf.ConfigurationService;
-import org.apache.guacamole.auth.oauth.token.TokenValidationService;
+import org.apache.guacamole.auth.openid.conf.ConfigurationService;
+import org.apache.guacamole.auth.openid.token.TokenValidationService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 
 /**
- * Guice module which configures OAuth-specific injections.
+ * Guice module which configures openid-specific injections.
  */
-public class OAuthAuthenticationProviderModule extends AbstractModule {
+public class OpenIDAuthenticationProviderModule extends AbstractModule {
 
     /**
      * Guacamole server environment.
@@ -38,14 +38,14 @@ public class OAuthAuthenticationProviderModule extends AbstractModule {
     private final Environment environment;
 
     /**
-     * A reference to the OAuthAuthenticationProvider on behalf of which this
+     * A reference to the OpenIDAuthenticationProvider on behalf of which this
      * module has configured injection.
      */
     private final AuthenticationProvider authProvider;
 
     /**
-     * Creates a new OAuth authentication provider module which configures
-     * injection for the OAuthAuthenticationProvider.
+     * Creates a new OpenID authentication provider module which configures
+     * injection for the OpenIDAuthenticationProvider.
      *
      * @param authProvider
      *     The AuthenticationProvider for which injection is being configured.
@@ -54,7 +54,7 @@ public class OAuthAuthenticationProviderModule extends AbstractModule {
      *     If an error occurs while retrieving the Guacamole server
      *     environment.
      */
-    public OAuthAuthenticationProviderModule(AuthenticationProvider authProvider)
+    public OpenIDAuthenticationProviderModule(AuthenticationProvider authProvider)
             throws GuacamoleException {
 
         // Get local environment
@@ -72,7 +72,7 @@ public class OAuthAuthenticationProviderModule extends AbstractModule {
         bind(AuthenticationProvider.class).toInstance(authProvider);
         bind(Environment.class).toInstance(environment);
 
-        // Bind OAuth-specific services
+        // Bind openid-specific services
         bind(ConfigurationService.class);
         bind(TokenValidationService.class);
 

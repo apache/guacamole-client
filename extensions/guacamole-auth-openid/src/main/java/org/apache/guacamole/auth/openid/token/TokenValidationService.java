@@ -17,10 +17,10 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.oauth.token;
+package org.apache.guacamole.auth.openid.token;
 
 import com.google.inject.Inject;
-import org.apache.guacamole.auth.oauth.conf.ConfigurationService;
+import org.apache.guacamole.auth.openid.conf.ConfigurationService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
@@ -34,12 +34,12 @@ import org.jose4j.keys.resolvers.HttpsJwksVerificationKeyResolver;
 
 /**
  * Service for validating ID tokens forwarded to us by the client, verifying
- * that they did indeed come from the OAuth service.
+ * that they did indeed come from the OpenID service.
  */
 public class TokenValidationService {
 
     /**
-     * Service for retrieving OAuth configuration information.
+     * Service for retrieving OpenID configuration information.
      */
     @Inject
     private ConfigurationService confService;

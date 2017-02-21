@@ -18,13 +18,11 @@
  */
 
 /**
- * Controller for the "GUAC_OAUTH_TOKEN" field which simply redirects the user
- * immediately to the authorization URI.
+ * Module which provides handling for OpenID authentication.
  */
-angular.module('guacOAuth').controller('guacOAuthController', ['$scope',
-    function guacOAuthController($scope) {
+angular.module('guacOpenID', [
+    'form'
+]);
 
-    // Redirect to authorization URI
-    window.location = $scope.field.authorizationURI;
-
-}]);
+// Ensure the OpenID module is loaded along with the rest of the app
+angular.module('index').requires.push('guacOpenID');

@@ -18,16 +18,16 @@
  */
 
 /**
- * Config block which registers OAuth-specific field types.
+ * Config block which registers openid-specific field types.
  */
-angular.module('guacOAuth').config(['formServiceProvider',
-        function guacOAuthConfig(formServiceProvider) {
+angular.module('guacOpenID').config(['formServiceProvider',
+        function guacOpenIDConfig(formServiceProvider) {
 
-    // Define field for token from OAuth service
-    formServiceProvider.registerFieldType("GUAC_OAUTH_TOKEN", {
+    // Define field for token from OpenID service
+    formServiceProvider.registerFieldType("GUAC_OPENID_TOKEN", {
         template   : '',
-        controller : 'guacOAuthController',
-        module     : 'guacOAuth'
+        controller : 'guacOpenIDController',
+        module     : 'guacOpenID'
     });
 
 }]);
