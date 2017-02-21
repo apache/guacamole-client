@@ -244,8 +244,15 @@ angular.module('form').provider('formService', function formServiceProvider() {
             }
 
             // If no raw HTML template is provided, retrieve template from URL
-            else
+            else if (fieldType.templateUrl)
                 templateRequest = $templateRequest(fieldType.templateUrl);
+
+            // Otherwise, use empty template
+            else {
+                var emptyTemplate= $q.defer();
+                emptyTemplate.resolve('');
+                templateRequest = emptyTemplate.promise;
+            }
 
             // Defer compilation of template pending successful retrieval
             var compiledTemplate = $q.defer();
