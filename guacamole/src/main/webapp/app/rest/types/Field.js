@@ -76,6 +76,14 @@ angular.module('rest').factory('Field', [function defineField() {
         TEXT : 'TEXT',
 
         /**
+         * The type string associated with parameters that may contain an email
+         * address.
+         *
+         * @type String
+         */
+        EMAIL : 'EMAIL',
+
+        /**
          * The type string associated with parameters that may contain an
          * arbitrary string, where that string represents the username of the
          * user authenticating with the remote desktop service.

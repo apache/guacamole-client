@@ -19,6 +19,7 @@
 
 /* Do not stretch connection parameters to fit available area */
 .connection-parameters input[type=text],
+.connection-parameters input[type=email],
 .connection-parameters input[type=password],
 .connection-parameters input[type=number] {
     width: auto;

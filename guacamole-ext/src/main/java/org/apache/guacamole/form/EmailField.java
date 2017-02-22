@@ -17,29 +17,21 @@
  * under the License.
  */
 
-input[type=checkbox], input[type=number], input[type=text], input[type=email], input[type=radio], label, textarea {
-    -webkit-tap-highlight-color: rgba(128,192,128,0.5);
-}
+package org.apache.guacamole.form;
 
-div.location, input[type=text], input[type=email], input[type=number], input[type=password], textarea {
-    border: 1px solid #777;
-    -moz-border-radius: 0.2em;
-    -webkit-border-radius: 0.2em;
-    -khtml-border-radius: 0.2em;
-    border-radius: 0.2em;
-    width: 100%;
-    max-width: 16em;
-    padding: 0.25em;
-    font-size: 0.8em;
-    background: white;
-    cursor: text;
-}
+/**
+ * Represents a text field which may contain an email address.
+ */
+public class EmailField extends Field {
 
-textarea {
-    max-width: none;
-    width: 30em;
-    height: 10em;
-    white-space: pre;
-    word-wrap: normal;
-    overflow: auto;
+    /**
+     * Creates a new EmailField with the given name.
+     *
+     * @param name
+     *     The unique name to associate with this field.
+     */
+    public EmailField(String name) {
+        super(name, Field.Type.EMAIL);
+    }
+
 }

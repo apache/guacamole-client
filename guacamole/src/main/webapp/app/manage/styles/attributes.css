@@ -19,6 +19,7 @@
 
 /* Do not stretch attributes to fit available area */
 .attributes input[type=text],
+.attributes input[type=email],
 .attributes input[type=password],
 .attributes input[type=number] {
     width: auto;
