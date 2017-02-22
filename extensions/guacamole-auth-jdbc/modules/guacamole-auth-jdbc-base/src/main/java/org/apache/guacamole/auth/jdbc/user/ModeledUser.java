@@ -45,6 +45,7 @@ import org.apache.guacamole.form.BooleanField;
 import org.apache.guacamole.form.DateField;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.Form;
+import org.apache.guacamole.form.TextField;
 import org.apache.guacamole.form.TimeField;
 import org.apache.guacamole.form.TimeZoneField;
 import org.apache.guacamole.net.auth.User;
@@ -63,6 +64,17 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(ModeledUser.class);
+
+    /**
+     * The name of the attribute which holds the user's full name, if known.
+     */
+    public static final String FULL_NAME_ATTRIBUTE_NAME = "full-name";
+
+    /**
+     * The name of the attribute which holds the user's email address, if
+     * known.
+     */
+    public static final String EMAIL_ADDRESS_ATTRIBUTE_NAME = "email-address";
 
     /**
      * The name of the attribute which controls whether a user account is
@@ -107,6 +119,15 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     public static final String TIMEZONE_ATTRIBUTE_NAME = "timezone";
 
     /**
+     * All attributes related to user profile information, within a logical
+     * form.
+     */
+    public static final Form PROFILE = new Form("profile", Arrays.<Field>asList(
+        new TextField(FULL_NAME_ATTRIBUTE_NAME),
+        new TextField(EMAIL_ADDRESS_ATTRIBUTE_NAME)
+    ));
+
+    /**
      * All attributes related to restricting user accounts, within a logical
      * form.
      */
@@ -125,6 +146,7 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
      * logical forms.
      */
     public static final Collection<Form> ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(
+        PROFILE,
         ACCOUNT_RESTRICTIONS
     ));
 
@@ -372,6 +394,25 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     }
 
     /**
+     * Stores all unrestricted (unprivileged) attributes within the given Map,
+     * pulling the values of those attributes from the underlying user model.
+     * If no value is yet defined for an attribute, that attribute will be set
+     * to null.
+     *
+     * @param attributes
+     *     The Map to store all unrestricted attributes within.
+     */
+    private void putUnrestrictedAttributes(Map<String, String> attributes) {
+
+        // Set full name attribute
+        attributes.put(FULL_NAME_ATTRIBUTE_NAME, "Testy McTesterson"); // TODO
+
+        // Set email address attribute
+        attributes.put(EMAIL_ADDRESS_ATTRIBUTE_NAME, "test@test.test"); // TODO
+
+    }
+
+    /**
      * Parses the given string into a corresponding date. The string must
      * follow the standard format used by date attributes, as defined by
      * DateField.FORMAT and as would be produced by DateField.format().
@@ -477,10 +518,30 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
 
     }
 
+    /**
+     * Stores all unrestricted (unprivileged) attributes within the underlying
+     * user model, pulling the values of those attributes from the given Map.
+     *
+     * @param attributes
+     *     The Map to pull all unrestricted attributes from.
+     */
+    private void setUnrestrictedAttributes(Map<String, String> attributes) {
+
+        // Translate full name attribute
+        logger.info("FULL NAME: \"{}\"", attributes.get(FULL_NAME_ATTRIBUTE_NAME)); // TODO
+
+        // Translate email address attribute
+        logger.info("EMAIL ADDRESS: \"{}\"", attributes.get(EMAIL_ADDRESS_ATTRIBUTE_NAME)); // TODO
+
+    }
+
     @Override
     public Map<String, String> getAttributes() {
 
         Map<String, String> attributes = new HashMap<String, String>();
+
+        // Always include unrestricted attributes
+        putUnrestrictedAttributes(attributes);
 
         // Include restricted attributes only if they should be exposed
         if (exposeRestrictedAttributes)
@@ -491,6 +552,9 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
 
     @Override
     public void setAttributes(Map<String, String> attributes) {
+
+        // Always assign unrestricted attributes
+        setUnrestrictedAttributes(attributes);
 
         // Assign restricted attributes only if they are exposed
         if (exposeRestrictedAttributes)
