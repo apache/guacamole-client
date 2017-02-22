@@ -64,7 +64,16 @@ angular.module('form').directive('guacForm', [function form() {
              *
              * @type Boolean
              */
-            modelOnly : '='
+            modelOnly : '=',
+
+            /**
+             * Whether the contents of the form should be restricted to those
+             * fields/forms which have associated values defined within the
+             * given model object. By default, all fields will be shown.
+             *
+             * @type Boolean
+             */
+            valuesOnly : '='
 
         },
         templateUrl: 'app/form/templates/form.html',
@@ -184,14 +193,18 @@ angular.module('form').directive('guacForm', [function form() {
              */
             $scope.isVisible = function isVisible(field) {
 
-                // All fields are visible if contents are not restricted to
-                // model properties only
-                if (!$scope.modelOnly)
-                    return true;
+                // Forms with valuesOnly set should display only fields with
+                // associated values in the model object
+                if ($scope.valuesOnly)
+                    return field && $scope.values[field.name];
 
-                // Otherwise, fields are only visible if they are present
-                // within the model
-                return field && (field.name in $scope.values);
+                // Forms with modelOnly set should display only fields with
+                // associated properties in the model object
+                if ($scope.modelOnly)
+                    return field && (field.name in $scope.values);
+
+                // Otherwise, all fields are visible
+                return true;
 
             };
 
