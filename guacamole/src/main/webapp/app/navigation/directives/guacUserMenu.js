@@ -47,6 +47,8 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
             var $location             = $injector.get('$location');
             var $route                = $injector.get('$route');
             var authenticationService = $injector.get('authenticationService');
+            var schemaService         = $injector.get('schemaService');
+            var userService           = $injector.get('userService');
             var userPageService       = $injector.get('userPageService');
 
             /**
@@ -56,6 +58,18 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
              */
             $scope.username = authenticationService.getCurrentUsername();
             
+            // Pull user attribute schema
+            schemaService.getUserAttributes(authenticationService.getDataSource())
+                    .success(function attributesReceived(attributes) {
+                $scope.attributes = attributes;
+            });
+
+            // Pull user data
+            userService.getUser(authenticationService.getDataSource(), $scope.username)
+                    .success(function userRetrieved(user) {
+                $scope.user = user;
+            });
+
             /**
              * The available main pages for the current user.
              * 

@@ -22,6 +22,7 @@
  */
 angular.module('navigation', [
     'auth',
+    'form',
     'notification',
     'rest'
 ]);
