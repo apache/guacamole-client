@@ -43,6 +43,7 @@ import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionService
 import org.apache.guacamole.auth.jdbc.permission.UserPermissionService;
 import org.apache.guacamole.form.BooleanField;
 import org.apache.guacamole.form.DateField;
+import org.apache.guacamole.form.EmailField;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.form.TextField;
@@ -124,7 +125,7 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
      */
     public static final Form PROFILE = new Form("profile", Arrays.<Field>asList(
         new TextField(FULL_NAME_ATTRIBUTE_NAME),
-        new TextField(EMAIL_ADDRESS_ATTRIBUTE_NAME)
+        new EmailField(EMAIL_ADDRESS_ATTRIBUTE_NAME)
     ));
 
     /**
