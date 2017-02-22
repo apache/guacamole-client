@@ -1,5 +1,6 @@
 <div class="form-group">
-    <div ng-repeat="form in forms" class="form">
+    <div ng-repeat="form in forms" class="form"
+         ng-show="containsVisible(form.fields)">
 
         <!-- Form name -->
         <h3 ng-show="form.name">{{getSectionHeader(form) | translate}}</h3>
@@ -7,6 +8,7 @@
         <!-- All fields in form -->
         <div class="fields">
             <guac-form-field ng-repeat="field in form.fields" namespace="namespace"
+                             ng-show="isVisible(field)"
                              field="field" model="values[field.name]"></guac-form-field>
         </div>
 

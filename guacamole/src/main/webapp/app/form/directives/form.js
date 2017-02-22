@@ -55,7 +55,16 @@ angular.module('form').directive('guacForm', [function form() {
              *
              * @type Object.<String, String>
              */
-            model : '='
+            model : '=',
+
+            /**
+             * Whether the contents of the form should be restricted to those
+             * fields/forms which match properties defined within the given
+             * model object. By default, all fields will be shown.
+             *
+             * @type Boolean
+             */
+            modelOnly : '='
 
         },
         templateUrl: 'app/form/templates/form.html',
@@ -162,6 +171,55 @@ angular.module('form').directive('guacForm', [function form() {
                     $scope.values = {};
 
             });
+
+            /**
+             * Returns whether the given field should be displayed to the
+             * current user.
+             *
+             * @param {Field} field
+             *     The field to check.
+             *
+             * @returns {Boolean}
+             *     true if the given field should be visible, false otherwise.
+             */
+            $scope.isVisible = function isVisible(field) {
+
+                // All fields are visible if contents are not restricted to
+                // model properties only
+                if (!$scope.modelOnly)
+                    return true;
+
+                // Otherwise, fields are only visible if they are present
+                // within the model
+                return field && (field.name in $scope.values);
+
+            };
+
+            /**
+             * Returns whether at least one of the given fields should be
+             * displayed to the current user.
+             *
+             * @param {Field[]} fields
+             *     The array of fields to check.
+             *
+             * @returns {Boolean}
+             *     true if at least one field within the given array should be
+             *     visible, false otherwise.
+             */
+            $scope.containsVisible = function containsVisible(fields) {
+
+                // If fields are defined, check whether at least one is visible
+                if (fields) {
+                    for (var i = 0; i < fields.length; i++) {
+                        if ($scope.isVisible(fields[i]))
+                            return true;
+                    }
+                }
+
+                // Otherwise, there are no visible fields
+                return false;
+
+            };
 
         }] // end controller
     };
