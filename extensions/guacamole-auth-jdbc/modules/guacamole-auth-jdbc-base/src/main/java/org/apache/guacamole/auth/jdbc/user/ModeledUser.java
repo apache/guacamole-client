@@ -177,6 +177,34 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     private UserPermissionService userPermissionService;
 
     /**
+     * Whether attributes which control access restrictions should be exposed
+     * via getAttributes() or allowed to be set via setAttributes().
+     */
+    private boolean exposeRestrictedAttributes = false;
+
+    /**
+     * Initializes this ModeledUser, associating it with the current
+     * authenticated user and populating it with data from the given user
+     * model.
+     *
+     * @param currentUser
+     *     The user that created or retrieved this object.
+     *
+     * @param model
+     *     The backing model object.
+     *
+     * @param exposeRestrictedAttributes
+     *     Whether attributes which control access restrictions should be
+     *     exposed via getAttributes() or allowed to be set via
+     *     setAttributes().
+     */
+    public void init(ModeledAuthenticatedUser currentUser, UserModel model,
+            boolean exposeRestrictedAttributes) {
+        super.init(currentUser, model);
+        this.exposeRestrictedAttributes = exposeRestrictedAttributes;
+    }
+
+    /**
      * The plaintext password previously set by a call to setPassword(), if
      * any. The password of a user cannot be retrieved once saved into the
      * database, so this serves to ensure getPassword() returns a reasonable
@@ -309,10 +337,16 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
         return userPermissionService.getPermissionSet(getCurrentUser(), this);
     }
 
-    @Override
-    public Map<String, String> getAttributes() {
-
-        Map<String, String> attributes = new HashMap<String, String>();
+    /**
+     * Stores all restricted (privileged) attributes within the given Map,
+     * pulling the values of those attributes from the underlying user model.
+     * If no value is yet defined for an attribute, that attribute will be set
+     * to null.
+     *
+     * @param attributes
+     *     The Map to store all restricted attributes within.
+     */
+    private void putRestrictedAttributes(Map<String, String> attributes) {
 
         // Set disabled attribute
         attributes.put(DISABLED_ATTRIBUTE_NAME, getModel().isDisabled() ? "true" : null);
@@ -335,7 +369,6 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
         // Set timezone attribute
         attributes.put(TIMEZONE_ATTRIBUTE_NAME, getModel().getTimeZone());
 
-        return attributes;
     }
 
     /**
@@ -396,8 +429,14 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
 
     }
 
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
+    /**
+     * Stores all restricted (privileged) attributes within the underlying user
+     * model, pulling the values of those attributes from the given Map.
+     *
+     * @param attributes
+     *     The Map to pull all restricted attributes from.
+     */
+    private void setRestrictedAttributes(Map<String, String> attributes) {
 
         // Translate disabled attribute
         getModel().setDisabled("true".equals(attributes.get(DISABLED_ATTRIBUTE_NAME)));
@@ -435,6 +474,27 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
 
         // Translate timezone attribute
         getModel().setTimeZone(TimeZoneField.parse(attributes.get(TIMEZONE_ATTRIBUTE_NAME)));
+
+    }
+
+    @Override
+    public Map<String, String> getAttributes() {
+
+        Map<String, String> attributes = new HashMap<String, String>();
+
+        // Include restricted attributes only if they should be exposed
+        if (exposeRestrictedAttributes)
+            putRestrictedAttributes(attributes);
+
+        return attributes;
+    }
+
+    @Override
+    public void setAttributes(Map<String, String> attributes) {
+
+        // Assign restricted attributes only if they are exposed
+        if (exposeRestrictedAttributes)
+            setRestrictedAttributes(attributes);
 
     }
 

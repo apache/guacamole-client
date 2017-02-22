@@ -147,15 +147,35 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
     @Override
     protected ModeledUser getObjectInstance(ModeledAuthenticatedUser currentUser,
-            UserModel model) {
+            UserModel model) throws GuacamoleException {
+
+        boolean exposeRestrictedAttributes;
+
+        // Expose restricted attributes if the user does not yet exist
+        if (model.getObjectID() == null)
+            exposeRestrictedAttributes = true;
+
+        // Otherwise, if the user permissions are available, expose restricted
+        // attributes only if the user has ADMINISTER permission
+        else if (currentUser != null)
+            exposeRestrictedAttributes = hasObjectPermission(currentUser,
+                    model.getIdentifier(), ObjectPermission.Type.ADMINISTER);
+
+        // If user permissions are not available, do not expose anything
+        else
+            exposeRestrictedAttributes = false;
+
+        // Produce ModeledUser exposing only those attributes for which the
+        // current user has permission
         ModeledUser user = userProvider.get();
-        user.init(currentUser, model);
+        user.init(currentUser, model, exposeRestrictedAttributes);
         return user;
+
     }
 
     @Override
     protected UserModel getModelInstance(ModeledAuthenticatedUser currentUser,
-            final User object) {
+            final User object) throws GuacamoleException {
 
         // Create new ModeledUser backed by blank model
         UserModel model = new UserModel();
@@ -362,9 +382,13 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      * @return
      *     The ModeledUser which corresponds to the given AuthenticatedUser, or
      *     null if no such user exists.
+     *
+     * @throws GuacamoleException
+     *     If a ModeledUser object for the user corresponding to the given
+     *     AuthenticatedUser cannot be created.
      */
     public ModeledUser retrieveUser(AuthenticationProvider authenticationProvider,
-            AuthenticatedUser authenticatedUser) {
+            AuthenticatedUser authenticatedUser) throws GuacamoleException {
 
         // If we already queried this user, return that rather than querying again
         if (authenticatedUser instanceof ModeledAuthenticatedUser)
