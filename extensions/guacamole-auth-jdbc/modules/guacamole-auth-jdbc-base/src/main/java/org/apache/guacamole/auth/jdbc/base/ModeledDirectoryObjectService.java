@@ -97,9 +97,12 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      *
      * @return
      *     An object which is backed by the given model object.
+     *
+     * @throws GuacamoleException
+     *     If the object instance cannot be created.
      */
     protected abstract InternalType getObjectInstance(ModeledAuthenticatedUser currentUser,
-            ModelType model);
+            ModelType model) throws GuacamoleException;
 
     /**
      * Returns an instance of a model object which is based on the given
@@ -113,9 +116,12 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      *
      * @return
      *     A model object which is based on the given object.
+     *
+     * @throws GuacamoleException
+     *     If the model object instance cannot be created.
      */
     protected abstract ModelType getModelInstance(ModeledAuthenticatedUser currentUser,
-            ExternalType object);
+            ExternalType object) throws GuacamoleException;
 
     /**
      * Returns whether the given user has permission to create the type of
@@ -199,9 +205,12 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      * @return
      *     A collection of objects which are backed by the models in the given
      *     collection.
+     *
+     * @throws GuacamoleException
+     *     If any of the object instances cannot be created.
      */
     protected Collection<InternalType> getObjectInstances(ModeledAuthenticatedUser currentUser,
-            Collection<ModelType> models) {
+            Collection<ModelType> models) throws GuacamoleException {
 
         // Create new collection of objects by manually converting each model
         Collection<InternalType> objects = new ArrayList<InternalType>(models.size());
