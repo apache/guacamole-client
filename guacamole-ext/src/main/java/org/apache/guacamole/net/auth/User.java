@@ -31,6 +31,27 @@ import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 public interface User extends Identifiable {
 
     /**
+     * All standard attribute names with semantics defined by the Guacamole web
+     * application. Extensions may additionally define their own attributes
+     * with completely arbitrary names and semantics, so long as those names do
+     * not conflict with the names listed here. All standard attribute names
+     * have a "guac-" prefix to avoid such conflicts.
+     */
+    public static class Attribute {
+
+        /**
+         * The user's full name.
+         */
+        public static String FULL_NAME = "guac-full-name";
+
+        /**
+         * The email address of the user.
+         */
+        public static String EMAIL_ADDRESS = "guac-email-address";
+
+    }
+
+    /**
      * Returns this user's password. Note that the password returned may be
      * hashed or completely arbitrary.
      *

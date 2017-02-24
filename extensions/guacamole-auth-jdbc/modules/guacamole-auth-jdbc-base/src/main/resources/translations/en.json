@@ -79,8 +79,6 @@
 
         "FIELD_HEADER_DISABLED"            : "Login disabled:",
         "FIELD_HEADER_EXPIRED"             : "Password expired:",
-        "FIELD_HEADER_EMAIL_ADDRESS"       : "Email address:",
-        "FIELD_HEADER_FULL_NAME"           : "Full name:",
         "FIELD_HEADER_ACCESS_WINDOW_END"   : "Do not allow access after:",
         "FIELD_HEADER_ACCESS_WINDOW_START" : "Allow access after:",
         "FIELD_HEADER_TIMEZONE"            : "User time zone:",

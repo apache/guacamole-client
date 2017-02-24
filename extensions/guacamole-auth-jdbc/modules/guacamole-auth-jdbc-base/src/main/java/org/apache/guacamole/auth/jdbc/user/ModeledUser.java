@@ -67,17 +67,6 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     private static final Logger logger = LoggerFactory.getLogger(ModeledUser.class);
 
     /**
-     * The name of the attribute which holds the user's full name, if known.
-     */
-    public static final String FULL_NAME_ATTRIBUTE_NAME = "full-name";
-
-    /**
-     * The name of the attribute which holds the user's email address, if
-     * known.
-     */
-    public static final String EMAIL_ADDRESS_ATTRIBUTE_NAME = "email-address";
-
-    /**
      * The name of the attribute which controls whether a user account is
      * disabled.
      */
@@ -124,8 +113,8 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
      * form.
      */
     public static final Form PROFILE = new Form("profile", Arrays.<Field>asList(
-        new TextField(FULL_NAME_ATTRIBUTE_NAME),
-        new EmailField(EMAIL_ADDRESS_ATTRIBUTE_NAME)
+        new TextField(User.Attribute.FULL_NAME),
+        new EmailField(User.Attribute.EMAIL_ADDRESS)
     ));
 
     /**
@@ -406,10 +395,10 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     private void putUnrestrictedAttributes(Map<String, String> attributes) {
 
         // Set full name attribute
-        attributes.put(FULL_NAME_ATTRIBUTE_NAME, "Testy McTesterson"); // TODO
+        attributes.put(User.Attribute.FULL_NAME, "Testy McTesterson"); // TODO
 
         // Set email address attribute
-        attributes.put(EMAIL_ADDRESS_ATTRIBUTE_NAME, "test@test.test"); // TODO
+        attributes.put(User.Attribute.EMAIL_ADDRESS, "test@test.test"); // TODO
 
     }
 
@@ -529,10 +518,10 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     private void setUnrestrictedAttributes(Map<String, String> attributes) {
 
         // Translate full name attribute
-        logger.info("FULL NAME: \"{}\"", attributes.get(FULL_NAME_ATTRIBUTE_NAME)); // TODO
+        logger.info("FULL NAME: \"{}\"", attributes.get(User.Attribute.FULL_NAME)); // TODO
 
         // Translate email address attribute
-        logger.info("EMAIL ADDRESS: \"{}\"", attributes.get(EMAIL_ADDRESS_ATTRIBUTE_NAME)); // TODO
+        logger.info("EMAIL ADDRESS: \"{}\"", attributes.get(User.Attribute.EMAIL_ADDRESS)); // TODO
 
     }
 
