@@ -114,7 +114,9 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
      */
     public static final Form PROFILE = new Form("profile", Arrays.<Field>asList(
         new TextField(User.Attribute.FULL_NAME),
-        new EmailField(User.Attribute.EMAIL_ADDRESS)
+        new EmailField(User.Attribute.EMAIL_ADDRESS),
+        new TextField(User.Attribute.ORGANIZATION),
+        new TextField(User.Attribute.ORGANIZATIONAL_ROLE)
     ));
 
     /**
@@ -400,6 +402,12 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
         // Set email address attribute
         attributes.put(User.Attribute.EMAIL_ADDRESS, "test@test.test"); // TODO
 
+        // Set organization attribute
+        attributes.put(User.Attribute.ORGANIZATION, "Example, Inc."); // TODO
+
+        // Set role attribute
+        attributes.put(User.Attribute.ORGANIZATIONAL_ROLE, "Senior Lead Architect"); // TODO
+
     }
 
     /**
@@ -522,6 +530,12 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
 
         // Translate email address attribute
         logger.info("EMAIL ADDRESS: \"{}\"", attributes.get(User.Attribute.EMAIL_ADDRESS)); // TODO
+
+        // Translate organization attribute
+        logger.info("ORGANIZATION: \"{}\"", attributes.get(User.Attribute.ORGANIZATION)); // TODO
+
+        // Translate role attribute
+        logger.info("ORGANIZATIONAL ROLE: \"{}\"", attributes.get(User.Attribute.ORGANIZATIONAL_ROLE)); // TODO
 
     }
 

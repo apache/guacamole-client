@@ -49,6 +49,17 @@ public interface User extends Identifiable {
          */
         public static String EMAIL_ADDRESS = "guac-email-address";
 
+        /**
+         * The organization, company, group, etc. that the user belongs to.
+         */
+        public static String ORGANIZATION = "guac-organization";
+
+        /**
+         * The role that the user has at the organization, company, group, etc.
+         * they belong to.
+         */
+        public static String ORGANIZATIONAL_ROLE = "guac-organizational-role";
+
     }
 
     /**

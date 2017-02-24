@@ -85,7 +85,22 @@ angular.module('rest').factory('User', [function defineUser() {
          *
          * @type String
          */
-        EMAIL_ADDRESS : 'guac-email-address'
+        EMAIL_ADDRESS : 'guac-email-address',
+
+        /**
+         * The organization, company, group, etc. that the user belongs to.
+         *
+         * @type String
+         */
+        ORGANIZATION : 'guac-organization',
+
+        /**
+         * The role that the user has at the organization, company, group, etc.
+         * they belong to.
+         *
+         * @type String
+         */
+        ORGANIZATIONAL_ROLE : 'guac-organizational-role'
 
     };
 
