@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-example</artifactId>
     <packaging>war</packaging>
-    <version>0.9.10-incubating</version>
+    <version>0.9.12-incubating</version>
     <name>guacamole-example</name>
     <url>http://guacamole.incubator.apache.org/</url>
 
@@ -114,7 +114,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-common-js</artifactId>
-            <version>0.9.10-incubating</version>
+            <version>0.9.12-incubating</version>
             <type>zip</type>
             <scope>runtime</scope>
         </dependency>

@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole</artifactId>
     <packaging>war</packaging>
-    <version>0.9.11-incubating</version>
+    <version>0.9.12-incubating</version>
     <name>guacamole</name>
     <url>http://guacamole.incubator.apache.org/</url>
 
@@ -285,14 +285,14 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.9.11-incubating</version>
+            <version>0.9.12-incubating</version>
         </dependency>
 
         <!-- Guacamole JavaScript API -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-common-js</artifactId>
-            <version>0.9.10-incubating</version>
+            <version>0.9.12-incubating</version>
             <type>zip</type>
             <scope>runtime</scope>
         </dependency>
