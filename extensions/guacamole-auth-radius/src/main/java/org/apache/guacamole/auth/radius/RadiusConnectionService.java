@@ -47,8 +47,6 @@ import net.jradius.packet.RadiusResponse;
 
 /**
  * Service for creating and managing connections to RADIUS servers.
- *
- * @author Nick Couchman
  */
 public class RadiusConnectionService {
 

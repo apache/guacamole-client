@@ -48,8 +48,6 @@ import net.jradius.packet.attribute.RadiusAttribute;
 /**
  * Service providing convenience functions for the RADIUS AuthenticationProvider
  * implementation.
- *
- * @author Michael Jumper
  */
 public class AuthenticationProviderService {
 

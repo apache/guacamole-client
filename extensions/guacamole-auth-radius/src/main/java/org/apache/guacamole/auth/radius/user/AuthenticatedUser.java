@@ -27,8 +27,6 @@ import org.apache.guacamole.net.auth.Credentials;
 /**
  * An RADIUS-specific implementation of AuthenticatedUser, associating a
  * particular set of credentials with the RADIUS authentication provider.
- *
- * @author Michael Jumper
  */
 public class AuthenticatedUser extends AbstractAuthenticatedUser {
 
