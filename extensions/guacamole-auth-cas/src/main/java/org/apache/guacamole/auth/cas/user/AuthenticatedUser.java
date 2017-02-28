@@ -28,8 +28,6 @@ import org.apache.guacamole.net.auth.Credentials;
  * An CAS-specific implementation of AuthenticatedUser, associating a
  * username and particular set of credentials with the CAS authentication
  * provider.
- *
- * @author Nick Couchman
  */
 public class AuthenticatedUser extends AbstractAuthenticatedUser {
 

@@ -38,8 +38,6 @@ import org.apache.guacamole.auth.cas.user.AuthenticatedUser;
 /**
  * Service providing convenience functions for the CAS AuthenticationProvider
  * implementation.
- *
- * @author Nick Couchman
  */
 public class AuthenticationProviderService {
 

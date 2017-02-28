@@ -32,8 +32,6 @@ import org.jasig.cas.client.validation.TicketValidationException;
 /**
  * Service for validating ID tickets forwarded to us by the client, verifying
  * that they did indeed come from the CAS service.
- *
- * @author Nick Couchman
  */
 public class TicketValidationService {
 

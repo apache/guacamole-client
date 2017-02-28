@@ -30,8 +30,6 @@ import org.apache.guacamole.form.Field;
  * Field definition which represents the ticket returned by an CAS service.
  * Within the user interface, this will be rendered as an appropriate "Log in
  * with ..." button which links to the CAS service.
- *
- * @author Nick Couchman
  */
 public class CASTicketField extends Field {
 

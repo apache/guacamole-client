@@ -32,8 +32,6 @@ import org.apache.guacamole.net.auth.UserContext;
  * arbitrary external system implementing CAS. No storage for connections is
  * provided - only authentication. Storage must be provided by some other
  * extension.
- *
- * @author Nick Couchman
  */
 public class CASAuthenticationProvider implements AuthenticationProvider {
 

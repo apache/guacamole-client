@@ -25,8 +25,6 @@ import org.apache.guacamole.environment.Environment;
 
 /**
  * Service for retrieving configuration information regarding the CAS service.
- *
- * @author Nick Couchman
  */
 public class ConfigurationService {
 
