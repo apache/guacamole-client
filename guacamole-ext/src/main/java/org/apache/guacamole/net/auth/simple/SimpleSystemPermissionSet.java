@@ -29,8 +29,6 @@ import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 /**
  * A read-only implementation of SystemPermissionSet which uses a backing Set
  * of Permissions to determine which permissions are present.
- *
- * @author Michael Jumper
  */
 public class SimpleSystemPermissionSet implements SystemPermissionSet {
 

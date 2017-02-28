@@ -33,8 +33,6 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
 /**
  * A wrapper to make an APIConnection look like a Connection. Useful where a
  * org.apache.guacamole.net.auth.Connection is required.
- * 
- * @author James Muehlner
  */
 public class APIConnectionWrapper implements Connection {
 

@@ -25,8 +25,6 @@ import org.apache.guacamole.net.InetGuacamoleSocket;
 /**
  * Implementation of GuacamoleSocket which connects via TCP to a given hostname
  * and port. If the socket is closed for any reason, a given task is run.
- *
- * @author Michael Jumper
  */
 public class ManagedInetGuacamoleSocket extends InetGuacamoleSocket {
 

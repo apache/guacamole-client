@@ -44,8 +44,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * Authenticates users against a static list of username/password pairs.
  * Each username/password may be associated with multiple configurations.
  * This list is stored in an XML file which is reread if modified.
- *
- * @author Michael Jumper, Michal Kotas
  */
 public class FileAuthenticationProvider extends SimpleAuthenticationProvider {
 

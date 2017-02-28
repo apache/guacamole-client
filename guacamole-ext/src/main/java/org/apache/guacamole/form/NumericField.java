@@ -21,8 +21,6 @@ package org.apache.guacamole.form;
 
 /**
  * Represents a field which may contain only integer values.
- *
- * @author Michael Jumper
  */
 public class NumericField extends Field {
 

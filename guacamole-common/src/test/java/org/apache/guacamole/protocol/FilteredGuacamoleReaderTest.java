@@ -29,8 +29,6 @@ import org.junit.Test;
 /**
  * Test which validates filtering of Guacamole instructions with
  * FilteredGuacamoleReader.
- *
- * @author Michael Jumper
  */
 public class FilteredGuacamoleReaderTest {
 

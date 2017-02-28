@@ -34,8 +34,6 @@ import org.apache.guacamole.protocol.GuacamoleClientInformation;
 /**
  * The root connection group, here represented as its own dedicated object as
  * the database does not contain an actual root group.
- *
- * @author Michael Jumper
  */
 public class RootConnectionGroup extends RestrictedObject
     implements ConnectionGroup {

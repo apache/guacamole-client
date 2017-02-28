@@ -27,8 +27,6 @@ import org.apache.guacamole.auth.jdbc.sharing.SharedAuthenticationProviderServic
  * Provides a implementation of AuthenticationProvider which interacts with the
  * MySQL AuthenticationProvider, accepting share keys as credentials and
  * providing access to the shared connections.
- *
- * @author Michael Jumper
  */
 public class MySQLSharedAuthenticationProvider extends InjectedAuthenticationProvider {
 

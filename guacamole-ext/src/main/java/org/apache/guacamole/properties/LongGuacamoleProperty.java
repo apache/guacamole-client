@@ -24,8 +24,6 @@ import org.apache.guacamole.GuacamoleServerException;
 
 /**
  * A GuacamoleProperty whose value is an long.
- *
- * @author James Muehlner
  */
 public abstract class LongGuacamoleProperty implements GuacamoleProperty<Long> {
 

@@ -28,8 +28,6 @@ import org.apache.guacamole.net.auth.Connection;
  * An extremely simple read-only implementation of a Directory of
  * GuacamoleConfigurations which provides access to a pre-defined Map of
  * GuacamoleConfigurations.
- *
- * @author Michael Jumper
  */
 public class SimpleConnectionDirectory extends SimpleDirectory<Connection> {
 

@@ -24,8 +24,6 @@ import org.apache.guacamole.GuacamoleException;
 
 /**
  * A GuacamoleProperty whose value is a filename.
- *
- * @author Michael Jumper
  */
 public abstract class FileGuacamoleProperty implements GuacamoleProperty<File> {
 

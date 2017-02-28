@@ -24,8 +24,6 @@ import java.util.Date;
 /**
  * A logging record describing when a user started and ended usage of a
  * particular connection.
- *
- * @author Michael Jumper
  */
 public interface ConnectionRecord {
 

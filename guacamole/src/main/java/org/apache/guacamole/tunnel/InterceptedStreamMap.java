@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Map-like storage for intercepted Guacamole streams.
  *
- * @author Michael Jumper
  * @param <T>
  *     The type of object which will produce or consume the data sent over the
  *     intercepted Guacamole stream. Usually, this will be either InputStream

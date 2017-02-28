@@ -33,8 +33,6 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
  * means for Guice to (effectively) apply dependency injection to an
  * AuthenticationProvider, even though it is the AuthenticationProvider that
  * serves as the entry point.
- *
- * @author Michael Jumper
  */
 public abstract class InjectedAuthenticationProvider implements AuthenticationProvider {
 

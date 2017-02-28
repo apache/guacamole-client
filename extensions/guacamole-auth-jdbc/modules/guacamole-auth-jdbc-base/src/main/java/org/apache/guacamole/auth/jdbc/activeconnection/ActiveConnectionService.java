@@ -38,8 +38,6 @@ import org.apache.guacamole.net.auth.ActiveConnection;
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating active connections.
- *
- * @author Michael Jumper
  */
 public class ActiveConnectionService
     implements DirectoryObjectService<TrackedActiveConnection, ActiveConnection> { 

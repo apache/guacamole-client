@@ -24,8 +24,6 @@ package org.apache.guacamole.net.auth;
  * Abstract implementation of Identifiable which provides equals() and
  * hashCode() implementations which use the identifier to determine equality.
  * The identifier comparison is case-sensitive.
- *
- * @author Michael Jumper
  */
 public abstract class AbstractIdentifiable implements Identifiable {
 

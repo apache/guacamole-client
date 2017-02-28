@@ -46,9 +46,6 @@ import org.apache.guacamole.net.auth.User;
 /**
  * UserContext implementation which is driven by an arbitrary, underlying
  * database.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class ModeledUserContext extends RestrictedObject
     implements org.apache.guacamole.net.auth.UserContext {

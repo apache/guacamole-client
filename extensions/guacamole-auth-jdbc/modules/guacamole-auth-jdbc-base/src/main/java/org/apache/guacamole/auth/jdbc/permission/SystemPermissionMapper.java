@@ -25,8 +25,6 @@ import org.apache.guacamole.net.auth.permission.SystemPermission;
 
 /**
  * Mapper for system-level permissions.
- *
- * @author Michael Jumper
  */
 public interface SystemPermissionMapper extends PermissionMapper<SystemPermissionModel> {
 

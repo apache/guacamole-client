@@ -32,8 +32,6 @@ import org.slf4j.LoggerFactory;
  * active connection with a sharing profile. The sharing profile defines the
  * access provided to users of the shared active connection through its
  * connection parameters.
- *
- * @author Michael Jumper
  */
 public class SharedConnectionDefinition {
 

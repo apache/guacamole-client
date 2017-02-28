@@ -24,8 +24,6 @@ import org.apache.guacamole.GuacamoleSession;
 /**
  * Factory which creates resources that expose the contents of a given
  * GuacamoleSession.
- *
- * @author Michael Jumper
  */
 public interface SessionResourceFactory {
 

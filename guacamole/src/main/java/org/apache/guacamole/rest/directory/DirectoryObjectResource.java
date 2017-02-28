@@ -35,7 +35,6 @@ import org.apache.guacamole.net.auth.Identifiable;
  * Guacamole object that is contained within a Directory, such as modification,
  * deletion, or individual retrieval.
  *
- * @author Michael Jumper
  * @param <InternalType>
  *     The type of object that this DirectoryObjectResource represents. To
  *     avoid coupling the REST API too tightly to the extension API, these

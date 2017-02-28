@@ -25,8 +25,6 @@ import org.apache.guacamole.GuacamoleException;
 
 /**
  * A set of permissions which affects the system as a whole.
- *
- * @author Michael Jumper
  */
 public interface SystemPermissionSet extends PermissionSet<SystemPermission> {
 

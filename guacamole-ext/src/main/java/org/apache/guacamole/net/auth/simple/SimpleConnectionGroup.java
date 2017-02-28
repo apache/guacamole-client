@@ -35,8 +35,6 @@ import org.apache.guacamole.protocol.GuacamoleClientInformation;
  * An extremely simple read-only implementation of a ConnectionGroup which
  * returns the connection and connection group identifiers it was constructed
  * with. Load balancing across this connection group is not allowed.
- * 
- * @author James Muehlner
  */
 public class SimpleConnectionGroup extends AbstractConnectionGroup {
 

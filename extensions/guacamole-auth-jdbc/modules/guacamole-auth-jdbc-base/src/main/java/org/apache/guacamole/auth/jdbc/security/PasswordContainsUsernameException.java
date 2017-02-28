@@ -22,8 +22,6 @@ package org.apache.guacamole.auth.jdbc.security;
 /**
  * Thrown when an attempt is made to set a user's password to a string which
  * contains their own username, in violation of the defined password policy.
- *
- * @author Michael Jumper
  */
 public class PasswordContainsUsernameException extends PasswordPolicyException {
 

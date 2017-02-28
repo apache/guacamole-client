@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.jdbc.security;
 
 /**
  * A service to perform password encryption and checking.
- * @author James Muehlner
  */
 public interface PasswordEncryptionService {
 

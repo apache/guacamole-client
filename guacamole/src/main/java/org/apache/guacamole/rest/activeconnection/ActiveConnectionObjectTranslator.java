@@ -28,8 +28,6 @@ import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
  * Translator which converts between ActiveConnection objects and
  * APIActiveConnection objects. As ActiveConnection objects are read-only, only
  * toExternalObject() is implemented here.
- *
- * @author Michael Jumper
  */
 public class ActiveConnectionObjectTranslator
         implements DirectoryObjectTranslator<ActiveConnection, APIActiveConnection> {

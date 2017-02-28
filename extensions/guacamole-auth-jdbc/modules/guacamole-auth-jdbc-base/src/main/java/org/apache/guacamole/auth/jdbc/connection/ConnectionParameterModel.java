@@ -21,8 +21,6 @@ package org.apache.guacamole.auth.jdbc.connection;
 
 /**
  * A single parameter name/value pair belonging to a connection.
- *
- * @author Michael Jumper
  */
 public class ConnectionParameterModel {
 

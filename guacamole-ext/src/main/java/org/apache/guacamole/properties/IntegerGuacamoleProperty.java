@@ -24,8 +24,6 @@ import org.apache.guacamole.GuacamoleServerException;
 
 /**
  * A GuacamoleProperty whose value is an integer.
- *
- * @author Michael Jumper
  */
 public abstract class IntegerGuacamoleProperty implements GuacamoleProperty<Integer> {
 

@@ -41,8 +41,6 @@ import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
 /**
  * A REST resource which abstracts the operations available on an existing
  * ActiveConnection.
- *
- * @author Michael Jumper
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

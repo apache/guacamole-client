@@ -25,8 +25,6 @@ import org.apache.guacamole.net.auth.ActiveConnection;
 /**
  * Information related to active connections which may be exposed through the
  * REST endpoints.
- * 
- * @author Michael Jumper
  */
 public class APIActiveConnection {
 

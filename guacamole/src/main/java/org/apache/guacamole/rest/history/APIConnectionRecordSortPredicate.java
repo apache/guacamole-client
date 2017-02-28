@@ -27,8 +27,6 @@ import org.apache.guacamole.rest.APIException;
 /**
  * A sort predicate which species the property to use when sorting connection
  * records, along with the sort order.
- *
- * @author Michael Jumper
  */
 public class APIConnectionRecordSortPredicate {
 

@@ -24,8 +24,6 @@ import org.apache.guacamole.net.auth.UserContext;
 /**
  * Abstract basis for events which may have an associated UserContext when
  * triggered.
- *
- * @author Michael Jumper
  */
 public interface UserEvent {
 

@@ -25,8 +25,6 @@ import org.apache.guacamole.GuacamoleException;
  * Interface which provides for the filtering of individual instructions. Each
  * filtered instruction may be allowed through untouched, modified, replaced,
  * dropped, or explicitly denied.
- *
- * @author Michael Jumper
  */
 public interface GuacamoleFilter {
 

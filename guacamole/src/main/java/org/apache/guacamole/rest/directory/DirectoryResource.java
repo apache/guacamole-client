@@ -53,7 +53,6 @@ import org.apache.guacamole.rest.PATCH;
  * number of child DirectoryObjectResources, which are created with the factory
  * provided at the time of this object's construction.
  *
- * @author Michael Jumper
  * @param <InternalType>
  *     The type of object contained within the Directory that this
  *     DirectoryResource exposes. To avoid coupling the REST API too tightly to

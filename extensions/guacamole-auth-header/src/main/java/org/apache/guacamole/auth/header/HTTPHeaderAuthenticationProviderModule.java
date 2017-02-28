@@ -27,8 +27,6 @@ import org.apache.guacamole.net.auth.AuthenticationProvider;
 
 /**
  * Guice module which configures HTTP header-specific injections.
- *
- * @author Michael Jumper
  */
 public class HTTPHeaderAuthenticationProviderModule extends AbstractModule {
 

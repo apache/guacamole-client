@@ -43,8 +43,6 @@ import org.apache.guacamole.rest.permission.PermissionSetResource;
 /**
  * A REST resource which abstracts the operations available on an existing
  * User.
- *
- * @author Michael Jumper
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

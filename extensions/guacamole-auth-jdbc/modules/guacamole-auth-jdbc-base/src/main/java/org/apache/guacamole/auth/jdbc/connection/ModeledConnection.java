@@ -46,9 +46,6 @@ import org.slf4j.LoggerFactory;
 /**
  * An implementation of the Connection object which is backed by a database
  * model.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionModel>
     implements Connection {

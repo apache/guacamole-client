@@ -62,8 +62,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *      <param name="port" value="3389" />
  *    </config>
  *  </configs>
- *
- * @author Laurent Meunier
  */
 public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
 

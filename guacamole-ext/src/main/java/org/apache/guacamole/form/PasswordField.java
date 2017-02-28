@@ -22,8 +22,6 @@ package org.apache.guacamole.form;
 /**
  * Represents a field which contains sensitive text information related to
  * authenticating a user.
- *
- * @author Michael Jumper
  */
 public class PasswordField extends Field {
 

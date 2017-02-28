@@ -22,8 +22,6 @@ package org.apache.guacamole.auth.jdbc.sharing;
 /**
  * Produces unique keys that can be safely used for the automatically-generated
  * "sharing credentials" associated with a shared connection.
- * 
- * @author Michael Jumper
  */
 public interface ShareKeyGenerator {
     

@@ -23,8 +23,6 @@ package org.apache.guacamole.net.auth;
 /**
  * A user of the Guacamole web application who has been authenticated by an
  * AuthenticationProvider.
- *
- * @author Michael Jumper
  */
 public interface AuthenticatedUser extends Identifiable {
 

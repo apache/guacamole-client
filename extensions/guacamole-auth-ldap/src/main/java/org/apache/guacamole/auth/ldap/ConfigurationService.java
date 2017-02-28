@@ -27,8 +27,6 @@ import org.apache.guacamole.environment.Environment;
 
 /**
  * Service for retrieving configuration information regarding the LDAP server.
- *
- * @author Michael Jumper
  */
 public class ConfigurationService {
 

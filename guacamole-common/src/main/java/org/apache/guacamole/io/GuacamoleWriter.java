@@ -26,8 +26,6 @@ import org.apache.guacamole.protocol.GuacamoleInstruction;
 /**
  * Provides abstract and raw character write access to a stream of Guacamole
  * instructions.
- *
- * @author Michael Jumper
  */
 public interface GuacamoleWriter {
 

@@ -25,8 +25,8 @@ import java.security.NoSuchAlgorithmException;
 import javax.xml.bind.DatatypeConverter;
 
 /**
- * Provides a SHA-256 based implementation of the password encryption functionality.
- * @author James Muehlner
+ * Provides a SHA-256 based implementation of the password encryption
+ * functionality.
  */
 public class SHA256PasswordEncryptionService implements PasswordEncryptionService {
 

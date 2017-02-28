@@ -27,8 +27,6 @@ import org.apache.guacamole.net.auth.Credentials;
 /**
  * Associates a user with the credentials they used to authenticate, including
  * any provided share key.
- *
- * @author Michael Jumper
  */
 public class SharedAuthenticatedUser extends RemoteAuthenticatedUser {
 

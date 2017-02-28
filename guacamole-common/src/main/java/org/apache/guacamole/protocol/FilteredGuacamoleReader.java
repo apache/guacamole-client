@@ -26,8 +26,6 @@ import org.apache.guacamole.io.GuacamoleReader;
  * GuacamoleReader which applies a given GuacamoleFilter to observe or alter all
  * read instructions. Instructions may also be dropped or denied by the the
  * filter.
- *
- * @author Michael Jumper
  */
 public class FilteredGuacamoleReader implements GuacamoleReader {
 

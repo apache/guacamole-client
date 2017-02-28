@@ -24,8 +24,6 @@ import org.apache.guacamole.net.auth.Credentials;
 /**
  * Abstract basis for events which may have associated user credentials when
  * triggered.
- *
- * @author Michael Jumper
  */
 public interface CredentialEvent {
 

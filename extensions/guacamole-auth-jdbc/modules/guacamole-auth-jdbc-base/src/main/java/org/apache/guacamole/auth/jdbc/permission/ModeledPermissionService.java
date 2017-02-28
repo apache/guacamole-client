@@ -36,7 +36,6 @@ import org.apache.guacamole.net.auth.permission.PermissionSet;
  * permission sets that contain these permissions. This service will
  * automatically enforce the permissions of the current user.
  *
- * @author Michael Jumper
  * @param <PermissionSetType>
  *     The type of permission sets this service provides access to.
  *

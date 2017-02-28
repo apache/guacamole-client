@@ -43,9 +43,6 @@ import org.slf4j.LoggerFactory;
  * interface. The various types of GuacamoleExceptions are automatically
  * translated into appropriate HTTP responses, including JSON describing the
  * error that occurred.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class RESTExceptionWrapper implements MethodInterceptor {
 

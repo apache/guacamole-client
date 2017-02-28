@@ -39,9 +39,6 @@ import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
  * GuacamoleTunnelService implementation which restricts concurrency for each
  * connection and group according to a maximum number of connections and
  * maximum number of connections per user.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 @Singleton
 public class RestrictedGuacamoleTunnelService

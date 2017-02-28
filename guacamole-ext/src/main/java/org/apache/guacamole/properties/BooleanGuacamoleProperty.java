@@ -25,8 +25,6 @@ import org.apache.guacamole.GuacamoleServerException;
 /**
  * A GuacamoleProperty whose value is an boolean. Legal true values are "true",
  * or "false". Case does not matter.
- *
- * @author Michael Jumper
  */
 public abstract class BooleanGuacamoleProperty implements GuacamoleProperty<Boolean> {
 

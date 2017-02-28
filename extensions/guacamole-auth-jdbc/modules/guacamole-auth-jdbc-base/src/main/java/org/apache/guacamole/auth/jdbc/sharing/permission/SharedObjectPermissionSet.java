@@ -28,8 +28,6 @@ import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
 /**
  * An immutable ObjectPermissionSet which defines only READ permissions for a
  * fixed set of identifiers.
- *
- * @author Michael Jumper
  */
 public class SharedObjectPermissionSet extends SimpleObjectPermissionSet {
 

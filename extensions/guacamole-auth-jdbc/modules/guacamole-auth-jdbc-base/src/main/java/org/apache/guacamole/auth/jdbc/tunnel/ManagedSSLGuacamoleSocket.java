@@ -25,8 +25,6 @@ import org.apache.guacamole.net.SSLGuacamoleSocket;
 /**
  * Implementation of GuacamoleSocket which connects via SSL to a given hostname
  * and port. If the socket is closed for any reason, a given task is run.
- *
- * @author Michael Jumper
  */
 public class ManagedSSLGuacamoleSocket extends SSLGuacamoleSocket {
 

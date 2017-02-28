@@ -36,8 +36,6 @@ import org.slf4j.LoggerFactory;
  * contents of in-progress streams, rerouting blobs to a provided OutputStream
  * or from a provided InputStream. Interception of streams is requested on a per
  * stream basis and lasts only for the duration of that stream.
- *
- * @author Michael Jumper
  */
 public class StreamInterceptingTunnel extends DelegatingGuacamoleTunnel {
 

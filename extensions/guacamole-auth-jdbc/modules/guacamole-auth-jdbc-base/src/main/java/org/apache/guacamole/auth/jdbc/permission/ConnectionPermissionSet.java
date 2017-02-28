@@ -25,8 +25,6 @@ import com.google.inject.Inject;
  * A database implementation of ObjectPermissionSet which uses an injected
  * service to query and manipulate the connection permissions associated with
  * a particular user.
- *
- * @author Michael Jumper
  */
 public class ConnectionPermissionSet extends ObjectPermissionSet {
 

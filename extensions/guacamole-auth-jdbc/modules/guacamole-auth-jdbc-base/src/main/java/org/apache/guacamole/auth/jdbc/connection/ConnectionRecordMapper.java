@@ -26,8 +26,6 @@ import org.apache.guacamole.auth.jdbc.user.UserModel;
 
 /**
  * Mapper for connection record objects.
- *
- * @author Michael Jumper
  */
 public interface ConnectionRecordMapper {
 

@@ -26,8 +26,6 @@ import org.apache.guacamole.net.auth.Credentials;
 /**
  * Utility class which provides access to standardized token names, as well as
  * facilities for generating those tokens from common objects.
- *
- * @author Michael Jumper
  */
 public class StandardTokens {
 

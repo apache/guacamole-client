@@ -25,8 +25,6 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
 /**
  * An exception which is thrown when data has been submitted with an unsupported
  * mimetype.
- * 
- * @author Michael Jumper
  */
 public class GuacamoleClientBadTypeException extends GuacamoleClientException {
 

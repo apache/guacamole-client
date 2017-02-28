@@ -25,8 +25,8 @@ import org.apache.guacamole.GuacamoleException;
  * An abstract representation of a property in the guacamole.properties file,
  * which parses into a specific type.
  *
- * @author Michael Jumper
- * @param <Type> The type this GuacamoleProperty will parse into.
+ * @param <Type>
+ *     The type this GuacamoleProperty will parse into.
  */
 public interface GuacamoleProperty<Type> {
 

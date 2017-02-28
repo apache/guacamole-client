@@ -25,8 +25,6 @@ import org.apache.guacamole.auth.jdbc.sharing.connection.SharedConnectionDefinit
 
 /**
  * A HashMap-based implementation of the SharedConnectionMap.
- *
- * @author Michael Jumper
  */
 public class HashSharedConnectionMap implements SharedConnectionMap {
 

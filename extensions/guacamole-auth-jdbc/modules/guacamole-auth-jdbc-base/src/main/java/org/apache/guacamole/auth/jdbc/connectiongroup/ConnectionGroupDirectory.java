@@ -33,9 +33,6 @@ import org.mybatis.guice.transactional.Transactional;
 /**
  * Implementation of the ConnectionGroup Directory which is driven by an
  * underlying, arbitrary database.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class ConnectionGroupDirectory extends RestrictedObject
     implements Directory<ConnectionGroup> {

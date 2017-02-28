@@ -25,8 +25,6 @@ import org.apache.guacamole.net.auth.Credentials;
  * An event which is triggered whenever a user's credentials fail to be
  * authenticated. The credentials that failed to be authenticated are included
  * within this event, and can be retrieved using getCredentials().
- *
- * @author Michael Jumper
  */
 public class AuthenticationFailureEvent implements CredentialEvent {
 

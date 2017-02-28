@@ -26,8 +26,6 @@ import org.apache.ibatis.annotations.Param;
 /**
  * Mapper for historical password records (users' prior passwords, along with
  * the dates they were set).
- *
- * @author Michael Jumper
  */
 public interface PasswordRecordMapper extends ModeledDirectoryObjectMapper<UserModel> {
 

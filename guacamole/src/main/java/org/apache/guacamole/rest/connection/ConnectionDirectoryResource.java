@@ -34,8 +34,6 @@ import org.apache.guacamole.rest.directory.DirectoryResource;
 /**
  * A REST resource which abstracts the operations available on a Directory of
  * Connections.
- *
- * @author Michael Jumper
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

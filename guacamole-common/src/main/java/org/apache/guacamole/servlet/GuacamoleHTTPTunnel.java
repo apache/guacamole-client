@@ -31,8 +31,6 @@ import org.apache.guacamole.net.GuacamoleTunnel;
  * such thread. Because the HTTP tunnel requires the stream to be split across
  * multiple requests, tracking of activity on the tunnel must be performed
  * independently of the HTTP requests.
- *
- * @author Michael Jumper
  */
 class GuacamoleHTTPTunnel extends DelegatingGuacamoleTunnel {
 

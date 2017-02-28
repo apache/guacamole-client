@@ -46,8 +46,6 @@ import org.slf4j.LoggerFactory;
  * the Guacamole.WebSocketTunnel object included with the JavaScript API.
  * Messages sent/received are simply chunks of the Guacamole protocol
  * instruction stream.
- *
- * @author Michael Jumper
  */
 public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
 

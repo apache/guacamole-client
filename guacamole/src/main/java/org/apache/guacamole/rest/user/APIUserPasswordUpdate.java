@@ -20,8 +20,6 @@ package org.apache.guacamole.rest.user;
 
 /**
  * All the information necessary for the password update operation on a user.
- * 
- * @author James Muehlner
  */
 public class APIUserPasswordUpdate {
     

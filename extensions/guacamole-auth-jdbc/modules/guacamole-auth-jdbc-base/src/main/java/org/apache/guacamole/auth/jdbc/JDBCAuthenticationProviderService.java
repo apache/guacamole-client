@@ -39,8 +39,6 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsExce
  * AuthenticationProviderService implementation which authenticates users with
  * a username/password pair, producing new UserContext objects which are backed
  * by an underlying, arbitrary database.
- *
- * @author Michael Jumper
  */
 public class JDBCAuthenticationProviderService implements AuthenticationProviderService  {
 

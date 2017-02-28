@@ -28,9 +28,6 @@ import org.mybatis.guice.datasource.helper.JdbcHelper;
 
 /**
  * Guice module which configures PostgreSQL-specific injections.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class PostgreSQLAuthenticationProviderModule implements Module {
 

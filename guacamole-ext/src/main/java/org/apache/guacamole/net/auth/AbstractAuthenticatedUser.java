@@ -23,8 +23,6 @@ package org.apache.guacamole.net.auth;
 /**
  * Basic implementation of an AuthenticatedUser which uses the username to
  * determine equality. Username comparison is case-sensitive.
- *
- * @author Michael Jumper
  */
 public abstract class AbstractAuthenticatedUser extends AbstractIdentifiable
         implements AuthenticatedUser {

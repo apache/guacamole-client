@@ -27,8 +27,6 @@ import java.util.Iterator;
 
 /**
  * A resource which is the logical concatenation of other resources.
- *
- * @author Michael Jumper
  */
 public class SequenceResource extends AbstractResource {
 

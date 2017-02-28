@@ -28,8 +28,6 @@ import org.apache.guacamole.GuacamoleException;
 /**
  * A request object which provides only the functions absolutely required to
  * retrieve and connect to a tunnel.
- *
- * @author Michael Jumper
  */
 public abstract class TunnelRequest {
 

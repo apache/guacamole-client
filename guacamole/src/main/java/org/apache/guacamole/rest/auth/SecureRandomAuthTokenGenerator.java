@@ -24,8 +24,6 @@ import javax.xml.bind.DatatypeConverter;
 
 /**
  * An implementation of the AuthTokenGenerator based around SecureRandom.
- * 
- * @author James Muehlner
  */
 public class SecureRandomAuthTokenGenerator implements AuthTokenGenerator {
 

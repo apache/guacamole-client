@@ -26,8 +26,6 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
  * A generic exception thrown when an intercepted Guacamole stream has closed
  * with an error condition. Guacamole streams report errors using the "ack"
  * instruction, which provides a status code and human-readable message.
- *
- * @author Michael Jumper
  */
 public class GuacamoleStreamException extends GuacamoleServerException {
 

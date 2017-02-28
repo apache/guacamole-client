@@ -29,8 +29,6 @@ import java.util.regex.Pattern;
  * their corresponding values. Unknown tokens are not replaced. If TOKEN_NAME
  * is a valid token, the literal value "${TOKEN_NAME}" can be included by using
  * "$${TOKEN_NAME}".
- *
- * @author Michael Jumper
  */
 public class TokenFilter {
 

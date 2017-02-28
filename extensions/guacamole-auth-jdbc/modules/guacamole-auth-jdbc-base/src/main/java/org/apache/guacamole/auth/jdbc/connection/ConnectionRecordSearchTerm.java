@@ -28,8 +28,6 @@ import java.util.regex.Pattern;
  * A search term for querying historical connection records. This will contain
  * a the search term in string form and, if that string appears to be a date. a
  * corresponding date range.
- *
- * @author James Muehlner
  */
 public class ConnectionRecordSearchTerm {
     

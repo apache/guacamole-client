@@ -26,8 +26,6 @@ import java.util.Collections;
  * field may be blank, but that its sole non-blank value is the value provided.
  * The provided value represents "true" while all other values, including
  * having no associated value, represent "false".
- *
- * @author Michael Jumper
  */
 public class BooleanField extends Field {
 

@@ -29,8 +29,6 @@ import org.apache.guacamole.GuacamoleServerException;
  * Parser for the Guacamole protocol. Arbitrary instruction data is appended,
  * and instructions are returned as a result. Invalid instructions result in
  * exceptions.
- *
- * @author Michael Jumper
  */
 public class GuacamoleParser implements Iterator<GuacamoleInstruction> {
 

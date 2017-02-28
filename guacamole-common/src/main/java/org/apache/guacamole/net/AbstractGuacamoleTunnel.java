@@ -29,8 +29,6 @@ import org.apache.guacamole.io.GuacamoleWriter;
  * Base GuacamoleTunnel implementation which synchronizes access to the
  * underlying reader and writer with reentrant locks. Implementations need only
  * provide the tunnel's UUID and socket.
- *
- * @author Michael Jumper
  */
 public abstract class AbstractGuacamoleTunnel implements GuacamoleTunnel {
 

@@ -26,8 +26,6 @@ import org.apache.guacamole.form.Form;
 /**
  * The context of an active user. The functions of this class enforce all
  * permissions and act only within the rights of the associated user.
- *
- * @author Michael Jumper
  */
 public interface UserContext {
 

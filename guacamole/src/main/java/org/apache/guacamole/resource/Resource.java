@@ -24,8 +24,6 @@ import java.io.InputStream;
 /**
  * An arbitrary resource that can be served to a user via HTTP. Resources are
  * anonymous but have a defined mimetype and corresponding input stream.
- *
- * @author Michael Jumper
  */
 public interface Resource {
 

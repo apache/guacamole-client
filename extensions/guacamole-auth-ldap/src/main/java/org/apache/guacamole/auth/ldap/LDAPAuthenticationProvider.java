@@ -32,8 +32,6 @@ import org.apache.guacamole.net.auth.UserContext;
  * Allows users to be authenticated against an LDAP server. Each user may have
  * any number of authorized configurations. Authorized configurations may be
  * shared.
- *
- * @author Michael Jumper
  */
 public class LDAPAuthenticationProvider implements AuthenticationProvider {
 

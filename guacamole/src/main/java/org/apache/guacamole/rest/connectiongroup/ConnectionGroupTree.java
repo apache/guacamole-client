@@ -42,8 +42,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides access to the entire tree of connection groups, their
  * connections, and any associated sharing profiles.
- *
- * @author Michael Jumper
  */
 public class ConnectionGroupTree {
 

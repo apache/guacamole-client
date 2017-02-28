@@ -24,8 +24,6 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 /**
  * Object representation of an object-related Guacamole permission, as
  * represented in the database.
- *
- * @author Michael Jumper
  */
 public class ObjectPermissionModel extends PermissionModel<ObjectPermission.Type> {
 

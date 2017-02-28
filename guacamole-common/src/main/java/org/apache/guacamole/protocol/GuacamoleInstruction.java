@@ -27,8 +27,6 @@ import java.util.List;
 /**
  * An abstract representation of a Guacamole instruction, as defined by the
  * Guacamole protocol.
- *
- * @author Michael Jumper
  */
 public class GuacamoleInstruction {
 

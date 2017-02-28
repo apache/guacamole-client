@@ -32,8 +32,6 @@ import java.security.Principal;
 /**
  * Service providing convenience functions for the HTTP Header
  * AuthenticationProvider implementation.
- *
- * @author Nick Couchman
  */
 public class AuthenticationProviderService {
 

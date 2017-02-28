@@ -24,8 +24,6 @@ import org.apache.guacamole.net.auth.ConnectionRecordSet;
 /**
  * A sort predicate which species the property to use when sorting connection
  * records, along with the sort order.
- *
- * @author James Muehlner
  */
 public class ConnectionRecordSortPredicate {
 

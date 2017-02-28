@@ -32,8 +32,6 @@ import org.mybatis.guice.transactional.Transactional;
 /**
  * Implementation of the SharingProfile Directory which is driven by an
  * underlying, arbitrary database.
- *
- * @author Michael Jumper
  */
 public class SharingProfileDirectory extends RestrictedObject
     implements Directory<SharingProfile> {

@@ -32,8 +32,6 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
  * A database implementation of ObjectPermissionSet which uses an injected
  * service to query and manipulate the object-level permissions associated with
  * a particular user.
- *
- * @author Michael Jumper
  */
 public abstract class ObjectPermissionSet extends RestrictedObject
     implements org.apache.guacamole.net.auth.permission.ObjectPermissionSet {

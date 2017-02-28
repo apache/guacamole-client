@@ -29,7 +29,6 @@ import org.apache.guacamole.net.auth.permission.PermissionSet;
  * A set of changes to be applied to a PermissionSet, describing the set of
  * permissions being added and removed.
  * 
- * @author Michael Jumper
  * @param <PermissionType>
  *     The type of permissions being added and removed.
  */

@@ -27,8 +27,6 @@ import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
  * A user of the Guacamole web application.
- *
- * @author Michael Jumper
  */
 public interface User extends Identifiable {
 

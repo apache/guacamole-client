@@ -24,8 +24,6 @@ import org.apache.guacamole.environment.Environment;
 
 /**
  * Guice module which binds the base Guacamole server environment.
- *
- * @author Michael Jumper
  */
 public class EnvironmentModule extends AbstractModule {
 

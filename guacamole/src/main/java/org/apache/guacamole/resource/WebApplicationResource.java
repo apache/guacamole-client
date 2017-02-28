@@ -25,8 +25,6 @@ import javax.servlet.ServletContext;
 /**
  * A resource which is located within the classpath associated with another
  * class.
- *
- * @author Michael Jumper
  */
 public class WebApplicationResource extends AbstractResource {
 

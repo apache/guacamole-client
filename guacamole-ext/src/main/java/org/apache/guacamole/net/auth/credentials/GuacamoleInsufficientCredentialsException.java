@@ -25,8 +25,6 @@ package org.apache.guacamole.net.auth.credentials;
  * The validity or invalidity of the given credentials is not specified, and
  * more information is needed before a decision can be made. Additional
  * information describing the form of valid credentials is provided.
- *
- * @author Michael Jumper
  */
 public class GuacamoleInsufficientCredentialsException extends GuacamoleCredentialsException {
 

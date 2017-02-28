@@ -23,8 +23,6 @@ package org.apache.guacamole.language;
  * A message which can be translated using a translation service, providing a
  * translation key and optional set of values to be substituted into the
  * translation string associated with that key.
- *
- * @author Michael Jumper
  */
 public class TranslatableMessage {
 

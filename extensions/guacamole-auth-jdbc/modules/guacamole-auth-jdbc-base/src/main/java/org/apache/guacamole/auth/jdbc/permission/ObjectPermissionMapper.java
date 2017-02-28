@@ -26,8 +26,6 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 
 /**
  * Mapper for object-related permissions.
- *
- * @author Michael Jumper
  */
 public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissionModel> {
 

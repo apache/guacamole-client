@@ -26,7 +26,6 @@ import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
  * JDBC-driven authentication providers, all modeled objects are also
  * restricted.
  *
- * @author Michael Jumper
  * @param <ModelType>
  *     The type of model object which corresponds to this object.
  */

@@ -26,8 +26,6 @@ import org.apache.ibatis.annotations.Param;
 
 /**
  * Mapper for connection objects.
- *
- * @author Michael Jumper
  */
 public interface ConnectionMapper extends ModeledDirectoryObjectMapper<ConnectionModel> {
 

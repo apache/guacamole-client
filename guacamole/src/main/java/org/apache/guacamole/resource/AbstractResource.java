@@ -23,8 +23,6 @@ package org.apache.guacamole.resource;
  * Base abstract resource implementation which provides an associated mimetype,
  * and modification time. Classes which extend AbstractResource must provide
  * their own InputStream, however.
- *
- * @author Michael Jumper
  */
 public abstract class AbstractResource implements Resource {
 

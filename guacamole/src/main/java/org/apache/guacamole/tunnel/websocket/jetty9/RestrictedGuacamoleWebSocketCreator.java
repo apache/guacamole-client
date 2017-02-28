@@ -27,8 +27,6 @@ import org.apache.guacamole.tunnel.TunnelRequestService;
 /**
  * WebSocketCreator which selects the appropriate WebSocketListener
  * implementation if the "guacamole" subprotocol is in use.
- * 
- * @author Michael Jumper
  */
 public class RestrictedGuacamoleWebSocketCreator implements WebSocketCreator {
 

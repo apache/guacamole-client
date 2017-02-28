@@ -45,8 +45,6 @@ import org.apache.guacamole.net.auth.simple.SimpleDirectory;
  * themselves, the any SharedConnections associated with that user via share
  * keys, and an internal root connection group containing only those
  * connections.
- *
- * @author Michael Jumper
  */
 public class SharedUserContext implements UserContext {
 

@@ -27,8 +27,6 @@ import org.apache.guacamole.net.auth.SharingProfile;
  * Changes to the underlying APISharingProfile are reflected immediately in the
  * values exposed by the SharingProfile interface, and changes made through the
  * SharingProfile interface immediately affect the underlying APISharingProfile.
- *
- * @author Michael Jumper
  */
 public class APISharingProfileWrapper implements SharingProfile {
 

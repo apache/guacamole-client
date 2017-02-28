@@ -26,8 +26,6 @@ import org.apache.guacamole.auth.jdbc.base.ObjectModel;
 
 /**
  * Object representation of a Guacamole user, as represented in the database.
- *
- * @author Michael Jumper
  */
 public class UserModel extends ObjectModel {
 

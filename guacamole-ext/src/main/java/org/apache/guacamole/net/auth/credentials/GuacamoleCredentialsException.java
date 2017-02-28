@@ -25,8 +25,6 @@ import org.apache.guacamole.GuacamoleUnauthorizedException;
  * A security-related exception thrown when access is denied to a user because
  * of a problem related to the provided credentials. Additional information
  * describing the form of valid credentials is provided.
- *
- * @author Michael Jumper
  */
 public class GuacamoleCredentialsException extends GuacamoleUnauthorizedException {
 

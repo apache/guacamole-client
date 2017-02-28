@@ -25,8 +25,6 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
 /**
  * An exception which indicates than an upstream server (such as the remote
  * desktop) is taking too long to respond.
- * 
- * @author Michael Jumper
  */
 public class GuacamoleUpstreamTimeoutException extends GuacamoleUpstreamException {
 

@@ -24,8 +24,6 @@ import java.util.Map;
 
 /**
  * Mapping of all usernames to corresponding authorizations.
- *
- * @author Mike Jumper
  */
 public class UserMapping {
 

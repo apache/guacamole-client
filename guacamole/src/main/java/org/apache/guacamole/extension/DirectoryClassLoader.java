@@ -34,8 +34,6 @@ import org.apache.guacamole.GuacamoleException;
 /**
  * A ClassLoader implementation which finds classes within .jar files within a
  * given directory.
- *
- * @author Michael Jumper
  */
 public class DirectoryClassLoader extends URLClassLoader {
 

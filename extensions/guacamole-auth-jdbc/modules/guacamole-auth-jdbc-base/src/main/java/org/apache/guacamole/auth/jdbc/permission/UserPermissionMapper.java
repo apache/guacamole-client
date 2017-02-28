@@ -21,7 +21,5 @@ package org.apache.guacamole.auth.jdbc.permission;
 
 /**
  * Mapper for user permissions.
- *
- * @author Michael Jumper
  */
 public interface UserPermissionMapper extends ObjectPermissionMapper {}

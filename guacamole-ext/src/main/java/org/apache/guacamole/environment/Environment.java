@@ -31,8 +31,6 @@ import org.apache.guacamole.protocols.ProtocolInfo;
 /**
  * The environment of an arbitrary Guacamole instance, describing available
  * protocols, configuration parameters, and the GUACAMOLE_HOME directory.
- *
- * @author Michael Jumper
  */
 public interface Environment {
 

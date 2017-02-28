@@ -29,8 +29,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * XML parser for the configuration file used by the NoAuth auth provider.
- *
- * @author Laurent Meunier
  */
 public class NoAuthConfigContentHandler extends DefaultHandler {
 

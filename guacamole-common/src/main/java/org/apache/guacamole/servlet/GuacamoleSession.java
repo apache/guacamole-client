@@ -26,8 +26,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provides abstract access to the tunnels associated with a Guacamole session.
- *
- * @author Michael Jumper
  */
 @Deprecated
 public class GuacamoleSession {

@@ -29,8 +29,6 @@ import java.util.Set;
 /**
  * All information necessary to complete the initial protocol handshake of a
  * Guacamole session.
- *
- * @author Michael Jumper
  */
 public class GuacamoleConfiguration implements Serializable {
 

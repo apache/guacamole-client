@@ -26,7 +26,6 @@ import org.apache.guacamole.GuacamoleException;
 /**
  * An arbitrary set of permissions.
  *
- * @author Michael Jumper
  * @param <PermissionType>
  *     The type of permission stored within this PermissionSet.
  */

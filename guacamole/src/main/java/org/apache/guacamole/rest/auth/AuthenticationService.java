@@ -41,9 +41,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A service for performing authentication checks in REST endpoints.
- * 
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class AuthenticationService {
 

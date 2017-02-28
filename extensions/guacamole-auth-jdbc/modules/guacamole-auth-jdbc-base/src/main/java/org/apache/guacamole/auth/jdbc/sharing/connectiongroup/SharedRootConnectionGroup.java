@@ -37,8 +37,6 @@ import org.apache.guacamole.protocol.GuacamoleClientInformation;
  * is statically defined, and all Connections which are intended to be contained
  * within an instance of SharedRootConnectionGroup MUST return that identifier
  * via getParentIdentifier().
- *
- * @author Michael Jumper
  */
 public class SharedRootConnectionGroup implements ConnectionGroup {
 

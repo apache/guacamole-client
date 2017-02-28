@@ -34,9 +34,6 @@ import org.apache.guacamole.tunnel.GuacamoleStreamException;
 
 /**
  * Describes an error that occurred within a REST endpoint.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class APIError {
 

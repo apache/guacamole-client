@@ -38,8 +38,6 @@ import org.apache.guacamole.net.auth.Directory;
  * A Directory implementation which exposes an explicitly-registered set of
  * share keys as connections. Only explicitly-registered share keys are
  * accessible a SharedConnectionDirectory.
- *
- * @author Michael Jumper
  */
 public class SharedConnectionDirectory implements Directory<Connection> {
 

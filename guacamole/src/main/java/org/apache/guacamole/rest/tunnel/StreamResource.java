@@ -36,8 +36,6 @@ import org.apache.guacamole.tunnel.StreamInterceptingTunnel;
 /**
  * A REST resource providing access to a Guacamole protocol-level stream
  * within a tunnel.
- *
- * @author Michael Jumper
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

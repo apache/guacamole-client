@@ -37,8 +37,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * WebSocket listener implementation which provides a Guacamole tunnel
- * 
- * @author Michael Jumper
  */
 public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListener {
 

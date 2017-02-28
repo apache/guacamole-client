@@ -25,8 +25,6 @@ import java.util.Date;
  * A single connection record representing a past usage of a particular
  * connection. If the connection was being shared, the sharing profile used to
  * join the connection is included in the record.
- *
- * @author Michael Jumper
  */
 public class ConnectionRecordModel {
 

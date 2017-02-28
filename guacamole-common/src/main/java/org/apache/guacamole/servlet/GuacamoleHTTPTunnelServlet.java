@@ -44,8 +44,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A HttpServlet implementing and abstracting the operations required by the
  * HTTP implementation of the JavaScript Guacamole client's tunnel.
- *
- * @author Michael Jumper
  */
 public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 

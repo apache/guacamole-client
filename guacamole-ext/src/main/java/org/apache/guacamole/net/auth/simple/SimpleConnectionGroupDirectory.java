@@ -28,8 +28,6 @@ import org.apache.guacamole.net.auth.ConnectionGroup;
  * An extremely simple read-only implementation of a Directory of
  * ConnectionGroup which provides which provides access to a pre-defined
  * Collection of ConnectionGroups.
- *
- * @author James Muehlner
  */
 public class SimpleConnectionGroupDirectory
     extends SimpleDirectory<ConnectionGroup> {

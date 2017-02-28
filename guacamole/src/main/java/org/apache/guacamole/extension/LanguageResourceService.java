@@ -45,8 +45,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Service which provides access to all built-in languages as resources, and
  * allows other resources to be added or overlaid against existing resources.
- *
- * @author Michael Jumper
  */
 public class LanguageResourceService {
 

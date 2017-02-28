@@ -24,9 +24,6 @@ import org.apache.guacamole.GuacamoleException;
 
 /**
  * The set of all available connection records, or a subset of those records.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public interface ConnectionRecordSet {
 

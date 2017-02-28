@@ -26,8 +26,6 @@ import org.xml.sax.SAXException;
 
 /**
  * TagHandler for the "connection" element.
- *
- * @author Mike Jumper
  */
 public class ConnectionTagHandler implements TagHandler {
 

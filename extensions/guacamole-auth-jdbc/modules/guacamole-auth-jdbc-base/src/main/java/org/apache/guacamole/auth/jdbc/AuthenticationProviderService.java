@@ -29,8 +29,6 @@ import org.apache.guacamole.net.auth.UserContext;
  * Service which authenticates users based on credentials and provides for
  * the creation of corresponding, new UserContext objects for authenticated
  * users.
- *
- * @author Michael Jumper
  */
 public interface AuthenticationProviderService  {
 

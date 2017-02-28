@@ -28,8 +28,6 @@ import org.apache.guacamole.form.UsernameField;
 
 /**
  * Information which describes a set of valid credentials.
- *
- * @author Michael Jumper
  */
 public class CredentialsInfo {
 

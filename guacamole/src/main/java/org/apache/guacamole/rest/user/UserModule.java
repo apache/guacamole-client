@@ -32,8 +32,6 @@ import org.apache.guacamole.rest.directory.DirectoryResource;
 /**
  * Guice Module which configures injections required for handling User resources
  * via the REST API.
- *
- * @author Michael Jumper
  */
 public class UserModule extends AbstractModule {
 

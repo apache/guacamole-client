@@ -26,8 +26,6 @@ import org.apache.guacamole.io.GuacamoleWriter;
 
 /**
  * Provides abstract socket-like access to a Guacamole connection.
- *
- * @author Michael Jumper
  */
 public interface GuacamoleSocket {
 

@@ -36,8 +36,6 @@ import org.apache.guacamole.net.GuacamoleSocket;
  * a specific configuration while disallowing the client that will be using
  * this GuacamoleSocket from manually controlling the initial protocol
  * handshake.
- *
- * @author Michael Jumper
  */
 public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
 

@@ -35,8 +35,6 @@ import org.apache.guacamole.protocol.GuacamoleClientInformation;
 /**
  * Service which creates pre-configured GuacamoleSocket instances for
  * connections and balancing groups, applying concurrent usage rules.
- *
- * @author Michael Jumper
  */
 public interface GuacamoleTunnelService {
 

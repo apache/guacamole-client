@@ -24,7 +24,6 @@ import java.security.SecureRandom;
 
 /**
  * Generates password salts via SecureRandom.
- * @author James Muehlner
  */
 public class SecureRandomSaltService implements SaltService {
 

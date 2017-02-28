@@ -27,8 +27,6 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
 /**
  * Implementation of GuacamoleConfiguration which loads parameter values only
  * if necessary, and only if allowed.
- *
- * @author Michael Jumper
  */
 public class ModeledGuacamoleConfiguration extends GuacamoleConfiguration {
 

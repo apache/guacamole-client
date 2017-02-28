@@ -35,8 +35,6 @@ import org.apache.guacamole.GuacamoleException;
  * classloader. Within the context of the JDBC extension, as long as each built
  * extension only provides one subclass of this class, things should work
  * properly, as each extension is given its own classloader by Guacamole.
- *
- * @author Michael Jumper
  */
 public abstract class JDBCInjectorProvider {
 

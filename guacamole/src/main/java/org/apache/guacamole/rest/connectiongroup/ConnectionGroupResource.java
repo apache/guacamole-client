@@ -39,8 +39,6 @@ import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 /**
  * A REST resource which abstracts the operations available on an existing
  * ConnectionGroup.
- *
- * @author Michael Jumper
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

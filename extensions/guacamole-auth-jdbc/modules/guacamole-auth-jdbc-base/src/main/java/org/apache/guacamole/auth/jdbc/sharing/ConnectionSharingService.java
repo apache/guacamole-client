@@ -38,8 +38,6 @@ import org.apache.guacamole.net.auth.credentials.UserCredentials;
 
 /**
  * Service which provides convenience methods for sharing active connections.
- *
- * @author Michael Jumper
  */
 public class ConnectionSharingService {
 

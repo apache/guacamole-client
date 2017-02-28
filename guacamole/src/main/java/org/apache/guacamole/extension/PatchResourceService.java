@@ -28,8 +28,6 @@ import org.apache.guacamole.resource.Resource;
 /**
  * Service which provides access to all HTML patches as resources, and allows
  * other patch resources to be added.
- *
- * @author Michael Jumper
  */
 public class PatchResourceService {
 

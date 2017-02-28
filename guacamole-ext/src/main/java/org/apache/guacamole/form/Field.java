@@ -29,8 +29,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  * defined by the type string. The behavior of each field type is defined
  * either through the web application itself (see FormService.js) or through
  * extensions.
- *
- * @author Michael Jumper
  */
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class Field {

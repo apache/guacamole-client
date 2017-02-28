@@ -24,9 +24,9 @@ package org.apache.guacamole.net.auth.permission;
  * A permission which affects a specific type of operation, where all available
  * operation types are defined by an enumeration.
  *
- * @author Michael Jumper
- * @param <Type> The enumeration of all available operation types that this
- *               permission can affect.
+ * @param <Type>
+ *     The enumeration of all available operation types that this permission
+ *     can affect.
  */
 public interface Permission<Type extends Enum> {
 

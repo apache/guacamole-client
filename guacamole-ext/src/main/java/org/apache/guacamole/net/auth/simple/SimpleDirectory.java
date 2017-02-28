@@ -34,7 +34,6 @@ import org.apache.guacamole.net.auth.Identifiable;
  * access to a pre-defined Map of arbitrary objects. Any changes to the Map
  * will affect the available contents of this SimpleDirectory.
  *
- * @author Michael Jumper
  * @param <ObjectType>
  *     The type of objects stored within this SimpleDirectory.
  */

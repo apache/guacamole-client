@@ -36,8 +36,6 @@ import org.apache.guacamole.rest.PATCH;
 /**
  * A REST resource which abstracts the operations available on the permissions
  * granted to an existing User.
- *
- * @author Michael Jumper
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

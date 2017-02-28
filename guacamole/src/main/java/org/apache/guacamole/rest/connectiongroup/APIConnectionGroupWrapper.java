@@ -29,8 +29,6 @@ import org.apache.guacamole.protocol.GuacamoleClientInformation;
 /**
  * A wrapper to make an APIConnection look like a ConnectionGroup.
  * Useful where a org.apache.guacamole.net.auth.ConnectionGroup is required.
- * 
- * @author James Muehlner
  */
 public class APIConnectionGroupWrapper implements ConnectionGroup {
 

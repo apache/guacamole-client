@@ -26,8 +26,6 @@ import org.apache.guacamole.net.auth.User;
 
 /**
  * A simple User to expose through the REST endpoints.
- * 
- * @author James Muehlner
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)

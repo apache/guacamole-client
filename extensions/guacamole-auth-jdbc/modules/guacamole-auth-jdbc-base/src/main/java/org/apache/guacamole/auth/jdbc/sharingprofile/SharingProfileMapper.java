@@ -24,8 +24,6 @@ import org.apache.ibatis.annotations.Param;
 
 /**
  * Mapper for sharing profile objects.
- *
- * @author Michael Jumper
  */
 public interface SharingProfileMapper
         extends ModeledDirectoryObjectMapper<SharingProfileModel> {

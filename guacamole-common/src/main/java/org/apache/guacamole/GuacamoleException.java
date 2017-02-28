@@ -25,8 +25,6 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
 /**
  * A generic exception thrown when parts of the Guacamole API encounter
  * errors.
- *
- * @author Michael Jumper
  */
 public class GuacamoleException extends Exception {
     

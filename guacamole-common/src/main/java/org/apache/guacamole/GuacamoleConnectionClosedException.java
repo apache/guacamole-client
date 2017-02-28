@@ -25,8 +25,6 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
 /**
  * An exception which is thrown when an operation cannot be performed because
  * its corresponding connection is closed.
- *
- * @author Michael Jumper
  */
 public class GuacamoleConnectionClosedException extends GuacamoleServerException {
 

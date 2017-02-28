@@ -31,8 +31,6 @@ import org.apache.guacamole.servlet.GuacamoleHTTPTunnelServlet;
 
 /**
  * Simple tunnel example with hard-coded configuration parameters.
- *
- * @author Michael Jumper
  */
 public class DummyGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 

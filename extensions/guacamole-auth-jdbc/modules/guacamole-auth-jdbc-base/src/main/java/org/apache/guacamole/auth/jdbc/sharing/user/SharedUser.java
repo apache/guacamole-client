@@ -37,8 +37,6 @@ import org.apache.guacamole.net.auth.simple.SimpleSystemPermissionSet;
  * An immutable implementation of User which defines READ permission for each of
  * the objects accessible through the various directories of a given
  * SharedUserContext.
- *
- * @author Michael Jumper
  */
 public class SharedUser implements User {
 

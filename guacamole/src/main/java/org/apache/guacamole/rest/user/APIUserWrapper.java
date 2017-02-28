@@ -31,8 +31,6 @@ import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
  * org.apache.guacamole.net.auth.User is required. As a simple wrapper for
  * APIUser, access to permissions is not provided. Any attempt to access or
  * manipulate permissions on an APIUserWrapper will result in an exception.
- * 
- * @author James Muehlner
  */
 public class APIUserWrapper implements User {
     

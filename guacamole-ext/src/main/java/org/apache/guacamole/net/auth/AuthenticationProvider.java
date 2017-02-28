@@ -25,8 +25,6 @@ import org.apache.guacamole.GuacamoleException;
  * Provides means of authorizing users and for accessing and managing data
  * associated with those users. Access to such data is limited according to the
  * AuthenticationProvider implementation.
- *
- * @author Michael Jumper
  */
 public interface AuthenticationProvider {
 

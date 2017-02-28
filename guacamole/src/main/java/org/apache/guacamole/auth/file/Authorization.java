@@ -30,8 +30,6 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
  * Mapping of username/password pair to configuration set. In addition to basic
  * storage of the username, password, and configurations, this class also
  * provides password validation functions.
- *
- * @author Mike Jumper
  */
 public class Authorization {
 

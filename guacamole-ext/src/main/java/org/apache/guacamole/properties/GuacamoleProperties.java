@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
  * be read from the root of the classpath.
  *
  * @deprecated
- * @author Michael Jumper
  */
 public class GuacamoleProperties {
 

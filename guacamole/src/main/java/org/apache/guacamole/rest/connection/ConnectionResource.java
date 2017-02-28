@@ -54,8 +54,6 @@ import org.apache.guacamole.rest.sharingprofile.APISharingProfile;
 /**
  * A REST resource which abstracts the operations available on an existing
  * Connection.
- *
- * @author Michael Jumper
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

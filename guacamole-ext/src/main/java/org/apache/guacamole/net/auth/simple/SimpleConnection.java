@@ -38,8 +38,6 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * An extremely basic Connection implementation.
- *
- * @author Michael Jumper
  */
 public class SimpleConnection extends AbstractConnection {
 

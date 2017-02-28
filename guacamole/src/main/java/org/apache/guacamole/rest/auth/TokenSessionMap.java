@@ -24,8 +24,6 @@ import org.apache.guacamole.GuacamoleSession;
 /**
  * Represents a mapping of auth token to Guacamole session for the REST 
  * authentication system.
- * 
- * @author James Muehlner
  */
 public interface TokenSessionMap {
     

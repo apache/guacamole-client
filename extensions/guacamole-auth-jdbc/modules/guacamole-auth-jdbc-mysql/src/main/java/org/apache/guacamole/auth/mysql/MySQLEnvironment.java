@@ -28,9 +28,6 @@ import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
 /**
  * A MySQL-specific implementation of JDBCEnvironment provides database
  * properties specifically for MySQL.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class MySQLEnvironment extends JDBCEnvironment {
 

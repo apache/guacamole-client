@@ -25,9 +25,6 @@ import org.apache.guacamole.net.auth.ConnectionRecord;
 
 /**
  * A ConnectionRecord which is backed by a database model.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class ModeledConnectionRecord implements ConnectionRecord {
 

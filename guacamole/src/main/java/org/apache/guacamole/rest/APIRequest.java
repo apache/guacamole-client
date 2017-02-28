@@ -31,8 +31,6 @@ import javax.ws.rs.core.MultivaluedMap;
 /**
  * Wrapper for HttpServletRequest which uses a given MultivaluedMap to provide
  * the values of all request parameters.
- * 
- * @author Michael Jumper
  */
 public class APIRequest extends HttpServletRequestWrapper {
 

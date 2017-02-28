@@ -25,8 +25,6 @@ import org.apache.guacamole.net.GuacamoleTunnel;
 /**
  * Base implementation of an ActiveConnection, providing storage and simply
  * getters/setters for its main properties.
- *
- * @author Michael Jumper
  */
 public abstract class AbstractActiveConnection extends AbstractIdentifiable
         implements ActiveConnection {

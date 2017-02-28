@@ -31,8 +31,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Initializes the logging subsystem.
- *
- * @author Michael Jumper
  */
 public class LogModule extends AbstractModule {
 

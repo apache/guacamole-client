@@ -27,8 +27,6 @@ import org.apache.guacamole.net.GuacamoleSocket;
 /**
  * Implementation of GuacamoleSocket which allows individual instructions to be
  * intercepted, overridden, etc.
- *
- * @author Michael Jumper
  */
 public class FilteredGuacamoleSocket implements GuacamoleSocket {
 

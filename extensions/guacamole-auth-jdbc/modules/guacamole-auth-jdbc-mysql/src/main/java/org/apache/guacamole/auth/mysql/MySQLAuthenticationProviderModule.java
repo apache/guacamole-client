@@ -28,8 +28,6 @@ import org.mybatis.guice.datasource.helper.JdbcHelper;
 
 /**
  * Guice module which configures MySQL-specific injections.
- *
- * @author James Muehlner
  */
 public class MySQLAuthenticationProviderModule implements Module {
 

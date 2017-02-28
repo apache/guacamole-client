@@ -26,7 +26,6 @@ import org.apache.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
  * the Directory class. All such objects will need the same base set of queries
  * to fulfill the needs of the Directory class.
  *
- * @author Michael Jumper
  * @param <ModelType>
  *     The type of model object that corresponds to this object.
  */

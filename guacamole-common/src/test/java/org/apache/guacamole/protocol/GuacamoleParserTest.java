@@ -26,8 +26,6 @@ import org.junit.Test;
 /**
  * Unit test for GuacamoleParser. Verifies that parsing of the Guacamole
  * protocol works as required.
- *
- * @author Michael Jumper
  */
 public class GuacamoleParserTest {
 

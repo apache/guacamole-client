@@ -25,8 +25,6 @@ import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 
 /**
  * Translator which converts between User objects and APIUser objects.
- *
- * @author Michael Jumper
  */
 public class UserObjectTranslator
         implements DirectoryObjectTranslator<User, APIUser> {

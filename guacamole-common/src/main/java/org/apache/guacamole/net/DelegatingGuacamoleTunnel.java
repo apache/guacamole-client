@@ -27,8 +27,6 @@ import org.apache.guacamole.io.GuacamoleWriter;
 /**
  * GuacamoleTunnel implementation which simply delegates all function calls to
  * an underlying GuacamoleTunnel.
- *
- * @author Michael Jumper
  */
 public class DelegatingGuacamoleTunnel implements GuacamoleTunnel {
 

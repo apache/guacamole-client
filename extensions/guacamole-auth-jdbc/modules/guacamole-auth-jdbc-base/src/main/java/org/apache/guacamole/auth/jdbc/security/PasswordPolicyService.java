@@ -34,8 +34,6 @@ import org.apache.guacamole.auth.jdbc.user.PasswordRecordModel;
 /**
  * Service which verifies compliance with the password policy configured via
  * guacamole.properties.
- *
- * @author Michael Jumper
  */
 public class PasswordPolicyService {
 
