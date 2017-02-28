@@ -26,8 +26,6 @@ import org.xml.sax.SAXException;
 
 /**
  * TagHandler for the "param" element.
- *
- * @author Mike Jumper
  */
 public class ParamTagHandler implements TagHandler {
 

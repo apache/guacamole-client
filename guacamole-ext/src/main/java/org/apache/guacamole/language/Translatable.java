@@ -23,8 +23,6 @@ package org.apache.guacamole.language;
  * An object which is associated with a translatable message that can be passed
  * through an arbitrary translation service, producing a human-readable message
  * in the user's native language.
- *
- * @author Michael Jumper
  */
 public interface Translatable {
 

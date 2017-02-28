@@ -22,8 +22,6 @@ package org.apache.guacamole.form;
 /**
  * Represents a time zone field. The field may contain only valid time zone IDs,
  * as dictated by TimeZone.getAvailableIDs().
- *
- * @author Michael Jumper
  */
 public class TimeZoneField extends Field {
 

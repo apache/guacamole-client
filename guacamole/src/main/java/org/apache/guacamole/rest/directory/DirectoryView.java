@@ -33,7 +33,6 @@ import org.apache.guacamole.net.auth.Identifiable;
  * determined by the set of identifiers provided when the DirectoryView is
  * created.
  *
- * @author Michael Jumper
  * @param <ObjectType>
  *     The type of objects accessible through this DirectoryView.
  */

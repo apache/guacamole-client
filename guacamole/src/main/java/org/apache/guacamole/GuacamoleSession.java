@@ -35,8 +35,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Contains Guacamole-specific user information which is tied to the current
  * session, such as the UserContext and current clipboard state.
- *
- * @author Michael Jumper
  */
 public class GuacamoleSession {
 

@@ -27,8 +27,6 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
  * usually indicates that a server-side buffer is not large enough to
  * accommodate the data, or protocol specifications prohibit data of the size
  * received.
- * 
- * @author Michael Jumper
  */
 public class GuacamoleClientOverrunException extends GuacamoleClientException {
 

@@ -22,8 +22,6 @@ package org.apache.guacamole.protocol;
 /**
  * All possible statuses returned by various Guacamole instructions, each having
  * a corresponding code.
- * 
- * @author Michael Jumper
  */
 public enum GuacamoleStatus {
 

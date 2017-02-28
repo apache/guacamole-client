@@ -24,8 +24,6 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
 
 /**
  * An exception which is thrown when the client is taking too long to respond.
- * 
- * @author Michael Jumper
  */
 public class GuacamoleClientTimeoutException extends GuacamoleClientException {
 

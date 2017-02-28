@@ -36,8 +36,6 @@ import org.apache.guacamole.rest.tunnel.TunnelCollectionResourceFactory;
 /**
  * A REST resource which exposes all data associated with a Guacamole user's
  * session via the underlying UserContexts.
- *
- * @author Michael Jumper
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

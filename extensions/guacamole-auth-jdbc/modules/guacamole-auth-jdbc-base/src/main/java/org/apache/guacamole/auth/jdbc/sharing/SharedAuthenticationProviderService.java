@@ -37,8 +37,6 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsExce
  * creation of corresponding UserContexts. The created UserContext objects are
  * restricted to the connections associated with those share keys via a common
  * ConnectionSharingService.
- *
- * @author Michael Jumper
  */
 public class SharedAuthenticationProviderService implements AuthenticationProviderService {
 

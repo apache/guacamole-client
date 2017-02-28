@@ -31,7 +31,6 @@ import org.apache.guacamole.net.auth.permission.PermissionSet;
  * Abstract PermissionService implementation which provides additional
  * convenience methods for enforcing the permission model.
  *
- * @author Michael Jumper
  * @param <PermissionSetType>
  *     The type of permission sets this service provides access to.
  *

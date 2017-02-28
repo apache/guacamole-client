@@ -29,8 +29,6 @@ import org.apache.guacamole.tunnel.TunnelRequest;
 
 /**
  * HTTP-specific implementation of TunnelRequest.
- *
- * @author Michael Jumper
  */
 public class HTTPTunnelRequest extends TunnelRequest {
 

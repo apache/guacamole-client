@@ -27,8 +27,6 @@ import org.apache.guacamole.net.auth.ConnectionRecordSet;
 
 /**
  * An immutable and empty ConnectionRecordSet.
- *
- * @author Michael Jumper
  */
 public class SimpleConnectionRecordSet implements ConnectionRecordSet {
 

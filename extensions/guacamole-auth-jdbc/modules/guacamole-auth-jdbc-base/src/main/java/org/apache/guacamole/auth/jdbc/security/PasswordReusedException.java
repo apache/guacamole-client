@@ -25,8 +25,6 @@ import org.apache.guacamole.language.TranslatableMessage;
 /**
  * Thrown when an attempt is made to reuse a previous password, in violation of
  * the defined password policy.
- *
- * @author Michael Jumper
  */
 public class PasswordReusedException extends PasswordPolicyException {
 

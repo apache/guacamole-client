@@ -25,8 +25,6 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
 /**
  * An exception which is thrown when the requested operation is unsupported
  * or unimplemented.
- *
- * @author Michael Jumper
  */
 public class GuacamoleUnsupportedException extends GuacamoleServerException {
 

@@ -34,8 +34,6 @@ import org.slf4j.LoggerFactory;
  * method is correctly supported, and HTTP 304 ("Not Modified") responses will
  * be properly returned for GET requests depending on the last time the
  * resource was modified.
- *
- * @author Michael Jumper
  */
 public class ResourceServlet extends HttpServlet {
 

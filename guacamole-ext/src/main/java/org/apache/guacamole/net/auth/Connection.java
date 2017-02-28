@@ -30,8 +30,6 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
  * human-readable identifier, and abstracts the connection process. The
  * backing GuacamoleConfiguration may be intentionally obfuscated or tokenized
  * to protect sensitive configuration information.
- *
- * @author Michael Jumper
  */
 public interface Connection extends Identifiable, Connectable {
 

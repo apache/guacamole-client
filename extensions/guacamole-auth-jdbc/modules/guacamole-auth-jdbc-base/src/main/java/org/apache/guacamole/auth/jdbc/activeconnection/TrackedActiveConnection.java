@@ -34,8 +34,6 @@ import org.apache.guacamole.net.auth.credentials.UserCredentials;
 /**
  * An implementation of the ActiveConnection object which has an associated
  * ActiveConnectionRecord.
- *
- * @author Michael Jumper
  */
 public class TrackedActiveConnection extends RestrictedObject implements ActiveConnection {
 

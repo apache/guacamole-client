@@ -22,8 +22,6 @@ package org.apache.guacamole.net.auth;
 /**
  * An object which has a deterministic, unique identifier, which may not be
  * null.
- *
- * @author Michael Jumper
  */
 public interface Identifiable {
 

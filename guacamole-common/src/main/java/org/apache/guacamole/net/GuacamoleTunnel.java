@@ -28,8 +28,6 @@ import org.apache.guacamole.io.GuacamoleWriter;
 /**
  * Provides a unique identifier and synchronized access to the GuacamoleReader
  * and GuacamoleWriter associated with a GuacamoleSocket.
- *
- * @author Michael Jumper
  */
 public interface GuacamoleTunnel {
 

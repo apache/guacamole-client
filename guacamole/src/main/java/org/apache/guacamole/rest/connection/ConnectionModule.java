@@ -32,8 +32,6 @@ import org.apache.guacamole.rest.directory.DirectoryResource;
 /**
  * Guice Module which configures injections required for handling Connection
  * resources via the REST API.
- *
- * @author Michael Jumper
  */
 public class ConnectionModule extends AbstractModule {
 

@@ -32,8 +32,6 @@ import org.apache.guacamole.rest.auth.AuthenticationService;
 /**
  * A REST service which exposes all data associated with Guacamole users'
  * sessions.
- *
- * @author Michael Jumper
  */
 @Path("/session")
 @Produces(MediaType.APPLICATION_JSON)

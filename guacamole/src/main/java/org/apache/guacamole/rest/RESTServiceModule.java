@@ -48,9 +48,6 @@ import org.webjars.servlet.WebjarsServlet;
 /**
  * A Guice Module to set up the servlet mappings and authentication-specific
  * dependency injection for the Guacamole REST API.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class RESTServiceModule extends ServletModule {
 

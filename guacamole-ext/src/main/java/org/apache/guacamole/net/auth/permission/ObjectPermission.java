@@ -23,8 +23,6 @@ package org.apache.guacamole.net.auth.permission;
 /**
  * A permission which affects a specific object, rather than the system as a
  * whole.
- *
- * @author Michael Jumper
  */
 public class ObjectPermission implements Permission<ObjectPermission.Type> {
 

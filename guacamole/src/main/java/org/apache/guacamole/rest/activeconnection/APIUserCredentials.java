@@ -28,8 +28,6 @@ import org.apache.guacamole.net.auth.credentials.UserCredentials;
  * The object returned by REST API calls to define a full set of valid
  * credentials, including field definitions and corresponding expected
  * values.
- *
- * @author Michael Jumper
  */
 public class APIUserCredentials {
 

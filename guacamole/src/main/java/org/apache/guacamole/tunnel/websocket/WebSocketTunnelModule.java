@@ -32,8 +32,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Loads the JSR-356 WebSocket tunnel implementation.
- * 
- * @author Michael Jumper
  */
 public class WebSocketTunnelModule extends ServletModule implements TunnelLoader {
 

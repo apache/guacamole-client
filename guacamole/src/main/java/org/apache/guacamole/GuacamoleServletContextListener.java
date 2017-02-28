@@ -38,8 +38,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A ServletContextListener to listen for initialization of the servlet context
  * in order to set up dependency injection.
- *
- * @author James Muehlner
  */
 public class GuacamoleServletContextListener extends GuiceServletContextListener {
 

@@ -21,8 +21,6 @@ package org.apache.guacamole.auth.ldap;
 
 /**
  * Service for escaping LDAP filters, distinguished names (DN's), etc.
- *
- * @author Michael Jumper
  */
 public class EscapingService {
 

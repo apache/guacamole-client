@@ -28,7 +28,6 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
  * stream-type object which will produce or consume the data sent over the
  * intercepted Guacamole stream.
  *
- * @author Michael Jumper
  * @param <T>
  *     The type of object which will produce or consume the data sent over the
  *     intercepted Guacamole stream. Usually, this will be either InputStream

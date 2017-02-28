@@ -25,8 +25,6 @@ import org.xml.sax.SAXException;
 /**
  * A simple element-level event handler for events triggered by the
  * SAX-driven DocumentHandler parser.
- *
- * @author Mike Jumper
  */
 public interface TagHandler {
 

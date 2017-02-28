@@ -26,8 +26,6 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
  * An exception which is thrown when a resource has been requested, but that
  * resource is locked or currently in use, and cannot be accessed by the
  * current user.
- * 
- * @author Michael Jumper
  */
 public class GuacamoleResourceConflictException extends GuacamoleClientException {
 

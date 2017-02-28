@@ -26,8 +26,6 @@ import org.xml.sax.SAXException;
 
 /**
  * TagHandler for the "protocol" element.
- *
- * @author Mike Jumper
  */
 public class ProtocolTagHandler implements TagHandler {
 

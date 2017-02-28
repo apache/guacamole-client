@@ -31,8 +31,6 @@ import java.util.Set;
  * added or removed individually, and the overall list of current records
  * associated with a given object can be retrieved at any time. The public
  * methods of this class are all threadsafe.
- *
- * @author Michael Jumper
  */
 public class ActiveConnectionMultimap {
 

@@ -31,7 +31,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * to register new objects after the SharedObjectManager has been invalidated
  * will cause the provided object to be immediately cleaned up.
  *
- * @author Michael Jumper
  * @param <T>
  *     The type of object managed by this SharedObjectManager.
  */

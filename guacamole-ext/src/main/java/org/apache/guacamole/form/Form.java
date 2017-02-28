@@ -25,8 +25,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  * Information which describes logical set of fields.
- *
- * @author Michael Jumper
  */
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class Form {

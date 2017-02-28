@@ -25,9 +25,6 @@ import java.util.List;
 /**
  * A simple object which describes the result of an authentication operation,
  * including the resulting token.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class APIAuthenticationResult {
 

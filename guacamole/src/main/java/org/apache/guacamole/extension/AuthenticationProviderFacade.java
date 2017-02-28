@@ -35,8 +35,6 @@ import org.slf4j.LoggerFactory;
  * Provides a safe wrapper around an AuthenticationProvider subclass, such that
  * authentication attempts can cleanly fail, and errors can be properly logged,
  * even if the AuthenticationProvider cannot be instantiated.
- *
- * @author Michael Jumper
  */
 public class AuthenticationProviderFacade implements AuthenticationProvider {
 

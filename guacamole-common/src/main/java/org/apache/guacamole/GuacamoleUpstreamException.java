@@ -25,8 +25,6 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
 /**
  * An exception which indicates than an upstream server (such as the remote
  * desktop) is returning an error or is otherwise unreachable.
- * 
- * @author Michael Jumper
  */
 public class GuacamoleUpstreamException extends GuacamoleException {
 

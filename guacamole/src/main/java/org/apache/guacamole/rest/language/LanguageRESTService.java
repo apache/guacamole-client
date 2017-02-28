@@ -30,8 +30,6 @@ import org.apache.guacamole.extension.LanguageResourceService;
 
 /**
  * A REST Service for handling the listing of languages.
- * 
- * @author James Muehlner
  */
 @Path("/languages")
 @Produces(MediaType.APPLICATION_JSON)

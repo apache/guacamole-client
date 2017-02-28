@@ -25,8 +25,6 @@ import org.apache.guacamole.protocol.GuacamoleClientInformation;
 
 /**
  * An object which Guacamole can connect to.
- *
- * @author Michael Jumper
  */
 public interface Connectable {
 

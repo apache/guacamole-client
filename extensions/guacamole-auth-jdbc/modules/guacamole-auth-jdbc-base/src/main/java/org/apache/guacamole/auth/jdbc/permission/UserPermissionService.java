@@ -29,8 +29,6 @@ import org.apache.guacamole.auth.jdbc.user.ModeledUser;
  * Service which provides convenience methods for creating, retrieving, and
  * deleting user permissions. This service will automatically enforce the
  * permissions of the current user.
- *
- * @author Michael Jumper
  */
 public class UserPermissionService extends ModeledObjectPermissionService {
 

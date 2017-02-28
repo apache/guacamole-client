@@ -41,8 +41,6 @@ import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating sharing profiles.
- *
- * @author Michael Jumper
  */
 public class SharingProfileService
         extends ModeledChildDirectoryObjectService<ModeledSharingProfile,

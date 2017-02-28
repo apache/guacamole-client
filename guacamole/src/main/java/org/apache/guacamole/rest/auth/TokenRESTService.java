@@ -46,9 +46,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A service for managing auth tokens via the Guacamole REST API.
- * 
- * @author James Muehlner
- * @author Michael Jumper
  */
 @Path("/tokens")
 @Produces(MediaType.APPLICATION_JSON)

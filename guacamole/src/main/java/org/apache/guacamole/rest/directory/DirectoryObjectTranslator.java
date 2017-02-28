@@ -26,7 +26,6 @@ import org.apache.guacamole.net.auth.Identifiable;
  * Provides bidirectional conversion between REST-specific objects and the
  * internal objects defined by the Guacamole extension API.
  *
- * @author Michael Jumper
  * @param <InternalType>
  *     The type of object converted by this DirectoryObjectTranslator which is
  *     not necessarily intended for use in interchange.

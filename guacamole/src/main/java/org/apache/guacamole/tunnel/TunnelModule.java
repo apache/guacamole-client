@@ -27,8 +27,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Module which loads tunnel implementations.
- *
- * @author Michael Jumper
  */
 public class TunnelModule extends ServletModule {
 

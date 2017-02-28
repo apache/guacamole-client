@@ -28,8 +28,6 @@ import org.apache.guacamole.form.Form;
  * a protocol plugin for guacd. Each parameter is described with a Form, which
  * allows the parameters of a protocol to be exposed to the user as friendly
  * groupings of fields.
- *
- * @author Michael Jumper
  */
 public class ProtocolInfo {
 

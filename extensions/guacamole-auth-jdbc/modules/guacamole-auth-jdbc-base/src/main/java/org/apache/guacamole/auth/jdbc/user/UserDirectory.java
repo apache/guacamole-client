@@ -33,9 +33,6 @@ import org.mybatis.guice.transactional.Transactional;
 /**
  * Implementation of the User Directory which is driven by an underlying,
  * arbitrary database.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class UserDirectory extends RestrictedObject
     implements Directory<User> {

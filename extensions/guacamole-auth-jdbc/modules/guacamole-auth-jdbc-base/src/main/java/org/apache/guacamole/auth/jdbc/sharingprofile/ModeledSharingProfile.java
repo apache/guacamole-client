@@ -30,8 +30,6 @@ import org.apache.guacamole.net.auth.SharingProfile;
 /**
  * An implementation of the SharingProfile object which is backed by a database
  * model.
- *
- * @author Michael Jumper
  */
 public class ModeledSharingProfile
         extends ModeledChildDirectoryObject<SharingProfileModel>

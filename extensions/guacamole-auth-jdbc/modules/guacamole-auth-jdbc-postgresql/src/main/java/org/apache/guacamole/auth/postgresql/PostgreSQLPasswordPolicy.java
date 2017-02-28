@@ -28,8 +28,6 @@ import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 /**
  * PasswordPolicy implementation which reads the details of the policy from
  * PostgreSQL-specific properties in guacamole.properties.
- *
- * @author Michael Jumper
  */
 public class PostgreSQLPasswordPolicy implements PasswordPolicy {
 

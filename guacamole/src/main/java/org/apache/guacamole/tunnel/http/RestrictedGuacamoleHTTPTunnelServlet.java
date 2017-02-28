@@ -33,8 +33,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Connects users to a tunnel associated with the authorized connection
  * having the given ID.
- *
- * @author Michael Jumper
  */
 @Singleton
 public class RestrictedGuacamoleHTTPTunnelServlet extends GuacamoleHTTPTunnelServlet {

@@ -26,8 +26,6 @@ import java.util.List;
 /**
  * An abstract representation of Guacamole client information, including all
  * information required by the Guacamole protocol during the preamble.
- *
- * @author Michael Jumper
  */
 public class GuacamoleClientInformation {
 

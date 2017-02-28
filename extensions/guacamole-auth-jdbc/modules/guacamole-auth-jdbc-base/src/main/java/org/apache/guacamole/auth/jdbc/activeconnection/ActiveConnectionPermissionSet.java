@@ -26,8 +26,6 @@ import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionSet;
 /**
  * An implementation of ObjectPermissionSet which uses an injected service to
  * query and manipulate the permissions associated with active connections.
- *
- * @author Michael Jumper
  */
 public class ActiveConnectionPermissionSet extends ObjectPermissionSet {
 

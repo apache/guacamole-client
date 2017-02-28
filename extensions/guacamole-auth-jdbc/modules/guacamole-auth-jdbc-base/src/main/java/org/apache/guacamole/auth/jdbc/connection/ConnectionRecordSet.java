@@ -33,8 +33,6 @@ import org.apache.guacamole.net.auth.ConnectionRecord;
  * A JDBC implementation of ConnectionRecordSet. Calls to asCollection() will 
  * query connection history records from the database. Which records are
  * returned will be determined by the values passed in earlier.
- * 
- * @author James Muehlner
  */
 public class ConnectionRecordSet extends RestrictedObject
         implements org.apache.guacamole.net.auth.ConnectionRecordSet {

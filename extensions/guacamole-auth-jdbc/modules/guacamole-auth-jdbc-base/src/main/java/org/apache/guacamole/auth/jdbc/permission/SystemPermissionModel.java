@@ -24,8 +24,6 @@ import org.apache.guacamole.net.auth.permission.SystemPermission;
 /**
  * Object representation of an system-level Guacamole permission, as
  * represented in the database.
- *
- * @author Michael Jumper
  */
 public class SystemPermissionModel extends PermissionModel<SystemPermission.Type> {
 

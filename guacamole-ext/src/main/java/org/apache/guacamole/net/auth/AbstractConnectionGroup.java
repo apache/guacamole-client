@@ -21,8 +21,6 @@ package org.apache.guacamole.net.auth;
 
 /**
  * Basic implementation of a Guacamole connection group.
- *
- * @author James Muehlner
  */
 public abstract class AbstractConnectionGroup extends AbstractIdentifiable
         implements ConnectionGroup {

@@ -24,8 +24,6 @@ import org.apache.guacamole.GuacamoleSession;
 /**
  * Factory which creates resources that expose the collection of tunnels
  * contained within a given GuacamoleSession.
- *
- * @author Michael Jumper
  */
 public interface TunnelCollectionResourceFactory {
 

@@ -26,8 +26,6 @@ import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
 /**
  * A JDBC-specific implementation of Environment that defines generic properties
  * intended for use within JDBC based authentication providers.
- *
- * @author James Muehlner
  */
 public abstract class JDBCEnvironment extends LocalEnvironment {
     

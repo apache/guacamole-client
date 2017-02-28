@@ -27,8 +27,6 @@ import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 /**
  * Translator which converts between Connection objects and APIConnection
  * objects.
- *
- * @author Michael Jumper
  */
 public class ConnectionObjectTranslator
         implements DirectoryObjectTranslator<Connection, APIConnection> {

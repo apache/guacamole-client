@@ -28,8 +28,6 @@ import static org.junit.Assert.*;
 /**
  * Tests the ReaderGuacamoleReader implementation of GuacamoleReader, validating
  * that instructions are parsed correctly.
- *
- * @author Michael Jumper
  */
 public class ReaderGuacamoleReaderTest {
 

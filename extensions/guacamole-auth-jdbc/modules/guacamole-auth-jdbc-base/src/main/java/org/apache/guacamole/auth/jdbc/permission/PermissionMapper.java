@@ -26,7 +26,6 @@ import org.apache.ibatis.annotations.Param;
 /**
  * Generic base for mappers which handle permissions.
  *
- * @author Michael Jumper
  * @param <PermissionType>
  *     The type of permission model object handled by this mapper.
  */

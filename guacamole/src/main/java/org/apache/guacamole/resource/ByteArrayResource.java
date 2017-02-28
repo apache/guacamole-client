@@ -24,8 +24,6 @@ import java.io.InputStream;
 
 /**
  * A resource which contains a defined byte array.
- *
- * @author Michael Jumper
  */
 public class ByteArrayResource extends AbstractResource {
 

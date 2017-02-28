@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
  * Abstract representation of the Guacamole configuration directory.
  *
  * @deprecated
- * @author Michael Jumper
  */
 public class GuacamoleHome {
 

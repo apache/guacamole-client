@@ -22,8 +22,6 @@ package org.apache.guacamole.auth.jdbc.base;
 /**
  * Object representation of a Guacamole object, such as a user or connection,
  * as represented in the database.
- *
- * @author Michael Jumper
  */
 public abstract class ObjectModel {
 

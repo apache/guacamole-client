@@ -42,9 +42,6 @@ import org.slf4j.LoggerFactory;
  * of this utility is specific to the form of request used by the upstream
  * Guacamole web application, and is not necessarily useful to applications
  * that use purely the Guacamole API.
- *
- * @author Michael Jumper
- * @author Vasily Loginov
  */
 @Singleton
 public class TunnelRequestService {

@@ -39,8 +39,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A WebSocketServlet partial re-implementation of GuacamoleTunnelServlet.
- *
- * @author Michael Jumper
  */
 public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
 

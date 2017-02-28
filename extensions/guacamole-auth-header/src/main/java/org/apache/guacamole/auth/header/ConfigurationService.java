@@ -26,8 +26,6 @@ import org.apache.guacamole.environment.Environment;
 /**
  * Service for retrieving configuration information for HTTP header-based 
  * authentication.
- *
- * @author Nick Couchman
  */
 public class ConfigurationService {
 

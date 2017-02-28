@@ -23,7 +23,6 @@ package org.apache.guacamole.auth.jdbc.permission;
  * Generic base permission model which grants a permission of a particular type
  * to a specific user.
  *
- * @author Michael Jumper
  * @param <PermissionType>
  *     The type of permissions allowed within this model.
  */

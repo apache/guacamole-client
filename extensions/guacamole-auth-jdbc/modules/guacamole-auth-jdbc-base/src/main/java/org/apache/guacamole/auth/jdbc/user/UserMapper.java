@@ -24,8 +24,6 @@ import org.apache.ibatis.annotations.Param;
 
 /**
  * Mapper for user objects.
- *
- * @author Michael Jumper
  */
 public interface UserMapper extends ModeledDirectoryObjectMapper<UserModel> {
 

@@ -25,8 +25,6 @@ import java.util.UUID;
 /**
  * GuacamoleTunnel implementation which uses a provided socket. The UUID of
  * the tunnel will be randomly generated.
- *
- * @author Michael Jumper
  */
 public class SimpleGuacamoleTunnel extends AbstractGuacamoleTunnel {
 

@@ -43,8 +43,6 @@ import org.apache.guacamole.protocol.GuacamoleClientInformation;
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating connection groups.
- *
- * @author Michael Jumper, James Muehlner
  */
 public class ConnectionGroupService extends ModeledChildDirectoryObjectService<ModeledConnectionGroup,
         ConnectionGroup, ConnectionGroupModel> {

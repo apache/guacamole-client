@@ -33,8 +33,6 @@ import org.apache.guacamole.net.auth.permission.SystemPermission;
  * Service which provides convenience methods for creating, retrieving, and
  * deleting system permissions. This service will automatically enforce
  * the permissions of the current user.
- *
- * @author Michael Jumper
  */
 public class SystemPermissionService
     extends ModeledPermissionService<SystemPermissionSet, SystemPermission, SystemPermissionModel> {

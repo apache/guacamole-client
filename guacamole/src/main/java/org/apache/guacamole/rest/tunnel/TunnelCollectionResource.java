@@ -37,8 +37,6 @@ import org.apache.guacamole.tunnel.UserTunnel;
 
 /**
  * A REST resource which exposes the active tunnels of a Guacamole session.
- *
- * @author Michael Jumper
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

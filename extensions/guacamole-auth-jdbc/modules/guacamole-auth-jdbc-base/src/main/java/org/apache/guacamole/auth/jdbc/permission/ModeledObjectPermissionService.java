@@ -33,8 +33,6 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
  * Service which provides convenience methods for creating, retrieving, and
  * deleting object permissions within a backend database model. This service
  * will automatically enforce the permissions of the current user.
- *
- * @author Michael Jumper
  */
 public abstract class ModeledObjectPermissionService
     extends ModeledPermissionService<ObjectPermissionSet, ObjectPermission, ObjectPermissionModel>

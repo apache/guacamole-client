@@ -24,8 +24,6 @@ import org.apache.guacamole.tunnel.UserTunnel;
 /**
  * Factory which creates resources that expose the contents of a given
  * tunnel.
- *
- * @author Michael Jumper
  */
 public interface TunnelResourceFactory {
 

@@ -28,8 +28,6 @@ import javax.ws.rs.HttpMethod;
 
 /**
  * An annotation for using the HTTP PATCH method in the REST endpoints.
- * 
- * @author James Muehlner
  */
 @Target({ElementType.METHOD}) 
 @Retention(RetentionPolicy.RUNTIME) 

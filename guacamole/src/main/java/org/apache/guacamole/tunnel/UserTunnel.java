@@ -30,8 +30,6 @@ import org.apache.guacamole.net.auth.UserContext;
 /**
  * Tunnel implementation which associates a given tunnel with the UserContext of
  * the user that created it.
- *
- * @author Michael Jumper
  */
 public class UserTunnel extends StreamInterceptingTunnel {
 

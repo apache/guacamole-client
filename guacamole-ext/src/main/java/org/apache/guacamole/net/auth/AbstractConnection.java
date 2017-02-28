@@ -26,8 +26,6 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * Basic implementation of a Guacamole connection.
- *
- * @author Michael Jumper
  */
 public abstract class AbstractConnection extends AbstractIdentifiable
         implements Connection {

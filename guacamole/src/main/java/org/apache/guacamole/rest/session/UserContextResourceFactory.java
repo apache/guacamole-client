@@ -24,8 +24,6 @@ import org.apache.guacamole.net.auth.UserContext;
 /**
  * Factory which creates resources that expose the contents of a given
  * UserContext.
- *
- * @author Michael Jumper
  */
 public interface UserContextResourceFactory {
 

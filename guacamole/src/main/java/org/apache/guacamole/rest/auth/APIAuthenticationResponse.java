@@ -21,8 +21,6 @@ package org.apache.guacamole.rest.auth;
 
 /**
  * A simple object to represent an auth token/username pair in the API.
- * 
- * @author James Muehlner
  */
 public class APIAuthenticationResponse {
     

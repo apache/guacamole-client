@@ -27,8 +27,6 @@ import org.apache.guacamole.tunnel.TunnelRequestService;
 
 /**
  * A WebSocketServlet partial re-implementation of GuacamoleTunnelServlet.
- *
- * @author Michael Jumper
  */
 @Singleton
 public class RestrictedGuacamoleWebSocketTunnelServlet extends WebSocketServlet {

@@ -29,8 +29,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * A simple ContentHandler implementation which digests SAX document events and
  * produces simpler tag-level events, maintaining its own stack for the
  * convenience of the tag handlers.
- *
- * @author Mike Jumper
  */
 public class DocumentHandler extends DefaultHandler {
 

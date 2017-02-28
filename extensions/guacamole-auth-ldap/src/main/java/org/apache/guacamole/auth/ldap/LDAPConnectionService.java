@@ -32,8 +32,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Service for creating and managing connections to LDAP servers.
- *
- * @author Michael Jumper
  */
 public class LDAPConnectionService {
 

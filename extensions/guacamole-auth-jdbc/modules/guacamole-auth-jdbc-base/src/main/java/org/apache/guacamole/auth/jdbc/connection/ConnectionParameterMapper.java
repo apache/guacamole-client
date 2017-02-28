@@ -24,8 +24,6 @@ import org.apache.ibatis.annotations.Param;
 
 /**
  * Mapper for connection parameter objects.
- *
- * @author Michael Jumper
  */
 public interface ConnectionParameterMapper {
 

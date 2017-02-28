@@ -24,8 +24,6 @@ import java.io.InputStream;
 /**
  * A resource which is located within the classpath of an arbitrary
  * ClassLoader.
- *
- * @author Michael Jumper
  */
 public class ClassPathResource extends AbstractResource {
 

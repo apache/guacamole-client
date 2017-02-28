@@ -27,8 +27,6 @@ import org.apache.guacamole.io.GuacamoleWriter;
  * GuacamoleWriter which applies a given GuacamoleFilter to observe or alter
  * all written instructions. Instructions may also be dropped or denied by
  * the filter.
- *
- * @author Michael Jumper
  */
 public class FilteredGuacamoleWriter implements GuacamoleWriter {
 

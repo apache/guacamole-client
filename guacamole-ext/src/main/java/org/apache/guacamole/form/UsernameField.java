@@ -22,8 +22,6 @@ package org.apache.guacamole.form;
 /**
  * Represents a text field which will contain the uniquely-identifying name of
  * a user.
- *
- * @author Michael Jumper
  */
 public class UsernameField extends Field {
 

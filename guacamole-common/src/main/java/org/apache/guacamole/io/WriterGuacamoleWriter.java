@@ -33,8 +33,6 @@ import org.apache.guacamole.protocol.GuacamoleInstruction;
 /**
  * A GuacamoleWriter which wraps a standard Java Writer, using that Writer as
  * the Guacamole instruction stream.
- *
- * @author Michael Jumper
  */
 public class WriterGuacamoleWriter implements GuacamoleWriter {
 

@@ -26,8 +26,6 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
  * An exception which is thrown when too many requests have been received
  * by the current client, and further requests are being rejected, either
  * temporarily or permanently.
- * 
- * @author Michael Jumper
  */
 public class GuacamoleClientTooManyException extends GuacamoleClientException {
 

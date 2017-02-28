@@ -66,8 +66,6 @@ import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
  * Base implementation of the GuacamoleTunnelService, handling retrieval of
  * connection parameters, load balancing, and connection usage counts. The
  * implementation of concurrency rules is up to policy-specific subclasses.
- *
- * @author Michael Jumper
  */
 public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelService {
 

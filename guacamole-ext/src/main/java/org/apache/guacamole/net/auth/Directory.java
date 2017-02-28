@@ -29,7 +29,6 @@ import org.apache.guacamole.GuacamoleException;
  * are not necessarily backed by the stored objects, thus updating an object
  * always requires calling the update() function.
  *
- * @author Michael Jumper
  * @param <ObjectType>
  *     The type of objects stored within this Directory.
  */

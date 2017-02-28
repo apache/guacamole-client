@@ -32,8 +32,6 @@ import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
 /**
  * Guice Module which configures injections required for handling SharingProfile
  * resources via the REST API.
- *
- * @author Michael Jumper
  */
 public class SharingProfileModule extends AbstractModule {
 

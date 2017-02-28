@@ -21,8 +21,6 @@ package org.apache.guacamole.auth.jdbc.tunnel;
 
 /**
  * A unique pairing of user and connection or connection group.
- * 
- * @author Michael Jumper
  */
 public class Seat {
 

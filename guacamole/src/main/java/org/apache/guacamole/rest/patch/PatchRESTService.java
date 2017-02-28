@@ -36,8 +36,6 @@ import org.apache.guacamole.resource.Resource;
 
 /**
  * A REST Service for handling the listing of HTML patches.
- *
- * @author Michael Jumper
  */
 @Path("/patches")
 @Produces(MediaType.APPLICATION_JSON)

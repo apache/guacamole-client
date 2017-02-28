@@ -26,8 +26,6 @@ import static org.junit.Assert.*;
 
 /**
  * Test which verifies the filtering functionality of TokenFilter.
- *
- * @author Michael Jumper
  */
 public class TokenFilterTest {
 

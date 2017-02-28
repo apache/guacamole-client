@@ -21,8 +21,6 @@ package org.apache.guacamole.form;
 
 /**
  * Represents a field which can contain multiple lines of text.
- *
- * @author Michael Jumper
  */
 public class MultilineField extends Field {
 

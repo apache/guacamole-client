@@ -23,8 +23,6 @@ import org.apache.guacamole.net.GuacamoleTunnel;
 
 /**
  * Abstract basis for events associated with tunnels.
- *
- * @author Michael Jumper
  */
 public interface TunnelEvent {
 

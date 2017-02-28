@@ -26,8 +26,6 @@ import org.apache.guacamole.language.TranslatableMessage;
 /**
  * Thrown when an attempt to change a user's password fails due to a violation
  * of password complexity policies.
- *
- * @author Michael Jumper
  */
 public class PasswordPolicyException extends GuacamoleClientException
     implements Translatable {

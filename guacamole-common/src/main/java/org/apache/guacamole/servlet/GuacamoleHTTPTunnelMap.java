@@ -36,8 +36,6 @@ import org.slf4j.LoggerFactory;
  * and closing tunnels which have not been used recently. This class is
  * intended for use only within the GuacamoleHTTPTunnelServlet implementation,
  * and has no real utility outside that implementation.
- *
- * @author Michael Jumper
  */
 class GuacamoleHTTPTunnelMap {
 

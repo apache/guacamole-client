@@ -36,8 +36,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A HashMap-based implementation of the TokenSessionMap with support for
  * session timeouts.
- *
- * @author James Muehlner
  */
 public class HashTokenSessionMap implements TokenSessionMap {
 

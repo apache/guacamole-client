@@ -22,8 +22,6 @@ package org.apache.guacamole.form;
 /**
  * Represents a basic text field. The field may generally contain any data, but
  * may not contain multiple lines.
- *
- * @author Michael Jumper
  */
 public class TextField extends Field {
 

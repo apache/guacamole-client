@@ -23,8 +23,6 @@ package org.apache.guacamole.net.auth.credentials;
  * A security-related exception thrown when access is denied to a user because
  * the provided credentials are invalid. Additional information describing
  * the form of valid credentials is provided.
- *
- * @author Michael Jumper
  */
 public class GuacamoleInvalidCredentialsException extends GuacamoleCredentialsException {
 

@@ -56,9 +56,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of the User object which is backed by a database model.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class ModeledUser extends ModeledDirectoryObject<UserModel> implements User {
 

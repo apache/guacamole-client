@@ -26,8 +26,6 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
  * A generic exception thrown when part of the Guacamole API encounters
  * an unexpected, internal error. An internal error, if correctable, would
  * require correction on the server side, not the client.
- *
- * @author Michael Jumper
  */
 public class GuacamoleServerException extends GuacamoleException {
 

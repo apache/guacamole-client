@@ -32,8 +32,6 @@ import org.apache.guacamole.net.auth.Directory;
 /**
  * Implementation of a Directory which contains all currently-active
  * connections.
- *
- * @author Michael Jumper
  */
 public class ActiveConnectionDirectory extends RestrictedObject
     implements Directory<ActiveConnection> {

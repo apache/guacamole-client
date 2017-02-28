@@ -24,8 +24,6 @@ import java.security.SecureRandom;
 /**
  * An implementation of the ShareKeyGenerator which uses SecureRandom to
  * generate cryptographically-secure random sharing keys.
- * 
- * @author Michael Jumper
  */
 public class SecureRandomShareKeyGenerator extends SecureRandom
         implements ShareKeyGenerator {

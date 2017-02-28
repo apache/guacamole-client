@@ -32,8 +32,6 @@ import org.apache.guacamole.GuacamoleException;
  * annotation like <code>@GET</code> or <code>@POST</code>. Any method which
  * throws GuacamoleException and is annotated with an annotation that is
  * annotated with <code>@HttpMethod</code> will match.
- *
- * @author Michael Jumper
  */
 public class RESTMethodMatcher extends AbstractMatcher<Method> {
 

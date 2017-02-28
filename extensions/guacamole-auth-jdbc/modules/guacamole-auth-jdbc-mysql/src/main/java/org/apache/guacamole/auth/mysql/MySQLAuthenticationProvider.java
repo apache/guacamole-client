@@ -26,9 +26,6 @@ import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProviderService;
 /**
  * Provides a MySQL based implementation of the AuthenticationProvider
  * functionality.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class MySQLAuthenticationProvider extends InjectedAuthenticationProvider {
 

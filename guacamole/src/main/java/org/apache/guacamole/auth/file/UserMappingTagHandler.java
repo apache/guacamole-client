@@ -25,8 +25,6 @@ import org.xml.sax.SAXException;
 
 /**
  * TagHandler for the "user-mapping" element.
- *
- * @author Mike Jumper
  */
 public class UserMappingTagHandler implements TagHandler {
 

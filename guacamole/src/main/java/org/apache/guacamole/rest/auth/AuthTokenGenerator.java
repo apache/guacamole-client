@@ -21,8 +21,6 @@ package org.apache.guacamole.rest.auth;
 
 /**
  * Generates an auth token for an authenticated user.
- * 
- * @author James Muehlner
  */
 public interface AuthTokenGenerator {
     

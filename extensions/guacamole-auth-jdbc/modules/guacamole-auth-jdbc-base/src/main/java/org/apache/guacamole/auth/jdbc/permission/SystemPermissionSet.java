@@ -32,8 +32,6 @@ import org.apache.guacamole.net.auth.permission.SystemPermission;
  * A database implementation of SystemPermissionSet which uses an injected
  * service to query and manipulate the system permissions associated with a
  * particular user.
- *
- * @author Michael Jumper
  */
 public class SystemPermissionSet extends RestrictedObject
     implements org.apache.guacamole.net.auth.permission.SystemPermissionSet {

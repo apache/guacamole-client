@@ -83,9 +83,6 @@ import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
  * Guice module which configures the injections used by the JDBC authentication
  * provider base. This module MUST be included in the Guice injector, or
  * authentication providers based on JDBC will not function.
- *
- * @author Michael Jumper
- * @author James Muehlner
  */
 public class JDBCAuthenticationProviderModule extends MyBatisModule {
 

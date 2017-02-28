@@ -35,8 +35,6 @@ import org.apache.guacamole.protocol.GuacamoleInstruction;
 /**
  * A GuacamoleReader which wraps a standard Java Reader, using that Reader as
  * the Guacamole instruction stream.
- *
- * @author Michael Jumper
  */
 public class ReaderGuacamoleReader implements GuacamoleReader {
 

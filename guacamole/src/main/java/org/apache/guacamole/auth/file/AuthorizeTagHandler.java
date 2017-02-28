@@ -26,8 +26,6 @@ import org.xml.sax.SAXException;
 
 /**
  * TagHandler for the "authorize" element.
- *
- * @author Mike Jumper
  */
 public class AuthorizeTagHandler implements TagHandler {
 

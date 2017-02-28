@@ -23,8 +23,6 @@ package org.apache.guacamole.net.auth.permission;
 /**
  * A permission which affects the system as a whole, rather than an individual
  * object.
- *
- * @author Michael Jumper
  */
 public class SystemPermission implements Permission<SystemPermission.Type> {
 

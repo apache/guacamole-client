@@ -26,8 +26,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Loads the Jetty 9 WebSocket tunnel implementation.
- * 
- * @author Michael Jumper
  */
 public class WebSocketTunnelModule extends ServletModule implements TunnelLoader {
 

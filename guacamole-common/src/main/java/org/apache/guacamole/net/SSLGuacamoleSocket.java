@@ -41,8 +41,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides abstract socket-like access to a Guacamole connection over SSL to
  * a given hostname and port.
- *
- * @author Michael Jumper
  */
 public class SSLGuacamoleSocket implements GuacamoleSocket {
 

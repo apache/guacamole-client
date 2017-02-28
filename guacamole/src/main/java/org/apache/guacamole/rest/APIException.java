@@ -29,9 +29,6 @@ import org.apache.guacamole.GuacamoleException;
  * within the context of the REST API, an appropriate HTTP status code will be
  * set for the failing response, and the details of the error will be exposed in
  * the body of the response as an APIError structure.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class APIException extends WebApplicationException {
 

@@ -46,8 +46,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Service for querying the connections available to a particular Guacamole
  * user according to an LDAP directory.
- *
- * @author Michael Jumper
  */
 public class ConnectionService {
 

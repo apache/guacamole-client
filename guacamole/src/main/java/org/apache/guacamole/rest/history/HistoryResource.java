@@ -35,8 +35,6 @@ import org.apache.guacamole.net.auth.UserContext;
 /**
  * A REST resource for retrieving and managing the history records of Guacamole
  * objects.
- *
- * @author Michael Jumper
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

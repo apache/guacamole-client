@@ -26,8 +26,6 @@ import org.apache.guacamole.auth.jdbc.base.ChildObjectModel;
 /**
  * Object representation of a Guacamole connection, as represented in the
  * database.
- *
- * @author Michael Jumper
  */
 public class ConnectionModel extends ChildObjectModel {
 

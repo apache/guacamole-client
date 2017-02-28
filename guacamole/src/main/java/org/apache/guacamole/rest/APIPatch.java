@@ -22,9 +22,9 @@ package org.apache.guacamole.rest;
 /**
  * An object for representing the body of a HTTP PATCH method.
  * See https://tools.ietf.org/html/rfc6902
- * 
- * @author James Muehlner
- * @param <T> The type of object being patched.
+ *
+ * @param <T>
+ *     The type of object being patched.
  */
 public class APIPatch<T> {
     

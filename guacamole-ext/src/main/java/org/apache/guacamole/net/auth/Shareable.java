@@ -30,8 +30,6 @@ import org.apache.guacamole.net.auth.credentials.UserCredentials;
  * @param <T>
  *     The type of object which dictates the semantics/restrictions of shared
  *     objects.
- *
- * @author Michael Jumper
  */
 public interface Shareable<T> {
 

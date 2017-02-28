@@ -41,8 +41,6 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
  * An extremely simple UserContext implementation which provides access to
  * a defined and restricted set of GuacamoleConfigurations. Access to
  * querying or modifying either users or permissions is denied.
- *
- * @author Michael Jumper
  */
 public class SimpleUserContext implements UserContext {
 

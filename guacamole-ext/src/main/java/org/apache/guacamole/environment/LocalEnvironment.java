@@ -39,8 +39,6 @@ import org.slf4j.LoggerFactory;
  * The environment of the locally-running Guacamole instance, describing
  * available protocols, configuration parameters, and the GUACAMOLE_HOME
  * directory.
- *
- * @author Michael Jumper
  */
 public class LocalEnvironment implements Environment {
 

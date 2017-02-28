@@ -27,8 +27,6 @@ import org.apache.guacamole.tunnel.TunnelRequestService;
 /**
  * WebSocket listener implementation which properly parses connection IDs
  * included in the connection request.
- * 
- * @author Michael Jumper
  */
 public class RestrictedGuacamoleWebSocketTunnelListener extends GuacamoleWebSocketTunnelListener {
 

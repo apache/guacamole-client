@@ -24,8 +24,6 @@ import java.util.Collection;
 /**
  * Represents an arbitrary field with a finite, enumerated set of possible
  * values.
- *
- * @author Michael Jumper
  */
 public class EnumField extends Field {
 

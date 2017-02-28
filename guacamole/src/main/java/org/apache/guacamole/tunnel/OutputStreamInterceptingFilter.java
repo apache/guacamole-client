@@ -35,8 +35,6 @@ import org.slf4j.LoggerFactory;
  * automatically writing to or closing the stream given with
  * interceptStream(). The required "ack" responses to received blobs are
  * sent automatically.
- *
- * @author Michael Jumper
  */
 public class OutputStreamInterceptingFilter
         extends StreamInterceptingFilter<OutputStream> {

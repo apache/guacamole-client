@@ -27,8 +27,6 @@ import org.apache.guacamole.properties.StringGuacamoleProperty;
  * Provides properties required for use of the LDAP authentication provider.
  * These properties will be read from guacamole.properties when the LDAP
  * authentication provider is used.
- *
- * @author Michael Jumper
  */
 public class LDAPGuacamoleProperties {
 

@@ -25,8 +25,6 @@ import java.util.Map;
 /**
  * Base implementation of a sharing profile which can be used to share a
  * Guacamole connection.
- *
- * @author Michael Jumper
  */
 public abstract class AbstractSharingProfile implements SharingProfile {
 

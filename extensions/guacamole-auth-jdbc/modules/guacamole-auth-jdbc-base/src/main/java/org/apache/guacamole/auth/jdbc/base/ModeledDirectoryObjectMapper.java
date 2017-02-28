@@ -29,7 +29,6 @@ import org.apache.ibatis.annotations.Param;
  * the Directory class. All such objects will need the same base set of queries
  * to fulfill the needs of the Directory class.
  *
- * @author Michael Jumper
  * @param <ModelType>
  *     The type of object contained within the directory whose objects are
  *     mapped by this mapper.

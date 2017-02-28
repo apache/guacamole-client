@@ -26,8 +26,6 @@ import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 /**
  * Translator which converts between SharingProfile objects and
  * APISharingProfile objects.
- *
- * @author Michael Jumper
  */
 public class SharingProfileObjectTranslator
         implements DirectoryObjectTranslator<SharingProfile, APISharingProfile> {

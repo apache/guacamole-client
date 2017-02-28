@@ -40,8 +40,6 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating active connections.
- *
- * @author Michael Jumper
  */
 public class ActiveConnectionPermissionService
     extends AbstractPermissionService<ObjectPermissionSet, ObjectPermission>

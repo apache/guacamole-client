@@ -23,8 +23,6 @@ import org.apache.guacamole.GuacamoleException;
 
 /**
  * A GuacamoleProperty whose value is a simple string.
- *
- * @author Michael Jumper
  */
 public abstract class StringGuacamoleProperty implements GuacamoleProperty<String> {
 

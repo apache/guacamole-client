@@ -31,8 +31,6 @@ import javax.servlet.http.HttpSession;
  *
  * This class is used along with AuthenticationProvider to provide arbitrary
  * HTTP-based authentication for Guacamole.
- *
- * @author Michael Jumper
  */
 public class Credentials implements Serializable {
 

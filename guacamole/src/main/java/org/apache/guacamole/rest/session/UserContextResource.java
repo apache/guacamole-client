@@ -47,8 +47,6 @@ import org.apache.guacamole.rest.user.APIUser;
 
 /**
  * A REST resource which exposes the contents of a particular UserContext.
- *
- * @author Michael Jumper
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

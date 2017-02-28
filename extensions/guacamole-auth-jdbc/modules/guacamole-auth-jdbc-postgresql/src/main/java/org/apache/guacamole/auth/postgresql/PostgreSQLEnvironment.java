@@ -28,8 +28,6 @@ import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
 /**
  * A PostgreSQL-specific implementation of JDBCEnvironment provides database
  * properties specifically for PostgreSQL.
- *
- * @author Michael Jumper
  */
 public class PostgreSQLEnvironment extends JDBCEnvironment {
 

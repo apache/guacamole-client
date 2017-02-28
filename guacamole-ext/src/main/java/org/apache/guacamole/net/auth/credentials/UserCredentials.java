@@ -29,8 +29,6 @@ import org.apache.guacamole.form.Field;
  * this object should describe a full set of parameter name/value pairs which
  * can be used to authenticate successfully, even if that success depends on
  * factors not described by this object.
- *
- * @author Michael Jumper
  */
 public class UserCredentials extends CredentialsInfo {
 

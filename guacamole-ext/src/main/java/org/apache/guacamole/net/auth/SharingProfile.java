@@ -24,8 +24,6 @@ import java.util.Map;
 /**
  * Represents the semantics which apply to an existing connection when shared,
  * along with a human-readable name and unique identifier.
- *
- * @author Michael Jumper
  */
 public interface SharingProfile extends Identifiable {
 

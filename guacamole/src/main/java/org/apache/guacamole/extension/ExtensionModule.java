@@ -44,8 +44,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A Guice Module which loads all extensions within the
  * GUACAMOLE_HOME/extensions directory, if any.
- *
- * @author Michael Jumper
  */
 public class ExtensionModule extends ServletModule {
 

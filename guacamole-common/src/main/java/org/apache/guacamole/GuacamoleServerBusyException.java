@@ -25,8 +25,6 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
 /**
  * An exception which is thrown when the server is too busy to service the
  * request.
- * 
- * @author Michael Jumper
  */
 public class GuacamoleServerBusyException extends GuacamoleServerException {
 

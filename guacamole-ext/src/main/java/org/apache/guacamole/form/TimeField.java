@@ -27,8 +27,6 @@ import java.util.Date;
 /**
  * Represents a time field. The field may contain only time values which
  * conform to a standard pattern, defined by TimeField.FORMAT.
- *
- * @author Michael Jumper
  */
 public class TimeField extends Field {
 

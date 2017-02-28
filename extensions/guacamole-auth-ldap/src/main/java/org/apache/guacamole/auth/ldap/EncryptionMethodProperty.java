@@ -28,8 +28,6 @@ import org.apache.guacamole.properties.GuacamoleProperty;
  * "none", "ssl", and "starttls" are each parsed to their corresponding values
  * within the EncryptionMethod enum. All other string values result in parse
  * errors.
- *
- * @author Michael Jumper
  */
 public abstract class EncryptionMethodProperty implements GuacamoleProperty<EncryptionMethod> {
 

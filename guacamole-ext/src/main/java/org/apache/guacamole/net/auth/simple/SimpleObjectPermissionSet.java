@@ -31,8 +31,6 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 /**
  * A read-only implementation of ObjectPermissionSet which uses a backing Set
  * of Permissions to determine which permissions are present.
- *
- * @author Michael Jumper
  */
 public class SimpleObjectPermissionSet implements ObjectPermissionSet {
 

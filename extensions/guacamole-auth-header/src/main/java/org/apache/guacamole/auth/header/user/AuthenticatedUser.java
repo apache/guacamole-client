@@ -28,8 +28,6 @@ import org.apache.guacamole.net.auth.Credentials;
  * An HTTP header implementation of AuthenticatedUser, associating a
  * username and particular set of credentials with the HTTP authentication
  * provider.
- *
- * @author Michael Jumper
  */
 public class AuthenticatedUser extends AbstractAuthenticatedUser {
 

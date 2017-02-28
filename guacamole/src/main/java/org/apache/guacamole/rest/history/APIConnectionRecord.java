@@ -24,8 +24,6 @@ import org.apache.guacamole.net.auth.ConnectionRecord;
 
 /**
  * A connection record which may be exposed through the REST endpoints.
- *
- * @author Michael Jumper
  */
 public class APIConnectionRecord {
 

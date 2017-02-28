@@ -49,8 +49,6 @@ import org.apache.guacamole.protocol.GuacamoleClientInformation;
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating connections.
- *
- * @author Michael Jumper, James Muehlner
  */
 public class ConnectionService extends ModeledChildDirectoryObjectService<ModeledConnection, Connection, ConnectionModel> {
 

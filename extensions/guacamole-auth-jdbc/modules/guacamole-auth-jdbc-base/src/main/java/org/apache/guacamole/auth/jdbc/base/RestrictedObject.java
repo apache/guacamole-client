@@ -24,8 +24,6 @@ import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 /**
  * Common base class for objects that are associated with the users that
  * obtain them.
- *
- * @author Michael Jumper
  */
 public abstract class RestrictedObject {
 

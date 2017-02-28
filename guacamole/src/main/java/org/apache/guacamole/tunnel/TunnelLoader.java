@@ -25,8 +25,6 @@ import com.google.inject.Module;
  * Generic means of loading a tunnel without adding explicit dependencies within
  * the main ServletModule, as not all servlet containers may have the classes
  * required by all tunnel implementations.
- *
- * @author Michael Jumper
  */
 public interface TunnelLoader extends Module {
 

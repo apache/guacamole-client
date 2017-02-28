@@ -26,8 +26,6 @@ import org.apache.guacamole.GuacamoleException;
 /**
  * Represents a connection group, which can contain both other connection groups
  * as well as connections.
- *
- * @author James Muehlner
  */
 public interface ConnectionGroup extends Identifiable, Connectable {
   

@@ -26,8 +26,6 @@ import org.codehaus.jackson.annotate.JsonProperty;
 /**
  * Java representation of the JSON manifest contained within every Guacamole
  * extension, identifying an extension and describing its contents.
- *
- * @author Michael Jumper
  */
 public class ExtensionManifest {
 

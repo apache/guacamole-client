@@ -27,8 +27,6 @@ import org.apache.guacamole.GuacamoleException;
 /**
  * A set of permissions which affect arbitrary objects, where each object has
  * an associated unique identifier.
- *
- * @author Michael Jumper
  */
 public interface ObjectPermissionSet extends PermissionSet<ObjectPermission> {
 

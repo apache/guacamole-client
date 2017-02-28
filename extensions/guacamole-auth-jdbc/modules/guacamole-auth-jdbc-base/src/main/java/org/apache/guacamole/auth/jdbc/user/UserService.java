@@ -53,8 +53,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating users.
- *
- * @author Michael Jumper, James Muehlner
  */
 public class UserService extends ModeledDirectoryObjectService<ModeledUser, User, UserModel> {
     

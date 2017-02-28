@@ -30,8 +30,6 @@ import org.apache.guacamole.net.auth.Credentials;
  * Associates a user with the credentials they used to authenticate, their
  * corresponding ModeledUser, and the AuthenticationProvider which produced
  * that ModeledUser.
- *
- * @author Michael Jumper 
  */
 public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
 

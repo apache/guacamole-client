@@ -29,8 +29,6 @@ import org.apache.guacamole.rest.connection.APIConnection;
 
 /**
  * A simple connection group to expose through the REST endpoints.
- * 
- * @author James Muehlner
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)

@@ -32,8 +32,6 @@ import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
  * An extremely basic User implementation.
- *
- * @author Michael Jumper
  */
 public class SimpleUser extends AbstractUser {
 

@@ -24,8 +24,6 @@ import java.sql.Timestamp;
 /**
  * A single password record representing a previous password of a particular
  * user, along with the time/date that password was set.
- *
- * @author Michael Jumper
  */
 public class PasswordRecordModel {
 

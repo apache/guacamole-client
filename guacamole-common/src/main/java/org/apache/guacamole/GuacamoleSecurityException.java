@@ -25,8 +25,6 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
 /**
  * A security-related exception thrown when parts of the Guacamole API is
  * denying access to a resource.
- *
- * @author Michael Jumper
  */
 public class GuacamoleSecurityException extends GuacamoleClientException {
 

@@ -37,8 +37,6 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
 /**
  * A Connection which joins an active connection, limited by restrictions
  * defined by a sharing profile.
- *
- * @author Michael Jumper
  */
 public class SharedConnection implements Connection {
 

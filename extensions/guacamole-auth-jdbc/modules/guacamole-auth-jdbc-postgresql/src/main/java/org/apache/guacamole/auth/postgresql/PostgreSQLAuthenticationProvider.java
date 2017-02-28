@@ -26,9 +26,6 @@ import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProviderService;
 /**
  * Provides a PostgreSQL-based implementation of the AuthenticationProvider
  * functionality.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class PostgreSQLAuthenticationProvider extends InjectedAuthenticationProvider {
 

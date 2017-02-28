@@ -46,8 +46,6 @@ import org.apache.guacamole.resource.Resource;
 /**
  * A Guacamole extension, which may provide custom authentication, static
  * files, theming/branding, etc.
- *
- * @author Michael Jumper
  */
 public class Extension {
 

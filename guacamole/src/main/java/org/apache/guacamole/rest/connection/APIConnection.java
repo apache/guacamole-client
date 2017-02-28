@@ -30,8 +30,6 @@ import org.apache.guacamole.rest.sharingprofile.APISharingProfile;
 
 /**
  * A simple connection to expose through the REST endpoints.
- * 
- * @author James Muehlner
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)

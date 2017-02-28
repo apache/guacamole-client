@@ -41,8 +41,6 @@ import org.apache.guacamole.tunnel.UserTunnel;
 /**
  * A REST resource which abstracts the operations available for an individual
  * tunnel.
- *
- * @author Michael Jumper
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

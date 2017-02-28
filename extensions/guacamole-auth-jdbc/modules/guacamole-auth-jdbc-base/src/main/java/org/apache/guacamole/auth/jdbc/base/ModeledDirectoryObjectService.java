@@ -38,7 +38,6 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
  * manipulating objects within directories. This service will automatically
  * enforce the permissions of the current user.
  *
- * @author Michael Jumper
  * @param <InternalType>
  *     The specific internal implementation of the type of object this service
  *     provides access to.

@@ -26,8 +26,6 @@ import org.apache.guacamole.tunnel.TunnelRequest;
 
 /**
  * WebSocket-specific implementation of TunnelRequest.
- *
- * @author Michael Jumper
  */
 public class WebSocketTunnelRequest extends TunnelRequest {
 

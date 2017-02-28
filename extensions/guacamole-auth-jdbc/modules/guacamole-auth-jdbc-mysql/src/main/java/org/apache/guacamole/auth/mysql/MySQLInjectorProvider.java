@@ -29,8 +29,6 @@ import org.apache.guacamole.auth.jdbc.JDBCInjectorProvider;
  * JDBCInjectorProvider implementation which configures Guice injections for
  * connecting to a MySQL database based on MySQL-specific options provided via
  * guacamole.properties.
- *
- * @author Michael Jumper
  */
 public class MySQLInjectorProvider extends JDBCInjectorProvider {
 

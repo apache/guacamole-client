@@ -27,8 +27,6 @@ import java.util.Date;
 /**
  * Represents a date field. The field may contain only date values which
  * conform to a standard pattern, defined by DateField.FORMAT.
- *
- * @author Michael Jumper
  */
 public class DateField extends Field {
 

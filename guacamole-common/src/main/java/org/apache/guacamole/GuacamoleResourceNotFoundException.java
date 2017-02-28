@@ -25,8 +25,6 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
 /**
  * A generic exception thrown when part of the Guacamole API fails to find
  * a requested resource, such as a configuration or tunnel.
- *
- * @author Michael Jumper
  */
 public class GuacamoleResourceNotFoundException extends GuacamoleClientException {
 

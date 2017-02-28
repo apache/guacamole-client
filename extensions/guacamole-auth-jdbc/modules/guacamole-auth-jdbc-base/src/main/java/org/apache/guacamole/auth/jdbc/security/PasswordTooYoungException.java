@@ -26,8 +26,6 @@ import org.apache.guacamole.language.TranslatableMessage;
  * Thrown when an attempt is made to set a user's password before sufficient
  * time has elapsed since the password was last reset, in violation of the
  * defined password policy.
- *
- * @author Michael Jumper
  */
 public class PasswordTooYoungException extends PasswordPolicyException {
 

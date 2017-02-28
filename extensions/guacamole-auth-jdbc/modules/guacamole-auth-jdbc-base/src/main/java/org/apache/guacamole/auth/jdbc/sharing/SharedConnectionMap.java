@@ -24,8 +24,6 @@ import org.apache.guacamole.auth.jdbc.sharing.connection.SharedConnectionDefinit
 /**
  * Represents a mapping between share keys and the Guacamole connection being
  * shared.
- * 
- * @author Michael Jumper
  */
 public interface SharedConnectionMap {
 

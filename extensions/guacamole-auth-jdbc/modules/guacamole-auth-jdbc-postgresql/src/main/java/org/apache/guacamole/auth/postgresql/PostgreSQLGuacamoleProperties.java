@@ -25,9 +25,6 @@ import org.apache.guacamole.properties.StringGuacamoleProperty;
 
 /**
  * Properties used by the PostgreSQL Authentication plugin.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class PostgreSQLGuacamoleProperties {
 

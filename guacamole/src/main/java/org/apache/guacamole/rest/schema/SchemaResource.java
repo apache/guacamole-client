@@ -36,8 +36,6 @@ import org.apache.guacamole.protocols.ProtocolInfo;
 /**
  * A REST resource which provides access to descriptions of the properties,
  * attributes, etc. of objects within a particular UserContext.
- *
- * @author Michael Jumper
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

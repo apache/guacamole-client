@@ -25,8 +25,6 @@ import org.apache.guacamole.net.GuacamoleTunnel;
 /**
  * A pairing of username and GuacamoleTunnel representing an active usage of a
  * particular connection.
- *
- * @author Michael Jumper
  */
 public interface ActiveConnection extends Identifiable, Shareable<SharingProfile> {
 

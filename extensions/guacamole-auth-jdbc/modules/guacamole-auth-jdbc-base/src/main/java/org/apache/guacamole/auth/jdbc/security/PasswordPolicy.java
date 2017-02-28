@@ -24,8 +24,6 @@ import org.apache.guacamole.GuacamoleException;
 /**
  * A set of restrictions which define the level of complexity required for
  * the passwords of Guacamole user accounts.
- *
- * @author Michael Jumper
  */
 public interface PasswordPolicy {
 

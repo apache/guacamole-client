@@ -43,9 +43,6 @@ import org.slf4j.LoggerFactory;
 /**
  * An implementation of the ConnectionGroup object which is backed by a
  * database model.
- *
- * @author James Muehlner
- * @author Michael Jumper
  */
 public class ModeledConnectionGroup extends ModeledChildDirectoryObject<ConnectionGroupModel>
     implements ConnectionGroup {

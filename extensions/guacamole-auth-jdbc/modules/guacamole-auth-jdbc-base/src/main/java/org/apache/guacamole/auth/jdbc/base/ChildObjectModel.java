@@ -23,8 +23,6 @@ package org.apache.guacamole.auth.jdbc.base;
  * Object representation of a Guacamole object which can be the child of another
  * object, such as a connection or sharing profile, as represented in the
  * database.
- *
- * @author Michael Jumper
  */
 public abstract class ChildObjectModel extends ObjectModel {
 

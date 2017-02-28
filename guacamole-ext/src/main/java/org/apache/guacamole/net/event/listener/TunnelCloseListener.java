@@ -25,8 +25,6 @@ import org.apache.guacamole.net.event.TunnelCloseEvent;
 /**
  * A listener whose tunnelClosed() hook will fire immediately after an
  * existing tunnel is closed.
- *
- * @author Michael Jumper
  */
 public interface TunnelCloseListener {
 

@@ -25,8 +25,6 @@ import org.apache.guacamole.net.auth.SharingProfile;
 
 /**
  * The external representation used by the REST API for sharing profiles.
- * 
- * @author Michael Jumper
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class APISharingProfile {

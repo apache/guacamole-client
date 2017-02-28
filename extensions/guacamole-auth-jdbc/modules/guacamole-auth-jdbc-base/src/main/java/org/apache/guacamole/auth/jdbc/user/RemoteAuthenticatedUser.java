@@ -28,8 +28,6 @@ import org.apache.guacamole.net.auth.Credentials;
 
 /**
  * An AuthenticatedUser that has an associated remote host.
- *
- * @author Michael Jumper 
  */
 public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
 
