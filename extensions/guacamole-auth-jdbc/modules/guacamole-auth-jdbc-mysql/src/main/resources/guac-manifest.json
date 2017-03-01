@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "0.9.11-incubating",
+    "guacamoleVersion" : "0.9.12-incubating",
 
     "name"      : "MySQL Authentication",
     "namespace" : "guac-mysql",
