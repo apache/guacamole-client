@@ -393,7 +393,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
                 if (pollingMode === POLLING_ENABLED) {
                     if (xmlhttprequest.readyState === 3 && !interval)
                         interval = setInterval(parseResponse, 30);
-                    else if (xmlhttprequest.readyState === 4 && !interval)
+                    else if (xmlhttprequest.readyState === 4 && interval)
                         clearInterval(interval);
                 }
 
@@ -461,7 +461,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
                         if (length === 0) {
 
                             // Clean up interval if polling
-                            if (!interval)
+                            if (interval)
                                 clearInterval(interval);
                            
                             // Clean up object
