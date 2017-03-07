@@ -143,6 +143,12 @@ CREATE TABLE guacamole_user (
   -- Timezone used for all date/time comparisons and interpretation
   timezone varchar(64),
 
+  -- Profile information
+  full_name           varchar(256),
+  email_address       varchar(256),
+  organization        varchar(256),
+  organizational_role varchar(256),
+
   PRIMARY KEY (user_id),
 
   CONSTRAINT username

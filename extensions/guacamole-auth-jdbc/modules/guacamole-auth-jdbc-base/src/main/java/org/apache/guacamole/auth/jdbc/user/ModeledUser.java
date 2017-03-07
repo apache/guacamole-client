@@ -397,16 +397,16 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     private void putUnrestrictedAttributes(Map<String, String> attributes) {
 
         // Set full name attribute
-        attributes.put(User.Attribute.FULL_NAME, "Testy McTesterson"); // TODO
+        attributes.put(User.Attribute.FULL_NAME, getModel().getFullName());
 
         // Set email address attribute
-        attributes.put(User.Attribute.EMAIL_ADDRESS, "test@test.test"); // TODO
+        attributes.put(User.Attribute.EMAIL_ADDRESS, getModel().getEmailAddress());
 
         // Set organization attribute
-        attributes.put(User.Attribute.ORGANIZATION, "Example, Inc."); // TODO
+        attributes.put(User.Attribute.ORGANIZATION, getModel().getOrganization());
 
         // Set role attribute
-        attributes.put(User.Attribute.ORGANIZATIONAL_ROLE, "Senior Lead Architect"); // TODO
+        attributes.put(User.Attribute.ORGANIZATIONAL_ROLE, getModel().getOrganizationalRole());
 
     }
 
@@ -526,16 +526,16 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     private void setUnrestrictedAttributes(Map<String, String> attributes) {
 
         // Translate full name attribute
-        logger.info("FULL NAME: \"{}\"", attributes.get(User.Attribute.FULL_NAME)); // TODO
+        getModel().setFullName(attributes.get(User.Attribute.FULL_NAME));
 
         // Translate email address attribute
-        logger.info("EMAIL ADDRESS: \"{}\"", attributes.get(User.Attribute.EMAIL_ADDRESS)); // TODO
+        getModel().setEmailAddress(attributes.get(User.Attribute.EMAIL_ADDRESS));
 
         // Translate organization attribute
-        logger.info("ORGANIZATION: \"{}\"", attributes.get(User.Attribute.ORGANIZATION)); // TODO
+        getModel().setOrganization(attributes.get(User.Attribute.ORGANIZATION));
 
         // Translate role attribute
-        logger.info("ORGANIZATIONAL ROLE: \"{}\"", attributes.get(User.Attribute.ORGANIZATIONAL_ROLE)); // TODO
+        getModel().setOrganizationalRole(attributes.get(User.Attribute.ORGANIZATIONAL_ROLE));
 
     }
 

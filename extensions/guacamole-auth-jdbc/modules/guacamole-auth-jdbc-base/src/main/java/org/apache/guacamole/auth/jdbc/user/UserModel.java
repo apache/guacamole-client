@@ -93,6 +93,28 @@ public class UserModel extends ObjectModel {
     private String timeZone;
 
     /**
+     * The user's full name, or null if this is not known.
+     */
+    private String fullName;
+
+    /**
+     * The email address of the user, or null if this is not known.
+     */
+    private String emailAddress;
+
+    /**
+     * The organization, company, group, etc. that the user belongs to, or null
+     * if this is not known.
+     */
+    private String organization;
+
+    /**
+     * The role that the user has at the organization, company, group, etc.
+     * they belong to, or null if this is not known.
+     */
+    private String organizationalRole;
+
+    /**
      * Creates a new, empty user.
      */
     public UserModel() {
@@ -349,6 +371,95 @@ public class UserModel extends ObjectModel {
      */
     public void setTimeZone(String timeZone) {
         this.timeZone = timeZone;
+    }
+
+    /**
+     * Returns the user's full name, if known. If not available, null is
+     * returned.
+     *
+     * @return
+     *     The user's full name, or null if this is not known.
+     */
+    public String getFullName() {
+        return fullName;
+    }
+
+    /**
+     * Sets the user's full name.
+     *
+     * @param fullName
+     *     The user's full name, or null if this is not known.
+     */
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    /**
+     * Returns the email address of the user, if known. If not available, null
+     * is returned.
+     *
+     * @return
+     *     The email address of the user, or null if this is not known.
+     */
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    /**
+     * Sets the email address of the user.
+     *
+     * @param emailAddress
+     *     The email address of the user, or null if this is not known.
+     */
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
+
+    /**
+     * Returns the organization, company, group, etc. that the user belongs to,
+     * if known. If not available, null is returned.
+     *
+     * @return
+     *     The organization, company, group, etc. that the user belongs to, or
+     *     null if this is not known.
+     */
+    public String getOrganization() {
+        return organization;
+    }
+
+    /**
+     * Sets the organization, company, group, etc. that the user belongs to.
+     *
+     * @param organization
+     *     The organization, company, group, etc. that the user belongs to, or
+     *     null if this is not known.
+     */
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
+
+    /**
+     * Returns the role that the user has at the organization, company, group,
+     * etc. they belong to. If not available, null is returned.
+     *
+     * @return
+     *     The role that the user has at the organization, company, group, etc.
+     *     they belong to, or null if this is not known.
+     */
+    public String getOrganizationalRole() {
+        return organizationalRole;
+    }
+
+    /**
+     * Sets the role that the user has at the organization, company, group,
+     * etc. they belong to.
+     *
+     * @param organizationalRole
+     *     The role that the user has at the organization, company, group, etc.
+     *     they belong to, or null if this is not known.
+     */
+    public void setOrganizationalRole(String organizationalRole) {
+        this.organizationalRole = organizationalRole;
     }
 
 }
