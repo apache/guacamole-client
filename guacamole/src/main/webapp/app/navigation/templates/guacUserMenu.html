@@ -2,10 +2,10 @@
     <guac-menu menu-title="username">
            
         <!-- User profile view -->
-        <div class="profile">
-            <guac-form namespace="'USER_ATTRIBUTES'" content="attributes"
-                       model="user.attributes" values-only="true"
-                       read-only="true"></guac-form>
+        <div class="profile" ng-show="fullName">
+            <div class="full-name"><a ng-href="{{userURL}}">{{ fullName }}</a></div>
+            <div class="organizational-role" ng-show="role">{{ role }}</div>
+            <div class="organization" ng-show="organization">{{ organization }}</div>
         </div>
 
         <!-- Local actions -->

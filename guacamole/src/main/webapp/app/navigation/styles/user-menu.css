@@ -90,7 +90,10 @@
     width: 2in;
 }
 
-.user-menu .menu-dropdown .menu-contents .profile span.field-header,
-.user-menu .menu-dropdown .menu-contents .profile h3 {
-    display: none;
+.user-menu .menu-dropdown .menu-contents .profile .full-name {
+    font-weight: bold;
+}
+.user-menu .menu-dropdown .menu-contents .profile .organization,
+.user-menu .menu-dropdown .menu-contents .profile .organizational-role {
+    font-size: 0.8em;
 }
