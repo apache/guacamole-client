@@ -267,11 +267,39 @@ Guacamole.Layer = function(width, height) {
     this.height = height;
 
     /**
-     * Returns the canvas element backing this Layer.
-     * @returns {Element} The canvas element backing this Layer.
+     * Returns the canvas element backing this Layer. Note that the dimensions
+     * of the canvas may not exactly match those of the Layer, as resizing a
+     * canvas while maintaining its state is an expensive operation.
+     *
+     * @returns {HTMLCanvasElement}
+     *     The canvas element backing this Layer.
      */
-    this.getCanvas = function() {
+    this.getCanvas = function getCanvas() {
         return canvas;
+    };
+
+    /**
+     * Returns a new canvas element containing the same image as this Layer.
+     * Unlike getCanvas(), the canvas element returned is guaranteed to have
+     * the exact same dimensions as the Layer.
+     *
+     * @returns {HTMLCanvasElement}
+     *     A new canvas element containing a copy of the image content this
+     *     Layer.
+     */
+    this.toCanvas = function toCanvas() {
+
+        // Create new canvas having same dimensions
+        var canvas = document.createElement('canvas');
+        canvas.width = layer.width;
+        canvas.height = layer.height;
+
+        // Copy image contents to new canvas
+        var context = canvas.getContext('2d');
+        context.drawImage(layer.getCanvas(), 0, 0);
+
+        return canvas;
+
     };
 
     /**

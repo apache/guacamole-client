@@ -423,7 +423,7 @@ Guacamole.Display = function() {
 
             // Fire cursor change event
             if (guac_display.oncursor)
-                guac_display.oncursor(cursor.getCanvas(), hotspotX, hotspotY);
+                guac_display.oncursor(cursor.toCanvas(), hotspotX, hotspotY);
 
         });
     };
