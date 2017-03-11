@@ -1037,6 +1037,17 @@ Guacamole.Client = function(tunnel) {
 
         },
 
+        "mouse" : function handleMouse(parameters) {
+
+            var x = parseInt(parameters[0]);
+            var y = parseInt(parameters[1]);
+
+            // Display and move software cursor to received coordinates
+            display.showCursor(true);
+            display.moveCursor(x, y);
+
+        },
+
         "move": function(parameters) {
             
             var layer_index = parseInt(parameters[0]);
