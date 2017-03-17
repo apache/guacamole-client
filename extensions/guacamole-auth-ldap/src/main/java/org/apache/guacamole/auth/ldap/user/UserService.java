@@ -24,6 +24,7 @@ import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
+import com.novell.ldap.LDAPReferralException;
 import com.novell.ldap.LDAPSearchResults;
 import com.novell.ldap.LDAPSearchConstraints;
 import java.util.ArrayList;
@@ -101,21 +102,24 @@ public class UserService {
 
             // Read all visible users
             while (results.hasMore()) {
+                try {
+                    LDAPEntry entry = results.next();
 
-                LDAPEntry entry = results.next();
+                    // Get username from record
+                    LDAPAttribute username = entry.getAttribute(usernameAttribute);
+                    if (username == null) {
+                        logger.warn("Queried user is missing the username attribute \"{}\".", usernameAttribute);
+                        continue;
+                    }
 
-                // Get username from record
-                LDAPAttribute username = entry.getAttribute(usernameAttribute);
-                if (username == null) {
-                    logger.warn("Queried user is missing the username attribute \"{}\".", usernameAttribute);
-                    continue;
+                    // Store user using their username as the identifier
+                    String identifier = username.getStringValue();
+                    if (users.put(identifier, new SimpleUser(identifier)) != null)
+                        logger.warn("Possibly ambiguous user account: \"{}\".", identifier);
+
+                } catch (LDAPReferralException e) {
+                    logger.debug("Ignoring LDAP Referral: \"{}\".", e.toString());
                 }
-
-                // Store user using their username as the identifier
-                String identifier = username.getStringValue();
-                if (users.put(identifier, new SimpleUser(identifier)) != null)
-                    logger.warn("Possibly ambiguous user account: \"{}\".", identifier);
-
             }
 
         }
@@ -259,8 +263,13 @@ public class UserService {
 
             // Add all DNs for found users
             while (results.hasMore()) {
-                LDAPEntry entry = results.next();
-                userDNs.add(entry.getDN());
+                try {
+                    LDAPEntry entry = results.next();
+                    userDNs.add(entry.getDN());
+                } catch (LDAPReferralException e) {
+                    logger.debug("Ignoring LDAP Referral: \"{}\".", e.toString());
+
+                }
             }
 
             // Return all discovered DNs (if any)
