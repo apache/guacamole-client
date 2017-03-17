@@ -223,4 +223,87 @@ public class ConfigurationService {
         );
     }
 
+    /**
+     * Returns the boolean value for whether the connection should
+     * follow referrals or not.  By default, it will not.
+     *
+     * @return
+     *     The boolean value of whether to follow referrals
+     *     as configured in guacamole.properties
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public boolean getFollowReferrals() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_FOLLOW_REFERRALS,
+            false
+        );
+    }
+
+    /**
+     * Returns the maximum number of referral hops to follow.
+     *
+     * @return
+     *     The maximum number of referral hops to follow
+     *     as configured in guacamole.properties
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public int getMaxReferralHops() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_MAX_REFERRAL_HOPS,
+            5
+        );
+    }
+
+    /**
+     * Returns the authentication method to use during referral following.
+     *
+     * @return
+     *     The authentication method to use during referral following
+     *     as configured in guacamole.properties or as derived from
+     *     other configuration options.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public String getReferralAuthentication() throws GuacamoleException {
+        String confMethod = environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_REFERRAL_AUTHENTICATION
+        );
+
+        if (confMethod == null)
+
+            if (getSearchBindDN() != null && getSearchBindPassword() != null)
+                return "bind";
+
+            else
+                return "anonymous";
+
+        else if (confMethod.equals("bind") && (getSearchBindDN() == null || getSearchBindPassword() == null))
+            throw new GuacamoleException("Referral is set to bind with credentials, but credentials are not configured.");
+
+        return confMethod;
+
+    }
+
+    /**
+     * Returns the maximum number of seconds to wait for LDAP operations
+     *
+     * @return
+     *     The maximum number of seconds to wait for LDAP operations
+     *     as configured in guacamole.properties
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public int getOperationTimeout() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_OPERATION_TIMEOUT,
+            30
+        );
+    }
+
 }

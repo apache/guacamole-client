@@ -21,12 +21,14 @@ package org.apache.guacamole.auth.ldap;
 
 import com.google.inject.Inject;
 import com.novell.ldap.LDAPConnection;
+import com.novell.ldap.LDAPConstraints;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPJSSESecureSocketFactory;
 import com.novell.ldap.LDAPJSSEStartTLSFactory;
 import java.io.UnsupportedEncodingException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
+import org.apache.guacamole.auth.ldap.ReferralAuthHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,6 +112,26 @@ public class LDAPConnectionService {
 
         // Obtain appropriately-configured LDAPConnection instance
         LDAPConnection ldapConnection = createLDAPConnection();
+
+        // Configure LDAP connection constraints
+        LDAPConstraints ldapConstraints = ldapConnection.getConstraints();
+        if (ldapConstraints == null)
+          ldapConstraints = new LDAPConstraints();
+
+        // Set whether or not we follow referrals, and max hops
+        ldapConstraints.setReferralFollowing(confService.getFollowReferrals());
+        String refAuthMethod = confService.getReferralAuthentication();
+
+        if (refAuthMethod != null && refAuthMethod.equals("bind"))
+            ldapConstraints.setReferralHandler(new ReferralAuthHandler(userDN, password));
+
+        ldapConstraints.setHopLimit(confService.getMaxReferralHops());
+
+        // Set timelimit to wait for LDAP operations, converting to ms
+        ldapConstraints.setTimeLimit(confService.getOperationTimeout() * 1000);
+
+        // Apply the constraints to the connection
+        ldapConnection.setConstraints(ldapConstraints);
 
         try {
 

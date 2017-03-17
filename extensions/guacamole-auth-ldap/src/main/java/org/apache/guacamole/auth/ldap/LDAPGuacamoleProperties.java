@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.ldap;
 
+import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
@@ -150,6 +151,46 @@ public class LDAPGuacamoleProperties {
 
         @Override
         public String getName() { return "ldap-max-search-results"; }
+
+    };
+
+    /**
+     * Whether or not we should follow referrals
+     */
+    public static final BooleanGuacamoleProperty LDAP_FOLLOW_REFERRALS = new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ldap-follow-referrals"; }
+
+    };
+
+    /**
+     * Maximum number of referral hops to follow
+     */
+    public static final IntegerGuacamoleProperty LDAP_MAX_REFERRAL_HOPS = new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ldap-max-referral-hops"; }
+
+    };
+
+    /**
+     * Authentication method to use to follow referrals
+     */
+    public static final StringGuacamoleProperty LDAP_REFERRAL_AUTHENTICATION = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ldap-referral-authentication"; }
+
+    };
+
+    /**
+     * Number of seconds to wait for LDAP operations to complete
+     */
+    public static final IntegerGuacamoleProperty LDAP_OPERATION_TIMEOUT = new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ldap-operation-timeout"; }
 
     };
 
