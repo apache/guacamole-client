@@ -118,13 +118,16 @@ public class LDAPConnectionService {
         if (ldapConstraints == null)
           ldapConstraints = new LDAPConstraints();
 
-        // Set whether or not we follow referrals, and max hops
+        // Set whether or not we follow referrals
         ldapConstraints.setReferralFollowing(confService.getFollowReferrals());
-        String refAuthMethod = confService.getReferralAuthentication();
 
+        // If the referral auth method is set to bind, we set it using the existing
+        // username and password.
+        String refAuthMethod = confService.getReferralAuthentication();
         if (refAuthMethod != null && refAuthMethod.equals("bind"))
             ldapConstraints.setReferralHandler(new ReferralAuthHandler(userDN, password));
 
+        // Set the maximum number of referrals we follow
         ldapConstraints.setHopLimit(confService.getMaxReferralHops());
 
         // Set timelimit to wait for LDAP operations, converting to ms
