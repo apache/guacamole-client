@@ -120,15 +120,17 @@ public class UserService {
                         logger.warn("Possibly ambiguous user account: \"{}\".", identifier);
 
                 }
+
+                // Deal with errors trying to follow referrals
                 catch (LDAPReferralException e) {
                     if (confService.getFollowReferrals()) {
                         logger.error("Could not follow referral.", e.getMessage());
                         logger.debug("Error encountered trying to follow referral.", e);
-                        throw new GuacamoleException("Could not follow LDAP referral.");
+                        throw new GuacamoleServerException("Could not follow LDAP referral.", e);
                     }
                     else {
-                        logger.warn("Encountered a referral, but not following it.", e.getMessage());
-                        logger.debug("Got a referral, but not configured to follow it.", e);
+                        logger.warn("Given a referral, but referrals are disabled.", e.getMessage());
+                        logger.debug("Got a referral, but configured to not follow them.", e);
                         continue;
                     }
                 }
@@ -276,8 +278,24 @@ public class UserService {
 
             // Add all DNs for found users
             while (results.hasMore()) {
-                LDAPEntry entry = results.next();
-                userDNs.add(entry.getDN());
+                try {
+                    LDAPEntry entry = results.next();
+                    userDNs.add(entry.getDN());
+                }
+          
+                // Deal with errors following referrals
+                catch (LDAPReferralException e) {
+                    if (confService.getFollowReferrals()) {
+                        logger.error("Error trying to follow a referral.", e.getMessage());
+                        logger.debug("Encountered an error trying to follow a referral.", e);
+                        throw new GuacamoleServerException("Failed while trying to follow referrals.", e);
+                    }
+                    else {
+                        logger.warn("Given a referral, not following it.", e.getMessage());
+                        logger.debug("Given a referral, but configured to not follow them.", e);
+                        continue;
+                    }
+                }
             }
 
             // Return all discovered DNs (if any)
