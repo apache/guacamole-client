@@ -223,4 +223,36 @@ public class ConfigurationService {
         );
     }
 
+    /**
+     * Returns whether or not LDAP aliases will be dereferenced,
+     * as configured with guacamole.properties.
+     * By default they will never be dereferenced.
+     *
+     * @return
+     *     An integer representing the status of of alias
+     *     dereferencing, as configured in guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public int getDereferenceAliases() throws GuacamoleException {
+        String derefAliases = environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_DEREFERENCE_ALIASES,
+            "never"
+        );
+
+        if (derefAliases == "always")
+            return 3;
+
+        else if (derefAliases == "finding")
+            return 2;
+
+        else if (derefAliases == "searching")
+            return 1;
+
+        else
+            return 0;
+
+    }
+
 }

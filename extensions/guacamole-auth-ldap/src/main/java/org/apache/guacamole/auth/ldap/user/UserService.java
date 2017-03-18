@@ -88,6 +88,7 @@ public class UserService {
             // Set search limits
             LDAPSearchConstraints constraints = new LDAPSearchConstraints();
             constraints.setMaxResults(confService.getMaxResults());
+            constraints.setDereference(confService.getDereferenceAliases());
 
             // Find all Guacamole users underneath base DN
             LDAPSearchResults results = ldapConnection.search(
@@ -247,6 +248,9 @@ public class UserService {
 
             List<String> userDNs = new ArrayList<String>();
 
+            LDAPSearchConstraints constraints = new LDAPSearchConstraints();
+            constraints.setDereference(confService.getDereferenceAliases());
+
             // Find all Guacamole users underneath base DN and matching the
             // specified username
             LDAPSearchResults results = ldapConnection.search(
@@ -254,7 +258,8 @@ public class UserService {
                 LDAPConnection.SCOPE_SUB,
                 generateLDAPQuery(username),
                 null,
-                false
+                false,
+                constraints
             );
 
             // Add all DNs for found users

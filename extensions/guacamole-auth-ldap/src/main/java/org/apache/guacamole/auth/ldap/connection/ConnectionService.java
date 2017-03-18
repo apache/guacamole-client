@@ -24,6 +24,7 @@ import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
+import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.LDAPSearchResults;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -108,6 +109,10 @@ public class ConnectionService {
             // current user
             String connectionSearchFilter = getConnectionSearchFilter(userDN, ldapConnection);
 
+            // Set Search Constraints
+            LDAPSearchConstraints constraints = new LDAPSearchConstraints();
+            constraints.setDereference(confService.getDereferenceAliases());
+
             // Find all Guacamole connections for the given user by
             // looking for direct membership in the guacConfigGroup
             // and possibly any groups the user is a member of that are
@@ -117,7 +122,8 @@ public class ConnectionService {
                 LDAPConnection.SCOPE_SUB,
                 connectionSearchFilter,
                 null,
-                false
+                false,
+                constraints
             );
 
             // Build token filter containing credential tokens
@@ -234,13 +240,18 @@ public class ConnectionService {
         String groupBaseDN = confService.getGroupBaseDN();
         if (groupBaseDN != null) {
 
+            // Set up LDAP constraints
+            LDAPSearchConstraints constraints = new LDAPSearchConstraints();
+            constraints.setDereference(confService.getDereferenceAliases());
+
             // Get all groups the user is a member of starting at the groupBaseDN, excluding guacConfigGroups
             LDAPSearchResults userRoleGroupResults = ldapConnection.search(
                 groupBaseDN,
                 LDAPConnection.SCOPE_SUB,
                 "(&(!(objectClass=guacConfigGroup))(member=" + escapingService.escapeLDAPSearchFilter(userDN) + "))",
                 null,
-                false
+                false,
+                constraints
             );
 
             // Append the additional user groups to the LDAP filter
