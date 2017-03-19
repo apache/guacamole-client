@@ -106,6 +106,9 @@ CREATE TABLE guacamole_connection (
   max_connections          integer,
   max_connections_per_user integer,
 
+  -- Connection Weight
+  connection_weight        integer,
+
   -- Guacamole proxy (guacd) overrides
   proxy_port              integer,
   proxy_hostname          varchar(512),

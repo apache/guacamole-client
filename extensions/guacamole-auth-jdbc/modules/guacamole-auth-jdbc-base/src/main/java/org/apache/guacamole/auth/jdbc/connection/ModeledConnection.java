@@ -119,7 +119,7 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
     /**
      * The connection weight for the WRR algorithm.
      */
-    public static final String CONNECTION_WEIGHT = "connection-weight";
+    public static final String CONNECTION_WEIGHT = "weight";
 
     /**
      * All attributes related to restricting user accounts, within a logical
@@ -127,7 +127,8 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      */
     public static final Form CONCURRENCY_LIMITS = new Form("concurrency", Arrays.<Field>asList(
         new NumericField(MAX_CONNECTIONS_NAME),
-        new NumericField(MAX_CONNECTIONS_PER_USER_NAME)
+        new NumericField(MAX_CONNECTIONS_PER_USER_NAME),
+        new NumericField(CONNECTION_WEIGHT)
     ));
 
     /**

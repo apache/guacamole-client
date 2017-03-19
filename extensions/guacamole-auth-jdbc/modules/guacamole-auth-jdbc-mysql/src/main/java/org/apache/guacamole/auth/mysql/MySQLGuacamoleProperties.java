@@ -181,7 +181,7 @@ public class MySQLGuacamoleProperties {
             MYSQL_DEFAULT_CONNECTION_WEIGHT =
             new IntegerGuacamoleProperty() {
        
-        @Overide
+        @Override
         public String getName() { return "mysql-default-connection-weight"; }
 
     };

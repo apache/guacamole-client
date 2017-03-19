@@ -90,6 +90,7 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     /**
      * The default value for the connection weight for a connection in
      * a balancing group.
+     */
     private int DEFAULT_CONNECTION_WEIGHT = 0;
 
     /**

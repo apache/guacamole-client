@@ -91,7 +91,7 @@ public abstract class JDBCEnvironment extends LocalEnvironment {
      * @throws GuacamoleException  
      *     If an error occurs while retrieving the property.
      */
-    public abstract int getConnectionWeight() throws GuacamoleException;
+    public abstract int getDefaultConnectionWeight() throws GuacamoleException;
     
     /**
      * Returns the default maximum number of concurrent connections to allow to 
