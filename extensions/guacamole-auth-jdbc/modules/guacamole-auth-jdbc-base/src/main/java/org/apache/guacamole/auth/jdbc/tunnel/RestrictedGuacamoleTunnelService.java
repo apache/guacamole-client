@@ -33,6 +33,8 @@ import org.apache.guacamole.GuacamoleResourceConflictException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -43,6 +45,11 @@ import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 @Singleton
 public class RestrictedGuacamoleTunnelService
     extends AbstractGuacamoleTunnelService {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(RestrictedGuacamoleTunnelService.class);
 
     /**
      * The environment of the Guacamole server.
@@ -166,20 +173,24 @@ public class RestrictedGuacamoleTunnelService
     protected ModeledConnection acquire(RemoteAuthenticatedUser user,
             List<ModeledConnection> connections) throws GuacamoleException {
 
+        logger.trace("Attempting to acquire a connection...");
         // Do not acquire connection unless within overall limits
         if (!tryIncrement(totalActiveConnections, environment.getAbsoluteMaxConnections()))
             throw new GuacamoleResourceConflictException("Cannot connect. Overall maximum connections reached.");
 
         // Get username
         String username = user.getIdentifier();
+        logger.trace("Username is: {}", username);
 
+        logger.trace("Sorting {} connections.", connections.size());
         // Sort connections in ascending order of usage
         ModeledConnection[] sortedConnections = connections.toArray(new ModeledConnection[connections.size()]);
         Arrays.sort(sortedConnections, new Comparator<ModeledConnection>() {
 
             @Override
             public int compare(ModeledConnection a, ModeledConnection b) {
-
+                
+                logger.trace("Comparing {} to {}.", a.getName(), b.getName());
                 return getActiveConnections(a).size()
                      - getActiveConnections(b).size();
 
@@ -194,15 +205,18 @@ public class RestrictedGuacamoleTunnelService
         for (ModeledConnection connection : sortedConnections) {
 
             // Attempt to aquire connection according to per-user limits
+            logger.trace("Trying to grab a seat on this train: {}", connection.getName());
             Seat seat = new Seat(username, connection.getIdentifier());
             if (tryAdd(activeSeats, seat,
                     connection.getMaxConnectionsPerUser())) {
 
+                logger.trace("Got a seat, trying to get the connection...");
                 // Attempt to aquire connection according to overall limits
                 if (tryAdd(activeConnections, connection.getIdentifier(),
                         connection.getMaxConnections()))
                     return connection;
 
+                logger.trace("Uh-oh, failed to get the connection...");
                 // Acquire failed - retry with next connection
                 activeSeats.remove(seat);
 
@@ -213,6 +227,7 @@ public class RestrictedGuacamoleTunnelService
 
         }
 
+        logger.trace("Well, we failed to get a seat at all...");
         // Acquire failed
         totalActiveConnections.decrementAndGet();
 

@@ -157,6 +157,15 @@ public class PostgreSQLGuacamoleProperties {
 
     };
 
+    public static final IntegerGuacamoleProperty
+            POSTGRESQL_DEFAULT_CONNECTION_WEIGHT =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-default-connection-weight"; }
+
+    };
+
     /**
      * The maximum number of concurrent connections to allow to any one
      * connection group. Zero denotes unlimited.

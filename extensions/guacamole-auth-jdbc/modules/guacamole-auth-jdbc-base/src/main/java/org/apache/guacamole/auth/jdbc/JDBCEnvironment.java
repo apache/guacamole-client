@@ -81,6 +81,17 @@ public abstract class JDBCEnvironment extends LocalEnvironment {
      *     If an error occurs while retrieving the property.
      */
     public abstract int getDefaultMaxConnections() throws GuacamoleException;
+
+    /**
+     * Returns the connection weight for the purpose of WRR calculation
+     *
+     * @return
+     *     The weight of the connection.
+     *
+     * @throws GuacamoleException  
+     *     If an error occurs while retrieving the property.
+     */
+    public abstract int getConnectionWeight() throws GuacamoleException;
     
     /**
      * Returns the default maximum number of concurrent connections to allow to 

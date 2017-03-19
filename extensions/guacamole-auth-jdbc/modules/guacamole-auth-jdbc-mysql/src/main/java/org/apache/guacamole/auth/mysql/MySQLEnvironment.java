@@ -88,6 +88,11 @@ public class MySQLEnvironment extends JDBCEnvironment {
     private int DEFAULT_MAX_CONNECTIONS = 0;
 
     /**
+     * The default value for the connection weight for a connection in
+     * a balancing group.
+    private int DEFAULT_CONNECTION_WEIGHT = 0;
+
+    /**
      * The default value for the default maximum number of connections to be
      * allowed to any one connection group. Note that, as long as the legacy
      * "disallow duplicate" and "disallow simultaneous" properties are still
@@ -191,6 +196,14 @@ public class MySQLEnvironment extends JDBCEnvironment {
         return getProperty(
             MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_CONNECTIONS,
             DEFAULT_MAX_CONNECTIONS
+        );
+    }
+
+    @Override
+    public int getDefaultConnectionWeight() throws GuacamoleException {
+        return getProperty(
+            MySQLGuacamoleProperties.MYSQL_DEFAULT_CONNECTION_WEIGHT,
+            DEFAULT_CONNECTION_WEIGHT
         );
     }
 

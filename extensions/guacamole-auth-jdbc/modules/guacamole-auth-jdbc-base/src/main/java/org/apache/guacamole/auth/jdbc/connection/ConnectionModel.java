@@ -55,6 +55,13 @@ public class ConnectionModel extends ChildObjectModel {
     private Integer maxConnectionsPerUser;
 
     /**
+     * The weight of the connection for the purposes of calculating
+     * WRR algorithm.  null indicates nothing has been set, -1 indicates
+     * the system is unavailable.
+     */
+    private Integer connectionWeight;
+
+    /**
      * The identifiers of all readable sharing profiles associated with this
      * connection.
      */
@@ -162,6 +169,29 @@ public class ConnectionModel extends ChildObjectModel {
      */
     public Integer getMaxConnectionsPerUser() {
         return maxConnectionsPerUser;
+    }
+
+    /**
+     * Sets the connection weight.
+     *
+     * @param connectionWeight
+     *     The weight of the connection.  null is acceptable, -1 indicates the
+     *     connection should not be used.
+     */
+    public void setConnectionWeight(Integer connectionWeight) {
+        this.connectionWeight = connectionWeight;
+    }
+
+    /**
+     * Returns the connection weight used in calculating the
+     * WRR algorithm.
+     *
+     * @return
+     *     The connection weight.  Null indicates no weight has been set,
+     *     -1 indicates that the system is unavailable.
+     */
+    public Integer getConnectionWeight() {
+        return connectionWeight;
     }
 
     /**

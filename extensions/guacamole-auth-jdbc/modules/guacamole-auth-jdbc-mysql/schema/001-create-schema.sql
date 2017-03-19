@@ -34,7 +34,6 @@ CREATE TABLE `guacamole_connection_group` (
   `max_connections_per_user` int(11),
   `enable_session_affinity`  boolean NOT NULL DEFAULT 0,
 
-
   PRIMARY KEY (`connection_group_id`),
   UNIQUE KEY `connection_group_name_parent` (`connection_group_name`, `parent_id`),
 
@@ -65,6 +64,10 @@ CREATE TABLE `guacamole_connection` (
   -- Concurrency limits
   `max_connections`          int(11),
   `max_connections_per_user` int(11),
+  
+  -- Connection weight
+  `connection_weight`        int(11),
+
 
   PRIMARY KEY (`connection_id`),
   UNIQUE KEY `connection_name_parent` (`connection_name`, `parent_id`),

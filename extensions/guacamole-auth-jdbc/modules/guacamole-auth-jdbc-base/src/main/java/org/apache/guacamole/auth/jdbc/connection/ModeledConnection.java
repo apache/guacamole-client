@@ -117,6 +117,11 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
     public static final String MAX_CONNECTIONS_PER_USER_NAME = "max-connections-per-user";
 
     /**
+     * The connection weight for the WRR algorithm.
+     */
+    public static final String CONNECTION_WEIGHT = "connection-weight";
+
+    /**
      * All attributes related to restricting user accounts, within a logical
      * form.
      */
@@ -265,6 +270,9 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
             }
         }
 
+        // Set connection weight
+        attributes.put(CONNECTION_WEIGHT, NumericField.format(getModel().getConnectionWeight()));
+
         return attributes;
     }
 
@@ -309,6 +317,13 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
         // Unimplemented / unspecified
         else
             getModel().setProxyEncryptionMethod(null);
+
+        // Translate connection weight attribute
+        try { getModel().setConnectionWeight(NumericField.parse(attributes.get(CONNECTION_WEIGHT))); }
+        catch (NumberFormatException e) {
+            logger.warn("Not setting the connection weight: {}", e.getMessage());
+            logger.debug("Unable to parse numeric attribute.", e);
+        }
 
     }
 
@@ -394,6 +409,25 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
             encryptionMethod != null ? encryptionMethod : defaultConfig.getEncryptionMethod()
         );
 
+    /** 
+     * Returns the weight of the connection, or the default.
+     *  
+     * @return
+     *     The weight of the connection.
+     *  
+     * @throws GuacamoleException
+     *     If an error occurs while parsing the concurrency limit properties
+     *     specified within guacamole.properties.
+     */
+    public int getConnectionWeight() throws GuacamoleException {
+
+        // Pull default from environment if weight is unset
+        Integer value = getModel().getConnectionWeight();
+        if (value == null)
+            return environment.getDefaultConnectionWeight();
+
+        // Otherwise use defined value
+        return value;
     }
 
 }
