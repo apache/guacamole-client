@@ -190,11 +190,15 @@ public class RestrictedGuacamoleTunnelService
                 logger.debug("Calculating weights for connections {} and {}.", a.getName(), b.getName());
                 int cw = 0;
                 int weightA = a.getConnectionWeight();
+                // If the weight is null, we go ahead and sort, anyway
                 if (weightA == null)
                     weightA = 0;
+
+                // If the weight is null, we go ahead and sort, anyway
                 int weightB = b.getConnectionWeight();
                 if (weightB == null)
                     weightB = 0;
+
                 int connsA = getActiveConnections(a).size();
                 int connsB = getActiveConnections(b).size();
                 logger.debug("Connection {} has computed weight of {}.", a.getName(), connsA * 10000 / weightA);
