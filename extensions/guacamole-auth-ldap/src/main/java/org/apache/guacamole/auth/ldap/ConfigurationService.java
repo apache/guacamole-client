@@ -225,12 +225,15 @@ public class ConfigurationService {
 
     /**
      * Returns whether or not LDAP aliases will be dereferenced,
-     * as configured with guacamole.properties.
-     * By default they will never be dereferenced.
+     * as configured with guacamole.properties.  The default
+     * behavior if not explicityly defined is to never 
+     * dereference them.
      *
      * @return
-     *     An integer representing the status of of alias
-     *     dereferencing, as configured in guacamole.properties.
+     *     An integer value that maps to the JLDAP constants
+     *     for dereferencing - 0 is DEREF_NEVER, 1 is DEREF_SEARCHING,
+     *     2 is DEREF_FINDING, and 3 is DEREF_ALWAYS - as configured
+     *     in guacamole.properties.
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
