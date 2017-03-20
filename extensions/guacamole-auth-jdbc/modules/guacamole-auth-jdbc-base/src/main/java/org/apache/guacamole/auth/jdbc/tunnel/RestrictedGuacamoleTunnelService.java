@@ -173,16 +173,13 @@ public class RestrictedGuacamoleTunnelService
     protected ModeledConnection acquire(RemoteAuthenticatedUser user,
             List<ModeledConnection> connections) throws GuacamoleException {
 
-        logger.trace("Attempting to acquire a connection...");
         // Do not acquire connection unless within overall limits
         if (!tryIncrement(totalActiveConnections, environment.getAbsoluteMaxConnections()))
             throw new GuacamoleResourceConflictException("Cannot connect. Overall maximum connections reached.");
 
         // Get username
         String username = user.getIdentifier();
-        logger.trace("Username is: {}", username);
 
-        logger.trace("Sorting {} connections.", connections.size());
         // Sort connections in ascending order of usage
         ModeledConnection[] sortedConnections = connections.toArray(new ModeledConnection[connections.size()]);
         Arrays.sort(sortedConnections, new Comparator<ModeledConnection>() {
@@ -190,12 +187,14 @@ public class RestrictedGuacamoleTunnelService
             @Override
             public int compare(ModeledConnection a, ModeledConnection b) {
                 
-                logger.trace("Comparing {} to {}.", a.getName(), b.getName());
+                logger.debug("Calculating weights for connections {} and {}.", a.getName(), b.getName());
                 int cw = 0;
                 int weightA = a.getConnectionWeight();
                 int weightB = b.getConnectionWeight();
                 int connsA = getActiveConnections(a).size();
                 int connsB = getActiveConnections(b).size();
+                logger.debug("Connection {} has computed weight of {}.", a.getName(), connsA * 10000 / weightA);
+                logger.debug("Connection {} has computed weight of {}.", b.getName(), connsB * 10000 / weightB);
 
                 return (connsA * 10000 / weightA) - (connsB * 10000 / weightB);
 
@@ -209,19 +208,20 @@ public class RestrictedGuacamoleTunnelService
         // Return the first unreserved connection
         for (ModeledConnection connection : sortedConnections) {
 
+            // If connection weight is negative, this host is disabled and should not be used.
+            if (connection.getConnectionWeight() < 0)
+                continue;
+
             // Attempt to aquire connection according to per-user limits
-            logger.trace("Trying to grab a seat on this train: {}", connection.getName());
             Seat seat = new Seat(username, connection.getIdentifier());
             if (tryAdd(activeSeats, seat,
                     connection.getMaxConnectionsPerUser())) {
 
-                logger.trace("Got a seat, trying to get the connection...");
                 // Attempt to aquire connection according to overall limits
                 if (tryAdd(activeConnections, connection.getIdentifier(),
                         connection.getMaxConnections()))
                     return connection;
 
-                logger.trace("Uh-oh, failed to get the connection...");
                 // Acquire failed - retry with next connection
                 activeSeats.remove(seat);
 
@@ -232,7 +232,6 @@ public class RestrictedGuacamoleTunnelService
 
         }
 
-        logger.trace("Well, we failed to get a seat at all...");
         // Acquire failed
         totalActiveConnections.decrementAndGet();
 
