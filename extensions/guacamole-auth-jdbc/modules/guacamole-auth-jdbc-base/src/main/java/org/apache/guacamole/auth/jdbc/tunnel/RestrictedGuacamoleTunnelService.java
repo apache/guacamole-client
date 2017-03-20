@@ -190,7 +190,11 @@ public class RestrictedGuacamoleTunnelService
                 logger.debug("Calculating weights for connections {} and {}.", a.getName(), b.getName());
                 int cw = 0;
                 int weightA = a.getConnectionWeight();
+                if (weightA == null)
+                    weightA = 0;
                 int weightB = b.getConnectionWeight();
+                if (weightB == null)
+                    weightB = 0;
                 int connsA = getActiveConnections(a).size();
                 int connsB = getActiveConnections(b).size();
                 logger.debug("Connection {} has computed weight of {}.", a.getName(), connsA * 10000 / weightA);
@@ -208,8 +212,8 @@ public class RestrictedGuacamoleTunnelService
         // Return the first unreserved connection
         for (ModeledConnection connection : sortedConnections) {
 
-            // If connection weight is negative, this host is disabled and should not be used.
-            if (connection.getConnectionWeight() < 0)
+            // If connection weight is zero or negative, this host is disabled and should not be used.
+            if (connection.getConnectionWeight() < 1)
                 continue;
 
             // Attempt to aquire connection according to per-user limits
