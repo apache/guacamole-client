@@ -20,15 +20,23 @@
 package org.apache.guacamole.auth.ldap;
 
 import com.google.inject.Inject;
+import com.novell.ldap.LDAPSearchConstraints;
 import java.util.Collections;
 import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service for retrieving configuration information regarding the LDAP server.
  */
 public class ConfigurationService {
+
+    /**
+     * Logger for this class.
+     */
+    private final Logger logger = LoggerFactory.getLogger(ConfigurationService.class);
 
     /**
      * The Guacamole server environment.
@@ -261,6 +269,32 @@ public class ConfigurationService {
             logger.debug("Received {} but expected one of the following: always, finding, searching, never.", derefAliases);
             throw new GuacamoleException("Invalid valid for ldap-dereference-aliases.");
         }
+
+    }
+
+    /**
+     * Returns a set of LDAPSearchConstraints to apply globally
+     * to all LDAP searches rather than having various instances
+     * dispersed throughout the code.  Currently contains the
+     * maximum number of LDAP results to return in a search, as
+     * well as whether or not aliases should be dereferenced
+     * during LDAP operations.
+     *
+     * @return
+     *     A LDAPSearchConstraints object containing constraints
+     *     to be applied to all LDAP search operations.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public LDAPSearchConstraints getLDAPSearchConstraints() throws GuacamoleException {
+
+        LDAPSearchConstraints constraints = new LDAPSearchConstraints();
+
+        constraints.setMaxResults(getMaxResults());
+        constraints.setDereference(getDereferenceAliases());
+
+        return constraints;
 
     }
 
