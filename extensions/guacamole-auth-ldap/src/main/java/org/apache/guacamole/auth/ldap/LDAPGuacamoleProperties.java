@@ -154,7 +154,7 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
-     * The behavior of alias dereferncing for the LDAP connections.
+     * The behavior of alias dereferencing for the LDAP connections.
      */
     public static final StringGuacamoleProperty LDAP_DEREFERENCE_ALIASES = new StringGuacamoleProperty() {
 
