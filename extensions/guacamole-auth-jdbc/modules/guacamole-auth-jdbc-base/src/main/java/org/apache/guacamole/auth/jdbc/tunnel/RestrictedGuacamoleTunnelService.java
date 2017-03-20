@@ -191,9 +191,22 @@ public class RestrictedGuacamoleTunnelService
             public int compare(ModeledConnection a, ModeledConnection b) {
                 
                 logger.trace("Comparing {} to {}.", a.getName(), b.getName());
-                return getActiveConnections(a).size()
-                     - getActiveConnections(b).size();
+                int cw = 0;
 
+                try {
+                    if(a.getConnectionWeight() > 0 && b.getConnectionWeight() > 0)
+                        cw = (int)(a.getConnectionWeight()/getActiveConnections(a).size() - b.getConnectionWeight()/getActiveConnections(b).size());
+                    else
+                        cw = getActiveConnections(a).size() - getActiveConnections(b).size();
+
+                }
+                catch (GuacamoleException e) {
+                    logger.error("Could not compare connections.", e.getMessage());
+                    logger.debug("Could not compare connections.", e);
+                }
+
+                return cw;
+            
             }
 
         });
