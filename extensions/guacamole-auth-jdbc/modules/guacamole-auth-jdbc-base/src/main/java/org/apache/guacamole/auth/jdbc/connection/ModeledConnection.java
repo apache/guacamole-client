@@ -416,19 +416,12 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      * @return
      *     The weight of the connection.
      *  
-     * @throws GuacamoleException
-     *     If an error occurs while parsing the concurrency limit properties
-     *     specified within guacamole.properties.
      */
-    public int getConnectionWeight() throws GuacamoleException {
+    public int getConnectionWeight() {
 
-        // Pull default from environment if weight is unset
-        Integer value = getModel().getConnectionWeight();
-        if (value == null)
-            return environment.getDefaultConnectionWeight();
+        // Return the connection weight
+        return getModel().getConnectionWeight();
 
-        // Otherwise use defined value
-        return value;
     }
 
 }
