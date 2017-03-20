@@ -238,37 +238,17 @@ public class ConfigurationService {
      * dereference them.
      *
      * @return
-     *     An integer value that maps to the JLDAP constants
-     *     for dereferencing - 0 is DEREF_NEVER, 1 is DEREF_SEARCHING,
-     *     2 is DEREF_FINDING, and 3 is DEREF_ALWAYS - as configured
-     *     in guacamole.properties.
+     *     The behavior for handling dereferencing of aliases
+     *     as configured in guacamole.properties.
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public int getDereferenceAliases() throws GuacamoleException {
-        String derefAliases = environment.getProperty(
+    public DereferenceAliases getDereferenceAliases() throws GuacamoleException {
+        return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_DEREFERENCE_ALIASES,
-            "never"
+            DereferenceAliases.NEVER
         );
-
-        if (derefAliases.equals("always"))
-            return 3;
-
-        else if (derefAliases.equals("finding"))
-            return 2;
-
-        else if (derefAliases.equals("searching"))
-            return 1;
-
-        else if (derefAliases.equals("never"))
-            return 0;
-        
-        else {
-            logger.error("Invalid value given for ldap-dereference-aliases.");
-            logger.debug("Received {} but expected one of the following: always, finding, searching, never.", derefAliases);
-            throw new GuacamoleException("Invalid valid for ldap-dereference-aliases.");
-        }
 
     }
 
@@ -292,7 +272,7 @@ public class ConfigurationService {
         LDAPSearchConstraints constraints = new LDAPSearchConstraints();
 
         constraints.setMaxResults(getMaxResults());
-        constraints.setDereference(getDereferenceAliases());
+        constraints.setDereference(getDereferenceAliases().DEREF_VALUE);
 
         return constraints;
 
