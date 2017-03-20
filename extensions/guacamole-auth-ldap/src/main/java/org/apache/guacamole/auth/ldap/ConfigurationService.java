@@ -241,17 +241,23 @@ public class ConfigurationService {
             "never"
         );
 
-        if (derefAliases == "always")
+        if (derefAliases.equals("always"))
             return 3;
 
-        else if (derefAliases == "finding")
+        else if (derefAliases.equals("finding"))
             return 2;
 
-        else if (derefAliases == "searching")
+        else if (derefAliases.equals("searching"))
             return 1;
 
-        else
+        else if (derefAliases.equals("never"))
             return 0;
+        
+        else {
+            logger.error("Invalid value given for ldap-dereference-aliases.");
+            logger.debug("Received {} but expected one of the following: always, finding, searching, never.", derefAliases);
+            throw new GuacamoleException("Invalid valid for ldap-dereference-aliases.");
+        }
 
     }
 
