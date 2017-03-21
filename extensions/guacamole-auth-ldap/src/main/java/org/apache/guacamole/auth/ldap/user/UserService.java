@@ -85,11 +85,18 @@ public class UserService {
 
         try {
 
+            StringBuilder userSearchFilter = new StringBuilder();
+            userSearchFilter.append("(&");
+            userSearchFilter.append(confService.getUserSearchFilter());
+            userSearchFilter.append("(" + escapeService.escapeLDAPSearchFilter(usernameAttribute) + "=*)");
+            userSearchFilter.append(")");
+         
+
             // Find all Guacamole users underneath base DN
             LDAPSearchResults results = ldapConnection.search(
                 confService.getUserBaseDN(),
                 LDAPConnection.SCOPE_SUB,
-                "(&(objectClass=*)(" + escapingService.escapeLDAPSearchFilter(usernameAttribute) + "=*))",
+                userSearchFilter.toString(),
                 null,
                 false,
                 confService.getLDAPSearchConstraints()
@@ -189,7 +196,9 @@ public class UserService {
 
         // Build LDAP query for users having at least one username attribute
         // with the specified username as its value
-        StringBuilder ldapQuery = new StringBuilder("(&(objectClass=*)");
+        StringBuilder ldapQuery = new StringBuilder();
+        ldapQuery.append("(&");
+        ldapQuery.append(confService.getUserSearchFilter());
 
         // Include all attributes within OR clause if there are more than one
         if (usernameAttributes.size() > 1)

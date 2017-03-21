@@ -164,4 +164,24 @@ public class LDAPGuacamoleProperties {
 
     };
 
+    /**
+     * A search filter to apply to the user LDAP query.
+     */
+    public static final StringGuacamoleProperty LDAP_USER_SEARCH_FILTER = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ldap-user-search-filter"; }
+
+    };
+
+    /**
+     * A search filter to apply to the connection LDAP query.
+     */
+    public static final StringGuacamoleProperty LDAP_CONNECTION_SEARCH_FILTER = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ldap-connection-search-filter"; }
+
+    };
+
 }
