@@ -20,15 +20,23 @@
 package org.apache.guacamole.auth.ldap;
 
 import com.google.inject.Inject;
+import com.novell.ldap.LDAPSearchConstraints;
 import java.util.Collections;
 import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service for retrieving configuration information regarding the LDAP server.
  */
 public class ConfigurationService {
+
+    /**
+     * Logger for this class.
+     */
+    private final Logger logger = LoggerFactory.getLogger(ConfigurationService.class);
 
     /**
      * The Guacamole server environment.
@@ -216,11 +224,53 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public int getMaxResults() throws GuacamoleException {
+    private int getMaxResults() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_MAX_SEARCH_RESULTS,
             1000 
         );
+    }
+
+    /**
+     * Returns whether or not LDAP aliases will be dereferenced,
+     * as configured with guacamole.properties. The default
+     * behavior if not explicitly defined is to never
+     * dereference them.
+     *
+     * @return
+     *     The behavior for handling dereferencing of aliases
+     *     as configured in guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    private DereferenceAliasesMode getDereferenceAliases() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_DEREFERENCE_ALIASES,
+            DereferenceAliasesMode.NEVER
+        );
+    }
+
+    /**
+     * Returns a set of LDAPSearchConstraints to apply globally
+     * to all LDAP searches.
+     *
+     * @return
+     *     A LDAPSearchConstraints object containing constraints
+     *     to be applied to all LDAP search operations.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public LDAPSearchConstraints getLDAPSearchConstraints() throws GuacamoleException {
+
+        LDAPSearchConstraints constraints = new LDAPSearchConstraints();
+
+        constraints.setMaxResults(getMaxResults());
+        constraints.setDereference(getDereferenceAliases().DEREF_VALUE);
+
+        return constraints;
+
     }
 
 }

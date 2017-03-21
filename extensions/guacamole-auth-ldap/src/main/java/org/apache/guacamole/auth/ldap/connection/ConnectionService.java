@@ -117,7 +117,8 @@ public class ConnectionService {
                 LDAPConnection.SCOPE_SUB,
                 connectionSearchFilter,
                 null,
-                false
+                false,
+                confService.getLDAPSearchConstraints()
             );
 
             // Build token filter containing credential tokens
@@ -240,7 +241,8 @@ public class ConnectionService {
                 LDAPConnection.SCOPE_SUB,
                 "(&(!(objectClass=guacConfigGroup))(member=" + escapingService.escapeLDAPSearchFilter(userDN) + "))",
                 null,
-                false
+                false,
+                confService.getLDAPSearchConstraints()
             );
 
             // Append the additional user groups to the LDAP filter

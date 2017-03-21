@@ -25,7 +25,6 @@ import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPSearchResults;
-import com.novell.ldap.LDAPSearchConstraints;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,9 +84,6 @@ public class UserService {
             String usernameAttribute) throws GuacamoleException {
 
         try {
-            // Set search limits
-            LDAPSearchConstraints constraints = new LDAPSearchConstraints();
-            constraints.setMaxResults(confService.getMaxResults());
 
             // Find all Guacamole users underneath base DN
             LDAPSearchResults results = ldapConnection.search(
@@ -96,7 +92,7 @@ public class UserService {
                 "(&(objectClass=*)(" + escapingService.escapeLDAPSearchFilter(usernameAttribute) + "=*))",
                 null,
                 false,
-                constraints
+                confService.getLDAPSearchConstraints()
             );
 
             // Read all visible users
@@ -254,7 +250,8 @@ public class UserService {
                 LDAPConnection.SCOPE_SUB,
                 generateLDAPQuery(username),
                 null,
-                false
+                false,
+                confService.getLDAPSearchConstraints()
             );
 
             // Add all DNs for found users
