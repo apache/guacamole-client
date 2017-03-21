@@ -233,8 +233,8 @@ public class ConfigurationService {
 
     /**
      * Returns whether or not LDAP aliases will be dereferenced,
-     * as configured with guacamole.properties.  The default
-     * behavior if not explicitly defined is to never 
+     * as configured with guacamole.properties. The default
+     * behavior if not explicitly defined is to never
      * dereference them.
      *
      * @return
@@ -249,7 +249,6 @@ public class ConfigurationService {
             LDAPGuacamoleProperties.LDAP_DEREFERENCE_ALIASES,
             DereferenceAliasesMode.NEVER
         );
-
     }
 
     /**

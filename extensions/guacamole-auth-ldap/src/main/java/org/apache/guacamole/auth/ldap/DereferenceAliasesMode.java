@@ -28,20 +28,20 @@ import com.novell.ldap.LDAPSearchConstraints;
 public enum DereferenceAliasesMode {
 
     /**
-     * Never dereference aliases.  This is the default.
+     * Never dereference aliases. This is the default.
      */
     NEVER(LDAPSearchConstraints.DEREF_NEVER),
 
     /**
      * Aliases are dereferenced below the base object, but not to locate
-     * the base object itself.  So, if the base object is itself an alias
+     * the base object itself. So, if the base object is itself an alias
      * the search will not complete.
      */
     SEARCHING(LDAPSearchConstraints.DEREF_SEARCHING),
 
     /**
      * Aliases are only dereferenced to locate the base object, but not
-     * after that.  So, a search against a base object that is an alias will
+     * after that. So, a search against a base object that is an alias will
      * find any subordinates of the real object the alias references, but
      * further aliases in the search will not be dereferenced.
      */

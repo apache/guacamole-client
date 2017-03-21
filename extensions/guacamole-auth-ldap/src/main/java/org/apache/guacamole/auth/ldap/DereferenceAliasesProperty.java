@@ -26,7 +26,7 @@ import org.apache.guacamole.properties.GuacamoleProperty;
 /**
  * A GuacamoleProperty with a value of DereferenceAliases. The possible strings
  * "never", "searching", "finding", and "always" are mapped to their values as a
- * DereferenceAliases enum.  Anything else results in a parse error.
+ * DereferenceAliases enum. Anything else results in a parse error.
  */
 public abstract class DereferenceAliasesProperty implements GuacamoleProperty<DereferenceAliasesMode> {
 
