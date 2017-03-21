@@ -154,7 +154,8 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
-     * The behavior of alias dereferencing for the LDAP connections.
+     * Property that controls whether or not the LDAP connection follows
+     * (dereferences) aliases as it searches the tree.
      */
     public static final DereferenceAliasesProperty LDAP_DEREFERENCE_ALIASES = new DereferenceAliasesProperty() {
 

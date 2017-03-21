@@ -224,7 +224,7 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public int getMaxResults() throws GuacamoleException {
+    private int getMaxResults() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_MAX_SEARCH_RESULTS,
             1000 
@@ -234,7 +234,7 @@ public class ConfigurationService {
     /**
      * Returns whether or not LDAP aliases will be dereferenced,
      * as configured with guacamole.properties.  The default
-     * behavior if not explicityly defined is to never 
+     * behavior if not explicitly defined is to never 
      * dereference them.
      *
      * @return
@@ -244,21 +244,17 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public DereferenceAliases getDereferenceAliases() throws GuacamoleException {
+    private DereferenceAliasesMode getDereferenceAliases() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_DEREFERENCE_ALIASES,
-            DereferenceAliases.NEVER
+            DereferenceAliasesMode.NEVER
         );
 
     }
 
     /**
      * Returns a set of LDAPSearchConstraints to apply globally
-     * to all LDAP searches rather than having various instances
-     * dispersed throughout the code.  Currently contains the
-     * maximum number of LDAP results to return in a search, as
-     * well as whether or not aliases should be dereferenced
-     * during LDAP operations.
+     * to all LDAP searches.
      *
      * @return
      *     A LDAPSearchConstraints object containing constraints

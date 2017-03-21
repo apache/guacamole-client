@@ -28,10 +28,10 @@ import org.apache.guacamole.properties.GuacamoleProperty;
  * "never", "searching", "finding", and "always" are mapped to their values as a
  * DereferenceAliases enum.  Anything else results in a parse error.
  */
-public abstract class DereferenceAliasesProperty implements GuacamoleProperty<DereferenceAliases> {
+public abstract class DereferenceAliasesProperty implements GuacamoleProperty<DereferenceAliasesMode> {
 
     @Override
-    public DereferenceAliases parseValue(String value) throws GuacamoleException {
+    public DereferenceAliasesMode parseValue(String value) throws GuacamoleException {
 
         // No value provided, so return null.
         if (value == null)
@@ -39,19 +39,19 @@ public abstract class DereferenceAliasesProperty implements GuacamoleProperty<De
 
         // Never dereference aliases
         if (value.equals("never"))
-            return DereferenceAliases.NEVER;
+            return DereferenceAliasesMode.NEVER;
 
         // Dereference aliases during search operations, but not at base
         if (value.equals("searching"))
-            return DereferenceAliases.SEARCHING;
+            return DereferenceAliasesMode.SEARCHING;
 
         // Dereference aliases to locate base, but not during searches
         if (value.equals("finding"))
-            return DereferenceAliases.FINDING;
+            return DereferenceAliasesMode.FINDING;
 
         // Always dereference aliases
         if (value.equals("always"))
-            return DereferenceAliases.ALWAYS;
+            return DereferenceAliasesMode.ALWAYS;
 
         // Anything else is invalid and results in an error
         throw new GuacamoleServerException("Dereference aliases must be one of \"never\", \"searching\", \"finding\", or \"always\".");

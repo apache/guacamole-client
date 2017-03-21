@@ -19,41 +19,44 @@
 
 package org.apache.guacamole.auth.ldap;
 
+import com.novell.ldap.LDAPSearchConstraints;
+
 /**
- * Acceptable values for configuring the dereferencing of aliases in
- * talking to LDAP servers.
+ * Data type that handles acceptable values for configuring
+ * alias dereferencing behavior when querying LDAP servers.
  */
-public enum DereferenceAliases {
+public enum DereferenceAliasesMode {
 
     /**
      * Never dereference aliases.  This is the default.
      */
-    NEVER(0),
+    NEVER(LDAPSearchConstraints.DEREF_NEVER),
 
     /**
      * Aliases are dereferenced below the base object, but not to locate
      * the base object itself.  So, if the base object is itself an alias
      * the search will not complete.
      */
-    SEARCHING(1),
+    SEARCHING(LDAPSearchConstraints.DEREF_SEARCHING),
 
     /**
      * Aliases are only dereferenced to locate the base object, but not
      * after that.  So, a search against a base object that is an alias will
-     * find any subordinates of the real object the aliase references, but
+     * find any subordinates of the real object the alias references, but
      * further aliases in the search will not be dereferenced.
      */
-    FINDING(2),
+    FINDING(LDAPSearchConstraints.DEREF_FINDING),
 
     /**
      * Aliases will always be dereferenced, both to locate the base object
      * and when handling results returned by the search.
      */
-    ALWAYS(3);
+    ALWAYS(LDAPSearchConstraints.DEREF_ALWAYS);
 
     /**
-     * The integer value that the enum represents, which is used in
-     * configuring the JLDAP library.
+     * The integer constant as defined in the JLDAP library that
+     * the LDAPSearchConstraints class uses to define the
+     * dereferencing behavior during search operations.
      */
     public final int DEREF_VALUE;
 
@@ -64,7 +67,7 @@ public enum DereferenceAliases {
      * @param derefValue
      *     The value associated with this dereference setting
      */
-    private DereferenceAliases(int derefValue) {
+    private DereferenceAliasesMode(int derefValue) {
         this.DEREF_VALUE = derefValue;
     }
 
