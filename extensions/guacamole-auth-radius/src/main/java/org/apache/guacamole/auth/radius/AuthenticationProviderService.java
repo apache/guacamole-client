@@ -35,6 +35,7 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredential
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.jradius.dictionary.Attr_State;
+import net.jradius.dictionary.Attr_ReplyMessage;
 import net.jradius.exception.UnknownAttributeException;
 import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.AccessAccept;
@@ -140,7 +141,6 @@ public class AuthenticationProviderService {
             // We create a new form/field with the challenge message.
             else if (radPack instanceof AccessChallenge) {
 
-                try {
                     // Try to get the state attribute - if it's not there, we have a problem
                     RadiusAttribute stateAttr = radPack.findAttribute(Attr_State.TYPE);
                     if (stateAttr == null) {
@@ -164,12 +164,6 @@ public class AuthenticationProviderService {
                     Field radiusStateField = new RadiusStateField(radiusState);
                     CredentialsInfo expectedCredentials = new CredentialsInfo(Arrays.asList(radiusResponseField,radiusStateField));
                     throw new GuacamoleInsufficientCredentialsException("LOGIN.INFO_RADIUS_ADDL_REQUIRED", expectedCredentials);
-                }
-                catch (UnknownAttributeException e) {
-                    logger.error("Error in talks with RADIUS server.");
-                    logger.debug("RADIUS challenged by didn't provide right attributes.");
-                    throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
-                }
             }
 
             // If we receive AccessAccept, authentication has succeeded
