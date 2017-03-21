@@ -141,29 +141,30 @@ public class AuthenticationProviderService {
             // We create a new form/field with the challenge message.
             else if (radPack instanceof AccessChallenge) {
 
-                    // Try to get the state attribute - if it's not there, we have a problem
-                    RadiusAttribute stateAttr = radPack.findAttribute(Attr_State.TYPE);
-                    if (stateAttr == null) {
-                        logger.error("Something went wrong, state attribute not present.");
-                        logger.debug("State Attribute turned up null, which shouldn't happen in AccessChallenge.");
-                        throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
-                    }
+                // Try to get the state attribute - if it's not there, we have a problem
+                RadiusAttribute stateAttr = radPack.findAttribute(Attr_State.TYPE);
+                if (stateAttr == null) {
+                    logger.error("Something went wrong, state attribute not present.");
+                    logger.debug("State Attribute turned up null, which shouldn't happen in AccessChallenge.");
+                    throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
+                }
 
-                    // We need to get the reply message so we know what to ask the user
-                    RadiusAttribute replyAttr = radPack.findAttribute(Attr_ReplyMessage.TYPE);
-                    if (replyAttr == null) {
-                        logger.error("No reply message received from the server.");
-                        logger.debug("Expecting a Attr_ReplyMessage attribute on this packet, and did not get one.");
-                        throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
-                    }
+                // We need to get the reply message so we know what to ask the user
+                RadiusAttribute replyAttr = radPack.findAttribute(Attr_ReplyMessage.TYPE);
+                if (replyAttr == null) {
+                    logger.error("No reply message received from the server.");
+                    logger.debug("Expecting a Attr_ReplyMessage attribute on this packet, and did not get one.");
+                    throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
+                }
 
-                    // We have the required attributes - convert to strings and then generate the additional login box/field
-                    String replyMsg = replyAttr.toString();
-                    radiusState = new String(stateAttr.getValue().getBytes());
-                    Field radiusResponseField = new RadiusChallengeResponseField(replyMsg);
-                    Field radiusStateField = new RadiusStateField(radiusState);
-                    CredentialsInfo expectedCredentials = new CredentialsInfo(Arrays.asList(radiusResponseField,radiusStateField));
-                    throw new GuacamoleInsufficientCredentialsException("LOGIN.INFO_RADIUS_ADDL_REQUIRED", expectedCredentials);
+                // We have the required attributes - convert to strings and then generate the additional login box/field
+                String replyMsg = replyAttr.toString();
+                radiusState = new String(stateAttr.getValue().getBytes());
+                Field radiusResponseField = new RadiusChallengeResponseField(replyMsg);
+                Field radiusStateField = new RadiusStateField(radiusState);
+                CredentialsInfo expectedCredentials = new CredentialsInfo(Arrays.asList(radiusResponseField,radiusStateField));
+                throw new GuacamoleInsufficientCredentialsException("LOGIN.INFO_RADIUS_ADDL_REQUIRED", expectedCredentials);
+
             }
 
             // If we receive AccessAccept, authentication has succeeded
