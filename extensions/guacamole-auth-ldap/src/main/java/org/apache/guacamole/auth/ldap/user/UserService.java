@@ -85,10 +85,12 @@ public class UserService {
 
         try {
 
+            // Build a filter using the configured or default user search filter
+            // to find all user objects in the LDAP tree
             StringBuilder userSearchFilter = new StringBuilder();
             userSearchFilter.append("(&");
             userSearchFilter.append(confService.getUserSearchFilter());
-            userSearchFilter.append("(" + escapeService.escapeLDAPSearchFilter(usernameAttribute) + "=*)");
+            userSearchFilter.append("(" + escapingService.escapeLDAPSearchFilter(usernameAttribute) + "=*)");
             userSearchFilter.append(")");
          
 
@@ -195,7 +197,7 @@ public class UserService {
         List<String> usernameAttributes = confService.getUsernameAttributes();
 
         // Build LDAP query for users having at least one username attribute
-        // with the specified username as its value
+        // and with the configured or default search filter
         StringBuilder ldapQuery = new StringBuilder();
         ldapQuery.append("(&");
         ldapQuery.append(confService.getUserSearchFilter());

@@ -295,12 +295,12 @@ public class ConfigurationService {
     /**
      * Returns the search filter that should be used when querying the 
      * LDAP server for Guacamole connections.  If no filter is specified,
-     * null is returned.
+     * the default of objectClass=guacConfigGroup is returned.
      * 
      * @return
      *     The search filter that should be used when querying the 
      *     LDAP server for connections for Guacamole, or 
-     *     null if no filter is specified. 
+     *     objectClass=guacConfigGroup if no filter is specified. 
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
