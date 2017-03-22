@@ -57,8 +57,8 @@ public class ConfigurationService {
      * into their browser to access Guacamole.
      *
      * @return
-     *     The client secret to use when communicating with the CAS service,
-     *     as configured with guacamole.properties.
+     *     The URI to redirect the client back to after authentication
+     *     is completed, as configured in guacamole.properties.
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed, or if the redirect URI

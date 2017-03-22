@@ -34,16 +34,19 @@ angular.module('guacCAS').config(['formServiceProvider',
 
 /**
  * Config block which augments the existing routing, providing special handling
- * for the "ticket=" fragments provided by OpenID Connect.
+ * for the "ticket=" parameter provided by the CAS authentication process.
  */
 angular.module('index').config(['$routeProvider','$windowProvider',
         function indexRouteConfig($routeProvider,$windowProvider) {
 
     var $window = $windowProvider.$get();
     var curPath = $window.location.href;
-    var ticketPos = curPath.indexOf("?ticket=") + 8;
-    var hashPos = curPath.indexOf("#/");
-    if (ticketPos > 0 && ticketPos < hashPos) {
+    var ticketPos = curPath.indexOf('?ticket=');
+    if (ticketPos < 0)
+        return null;
+    ticketPos += 8;
+    var hashPos = curPath.indexOf('#/');
+    if (ticketPos < hashPos) {
         var ticket = curPath.substring(ticketPos, hashPos);
         var newPath = curPath.substring(0,ticketPos - 8) + '#/?ticket=' + ticket;
         $window.location.href = newPath;

@@ -141,11 +141,14 @@
             <version>0.9.11-incubating</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Apereo CAS Client API -->
         <dependency>
-          <groupId>org.jasig.cas.client</groupId>
-          <artifactId>cas-client-core</artifactId>
-          <version>3.4.1</version>
+            <groupId>org.jasig.cas.client</groupId>
+            <artifactId>cas-client-core</artifactId>
+            <version>3.4.1</version>
         </dependency>
+
         <!-- Guice -->
         <dependency>
             <groupId>com.google.inject</groupId>

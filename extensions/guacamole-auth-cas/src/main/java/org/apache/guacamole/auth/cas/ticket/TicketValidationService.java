@@ -58,21 +58,25 @@ public class TicketValidationService {
      *     guacamole.properties could not be parsed.
      */
     public String processUsername(String ticket) throws GuacamoleException {
+
         AttributePrincipal principal = null;
 
-        // Retrieve the configured CAS URL and establish a ticket validator
+        // Retrieve the configured CAS URL, establish a ticket validator,
+        // and then attempt to validate the supplied ticket.  If that succeeds,
+        // grab the principal returned by the validator.
         String casServerUrl = confService.getAuthorizationEndpoint();
-        Cas20ProxyTicketValidator sv = new Cas20ProxyTicketValidator(casServerUrl);
-        sv.setAcceptAnyProxy(true);
+        Cas20ProxyTicketValidator validator = new Cas20ProxyTicketValidator(casServerUrl);
+        validator.setAcceptAnyProxy(true);
         try {
             String confRedirectURI = confService.getRedirectURI();
-            Assertion a = sv.validate(ticket, confRedirectURI);
+            Assertion a = validator.validate(ticket, confRedirectURI);
             principal = a.getPrincipal();
         } 
         catch (TicketValidationException e) {
             throw new GuacamoleException("Ticket validation failed.", e);
         }
 
+        // Return the principal name as the username.
         return principal.getName();
 
     }
