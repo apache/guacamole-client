@@ -18,9 +18,8 @@
  */
 
 /**
- * Controller for the "GUAC_RADIUS_CHALLENGE_RESPONSE" field which uses the DuoWeb
- * API to prompt the user for additional credentials, ultimately receiving a
- * signed response from the Duo service.
+ * Controller for the "GUAC_RADIUS_CHALLENGE_RESPONSE" field which
+ * passes the RADIUS server challenge to the user and takes the response.
  */
 angular.module('guacRadius').controller('radiusResponseController', ['$scope', '$element',
         function radiusResponseController($scope, $element) {

@@ -18,9 +18,9 @@
  */
 
 /**
- * Controller for the "GUAC_RADIUS_CHALLENGE_RESPONSE" field which uses the DuoWeb
- * API to prompt the user for additional credentials, ultimately receiving a
- * signed response from the Duo service.
+ * Controller for the "GUAC_RADIUS_STATE" field which is used to pass
+ * the RADIUS server state to maintain the session with the RADIUS
+ * server.
  */
 angular.module('guacRadius').controller('radiusStateController', ['$scope', '$element',
         function radiusStateController($scope, $element) {
