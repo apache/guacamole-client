@@ -72,7 +72,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         ALT_KEYS    = {0xFFE9 : true, 0xFFEA : true, 0xFE03 : true,
                        0xFFE7 : true, 0xFFE8 : true},
         CTRL_KEYS   = {0xFFE3 : true, 0xFFE4 : true},
+        END_KEYS    = {0xFF57 : true, 0xFFB1 : true},
         MENU_KEYS   = angular.extend({}, SHIFT_KEYS, ALT_KEYS, CTRL_KEYS);
+        CAD_KEYS    = angular.extend({}, ALT_KEYS, CTRL_KEYS, END_KEYS);
 
     /**
      * All client error codes handled and passed off for translation. Any error
@@ -288,6 +290,16 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         return true;
     }
 
+    function checkCADHotkeyActive() {
+        for(var keysym in keysCurrentlyPressed) {
+            if(!CAD_KEYS[keysym]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     // Hide menu when the user swipes from the right
     $scope.menuDrag = function menuDrag(inProgress, startX, startY, currentX, currentY, deltaX, deltaY) {
 
@@ -495,12 +507,12 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Record key as pressed
         keysCurrentlyPressed[keysym] = true;   
         
+        var currentKeysPressedKeys = Object.keys(keysCurrentlyPressed);
         /* 
          * If only menu keys are pressed, and we have one keysym from each group,
          * and one of the keys is being released, show the menu. 
          */
         if(checkMenuModeActive()) {
-            var currentKeysPressedKeys = Object.keys(keysCurrentlyPressed);
             
             // Check that there is a key pressed for each of the required key classes
             if(!_.isEmpty(_.pick(SHIFT_KEYS, currentKeysPressedKeys)) &&
@@ -519,6 +531,26 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
                 $scope.$apply(function() {
                     $scope.menu.shown = !$scope.menu.shown;
                 });
+            }
+        }
+
+        if(checkCADHotkeyActive()) {
+
+            // Check that there is a key pressed for each of the required key classes
+            if(!_.isEmpty(_.pick(ALT_KEYS, currentKeysPressedKeys)) &&
+               !_.isEmpty(_.pick(CTRL_KEYS, currentKeysPressedKeys)) &&
+               !_.isEmpty(_.pick(END_KEYS, currentKeysPressedKeys))
+            ) {
+
+               // Don't send this key event through to the client
+               event.preventDefault();
+
+               // Log the event
+               console.log('We should trigger Ctrl-Alt-Delete here.');
+
+               // Reset the keys pressed
+               keysCurrentlyPressed = {};
+               keyboard.reset();
             }
         }
 
