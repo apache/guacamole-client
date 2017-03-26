@@ -23,7 +23,6 @@
 
 # Start from Tomcat image
 FROM tomcat:8.0.20-jre8
-MAINTAINER Michael Jumper <mike.jumper@guac-dev.org>
 
 # Environment variables
 ENV \
