@@ -90,7 +90,9 @@ public class UserService {
             StringBuilder userSearchFilter = new StringBuilder();
             userSearchFilter.append("(&");
             userSearchFilter.append(confService.getUserSearchFilter());
-            userSearchFilter.append("(" + escapingService.escapeLDAPSearchFilter(usernameAttribute) + "=*)");
+            userSearchFilter.append("(");
+            userSearchFilter.append(escapingService.escapeLDAPSearchFilter(usernameAttribute));
+            userSearchFilter.append("=*)");
             userSearchFilter.append(")");
          
 
