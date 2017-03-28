@@ -270,7 +270,26 @@ public class ConfigurationService {
         constraints.setDereference(getDereferenceAliases().DEREF_VALUE);
 
         return constraints;
+    }
 
+    /**
+     * Returns the search filter that should be used when querying the
+     * LDAP server for Guacamole users.  If no filter is specified,
+     * a default of "(objectClass=*)" is returned.
+     *
+     * @return
+     *     The search filter that should be used when querying the
+     *     LDAP server for users that are valid in Guacamole, or
+     *     "(objectClass=*)" if not specified.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public String getUserSearchFilter() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_USER_SEARCH_FILTER,
+            "(objectClass=*)"
+        );
     }
 
 }
