@@ -96,6 +96,17 @@ angular.module('form').directive('guacFormField', [function formField() {
 
             };
 
+            /**
+             * Returns whether the current field should be displayed.
+             *
+             * @returns {Boolean}
+             *     true if the current field should be displayed, false
+             *     otherwise.
+             */
+            $scope.isFieldVisible = function isFieldVisible() {
+                return fieldContent[0].hasChildNodes();
+            };
+
             // Update field contents when field definition is changed
             $scope.$watch('field', function setField(field) {
 
