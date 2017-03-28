@@ -12,7 +12,8 @@
     "js" : [
         "casModule.js",
         "casController.js",
-        "casConfig.js"
+        "casConfig.js",
+        "casIndexTicket.js"
     ]
 
 }

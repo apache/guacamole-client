@@ -18,16 +18,25 @@
  */
 
 /**
- * Config block which registers CAS-specific field types.
+ * Index module run block that looks for the ticket parameter
+ * on the current location and moves it to the correct
+ * place to get processed by the Angular app.
  */
-angular.module('guacCAS').config(['formServiceProvider',
-        function guacCASConfig(formServiceProvider) {
+angular.module('index').run(['$injector',
+        function casIndexTicket($injector) {
 
-    // Define field for ticket from CAS service
-    formServiceProvider.registerFieldType("GUAC_CAS_TICKET", {
-        templateUrl   : '',
-        controller    : 'guacCASController',
-        module        : 'guacCAS'
-    });
+    console.log('Running casIndexTicket...');
+    var $window = $injector.get('$window');
+    var curPath = $window.location.href;
+    var ticketPos = curPath.indexOf('?ticket=');
+    if (ticketPos < 0)
+        return null;
+    ticketPos += 8;
+    var hashPos = curPath.indexOf('#/');
+    if (ticketPos < hashPos) {
+        var ticket = curPath.substring(ticketPos, hashPos);
+        var newPath = curPath.substring(0,ticketPos - 8) + '#/?ticket=' + ticket;
+        $window.location.href = newPath;
+    }
 
 }]);
