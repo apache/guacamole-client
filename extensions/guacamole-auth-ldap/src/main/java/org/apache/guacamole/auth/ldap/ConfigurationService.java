@@ -292,24 +292,4 @@ public class ConfigurationService {
         );
     }
 
-    /**
-     * Returns the search filter that should be used when querying the 
-     * LDAP server for Guacamole connections.  If no filter is specified,
-     * the default of objectClass=guacConfigGroup is returned.
-     * 
-     * @return
-     *     The search filter that should be used when querying the 
-     *     LDAP server for connections for Guacamole, or 
-     *     objectClass=guacConfigGroup if no filter is specified. 
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public String getConnectionSearchFilter() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_CONNECTION_SEARCH_FILTER,
-            "(objectClass=guacConfigGroup)"
-        );
-    }
-
 }
