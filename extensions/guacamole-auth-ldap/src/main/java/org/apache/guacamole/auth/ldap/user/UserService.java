@@ -92,10 +92,8 @@ public class UserService {
             userSearchFilter.append(confService.getUserSearchFilter());
             userSearchFilter.append("(");
             userSearchFilter.append(escapingService.escapeLDAPSearchFilter(usernameAttribute));
-            userSearchFilter.append("=*)");
-            userSearchFilter.append(")");
+            userSearchFilter.append("=*))");
          
-
             // Find all Guacamole users underneath base DN
             LDAPSearchResults results = ldapConnection.search(
                 confService.getUserBaseDN(),
