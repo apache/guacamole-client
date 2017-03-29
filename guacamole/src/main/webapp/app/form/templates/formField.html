@@ -1,10 +1,9 @@
-<label class="labeled-field" ng-class="{empty: !model}">
+<label class="labeled-field" ng-class="{empty: !model}" ng-show="isFieldVisible()">
 
     <!-- Field header -->
     <span class="field-header">{{getFieldHeader() | translate}}</span>
 
     <!-- Field content -->
-    <div class="form-field">
-    </div>
+    <div class="form-field"></div>
 
 </label>
