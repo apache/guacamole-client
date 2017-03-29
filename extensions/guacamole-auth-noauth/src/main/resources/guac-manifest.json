@@ -2,7 +2,7 @@
 
     "guacamoleVersion" : "0.9.12-incubating",
 
-    "name"      : "Disabled Authentication",
+    "name"      : "Disabled Authentication (DEPRECATED)",
     "namespace" : "guac-noauth",
 
     "authProviders" : [
