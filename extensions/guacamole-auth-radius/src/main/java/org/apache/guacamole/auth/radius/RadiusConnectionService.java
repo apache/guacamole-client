@@ -110,7 +110,7 @@ public class RadiusConnectionService {
      *     configuration fails.
      *
      */
-    private RadiusAuthenticator setupRadiusAuthenticator() {
+    private RadiusAuthenticator setupRadiusAuthenticator() throws GuacamoleException {
 
         // If we don't have a radiusClient object, yet, don't go any further.
         if (radiusClient == null) {
@@ -132,26 +132,18 @@ public class RadiusConnectionService {
         String basePath;
 
         // Pull configuration parameters from guacamole.properties
-        try {
-            guacEnv = new LocalEnvironment();
-            basePath = guacEnv.getGuacamoleHome().getAbsolutePath() + '/';
-            radAuthName = confService.getRadiusAuthProtocol();
-            caFile = confService.getRadiusCAFile();
-            caPassword = confService.getRadiusCAPassword();
-            caType = confService.getRadiusCAType();
-            keyFile = confService.getRadiusKeyFile();
-            keyPassword = confService.getRadiusKeyPassword();
-            keyType = confService.getRadiusKeyType();
-            trustAll = confService.getRadiusTrustAll();
-            innerProtocol = confService.getRadiusEAPTTLSInnerProtocol();
+        guacEnv = new LocalEnvironment();
+        basePath = guacEnv.getGuacamoleHome().getAbsolutePath() + '/';
+        radAuthName = confService.getRadiusAuthProtocol();
+        caFile = confService.getRadiusCAFile();
+        caPassword = confService.getRadiusCAPassword();
+        caType = confService.getRadiusCAType();
+        keyFile = confService.getRadiusKeyFile();
+        keyPassword = confService.getRadiusKeyPassword();
+        keyType = confService.getRadiusKeyType();
+        trustAll = confService.getRadiusTrustAll();
+        innerProtocol = confService.getRadiusEAPTTLSInnerProtocol();
             
-        }
-        catch (GuacamoleException e) {
-            logger.error("Error retrieving configuration.");
-            logger.debug("Error getting config parameters from file.");
-            return null;
-        }
-
         RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(radAuthName);
         if (radAuth == null)
             return null;
