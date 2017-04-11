@@ -133,6 +133,127 @@ Guacamole.Client = function(tunnel) {
     }
 
     /**
+     * Returns an opaque representation of Guacamole.Client state which can be
+     * later imported through a call to importState(). This object is
+     * effectively an independent, compressed snapshot of protocol and display
+     * state.
+     *
+     * @returns {Object}
+     *     An opaque representation of Guacamole.Client state which can be
+     *     imported through a call to importState().
+     */
+    this.exportState = function exportState() {
+
+        // Start with empty state
+        var state = {
+            'currentState' : currentState,
+            'currentTimestamp' : currentTimestamp,
+            'layers' : {}
+        };
+
+        // Export each defined layer/buffer
+        for (var key in layers) {
+
+            var index = parseInt(key);
+            var layer = layers[key];
+            var canvas = layer.toCanvas();
+
+            // Store common layer/buffer data (dimensions and image contents)
+            var exportLayer = {
+                'width'  : layer.width,
+                'height' : layer.height,
+                'url'    : canvas.toDataURL('image/png')
+            };
+
+            // Add layer properties if not a buffer nor the default layer
+            if (index > 0) {
+                exportLayer.x = layer.x;
+                exportLayer.y = layer.y;
+                exportLayer.z = layer.z;
+                exportLayer.alpha = layer.alpha;
+                exportLayer.matrix = layer.matrix;
+                exportLayer.parent = getLayerIndex(layer.parent);
+            }
+
+            // Store exported layer
+            state.layers[key] = exportLayer;
+
+        }
+
+        return state;
+
+    };
+
+    /**
+     * Restores Guacamole.Client protocol and display state based on an opaque
+     * object from a prior call to exportState(). The Guacamole.Client instance
+     * used to export that state need not be the same as this instance.
+     *
+     * @param {Object} state
+     *     An opaque representation of Guacamole.Client state from a prior call
+     *     to exportState().
+     *
+     * @param {function} [callback]
+     *     The function to invoke when state has finished being imported. This
+     *     may happen immediately, or later as images within the provided state
+     *     object are loaded.
+     */
+    this.importState = function importState(state, callback) {
+
+        var key;
+        var index;
+
+        currentState = state.currentState;
+        currentTimestamp = state.currentTimestamp;
+
+        // Dispose of all layers
+        for (key in layers) {
+            index = parseInt(key);
+            if (index > 0)
+                display.dispose(layers[key]);
+        }
+
+        layers = {};
+
+        // Import state of each layer/buffer
+        for (key in state.layers) {
+
+            index = parseInt(key);
+
+            var importLayer = state.layers[key];
+            var layer = getLayer(index);
+
+            // Initialize new layer with imported data
+            display.resize(layer, importLayer.width, importLayer.height);
+            display.setChannelMask(layer, Guacamole.Layer.SRC);
+            display.draw(layer, 0, 0, importLayer.url);
+
+            // Set layer-specific properties if not a buffer nor the default layer
+            if (index > 0 && importLayer.parent >= 0) {
+
+                // Apply layer position and set parent
+                var parent = getLayer(importLayer.parent);
+                display.move(layer, parent, importLayer.x, importLayer.y, importLayer.z);
+
+                // Set layer transparency
+                display.shade(layer, importLayer.alpha);
+
+                // Apply matrix transform
+                var matrix = importLayer.matrix;
+                display.distort(layer,
+                    matrix[0], matrix[1], matrix[2],
+                    matrix[3], matrix[4], matrix[5]);
+
+            }
+
+        }
+
+        // Flush changes to display
+        display.flush(callback);
+
+    };
+
+    /**
      * Returns the underlying display of this Guacamole.Client. The display
      * contains an Element which can be added to the DOM, causing the
      * display to become visible.
@@ -597,6 +718,36 @@ Guacamole.Client = function(tunnel) {
         }
 
         return layer;
+
+    };
+
+    /**
+     * Returns the index passed to getLayer() when the given layer was created.
+     * Positive indices refer to visible layers, an index of zero refers to the
+     * default layer, and negative indices refer to buffers.
+     *
+     * @param {Guacamole.Display.VisibleLayer|Guacamole.Layer} layer
+     *     The layer whose index should be determined.
+     *
+     * @returns {Number}
+     *     The index of the given layer, or null if no such layer is associated
+     *     with this client.
+     */
+    var getLayerIndex = function getLayerIndex(layer) {
+
+        // Avoid searching if there clearly is no such layer
+        if (!layer)
+            return null;
+
+        // Search through each layer, returning the index of the given layer
+        // once found
+        for (var key in layers) {
+            if (layer === layers[key])
+                return parseInt(key);
+        }
+
+        // Otherwise, no such index
+        return null;
 
     };
 
