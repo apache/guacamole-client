@@ -119,14 +119,11 @@ public class RadiusConnectionService {
             return null;
         }
 
-        String radAuthName;
         String caFile;
         String caPassword;
         String caType;
         String keyFile;
         String keyPassword;
-        String keyType;
-        Boolean trustAll;
         String innerProtocol;
         LocalEnvironment guacEnv;
         String basePath;
@@ -134,52 +131,42 @@ public class RadiusConnectionService {
         // Pull configuration parameters from guacamole.properties
         guacEnv = new LocalEnvironment();
         basePath = guacEnv.getGuacamoleHome().getAbsolutePath() + '/';
-        radAuthName = confService.getRadiusAuthProtocol();
         caFile = confService.getRadiusCAFile();
         caPassword = confService.getRadiusCAPassword();
-        caType = confService.getRadiusCAType();
         keyFile = confService.getRadiusKeyFile();
         keyPassword = confService.getRadiusKeyPassword();
-        keyType = confService.getRadiusKeyType();
-        trustAll = confService.getRadiusTrustAll();
         innerProtocol = confService.getRadiusEAPTTLSInnerProtocol();
             
-        RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(radAuthName);
+        RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(confService.getRadiusAuthProtocol());
         if (radAuth == null)
-            return null;
+            throw new GuacamoleException("Could not get a valid RadiusAuthenticator for specified protocol: " + confService.getRadiusAuthProtocol());
 
         // If we're using any of the TLS protocols, we need to configure them
         if (radAuth instanceof PEAPAuthenticator || 
             radAuth instanceof EAPTLSAuthenticator || 
             radAuth instanceof EAPTTLSAuthenticator) {
 
-            if (caFile != null && !caFile.isEmpty())
+            if (caFile != null) {
                 ((EAPTLSAuthenticator)radAuth).setCaFile(basePath + caFile);
+                ((EAPTLSAuthenticator)radAuth).setCaFileType(confService.getRadiusCAType());
+                if (caPassword != null)
+                    ((EAPTLSAuthenticator)radAuth).setCaPassword(caPassword);
+            }
 
-            if (caType != null && !caType.isEmpty())
-                ((EAPTLSAuthenticator)radAuth).setCaFileType(caType);
-
-            if (caPassword != null && !caPassword.isEmpty())
-                ((EAPTLSAuthenticator)radAuth).setCaPassword(caPassword);
-
-            if (keyFile != null && !keyFile.isEmpty())
-                ((EAPTLSAuthenticator)radAuth).setKeyFile(basePath + keyFile);
-
-            if (keyType != null && !keyType.isEmpty())
-                ((EAPTLSAuthenticator)radAuth).setKeyFileType(keyType);
-
-            if (keyPassword != null && !keyPassword.isEmpty())
+            if (keyPassword != null)
                 ((EAPTLSAuthenticator)radAuth).setKeyPassword(keyPassword);
 
-            ((EAPTLSAuthenticator)radAuth).setTrustAll(trustAll);
+            ((EAPTLSAuthenticator)radAuth).setKeyFile(basePath + keyFile);
+            ((EAPTLSAuthenticator)radAuth).setKeyFileType(confService.getRadiusKeyType());
+            ((EAPTLSAuthenticator)radAuth).setTrustAll(confService.getRadiusTrustAll());
 
         }
 
         // If we're using EAP-TTLS, we need to define tunneled protocol
         if (radAuth instanceof EAPTTLSAuthenticator) {
 
-            if (innerProtocol == null || innerProtocol.isEmpty())
-                return null;
+            if (innerProtocol == null)
+                throw new GuacamoleException("Trying to use EAP-TTLS, but no inner protocol specified.");
 
             ((EAPTTLSAuthenticator)radAuth).setInnerProtocol(innerProtocol);
 
