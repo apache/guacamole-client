@@ -111,7 +111,7 @@ public class AuthenticationProviderService {
         String challengeResponse = request.getParameter(RadiusChallengeResponseField.PARAMETER_NAME);
 
         // We do not have a challenge response, so we proceed normally
-        if (challengeResponse == null || challengeResponse.isEmpty()) {
+        if (challengeResponse == null) {
 
             // Initialize Radius Packet and try to authenticate
             try {
