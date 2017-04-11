@@ -208,7 +208,7 @@ public class RadiusConnectionService {
             throws GuacamoleException {
 
         // Create the connection and load the attribute dictionary
-	createRadiusConnection();
+        createRadiusConnection();
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
 
         // If the client is null, we return null - something has gone wrong
