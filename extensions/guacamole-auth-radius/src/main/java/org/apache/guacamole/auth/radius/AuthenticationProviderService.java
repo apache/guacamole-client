@@ -121,7 +121,7 @@ public class AuthenticationProviderService {
             catch (GuacamoleException e) {
                 logger.error("Cannot configure RADIUS server: {}", e.getMessage());
                 logger.debug("Error configuring RADIUS server.", e);
-                radPack = null;
+                throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
             }
 
             // If configure fails, permission to login is denied
