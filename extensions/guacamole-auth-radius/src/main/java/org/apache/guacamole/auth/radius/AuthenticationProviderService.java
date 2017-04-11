@@ -109,7 +109,6 @@ public class AuthenticationProviderService {
 
         // Try to get parameters to see if this is a post-challenge attempt
         String challengeResponse = request.getParameter(RadiusChallengeResponseField.PARAMETER_NAME);
-        String radiusState = request.getParameter(RadiusStateField.PARAMETER_NAME);
 
         // We do not have a challenge response, so we proceed normally
         if (challengeResponse == null || challengeResponse.isEmpty()) {
@@ -159,7 +158,7 @@ public class AuthenticationProviderService {
 
                 // We have the required attributes - convert to strings and then generate the additional login box/field
                 String replyMsg = replyAttr.toString();
-                radiusState = new String(stateAttr.getValue().getBytes());
+                String radiusState = new String(stateAttr.getValue().getBytes());
                 Field radiusResponseField = new RadiusChallengeResponseField(replyMsg);
                 Field radiusStateField = new RadiusStateField(radiusState);
                 CredentialsInfo expectedCredentials = new CredentialsInfo(Arrays.asList(radiusResponseField,radiusStateField));
@@ -193,7 +192,7 @@ public class AuthenticationProviderService {
             // Initialize Radius Packet and try to authenticate
             try {
                 radPack = radiusService.authenticate(credentials.getUsername(),
-                                                     radiusState,
+                                                     request.getParameter(RadiusStateField.PARAMETER_NAME),
                                                      challengeResponse);
             }
             catch (GuacamoleException e) {
