@@ -88,17 +88,14 @@ public class RadiusConnectionService {
         catch (GuacamoleException e) {
             logger.error("Unable to initialize RADIUS client: {}", e.getMessage());
             logger.debug("Failed to init RADIUS client.", e);
-            return;
         }
         catch (UnknownHostException e) {
             logger.error("Unable to resolve host: {}", e.getMessage());
             logger.debug("Failed to resolve host.", e);
-            return;
         }
         catch (IOException e) {
             logger.error("Unable to communicate with host: {}", e.getMessage());
             logger.debug("Failed to communicate with host.", e);
-            return;
         }
 
     }
