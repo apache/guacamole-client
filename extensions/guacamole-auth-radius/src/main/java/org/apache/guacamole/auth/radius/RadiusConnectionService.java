@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.radius;
 
 import com.google.inject.Inject;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
@@ -119,23 +120,14 @@ public class RadiusConnectionService {
             return null;
         }
 
-        String caFile;
-        String caPassword;
-        String caType;
-        String keyFile;
-        String keyPassword;
-        String innerProtocol;
-        LocalEnvironment guacEnv;
-        String basePath;
-
         // Pull configuration parameters from guacamole.properties
-        guacEnv = new LocalEnvironment();
-        basePath = guacEnv.getGuacamoleHome().getAbsolutePath() + '/';
-        caFile = confService.getRadiusCAFile();
-        caPassword = confService.getRadiusCAPassword();
-        keyFile = confService.getRadiusKeyFile();
-        keyPassword = confService.getRadiusKeyPassword();
-        innerProtocol = confService.getRadiusEAPTTLSInnerProtocol();
+        LocalEnvironment guacEnv = new LocalEnvironment();
+        String guacHome = guacEnv.getGuacamoleHome().getAbsolutePath();
+        String caFile = confService.getRadiusCAFile();
+        String caPassword = confService.getRadiusCAPassword();
+        String keyFile = confService.getRadiusKeyFile();
+        String keyPassword = confService.getRadiusKeyPassword();
+        String innerProtocol = confService.getRadiusEAPTTLSInnerProtocol();
             
         RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(confService.getRadiusAuthProtocol());
         if (radAuth == null)
@@ -147,7 +139,7 @@ public class RadiusConnectionService {
             radAuth instanceof EAPTTLSAuthenticator) {
 
             if (caFile != null) {
-                ((EAPTLSAuthenticator)radAuth).setCaFile(basePath + caFile);
+                ((EAPTLSAuthenticator)radAuth).setCaFile((new File(guacHome, caFile)).toString());
                 ((EAPTLSAuthenticator)radAuth).setCaFileType(confService.getRadiusCAType());
                 if (caPassword != null)
                     ((EAPTLSAuthenticator)radAuth).setCaPassword(caPassword);
@@ -156,7 +148,7 @@ public class RadiusConnectionService {
             if (keyPassword != null)
                 ((EAPTLSAuthenticator)radAuth).setKeyPassword(keyPassword);
 
-            ((EAPTLSAuthenticator)radAuth).setKeyFile(basePath + keyFile);
+            ((EAPTLSAuthenticator)radAuth).setKeyFile((new File(guacHome, keyFile)).toString());
             ((EAPTLSAuthenticator)radAuth).setKeyFileType(confService.getRadiusKeyType());
             ((EAPTLSAuthenticator)radAuth).setTrustAll(confService.getRadiusTrustAll());
 
