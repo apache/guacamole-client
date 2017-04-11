@@ -68,7 +68,7 @@ public class RadiusConnectionService {
     private RadiusClient radiusClient;
 
     /**
-     * Creates a new instance of RadiusConnection, configured with parameters
+     * Creates a new instance of RadiusClient, configured with parameters
      * from guacamole.properties.
      *
      * @throws GuacamoleException
