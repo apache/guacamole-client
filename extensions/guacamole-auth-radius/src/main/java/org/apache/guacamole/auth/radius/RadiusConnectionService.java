@@ -71,13 +71,9 @@ public class RadiusConnectionService {
      * Creates a new instance of RadiusConnection, configured with parameters
      * from guacamole.properties.
      *
-     * @return
-     *     A new RadiusConnection instance which has already been configured 
-     *     with parameters from guacamole.properties.
-     *
      * @throws GuacamoleException
      *     If an error occurs while parsing guacamole.properties, or if the
-     *     requested encryption method is actually not implemented (a bug).
+     *     configuration of RadiusClient fails.
      */
     private void createRadiusConnection() {
 
