@@ -1025,3 +1025,184 @@ Guacamole.ChainedTunnel = function(tunnelChain) {
 };
 
 Guacamole.ChainedTunnel.prototype = new Guacamole.Tunnel();
+
+/**
+ * Guacamole Tunnel which replays a Guacamole protocol dump from a static file
+ * received via HTTP. Instructions within the file are parsed and handled as
+ * quickly as possible, while the file is being downloaded.
+ *
+ * @constructor
+ * @augments Guacamole.Tunnel
+ * @param {String} url
+ *     The URL of a Guacamole protocol dump.
+ *
+ * @param {Boolean} [crossDomain=false]
+ *     Whether tunnel requests will be cross-domain, and thus must use CORS
+ *     mechanisms and headers. By default, it is assumed that tunnel requests
+ *     will be made to the same domain.
+ */
+Guacamole.StaticHTTPTunnel = function StaticHTTPTunnel(url, crossDomain) {
+
+    /**
+     * Reference to this Guacamole.StaticHTTPTunnel.
+     *
+     * @private
+     */
+    var tunnel = this;
+
+    /**
+     * The current, in-progress HTTP request. If no request is currently in
+     * progress, this will be null.
+     *
+     * @private
+     * @type {XMLHttpRequest}
+     */
+    var xhr = null;
+
+    /**
+     * Changes the stored numeric state of this tunnel, firing the onstatechange
+     * event if the new state is different and a handler has been defined.
+     *
+     * @private
+     * @param {Number} state
+     *     The new state of this tunnel.
+     */
+    var setState = function setState(state) {
+
+        // Notify only if state changes
+        if (state !== tunnel.state) {
+            tunnel.state = state;
+            if (tunnel.onstatechange)
+                tunnel.onstatechange(state);
+        }
+
+    };
+
+    /**
+     * Returns the Guacamole protocol status code which most closely
+     * represents the given HTTP status code.
+     *
+     * @private
+     * @param {Number} httpStatus
+     *     The HTTP status code to translate into a Guacamole protocol status
+     *     code.
+     *
+     * @returns {Number}
+     *     The Guacamole protocol status code which most closely represents the
+     *     given HTTP status code.
+     */
+    var getGuacamoleStatusCode = function getGuacamoleStatusCode(httpStatus) {
+
+        // Translate status codes with known equivalents
+        switch (httpStatus) {
+
+            // HTTP 400 - Bad request
+            case 400:
+                return Guacamole.Status.Code.CLIENT_BAD_REQUEST;
+
+            // HTTP 403 - Forbidden
+            case 403:
+                return Guacamole.Status.Code.CLIENT_FORBIDDEN;
+
+            // HTTP 404 - Resource not found
+            case 404:
+                return Guacamole.Status.Code.RESOURCE_NOT_FOUND;
+
+            // HTTP 429 - Too many requests
+            case 429:
+                return Guacamole.Status.Code.CLIENT_TOO_MANY;
+
+            // HTTP 503 - Server unavailable
+            case 503:
+                return Guacamole.Status.Code.SERVER_BUSY;
+
+        }
+
+        // Default all other codes to generic internal error
+        return Guacamole.Status.Code.SERVER_ERROR;
+
+    };
+
+    this.sendMessage = function sendMessage(elements) {
+        // Do nothing
+    };
+
+    this.connect = function connect(data) {
+
+        // Ensure any existing connection is killed
+        tunnel.disconnect();
+
+        // Connection is now starting
+        setState(Guacamole.Tunnel.State.CONNECTING);
+
+        // Start a new connection
+        xhr = new XMLHttpRequest();
+        xhr.open('GET', url);
+        xhr.withCredentials = !!crossDomain;
+        xhr.send(null);
+
+        var offset = 0;
+
+        // Create Guacamole protocol parser specifically for this connection
+        var parser = new Guacamole.Parser();
+
+        // Invoke tunnel's oninstruction handler for each parsed instruction
+        parser.oninstruction = function instructionReceived(opcode, args) {
+            if (tunnel.oninstruction)
+                tunnel.oninstruction(opcode, args);
+        };
+
+        // Continuously parse received data
+        xhr.onreadystatechange = function readyStateChanged() {
+
+            // Parse while data is being received
+            if (xhr.readyState === 3 || xhr.readyState === 4) {
+
+                // Connection is open
+                setState(Guacamole.Tunnel.State.OPEN);
+
+                var buffer = xhr.responseText;
+                var length = buffer.length;
+
+                // Parse only the portion of data which is newly received
+                if (offset < length) {
+                    parser.receive(buffer.substring(offset));
+                    offset = length;
+                }
+
+            }
+
+            // Clean up and close when done
+            if (xhr.readyState === 4)
+                tunnel.disconnect();
+
+        };
+
+        // Reset state and close upon error
+        xhr.onerror = function httpError() {
+
+            // Fail if file could not be downloaded via HTTP
+            if (tunnel.onerror)
+                tunnel.onerror(new Guacamole.Status(getGuacamoleStatusCode(xhr.status), xhr.statusText));
+
+            tunnel.disconnect();
+        };
+
+    };
+
+    this.disconnect = function disconnect() {
+
+        // Abort and dispose of XHR if a request is in progress
+        if (xhr) {
+            xhr.abort();
+            xhr = null;
+        }
+
+        // Connection is now closed
+        setState(Guacamole.Tunnel.State.CLOSED);
+
+    };
+
+};
+
+Guacamole.StaticHTTPTunnel.prototype = new Guacamole.Tunnel();
