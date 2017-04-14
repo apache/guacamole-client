@@ -133,16 +133,18 @@ Guacamole.Client = function(tunnel) {
     }
 
     /**
-     * Returns an opaque representation of Guacamole.Client state which can be
+     * Produces an opaque representation of Guacamole.Client state which can be
      * later imported through a call to importState(). This object is
      * effectively an independent, compressed snapshot of protocol and display
-     * state.
+     * state. Invoking this function implicitly flushes the display.
      *
-     * @returns {Object}
-     *     An opaque representation of Guacamole.Client state which can be
-     *     imported through a call to importState().
+     * @param {function} callback
+     *     Callback which should be invoked once the state object is ready. The
+     *     state object will be passed to the callback as the sole parameter.
+     *     This callback may be invoked immediately, or later as the display
+     *     finishes rendering and becomes ready.
      */
-    this.exportState = function exportState() {
+    this.exportState = function exportState(callback) {
 
         // Start with empty state
         var state = {
@@ -151,39 +153,53 @@ Guacamole.Client = function(tunnel) {
             'layers' : {}
         };
 
-        // Export each defined layer/buffer
+        var layersSnapshot = {};
+
+        // Make a copy of all current layers (protocol state)
         for (var key in layers) {
-
-            var index = parseInt(key);
-            var layer = layers[key];
-            var canvas = layer.toCanvas();
-
-            // Store layer/buffer dimensions
-            var exportLayer = {
-                'width'  : layer.width,
-                'height' : layer.height
-            };
-
-            // Store layer/buffer image data, if it can be generated
-            if (layer.width && layer.height)
-                exportLayer.url = canvas.toDataURL('image/png');
-
-            // Add layer properties if not a buffer nor the default layer
-            if (index > 0) {
-                exportLayer.x = layer.x;
-                exportLayer.y = layer.y;
-                exportLayer.z = layer.z;
-                exportLayer.alpha = layer.alpha;
-                exportLayer.matrix = layer.matrix;
-                exportLayer.parent = getLayerIndex(layer.parent);
-            }
-
-            // Store exported layer
-            state.layers[key] = exportLayer;
-
+            layersSnapshot[key] = layers[key];
         }
 
-        return state;
+        // Populate layers once data is available (display state, requires flush)
+        display.flush(function populateLayers() {
+
+            // Export each defined layer/buffer
+            for (var key in layersSnapshot) {
+
+                var index = parseInt(key);
+                var layer = layersSnapshot[key];
+                var canvas = layer.toCanvas();
+
+                // Store layer/buffer dimensions
+                var exportLayer = {
+                    'width'  : layer.width,
+                    'height' : layer.height
+                };
+
+                // Store layer/buffer image data, if it can be generated
+                if (layer.width && layer.height)
+                    exportLayer.url = canvas.toDataURL('image/png');
+
+                // Add layer properties if not a buffer nor the default layer
+                if (index > 0) {
+                    exportLayer.x = layer.x;
+                    exportLayer.y = layer.y;
+                    exportLayer.z = layer.z;
+                    exportLayer.alpha = layer.alpha;
+                    exportLayer.matrix = layer.matrix;
+                    exportLayer.parent = getLayerIndex(layer.parent);
+                }
+
+                // Store exported layer
+                state.layers[key] = exportLayer;
+
+            }
+
+            // Invoke callback now that the state is ready
+            if (callback)
+                callback(state);
+
+        });
 
     };
 
