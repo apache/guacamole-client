@@ -158,12 +158,15 @@ Guacamole.Client = function(tunnel) {
             var layer = layers[key];
             var canvas = layer.toCanvas();
 
-            // Store common layer/buffer data (dimensions and image contents)
+            // Store layer/buffer dimensions
             var exportLayer = {
                 'width'  : layer.width,
-                'height' : layer.height,
-                'url'    : canvas.toDataURL('image/png')
+                'height' : layer.height
             };
+
+            // Store layer/buffer image data, if it can be generated
+            if (layer.width && layer.height)
+                exportLayer.url = canvas.toDataURL('image/png');
 
             // Add layer properties if not a buffer nor the default layer
             if (index > 0) {
@@ -223,10 +226,14 @@ Guacamole.Client = function(tunnel) {
             var importLayer = state.layers[key];
             var layer = getLayer(index);
 
-            // Initialize new layer with imported data
+            // Reset layer size
             display.resize(layer, importLayer.width, importLayer.height);
-            display.setChannelMask(layer, Guacamole.Layer.SRC);
-            display.draw(layer, 0, 0, importLayer.url);
+
+            // Initialize new layer if it has associated data
+            if (importLayer.url) {
+                display.setChannelMask(layer, Guacamole.Layer.SRC);
+                display.draw(layer, 0, 0, importLayer.url);
+            }
 
             // Set layer-specific properties if not a buffer nor the default layer
             if (index > 0 && importLayer.parent >= 0) {
