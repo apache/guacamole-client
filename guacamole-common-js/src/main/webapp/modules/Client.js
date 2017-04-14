@@ -196,8 +196,7 @@ Guacamole.Client = function(tunnel) {
             }
 
             // Invoke callback now that the state is ready
-            if (callback)
-                callback(state);
+            callback(state);
 
         });
 
