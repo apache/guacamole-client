@@ -1139,6 +1139,7 @@ Guacamole.StaticHTTPTunnel = function StaticHTTPTunnel(url, crossDomain) {
         xhr = new XMLHttpRequest();
         xhr.open('GET', url);
         xhr.withCredentials = !!crossDomain;
+        xhr.responseType = 'text';
         xhr.send(null);
 
         var offset = 0;
