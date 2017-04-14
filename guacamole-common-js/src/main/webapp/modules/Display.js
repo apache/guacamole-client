@@ -548,13 +548,20 @@ Guacamole.Display = function() {
 
         // Draw and free blob URL when ready
         var task = scheduleTask(function __display_drawBlob() {
-            layer.drawImage(x, y, image);
+
+            // Draw the image only if it loaded without errors
+            if (image.width && image.height)
+                layer.drawImage(x, y, image);
+
+            // Blob URL no longer needed
             URL.revokeObjectURL(url);
+
         }, true);
 
         // Load image from URL
         var image = new Image();
         image.onload = task.unblock;
+        image.onerror = task.unblock;
         image.src = url;
 
     };
@@ -572,11 +579,16 @@ Guacamole.Display = function() {
     this.draw = function(layer, x, y, url) {
 
         var task = scheduleTask(function __display_draw() {
-            layer.drawImage(x, y, image);
+
+            // Draw the image only if it loaded without errors
+            if (image.width && image.height)
+                layer.drawImage(x, y, image);
+
         }, true);
 
         var image = new Image();
         image.onload = task.unblock;
+        image.onerror = task.unblock;
         image.src = url;
 
     };
