@@ -42,6 +42,25 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
     var recording = this;
 
     /**
+     * The minimum number of characters which must have been read between
+     * keyframes.
+     *
+     * @private
+     * @constant
+     * @type {Number}
+     */
+    var KEYFRAME_CHAR_INTERVAL = 16384;
+
+    /**
+     * The minimum number of milliseconds which must elapse between keyframes.
+     *
+     * @private
+     * @constant
+     * @type {Number}
+     */
+    var KEYFRAME_TIME_INTERVAL = 5000;
+
+    /**
      * All frames parsed from the provided tunnel.
      *
      * @private
@@ -57,6 +76,24 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * @type {Guacamole.SessionRecording._Frame.Instruction[]}
      */
     var instructions = [];
+
+    /**
+     * The approximate number of characters which have been read from the
+     * provided tunnel since the last frame was flagged for use as a keyframe.
+     *
+     * @private
+     * @type {Number}
+     */
+    var charactersSinceLastKeyframe = 0;
+
+    /**
+     * The timestamp of the last frame which was flagged for use as a keyframe.
+     * If no timestamp has yet been flagged, this will be 0.
+     *
+     * @private
+     * @type {Number}
+     */
+    var lastKeyframeTimestamp = 0;
 
     /**
      * Tunnel which feeds arbitrary instructions to the client used by this
@@ -123,7 +160,9 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
     tunnel.oninstruction = function handleInstruction(opcode, args) {
 
         // Store opcode and arguments for received instruction
-        instructions.push(new Guacamole.SessionRecording._Frame.Instruction(opcode, args.slice()));
+        var instruction = new Guacamole.SessionRecording._Frame.Instruction(opcode, args.slice());
+        instructions.push(instruction);
+        charactersSinceLastKeyframe += instruction.getSize();
 
         // Once a sync is received, store all instructions since the last
         // frame as a new frame
@@ -135,6 +174,16 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
             // Add a new frame containing the instructions read since last frame
             var frame = new Guacamole.SessionRecording._Frame(timestamp, instructions);
             frames.push(frame);
+
+            // This frame should eventually become a keyframe if enough data
+            // has been processed and enough recording time has elapsed, or if
+            // this is the absolute first frame
+            if (frames.length === 1 || (charactersSinceLastKeyframe >= KEYFRAME_CHAR_INTERVAL
+                    && timestamp - lastKeyframeTimestamp >= KEYFRAME_TIME_INTERVAL)) {
+                frame.keyframe = true;
+                lastKeyframeTimestamp = timestamp;
+                charactersSinceLastKeyframe = 0;
+            }
 
             // Clear set of instructions in preparation for next frame
             instructions = [];
@@ -187,6 +236,13 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
         for (var i = 0; i < frame.instructions.length; i++) {
             var instruction = frame.instructions[i];
             playbackTunnel.receiveInstruction(instruction.opcode, instruction.args);
+        }
+
+        // Store client state if frame is flagged as a keyframe
+        if (frame.keyframe && !frame.clientState) {
+            playbackClient.exportState(function storeClientState(state) {
+                frame.clientState = state;
+            });
         }
 
     };
@@ -472,6 +528,17 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
 Guacamole.SessionRecording._Frame = function _Frame(timestamp, instructions) {
 
     /**
+     * Whether this frame should be used as a keyframe if possible. This value
+     * is purely advisory. The stored clientState must eventually be manually
+     * set for the frame to be used as a keyframe. By default, frames are not
+     * keyframes.
+     *
+     * @type {Boolean}
+     * @default false
+     */
+    this.keyframe = false;
+
+    /**
      * The timestamp of this frame, as dictated by the "sync" instruction which
      * terminates the frame.
      *
@@ -493,6 +560,7 @@ Guacamole.SessionRecording._Frame = function _Frame(timestamp, instructions) {
      * be null.
      *
      * @type {Object}
+     * @default null
      */
     this.clientState = null;
 
@@ -513,6 +581,14 @@ Guacamole.SessionRecording._Frame = function _Frame(timestamp, instructions) {
 Guacamole.SessionRecording._Frame.Instruction = function Instruction(opcode, args) {
 
     /**
+     * Reference to this Guacamole.SessionRecording._Frame.Instruction.
+     *
+     * @private
+     * @type {Guacamole.SessionRecording._Frame.Instruction}
+     */
+    var instruction = this;
+
+    /**
      * The opcode of this Guacamole instruction.
      *
      * @type {String}
@@ -525,6 +601,28 @@ Guacamole.SessionRecording._Frame.Instruction = function Instruction(opcode, arg
      * @type {String[]}
      */
     this.args = args;
+
+    /**
+     * Returns the approximate number of characters which make up this
+     * instruction. This value is only approximate as it excludes the length
+     * prefixes and various delimiters used by the Guacamole protocol; only
+     * the content of the opcode and each argument is taken into account.
+     *
+     * @returns {Number}
+     *     The approximate size of this instruction, in characters.
+     */
+    this.getSize = function getSize() {
+
+        // Init with length of opcode
+        var size = instruction.opcode.length;
+
+        // Add length of all arguments
+        for (var i = 0; i < instruction.args.length; i++)
+            size += instruction.args[i].length;
+
+        return size;
+
+    };
 
 };
 
