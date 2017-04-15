@@ -205,9 +205,14 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
         var startIndex;
 
         // Back up until startIndex represents current state
-        for (startIndex = index; startIndex > currentFrame; startIndex--) {
+        for (startIndex = index; startIndex >= 0; startIndex--) {
 
             var frame = frames[startIndex];
+
+            // If we've reached the current frame, startIndex represents
+            // current state by definition
+            if (startIndex === currentFrame)
+                break;
 
             // If frame has associated absolute state, make that frame the
             // current state
