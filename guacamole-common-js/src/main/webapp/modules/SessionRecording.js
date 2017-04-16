@@ -220,6 +220,51 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
     };
 
     /**
+     * Searches through the given region of frames for the frame having a
+     * relative timestamp closest to the timestamp given.
+     *
+     * @private
+     * @param {Number} minIndex
+     *     The index of the first frame in the region (the frame having the
+     *     smallest timestamp).
+     *
+     * @param {Number} maxIndex
+     *     The index of the last frame in the region (the frame having the
+     *     largest timestamp).
+     *
+     * @param {Number} timestamp
+     *     The relative timestamp to search for, where zero denotes the first
+     *     frame in the recording.
+     *
+     * @returns {Number}
+     *     The index of the frame having a relative timestamp closest to the
+     *     given value.
+     */
+    var findFrame = function findFrame(minIndex, maxIndex, timestamp) {
+
+        // Do not search if the region contains only one element
+        if (minIndex === maxIndex)
+            return minIndex;
+
+        // Split search region into two halves
+        var midIndex = Math.floor((minIndex + maxIndex) / 2);
+        var midTimestamp = toRelativeTimestamp(frames[midIndex].timestamp);
+
+        // If timestamp is within lesser half, search again within that half
+        if (timestamp < midTimestamp && midIndex > minIndex)
+            return findFrame(minIndex, midIndex - 1, timestamp);
+
+        // If timestamp is within greater half, search again within that half
+        if (timestamp > midTimestamp && midIndex < maxIndex)
+            return findFrame(midIndex + 1, maxIndex, timestamp);
+
+        // Otherwise, we lucked out and found a frame with exactly the
+        // desired timestamp
+        return midIndex;
+
+    };
+
+    /**
      * Replays the instructions associated with the given frame, sending those
      * instructions to the playback client.
      *
@@ -479,6 +524,34 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
             continuePlayback();
 
         }
+
+    };
+
+    /**
+     * Seeks to the given position within the recording. If the recording is
+     * currently being played back, playback will continue after the seek is
+     * performed. If the recording is currently paused, playback will be
+     * paused after the seek is performed.
+     *
+     * @param {Number} position
+     *     The position within the recording to seek to, in milliseconds.
+     */
+    this.seek = function seek(position) {
+
+        // Do not seek if no frames exist
+        if (frames.length === 0)
+            return;
+
+        // Pause playback, preserving playback state
+        var originallyPlaying = recording.isPlaying();
+        recording.pause();
+
+        // Perform seek
+        seekToFrame(findFrame(0, frames.length - 1, position));
+
+        // Restore playback state
+        if (originallyPlaying)
+            recording.play();
 
     };
 
