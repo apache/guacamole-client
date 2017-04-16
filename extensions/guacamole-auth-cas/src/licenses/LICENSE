@@ -236,15 +236,6 @@ Google Guice (https://github.com/google/guice)
     License(s):
         Apache v2.0 (bundled/guice-3.0/COPYING)
 
-Javax Servlet API (http://servlet-spec.java.net/)
--------------------------------------------------
-
-    Version: 3.0.1
-    From: 'GlassFish Community' (http://servlet-spec.java.net/)
-    License(s):
-        CDDL 2 + GPLv2 with ClassPath Exception (bundled/javax.servlet-api/LICENSE)
-
-
 JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
 ----------------------------------------------------------------------------
 
@@ -252,30 +243,6 @@ JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
     From: 'JSR-330 Expert Group' (https://jcp.org/en/jsr/detail?id=330)
     License(s):
         Apache v2.0 (bundled/javax.inject-1/LICENSE-2.0.txt)
-
-JUnit (http://junit.org)
-------------------------
-
-    Version: 4.8.2
-    From: 'JUnit' (http://junit.org)
-    License(s):
-        CPL v1.0 (bundled/junit/LICENSE-1.0.txt)
-
-LOG4J (http://logging.apache.org/log4j/1.2/)
---------------------------------------------
-
-    Version: 1.2.15
-    From: 'Apache Software Foundation' (https://www.apache.org)
-    License(s):
-        Apache v2.0 (bundled/log4j/LICENSE-2.0.txt)
-
-slf4j (http://www.slf4j.org)
-----------------------------
-
-    Version: 1.7.1
-    From: 'Quality Open Software' (http://www.qos.ch)
-    License(s):
-        MIT (bundled/slf4j/LICENSE)
 
 Spring Framework (https://projects.spring.io/spring-framework/)
 ---------------------------------------------------------------
