@@ -234,19 +234,3 @@ JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
     From: 'JSR-330 Expert Group' (https://jcp.org/en/jsr/detail?id=330)
     License(s):
         Apache v2.0 (bundled/javax.inject-1/LICENSE-2.0.txt)
-
-Spring Framework (https://projects.spring.io/spring-framework/)
----------------------------------------------------------------
-
-    Version: 3.0.5.RELEASE
-    From: 'Spring by Pivotal' (https://spring.io)
-    License(s):
-        Apache v2.0 (bundled/springframework/LICENSE-2.0.txt)
-
-XML Security (http://santuario.apache.org)
-------------------------------------------
-
-    Version: 1.3.0
-    From: 'Apache Software Foundation' (http://www.apache.org)
-    License(s):
-        Apache v2.0 (bundled/xmlsec/LICENSE-2.0.txt)
