@@ -219,15 +219,6 @@ AOP Alliance (http://aopalliance.sourceforge.net/)
     License(s):
         Public Domain (bundled/aopalliance-1.0/LICENSE)
 
-Commons Codec (http://commons.apache.org/codec/)
-------------------------------------------------
-
-    Version: 1.4
-    From: 'Apache Software Foundation' (http://www.apache.org)
-    License(s):
-        Apache v2.0 (bundled/commons-codec/LICENSE-2.0.txt)
-
-
 Google Guice (https://github.com/google/guice)
 ----------------------------------------------
 
