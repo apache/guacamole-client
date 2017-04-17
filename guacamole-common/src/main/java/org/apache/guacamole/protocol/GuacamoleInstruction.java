@@ -33,12 +33,18 @@ public class GuacamoleInstruction {
     /**
      * The opcode of this instruction.
      */
-    private String opcode;
+    private final String opcode;
 
     /**
      * All arguments of this instruction, in order.
      */
-    private List<String> args;
+    private final List<String> args;
+
+    /**
+     * The cached result of converting this GuacamoleInstruction to the format
+     * used by the Guacamole protocol.
+     */
+    private String protocolForm = null;
 
     /**
      * Creates a new GuacamoleInstruction having the given Operation and
@@ -91,31 +97,41 @@ public class GuacamoleInstruction {
      * Returns this GuacamoleInstruction in the form it would be sent over the
      * Guacamole protocol.
      *
-     * @return This GuacamoleInstruction in the form it would be sent over the
-     *         Guacamole protocol.
+     * @return
+     *     This GuacamoleInstruction in the form it would be sent over the
+     *     Guacamole protocol.
      */
     @Override
     public String toString() {
 
-        StringBuilder buff = new StringBuilder();
+        // Avoid rebuilding Guacamole protocol form of instruction if already
+        // known
+        if (protocolForm == null) {
 
-        // Write opcode
-        buff.append(opcode.length());
-        buff.append('.');
-        buff.append(opcode);
+            StringBuilder buff = new StringBuilder();
 
-        // Write argument values
-        for (String value : args) {
-            buff.append(',');
-            buff.append(value.length());
+            // Write opcode
+            buff.append(opcode.length());
             buff.append('.');
-            buff.append(value);
+            buff.append(opcode);
+
+            // Write argument values
+            for (String value : args) {
+                buff.append(',');
+                buff.append(value.length());
+                buff.append('.');
+                buff.append(value);
+            }
+
+            // Write terminator
+            buff.append(';');
+
+            // Cache result for future calls
+            protocolForm = buff.toString();
+
         }
 
-        // Write terminator
-        buff.append(';');
-
-        return buff.toString();
+        return protocolForm;
 
     }
 
