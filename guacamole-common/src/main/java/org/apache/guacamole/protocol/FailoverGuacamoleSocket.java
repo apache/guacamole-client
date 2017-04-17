@@ -19,10 +19,14 @@
 
 package org.apache.guacamole.protocol;
 
+import java.util.LinkedList;
 import java.util.List;
-import org.apache.guacamole.GuacamoleConnectionClosedException;
+import java.util.Queue;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.GuacamoleUpstreamException;
+import org.apache.guacamole.GuacamoleUpstreamNotFoundException;
+import org.apache.guacamole.GuacamoleUpstreamTimeoutException;
+import org.apache.guacamole.GuacamoleUpstreamUnavailableException;
 import org.apache.guacamole.io.GuacamoleReader;
 import org.apache.guacamole.io.GuacamoleWriter;
 import org.apache.guacamole.net.GuacamoleSocket;
@@ -30,318 +34,220 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * GuacamoleSocket implementation which transparently switches between an
- * underlying queue of available sockets when errors are encountered during
- * the initial part of a connection (prior to first "sync").
+ * GuacamoleSocket which intercepts errors received early in the Guacamole
+ * session. Upstream errors which are intercepted early enough result in
+ * exceptions thrown immediately within the FailoverGuacamoleSocket's
+ * constructor, allowing a different socket to be substituted prior to
+ * fulfilling the connection.
  */
 public class FailoverGuacamoleSocket implements GuacamoleSocket {
 
     /**
      * Logger for this class.
      */
-    private Logger logger = LoggerFactory.getLogger(FailoverGuacamoleSocket.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(FailoverGuacamoleSocket.class);
 
     /**
-     * A queue of available sockets. The full set of available sockets need not
-     * be known ahead of time.
+     * The maximum number of characters of Guacamole instruction data to store
+     * within the instruction queue while searching for errors. Once this limit
+     * is exceeded, the connection is assumed to be successful.
      */
-    public static interface SocketQueue {
+    private static final int INSTRUCTION_QUEUE_LIMIT = 2048;
 
-        /**
-         * Returns the next available socket in the queue, or null if no
-         * further sockets are available. This function will be invoked when an
-         * error occurs within the current socket, and will be invoked again if
-         * a GuacamoleException is thrown. Such repeated calls to this function
-         * will occur until errors cease or null is returned.
-         *
-         * @return
-         *     The next available socket in the queue, or null if no further
-         *     sockets are available.
-         *
-         * @throws GuacamoleException
-         *     If an error occurs preventing the next available socket from
-         *     being used.
-         */
-        GuacamoleSocket nextSocket() throws GuacamoleException;
+    /**
+     * The wrapped socket being used.
+     */
+    private final GuacamoleSocket socket;
+
+    /**
+     * Queue of all instructions read while this FailoverGuacamoleSocket was
+     * being constructed.
+     */
+    private final Queue<GuacamoleInstruction> instructionQueue =
+            new LinkedList<GuacamoleInstruction>();
+
+    /**
+     * Parses the given "error" instruction, throwing an exception if the
+     * instruction represents an error from the upstream remote desktop.
+     *
+     * @param instruction
+     *     The "error" instruction to parse.
+     *
+     * @throws GuacamoleUpstreamException
+     *     If the "error" instruction represents an error from the upstream
+     *     remote desktop.
+     */
+    private static void handleUpstreamErrors(GuacamoleInstruction instruction)
+            throws GuacamoleUpstreamException {
+
+        // Ignore error instructions which are missing the status code
+        List<String> args = instruction.getArgs();
+        if (args.size() < 2) {
+            logger.debug("Received \"error\" instruction without status code.");
+            return;
+        }
+
+        // Parse the status code from the received error instruction
+        int statusCode;
+        try {
+            statusCode = Integer.parseInt(args.get(1));
+        }
+        catch (NumberFormatException e) {
+            logger.debug("Received \"error\" instruction with non-numeric status code.", e);
+            return;
+        }
+
+        // Translate numeric status code into a GuacamoleStatus
+        GuacamoleStatus status = GuacamoleStatus.fromGuacamoleStatusCode(statusCode);
+        if (status == null) {
+            logger.debug("Received \"error\" instruction with unknown/invalid status code: {}", statusCode);
+            return;
+        }
+
+        // Only handle error instructions related to the upstream remote desktop
+        switch (status) {
+
+            // Generic upstream error
+            case UPSTREAM_ERROR:
+                throw new GuacamoleUpstreamException(args.get(0));
+
+            // Upstream is unreachable
+            case UPSTREAM_NOT_FOUND:
+                throw new GuacamoleUpstreamNotFoundException(args.get(0));
+
+            // Upstream did not respond
+            case UPSTREAM_TIMEOUT:
+                throw new GuacamoleUpstreamTimeoutException(args.get(0));
+
+            // Upstream is refusing the connection
+            case UPSTREAM_UNAVAILABLE:
+                throw new GuacamoleUpstreamUnavailableException(args.get(0));
+
+        }
 
     }
 
     /**
-     * The queue of available sockets provided when this FailoverGuacamoleSocket
-     * was created.
-     */
-    private final SocketQueue sockets;
-
-    /**
-     * The current socket being used, or null if no socket is available.
-     */
-    private GuacamoleSocket socket;
-
-    /**
-     * Creates a new FailoverGuacamoleSocket which pulls its sockets from the
-     * given SocketQueue. If an error occurs during the Guacamole connection,
-     * other sockets from the SocketQueue are tried, in order, until no error
-     * occurs.
+     * Creates a new FailoverGuacamoleSocket which reads Guacamole instructions
+     * from the given socket, searching for errors from the upstream remote
+     * desktop. If an upstream error is encountered, it is thrown as a
+     * GuacamoleUpstreamException. This constructor will block until an error
+     * is encountered, or until the connection appears to have been successful.
+     * Once the FailoverGuacamoleSocket has been created, all reads, writes,
+     * etc. will be delegated to the provided socket.
      *
-     * @param sockets
-     *     A SocketQueue which returns the sockets which should be used, in
-     *     order.
+     * @param socket
+     *     The GuacamoleSocket of the Guacamole connection this
+     *     FailoverGuacamoleSocket should handle.
      *
      * @throws GuacamoleException
-     *     If errors prevent use of the sockets defined by the SocketQueue, and
-     *     no further sockets remain to be tried.
+     *     If an error occurs while reading data from the provided socket.
+     *
+     * @throws GuacamoleUpstreamException
+     *     If the connection to guacd succeeded, but an error occurred while
+     *     connecting to the remote desktop.
      */
-    public FailoverGuacamoleSocket(SocketQueue sockets)
-            throws GuacamoleException {
-        this.sockets = sockets;
-        selectNextSocket();
-    }
+    public FailoverGuacamoleSocket(GuacamoleSocket socket)
+            throws GuacamoleException, GuacamoleUpstreamException {
 
-    private GuacamoleException tryNextSocket() {
+        int totalQueueSize = 0;
 
-        try {
-            if (socket != null)
-                socket.close();
-        }
-        catch (GuacamoleException e) {
-            if (socket.isOpen())
-                logger.debug("Previous failed socket could not be closed.", e);
-        }
+        GuacamoleInstruction instruction;
+        GuacamoleReader reader = socket.getReader();
 
-        try {
+        // Continuously read instructions, searching for errors
+        while ((instruction = reader.readInstruction()) != null) {
 
-            socket = sockets.nextSocket();
-            if (socket == null)
-                return new GuacamoleServerException("No remaining sockets to try.");
+            // Add instruction to tail of instruction queue
+            instructionQueue.add(instruction);
 
-        }
-
-        catch (GuacamoleException e) {
-            if (tryNextSocket() != null)
-                return e;
-        }
-
-        return null;
-
-    }
-
-    private void selectNextSocket() throws GuacamoleException {
-        synchronized (sockets) {
-            GuacamoleException failure = tryNextSocket();
-            if (failure != null)
-                throw failure;
-        }
-    }
-
-    private class ErrorFilter implements GuacamoleFilter {
-
-        /**
-         * Whether a "sync" instruction has been read.
-         */
-        private boolean receivedSync = false;
-
-        @Override
-        public GuacamoleInstruction filter(GuacamoleInstruction instruction)
-                throws GuacamoleException {
-
-            // Ignore instructions after first sync is received
-            if (receivedSync)
-                return instruction;
-
+            // If instruction is a "sync" instruction, stop reading
             String opcode = instruction.getOpcode();
+            if (opcode.equals("sync"))
+                break;
 
-            if (opcode.equals("sync")) {
-                receivedSync = true;
-                return instruction;
+            // If instruction is an "error" instruction, parse its contents and
+            // stop reading
+            if (opcode.equals("error")) {
+                handleUpstreamErrors(instruction);
+                break;
             }
 
-            if (opcode.equals("error"))
-                return handleError(instruction);
-
-            return instruction;
+            // Otherwise, track total data parsed, and assume connection is
+            // successful if no error encountered within reasonable space
+            totalQueueSize += instruction.toString().length();
+            if (totalQueueSize >= INSTRUCTION_QUEUE_LIMIT)
+                break;
 
         }
 
-        private GuacamoleInstruction handleError(GuacamoleInstruction instruction) {
-
-            // Ignore error instructions which are missing the status code
-            List<String> args = instruction.getArgs();
-            if (args.size() < 2) {
-                logger.debug("Ignoring \"error\" instruction without status code.");
-                return instruction;
-            }
-
-            int statusCode;
-            try {
-                statusCode = Integer.parseInt(args.get(1));
-            }
-            catch (NumberFormatException e) {
-                logger.debug("Ignoring \"error\" instruction with non-numeric status code.", e);
-                return instruction;
-            }
-
-            // Invalid status code
-            GuacamoleStatus status = GuacamoleStatus.fromGuacamoleStatusCode(statusCode);
-            if (status == null) {
-                logger.debug("Ignoring \"error\" instruction with unknown/invalid status code: {}", statusCode);
-                return instruction;
-            }
-
-            // Only handle error instructions related to the upstream remote desktop
-            switch (status) {
-
-                // Transparently connect to a different connection if upstream fails
-                case UPSTREAM_ERROR:
-                case UPSTREAM_NOT_FOUND:
-                case UPSTREAM_TIMEOUT:
-                case UPSTREAM_UNAVAILABLE:
-                    break;
-
-                // Allow error through otherwise
-                default:
-                    return instruction;
-
-            }
-
-            logger.debug("Overriding {} \"error\" instruction. Failing over to next connection...", status);
-
-            // Advance through remaining sockets until another functional socket
-            // is retrieved, or no more sockets remain
-            try {
-                selectNextSocket();
-                return null;
-            }
-
-            catch (GuacamoleException e) {
-                logger.debug("No sockets remain to be tried - giving up on failover.");
-            }
-
-            // Allow error through if not intercepting
-            return instruction;
-
-        }
+        this.socket = socket;
 
     }
 
     /**
-     * GuacamoleReader which filters "error" instructions, transparently failing
-     * over to the next socket in the queue if an error is encountered. Read
-     * attempts are delegated to the GuacamoleReader of the current socket.
+     * GuacamoleReader which reads instructions from the queue populated when
+     * the FailoverGuacamoleSocket was constructed. Once the queue has been
+     * emptied, reads are delegated directly to the reader of the wrapped
+     * socket.
      */
-    private final GuacamoleReader reader = new FilteredGuacamoleReader(new GuacamoleReader() {
+    private final GuacamoleReader queuedReader = new GuacamoleReader() {
 
         @Override
         public boolean available() throws GuacamoleException {
-            synchronized (sockets) {
-
-                if (socket == null)
-                    return false;
-
-                return socket.getReader().available();
-
-            }
+            return !instructionQueue.isEmpty() || socket.getReader().available();
         }
 
         @Override
         public char[] read() throws GuacamoleException {
-            synchronized (sockets) {
 
-                if (socket == null)
-                    return null;
-
-                return socket.getReader().read();
-
+            // Read instructions from queue before finally delegating to
+            // underlying reader (received when FailoverGuacamoleSocket was
+            // being constructed)
+            if (!instructionQueue.isEmpty()) {
+                GuacamoleInstruction instruction = instructionQueue.remove();
+                return instruction.toString().toCharArray();
             }
+
+            return socket.getReader().read();
+
         }
 
         @Override
         public GuacamoleInstruction readInstruction()
                 throws GuacamoleException {
-            synchronized (sockets) {
 
-                if (socket == null)
-                    return null;
+            // Read instructions from queue before finally delegating to
+            // underlying reader (received when FailoverGuacamoleSocket was
+            // being constructed)
+            if (!instructionQueue.isEmpty())
+                return instructionQueue.remove();
 
-                return socket.getReader().readInstruction();
+            return socket.getReader().readInstruction();
 
-            }
-        }
-
-    }, new ErrorFilter());
-
-    /**
-     * GuacamoleWriter which delegates all write attempts to the GuacamoleWriter
-     * of the current socket.
-     */
-    private final GuacamoleWriter writer = new GuacamoleWriter() {
-
-        @Override
-        public void write(char[] chunk, int off, int len)
-                throws GuacamoleException {
-            synchronized (sockets) {
-
-                if (socket == null)
-                    throw new GuacamoleConnectionClosedException("No further sockets remaining in SocketQueue.");
-
-                socket.getWriter().write(chunk, off, len);
-
-            }
-        }
-
-        @Override
-        public void write(char[] chunk) throws GuacamoleException {
-            synchronized (sockets) {
-
-                if (socket == null)
-                    throw new GuacamoleConnectionClosedException("No further sockets remaining in SocketQueue.");
-
-                socket.getWriter().write(chunk);
-
-            }
-        }
-
-        @Override
-        public void writeInstruction(GuacamoleInstruction instruction)
-                throws GuacamoleException {
-            synchronized (sockets) {
-
-                if (socket == null)
-                    throw new GuacamoleConnectionClosedException("No further sockets remaining in SocketQueue.");
-
-                socket.getWriter().writeInstruction(instruction);
-
-            }
         }
 
     };
 
     @Override
     public GuacamoleReader getReader() {
-        return reader;
+        return queuedReader;
     }
 
     @Override
     public GuacamoleWriter getWriter() {
-        return writer;
+        return socket.getWriter();
     }
 
     @Override
     public void close() throws GuacamoleException {
-        synchronized (sockets) {
-            socket.close();
-        }
+        socket.close();
     }
 
     @Override
     public boolean isOpen() {
-        synchronized (sockets) {
-
-            if (socket == null)
-                return false;
-
-            return socket.isOpen();
-
-        }
+        return socket.isOpen();
     }
     
 }
