@@ -488,7 +488,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 getUnconfiguredGuacamoleSocket(cleanupTask), config, info);
 
             // Assign and return new tunnel 
-            return activeConnection.assignGuacamoleTunnel(socket);
+            return activeConnection.assignGuacamoleTunnel(socket, socket.getConnectionID());
             
         }
 
