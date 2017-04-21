@@ -119,7 +119,7 @@ public class UserService {
 
                 }
                 catch (LDAPReferralException e) {
-                    logger.debug("Ignoring LDAP Referral: \"{}\".", e.toString());
+                    logger.warn("Ignoring LDAP Referral while querying users.");
                 }
             }
 
@@ -269,7 +269,7 @@ public class UserService {
                     userDNs.add(entry.getDN());
                 }
                 catch (LDAPReferralException e) {
-                    logger.debug("Ignoring LDAP Referral: \"{}\".", e.toString());
+                    logger.warn("Ignoring LDAP Referral while querying user DNs.");
                 }
             }
 
