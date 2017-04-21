@@ -117,7 +117,8 @@ public class UserService {
                     if (users.put(identifier, new SimpleUser(identifier)) != null)
                         logger.warn("Possibly ambiguous user account: \"{}\".", identifier);
 
-                } catch (LDAPReferralException e) {
+                }
+                catch (LDAPReferralException e) {
                     logger.debug("Ignoring LDAP Referral: \"{}\".", e.toString());
                 }
             }
@@ -266,9 +267,9 @@ public class UserService {
                 try {
                     LDAPEntry entry = results.next();
                     userDNs.add(entry.getDN());
-                } catch (LDAPReferralException e) {
+                }
+                catch (LDAPReferralException e) {
                     logger.debug("Ignoring LDAP Referral: \"{}\".", e.toString());
-
                 }
             }
 
