@@ -39,8 +39,10 @@ import org.apache.guacamole.auth.jdbc.connection.ConnectionModel;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionParameterModel;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleResourceConflictException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.GuacamoleUpstreamException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionMapper;
 import org.apache.guacamole.environment.Environment;
@@ -60,6 +62,9 @@ import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterMapper;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterModel;
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
+import org.apache.guacamole.protocol.FailoverGuacamoleSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -68,6 +73,11 @@ import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
  * implementation of concurrency rules is up to policy-specific subclasses.
  */
 public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelService {
+
+    /**
+     * Logger for this class.
+     */
+    private final Logger logger = LoggerFactory.getLogger(AbstractGuacamoleTunnelService.class);
 
     /**
      * The environment of the Guacamole server.
@@ -439,6 +449,10 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      *     Information describing the Guacamole client connecting to the given
      *     connection.
      *
+     * @param interceptErrors
+     *     Whether errors from the upstream remote desktop should be
+     *     intercepted and rethrown as GuacamoleUpstreamExceptions.
+     *
      * @return
      *     A new GuacamoleTunnel which is configured and connected to the given
      *     connection.
@@ -448,7 +462,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      *     while connection configuration information is being retrieved.
      */
     private GuacamoleTunnel assignGuacamoleTunnel(ActiveConnectionRecord activeConnection,
-            GuacamoleClientInformation info) throws GuacamoleException {
+            GuacamoleClientInformation info, boolean interceptErrors) throws GuacamoleException {
 
         // Record new active connection
         Runnable cleanupTask = new ConnectionCleanupTask(activeConnection);
@@ -487,8 +501,11 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             ConfiguredGuacamoleSocket socket = new ConfiguredGuacamoleSocket(
                 getUnconfiguredGuacamoleSocket(cleanupTask), config, info);
 
-            // Assign and return new tunnel 
-            return activeConnection.assignGuacamoleTunnel(socket);
+            // Assign and return new tunnel
+            if (interceptErrors)
+                return activeConnection.assignGuacamoleTunnel(new FailoverGuacamoleSocket(socket), socket.getConnectionID());
+            else
+                return activeConnection.assignGuacamoleTunnel(socket, socket.getConnectionID());
             
         }
 
@@ -633,7 +650,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         // Connect only if the connection was successfully acquired
         ActiveConnectionRecord connectionRecord = activeConnectionRecordProvider.get();
         connectionRecord.init(user, connection);
-        return assignGuacamoleTunnel(connectionRecord, info);
+        return assignGuacamoleTunnel(connectionRecord, info, false);
 
     }
 
@@ -653,29 +670,50 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         if (connections.isEmpty())
             throw new GuacamoleSecurityException("Permission denied.");
 
-        // Acquire group
-        acquire(user, connectionGroup);
+        do {
 
-        // Attempt to acquire to any child
-        ModeledConnection connection;
-        try {
-            connection = acquire(user, connections);
-        }
+            // Acquire group
+            acquire(user, connectionGroup);
 
-        // Ensure connection group is always released if child acquire fails
-        catch (GuacamoleException e) {
-            release(user, connectionGroup);
-            throw e;
-        }
+            // Attempt to acquire to any child
+            ModeledConnection connection;
+            try {
+                connection = acquire(user, connections);
+            }
 
-        // If session affinity is enabled, prefer this connection going forward
-        if (connectionGroup.isSessionAffinityEnabled())
-            user.preferConnection(connection.getIdentifier());
+            // Ensure connection group is always released if child acquire fails
+            catch (GuacamoleException e) {
+                release(user, connectionGroup);
+                throw e;
+            }
 
-        // Connect to acquired child
-        ActiveConnectionRecord connectionRecord = activeConnectionRecordProvider.get();
-        connectionRecord.init(user, connectionGroup, connection);
-        return assignGuacamoleTunnel(connectionRecord, info);
+            try {
+
+                // Connect to acquired child
+                ActiveConnectionRecord connectionRecord = activeConnectionRecordProvider.get();
+                connectionRecord.init(user, connectionGroup, connection);
+                GuacamoleTunnel tunnel = assignGuacamoleTunnel(connectionRecord, info, connections.size() > 1);
+
+                // If session affinity is enabled, prefer this connection going forward
+                if (connectionGroup.isSessionAffinityEnabled())
+                    user.preferConnection(connection.getIdentifier());
+
+                return tunnel;
+
+            }
+
+            // If connection failed due to an upstream error, retry other
+            // connections
+            catch (GuacamoleUpstreamException e) {
+                logger.info("Upstream error intercepted for connection \"{}\". Failing over to next connection in group...", connection.getIdentifier());
+                logger.debug("Upstream remote desktop reported an error during connection.", e);
+                connections.remove(connection);
+            }
+
+        } while (!connections.isEmpty());
+
+        // All connection possibilities have been exhausted
+        throw new GuacamoleResourceConflictException("Cannot connect. All upstream connections are unavailable.");
 
     }
 
@@ -703,7 +741,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 definition.getSharingProfile());
 
         // Connect to shared connection described by the created record
-        GuacamoleTunnel tunnel = assignGuacamoleTunnel(connectionRecord, info);
+        GuacamoleTunnel tunnel = assignGuacamoleTunnel(connectionRecord, info, false);
 
         // Register tunnel, such that it is closed when the
         // SharedConnectionDefinition is invalidated
