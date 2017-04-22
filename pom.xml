@@ -56,13 +56,21 @@
         <module>extensions/guacamole-auth-ldap</module>
         <module>extensions/guacamole-auth-noauth</module>
         <module>extensions/guacamole-auth-openid</module>
-        <module>extensions/guacamole-auth-radius</module>
 
         <!-- Example web applications using the Guacamole APIs -->
         <module>doc/guacamole-example</module>
         <module>doc/guacamole-playback-example</module>
 
     </modules>
+
+    <profiles>
+        <profile>
+            <id>lgpl-extensions</id>
+            <modules>
+                <module>extensions/guacamole-auth-radius</module>
+            </modules>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
@@ -106,6 +114,7 @@
                         <exclude>.dockerignore</exclude>
                         <exclude>CONTRIBUTING</exclude>
                         <exclude>**/README.md</exclude>
+                        <exclude>extensions/**/*</exclude>
                     </excludes>
                 </configuration>
 
