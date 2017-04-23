@@ -108,6 +108,14 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         this.name = template.name;
 
         /**
+         * The title which should be displayed as the page title for this
+         * client.
+         *
+         * @type String
+         */
+        this.title = template.title;
+
+        /**
          * The most recently-generated thumbnail for this connection, as
          * stored within the local connection history. If no thumbnail is
          * stored, this will be null.
@@ -470,6 +478,13 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
         };
 
+        // Update title when a "name" instruction is received
+        client.onname = function clientNameReceived(name) {
+            $rootScope.$apply(function updateClientTitle() {
+                managedClient.title = name;
+            });
+        };
+
         // Handle any received files
         client.onfile = function clientFileReceived(stream, mimetype, filename) {
             tunnelService.downloadStream(tunnel.uuid, stream, mimetype, filename);
@@ -498,7 +513,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION) {
             connectionService.getConnection(clientIdentifier.dataSource, clientIdentifier.id)
             .success(function connectionRetrieved(connection) {
-                managedClient.name = connection.name;
+                managedClient.name = managedClient.title = connection.name;
             });
         }
         
@@ -506,7 +521,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         else if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION_GROUP) {
             connectionGroupService.getConnectionGroup(clientIdentifier.dataSource, clientIdentifier.id)
             .success(function connectionGroupRetrieved(group) {
-                managedClient.name = group.name;
+                managedClient.name = managedClient.title = group.name;
             });
         }
 

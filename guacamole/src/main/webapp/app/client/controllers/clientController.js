@@ -540,9 +540,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
-    // Update page title when client name is received
-    $scope.$watch('client.name', function clientNameChanged(name) {
-        $scope.page.title = name;
+    // Update page title when client title changes
+    $scope.$watch('client.title', function clientTitleChanged(title) {
+        $scope.page.title = title;
     });
 
     /**
