@@ -103,6 +103,7 @@ public class LocalEnvironment implements Environment {
 
         // Determine location of GUACAMOLE_HOME
         guacHome = findGuacamoleHome();
+        logger.info("GUACAMOLE_HOME is \"{}\".", guacHome.getAbsolutePath());
 
         // Read properties
         properties = new Properties();
@@ -146,7 +147,8 @@ public class LocalEnvironment implements Environment {
      * Locates the Guacamole home directory by checking, in order:
      * the guacamole.home system property, the GUACAMOLE_HOME environment
      * variable, and finally the .guacamole directory in the home directory of
-     * the user running the servlet container.
+     * the user running the servlet container. If even the .guacamole directory
+     * doesn't exist, then /etc/guacamole will be used.
      *
      * @return The File representing the Guacamole home directory, which may
      *         or may not exist, and may turn out to not be a directory.
@@ -166,9 +168,18 @@ public class LocalEnvironment implements Environment {
         if (desiredDir != null)
             guacHome = new File(desiredDir);
 
-        // If not explicitly specified, use ~/.guacamole
-        else
+        // If not explicitly specified, use standard locations
+        else {
+
+            // Try ~/.guacamole first
             guacHome = new File(System.getProperty("user.home"), ".guacamole");
+
+            // If that doesn't exist, try /etc/guacamole if the /etc directory
+            // exists on this system
+            if (!guacHome.exists() && new File("/etc").exists())
+                guacHome = new File("/etc/guacamole");
+
+        }
 
         // Return discovered directory
         return guacHome;
