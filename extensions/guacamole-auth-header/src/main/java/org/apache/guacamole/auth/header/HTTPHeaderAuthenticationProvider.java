@@ -64,6 +64,11 @@ public class HTTPHeaderAuthenticationProvider implements AuthenticationProvider 
     }
 
     @Override
+    public Object getResource() {
+        return null;
+    }
+
+    @Override
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 

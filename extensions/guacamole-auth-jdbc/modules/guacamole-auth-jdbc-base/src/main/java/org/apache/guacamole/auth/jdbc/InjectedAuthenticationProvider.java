@@ -71,6 +71,11 @@ public abstract class InjectedAuthenticationProvider implements AuthenticationPr
     }
 
     @Override
+    public Object getResource() throws GuacamoleException {
+        return null;
+    }
+
+    @Override
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
         return authProviderService.authenticateUser(this, credentials);

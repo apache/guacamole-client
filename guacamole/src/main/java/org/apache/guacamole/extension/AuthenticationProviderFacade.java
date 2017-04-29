@@ -135,6 +135,20 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
     }
 
     @Override
+    public Object getResource() throws GuacamoleException {
+
+        // Ignore auth attempts if no auth provider could be loaded
+        if (authProvider == null) {
+            logger.warn("The authentication system could not be loaded. Please check for errors earlier in the logs.");
+            return null;
+        }
+
+        // Delegate to underlying auth provider
+        return authProvider.getResource();
+
+    }
+
+    @Override
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 

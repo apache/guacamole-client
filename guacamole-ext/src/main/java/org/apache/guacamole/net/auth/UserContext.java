@@ -39,6 +39,26 @@ public interface UserContext {
     User self();
 
     /**
+     * Returns an arbitrary REST resource. The REST resource returned must be
+     * properly annotated with JSR-311 annotations, and may serve as the root
+     * resource for any number of extension-specific REST resources related to
+     * an authenticated user's session. The returned resource is ultimately
+     * exposed at ".../api/session/data/IDENTIFIER/ext/", where IDENTIFIER is
+     * the identifier of the AuthenticationProvider.
+     *
+     * REST resources which are NOT related to an authenticated user's session
+     * should instead be returned from AuthenticationProvider.getResource().
+     *
+     * @return
+     *     An arbitrary REST resource, annotated with JSR-311 annotations, or
+     *     null if no such resource is defined.
+     *
+     * @throws GuacamoleException
+     *     If the REST resource cannot be returned due to an error.
+     */
+    Object getResource() throws GuacamoleException;
+
+    /**
      * Returns the AuthenticationProvider which created this UserContext, which
      * may not be the same AuthenticationProvider that authenticated the user
      * associated with this UserContext.

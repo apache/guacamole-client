@@ -160,6 +160,11 @@ public class UserContext implements org.apache.guacamole.net.auth.UserContext {
     }
 
     @Override
+    public String getResource() {
+        return null;
+    }
+
+    @Override
     public AuthenticationProvider getAuthenticationProvider() {
         return authProvider;
     }
