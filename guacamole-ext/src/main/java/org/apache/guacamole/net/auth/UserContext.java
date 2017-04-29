@@ -43,8 +43,9 @@ public interface UserContext {
      * properly annotated with JSR-311 annotations, and may serve as the root
      * resource for any number of extension-specific REST resources related to
      * an authenticated user's session. The returned resource is ultimately
-     * exposed at ".../api/session/data/IDENTIFIER/ext/", where IDENTIFIER is
-     * the identifier of the AuthenticationProvider.
+     * exposed at ".../api/session/ext/IDENTIFIER/", where IDENTIFIER is the
+     * identifier of the AuthenticationProvider associated with this
+     * UserContext.
      *
      * REST resources which are NOT related to an authenticated user's session
      * should instead be returned from AuthenticationProvider.getResource().

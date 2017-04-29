@@ -29,7 +29,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
@@ -252,31 +251,6 @@ public class UserContextResource {
     @Path("schema")
     public SchemaResource getSchemaResource() {
         return new SchemaResource(userContext);
-    }
-
-    /**
-     * Returns the arbitrary REST resource exposed by the UserContext exposed
-     * by this UserContextResource.
-     *
-     * @return
-     *     The arbitrary REST resource exposed by the UserContext exposed by
-     *     this UserContextresource.
-     *
-     * @throws GuacamoleException
-     *     If no such resource could be found, or if an error occurs while
-     *     retrieving that resource.
-     */
-    @Path("ext")
-    public Object getExtensionResource() throws GuacamoleException {
-
-        // Pull resource from user context
-        Object resource = userContext.getResource();
-        if (resource != null)
-            return resource;
-
-        // UserContext-specific resource could not be found
-        throw new GuacamoleResourceNotFoundException("No such resource.");
-
     }
 
 }
