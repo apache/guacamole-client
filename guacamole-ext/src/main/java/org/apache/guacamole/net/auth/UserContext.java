@@ -39,16 +39,18 @@ public interface UserContext {
     User self();
 
     /**
-     * Returns an arbitrary REST resource. The REST resource returned must be
-     * properly annotated with JSR-311 annotations, and may serve as the root
-     * resource for any number of extension-specific REST resources related to
-     * an authenticated user's session. The returned resource is ultimately
-     * exposed at ".../api/session/ext/IDENTIFIER/", where IDENTIFIER is the
-     * identifier of the AuthenticationProvider associated with this
-     * UserContext.
+     * Returns an arbitrary REST resource representing this UserContext. The
+     * REST resource returned must be properly annotated with JSR-311
+     * annotations, and may serve as the root resource for any number of
+     * subresources. The returned resource is ultimately exposed at
+     * ".../api/session/ext/IDENTIFIER/", where IDENTIFIER is the identifier of
+     * the AuthenticationProvider associated with this UserContext.
      *
-     * REST resources which are NOT related to an authenticated user's session
-     * should instead be returned from AuthenticationProvider.getResource().
+     * REST resources returned by this function will only be reachable by
+     * authenticated users with valid authentication tokens. REST resources
+     * which should be accessible by all users regardless of whether they have
+     * authenticated should instead be returned from
+     * AuthenticationProvider.getResource().
      *
      * @return
      *     An arbitrary REST resource, annotated with JSR-311 annotations, or
