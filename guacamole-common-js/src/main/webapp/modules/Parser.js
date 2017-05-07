@@ -121,7 +121,7 @@ Guacamole.Parser = function() {
 
                 // Parse length
                 var length = parseInt(buffer.substring(element_end+1, length_end));
-                if (length == NaN)
+                if (isNaN(length))
                     throw new Error("Non-numeric character in element length.");
 
                 // Calculate start of element
