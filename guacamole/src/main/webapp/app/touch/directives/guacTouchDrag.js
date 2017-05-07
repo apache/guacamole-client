@@ -168,7 +168,7 @@ angular.module('touch').directive('guacTouchDrag', [function guacTouchDrag() {
                     // Signal end of drag gesture
                     if (inProgress && guacTouchDrag) {
                         $scope.$apply(function dragComplete() {
-                            if (guacTouchDrag(true, startX, startY, currentX, currentY, deltaX, deltaY === false))
+                            if (guacTouchDrag(true, startX, startY, currentX, currentY, deltaX, deltaY) === false)
                                 e.preventDefault();
                         });
                     }
