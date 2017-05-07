@@ -2,6 +2,16 @@
     "name"  : "ssh",
     "connectionForms" : [
 
+        {   "name"   : "template",
+            "fields" : [
+                {
+                    "name"    : "connection",
+                    "type"    : "ENUM",
+                    "options" : [ "" ]
+                }
+            ]
+        },
+
         {
             "name"  : "network",
             "fields" : [
