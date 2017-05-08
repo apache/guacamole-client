@@ -204,6 +204,11 @@ public abstract class SimpleAuthenticationProvider
     }
 
     @Override
+    public Object getResource() throws GuacamoleException {
+        return null;
+    }
+
+    @Override
     public AuthenticatedUser authenticateUser(final Credentials credentials)
             throws GuacamoleException {
 

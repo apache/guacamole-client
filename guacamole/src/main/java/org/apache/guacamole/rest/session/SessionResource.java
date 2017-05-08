@@ -28,6 +28,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleSession;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.rest.tunnel.TunnelCollectionResource;
@@ -98,6 +99,40 @@ public class SessionResource {
 
         // Return a resource exposing the retrieved UserContext
         return userContextResourceFactory.create(userContext);
+
+    }
+
+    /**
+     * Returns the arbitrary REST resource exposed by the UserContext
+     * associated with the AuthenticationProvider having the given identifier.
+     *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext whose arbitrary REST service is being retrieved.
+     *
+     * @return
+     *     The arbitrary REST resource exposed by the UserContext exposed by
+     *     this UserContextresource.
+     *
+     * @throws GuacamoleException
+     *     If no such resource could be found, or if an error occurs while
+     *     retrieving that resource.
+     */
+    @Path("ext/{dataSource}")
+    public Object getExtensionResource(
+            @PathParam("dataSource") String authProviderIdentifier)
+            throws GuacamoleException {
+
+        // Pull UserContext defined by the given auth provider identifier
+        UserContext userContext = session.getUserContext(authProviderIdentifier);
+
+        // Pull resource from user context
+        Object resource = userContext.getResource();
+        if (resource != null)
+            return resource;
+
+        // UserContext-specific resource could not be found
+        throw new GuacamoleResourceNotFoundException("No such resource.");
 
     }
 

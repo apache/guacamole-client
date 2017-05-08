@@ -41,6 +41,28 @@ public interface AuthenticationProvider {
     String getIdentifier();
 
     /**
+     * Returns an arbitrary REST resource representing this
+     * AuthenticationProvider. The REST resource returned must be properly
+     * annotated with JSR-311 annotations, and may serve as the root resource
+     * for any number of subresources. The returned resource is ultimately
+     * exposed at ".../api/ext/IDENTIFIER/", where IDENTIFIER is the identifier
+     * of this AuthenticationProvider.
+     *
+     * REST resources returned by this function will be reachable by all users,
+     * regardless of whether they have authenticated. REST resources which
+     * must only be accessible by authenticated users should instead be returned
+     * from UserContext.getResource().
+     *
+     * @return
+     *     An arbitrary REST resource, annotated with JSR-311 annotations, or
+     *     null if no such resource is defined.
+     *
+     * @throws GuacamoleException
+     *     If the REST resource cannot be returned due to an error.
+     */
+    Object getResource() throws GuacamoleException;
+
+    /**
      * Returns an AuthenticatedUser representing the user authenticated by the
      * given credentials, if any.
      *

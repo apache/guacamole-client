@@ -117,6 +117,11 @@ public class ModeledUserContext extends RestrictedObject
     }
 
     @Override
+    public Object getResource() throws GuacamoleException {
+        return null;
+    }
+
+    @Override
     public AuthenticationProvider getAuthenticationProvider() {
         return getCurrentUser().getModelAuthenticationProvider();
     }

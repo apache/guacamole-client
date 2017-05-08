@@ -36,6 +36,7 @@ import org.apache.guacamole.rest.auth.SecureRandomAuthTokenGenerator;
 import org.apache.guacamole.rest.auth.TokenSessionMap;
 import org.apache.guacamole.rest.connection.ConnectionModule;
 import org.apache.guacamole.rest.connectiongroup.ConnectionGroupModule;
+import org.apache.guacamole.rest.extension.ExtensionRESTService;
 import org.apache.guacamole.rest.language.LanguageRESTService;
 import org.apache.guacamole.rest.patch.PatchRESTService;
 import org.apache.guacamole.rest.session.SessionResourceFactory;
@@ -84,6 +85,7 @@ public class RESTServiceModule extends ServletModule {
         bindInterceptor(Matchers.any(), new RESTMethodMatcher(), interceptor);
 
         // Set up the API endpoints
+        bind(ExtensionRESTService.class);
         bind(LanguageRESTService.class);
         bind(PatchRESTService.class);
         bind(TokenRESTService.class);
