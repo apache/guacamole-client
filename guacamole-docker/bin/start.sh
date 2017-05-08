@@ -427,7 +427,7 @@ fi
 # Validate that at least one authentication backend is installed
 #
 
-if [ -z "$INSTALLED_AUTH" ]; then
+if [ -z "$INSTALLED_AUTH" -a -z "$GUACAMOLE_HOME_TEMPLATE" ]; then
     cat <<END
 FATAL: No authentication configured
 -------------------------------------------------------------------------------
@@ -435,7 +435,7 @@ The Guacamole Docker container needs at least one authentication mechanism in
 order to function, such as a MySQL database, PostgreSQL database, or LDAP
 directory.  Please specify at least the MYSQL_DATABASE or POSTGRES_DATABASE
 environment variables, or check Guacamole's Docker documentation regarding
-configuring LDAP.
+configuring LDAP and/or custom extensions.
 END
     exit 1;
 fi
