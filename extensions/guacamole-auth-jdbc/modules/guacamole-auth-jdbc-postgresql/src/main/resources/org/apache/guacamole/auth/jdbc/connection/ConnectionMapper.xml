@@ -33,6 +33,10 @@
         <result column="protocol"                 property="protocol"              jdbcType="VARCHAR"/>
         <result column="max_connections"          property="maxConnections"        jdbcType="INTEGER"/>
         <result column="max_connections_per_user" property="maxConnectionsPerUser" jdbcType="INTEGER"/>
+        <result column="proxy_hostname"           property="proxyHostname"         jdbcType="VARCHAR"/>
+        <result column="proxy_port"               property="proxyPort"             jdbcType="INTEGER"/>
+        <result column="proxy_encryption_method"  property="proxyEncryptionMethod" jdbcType="VARCHAR"
+                javaType="org.apache.guacamole.net.auth.GuacamoleProxyConfiguration$EncryptionMethod"/>
 
         <!-- Associated sharing profiles -->
         <collection property="sharingProfileIdentifiers" resultSet="sharingProfiles" ofType="java.lang.String"
@@ -88,7 +92,10 @@
             parent_id,
             protocol,
             max_connections,
-            max_connections_per_user
+            max_connections_per_user,
+            proxy_hostname,
+            proxy_port,
+            proxy_encryption_method
         FROM guacamole_connection
         WHERE connection_id IN
             <foreach collection="identifiers" item="identifier"
@@ -116,7 +123,10 @@
             parent_id,
             protocol,
             max_connections,
-            max_connections_per_user
+            max_connections_per_user,
+            proxy_hostname,
+            proxy_port,
+            proxy_encryption_method
         FROM guacamole_connection
         JOIN guacamole_connection_permission ON guacamole_connection_permission.connection_id = guacamole_connection.connection_id
         WHERE guacamole_connection.connection_id IN
@@ -149,7 +159,10 @@
             parent_id,
             protocol,
             max_connections,
-            max_connections_per_user
+            max_connections_per_user,
+            proxy_hostname,
+            proxy_port,
+            proxy_encryption_method
         FROM guacamole_connection
         WHERE 
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}::integer</if>
@@ -173,14 +186,20 @@
             parent_id,
             protocol,
             max_connections,
-            max_connections_per_user
+            max_connections_per_user,
+            proxy_hostname,
+            proxy_port,
+            proxy_encryption_method
         )
         VALUES (
             #{object.name,jdbcType=VARCHAR},
             #{object.parentIdentifier,jdbcType=INTEGER}::integer,
             #{object.protocol,jdbcType=VARCHAR},
             #{object.maxConnections,jdbcType=INTEGER},
-            #{object.maxConnectionsPerUser,jdbcType=INTEGER}
+            #{object.maxConnectionsPerUser,jdbcType=INTEGER},
+            #{object.proxyHostname,jdbcType=VARCHAR},
+            #{object.proxyPort,jdbcType=INTEGER},
+            #{object.proxyEncryptionMethod,jdbcType=VARCHAR}::guacamole_proxy_encryption_method
         )
 
     </insert>
@@ -192,7 +211,10 @@
             parent_id                = #{object.parentIdentifier,jdbcType=INTEGER}::integer,
             protocol                 = #{object.protocol,jdbcType=VARCHAR},
             max_connections          = #{object.maxConnections,jdbcType=INTEGER},
-            max_connections_per_user = #{object.maxConnectionsPerUser,jdbcType=INTEGER}
+            max_connections_per_user = #{object.maxConnectionsPerUser,jdbcType=INTEGER},
+            proxy_hostname           = #{object.proxyHostname,jdbcType=VARCHAR},
+            proxy_port               = #{object.proxyPort,jdbcType=INTEGER},
+            proxy_encryption_method  = #{object.proxyEncryptionMethod,jdbcType=VARCHAR}::guacamole_proxy_encryption_method
         WHERE connection_id = #{object.objectID,jdbcType=INTEGER}::integer
     </update>
 

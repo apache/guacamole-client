@@ -30,6 +30,7 @@ import java.util.Properties;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
 import org.apache.guacamole.properties.GuacamoleProperty;
 import org.apache.guacamole.protocols.ProtocolInfo;
 import org.slf4j.Logger;
@@ -52,6 +53,24 @@ public class LocalEnvironment implements Environment {
      */
     private static final String[] KNOWN_PROTOCOLS = new String[]{
         "vnc", "rdp", "ssh", "telnet"};
+
+    /**
+     * The hostname to use when connecting to guacd if no hostname is provided
+     * within guacamole.properties.
+     */
+    private static final String DEFAULT_GUACD_HOSTNAME = "localhost";
+
+    /**
+     * The port to use when connecting to guacd if no port is provided within
+     * guacamole.properties.
+     */
+    private static final int DEFAULT_GUACD_PORT = 4822;
+
+    /**
+     * Whether SSL/TLS is enabled for connections to guacd if not specified
+     * within guacamole.properties.
+     */
+    private static final boolean DEFAULT_GUACD_SSL = false;
 
     /**
      * All properties read from guacamole.properties.
@@ -311,6 +330,19 @@ public class LocalEnvironment implements Environment {
     @Override
     public ProtocolInfo getProtocol(String name) {
         return availableProtocols.get(name);
+    }
+
+    @Override
+    public GuacamoleProxyConfiguration getDefaultGuacamoleProxyConfiguration()
+            throws GuacamoleException {
+
+        // Parse guacd hostname/port/ssl properties
+        return new GuacamoleProxyConfiguration(
+            getProperty(Environment.GUACD_HOSTNAME, DEFAULT_GUACD_HOSTNAME),
+            getProperty(Environment.GUACD_PORT, DEFAULT_GUACD_PORT),
+            getProperty(Environment.GUACD_SSL, DEFAULT_GUACD_SSL)
+        );
+
     }
 
 }
