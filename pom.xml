@@ -49,6 +49,7 @@
         <module>guacamole-common-js</module>
 
         <!-- Authentication extensions -->
+        <module>extensions/guacamole-auth-cas</module>
         <module>extensions/guacamole-auth-duo</module>
         <module>extensions/guacamole-auth-header</module>
         <module>extensions/guacamole-auth-jdbc</module>
