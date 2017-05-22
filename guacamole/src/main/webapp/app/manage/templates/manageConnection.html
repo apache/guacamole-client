@@ -41,7 +41,7 @@
     <!-- Connection attributes section -->
     <div class="attributes">
         <guac-form namespace="'CONNECTION_ATTRIBUTES'" content="attributes"
-                   model="connection.attributes" model-only="true"></guac-form>
+                   model="connection.attributes" model-only="!canChangeAllAttributes()"></guac-form>
     </div>
 
     <!-- Connection parameters -->

@@ -195,7 +195,26 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
             value : ConnectionGroup.Type.BALANCING
         }
     ];
-    
+
+    /**
+     * Returns whether the current user can change/set all connection group
+     * attributes for the connection group being edited, regardless of whether
+     * those attributes are already explicitly associated with that connection
+     * group.
+     *
+     * @returns {Boolean}
+     *     true if the current user can change all attributes for the
+     *     connection group being edited, regardless of whether those
+     *     attributes are already explicitly associated with that connection
+     *     group, false otherwise.
+     */
+    $scope.canChangeAllAttributes = function canChangeAllAttributes() {
+
+        // All attributes can be set if we are creating the connection group
+        return !identifier;
+
+    };
+
     /**
      * Cancels all pending edits, returning to the management page.
      */

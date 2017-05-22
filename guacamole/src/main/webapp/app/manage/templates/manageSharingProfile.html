@@ -22,7 +22,7 @@
     <!-- Sharing profile attributes section -->
     <div class="attributes">
         <guac-form namespace="'SHARING_PROFILE_ATTRIBUTES'" content="attributes"
-                   model="sharingProfile.attributes" model-only="true"></guac-form>
+                   model="sharingProfile.attributes" model-only="!canChangeAllAttributes()"></guac-form>
     </div>
 
     <!-- Sharing profile parameters -->

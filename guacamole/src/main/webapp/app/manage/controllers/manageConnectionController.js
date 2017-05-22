@@ -300,6 +300,23 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     }
 
     /**
+     * Returns whether the current user can change/set all connection
+     * attributes for the connection being edited, regardless of whether those
+     * attributes are already explicitly associated with that connection.
+     *
+     * @returns {Boolean}
+     *     true if the current user can change all attributes for the
+     *     connection being edited, regardless of whether those attributes are
+     *     already explicitly associated with that connection, false otherwise.
+     */
+    $scope.canChangeAllAttributes = function canChangeAllAttributes() {
+
+        // All attributes can be set if we are creating the connection
+        return !identifier;
+
+    };
+
+    /**
      * Returns the translation string namespace for the protocol having the
      * given name. The namespace will be of the form:
      *

@@ -42,7 +42,7 @@
         <!-- User attributes section -->
         <div class="attributes" ng-show="canChangeAttributes()">
             <guac-form namespace="'USER_ATTRIBUTES'" content="attributes"
-                       model="user.attributes" model-only="true"></guac-form>
+                       model="user.attributes" model-only="!canChangeAllAttributes()"></guac-form>
         </div>
 
         <!-- System permissions section -->
