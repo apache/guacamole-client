@@ -281,6 +281,25 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
     });
 
     /**
+     * Returns whether the current user can change/set all sharing profile
+     * attributes for the sharing profile being edited, regardless of whether
+     * those attributes are already explicitly associated with that sharing
+     * profile.
+     *
+     * @returns {Boolean}
+     *     true if the current user can change all attributes for the sharing
+     *     profile being edited, regardless of whether those attributes are
+     *     already explicitly associated with that sharing profile, false
+     *     otherwise.
+     */
+    $scope.canChangeAllAttributes = function canChangeAllAttributes() {
+
+        // All attributes can be set if we are creating the sharing profile
+        return !identifier;
+
+    };
+
+    /**
      * Returns the translation string namespace for the protocol having the
      * given name. The namespace will be of the form:
      *

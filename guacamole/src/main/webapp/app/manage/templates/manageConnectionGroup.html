@@ -40,7 +40,8 @@
 
     <!-- Connection group attributes section -->
     <div class="attributes">
-        <guac-form namespace="'CONNECTION_GROUP_ATTRIBUTES'" content="attributes" model="connectionGroup.attributes"></guac-form>
+        <guac-form namespace="'CONNECTION_GROUP_ATTRIBUTES'" content="attributes"
+                   model="connectionGroup.attributes" model-only="!canChangeAllAttributes()"></guac-form>
     </div>
 
     <!-- Form action buttons -->

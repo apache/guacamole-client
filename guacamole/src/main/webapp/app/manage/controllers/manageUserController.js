@@ -225,8 +225,8 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
 
     /**
-     * Returns whether the current user can change attributes associated with
-     * the user being edited within the given data source.
+     * Returns whether the current user can change attributes explicitly
+     * associated with the user being edited within the given data source.
      *
      * @param {String} [dataSource]
      *     The identifier of the data source to check. If omitted, this will
@@ -257,6 +257,23 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         // Otherwise, can change attributes if we have permission to update this user
         return PermissionSet.hasUserPermission($scope.permissions[dataSource],
             PermissionSet.ObjectPermissionType.UPDATE, username);
+
+    };
+
+    /**
+     * Returns whether the current user can change/set all user attributes for
+     * the user being edited, regardless of whether those attributes are
+     * already explicitly associated with that user.
+     *
+     * @returns {Boolean}
+     *     true if the current user can change all attributes for the user
+     *     being edited, regardless of whether those attributes are already
+     *     explicitly associated with that user, false otherwise.
+     */
+    $scope.canChangeAllAttributes = function canChangeAllAttributes() {
+
+        // All attributes can be set if we are creating the user
+        return !$scope.userExists(selectedDataSource);
 
     };
 
