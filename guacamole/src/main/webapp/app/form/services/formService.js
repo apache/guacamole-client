@@ -48,6 +48,16 @@ angular.module('form').provider('formService', function formServiceProvider() {
         },
 
         /**
+         * Email address field type.
+         *
+         * @see {@link Field.Type.EMAIL}
+         * @type FieldType
+         */
+        'EMAIL' : {
+            templateUrl : 'app/form/templates/emailField.html'
+        },
+
+        /**
          * Numeric field type.
          *
          * @see {@link Field.Type.NUMERIC}

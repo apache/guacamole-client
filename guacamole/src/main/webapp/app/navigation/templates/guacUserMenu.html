@@ -1,6 +1,13 @@
 <div class="user-menu" ng-show="!isAnonymous()">
     <guac-menu menu-title="username">
            
+        <!-- User profile view -->
+        <div class="profile" ng-show="fullName">
+            <div class="full-name"><a ng-href="{{userURL}}">{{ fullName }}</a></div>
+            <div class="organizational-role" ng-show="role">{{ role }}</div>
+            <div class="organization" ng-show="organization">{{ organization }}</div>
+        </div>
+
         <!-- Local actions -->
         <ul class="action-list">
             <li ng-repeat="action in localActions">

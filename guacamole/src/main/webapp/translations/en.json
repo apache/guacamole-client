@@ -697,6 +697,15 @@
 
     },
 
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_EMAIL_ADDRESS"       : "Email address:",
+        "FIELD_HEADER_GUAC_FULL_NAME"           : "Full name:",
+        "FIELD_HEADER_GUAC_ORGANIZATION"        : "Organization:",
+        "FIELD_HEADER_GUAC_ORGANIZATIONAL_ROLE" : "Role:"
+
+    },
+
     "USER_MENU" : {
 
         "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",

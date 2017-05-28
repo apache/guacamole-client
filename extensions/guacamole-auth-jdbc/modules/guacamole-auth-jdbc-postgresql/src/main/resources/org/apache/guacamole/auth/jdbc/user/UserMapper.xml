@@ -25,18 +25,22 @@
 
     <!-- Result mapper for user objects -->
     <resultMap id="UserResultMap" type="org.apache.guacamole.auth.jdbc.user.UserModel" >
-        <id     column="user_id"             property="objectID"          jdbcType="INTEGER"/>
-        <result column="username"            property="identifier"        jdbcType="VARCHAR"/>
-        <result column="password_hash"       property="passwordHash"      jdbcType="BINARY"/>
-        <result column="password_salt"       property="passwordSalt"      jdbcType="BINARY"/>
-        <result column="password_date"       property="passwordDate"      jdbcType="TIMESTAMP"/>
-        <result column="disabled"            property="disabled"          jdbcType="BOOLEAN"/>
-        <result column="expired"             property="expired"           jdbcType="BOOLEAN"/>
-        <result column="access_window_start" property="accessWindowStart" jdbcType="TIME"/>
-        <result column="access_window_end"   property="accessWindowEnd"   jdbcType="TIME"/>
-        <result column="valid_from"          property="validFrom"         jdbcType="DATE"/>
-        <result column="valid_until"         property="validUntil"        jdbcType="DATE"/>
-        <result column="timezone"            property="timeZone"          jdbcType="VARCHAR"/>
+        <id     column="user_id"             property="objectID"           jdbcType="INTEGER"/>
+        <result column="username"            property="identifier"         jdbcType="VARCHAR"/>
+        <result column="password_hash"       property="passwordHash"       jdbcType="BINARY"/>
+        <result column="password_salt"       property="passwordSalt"       jdbcType="BINARY"/>
+        <result column="password_date"       property="passwordDate"       jdbcType="TIMESTAMP"/>
+        <result column="disabled"            property="disabled"           jdbcType="BOOLEAN"/>
+        <result column="expired"             property="expired"            jdbcType="BOOLEAN"/>
+        <result column="access_window_start" property="accessWindowStart"  jdbcType="TIME"/>
+        <result column="access_window_end"   property="accessWindowEnd"    jdbcType="TIME"/>
+        <result column="valid_from"          property="validFrom"          jdbcType="DATE"/>
+        <result column="valid_until"         property="validUntil"         jdbcType="DATE"/>
+        <result column="timezone"            property="timeZone"           jdbcType="VARCHAR"/>
+        <result column="full_name"           property="fullName"           jdbcType="VARCHAR"/>
+        <result column="email_address"       property="emailAddress"       jdbcType="VARCHAR"/>
+        <result column="organization"        property="organization"       jdbcType="VARCHAR"/>
+        <result column="organizational_role" property="organizationalRole" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!-- Select all usernames -->
@@ -70,7 +74,11 @@
             access_window_end,
             valid_from,
             valid_until,
-            timezone
+            timezone,
+            full_name,
+            email_address,
+            organization,
+            organizational_role
         FROM guacamole_user
         WHERE username IN
             <foreach collection="identifiers" item="identifier"
@@ -95,7 +103,11 @@
             access_window_end,
             valid_from,
             valid_until,
-            timezone
+            timezone,
+            full_name,
+            email_address,
+            organization,
+            organizational_role
         FROM guacamole_user
         JOIN guacamole_user_permission ON affected_user_id = guacamole_user.user_id
         WHERE username IN
@@ -123,7 +135,11 @@
             access_window_end,
             valid_from,
             valid_until,
-            timezone
+            timezone,
+            full_name,
+            email_address,
+            organization,
+            organizational_role
         FROM guacamole_user
         WHERE
             username = #{username,jdbcType=VARCHAR}
@@ -151,7 +167,11 @@
             access_window_end,
             valid_from,
             valid_until,
-            timezone
+            timezone,
+            full_name,
+            email_address,
+            organization,
+            organizational_role
         )
         VALUES (
             #{object.identifier,jdbcType=VARCHAR},
@@ -164,7 +184,11 @@
             #{object.accessWindowEnd,jdbcType=TIME},
             #{object.validFrom,jdbcType=DATE},
             #{object.validUntil,jdbcType=DATE},
-            #{object.timeZone,jdbcType=VARCHAR}
+            #{object.timeZone,jdbcType=VARCHAR},
+            #{object.fullName,jdbcType=VARCHAR},
+            #{object.emailAddress,jdbcType=VARCHAR},
+            #{object.organization,jdbcType=VARCHAR},
+            #{object.organizationalRole,jdbcType=VARCHAR}
         )
 
     </insert>
@@ -181,7 +205,11 @@
             access_window_end = #{object.accessWindowEnd,jdbcType=TIME},
             valid_from = #{object.validFrom,jdbcType=DATE},
             valid_until = #{object.validUntil,jdbcType=DATE},
-            timezone = #{object.timeZone,jdbcType=VARCHAR}
+            timezone = #{object.timeZone,jdbcType=VARCHAR},
+            full_name = #{object.fullName,jdbcType=VARCHAR},
+            email_address = #{object.emailAddress,jdbcType=VARCHAR},
+            organization = #{object.organization,jdbcType=VARCHAR},
+            organizational_role = #{object.organizationalRole,jdbcType=VARCHAR}
         WHERE user_id = #{object.objectID,jdbcType=VARCHAR}
     </update>
 

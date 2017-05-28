@@ -102,6 +102,12 @@ CREATE TABLE `guacamole_user` (
   -- Timezone used for all date/time comparisons and interpretation
   `timezone` VARCHAR(64),
 
+  -- Profile information
+  `full_name`           VARCHAR(256),
+  `email_address`       VARCHAR(256),
+  `organization`        VARCHAR(256),
+  `organizational_role` VARCHAR(256),
+
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`)
 

@@ -43,10 +43,14 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
         controller: ['$scope', '$injector',
             function guacUserMenuController($scope, $injector) {
 
+            // Required types
+            var User = $injector.get('User');
+
             // Get required services
             var $location             = $injector.get('$location');
             var $route                = $injector.get('$route');
             var authenticationService = $injector.get('authenticationService');
+            var userService           = $injector.get('userService');
             var userPageService       = $injector.get('userPageService');
 
             /**
@@ -55,7 +59,59 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
              * @type String
              */
             $scope.username = authenticationService.getCurrentUsername();
-            
+
+            /**
+             * The user's full name. If not yet available, or if not defined,
+             * this will be null.
+             *
+             * @type String
+             */
+            $scope.fullName = null;
+
+            /**
+             * A URL pointing to relevant user information such as the user's
+             * email address. If not yet available, or if no such URL can be
+             * determined, this will be null.
+             *
+             * @type String
+             */
+            $scope.userURL = null;
+
+            /**
+             * The organization, company, group, etc. that the user belongs to.
+             * If not yet available, or if not defined, this will be null.
+             *
+             * @type String
+             */
+            $scope.organization = null;
+
+            /**
+             * The role that the user has at the organization, company, group,
+             * etc. they belong to. If not yet available, or if not defined,
+             * this will be null.
+             *
+             * @type String
+             */
+            $scope.role = null;
+
+            // Pull user data
+            userService.getUser(authenticationService.getDataSource(), $scope.username)
+                    .success(function userRetrieved(user) {
+
+                // Store retrieved user object
+                $scope.user = user;
+
+                // Pull basic profile information
+                $scope.fullName = user.attributes[User.Attributes.FULL_NAME];
+                $scope.organization = user.attributes[User.Attributes.ORGANIZATION];
+                $scope.role = user.attributes[User.Attributes.ORGANIZATIONAL_ROLE];
+
+                // Link to email address if available
+                var email = user.attributes[User.Attributes.EMAIL_ADDRESS];
+                $scope.userURL = email ? 'mailto:' + email : null;
+
+            });
+
             /**
              * The available main pages for the current user.
              * 

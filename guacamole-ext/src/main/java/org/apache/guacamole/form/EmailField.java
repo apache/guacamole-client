@@ -17,12 +17,21 @@
  * under the License.
  */
 
+package org.apache.guacamole.form;
+
 /**
- * Module for generating and implementing user navigation options.
+ * Represents a text field which may contain an email address.
  */
-angular.module('navigation', [
-    'auth',
-    'form',
-    'notification',
-    'rest'
-]);
+public class EmailField extends Field {
+
+    /**
+     * Creates a new EmailField with the given name.
+     *
+     * @param name
+     *     The unique name to associate with this field.
+     */
+    public EmailField(String name) {
+        super(name, Field.Type.EMAIL);
+    }
+
+}

@@ -1,0 +1,8 @@
+<div class="email-field">
+    <input type="email"
+           ng-model="model"
+           ng-hide="readOnly"
+           autocorrect="off"
+           autocapitalize="off"/>
+    <a href="mailto:{{model}}" ng-show="readOnly">{{model}}</a>
+</div>

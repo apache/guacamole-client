@@ -17,11 +17,11 @@
  * under the License.
  */
 
-input[type=checkbox], input[type=number], input[type=text], input[type=radio], label, textarea {
+input[type=checkbox], input[type=number], input[type=text], input[type=email], input[type=radio], label, textarea {
     -webkit-tap-highlight-color: rgba(128,192,128,0.5);
 }
 
-div.location, input[type=text], input[type=number], input[type=password], textarea {
+div.location, input[type=text], input[type=email], input[type=number], input[type=password], textarea {
     border: 1px solid #777;
     -moz-border-radius: 0.2em;
     -webkit-border-radius: 0.2em;

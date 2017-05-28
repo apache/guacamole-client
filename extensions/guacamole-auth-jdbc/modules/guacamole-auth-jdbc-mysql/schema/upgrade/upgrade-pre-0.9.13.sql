@@ -28,3 +28,13 @@ ALTER TABLE guacamole_connection ADD COLUMN proxy_encryption_method ENUM(
     'NONE',
     'SSL'
 );
+
+--
+-- Add new user profile columns
+--
+
+ALTER TABLE guacamole_user ADD COLUMN full_name           VARCHAR(256);
+ALTER TABLE guacamole_user ADD COLUMN email_address       VARCHAR(256);
+ALTER TABLE guacamole_user ADD COLUMN organization        VARCHAR(256);
+ALTER TABLE guacamole_user ADD COLUMN organizational_role VARCHAR(256);
+
