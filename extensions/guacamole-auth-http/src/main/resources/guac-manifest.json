@@ -1,0 +1,12 @@
+{
+
+    "guacamoleVersion" : "0.9.11-incubating",
+
+    "name"      : "HTTP Authentication Extension",
+    "namespace" : "guac-http",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.http.HTTPAuthenticationProvider"
+    ]
+
+}
