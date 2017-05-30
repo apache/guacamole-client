@@ -191,4 +191,9 @@ public class ModeledUserContext extends RestrictedObject
         return ModeledSharingProfile.ATTRIBUTES;
     }
 
+    @Override
+    public void invalidate() {
+        // Nothing to invalidate
+    }
+
 }

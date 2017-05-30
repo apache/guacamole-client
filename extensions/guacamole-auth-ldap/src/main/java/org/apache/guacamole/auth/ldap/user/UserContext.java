@@ -229,4 +229,9 @@ public class UserContext implements org.apache.guacamole.net.auth.UserContext {
         return Collections.<Form>emptyList();
     }
 
+    @Override
+    public void invalidate() {
+        // Nothing to invalidate
+    }
+
 }

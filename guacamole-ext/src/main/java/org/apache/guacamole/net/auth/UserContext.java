@@ -212,4 +212,11 @@ public interface UserContext {
      */
     Collection<Form> getSharingProfileAttributes();
 
+    /**
+     * Invalidates this user context, releasing all associated resources. This
+     * function will be invoked when the user logs out, or when their session
+     * is automatically invalidated.
+     */
+    void invalidate();
+
 }
