@@ -252,6 +252,9 @@ public class GuacamoleSession {
             }
         }
 
+        // Invalidate the authenticated user object
+        authenticatedUser.invalidate();
+
     }
     
 }

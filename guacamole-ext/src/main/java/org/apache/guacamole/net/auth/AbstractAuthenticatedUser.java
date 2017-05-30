@@ -29,4 +29,9 @@ public abstract class AbstractAuthenticatedUser extends AbstractIdentifiable
 
     // Prior functionality now resides within AbstractIdentifiable
 
+    @Override
+    public void invalidate() {
+        // Nothing to invalidate
+    }
+
 }
