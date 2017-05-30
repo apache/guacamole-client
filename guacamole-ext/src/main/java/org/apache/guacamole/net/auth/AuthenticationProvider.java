@@ -167,5 +167,12 @@ public interface AuthenticationProvider {
     UserContext updateUserContext(UserContext context,
             AuthenticatedUser authenticatedUser,
             Credentials credentials) throws GuacamoleException;
+
+    /**
+     * Frees all resources associated with this AuthenticationProvider. This
+     * function will be automatically invoked when the Guacamole server is
+     * shutting down.
+     */
+    void shutdown();
     
 }
