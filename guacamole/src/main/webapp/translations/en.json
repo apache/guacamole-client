@@ -425,6 +425,7 @@
         "FIELD_HEADER_READ_ONLY"   : "Read-only:",
         "FIELD_HEADER_RECORDING_NAME" : "Recording name:",
         "FIELD_HEADER_RECORDING_PATH" : "Recording path:",
+        "FIELD_HEADER_SERVER_ALIVE_INTERVAL" : "Server Keepalive Interval:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
 

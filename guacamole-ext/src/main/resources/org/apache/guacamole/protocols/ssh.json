@@ -69,6 +69,10 @@
                 {
                     "name"  : "command",
                     "type"  : "TEXT"
+                },
+                {
+                    "name"  : "server-alive-interval",
+                    "type"  : "NUMERIC"
                 }
             ]
         },
