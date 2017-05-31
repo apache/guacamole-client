@@ -23,6 +23,7 @@ import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,11 +46,6 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class RestrictedGuacamoleTunnelService
     extends AbstractGuacamoleTunnelService {
-
-    /**
-     * Logger for this class.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(RestrictedGuacamoleTunnelService.class);
 
     /**
      * The environment of the Guacamole server.
@@ -180,6 +176,14 @@ public class RestrictedGuacamoleTunnelService
         // Get username
         String username = user.getIdentifier();
 
+        // Remove connections where weight < 0
+        Iterator<ModeledConnection> i = connections.iterator();
+        while(i.hasNext()) {
+            Integer weight = i.next().getConnectionWeight();
+            if (weight != null && weight.intValue() < 0)
+                i.remove();
+        }
+
         // Sort connections in ascending order of usage
         ModeledConnection[] sortedConnections = connections.toArray(new ModeledConnection[connections.size()]);
         Arrays.sort(sortedConnections, new Comparator<ModeledConnection>() {
@@ -187,22 +191,21 @@ public class RestrictedGuacamoleTunnelService
             @Override
             public int compare(ModeledConnection a, ModeledConnection b) {
                 
-                logger.debug("Calculating weights for connections {} and {}.", a.getName(), b.getName());
-                int cw = 0;
-                int weightA = a.getConnectionWeight();
-                // If the weight is null, we go ahead and sort, anyway
-                if (weightA == null)
-                    weightA = 0;
+                int weightA, weightB;
+                // Check if weight of a is null, assign 1 if it is.
+                if (a.getConnectionWeight() == null)
+                    weightA = 1;
+                else
+                    weightA = a.getConnectionWeight().intValue() + 1;
 
-                // If the weight is null, we go ahead and sort, anyway
-                int weightB = b.getConnectionWeight();
-                if (weightB == null)
-                    weightB = 0;
+                // Check if weight of b is null, assign 1 if it is.
+                if (b.getConnectionWeight() == null)
+                    weightB = 1;
+                else
+                    weightB = b.getConnectionWeight().intValue() + 1;
 
-                int connsA = getActiveConnections(a).size();
-                int connsB = getActiveConnections(b).size();
-                logger.debug("Connection {} has computed weight of {}.", a.getName(), connsA * 10000 / weightA);
-                logger.debug("Connection {} has computed weight of {}.", b.getName(), connsB * 10000 / weightB);
+                int connsA = getActiveConnections(a).size() + 1;
+                int connsB = getActiveConnections(b).size() + 1;
 
                 return (connsA * 10000 / weightA) - (connsB * 10000 / weightB);
 

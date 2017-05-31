@@ -409,6 +409,7 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
             port             != null ? port             : defaultConfig.getPort(),
             encryptionMethod != null ? encryptionMethod : defaultConfig.getEncryptionMethod()
         );
+    }
 
     /** 
      * Returns the weight of the connection, or the default.
@@ -417,7 +418,7 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      *     The weight of the connection.
      *  
      */
-    public int getConnectionWeight() {
+    public Integer getConnectionWeight() {
 
         // Return the connection weight
         return getModel().getConnectionWeight();
