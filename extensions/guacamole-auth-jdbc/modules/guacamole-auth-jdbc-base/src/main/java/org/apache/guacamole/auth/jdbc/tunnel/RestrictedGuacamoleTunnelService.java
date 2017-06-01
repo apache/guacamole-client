@@ -189,28 +189,21 @@ public class RestrictedGuacamoleTunnelService
             public int compare(ModeledConnection a, ModeledConnection b) {
                 
                 int weightA, weightB;
-                // Check if weight of a is null, assign 1 if it is.
-                if (a.getConnectionWeight() == null)
-                    weightA = 1;
-                // If weight is less than 1, host will be disabled
-                // but for sorting we set it to 1 to avoid divide
-                // by 0.
-                else if (a.getConnectionWeight().intValue() < 1)
-                    weightA = 1;
+                // Check if weight of a is non-null and retrieve it.
+                if (a.getConnectionWeight() != null && a.getConnectionWeight().intValue() > 0)
+                    weightA = a.getConnectionWeight().intValue();
+                // In all other cases assign 1 for sorting.
                 else
-                    weightA = a.getConnectionWeight().intValue() + 1;
+                    weightA = 1;
 
                 // Check if weight of b is null, assign 1 if it is.
-                if (b.getConnectionWeight() == null)
-                    weightB = 1;
-                // If weight is less than 1, host will be disabled,
-                // but for sorting we set it to 1 to avoid divide
-                // by 0.
-                else if (b.getConnectionWeight().intValue() < 1)
-                    weightB = 1;
+                if (b.getConnectionWeight() != null && b.getConnectionWeight().intValue() > 0)
+                    weightB = b.getConnectionWeight().intValue();
+                // In all other cases assign 1 for sorting.
                 else
-                    weightB = b.getConnectionWeight().intValue() + 1;
+                    weightB = 1;
 
+                // Get current active connections, add 1 to both to avoid calculations with 0.
                 int connsA = getActiveConnections(a).size() + 1;
                 int connsB = getActiveConnections(b).size() + 1;
 
