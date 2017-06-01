@@ -48,6 +48,11 @@ public class RestrictedGuacamoleTunnelService
     extends AbstractGuacamoleTunnelService {
 
     /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(RestrictedGuacamoleTunnelService.class);
+
+    /**
      * The environment of the Guacamole server.
      */
     @Inject
@@ -176,14 +181,6 @@ public class RestrictedGuacamoleTunnelService
         // Get username
         String username = user.getIdentifier();
 
-        // Remove connections where weight < 0
-        Iterator<ModeledConnection> i = connections.iterator();
-        while(i.hasNext()) {
-            Integer weight = i.next().getConnectionWeight();
-            if (weight != null && weight.intValue() < 0)
-                i.remove();
-        }
-
         // Sort connections in ascending order of usage
         ModeledConnection[] sortedConnections = connections.toArray(new ModeledConnection[connections.size()]);
         Arrays.sort(sortedConnections, new Comparator<ModeledConnection>() {
@@ -195,11 +192,21 @@ public class RestrictedGuacamoleTunnelService
                 // Check if weight of a is null, assign 1 if it is.
                 if (a.getConnectionWeight() == null)
                     weightA = 1;
+                // If weight is less than 1, host will be disabled
+                // but for sorting we set it to 1 to avoid divide
+                // by 0.
+                else if (a.getConnectionWeight().intValue() < 1)
+                    weightA = 1;
                 else
                     weightA = a.getConnectionWeight().intValue() + 1;
 
                 // Check if weight of b is null, assign 1 if it is.
                 if (b.getConnectionWeight() == null)
+                    weightB = 1;
+                // If weight is less than 1, host will be disabled,
+                // but for sorting we set it to 1 to avoid divide
+                // by 0.
+                else if (b.getConnectionWeight().intValue() < 1)
                     weightB = 1;
                 else
                     weightB = b.getConnectionWeight().intValue() + 1;
@@ -220,8 +227,10 @@ public class RestrictedGuacamoleTunnelService
         for (ModeledConnection connection : sortedConnections) {
 
             // If connection weight is zero or negative, this host is disabled and should not be used.
-            if (connection.getConnectionWeight() < 1)
+            if (connection.getConnectionWeight() != null && connection.getConnectionWeight().intValue() < 1) {
+                logger.warn("Weight for {} is non-null and < 1, connection will be skipped.", connection.getName());
                 continue;
+            }
 
             // Attempt to aquire connection according to per-user limits
             Seat seat = new Seat(username, connection.getIdentifier());
