@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-playback-example</artifactId>
     <packaging>war</packaging>
-    <version>0.9.12-incubating</version>
+    <version>0.9.13-incubating</version>
     <name>guacamole-playback-example</name>
     <url>http://guacamole.incubator.apache.org/</url>
 
@@ -88,7 +88,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-common-js</artifactId>
-            <version>0.9.12-incubating</version>
+            <version>0.9.13-incubating</version>
             <type>zip</type>
             <scope>runtime</scope>
         </dependency>
