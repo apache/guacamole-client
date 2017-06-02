@@ -190,14 +190,14 @@ public class RestrictedGuacamoleTunnelService
                 
                 int weightA, weightB;
                 // Check if weight of a is non-null and retrieve it.
-                if (a.getConnectionWeight() != null && a.getConnectionWeight().intValue() > 0)
+                if (a.getConnectionWeight().intValue() > 0)
                     weightA = a.getConnectionWeight().intValue();
                 // In all other cases assign 1 for sorting.
                 else
                     weightA = 1;
 
                 // Check if weight of b is null, assign 1 if it is.
-                if (b.getConnectionWeight() != null && b.getConnectionWeight().intValue() > 0)
+                if (b.getConnectionWeight().intValue() > 0)
                     weightB = b.getConnectionWeight().intValue();
                 // In all other cases assign 1 for sorting.
                 else

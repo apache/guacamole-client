@@ -191,6 +191,8 @@ public class ConnectionModel extends ChildObjectModel {
      *     -1 indicates that the system is unavailable.
      */
     public Integer getConnectionWeight() {
+        if (connectionWeight == null)
+            return 1;
         return connectionWeight;
     }
 
