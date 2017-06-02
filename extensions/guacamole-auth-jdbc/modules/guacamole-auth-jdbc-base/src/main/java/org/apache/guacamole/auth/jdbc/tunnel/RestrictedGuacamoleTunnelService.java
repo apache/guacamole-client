@@ -207,7 +207,7 @@ public class RestrictedGuacamoleTunnelService
                 int connsA = getActiveConnections(a).size() + 1;
                 int connsB = getActiveConnections(b).size() + 1;
 
-                return (connsA * 10000 / weightA) - (connsB * 10000 / weightB);
+                return (connsA * weightB) - (connsB * weightA);
 
             }
 
