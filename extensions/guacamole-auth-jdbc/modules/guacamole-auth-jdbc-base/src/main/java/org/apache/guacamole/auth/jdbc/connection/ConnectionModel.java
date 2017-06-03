@@ -184,16 +184,18 @@ public class ConnectionModel extends ChildObjectModel {
 
     /**
      * Returns the connection weight used in calculating the
-     * WRR algorithm.
+     * weighted algorithms.
      *
      * @return
-     *     The connection weight.  Null indicates no weight has been set,
-     *     -1 indicates that the system is unavailable.
+     *     The connection weight as an int.  If the weight is
+     *     null a default weight of 1 is returned.  Zero and
+     *     negative numbers are used to indicate the system is
+     *     unavailable.
      */
-    public Integer getConnectionWeight() {
+    public int getConnectionWeight() {
         if (connectionWeight == null)
             return 1;
-        return connectionWeight;
+        return connectionWeight.intValue();
     }
 
     /**

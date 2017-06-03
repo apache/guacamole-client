@@ -23,7 +23,6 @@ import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -188,15 +187,8 @@ public class RestrictedGuacamoleTunnelService
             @Override
             public int compare(ModeledConnection a, ModeledConnection b) {
 
-                // Get connection weight for the two systems being compared.                
-                int weightA = a.getConnectionWeight().intValue();
-                int weightB = b.getConnectionWeight().intValue();
-
-                // Get current active connections, add 1 to both to avoid calculations with 0.
-                int connsA = getActiveConnections(a).size() + 1;
-                int connsB = getActiveConnections(b).size() + 1;
-
-                return (connsA * weightB) - (connsB * weightA);
+                return ((getActiveConnections(a).size() + 1) * b.getConnectionWeight() -
+                        (getActiveConnections(b).size() + 1) * a.getConnectionWeight());
 
             }
 
@@ -209,8 +201,8 @@ public class RestrictedGuacamoleTunnelService
         for (ModeledConnection connection : sortedConnections) {
 
             // If connection weight is zero or negative, this host is disabled and should not be used.
-            if (connection.getConnectionWeight() != null && connection.getConnectionWeight().intValue() < 1) {
-                logger.warn("Weight for {} is non-null and < 1, connection will be skipped.", connection.getName());
+            if (connection.getConnectionWeight() < 1) {
+                logger.warn("Weight for {} is < 1, connection will be skipped.", connection.getName());
                 continue;
             }
 
