@@ -21,9 +21,11 @@ package org.apache.guacamole.auth.jdbc;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicyService;
 import org.apache.guacamole.auth.jdbc.sharing.user.SharedAuthenticatedUser;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUserContext;
 import org.apache.guacamole.auth.jdbc.user.UserModel;
@@ -104,13 +106,24 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
 
         }
 
-        // Veto authentication result if account is required but unavailable
-        // due to account restrictions
+        // Apply account restrictions if this extension authenticated the user
+        // OR if an account from this extension is explicitly required
         UserModel userModel = user.getModel();
-        if (environment.isUserRequired()
-                && (userModel.isDisabled() || !user.isAccountValid() || !user.isAccountAccessible())) {
+        if (authenticatedUser instanceof ModeledAuthenticatedUser || environment.isUserRequired()) {
+
+            // If user is disabled, pretend user does not exist
+            if (userModel.isDisabled())
                 throw new GuacamoleInvalidCredentialsException("Invalid login",
                         CredentialsInfo.USERNAME_PASSWORD);
+
+            // Verify user account is still valid as of today
+            if (!user.isAccountValid())
+                throw new GuacamoleClientException("LOGIN.ERROR_NOT_VALID");
+
+            // Verify user account is allowed to be used at the current time
+            if (!user.isAccountAccessible())
+                throw new GuacamoleClientException("LOGIN.ERROR_NOT_ACCESSIBLE");
+
         }
 
         // Update password if password is expired
