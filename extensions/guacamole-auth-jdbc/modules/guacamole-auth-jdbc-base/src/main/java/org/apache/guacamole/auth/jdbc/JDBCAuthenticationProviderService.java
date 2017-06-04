@@ -88,52 +88,55 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
 
         // Retrieve user account for already-authenticated user
         ModeledUser user = userService.retrieveUser(authenticationProvider, authenticatedUser);
-        if (user == null) {
+        if (user != null) {
 
-            // Do not invalidate the authentication result of users who were
-            // authenticated via our own connection sharing links
-            if (authenticatedUser instanceof SharedAuthenticatedUser)
-                return null;
+            // User data only exists for purposes of retrieval if the account
+            // is not disabled
+            UserModel userModel = user.getModel();
+            if (!userModel.isDisabled()) {
 
-            // Simply return no data if a database user account is not required
-            if (!environment.isUserRequired())
-                return null;
+                // Apply account restrictions if this extension authenticated
+                // the user OR if an account from this extension is explicitly
+                // required
+                if (authenticatedUser instanceof ModeledAuthenticatedUser
+                        || environment.isUserRequired()) {
 
-            // Otherwise, invalidate the authentication result, as database user
-            // accounts are absolutely required
-            throw new GuacamoleInvalidCredentialsException("Invalid login",
-                    CredentialsInfo.USERNAME_PASSWORD);
+                    // Verify user account is still valid as of today
+                    if (!user.isAccountValid())
+                        throw new GuacamoleClientException("LOGIN.ERROR_NOT_VALID");
 
-        }
+                    // Verify user account is allowed to be used at the current time
+                    if (!user.isAccountAccessible())
+                        throw new GuacamoleClientException("LOGIN.ERROR_NOT_ACCESSIBLE");
 
-        // Apply account restrictions if this extension authenticated the user
-        // OR if an account from this extension is explicitly required
-        UserModel userModel = user.getModel();
-        if (authenticatedUser instanceof ModeledAuthenticatedUser || environment.isUserRequired()) {
+                    // Update password if password is expired
+                    if (userModel.isExpired() || passwordPolicyService.isPasswordExpired(user))
+                        userService.resetExpiredPassword(user, authenticatedUser.getCredentials());
 
-            // If user is disabled, pretend user does not exist
-            if (userModel.isDisabled())
-                throw new GuacamoleInvalidCredentialsException("Invalid login",
-                        CredentialsInfo.USERNAME_PASSWORD);
+                }
 
-            // Verify user account is still valid as of today
-            if (!user.isAccountValid())
-                throw new GuacamoleClientException("LOGIN.ERROR_NOT_VALID");
+                // Link to user context
+                ModeledUserContext context = userContextProvider.get();
+                context.init(user.getCurrentUser());
+                return context;
 
-            // Verify user account is allowed to be used at the current time
-            if (!user.isAccountAccessible())
-                throw new GuacamoleClientException("LOGIN.ERROR_NOT_ACCESSIBLE");
+            }
 
         }
 
-        // Update password if password is expired
-        if (userModel.isExpired() || passwordPolicyService.isPasswordExpired(user))
-            userService.resetExpiredPassword(user, authenticatedUser.getCredentials());
+        // Do not invalidate the authentication result of users who were
+        // authenticated via our own connection sharing links
+        if (authenticatedUser instanceof SharedAuthenticatedUser)
+            return null;
 
-        // Link to user context
-        ModeledUserContext context = userContextProvider.get();
-        context.init(user.getCurrentUser());
-        return context;
+        // Simply return no data if a database user account is not required
+        if (!environment.isUserRequired())
+            return null;
+
+        // Otherwise, invalidate the authentication result, as database user
+        // accounts are absolutely required
+        throw new GuacamoleInvalidCredentialsException("Invalid login",
+                CredentialsInfo.USERNAME_PASSWORD);
 
     }
 
