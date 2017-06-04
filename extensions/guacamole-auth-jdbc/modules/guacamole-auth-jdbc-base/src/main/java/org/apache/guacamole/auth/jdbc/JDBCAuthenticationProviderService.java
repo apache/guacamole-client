@@ -89,9 +89,9 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
         ModeledUser user = userService.retrieveUser(authenticationProvider, authenticatedUser);
         if (user != null && !user.isDisabled()) {
 
-            // Apply account restrictions if this extension authenticated
-            // the user OR if an account from this extension is explicitly
-            // required
+            // Account restrictions specific to this extension apply if this
+            // extension authenticated the user OR if an account from this
+            // extension is explicitly required
             if (authenticatedUser instanceof ModeledAuthenticatedUser
                     || environment.isUserRequired()) {
 

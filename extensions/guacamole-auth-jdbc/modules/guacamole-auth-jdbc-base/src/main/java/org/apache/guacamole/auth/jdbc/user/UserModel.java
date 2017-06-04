@@ -194,48 +194,51 @@ public class UserModel extends ObjectModel {
     }
 
     /**
-     * Returns whether the user has been disabled. Disabled users are not
-     * allowed to login. Although their account data exists, all login attempts
-     * will fail as if the account does not exist.
+     * Returns whether this user account has been disabled. The credentials of
+     * disabled user accounts are treated as invalid, effectively disabling
+     * that user's access to data for which they would otherwise have
+     * permission.
      *
      * @return
-     *     true if the account is disabled, false otherwise.
+     *     true if this user account is disabled, false otherwise.
      */
     public boolean isDisabled() {
         return disabled;
     }
 
     /**
-     * Sets whether the user is disabled. Disabled users are not allowed to
-     * login. Although their account data exists, all login attempts will fail
-     * as if the account does not exist.
+     * Sets whether this user account has been disabled. The credentials of
+     * disabled user accounts are treated as invalid, effectively disabling
+     * that user's access to data for which they would otherwise have
+     * permission.
      *
      * @param disabled
-     *     true if the account should be disabled, false otherwise.
+     *     true if this user account should be disabled, false otherwise.
      */
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
     }
 
     /**
-     * Returns whether the user's password has expired. If a user's password is
-     * expired, it must be immediately changed upon login. A user account with
-     * an expired password cannot be used until the password has been changed.
+     * Returns whether this user's password has expired. If a user's password
+     * is expired, it must be immediately changed upon login. A user account
+     * with an expired password cannot be used until the password has been
+     * changed.
      *
      * @return
-     *     true if the user's password has expired, false otherwise.
+     *     true if this user's password has expired, false otherwise.
      */
     public boolean isExpired() {
         return expired;
     }
 
     /**
-     * Sets whether the user's password is expired. If a user's password is
+     * Sets whether this user's password is expired. If a user's password is
      * expired, it must be immediately changed upon login. A user account with
      * an expired password cannot be used until the password has been changed.
      *
      * @param expired
-     *     true to expire the user's password, false otherwise.
+     *     true if this user's password has expired, false otherwise.
      */
     public void setExpired(boolean expired) {
         this.expired = expired;
