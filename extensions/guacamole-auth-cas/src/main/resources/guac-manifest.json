@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "0.9.12-incubating",
+    "guacamoleVersion" : "0.9.13-incubating",
 
     "name"      : "CAS Authentication Extension",
     "namespace" : "guac-cas",
