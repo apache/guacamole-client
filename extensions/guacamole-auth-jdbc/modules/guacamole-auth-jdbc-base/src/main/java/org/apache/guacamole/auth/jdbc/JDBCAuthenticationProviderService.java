@@ -104,8 +104,16 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
 
         }
 
-        // Update password if password is expired
+        // Veto authentication result if account is required but unavailable
+        // due to account restrictions
         UserModel userModel = user.getModel();
+        if (environment.isUserRequired()
+                && (userModel.isDisabled() || !user.isAccountValid() || !user.isAccountAccessible())) {
+                throw new GuacamoleInvalidCredentialsException("Invalid login",
+                        CredentialsInfo.USERNAME_PASSWORD);
+        }
+
+        // Update password if password is expired
         if (userModel.isExpired() || passwordPolicyService.isPasswordExpired(user))
             userService.resetExpiredPassword(user, authenticatedUser.getCredentials());
 
