@@ -57,6 +57,11 @@ CREATE TABLE `guacamole_connection` (
   `parent_id`           int(11),
   `protocol`            varchar(32)  NOT NULL,
   
+  -- Guacamole proxy (guacd) overrides
+  `proxy_port`              integer,
+  `proxy_hostname`          varchar(512),
+  `proxy_encryption_method` enum('NONE', 'SSL'),
+
   -- Concurrency limits
   `max_connections`          int(11),
   `max_connections_per_user` int(11),
