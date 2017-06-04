@@ -28,7 +28,6 @@ import org.apache.guacamole.auth.jdbc.sharing.user.SharedAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUserContext;
-import org.apache.guacamole.auth.jdbc.user.UserModel;
 import org.apache.guacamole.auth.jdbc.user.UserService;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -88,39 +87,32 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
 
         // Retrieve user account for already-authenticated user
         ModeledUser user = userService.retrieveUser(authenticationProvider, authenticatedUser);
-        if (user != null) {
+        if (user != null && !user.isDisabled()) {
 
-            // User data only exists for purposes of retrieval if the account
-            // is not disabled
-            UserModel userModel = user.getModel();
-            if (!userModel.isDisabled()) {
+            // Apply account restrictions if this extension authenticated
+            // the user OR if an account from this extension is explicitly
+            // required
+            if (authenticatedUser instanceof ModeledAuthenticatedUser
+                    || environment.isUserRequired()) {
 
-                // Apply account restrictions if this extension authenticated
-                // the user OR if an account from this extension is explicitly
-                // required
-                if (authenticatedUser instanceof ModeledAuthenticatedUser
-                        || environment.isUserRequired()) {
+                // Verify user account is still valid as of today
+                if (!user.isAccountValid())
+                    throw new GuacamoleClientException("LOGIN.ERROR_NOT_VALID");
 
-                    // Verify user account is still valid as of today
-                    if (!user.isAccountValid())
-                        throw new GuacamoleClientException("LOGIN.ERROR_NOT_VALID");
+                // Verify user account is allowed to be used at the current time
+                if (!user.isAccountAccessible())
+                    throw new GuacamoleClientException("LOGIN.ERROR_NOT_ACCESSIBLE");
 
-                    // Verify user account is allowed to be used at the current time
-                    if (!user.isAccountAccessible())
-                        throw new GuacamoleClientException("LOGIN.ERROR_NOT_ACCESSIBLE");
-
-                    // Update password if password is expired
-                    if (userModel.isExpired() || passwordPolicyService.isPasswordExpired(user))
-                        userService.resetExpiredPassword(user, authenticatedUser.getCredentials());
-
-                }
-
-                // Link to user context
-                ModeledUserContext context = userContextProvider.get();
-                context.init(user.getCurrentUser());
-                return context;
+                // Update password if password is expired
+                if (user.isExpired() || passwordPolicyService.isPasswordExpired(user))
+                    userService.resetExpiredPassword(user, authenticatedUser.getCredentials());
 
             }
+
+            // Link to user context
+            ModeledUserContext context = userContextProvider.get();
+            context.init(user.getCurrentUser());
+            return context;
 
         }
 
