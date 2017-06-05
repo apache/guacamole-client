@@ -117,7 +117,7 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
     public static final String MAX_CONNECTIONS_PER_USER_NAME = "max-connections-per-user";
 
     /**
-     * The connection weight for the WRR algorithm.
+     * The connection weight for weighted algorithms.
      */
     public static final String CONNECTION_WEIGHT = "weight";
 
