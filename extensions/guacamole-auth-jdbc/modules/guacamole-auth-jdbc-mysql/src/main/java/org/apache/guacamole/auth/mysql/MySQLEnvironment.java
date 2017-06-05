@@ -201,14 +201,6 @@ public class MySQLEnvironment extends JDBCEnvironment {
     }
 
     @Override
-    public int getDefaultConnectionWeight() throws GuacamoleException {
-        return getProperty(
-            MySQLGuacamoleProperties.MYSQL_DEFAULT_CONNECTION_WEIGHT,
-            DEFAULT_CONNECTION_WEIGHT
-        );
-    }
-
-    @Override
     public int getDefaultMaxGroupConnections() throws GuacamoleException {
         return getProperty(
             MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS,

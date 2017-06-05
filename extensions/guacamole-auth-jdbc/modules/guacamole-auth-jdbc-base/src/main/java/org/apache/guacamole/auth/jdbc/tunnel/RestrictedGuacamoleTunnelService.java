@@ -188,7 +188,7 @@ public class RestrictedGuacamoleTunnelService
             public int compare(ModeledConnection a, ModeledConnection b) {
 
                 return ((getActiveConnections(a).size() + 1) * b.getConnectionWeight() -
-                        (getActiveConnections(b).size() + 1) * a.getConnectionWeight());
+                            (getActiveConnections(b).size() + 1) * a.getConnectionWeight());
 
             }
 
@@ -202,7 +202,7 @@ public class RestrictedGuacamoleTunnelService
 
             // If connection weight is zero or negative, this host is disabled and should not be used.
             if (connection.getConnectionWeight() < 1) {
-                logger.warn("Weight for {} is < 1, connection will be skipped.", connection.getName());
+                logger.debug("Weight for {} is < 1, connection will be skipped.", connection.getName());
                 continue;
             }
 

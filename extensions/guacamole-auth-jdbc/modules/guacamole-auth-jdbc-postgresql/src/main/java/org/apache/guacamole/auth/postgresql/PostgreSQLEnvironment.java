@@ -201,14 +201,6 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     }
 
     @Override
-    public int getDefaultConnectionWeight() throws GuacamoleException {
-        return getProperty(
-            PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_CONNECTION_WEIGHT,
-            DEFAULT_CONNECTION_WEIGHT
-        );
-    }
-
-    @Override
     public int getDefaultMaxGroupConnections() throws GuacamoleException {
         return getProperty(
             PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS,
