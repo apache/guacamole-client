@@ -18,8 +18,8 @@
 --
 
 --
--- Add per-user password set date
+-- Add per-connection weight
 --
 
 ALTER TABLE guacamole_connection
-    ADD COLUMN connection_weight int(11);
+    ADD COLUMN connection_weight int;
