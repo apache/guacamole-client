@@ -192,10 +192,8 @@ public class ConnectionModel extends ChildObjectModel {
      *     negative numbers are used to indicate the system is
      *     unavailable.
      */
-    public int getConnectionWeight() {
-        if (connectionWeight == null)
-            return 1;
-        return connectionWeight.intValue();
+    public Integer getConnectionWeight() {
+        return connectionWeight;
     }
 
     /**

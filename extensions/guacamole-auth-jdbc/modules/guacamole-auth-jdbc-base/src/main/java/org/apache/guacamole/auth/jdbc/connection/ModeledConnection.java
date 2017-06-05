@@ -412,7 +412,8 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
     }
 
     /** 
-     * Returns the weight of the connection, or the default.
+     * Returns the weight of the connection, or a default
+     * of 1 if the weight is undefined.
      *  
      * @return
      *     The weight of the connection.
@@ -420,8 +421,10 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      */
     public int getConnectionWeight() {
 
-        // Return the connection weight
-        return getModel().getConnectionWeight();
+        Integer connectionWeight = getModel().getConnectionWeight();
+        if(connectionWeight == null)
+            return 1;
+        return connectionWeight;
 
     }
 
