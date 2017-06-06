@@ -451,4 +451,17 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
 
     }
 
+    /**
+     * Returns whether this connection should be reserved for failover.
+     * Failover-only connections within a balancing group are only used when
+     * all non-failover connections are unavailable.
+     *
+     * @return
+     *     true if this connection should be reserved for failover, false
+     *     otherwise.
+     */
+    public boolean isFailoverOnly() {
+        return getModel().isFailoverOnly();
+    }
+
 }
