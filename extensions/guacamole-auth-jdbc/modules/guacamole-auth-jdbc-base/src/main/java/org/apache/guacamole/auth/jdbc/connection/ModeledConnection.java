@@ -131,7 +131,7 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
     ));
 
     /**
-     * All attributes related to to load balancing in a logical form.
+     * All attributes related to load balancing in a logical form.
      */
     public static final Form LOAD_BALANCING = new Form("load-balancing", Arrays.<Field>asList(
         new NumericField(CONNECTION_WEIGHT)
