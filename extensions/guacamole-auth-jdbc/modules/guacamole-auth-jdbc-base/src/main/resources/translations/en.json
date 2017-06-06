@@ -19,7 +19,8 @@
 
         "FIELD_HEADER_MAX_CONNECTIONS"          : "Maximum number of connections:",
         "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Maximum number of connections per user:",
-        "FIELD_HEADER_WEIGHT"                   : "Connection Weight for Load Balancing:",
+
+        "FIELD_HEADER_WEIGHT"                   : "Connection weight for load balancing:",
 
         "FIELD_HEADER_GUACD_HOSTNAME"   : "Hostname:",
         "FIELD_HEADER_GUACD_ENCRYPTION" : "Encryption:",
@@ -29,8 +30,9 @@
         "FIELD_OPTION_GUACD_ENCRYPTION_NONE"  : "None (unencrypted)",
         "FIELD_OPTION_GUACD_ENCRYPTION_SSL"   : "SSL / TLS",
 
-        "SECTION_HEADER_CONCURRENCY" : "Concurrency Limits",
-        "SECTION_HEADER_GUACD"       : "Guacamole Proxy Parameters (guacd)"
+        "SECTION_HEADER_CONCURRENCY"    : "Concurrency Limits",
+        "SECTION_HEADER_LOAD_BALANCING" : "Load Balancing",
+        "SECTION_HEADER_GUACD"          : "Guacamole Proxy Parameters (guacd)"
 
     },
 
