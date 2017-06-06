@@ -20,6 +20,7 @@
         "FIELD_HEADER_MAX_CONNECTIONS"          : "Maximum number of connections:",
         "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Maximum number of connections per user:",
 
+        "FIELD_HEADER_FAILOVER_ONLY"            : "Use for failover only:",
         "FIELD_HEADER_WEIGHT"                   : "Connection weight:",
 
         "FIELD_HEADER_GUACD_HOSTNAME"   : "Hostname:",
