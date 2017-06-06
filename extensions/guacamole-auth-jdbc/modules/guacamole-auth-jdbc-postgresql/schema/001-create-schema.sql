@@ -108,6 +108,7 @@ CREATE TABLE guacamole_connection (
 
   -- Connection Weight
   connection_weight        integer,
+  failover_only            boolean NOT NULL DEFAULT FALSE,
 
   -- Guacamole proxy (guacd) overrides
   proxy_port              integer,

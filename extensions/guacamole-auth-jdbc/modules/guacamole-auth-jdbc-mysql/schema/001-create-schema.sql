@@ -65,9 +65,9 @@ CREATE TABLE `guacamole_connection` (
   `max_connections`          int(11),
   `max_connections_per_user` int(11),
   
-  -- Connection weight
+  -- Load-balancing behavior
   `connection_weight`        int(11),
-
+  `failover_only`            boolean NOT NULL DEFAULT 0,
 
   PRIMARY KEY (`connection_id`),
   UNIQUE KEY `connection_name_parent` (`connection_name`, `parent_id`),
