@@ -20,7 +20,7 @@
         "FIELD_HEADER_MAX_CONNECTIONS"          : "Maximum number of connections:",
         "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Maximum number of connections per user:",
 
-        "FIELD_HEADER_WEIGHT"                   : "Connection weight for load balancing:",
+        "FIELD_HEADER_WEIGHT"                   : "Connection weight:",
 
         "FIELD_HEADER_GUACD_HOSTNAME"   : "Hostname:",
         "FIELD_HEADER_GUACD_ENCRYPTION" : "Encryption:",

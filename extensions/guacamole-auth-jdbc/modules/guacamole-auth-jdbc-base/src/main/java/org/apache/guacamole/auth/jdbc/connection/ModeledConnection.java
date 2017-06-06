@@ -127,7 +127,13 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      */
     public static final Form CONCURRENCY_LIMITS = new Form("concurrency", Arrays.<Field>asList(
         new NumericField(MAX_CONNECTIONS_NAME),
-        new NumericField(MAX_CONNECTIONS_PER_USER_NAME),
+        new NumericField(MAX_CONNECTIONS_PER_USER_NAME)
+    ));
+
+    /**
+     * All attributes related to to load balancing in a logical form.
+     */
+    public static final Form LOAD_BALANCING = new Form("load-balancing", Arrays.<Field>asList(
         new NumericField(CONNECTION_WEIGHT)
     ));
 
@@ -137,6 +143,7 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      */
     public static final Collection<Form> ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(
         CONCURRENCY_LIMITS,
+        LOAD_BALANCING,
         GUACD_PARAMETERS
     ));
 
