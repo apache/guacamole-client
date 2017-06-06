@@ -1,0 +1,27 @@
+{
+    "guacamoleVersion" : "0.9.13-incubating",
+
+    "name"             : "Adhoc Guacamole Connections",
+    "namespace"        : "quickconnect",
+
+    "authProviders"    : [
+        "org.apache.guacamole.auth.quickconnect.QuickConnectAuthenticationProvider"
+    ],
+
+    "js" : [
+        "quickconnect.min.js"
+    ],
+
+    "css" : [
+        "quickconnect.min.css"
+    ],
+
+    "html" : [
+        "templates/quickconnectField.html"
+    ],
+
+    "resources" : {
+        "templates/quickconnectField.html" : "text/html"
+    }
+
+}
