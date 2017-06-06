@@ -187,6 +187,15 @@ public class RestrictedGuacamoleTunnelService
             @Override
             public int compare(ModeledConnection a, ModeledConnection b) {
 
+                // Always prefer non-failover connections to those which are
+                // failover-only
+                if (a.isFailoverOnly()) {
+                    if (!b.isFailoverOnly())
+                        return 1;
+                }
+                else if (b.isFailoverOnly())
+                    return -1;
+
                 // Active connections
                 int connA = getActiveConnections(a).size();
                 int connB = getActiveConnections(b).size();
