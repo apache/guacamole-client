@@ -44,7 +44,6 @@ import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleUpstreamException;
-import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionMapper;
 import org.apache.guacamole.net.GuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -143,6 +142,10 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      * @param connections
      *     The connections being accessed.
      *
+     * @param includeFailoverOnly
+     *     Whether connections which have been designated for use in failover
+     *     situations only (hot spares) may be considered.
+     *
      * @return
      *     The connection that has been acquired on behalf of the given user.
      *
@@ -150,7 +153,8 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      *     If access is denied to the given user for any reason.
      */
     protected abstract ModeledConnection acquire(RemoteAuthenticatedUser user,
-            List<ModeledConnection> connections) throws GuacamoleException;
+            List<ModeledConnection> connections, boolean includeFailoverOnly)
+            throws GuacamoleException;
 
     /**
      * Releases possibly-exclusive access to the given connection on behalf of
@@ -647,8 +651,8 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             final ModeledConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException {
 
-        // Acquire access to single connection
-        acquire(user, Collections.singletonList(connection));
+        // Acquire access to single connection, ignoring the failover-only flag
+        acquire(user, Collections.singletonList(connection), true);
 
         // Connect only if the connection was successfully acquired
         ActiveConnectionRecord connectionRecord = activeConnectionRecordProvider.get();
@@ -668,6 +672,9 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             ModeledConnectionGroup connectionGroup,
             GuacamoleClientInformation info) throws GuacamoleException {
 
+        // Track failures in upstream (remote desktop) connections
+        boolean upstreamHasFailed = false;
+
         // If group has no associated balanced connections, cannot connect
         List<ModeledConnection> connections = getBalancedConnections(user, connectionGroup);
         if (connections.isEmpty())
@@ -678,10 +685,11 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             // Acquire group
             acquire(user, connectionGroup);
 
-            // Attempt to acquire to any child
+            // Attempt to acquire to any child, including failover-only
+            // connections only if at least one upstream failure has occurred
             ModeledConnection connection;
             try {
-                connection = acquire(user, connections);
+                connection = acquire(user, connections, upstreamHasFailed);
             }
 
             // Ensure connection group is always released if child acquire fails
@@ -701,6 +709,14 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 if (connectionGroup.isSessionAffinityEnabled())
                     user.preferConnection(connection.getIdentifier());
 
+                // Warn if we are connecting to a failover-only connection
+                if (connection.isFailoverOnly())
+                    logger.warn("One or more normal connections within "
+                            + "group \"{}\" have failed. Some connection "
+                            + "attempts are being routed to designated "
+                            + "failover-only connections.",
+                            connectionGroup.getIdentifier());
+
                 return tunnel;
 
             }
@@ -711,6 +727,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 logger.info("Upstream error intercepted for connection \"{}\". Failing over to next connection in group...", connection.getIdentifier());
                 logger.debug("Upstream remote desktop reported an error during connection.", e);
                 connections.remove(connection);
+                upstreamHasFailed = true;
             }
 
         } while (!connections.isEmpty());
