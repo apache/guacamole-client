@@ -175,18 +175,6 @@ public class MySQLGuacamoleProperties {
     };
 
     /**
-     * The connection weight for connections in balancing groups.
-     */
-    public static final IntegerGuacamoleProperty
-            MYSQL_DEFAULT_CONNECTION_WEIGHT =
-            new IntegerGuacamoleProperty() {
-       
-        @Override
-        public String getName() { return "mysql-default-connection-weight"; }
-
-    };
-
-    /**
      * The maximum number of concurrent connections to allow to any one
      * connection group by an individual user. Zero denotes
      * unlimited.

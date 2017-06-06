@@ -188,23 +188,23 @@ public class RestrictedGuacamoleTunnelService
             public int compare(ModeledConnection a, ModeledConnection b) {
 
                 // Active connections
-                int Ca = getActiveConnections(a).size();
-                int Cb = getActiveConnections(b).size();
+                int connA = getActiveConnections(a).size();
+                int connB = getActiveConnections(b).size();
 
                 // Assigned weight
-                int Wa = a.getConnectionWeight();
-                int Wb = b.getConnectionWeight();
+                int weightA = a.getConnectionWeight();
+                int weightB = b.getConnectionWeight();
 
-                // Net weight of connections
-                int NWa = Ca * Wb;
-                int NWb = Cb * Wa;
+                // Calculated weight of connections
+                int calcWeightA = connA * weightB;
+                int calcWeightB = connB * weightA;
 
-                // If net weights are equal, return difference in weight
-                if (NWa == NWb)
-                    return (Wa - Wb);
+                // If calculated weights are equal, return difference in assigned weight
+                if (calcWeightA == calcWeightB)
+                    return (weightA - weightB);
 
-                // Return different in net weights
-                return (NWa - NWb);
+                // Return different in calculated weights
+                return (calcWeightA - calcWeightB);
 
             }
 
