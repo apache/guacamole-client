@@ -117,7 +117,7 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
     public static final String MAX_CONNECTIONS_PER_USER_NAME = "max-connections-per-user";
 
     /**
-     * The connection weight for weighted algorithms.
+     * The connection weight attribute used for weighted load balancing algorithms.
      */
     public static final String CONNECTION_WEIGHT = "weight";
 
@@ -412,11 +412,13 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
     }
 
     /** 
-     * Returns the weight of the connection, or a default
-     * of 1 if the weight is undefined.
+     * Returns the weight of the connection used in applying weighted
+     * load balancing algorithms, or a default of 1 if the 
+     * attribute is undefined.
      *  
      * @return
-     *     The weight of the connection.
+     *     The weight of the connection used in applying weighted
+     *     load balancing algorithms.
      */
     public int getConnectionWeight() {
 

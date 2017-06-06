@@ -172,22 +172,25 @@ public class ConnectionModel extends ChildObjectModel {
     }
 
     /**
-     * Sets the connection weight.
+     * Sets the connection weight for load balancing.
      *
      * @param connectionWeight
-     *     The weight of the connection.  null is acceptable, and anything
-     *     less than one will prevent the connection from being used.
+     *     The weight of the connection used in load balancing. 
+     *     The value is not required for the connection (null), and
+     *     values less than 1 will prevent the connection from being
+     *     used.
      */
     public void setConnectionWeight(Integer connectionWeight) {
         this.connectionWeight = connectionWeight;
     }
 
     /**
-     * Returns the connection weight used in calculating the
-     * weighted algorithms.
+     * Returns the connection weight used in applying weighted
+     * load balancing algorithms.
      *
      * @return
-     *     The connection weight as an Integer.
+     *     The connection weight used in applying weighted
+     *     load balancing aglorithms.
      */
     public Integer getConnectionWeight() {
         return connectionWeight;
