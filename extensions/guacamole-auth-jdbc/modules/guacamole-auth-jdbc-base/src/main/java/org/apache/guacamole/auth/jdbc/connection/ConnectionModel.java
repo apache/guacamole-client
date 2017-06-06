@@ -175,8 +175,8 @@ public class ConnectionModel extends ChildObjectModel {
      * Sets the connection weight.
      *
      * @param connectionWeight
-     *     The weight of the connection.  null is acceptable, negative values
-     *     indicate that the connection should not be used.
+     *     The weight of the connection.  null is acceptable, and anything
+     *     less than one will prevent the connection from being used.
      */
     public void setConnectionWeight(Integer connectionWeight) {
         this.connectionWeight = connectionWeight;

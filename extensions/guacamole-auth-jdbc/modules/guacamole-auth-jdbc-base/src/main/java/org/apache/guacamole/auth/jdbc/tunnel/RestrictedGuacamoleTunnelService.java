@@ -216,7 +216,7 @@ public class RestrictedGuacamoleTunnelService
         // Return the first unreserved connection
         for (ModeledConnection connection : sortedConnections) {
 
-            // If connection weight is zero or negative, this host is disabled and should not be used.
+            // If connection weight is less than 1 this host is disabled and should not be used.
             if (connection.getConnectionWeight() < 1) {
                 logger.debug("Weight for {} is < 1, connection will be skipped.", connection.getName());
                 continue;
