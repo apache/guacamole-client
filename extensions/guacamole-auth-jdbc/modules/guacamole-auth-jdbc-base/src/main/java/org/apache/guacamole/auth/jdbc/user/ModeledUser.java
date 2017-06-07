@@ -766,4 +766,30 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
         return isActive(getAccessWindowStart(), getAccessWindowEnd());
     }
 
+    /**
+     * Returns whether this user account has been disabled. The credentials of
+     * disabled user accounts are treated as invalid, effectively disabling
+     * that user's access to data for which they would otherwise have
+     * permission.
+     *
+     * @return
+     *     true if this user account has been disabled, false otherwise.
+     */
+    public boolean isDisabled() {
+        return getModel().isDisabled();
+    }
+
+    /**
+     * Returns whether this user's password has expired. If a user's password
+     * is expired, it must be immediately changed upon login. A user account
+     * with an expired password cannot be used until the password has been
+     * changed.
+     *
+     * @return
+     *     true if this user's password has expired, false otherwise.
+     */
+    public boolean isExpired() {
+        return getModel().isExpired();
+    }
+
 }

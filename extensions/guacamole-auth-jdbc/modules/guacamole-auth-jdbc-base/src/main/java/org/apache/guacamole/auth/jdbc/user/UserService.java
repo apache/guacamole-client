@@ -312,9 +312,10 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
     /**
      * Retrieves the user corresponding to the given credentials from the
-     * database. If the user account is expired, and the credentials contain
-     * the necessary additional parameters to reset the user's password, the
-     * password is reset.
+     * database. Note that this function will not enforce any additional
+     * account restrictions, including explicitly disabled accounts,
+     * scheduling, and password expiration. It is the responsibility of the
+     * caller to enforce such restrictions, if desired.
      *
      * @param authenticationProvider
      *     The AuthenticationProvider on behalf of which the user is being
@@ -342,10 +343,6 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         if (userModel == null)
             return null;
 
-        // If user is disabled, pretend user does not exist
-        if (userModel.isDisabled())
-            return null;
-
         // Verify provided password is correct
         byte[] hash = encryptionService.createPasswordHash(password, userModel.getPasswordSalt());
         if (!Arrays.equals(hash, userModel.getPasswordHash()))
@@ -354,14 +351,6 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         // Create corresponding user object, set up cyclic reference
         ModeledUser user = getObjectInstance(null, userModel);
         user.setCurrentUser(new ModeledAuthenticatedUser(authenticationProvider, user, credentials));
-
-        // Verify user account is still valid as of today
-        if (!user.isAccountValid())
-            throw new GuacamoleClientException("LOGIN.ERROR_NOT_VALID");
-
-        // Verify user account is allowed to be used at the current time
-        if (!user.isAccountAccessible())
-            throw new GuacamoleClientException("LOGIN.ERROR_NOT_ACCESSIBLE");
 
         // Return now-authenticated user
         return user.getCurrentUser();
