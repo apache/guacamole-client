@@ -117,6 +117,11 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
     public static final String MAX_CONNECTIONS_PER_USER_NAME = "max-connections-per-user";
 
     /**
+     * The connection weight attribute used for weighted load balancing algorithms.
+     */
+    public static final String CONNECTION_WEIGHT = "weight";
+
+    /**
      * All attributes related to restricting user accounts, within a logical
      * form.
      */
@@ -126,11 +131,19 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
     ));
 
     /**
+     * All attributes related to load balancing in a logical form.
+     */
+    public static final Form LOAD_BALANCING = new Form("load-balancing", Arrays.<Field>asList(
+        new NumericField(CONNECTION_WEIGHT)
+    ));
+
+    /**
      * All possible attributes of connection objects organized as individual,
      * logical forms.
      */
     public static final Collection<Form> ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(
         CONCURRENCY_LIMITS,
+        LOAD_BALANCING,
         GUACD_PARAMETERS
     ));
 
@@ -265,6 +278,9 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
             }
         }
 
+        // Set connection weight
+        attributes.put(CONNECTION_WEIGHT, NumericField.format(getModel().getConnectionWeight()));
+
         return attributes;
     }
 
@@ -309,6 +325,13 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
         // Unimplemented / unspecified
         else
             getModel().setProxyEncryptionMethod(null);
+
+        // Translate connection weight attribute
+        try { getModel().setConnectionWeight(NumericField.parse(attributes.get(CONNECTION_WEIGHT))); }
+        catch (NumberFormatException e) {
+            logger.warn("Not setting the connection weight: {}", e.getMessage());
+            logger.debug("Unable to parse numeric attribute.", e);
+        }
 
     }
 
@@ -393,6 +416,23 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
             port             != null ? port             : defaultConfig.getPort(),
             encryptionMethod != null ? encryptionMethod : defaultConfig.getEncryptionMethod()
         );
+    }
+
+    /** 
+     * Returns the weight of the connection used in applying weighted
+     * load balancing algorithms, or a default of 1 if the 
+     * attribute is undefined.
+     *  
+     * @return
+     *     The weight of the connection used in applying weighted
+     *     load balancing algorithms.
+     */
+    public int getConnectionWeight() {
+
+        Integer connectionWeight = getModel().getConnectionWeight();
+        if (connectionWeight == null)
+            return 1;
+        return connectionWeight;
 
     }
 

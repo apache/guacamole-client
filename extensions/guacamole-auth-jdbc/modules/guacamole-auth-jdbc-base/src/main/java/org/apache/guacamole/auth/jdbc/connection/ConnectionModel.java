@@ -55,6 +55,13 @@ public class ConnectionModel extends ChildObjectModel {
     private Integer maxConnectionsPerUser;
 
     /**
+     * The weight of the connection for the purposes of calculating
+     * WLC algorithm.  null indicates nothing has been set, and anything less
+     * than 1 eliminates the system from being used for connections.
+     */
+    private Integer connectionWeight;
+
+    /**
      * The identifiers of all readable sharing profiles associated with this
      * connection.
      */
@@ -162,6 +169,31 @@ public class ConnectionModel extends ChildObjectModel {
      */
     public Integer getMaxConnectionsPerUser() {
         return maxConnectionsPerUser;
+    }
+
+    /**
+     * Sets the connection weight for load balancing.
+     *
+     * @param connectionWeight
+     *     The weight of the connection used in load balancing. 
+     *     The value is not required for the connection (null), and
+     *     values less than 1 will prevent the connection from being
+     *     used.
+     */
+    public void setConnectionWeight(Integer connectionWeight) {
+        this.connectionWeight = connectionWeight;
+    }
+
+    /**
+     * Returns the connection weight used in applying weighted
+     * load balancing algorithms.
+     *
+     * @return
+     *     The connection weight used in applying weighted
+     *     load balancing aglorithms.
+     */
+    public Integer getConnectionWeight() {
+        return connectionWeight;
     }
 
     /**

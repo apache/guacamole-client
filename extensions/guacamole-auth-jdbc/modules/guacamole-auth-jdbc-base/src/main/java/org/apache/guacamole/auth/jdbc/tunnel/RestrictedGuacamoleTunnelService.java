@@ -33,6 +33,8 @@ import org.apache.guacamole.GuacamoleResourceConflictException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -43,6 +45,11 @@ import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 @Singleton
 public class RestrictedGuacamoleTunnelService
     extends AbstractGuacamoleTunnelService {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(RestrictedGuacamoleTunnelService.class);
 
     /**
      * The environment of the Guacamole server.
@@ -180,8 +187,24 @@ public class RestrictedGuacamoleTunnelService
             @Override
             public int compare(ModeledConnection a, ModeledConnection b) {
 
-                return getActiveConnections(a).size()
-                     - getActiveConnections(b).size();
+                // Active connections
+                int connA = getActiveConnections(a).size();
+                int connB = getActiveConnections(b).size();
+
+                // Assigned weight
+                int weightA = a.getConnectionWeight();
+                int weightB = b.getConnectionWeight();
+
+                // Calculated weight of connections
+                int calcWeightA = connA * weightB;
+                int calcWeightB = connB * weightA;
+
+                // If calculated weights are equal, return difference in assigned weight
+                if (calcWeightA == calcWeightB)
+                    return (weightA - weightB);
+
+                // Return different in calculated weights
+                return (calcWeightA - calcWeightB);
 
             }
 
@@ -192,6 +215,12 @@ public class RestrictedGuacamoleTunnelService
 
         // Return the first unreserved connection
         for (ModeledConnection connection : sortedConnections) {
+
+            // If connection weight is less than 1 this host is disabled and should not be used.
+            if (connection.getConnectionWeight() < 1) {
+                logger.debug("Weight for {} is < 1, connection will be skipped.", connection.getName());
+                continue;
+            }
 
             // Attempt to aquire connection according to per-user limits
             Seat seat = new Seat(username, connection.getIdentifier());

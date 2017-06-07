@@ -37,6 +37,7 @@
         <result column="proxy_port"               property="proxyPort"             jdbcType="INTEGER"/>
         <result column="proxy_encryption_method"  property="proxyEncryptionMethod" jdbcType="VARCHAR"
                 javaType="org.apache.guacamole.net.auth.GuacamoleProxyConfiguration$EncryptionMethod"/>
+        <result column="connection_weight"        property="connectionWeight"      jdbcType="INTEGER"/>
 
         <!-- Associated sharing profiles -->
         <collection property="sharingProfileIdentifiers" resultSet="sharingProfiles" ofType="java.lang.String"
@@ -95,7 +96,8 @@
             max_connections_per_user,
             proxy_hostname,
             proxy_port,
-            proxy_encryption_method
+            proxy_encryption_method,
+            connection_weight
         FROM guacamole_connection
         WHERE connection_id IN
             <foreach collection="identifiers" item="identifier"
@@ -126,7 +128,8 @@
             max_connections_per_user,
             proxy_hostname,
             proxy_port,
-            proxy_encryption_method
+            proxy_encryption_method,
+            connection_weight
         FROM guacamole_connection
         JOIN guacamole_connection_permission ON guacamole_connection_permission.connection_id = guacamole_connection.connection_id
         WHERE guacamole_connection.connection_id IN
@@ -162,7 +165,8 @@
             max_connections_per_user,
             proxy_hostname,
             proxy_port,
-            proxy_encryption_method
+            proxy_encryption_method,
+            connection_weight
         FROM guacamole_connection
         WHERE 
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=VARCHAR}</if>
@@ -189,7 +193,8 @@
             max_connections_per_user,
             proxy_hostname,
             proxy_port,
-            proxy_encryption_method
+            proxy_encryption_method,
+            connection_weight
         )
         VALUES (
             #{object.name,jdbcType=VARCHAR},
@@ -199,7 +204,8 @@
             #{object.maxConnectionsPerUser,jdbcType=INTEGER},
             #{object.proxyHostname,jdbcType=VARCHAR},
             #{object.proxyPort,jdbcType=INTEGER},
-            #{object.proxyEncryptionMethod,jdbcType=VARCHAR}
+            #{object.proxyEncryptionMethod,jdbcType=VARCHAR},
+            #{object.connectionWeight,jdbcType=INTEGER}
         )
 
     </insert>
@@ -214,7 +220,8 @@
             max_connections_per_user = #{object.maxConnectionsPerUser,jdbcType=INTEGER},
             proxy_hostname           = #{object.proxyHostname,jdbcType=VARCHAR},
             proxy_port               = #{object.proxyPort,jdbcType=INTEGER},
-            proxy_encryption_method  = #{object.proxyEncryptionMethod,jdbcType=VARCHAR}
+            proxy_encryption_method  = #{object.proxyEncryptionMethod,jdbcType=VARCHAR},
+            connection_weight        = #{object.connectionWeight,jdbcType=INTEGER}
         WHERE connection_id = #{object.objectID,jdbcType=INTEGER}
     </update>
 
