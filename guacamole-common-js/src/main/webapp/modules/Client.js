@@ -1381,15 +1381,15 @@ Guacamole.Client = function(tunnel) {
                     currentTimestamp = timestamp;
                 }
 
+                // If received first update, no longer waiting.
+                if (currentState === STATE_WAITING)
+                    setState(STATE_CONNECTED);
+
+                // Call sync handler if defined
+                if (guac_client.onsync)
+                    guac_client.onsync(timestamp);
+
             });
-
-            // If received first update, no longer waiting.
-            if (currentState === STATE_WAITING)
-                setState(STATE_CONNECTED);
-
-            // Call sync handler if defined
-            if (guac_client.onsync)
-                guac_client.onsync(timestamp);
 
         },
 
