@@ -227,7 +227,7 @@
             proxy_hostname           = #{object.proxyHostname,jdbcType=VARCHAR},
             proxy_port               = #{object.proxyPort,jdbcType=INTEGER},
             proxy_encryption_method  = #{object.proxyEncryptionMethod,jdbcType=VARCHAR},
-            connection_weight        = #{object.connectionWeight,jdbcType=INTEGER}
+            connection_weight        = #{object.connectionWeight,jdbcType=INTEGER},
             failover_only            = #{object.failoverOnly,jdbcType=BOOLEAN}
         WHERE connection_id = #{object.objectID,jdbcType=INTEGER}
     </update>
