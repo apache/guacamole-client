@@ -133,7 +133,7 @@
                     "type"  : "TEXT"
                 },
                 {
-                    "name"  : "sftp-keepalive",
+                    "name"  : "sftp-server-alive-interval",
                     "type"  : "NUMERIC"
                 }
             ]
