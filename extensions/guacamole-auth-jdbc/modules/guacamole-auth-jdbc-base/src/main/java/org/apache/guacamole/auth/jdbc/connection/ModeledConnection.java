@@ -32,6 +32,7 @@ import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.ModeledChildDirectoryObject;
+import org.apache.guacamole.form.BooleanField;
 import org.apache.guacamole.form.EnumField;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.Form;
@@ -122,6 +123,13 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
     public static final String CONNECTION_WEIGHT = "weight";
 
     /**
+     * The name of the attribute which controls whether the connection should
+     * be used as a spare only (all other non-spare connections within the same
+     * balancing group should be preferred).
+     */
+    public static final String FAILOVER_ONLY_NAME = "failover-only";
+
+    /**
      * All attributes related to restricting user accounts, within a logical
      * form.
      */
@@ -134,7 +142,8 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      * All attributes related to load balancing in a logical form.
      */
     public static final Form LOAD_BALANCING = new Form("load-balancing", Arrays.<Field>asList(
-        new NumericField(CONNECTION_WEIGHT)
+        new NumericField(CONNECTION_WEIGHT),
+        new BooleanField(FAILOVER_ONLY_NAME, "true")
     ));
 
     /**
@@ -281,6 +290,9 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
         // Set connection weight
         attributes.put(CONNECTION_WEIGHT, NumericField.format(getModel().getConnectionWeight()));
 
+        // Set whether connection is failover-only
+        attributes.put(FAILOVER_ONLY_NAME, getModel().isFailoverOnly() ? "true" : null);
+
         return attributes;
     }
 
@@ -332,6 +344,9 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
             logger.warn("Not setting the connection weight: {}", e.getMessage());
             logger.debug("Unable to parse numeric attribute.", e);
         }
+
+        // Translate failover-only attribute
+        getModel().setFailoverOnly("true".equals(attributes.get(FAILOVER_ONLY_NAME)));
 
     }
 
@@ -434,6 +449,19 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
             return 1;
         return connectionWeight;
 
+    }
+
+    /**
+     * Returns whether this connection should be reserved for failover.
+     * Failover-only connections within a balancing group are only used when
+     * all non-failover connections are unavailable.
+     *
+     * @return
+     *     true if this connection should be reserved for failover, false
+     *     otherwise.
+     */
+    public boolean isFailoverOnly() {
+        return getModel().isFailoverOnly();
     }
 
 }

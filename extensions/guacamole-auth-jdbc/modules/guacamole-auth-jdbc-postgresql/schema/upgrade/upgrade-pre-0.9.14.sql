@@ -23,3 +23,10 @@
 
 ALTER TABLE guacamole_connection
     ADD COLUMN connection_weight int;
+
+--
+-- Add failover-only flag
+--
+
+ALTER TABLE guacamole_connection
+    ADD COLUMN failover_only BOOLEAN NOT NULL DEFAULT FALSE;

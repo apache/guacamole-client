@@ -38,6 +38,7 @@
         <result column="proxy_encryption_method"  property="proxyEncryptionMethod" jdbcType="VARCHAR"
                 javaType="org.apache.guacamole.net.auth.GuacamoleProxyConfiguration$EncryptionMethod"/>
         <result column="connection_weight"        property="connectionWeight"      jdbcType="INTEGER"/>
+        <result column="failover_only"            property="failoverOnly"          jdbcType="BOOLEAN"/>
 
         <!-- Associated sharing profiles -->
         <collection property="sharingProfileIdentifiers" resultSet="sharingProfiles" ofType="java.lang.String"
@@ -97,7 +98,8 @@
             proxy_hostname,
             proxy_port,
             proxy_encryption_method,
-            connection_weight
+            connection_weight,
+            failover_only
         FROM guacamole_connection
         WHERE connection_id IN
             <foreach collection="identifiers" item="identifier"
@@ -129,7 +131,8 @@
             proxy_hostname,
             proxy_port,
             proxy_encryption_method,
-            connection_weight
+            connection_weight,
+            failover_only
         FROM guacamole_connection
         JOIN guacamole_connection_permission ON guacamole_connection_permission.connection_id = guacamole_connection.connection_id
         WHERE guacamole_connection.connection_id IN
@@ -166,7 +169,8 @@
             proxy_hostname,
             proxy_port,
             proxy_encryption_method,
-            connection_weight
+            connection_weight,
+            failover_only
         FROM guacamole_connection
         WHERE 
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}::integer</if>
@@ -194,7 +198,8 @@
             proxy_hostname,
             proxy_port,
             proxy_encryption_method,
-            connection_weight
+            connection_weight,
+            failover_only
         )
         VALUES (
             #{object.name,jdbcType=VARCHAR},
@@ -205,7 +210,8 @@
             #{object.proxyHostname,jdbcType=VARCHAR},
             #{object.proxyPort,jdbcType=INTEGER},
             #{object.proxyEncryptionMethod,jdbcType=VARCHAR}::guacamole_proxy_encryption_method,
-            #{object.connectionWeight,jdbcType=INTEGER}
+            #{object.connectionWeight,jdbcType=INTEGER},
+            #{object.failoverOnly,jdbcType=BOOLEAN}
         )
 
     </insert>
@@ -221,7 +227,8 @@
             proxy_hostname           = #{object.proxyHostname,jdbcType=VARCHAR},
             proxy_port               = #{object.proxyPort,jdbcType=INTEGER},
             proxy_encryption_method  = #{object.proxyEncryptionMethod,jdbcType=VARCHAR}::guacamole_proxy_encryption_method,
-            connection_weight        = #{object.connectionWeight,jdbcType=INTEGER}
+            connection_weight        = #{object.connectionWeight,jdbcType=INTEGER},
+            failover_only            = #{object.failoverOnly,jdbcType=BOOLEAN}
         WHERE connection_id = #{object.objectID,jdbcType=INTEGER}::integer
     </update>
 

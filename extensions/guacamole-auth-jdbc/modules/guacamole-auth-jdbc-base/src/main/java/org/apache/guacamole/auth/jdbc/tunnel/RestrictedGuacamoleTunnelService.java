@@ -171,7 +171,8 @@ public class RestrictedGuacamoleTunnelService
 
     @Override
     protected ModeledConnection acquire(RemoteAuthenticatedUser user,
-            List<ModeledConnection> connections) throws GuacamoleException {
+            List<ModeledConnection> connections, boolean includeFailoverOnly)
+            throws GuacamoleException {
 
         // Do not acquire connection unless within overall limits
         if (!tryIncrement(totalActiveConnections, environment.getAbsoluteMaxConnections()))
@@ -221,6 +222,11 @@ public class RestrictedGuacamoleTunnelService
                 logger.debug("Weight for {} is < 1, connection will be skipped.", connection.getName());
                 continue;
             }
+
+            // Skip connections which are failover-only if they are excluded
+            // from this connection attempt
+            if (!includeFailoverOnly && connection.isFailoverOnly())
+                continue;
 
             // Attempt to aquire connection according to per-user limits
             Seat seat = new Seat(username, connection.getIdentifier());
