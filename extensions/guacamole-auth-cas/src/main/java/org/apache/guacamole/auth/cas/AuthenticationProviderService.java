@@ -91,7 +91,7 @@ public class AuthenticationProviderService {
 
         // Request CAS ticket
         throw new GuacamoleInsufficientCredentialsException(
-            "Please wait, redirecting to CAS authentication.",
+            "LOGIN.INFO_CAS_REDIRECT_PENDING",
             new CredentialsInfo(Arrays.asList(new Field[] {
 
                 // CAS-specific ticket (will automatically redirect the user
