@@ -165,6 +165,12 @@ Guacamole.Tunnel.State = {
  *     will be made to the same domain.
  */
 Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
+    function appendPart(url, part) {
+        if (!part) {
+            return url;
+        }
+        return url.indexOf('?') >= 0 ? url + "&" + part : url + "?" + part;
+    }
 
     /**
      * Reference to this HTTP tunnel.
@@ -172,9 +178,9 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
      */
     var tunnel = this;
 
-    var TUNNEL_CONNECT = tunnelURL + "?connect";
-    var TUNNEL_READ    = tunnelURL + "?read:";
-    var TUNNEL_WRITE   = tunnelURL + "?write:";
+    var TUNNEL_CONNECT = appendPart(tunnelURL, "connect");
+    var TUNNEL_READ    = appendPart(tunnelURL, "read:");
+    var TUNNEL_WRITE   = appendPart(tunnelURL, "write:");
 
     var POLLING_ENABLED     = 1;
     var POLLING_DISABLED    = 0;
@@ -706,6 +712,13 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
     }
 
+    function appendPart(url, part) {
+        if (!part) {
+            return url;
+        }
+        return url.indexOf('?') >= 0 ? url + "&" + part : url + "?" + part;
+    }
+
     this.sendMessage = function(elements) {
 
         // Do not attempt to send messages if not connected
@@ -748,7 +761,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         reset_timeout();
 
         // Connect socket
-        socket = new WebSocket(tunnelURL + "?" + data, "guacamole");
+        socket = new WebSocket(appendPart(tunnelURL, data), "guacamole");
 
         socket.onopen = function(event) {
             reset_timeout();
