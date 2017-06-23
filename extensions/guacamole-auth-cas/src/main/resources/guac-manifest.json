@@ -9,6 +9,10 @@
         "org.apache.guacamole.auth.cas.CASAuthenticationProvider"
     ],
 
+    "translations" : [
+        "translations/en.json"
+    ],
+
     "js" : [
         "casModule.js",
         "casController.js",
