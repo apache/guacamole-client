@@ -131,6 +131,10 @@
                 {
                     "name"  : "sftp-directory",
                     "type"  : "TEXT"
+                },
+                {
+                    "name"  : "sftp-server-alive-interval",
+                    "type"  : "NUMERIC"
                 }
             ]
         },
