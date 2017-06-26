@@ -14,9 +14,15 @@
     ],
 
     "js" : [
-        "casModule.js",
-        "casController.js",
-        "casConfig.js"
-    ]
+        "cas.min.js"
+    ],
+
+    "css" : [
+        "cas.min.css"
+    ],
+
+    "resources" : {
+        "templates/casTicketField.html" : "text/html"
+    }
 
 }
