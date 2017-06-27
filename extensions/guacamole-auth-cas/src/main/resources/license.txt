@@ -16,18 +16,3 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-/**
- * Config block which registers CAS-specific field types.
- */
-angular.module('guacCAS').config(['formServiceProvider',
-        function guacCASConfig(formServiceProvider) {
-
-    // Define field for ticket from CAS service
-    formServiceProvider.registerFieldType("GUAC_CAS_TICKET", {
-        templateUrl   : '',
-        controller    : 'guacCASController',
-        module        : 'guacCAS'
-    });
-
-}]);
