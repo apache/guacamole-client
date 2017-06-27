@@ -53,6 +53,85 @@
                 </configuration>
             </plugin>
 
+            <!-- Pre-cache Angular templates with maven-angular-plugin -->
+            <plugin>
+                <groupId>com.keithbranton.mojo</groupId>
+                <artifactId>angular-maven-plugin</artifactId>
+                <version>0.3.2</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>html2js</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sourceDir>${basedir}/src/main/resources</sourceDir>
+                    <include>**/*.html</include>
+                    <target>${basedir}/src/main/resources/generated/templates-main/templates.js</target>
+                    <prefix>app/ext/guac-cas</prefix>
+                </configuration>
+            </plugin>
+
+            <!-- JS/CSS Minification Plugin -->
+            <plugin>
+                <groupId>com.samaxes.maven</groupId>
+                <artifactId>minify-maven-plugin</artifactId>
+                <version>1.7.5</version>
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+                        <configuration>
+                            <charset>UTF-8</charset>
+
+                            <webappSourceDir>${basedir}/src/main/resources</webappSourceDir>
+                            <webappTargetDir>${project.build.directory}/classes</webappTargetDir>
+
+                            <cssSourceDir>/</cssSourceDir>
+                            <cssTargetDir>/</cssTargetDir>
+                            <cssFinalFile>cas.css</cssFinalFile>
+
+                            <cssSourceFiles>
+                                <cssSourceFile>license.txt</cssSourceFile>
+                            </cssSourceFiles>
+
+                            <cssSourceIncludes>
+                                <cssSourceInclude>**/*.css</cssSourceInclude>
+                            </cssSourceIncludes>
+
+                            <jsSourceDir>/</jsSourceDir>
+                            <jsTargetDir>/</jsTargetDir>
+                            <jsFinalFile>cas.js</jsFinalFile>
+
+                            <jsSourceFiles>
+                                <jsSourceFile>license.txt</jsSourceFile>
+                            </jsSourceFiles>
+
+                            <jsSourceIncludes>
+                                <jsSourceInclude>**/*.js</jsSourceInclude>
+                            </jsSourceIncludes>
+
+                            <!-- Do not minify and include tests -->
+                            <jsSourceExcludes>
+                                <jsSourceExclude>**/*.test.js</jsSourceExclude>
+                            </jsSourceExcludes>
+                            <jsEngine>CLOSURE</jsEngine>
+
+                            <!-- Disable warnings for JSDoc annotations -->
+                            <closureWarningLevels>
+                                <misplacedTypeAnnotation>OFF</misplacedTypeAnnotation>
+                                <nonStandardJsDocs>OFF</nonStandardJsDocs>
+                            </closureWarningLevels>
+
+                        </configuration>
+                        <goals>
+                            <goal>minify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Copy dependencies prior to packaging -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -105,6 +184,7 @@
                     <excludes>
                         <exclude>**/*.json</exclude>
                         <exclude>src/licenses/**/*</exclude>
+                        <exclude>src/main/resources/templates/*.html</exclude>
                     </excludes>
                 </configuration>
 
