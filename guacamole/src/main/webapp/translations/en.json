@@ -13,6 +13,7 @@
         "ACTION_CONTINUE"           : "Continue",
         "ACTION_DELETE"             : "Delete",
         "ACTION_DELETE_SESSIONS"    : "Kill Sessions",
+        "ACTION_DOWNLOAD"           : "Download",
         "ACTION_LOGIN"              : "Login",
         "ACTION_LOGOUT"             : "Logout",
         "ACTION_MANAGE_CONNECTIONS" : "Connections",
@@ -578,9 +579,12 @@
 
     "SETTINGS_CONNECTION_HISTORY" : {
 
-        "ACTION_SEARCH" : "@:APP.ACTION_SEARCH",
+        "ACTION_DOWNLOAD" : "@:APP.ACTION_DOWNLOAD",
+        "ACTION_SEARCH"   : "@:APP.ACTION_SEARCH",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FILENAME_HISTORY_CSV" : "history.csv",
 
         "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 

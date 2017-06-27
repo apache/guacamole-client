@@ -39,8 +39,10 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
             var SortOrder                     = $injector.get('SortOrder');
 
             // Get required services
+            var $filter        = $injector.get('$filter');
             var $routeParams   = $injector.get('$routeParams');
             var $translate     = $injector.get('$translate');
+            var csvService     = $injector.get('csvService');
             var historyService = $injector.get('historyService');
 
             /**
@@ -178,6 +180,53 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
 
             };
             
+            /**
+             * Initiates a download of a CSV version of the displayed history
+             * search results.
+             */
+            $scope.downloadCSV = function downloadCSV() {
+
+                // Translate CSV header
+                $translate([
+                    'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_USERNAME',
+                    'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_STARTDATE',
+                    'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_DURATION',
+                    'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_CONNECTION_NAME',
+                    'SETTINGS_CONNECTION_HISTORY.FILENAME_HISTORY_CSV'
+                ]).then(function headerTranslated(translations) {
+
+                    // Initialize records with translated header row
+                    var records = [[
+                        translations['SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_USERNAME'],
+                        translations['SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_STARTDATE'],
+                        translations['SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_DURATION'],
+                        translations['SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_CONNECTION_NAME']
+                    ]];
+
+                    // Add rows for all history entries, using the same sort
+                    // order as the displayed table
+                    angular.forEach(
+                        $filter('orderBy')(
+                            $scope.historyEntryWrappers,
+                            $scope.order.predicate
+                        ),
+                        function pushRecord(historyEntryWrapper) {
+                            records.push([
+                                historyEntryWrapper.username,
+                                $filter('date')(historyEntryWrapper.startDate, $scope.dateFormat),
+                                historyEntryWrapper.duration / 1000,
+                                historyEntryWrapper.connectionName
+                            ]);
+                        }
+                    );
+
+                    // Save the result
+                    saveAs(csvService.toBlob(records), translations['SETTINGS_CONNECTION_HISTORY.FILENAME_HISTORY_CSV']);
+
+                });
+
+            };
+
             // Initialize search results
             $scope.search();
             

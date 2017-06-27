@@ -7,6 +7,7 @@
     <form class="filter" ng-submit="search()">
         <input class="search-string" type="text" placeholder="{{'SETTINGS_CONNECTION_HISTORY.FIELD_PLACEHOLDER_FILTER' | translate}}" ng-model="searchString" />
         <input class="search-button" type="submit" value="{{'SETTINGS_CONNECTION_HISTORY.ACTION_SEARCH' | translate}}" />
+        <button type="button" ng-click="downloadCSV()">{{'SETTINGS_CONNECTION_HISTORY.ACTION_DOWNLOAD' | translate}}</button>
     </form>
 
     <!-- Search results -->
