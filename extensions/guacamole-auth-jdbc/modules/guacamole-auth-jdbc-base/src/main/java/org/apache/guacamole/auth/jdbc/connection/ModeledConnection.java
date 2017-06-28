@@ -313,8 +313,8 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
             logger.debug("Unable to parse numeric attribute.", e);
         }
 
-        // Set guacd hostname (no translation necessary)
-        getModel().setProxyHostname(attributes.get(GUACD_HOSTNAME_NAME));
+        // Translate guacd hostname
+        getModel().setProxyHostname(TextField.parse(attributes.get(GUACD_HOSTNAME_NAME)));
 
         // Translate guacd port
         try { getModel().setProxyPort(NumericField.parse(attributes.get(GUACD_PORT_NAME))); }

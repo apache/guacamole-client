@@ -526,16 +526,16 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     private void setUnrestrictedAttributes(Map<String, String> attributes) {
 
         // Translate full name attribute
-        getModel().setFullName(attributes.get(User.Attribute.FULL_NAME));
+        getModel().setFullName(TextField.parse(attributes.get(User.Attribute.FULL_NAME)));
 
         // Translate email address attribute
-        getModel().setEmailAddress(attributes.get(User.Attribute.EMAIL_ADDRESS));
+        getModel().setEmailAddress(TextField.parse(attributes.get(User.Attribute.EMAIL_ADDRESS)));
 
         // Translate organization attribute
-        getModel().setOrganization(attributes.get(User.Attribute.ORGANIZATION));
+        getModel().setOrganization(TextField.parse(attributes.get(User.Attribute.ORGANIZATION)));
 
         // Translate role attribute
-        getModel().setOrganizationalRole(attributes.get(User.Attribute.ORGANIZATIONAL_ROLE));
+        getModel().setOrganizationalRole(TextField.parse(attributes.get(User.Attribute.ORGANIZATIONAL_ROLE)));
 
     }
 
