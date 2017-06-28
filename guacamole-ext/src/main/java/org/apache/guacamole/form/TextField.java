@@ -35,4 +35,25 @@ public class TextField extends Field {
         super(name, Field.Type.TEXT);
     }
 
+    /**
+     * Parses the given string, interpreting empty strings as equivalent to
+     * null. For all other cases, the given string is returned verbatim.
+     *
+     * @param str
+     *     The string to parse, which may be null.
+     *
+     * @return
+     *     The given string, or null if the given string was null or empty.
+     */
+    public static String parse(String str) {
+
+        // Return null if no value provided
+        if (str == null || str.isEmpty())
+            return null;
+
+        // Otherwise, return string unmodified
+        return str;
+
+    }
+
 }
