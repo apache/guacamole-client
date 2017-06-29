@@ -361,6 +361,7 @@
         "FIELD_HEADER_SFTP_PASSWORD"              : "Password:",
         "FIELD_HEADER_SFTP_PORT"                  : "Port:",
         "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Private key:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "File browser root directory:",
         "FIELD_HEADER_SFTP_USERNAME"              : "Username:",
         "FIELD_HEADER_STATIC_CHANNELS" : "Static channel names:",
         "FIELD_HEADER_USERNAME"        : "Username:",
@@ -428,6 +429,7 @@
         "FIELD_HEADER_RECORDING_NAME" : "Recording name:",
         "FIELD_HEADER_RECORDING_PATH" : "Recording path:",
         "FIELD_HEADER_SERVER_ALIVE_INTERVAL" : "Server keepalive interval:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "File browser root directory:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
 
@@ -539,6 +541,7 @@
         "FIELD_HEADER_SFTP_PASSWORD"              : "Password:",
         "FIELD_HEADER_SFTP_PORT"                  : "Port:",
         "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Private key:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "File browser root directory:",
         "FIELD_HEADER_SFTP_USERNAME"              : "Username:",
         "FIELD_HEADER_SWAP_RED_BLUE"    : "Swap red/blue components:",
 
