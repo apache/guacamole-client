@@ -187,7 +187,7 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
             dataSource : dataSource,
 
             // Type information
-            expandable : includeSharingProfiles,
+            expandable : includeSharingProfiles !== false,
             type       : GroupListItem.Type.CONNECTION,
 
             // Already-converted children
