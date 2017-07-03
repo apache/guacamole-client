@@ -25,6 +25,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             
     // Required types
     var ConnectionGroup   = $injector.get('ConnectionGroup');
+    var GroupListItem     = $injector.get('GroupListItem');
     var PageDefinition    = $injector.get('PageDefinition');
     var PermissionFlagSet = $injector.get('PermissionFlagSet');
     var PermissionSet     = $injector.get('PermissionSet');
@@ -133,7 +134,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * thost data sources. As only one data source is applicable to any one
      * user being edited/created, this will only contain a single key.
      *
-     * @type Object.<String, ConnectionGroup>
+     * @type Object.<String, GroupListItem>
      */
     $scope.rootGroups = null;
 
@@ -607,6 +608,59 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
     }
 
+    /**
+     * Expands all items within the tree descending from the given
+     * GroupListItem which have at least one descendant for which explicit READ
+     * permission is granted. The expanded state of all other items is left
+     * untouched.
+     *
+     * @param {GroupListItem} item
+     *     The GroupListItem which should be conditionally expanded depending
+     *     on whether READ permission is granted for any of its descendants.
+     *
+     * @param {PemissionFlagSet} flags
+     *     The set of permissions which should be used to determine whether the
+     *     given item and its descendants are expanded.
+     */
+    var expandReadable = function expandReadable(item, flags) {
+
+        // If the current item is expandable and has defined children,
+        // determine whether it should be expanded
+        if (item.expandable && item.children) {
+            angular.forEach(item.children, function expandReadableChild(child) {
+
+                // Determine whether the user has READ permission for the
+                // current child object
+                var readable = false;
+                switch (child.type) {
+
+                    case GroupListItem.Type.CONNECTION:
+                        readable = flags.connectionPermissions.READ[child.identifier];
+                        break;
+
+                    case GroupListItem.Type.CONNECTION_GROUP:
+                        readable = flags.connectionGroupPermissions.READ[child.identifier];
+                        break;
+
+                    case GroupListItem.Type.SHARING_PROFILE:
+                        readable = flags.sharingProfilePermissions.READ[child.identifier];
+                        break;
+
+                }
+
+                // The parent should be expanded by default if the child is
+                // expanded by default OR the user has READ permission on the
+                // child
+                item.expanded |= expandReadable(child, flags) || readable;
+
+            });
+        }
+
+        return item.expanded;
+
+    };
+
+
     // Retrieve all connections for which we have ADMINISTER permission
     dataSourceService.apply(
         connectionGroupService.getConnectionGroupTree,
@@ -615,7 +669,13 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         [PermissionSet.ObjectPermissionType.ADMINISTER]
     )
     .then(function connectionGroupReceived(rootGroups) {
-        $scope.rootGroups = rootGroups;
+
+        // Convert all received ConnectionGroup objects into GroupListItems
+        $scope.rootGroups = {};
+        angular.forEach(rootGroups, function addGroupListItem(rootGroup, dataSource) {
+            $scope.rootGroups[dataSource] = GroupListItem.fromConnectionGroup(dataSource, rootGroup);
+        });
+
     });
     
     // Query the user's permissions for the current user
@@ -626,6 +686,19 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     )
     .then(function permissionsReceived(permissions) {
         $scope.permissions = permissions;
+    });
+
+    // Update default expanded state whenever connection groups and associated
+    // permissions change
+    $scope.$watchGroup(['rootGroups', 'permissionFlags'], function updateDefaultExpandedStates() {
+        angular.forEach($scope.rootGroups, function updateExpandedStates(rootGroup) {
+
+            // Automatically expand all objects with any descendants for which
+            // the user has READ permission
+            if ($scope.permissionFlags)
+                expandReadable(rootGroup, $scope.permissionFlags);
+
+        });
     });
 
     /**
