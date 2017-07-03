@@ -32,7 +32,7 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              * The connection groups to display as a map of data source
              * identifier to corresponding root group.
              *
-             * @type Object.<String, ConnectionGroup>
+             * @type Object.<String, ConnectionGroup|GroupListItem>
              */
             connectionGroups : '=',
 
@@ -167,15 +167,23 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
                     // Add each provided connection group
                     angular.forEach(connectionGroups, function addConnectionGroup(connectionGroup, dataSource) {
 
+                        var rootItem;
+
                         // Prepare data source for active connection counting
                         dataSources.push(dataSource);
                         connectionCount[dataSource] = {};
 
+                        // If the provided connection group is already a
+                        // GroupListItem, no need to create a new item
+                        if (connectionGroup instanceof GroupListItem)
+                            rootItem = connectionGroup;
+
                         // Create root item for current connection group
-                        var rootItem = GroupListItem.fromConnectionGroup(dataSource, connectionGroup,
-                            $scope.isVisible(GroupListItem.Type.CONNECTION),
-                            $scope.isVisible(GroupListItem.Type.SHARING_PROFILE),
-                            countActiveConnections);
+                        else
+                            rootItem = GroupListItem.fromConnectionGroup(dataSource, connectionGroup,
+                                $scope.isVisible(GroupListItem.Type.CONNECTION),
+                                $scope.isVisible(GroupListItem.Type.SHARING_PROFILE),
+                                countActiveConnections);
 
                         // If root group is to be shown, add it as a root item
                         if ($scope.showRootGroup)
