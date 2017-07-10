@@ -72,7 +72,7 @@ public class AuthenticationProviderService {
             // Get the username from the header configured in guacamole.properties
             String username = request.getHeader(confService.getHttpAuthHeader());
             
-            //write username to the credentials object to make tokenfilter work
+            //  Write username to the credentials object to make tokenfilter work
             credentials.setUsername(username);
 
             if (username != null) {
