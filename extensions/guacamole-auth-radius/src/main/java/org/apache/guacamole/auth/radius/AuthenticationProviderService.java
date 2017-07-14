@@ -182,8 +182,10 @@ public class AuthenticationProviderService {
             }
 
             // Something unanticipated happened, so we panic
-            else
+            else {
+                logger.error("Unexpected authentication failure talking to RADIUS server.");
                 throw new GuacamoleInvalidCredentialsException("Unknown error trying to authenticate.", CredentialsInfo.USERNAME_PASSWORD);
+            }
         }
 
         // The user responded to the challenge, send that back to the server
