@@ -49,7 +49,7 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
              * identifier to corresponding root group. A subset of this map
              * will be exposed as filteredConnectionGroups.
              *
-             * @type Object.<String, ConnectionGroup>
+             * @type Object.<String, ConnectionGroup|GroupListItem>
              */
             connectionGroups : '&',
 
@@ -81,6 +81,7 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
             // Required types
             var ConnectionGroup = $injector.get('ConnectionGroup');
             var FilterPattern   = $injector.get('FilterPattern');
+            var GroupListItem   = $injector.get('GroupListItem');
 
             /**
              * The pattern object to use when filtering connections.
@@ -175,6 +176,10 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
                 var connectionGroups = $scope.connectionGroups();
                 if (connectionGroups) {
                     angular.forEach(connectionGroups, function updateFilteredConnectionGroup(connectionGroup, dataSource) {
+
+                        // Unwrap GroupListItem
+                        if (connectionGroup instanceof GroupListItem)
+                            connectionGroup = connectionGroup.wrappedItem;
 
                         // Flatten hierarchy of connection group
                         var filteredGroup = flattenConnectionGroup(connectionGroup);
