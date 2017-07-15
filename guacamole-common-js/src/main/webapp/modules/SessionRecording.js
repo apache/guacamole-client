@@ -415,32 +415,34 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
     var continuePlayback = function continuePlayback() {
 
         // Advance to next frame
-        seekToFrame(currentFrame + 1);
+        seekToFrame(currentFrame + 1, function playbackSeekComplete() {
 
-        // If frames remain after advancing, schedule next frame
-        if (currentFrame + 1 < frames.length) {
+            // If frames remain after advancing, schedule next frame
+            if (currentFrame + 1 < frames.length) {
 
-            // Pull the upcoming frame
-            var next = frames[currentFrame + 1];
+                // Pull the upcoming frame
+                var next = frames[currentFrame + 1];
 
-            // Calculate the real timestamp corresponding to when the next
-            // frame begins
-            var nextRealTimestamp = next.timestamp - startVideoTimestamp + startRealTimestamp;
+                // Calculate the real timestamp corresponding to when the next
+                // frame begins
+                var nextRealTimestamp = next.timestamp - startVideoTimestamp + startRealTimestamp;
 
-            // Calculate the relative delay between the current time and
-            // the next frame start
-            var delay = Math.max(nextRealTimestamp - new Date().getTime(), 0);
+                // Calculate the relative delay between the current time and
+                // the next frame start
+                var delay = Math.max(nextRealTimestamp - new Date().getTime(), 0);
 
-            // Advance to next frame after enough time has elapsed
-            playbackTimeout = window.setTimeout(function frameDelayElapsed() {
-                continuePlayback();
-            }, delay);
+                // Advance to next frame after enough time has elapsed
+                playbackTimeout = window.setTimeout(function frameDelayElapsed() {
+                    continuePlayback();
+                }, delay);
 
-        }
+            }
 
-        // Otherwise stop playback
-        else
-            recording.pause();
+            // Otherwise stop playback
+            else
+                recording.pause();
+
+        });
 
     };
 
