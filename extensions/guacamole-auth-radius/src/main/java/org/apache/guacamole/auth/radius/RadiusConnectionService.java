@@ -109,7 +109,6 @@ public class RadiusConnectionService {
      *     A new RadiusAuthenticator instance which has been configured
      *     with parameters from guacamole.properties, or null if
      *     configuration fails.
-     *
      */
     private RadiusAuthenticator setupRadiusAuthenticator() throws GuacamoleException {
 
@@ -151,17 +150,14 @@ public class RadiusConnectionService {
             ((EAPTLSAuthenticator)radAuth).setKeyFile((new File(guacHome, keyFile)).toString());
             ((EAPTLSAuthenticator)radAuth).setKeyFileType(confService.getRadiusKeyType());
             ((EAPTLSAuthenticator)radAuth).setTrustAll(confService.getRadiusTrustAll());
-
         }
 
         // If we're using EAP-TTLS, we need to define tunneled protocol
         if (radAuth instanceof EAPTTLSAuthenticator) {
-
             if (innerProtocol == null)
                 throw new GuacamoleException("Trying to use EAP-TTLS, but no inner protocol specified.");
 
             ((EAPTTLSAuthenticator)radAuth).setInnerProtocol(innerProtocol);
-
         }
 
         return radAuth;
@@ -186,14 +182,6 @@ public class RadiusConnectionService {
     public RadiusPacket authenticate(String username, String password) 
             throws GuacamoleException {
 
-        // Create the connection and load the attribute dictionary
-        createRadiusConnection();
-        AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
-
-        // If the client is null, we return null - something has gone wrong
-        if (radiusClient == null)
-            return null;
-
         // If a username hasn't been provided, stop
         if (username == null || username.isEmpty()) {
             logger.warn("Anonymous access not allowed with RADIUS client.");
@@ -205,6 +193,14 @@ public class RadiusConnectionService {
             logger.warn("Password required for RADIUS authentication.");
             return null;
         }
+
+        // Create the connection and load the attribute dictionary
+        createRadiusConnection();
+        AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
+
+        // If the client is null, we return null - something has gone wrong
+        if (radiusClient == null)
+            return null;
 
         RadiusAuthenticator radAuth = setupRadiusAuthenticator();
 
@@ -272,14 +268,6 @@ public class RadiusConnectionService {
     public RadiusPacket authenticate(String username, String state, String response)
             throws GuacamoleException {
 
-        // Create the RADIUS connection and set up the dictionary
-        createRadiusConnection();
-        AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
-
-        // Client failed to set up, so we return null
-        if (radiusClient == null)
-            return null;
-
         // If a username wasn't passed, we quit
         if (username == null || username.isEmpty()) {
             logger.warn("Anonymous access not allowed with RADIUS client.");
@@ -297,6 +285,14 @@ public class RadiusConnectionService {
             logger.warn("Response required for RADIUS authentication.");
             return null;
         }
+
+        // Create the RADIUS connection and set up the dictionary
+        createRadiusConnection();
+        AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
+
+        // Client failed to set up, so we return null
+        if (radiusClient == null)
+            return null;
 
         // Set up the RadiusAuthenticator
         RadiusAuthenticator radAuth = setupRadiusAuthenticator();
@@ -345,9 +341,7 @@ public class RadiusConnectionService {
     }
 
     /**
-     * Disconnects the given RADIUS connection, logging any failure to do so
-     * appropriately.
-     *
+     * Disconnects the current RADIUS connection.
      */
     public void disconnect() {
 
