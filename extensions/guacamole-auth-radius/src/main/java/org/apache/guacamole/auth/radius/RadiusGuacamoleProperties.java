@@ -47,7 +47,7 @@ public class RadiusGuacamoleProperties {
     };
 
     /**
-     * The port on the RADIUS server to connect to when accounting users.
+     * The port on the server to connect to when performing RADIUS accounting.
      */
     public static final IntegerGuacamoleProperty RADIUS_ACCT_PORT = new IntegerGuacamoleProperty() {
 
@@ -68,7 +68,7 @@ public class RadiusGuacamoleProperties {
     };
 
     /**
-     * The shared secret of the RADIUS server to connect to when authenticating users.
+     * The shared secret to use when connecting to the RADIUS server.
      */
     public static final StringGuacamoleProperty RADIUS_SHARED_SECRET = new StringGuacamoleProperty() {
 
