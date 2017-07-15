@@ -37,7 +37,3 @@
 .radius-challenge-response-field input[type="submit"] {
     display: none !important;
 }
-
-.radius-challenge-response-field.loading iframe {
-    opacity: 0;
-}
