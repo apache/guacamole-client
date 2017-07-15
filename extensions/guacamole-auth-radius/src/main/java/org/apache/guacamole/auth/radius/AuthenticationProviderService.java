@@ -160,51 +160,13 @@ public class AuthenticationProviderService {
                 logger.debug("Error configuring RADIUS server.", e);
                 throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
             }
-
-            // No RadiusPacket is returned, we've encountered an error.
-            if (radPack == null) {
-                logger.debug("Nothing in the RADIUS packet.");
-                throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
-            }
-
-            // Received AccessReject packet, login is denied.
-            else if (radPack instanceof AccessReject) {
-                logger.debug("Login has been rejected by RADIUS server.");
-                throw new GuacamoleInvalidCredentialsException("Authentication failed.", CredentialsInfo.USERNAME_PASSWORD);
-            }
-
-            // Received AccessChallenge packet, more credentials required to complete authentication
-            else if (radPack instanceof AccessChallenge) {
-                CredentialsInfo expectedCredentials = getRadiusChallenge(radPack);
-
-                if (expectedCredentials == null)
-                    throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
-
-                throw new GuacamoleInsufficientCredentialsException("LOGIN.INFO_RADIUS_ADDL_REQUIRED", expectedCredentials);
-            }
-
-            // Received AccessAccept, authentication has succeeded
-            else if (radPack instanceof AccessAccept) {
-                try {
-                    AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-                    authenticatedUser.init(credentials);
-                    return authenticatedUser;
-                }
-                finally {
-                    radiusService.disconnect();
-                }
-            }
-
-            // Something unanticipated happened, so panic and go back to login.
-            else {
-                logger.error("Unexpected failure authenticating with RADIUS server.");
-                throw new GuacamoleInvalidCredentialsException("Unknown error trying to authenticate.", CredentialsInfo.USERNAME_PASSWORD);
+            finally {
+                radiusService.disconnect();
             }
         }
 
-        // This is a response to a challenge, so authenticate with that response
+        // This is a response to a previous challenge, authenticate with that.
         else {
-
             try {
                 radPack = radiusService.authenticate(credentials.getUsername(),
                                                      request.getParameter(RadiusStateField.PARAMETER_NAME),
@@ -218,21 +180,43 @@ public class AuthenticationProviderService {
             finally {
                 radiusService.disconnect();
             }
-
-            // Received AccessAccept, authentication succeeded.
-            if (radPack instanceof AccessAccept) {
-                AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-                authenticatedUser.init(credentials);
-                return authenticatedUser;
-            }
-
-            // Authentication failed.
-            else {
-                logger.warn("RADIUS Challenge/Response authentication failed.");
-                logger.debug("Received something other than AccessAccept packet from the RADIUS server.");
-                throw new GuacamoleInvalidCredentialsException("Authentication failed.", CredentialsInfo.USERNAME_PASSWORD);
-            }
         }
+
+        // No RadiusPacket is returned, we've encountered an error.
+        if (radPack == null) {
+            logger.debug("Nothing in the RADIUS packet.");
+            throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
+        }
+
+        // Received AccessReject packet, login is denied.
+        else if (radPack instanceof AccessReject) {
+            logger.debug("Login has been rejected by RADIUS server.");
+            throw new GuacamoleInvalidCredentialsException("Authentication failed.", CredentialsInfo.USERNAME_PASSWORD);
+        }
+
+        // Received AccessAccept, authentication has succeeded
+        else if (radPack instanceof AccessAccept) {
+            AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+            authenticatedUser.init(credentials);
+            return authenticatedUser;
+        }
+
+        // Received AccessChallenge packet, more credentials required to complete authentication
+        else if (radPack instanceof AccessChallenge) {
+            CredentialsInfo expectedCredentials = getRadiusChallenge(radPack);
+
+            if (expectedCredentials == null)
+                throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
+
+            throw new GuacamoleInsufficientCredentialsException("LOGIN.INFO_RADIUS_ADDL_REQUIRED", expectedCredentials);
+        }
+
+        // Something unanticipated happened, so panic and go back to login.
+        else {
+            logger.error("Unexpected failure authenticating with RADIUS server.");
+            throw new GuacamoleInvalidCredentialsException("Unknown error trying to authenticate.", CredentialsInfo.USERNAME_PASSWORD);
+        }
+
     }
 
 }
