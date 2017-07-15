@@ -42,6 +42,13 @@
     var playPause = document.getElementById('play-pause');
 
     /**
+     * Button for cancelling in-progress seek operations.
+     *
+     * @type Element
+     */
+    var cancelSeek = document.getElementById('cancel-seek');
+
+    /**
      * Text status display indicating the current playback position within the
      * recording.
      *
@@ -162,6 +169,12 @@
             recording.play();
         else
             recording.pause();
+    };
+
+    // Cancel seek operation when cancel button is clicked
+    cancelSeek.onclick = function cancelSeekOperation(e) {
+        recording.pause();
+        e.stopPropagation();
     };
 
     // Fit display within containing div
