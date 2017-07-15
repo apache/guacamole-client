@@ -88,7 +88,7 @@ public class RadiusGuacamoleProperties {
     };
 
     /**
-     * The number of retries when attempting a radius packet transaction.
+     * The number of retries when attempting a RADIUS packet transaction.
      */
     public static final IntegerGuacamoleProperty RADIUS_RETRIES = new IntegerGuacamoleProperty() {
 
@@ -98,7 +98,7 @@ public class RadiusGuacamoleProperties {
     };
 
     /**
-     * The network timeout when attempting a radius packet transaction.
+     * The network timeout when attempting a RADIUS packet transaction.
      */
     public static final IntegerGuacamoleProperty RADIUS_TIMEOUT = new IntegerGuacamoleProperty() {
 
