@@ -141,19 +141,16 @@ public class AuthenticationProviderService {
         if (credentials.getPassword() == null || credentials.getPassword().isEmpty())
             return null;
 
-        // Grab the HTTP Request from the credentials object
+        // Grab HTTP request object and a response to a challenge.
         HttpServletRequest request = credentials.getRequest();
-
-        // Try to get parameters to see if this is a post-challenge attempt
         String challengeResponse = request.getParameter(RadiusChallengeResponseField.PARAMETER_NAME);
 
         // RadiusPacket object to store response from server.
         RadiusPacket radPack;
 
-        // We do not have a challenge response, proceed with username/password authentication.
+        // No challenge response, proceed with username/password authentication.
         if (challengeResponse == null) {
 
-            // Attempt RADIUS authentication with username/password.
             try {
                 radPack = radiusService.authenticate(credentials.getUsername(),
                                                 credentials.getPassword());
@@ -164,20 +161,19 @@ public class AuthenticationProviderService {
                 throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
             }
 
-            // If no RadiusPacket is returned, we've encountered an error.
+            // No RadiusPacket is returned, we've encountered an error.
             if (radPack == null) {
                 logger.debug("Nothing in the RADIUS packet.");
                 throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
             }
 
-            // If we get back an AccessReject packet, login is denied.
+            // Received AccessReject packet, login is denied.
             else if (radPack instanceof AccessReject) {
                 logger.debug("Login has been rejected by RADIUS server.");
                 throw new GuacamoleInvalidCredentialsException("Authentication failed.", CredentialsInfo.USERNAME_PASSWORD);
             }
 
-            // If we receive an AccessChallenge package, the server needs more information -
-            // We create a new form/field with the challenge message.
+            // Received AccessChallenge packet, more credentials required to complete authentication
             else if (radPack instanceof AccessChallenge) {
                 CredentialsInfo expectedCredentials = getRadiusChallenge(radPack);
 
@@ -187,7 +183,7 @@ public class AuthenticationProviderService {
                 throw new GuacamoleInsufficientCredentialsException("LOGIN.INFO_RADIUS_ADDL_REQUIRED", expectedCredentials);
             }
 
-            // If we receive AccessAccept, authentication has succeeded
+            // Received AccessAccept, authentication has succeeded
             else if (radPack instanceof AccessAccept) {
                 try {
                     AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
@@ -206,10 +202,9 @@ public class AuthenticationProviderService {
             }
         }
 
-        // The user responded to the challenge, send that back to the server
+        // This is a response to a challenge, so authenticate with that response
         else {
 
-            // Attempt to authenticate with response to challenge.
             try {
                 radPack = radiusService.authenticate(credentials.getUsername(),
                                                      request.getParameter(RadiusStateField.PARAMETER_NAME),
@@ -224,14 +219,14 @@ public class AuthenticationProviderService {
                 radiusService.disconnect();
             }
 
-            // Check the server response, see if we get accepted or not
+            // Received AccessAccept, authentication succeeded.
             if (radPack instanceof AccessAccept) {
                 AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
                 authenticatedUser.init(credentials);
                 return authenticatedUser;
             }
 
-            // Authentication failed
+            // Authentication failed.
             else {
                 logger.warn("RADIUS Challenge/Response authentication failed.");
                 logger.debug("Received something other than AccessAccept packet from the RADIUS server.");
