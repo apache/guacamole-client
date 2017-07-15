@@ -330,35 +330,35 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      */
     var seekToFrame = function seekToFrame(index, callback) {
 
-        var startIndex;
-
         // Abort any in-progress seek
         abortSeek();
 
-        // Back up until startIndex represents current state
-        for (startIndex = index; startIndex >= 0; startIndex--) {
-
-            var frame = frames[startIndex];
-
-            // If we've reached the current frame, startIndex represents
-            // current state by definition
-            if (startIndex === currentFrame)
-                break;
-
-            // If frame has associated absolute state, make that frame the
-            // current state
-            if (frame.clientState) {
-                playbackClient.importState(frame.clientState);
-                break;
-            }
-
-        }
-
-        // Advance to frame index after current state
-        startIndex++;
-
         // Replay frames asynchronously
         seekTimeout = window.setTimeout(function continueSeek() {
+
+            var startIndex;
+
+            // Back up until startIndex represents current state
+            for (startIndex = index; startIndex >= 0; startIndex--) {
+
+                var frame = frames[startIndex];
+
+                // If we've reached the current frame, startIndex represents
+                // current state by definition
+                if (startIndex === currentFrame)
+                    break;
+
+                // If frame has associated absolute state, make that frame the
+                // current state
+                if (frame.clientState) {
+                    playbackClient.importState(frame.clientState);
+                    break;
+                }
+
+            }
+
+            // Advance to frame index after current state
+            startIndex++;
 
             var startTime = new Date().getTime();
 
