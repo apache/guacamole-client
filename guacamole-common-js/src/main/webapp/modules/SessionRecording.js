@@ -325,7 +325,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      *     The index of the frame which should become the new playback
      *     position.
      *
-     * @param {function} [callback]
+     * @param {function} callback
      *     The callback to invoke once the seek operation has completed.
      */
     var seekToFrame = function seekToFrame(index, callback) {
@@ -387,8 +387,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
             else {
 
                 // Notify that the requested seek has completed
-                if (callback)
-                    callback();
+                callback();
 
             }
 
