@@ -220,14 +220,6 @@ AOP Alliance (http://aopalliance.sourceforge.net/)
         Public Domain (bundled/aopalliance-1.0/LICENSE)
 
 
-JRadius (https://github.com/coova/jradius)
-------------------------------------------
-
-    Version: 1.1.5
-    From: 'Coova Technologies, LLC' (https://coova.github.io)
-    License(s):
-        LGPL-2.1 (bundled/jradius-1.1.5/LICENSE)
-
 BouncyCastle Crypto (https://www.bouncycastle.org/java.html)
 ------------------------------------------------------------
 
@@ -236,6 +228,7 @@ BouncyCastle Crypto (https://www.bouncycastle.org/java.html)
     License(s):
         The Bouncy Castle License (bundled/bouncycastle-1.44/LICENSE
 
+
 Google Guice (https://github.com/google/guice)
 ----------------------------------------------
 
@@ -243,6 +236,15 @@ Google Guice (https://github.com/google/guice)
     From: 'Google Inc.' (http://www.google.com/)
     License(s):
         Apache v2.0 (bundled/guice-3.0/COPYING)
+
+
+JRadius (https://github.com/coova/jradius)
+------------------------------------------
+
+    Version: 1.1.5
+    From: 'Coova Technologies, LLC' (https://coova.github.io)
+    License(s):
+        LGPL-2.1 (bundled/jradius-1.1.5/LICENSE)
 
 
 JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
