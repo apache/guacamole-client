@@ -384,12 +384,9 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
             if (currentFrame !== index)
                 seekToFrame(index, callback);
 
-            else {
-
-                // Notify that the requested seek has completed
+            // Notify that the requested seek has completed
+            else
                 callback();
-
-            }
 
         }, 0);
 
