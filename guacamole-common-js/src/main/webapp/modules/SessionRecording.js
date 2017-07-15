@@ -315,11 +315,10 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
 
     /**
      * Moves the playback position to the given frame, resetting the state of
-     * the playback client and replaying frames as necessary. If the seek
-     * cannot be completed quickly, the seek operation may proceed
-     * asynchronously. If a seek operation is already in progress, that seek is
-     * first aborted. The progress of the seek operation can be observed
-     * through the onseek handler and the provided callback.
+     * the playback client and replaying frames as necessary. The seek
+     * operation will proceed asynchronously. If a seek operation is already in
+     * progress, that seek is first aborted. The progress of the seek operation
+     * can be observed through the onseek handler and the provided callback.
      *
      * @private
      * @param {Number} index
@@ -358,39 +357,42 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
         // Advance to frame index after current state
         startIndex++;
 
-        var startTime = new Date().getTime();
+        // Replay frames asynchronously
+        seekTimeout = window.setTimeout(function continueSeek() {
 
-        // Replay any applicable incremental frames
-        for (; startIndex <= index; startIndex++) {
+            var startTime = new Date().getTime();
 
-            // Stop seeking if the operation is taking too long
-            var currentTime = new Date().getTime();
-            if (currentTime - startTime >= MAXIMUM_SEEK_TIME)
-                break;
+            // Replay any applicable incremental frames
+            for (; startIndex <= index; startIndex++) {
 
-            replayFrame(startIndex);
-        }
+                // Stop seeking if the operation is taking too long
+                var currentTime = new Date().getTime();
+                if (currentTime - startTime >= MAXIMUM_SEEK_TIME)
+                    break;
 
-        // Current frame is now at requested index
-        currentFrame = startIndex - 1;
+                replayFrame(startIndex);
+            }
 
-        // Notify of changes in position
-        if (recording.onseek)
-            recording.onseek(recording.getPosition());
+            // Current frame is now at requested index
+            currentFrame = startIndex - 1;
 
-        // If the seek operation has not yet completed, schedule continuation
-        if (currentFrame !== index)
-            seekTimeout = window.setTimeout(function continueSeek() {
+            // Notify of changes in position
+            if (recording.onseek)
+                recording.onseek(recording.getPosition());
+
+            // If the seek operation has not yet completed, schedule continuation
+            if (currentFrame !== index)
                 seekToFrame(index, callback);
-            }, 0);
 
-        else {
+            else {
 
-            // Notify that the requested seek has completed
-            if (callback)
-                callback();
+                // Notify that the requested seek has completed
+                if (callback)
+                    callback();
 
-        }
+            }
+
+        }, 0);
 
     };
 
@@ -598,8 +600,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * currently being played back, playback will continue after the seek is
      * performed. If the recording is currently paused, playback will be
      * paused after the seek is performed. If a seek operation is already in
-     * progress, that seek is first aborted. Depending on how much processing
-     * the seek operation requires, the seek operation may proceed
+     * progress, that seek is first aborted. The seek operation will proceed
      * asynchronously.
      *
      * @param {Number} position
