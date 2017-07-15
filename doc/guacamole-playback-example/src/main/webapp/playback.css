@@ -21,6 +21,41 @@
     width: 640px;
 }
 
+.player #display {
+    position: relative;
+}
+
+.player .notification-container {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}
+
+.player .seek-notification {
+
+    color: white;
+    background: rgba(0, 0, 0, 0.75);
+
+    display: none; /* Initially hidden */
+    width: 100%;
+    height: 100%;
+
+}
+
+.player #display.seeking .seek-notification {
+    display: table;
+}
+
+.player .seek-notification p {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    font-family: sans-serif;
+}
+
 .player .controls {
 
     width: 100%;

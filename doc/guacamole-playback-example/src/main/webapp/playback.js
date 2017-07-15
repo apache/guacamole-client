@@ -148,6 +148,7 @@
     // If playing, the play/pause button should read "Pause"
     recording.onplay = function() {
         playPause.textContent = 'Pause';
+        display.classList.remove('seeking');
     };
 
     // If paused, the play/pause button should read "Play"
@@ -189,7 +190,17 @@
 
     // Seek within recording if slider is moved
     positionSlider.onchange = function sliderPositionChanged() {
-        recording.seek(positionSlider.value);
+
+        // Seek is in progress
+        display.classList.add('seeking');
+
+        // Request seek
+        recording.seek(positionSlider.value, function seekComplete() {
+
+            // Seek has completed
+            display.classList.remove('seeking');
+
+        });
     };
 
 })();
