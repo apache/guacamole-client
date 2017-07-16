@@ -160,9 +160,6 @@ public class AuthenticationProviderService {
                 logger.debug("Error configuring RADIUS server.", e);
                 throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
             }
-            finally {
-                radiusService.disconnect();
-            }
         }
 
         // This is a response to a previous challenge, authenticate with that.
@@ -176,9 +173,6 @@ public class AuthenticationProviderService {
                 logger.error("Cannot configure RADIUS server: {}", e.getMessage());
                 logger.debug("Error configuring RADIUS server.", e);
                 throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
-            }
-            finally {
-                radiusService.disconnect();
             }
         }
 

@@ -64,11 +64,6 @@ public class RadiusConnectionService {
 
 
     /**
-     * The RADIUS client;
-     */
-    private RadiusClient radiusClient;
-
-    /**
      * Creates a new instance of RadiusClient, configured with parameters
      * from guacamole.properties.
      *
@@ -76,11 +71,11 @@ public class RadiusConnectionService {
      *     If an error occurs while parsing guacamole.properties, or if the
      *     configuration of RadiusClient fails.
      */
-    private void createRadiusConnection() {
+    private RadiusClient createRadiusConnection() {
 
         // Create the RADIUS client with the configuration parameters
         try {
-            radiusClient = new RadiusClient(InetAddress.getByName(confService.getRadiusServer()),
+            return new RadiusClient(InetAddress.getByName(confService.getRadiusServer()),
                                             confService.getRadiusSharedSecret(),
                                             confService.getRadiusAuthPort(),
                                             confService.getRadiusAcctPort(),
@@ -99,6 +94,8 @@ public class RadiusConnectionService {
             logger.debug("Failed to communicate with host.", e);
         }
 
+        return null;
+
     }
 
     /**
@@ -110,7 +107,8 @@ public class RadiusConnectionService {
      *     with parameters from guacamole.properties, or null if
      *     configuration fails.
      */
-    private RadiusAuthenticator setupRadiusAuthenticator() throws GuacamoleException {
+    private RadiusAuthenticator setupRadiusAuthenticator(RadiusClient radiusClient)
+            throws GuacamoleException {
 
         // If we don't have a radiusClient object, yet, don't go any further.
         if (radiusClient == null) {
@@ -196,7 +194,7 @@ public class RadiusConnectionService {
         }
 
         // Create the RADIUS connection and set up the dictionary
-        createRadiusConnection();
+        RadiusClient radiusClient = createRadiusConnection();
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
 
         // Client failed to set up, so we return null
@@ -204,7 +202,7 @@ public class RadiusConnectionService {
             return null;
 
         // Set up the RadiusAuthenticator
-        RadiusAuthenticator radAuth = setupRadiusAuthenticator();
+        RadiusAuthenticator radAuth = setupRadiusAuthenticator(radiusClient);
         if (radAuth == null)
             throw new GuacamoleException("Unknown RADIUS authentication protocol.");
 
@@ -248,6 +246,9 @@ public class RadiusConnectionService {
             logger.debug("Unknown RADIUS algorithm.", e);
             return null;
         }
+        finally {
+            radiusClient.close();
+        }
     }
 
     public RadiusPacket sendChallengeResponse(String username, String response, String state)
@@ -269,15 +270,6 @@ public class RadiusConnectionService {
         }
 
         return authenticate(username,response,state);
-
-    }
-
-    /**
-     * Disconnects the current RADIUS connection.
-     */
-    public void disconnect() {
-
-        radiusClient.close();
 
     }
 
