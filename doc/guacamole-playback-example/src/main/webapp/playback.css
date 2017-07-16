@@ -34,7 +34,6 @@
     bottom: 0;
 }
 
-#player .paused-notification,
 #player .seek-notification {
 
     color: white;
@@ -50,11 +49,6 @@
     display: table;
 }
 
-#player.paused .paused-notification {
-    display: table;
-}
-
-#player .paused-notification p,
 #player .seek-notification p {
     display: table-cell;
     text-align: center;

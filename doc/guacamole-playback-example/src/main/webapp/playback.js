@@ -162,13 +162,11 @@
     // If playing, the play/pause button should read "Pause"
     recording.onplay = function() {
         playPause.textContent = 'Pause';
-        player.className = 'playing';
     };
 
     // If paused, the play/pause button should read "Play"
     recording.onpause = function() {
         playPause.textContent = 'Play';
-        player.className = 'paused';
     };
 
     // Toggle play/pause when display or button are clicked
@@ -182,6 +180,7 @@
     // Resume playback when cancel button is clicked
     cancelSeek.onclick = function cancelSeekOperation(e) {
         recording.play();
+        player.className = '';
         e.stopPropagation();
     };
 
@@ -213,7 +212,12 @@
     positionSlider.onchange = function sliderPositionChanged() {
 
         // Request seek
-        recording.seek(positionSlider.value);
+        recording.seek(positionSlider.value, function seekComplete() {
+
+            // Seek has completed
+            player.className = '';
+
+        });
 
         // Seek is in progress
         player.className = 'seeking';
