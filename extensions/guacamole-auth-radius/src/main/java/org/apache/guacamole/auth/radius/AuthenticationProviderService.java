@@ -153,7 +153,7 @@ public class AuthenticationProviderService {
 
             try {
                 radPack = radiusService.authenticate(credentials.getUsername(),
-                                                credentials.getPassword());
+                                                credentials.getPassword(), null);
             }
             catch (GuacamoleException e) {
                 logger.error("Cannot configure RADIUS server: {}", e.getMessage());
@@ -168,9 +168,9 @@ public class AuthenticationProviderService {
         // This is a response to a previous challenge, authenticate with that.
         else {
             try {
-                radPack = radiusService.authenticate(credentials.getUsername(),
-                                                     request.getParameter(RadiusStateField.PARAMETER_NAME),
-                                                     challengeResponse);
+                radPack = radiusService.sendChallengeResponse(credentials.getUsername(),
+                                                     challengeResponse,
+                                                     request.getParameter(RadiusStateField.PARAMETER_NAME));
             }
             catch (GuacamoleException e) {
                 logger.error("Cannot configure RADIUS server: {}", e.getMessage());

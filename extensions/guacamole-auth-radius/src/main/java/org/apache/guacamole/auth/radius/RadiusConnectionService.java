@@ -165,91 +165,6 @@ public class RadiusConnectionService {
     }
 
     /**
-     * Authenticate to the RADIUS server and return the response from the
-     * server.
-     *
-     * @param username
-     *     The username for authentication.
-     * @param password
-     *     The password for authentication.
-     *
-     * @return
-     *     A RadiusPacket with the response of the server.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while talking to the server. 
-     */
-    public RadiusPacket authenticate(String username, String password) 
-            throws GuacamoleException {
-
-        // If a username hasn't been provided, stop
-        if (username == null || username.isEmpty()) {
-            logger.warn("Anonymous access not allowed with RADIUS client.");
-            return null;
-        }
-
-        // If a password hasn't been provided, stop
-        if (password == null || password.isEmpty()) {
-            logger.warn("Password required for RADIUS authentication.");
-            return null;
-        }
-
-        // Create the connection and load the attribute dictionary
-        createRadiusConnection();
-        AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
-
-        // If the client is null, we return null - something has gone wrong
-        if (radiusClient == null)
-            return null;
-
-        RadiusAuthenticator radAuth = setupRadiusAuthenticator();
-
-        if (radAuth == null)
-            throw new GuacamoleException("Unknown RADIUS authentication protocol.");
-
-        // Set up attributes, create the access request, and send the packet
-        try { 
-            AttributeList radAttrs = new AttributeList();
-            radAttrs.add(new Attr_UserName(username));
-            radAttrs.add(new Attr_UserPassword(password));
-            radAttrs.add(new Attr_CleartextPassword(password));
-
-            AccessRequest radAcc = new AccessRequest(radiusClient);
-
-            // EAP-TTLS tunnels protected attributes inside the TLS layer
-            if (radAuth instanceof EAPTTLSAuthenticator) {
-                radAuth.setUsername(new Attr_UserName(username));
-                ((EAPTTLSAuthenticator)radAuth).setTunneledAttributes(radAttrs);
-            }
-            else
-                radAcc.addAttributes(radAttrs);
-
-            radAuth.setupRequest(radiusClient, radAcc);
-            radAuth.processRequest(radAcc);
-            RadiusResponse reply = radiusClient.sendReceive(radAcc, confService.getRadiusRetries());
-
-            // We receive a Challenge not asking for user input, so silently process the challenge
-            while((reply instanceof AccessChallenge) && (reply.findAttribute(Attr_ReplyMessage.TYPE) == null)) {
-                radAuth.processChallenge(radAcc, reply);
-                reply = radiusClient.sendReceive(radAcc, confService.getRadiusRetries());
-            }
-            return reply;
-        }
-
-        catch (RadiusException e) {
-            logger.error("Unable to complete authentication.", e.getMessage());
-            logger.debug("Authentication with RADIUS failed.", e);
-            return null;
-        }
-
-        catch (NoSuchAlgorithmException e) {
-            logger.error("No such RADIUS algorithm: {}", e.getMessage());
-            logger.debug("Unknown RADIUS algorithm.", e);
-            return null;
-        }
-    }
-
-    /**
      * Authenticate to the RADIUS server using existing state and a response
      *
      * @param username
@@ -265,7 +180,7 @@ public class RadiusConnectionService {
      * @throws GuacamoleException
      *     If an error occurs while talking to the server.
      */
-    public RadiusPacket authenticate(String username, String state, String response)
+    public RadiusPacket authenticate(String username, String secret, String state)
             throws GuacamoleException {
 
         // If a username wasn't passed, we quit
@@ -274,15 +189,9 @@ public class RadiusConnectionService {
             return null;
         }
 
-        // If the state wasn't passed, we quit
-        if (state == null || state.isEmpty()) {
-            logger.warn("This method needs a previous RADIUS state to respond to.");
-            return null;
-        }
-
-        // If the response wasn't passed, we quit
-        if (response == null || response.isEmpty()) {
-            logger.warn("Response required for RADIUS authentication.");
+        // If secret wasn't passed, we quit
+        if (secret == null || secret.isEmpty()) {
+            logger.warn("Password/secret required for RADIUS authentication.");
             return null;
         }
 
@@ -303,9 +212,10 @@ public class RadiusConnectionService {
         try {
             AttributeList radAttrs = new AttributeList();
             radAttrs.add(new Attr_UserName(username));
-            radAttrs.add(new Attr_State(state));
-            radAttrs.add(new Attr_UserPassword(response));
-            radAttrs.add(new Attr_CleartextPassword(response));
+            if (state != null && !state.isEmpty())
+                radAttrs.add(new Attr_State(state));
+            radAttrs.add(new Attr_UserPassword(secret));
+            radAttrs.add(new Attr_CleartextPassword(secret));
 
             AccessRequest radAcc = new AccessRequest(radiusClient);
 
@@ -338,6 +248,28 @@ public class RadiusConnectionService {
             logger.debug("Unknown RADIUS algorithm.", e);
             return null;
         }
+    }
+
+    public RadiusPacket sendChallengeResponse(String username, String response, String state)
+            throws GuacamoleException {
+
+        if (username == null || username.isEmpty()) {
+            logger.error("Challenge/response to RADIUS requires a username.");
+            return null;
+        }
+
+        if (state == null || state.isEmpty()) {
+            logger.error("Challenge/response to RADIUS requires a prior state.");
+            return null;
+        }
+
+        if (response == null || response.isEmpty()) {
+            logger.error("Challenge/response to RADIUS requires a response.");
+            return null;
+        }
+
+        return authenticate(username,response,state);
+
     }
 
     /**
