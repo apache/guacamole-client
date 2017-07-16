@@ -179,10 +179,9 @@
             recording.pause();
     };
 
-    // Cancel seek operation when cancel button is clicked
+    // Resume playback when cancel button is clicked
     cancelSeek.onclick = function cancelSeekOperation(e) {
-        player.className = 'paused';
-        recording.pause();
+        recording.play();
         e.stopPropagation();
     };
 
