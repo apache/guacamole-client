@@ -117,15 +117,6 @@ public class RadiusConnectionService {
             return null;
         }
 
-        // Pull configuration parameters from guacamole.properties
-        LocalEnvironment guacEnv = new LocalEnvironment();
-        String guacHome = guacEnv.getGuacamoleHome().getAbsolutePath();
-        String caFile = confService.getRadiusCAFile();
-        String caPassword = confService.getRadiusCAPassword();
-        String keyFile = confService.getRadiusKeyFile();
-        String keyPassword = confService.getRadiusKeyPassword();
-        String innerProtocol = confService.getRadiusEAPTTLSInnerProtocol();
-            
         RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(confService.getRadiusAuthProtocol());
         if (radAuth == null)
             throw new GuacamoleException("Could not get a valid RadiusAuthenticator for specified protocol: " + confService.getRadiusAuthProtocol());
@@ -134,6 +125,15 @@ public class RadiusConnectionService {
         if (radAuth instanceof PEAPAuthenticator || 
             radAuth instanceof EAPTLSAuthenticator || 
             radAuth instanceof EAPTTLSAuthenticator) {
+
+            // Pull TLS configuration parameters from guacamole.properties
+            LocalEnvironment guacEnv = new LocalEnvironment();
+            String guacHome = guacEnv.getGuacamoleHome();
+            String caFile = confService.getRadiusCAFile();
+            String caPassword = confService.getRadiusCAPassword();
+            String keyFile = confService.getRadiusKeyFile();
+            String keyPassword = confService.getRadiusKeyPassword();
+            String innerProtocol = confService.getRadiusEAPTTLSInnerProtocol();
 
             if (caFile != null) {
                 ((EAPTLSAuthenticator)radAuth).setCaFile((new File(guacHome, caFile)).toString());
