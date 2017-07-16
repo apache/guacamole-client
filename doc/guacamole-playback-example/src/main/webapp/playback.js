@@ -28,6 +28,13 @@
     var RECORDING_URL = 'recording.guac';
 
     /**
+     * The element representing the session recording player.
+     *
+     * @type Element
+     */
+    var player = document.getElementById('player');
+
+    /**
      * The element which will contain the recording display.
      *
      * @type Element
@@ -155,13 +162,13 @@
     // If playing, the play/pause button should read "Pause"
     recording.onplay = function() {
         playPause.textContent = 'Pause';
-        display.classList.remove('seeking');
+        player.className = 'playing';
     };
 
     // If paused, the play/pause button should read "Play"
     recording.onpause = function() {
         playPause.textContent = 'Play';
-        display.classList.remove('seeking');
+        player.className = 'paused';
     };
 
     // Toggle play/pause when display or button are clicked
@@ -174,7 +181,7 @@
 
     // Cancel seek operation when cancel button is clicked
     cancelSeek.onclick = function cancelSeekOperation(e) {
-        display.classList.remove('seeking');
+        player.className = 'paused';
         recording.pause();
         e.stopPropagation();
     };
@@ -207,15 +214,10 @@
     positionSlider.onchange = function sliderPositionChanged() {
 
         // Request seek
-        recording.seek(positionSlider.value, function seekComplete() {
-
-            // Seek has completed
-            display.classList.remove('seeking');
-
-        });
+        recording.seek(positionSlider.value);
 
         // Seek is in progress
-        display.classList.add('seeking');
+        player.className = 'seeking';
 
     };
 

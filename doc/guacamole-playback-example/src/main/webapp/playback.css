@@ -17,15 +17,15 @@
  * under the License.
  */
 
-.player {
+#player {
     width: 640px;
 }
 
-.player #display {
+#display {
     position: relative;
 }
 
-.player .notification-container {
+#player .notification-container {
     position: absolute;
     z-index: 1;
     top: 0;
@@ -34,7 +34,8 @@
     bottom: 0;
 }
 
-.player .seek-notification {
+#player .paused-notification,
+#player .seek-notification {
 
     color: white;
     background: rgba(0, 0, 0, 0.75);
@@ -45,18 +46,23 @@
 
 }
 
-.player #display.seeking .seek-notification {
+#player.seeking .seek-notification {
     display: table;
 }
 
-.player .seek-notification p {
+#player.paused .paused-notification {
+    display: table;
+}
+
+#player .paused-notification p,
+#player .seek-notification p {
     display: table-cell;
     text-align: center;
     vertical-align: middle;
     font-family: sans-serif;
 }
 
-.player .controls {
+#player .controls {
 
     width: 100%;
 
@@ -87,11 +93,11 @@
 
 }
 
-.player .controls > * {
+#player .controls > * {
     margin: 0.25em;
 }
 
-.player .controls #position-slider {
+#player .controls #position-slider {
     -ms-flex: 1 1 auto;
     -moz-box-flex: 1;
     -webkit-box-flex: 1;
@@ -99,16 +105,16 @@
     flex: 1 1 auto;
 }
 
-.player .controls #play-pause {
+#player .controls #play-pause {
     margin-left: 0;
     min-width: 5em;
 }
 
-.player .controls #position,
-.player .controls #duration {
+#player .controls #position,
+#player .controls #duration {
     font-family: monospace;
 }
 
-.player .controls #duration {
+#player .controls #duration {
     margin-right: 0;
 }
