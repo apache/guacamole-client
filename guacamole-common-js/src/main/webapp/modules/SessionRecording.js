@@ -152,16 +152,6 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
     var startRealTimestamp = null;
 
     /**
-     * The ID of the timeout which will play the next frame, if playback is in
-     * progress. If playback is not in progress, the ID stored here (if any)
-     * will not be valid.
-     *
-     * @private
-     * @type {Number}
-     */
-    var playbackTimeout = null;
-
-    /**
      * The ID of the timeout which will continue the in-progress seek
      * operation. If no seek operation is in progress, the ID stored here (if
      * any) will not be valid.
@@ -327,8 +317,12 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      *
      * @param {function} callback
      *     The callback to invoke once the seek operation has completed.
+     *
+     * @param {Number} [delay=0]
+     *     The number of milliseconds that the seek operation should be
+     *     scheduled to take.
      */
-    var seekToFrame = function seekToFrame(index, callback) {
+    var seekToFrame = function seekToFrame(index, callback, delay) {
 
         // Abort any in-progress seek
         abortSeek();
@@ -382,13 +376,14 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
 
             // If the seek operation has not yet completed, schedule continuation
             if (currentFrame !== index)
-                seekToFrame(index, callback);
+                seekToFrame(index, callback,
+                    Math.max(delay - (new Date().getTime() - startTime), 0));
 
             // Notify that the requested seek has completed
             else
                 callback();
 
-        }, 0);
+        }, delay || 0);
 
     };
 
@@ -411,35 +406,30 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      */
     var continuePlayback = function continuePlayback() {
 
-        // Advance to next frame
-        seekToFrame(currentFrame + 1, function playbackSeekComplete() {
+        // If frames remain after advancing, schedule next frame
+        if (currentFrame + 1 < frames.length) {
 
-            // If frames remain after advancing, schedule next frame
-            if (currentFrame + 1 < frames.length) {
+            // Pull the upcoming frame
+            var next = frames[currentFrame + 1];
 
-                // Pull the upcoming frame
-                var next = frames[currentFrame + 1];
+            // Calculate the real timestamp corresponding to when the next
+            // frame begins
+            var nextRealTimestamp = next.timestamp - startVideoTimestamp + startRealTimestamp;
 
-                // Calculate the real timestamp corresponding to when the next
-                // frame begins
-                var nextRealTimestamp = next.timestamp - startVideoTimestamp + startRealTimestamp;
+            // Calculate the relative delay between the current time and
+            // the next frame start
+            var delay = Math.max(nextRealTimestamp - new Date().getTime(), 0);
 
-                // Calculate the relative delay between the current time and
-                // the next frame start
-                var delay = Math.max(nextRealTimestamp - new Date().getTime(), 0);
+            // Advance to next frame after enough time has elapsed
+            seekToFrame(currentFrame + 1, function frameDelayElapsed() {
+                continuePlayback();
+            }, delay);
 
-                // Advance to next frame after enough time has elapsed
-                playbackTimeout = window.setTimeout(function frameDelayElapsed() {
-                    continuePlayback();
-                }, delay);
+        }
 
-            }
-
-            // Otherwise stop playback
-            else
-                recording.pause();
-
-        });
+        // Otherwise stop playback
+        else
+            recording.pause();
 
     };
 
@@ -641,7 +631,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      */
     this.pause = function pause() {
 
-        // Abort any in-progress seek
+        // Abort any in-progress seek / playback
         abortSeek();
 
         // Stop playback only if playback is in progress
@@ -651,8 +641,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
             if (recording.onpause)
                 recording.onpause();
 
-            // Stop playback
-            window.clearTimeout(playbackTimeout);
+            // Playback is stopped
             startVideoTimestamp = null;
             startRealTimestamp = null;
 
