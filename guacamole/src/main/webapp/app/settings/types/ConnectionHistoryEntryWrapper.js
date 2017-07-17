@@ -51,6 +51,13 @@ angular.module('settings').factory('ConnectionHistoryEntryWrapper', ['$injector'
         this.connectionName = historyEntry.connectionName;
 
         /**
+         * The remote host associated with this history entry.
+         *
+         * @type String
+         */
+        this.remoteHost = historyEntry.remoteHost;
+
+        /**
          * The username of the user associated with this particular usage of
          * the connection.
          *

@@ -72,6 +72,7 @@
                     <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_USERNAME' | translate}}</th>
                     <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_START' | translate}}</th>
                     <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_DURATION' | translate}}</th>
+                    <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_REMOTEHOST' | translate}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -81,6 +82,7 @@
                     <td class="duration"
                         translate="{{wrapper.durationText}}"
                         translate-values="{VALUE: wrapper.duration.value, UNIT: wrapper.duration.unit}"></td>
+                    <td class="remoteHost">{{wrapper.entry.remoteHost}}</td>
                 </tr>
             </tbody>
         </table>
