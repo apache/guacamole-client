@@ -36,4 +36,4 @@ ALTER TABLE guacamole_connection
 --
 
 ALTER TABLE guacamole_connection_history
-    ADD COLUMN remote_host VARCHAR(128) DEFAULT NULL;
+    ADD COLUMN remote_host VARCHAR(256) DEFAULT NULL;
