@@ -322,6 +322,7 @@ CREATE TABLE `guacamole_connection_history` (
   `history_id`           int(11)      NOT NULL AUTO_INCREMENT,
   `user_id`              int(11)      DEFAULT NULL,
   `username`             varchar(128) NOT NULL,
+  `remote_host`          varchar(256) DEFAULT NULL,
   `connection_id`        int(11)      DEFAULT NULL,
   `connection_name`      varchar(128) NOT NULL,
   `sharing_profile_id`   int(11)      DEFAULT NULL,

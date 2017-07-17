@@ -84,7 +84,8 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
                 '-startDate',
                 '-duration',
                 'username',
-                'connectionName'
+                'connectionName',
+                'remoteHost'
             ]);
 
             // Get session date format
@@ -192,6 +193,7 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
                     'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_STARTDATE',
                     'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_DURATION',
                     'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_CONNECTION_NAME',
+                    'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_REMOTEHOST',
                     'SETTINGS_CONNECTION_HISTORY.FILENAME_HISTORY_CSV'
                 ]).then(function headerTranslated(translations) {
 
@@ -200,7 +202,8 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
                         translations['SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_USERNAME'],
                         translations['SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_STARTDATE'],
                         translations['SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_DURATION'],
-                        translations['SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_CONNECTION_NAME']
+                        translations['SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_CONNECTION_NAME'],
+                        translations['SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_REMOTEHOST']
                     ]];
 
                     // Add rows for all history entries, using the same sort
@@ -215,7 +218,8 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
                                 historyEntryWrapper.username,
                                 $filter('date')(historyEntryWrapper.startDate, $scope.dateFormat),
                                 historyEntryWrapper.duration / 1000,
-                                historyEntryWrapper.connectionName
+                                historyEntryWrapper.connectionName,
+                                historyEntryWrapper.remoteHost
                             ]);
                         }
                     );

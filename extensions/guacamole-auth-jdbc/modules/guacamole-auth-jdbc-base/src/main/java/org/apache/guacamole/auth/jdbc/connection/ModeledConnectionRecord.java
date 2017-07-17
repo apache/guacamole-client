@@ -77,7 +77,7 @@ public class ModeledConnectionRecord implements ConnectionRecord {
 
     @Override
     public String getRemoteHost() {
-        return null;
+        return model.getRemoteHost();
     }
 
     @Override

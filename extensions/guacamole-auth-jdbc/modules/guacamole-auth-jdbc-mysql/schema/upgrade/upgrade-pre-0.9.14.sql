@@ -30,3 +30,10 @@ ALTER TABLE guacamole_connection
 
 ALTER TABLE guacamole_connection
     ADD COLUMN failover_only BOOLEAN NOT NULL DEFAULT 0;
+
+--
+-- Add remote_host to connection history
+--
+
+ALTER TABLE guacamole_connection_history
+    ADD COLUMN remote_host VARCHAR(256) DEFAULT NULL;

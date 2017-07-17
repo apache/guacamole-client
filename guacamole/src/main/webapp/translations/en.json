@@ -220,9 +220,10 @@
         "SECTION_HEADER_HISTORY"         : "Usage History",
         "SECTION_HEADER_PARAMETERS"      : "Parameters",
 
-        "TABLE_HEADER_HISTORY_USERNAME" : "Username",
-        "TABLE_HEADER_HISTORY_START"    : "Start Time",
-        "TABLE_HEADER_HISTORY_DURATION" : "Duration",
+        "TABLE_HEADER_HISTORY_USERNAME"   : "Username",
+        "TABLE_HEADER_HISTORY_START"      : "Start Time",
+        "TABLE_HEADER_HISTORY_DURATION"   : "Duration",
+        "TABLE_HEADER_HISTORY_REMOTEHOST" : "Remote Host",
 
         "TEXT_CONFIRM_DELETE"   : "Connections cannot be restored after they have been deleted. Are you sure you want to delete this connection?",
         "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
@@ -598,6 +599,7 @@
 
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Connection name",
         "TABLE_HEADER_SESSION_DURATION"        : "Duration",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Remote host",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Start time",
         "TABLE_HEADER_SESSION_USERNAME"        : "Username",
 

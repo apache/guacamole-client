@@ -53,6 +53,13 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
         this.connectionName = template.connectionName;
 
         /**
+         * The remote host associated with this history entry.
+         *
+         * @type String
+         */
+        this.remoteHost = template.remoteHost;
+
+        /**
          * The time that usage began, in seconds since 1970-01-01 00:00:00 UTC.
          *
          * @type Number 
