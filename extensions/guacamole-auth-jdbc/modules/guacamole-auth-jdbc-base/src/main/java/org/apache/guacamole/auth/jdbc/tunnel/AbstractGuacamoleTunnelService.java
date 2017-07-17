@@ -306,6 +306,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         recordModel.setUsername(record.getUsername());
         recordModel.setConnectionIdentifier(record.getConnectionIdentifier());
         recordModel.setConnectionName(record.getConnectionName());
+        recordModel.setRemoteHost(record.getRemoteHost());
         recordModel.setSharingProfileIdentifier(record.getSharingProfileIdentifier());
         recordModel.setSharingProfileName(record.getSharingProfileName());
         recordModel.setStartDate(record.getStartDate());

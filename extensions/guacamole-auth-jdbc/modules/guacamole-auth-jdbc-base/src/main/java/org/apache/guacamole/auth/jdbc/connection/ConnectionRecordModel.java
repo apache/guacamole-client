@@ -64,6 +64,11 @@ public class ConnectionRecordModel {
     private String username;
 
     /**
+     * The remote host associated with this connection record.
+     */
+    private String remoteHost;
+
+    /**
      * The time the connection was initiated by the associated user.
      */
     private Date startDate;
@@ -214,6 +219,26 @@ public class ConnectionRecordModel {
      */
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    /**
+     * Returns the remote host associated with this connection record.
+     *
+     * @return
+     *     The remote host associated with this connection record.
+     */
+    public String getRemoteHost() {
+        return remoteHost;
+    }
+
+    /**
+     * Sets the remote host associated with this connection record.
+     *
+     * @param remoteHost
+     *     The remote host to associate with this connection record.
+     */
+    public void setRemoteHost(String remoteHost) {
+        this.remoteHost = remoteHost;
     }
 
     /**

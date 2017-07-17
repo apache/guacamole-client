@@ -381,6 +381,7 @@ CREATE TABLE guacamole_connection_history (
   history_id           serial       NOT NULL,
   user_id              integer      DEFAULT NULL,
   username             varchar(128) NOT NULL,
+  remote_host          varchar(128) DEFAULT NULL,
   connection_id        integer      DEFAULT NULL,
   connection_name      varchar(128) NOT NULL,
   sharing_profile_id   integer      DEFAULT NULL,
