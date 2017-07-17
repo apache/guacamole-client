@@ -128,12 +128,11 @@ public class RadiusConnectionService {
 
             // Pull TLS configuration parameters from guacamole.properties
             LocalEnvironment guacEnv = new LocalEnvironment();
-            String guacHome = guacEnv.getGuacamoleHome();
+            File guacHome = guacEnv.getGuacamoleHome();
             String caFile = confService.getRadiusCAFile();
             String caPassword = confService.getRadiusCAPassword();
             String keyFile = confService.getRadiusKeyFile();
             String keyPassword = confService.getRadiusKeyPassword();
-            String innerProtocol = confService.getRadiusEAPTTLSInnerProtocol();
 
             if (caFile != null) {
                 ((EAPTLSAuthenticator)radAuth).setCaFile((new File(guacHome, caFile)).toString());
@@ -152,6 +151,7 @@ public class RadiusConnectionService {
 
         // If we're using EAP-TTLS, we need to define tunneled protocol
         if (radAuth instanceof EAPTTLSAuthenticator) {
+            String innerProtocol = confService.getRadiusEAPTTLSInnerProtocol();
             if (innerProtocol == null)
                 throw new GuacamoleException("Trying to use EAP-TTLS, but no inner protocol specified.");
 
