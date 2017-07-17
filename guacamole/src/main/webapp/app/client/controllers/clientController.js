@@ -31,6 +31,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     // Required services
     var $location             = $injector.get('$location');
+    var $rootScope            = $injector.get('$rootScope');
     var authenticationService = $injector.get('authenticationService');
     var clipboardService      = $injector.get('clipboardService');
     var guacClientManager     = $injector.get('guacClientManager');
@@ -64,7 +65,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     var MENU_DRAG_VERTICAL_TOLERANCE = 10;
 
-    /*
+    /**
      * In order to open the guacamole menu, we need to hit ctrl-alt-shift. There are
      * several possible keysysms for each key.
      */
@@ -74,7 +75,15 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         CTRL_KEYS   = {0xFFE3 : true, 0xFFE4 : true},
         END_KEYS    = {0xFF57 : true, 0xFFB1 : true},
         MENU_KEYS   = angular.extend({}, SHIFT_KEYS, ALT_KEYS, CTRL_KEYS);
-        CAD_KEYS    = angular.extend({}, ALT_KEYS, CTRL_KEYS, END_KEYS);
+
+    /**
+     * Keys needed to support the Ctrl-Alt-End hotkey for sending
+     * Ctrl-Alt-Delete.
+     */
+    CAD_KEYS    = angular.extend({}, ALT_KEYS, CTRL_KEYS, END_KEYS);
+    var CTRL_KEY    = 0xFFE3;
+    var ALT_KEY     = 0xFFE9;
+    var DEL_KEY     = 0xFFFF;
 
     /**
      * All client error codes handled and passed off for translation. Any error
@@ -501,14 +510,17 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     };
 
-    // Track pressed keys, opening the Guacamole menu after Ctrl+Alt+Shift
+    /**
+     * Track pressed keys, opening the Guacamole menu after Ctrl+Alt+Shift, or
+     * send Ctrl-Alt-Delete when Ctrl-Alt-End is pressed.
+     */
     $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
 
         // Record key as pressed
         keysCurrentlyPressed[keysym] = true;   
         
         var currentKeysPressedKeys = Object.keys(keysCurrentlyPressed);
-        /* 
+        /**
          * If only menu keys are pressed, and we have one keysym from each group,
          * and one of the keys is being released, show the menu. 
          */
@@ -534,6 +546,10 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             }
         }
 
+        /**
+         * If only Ctrl-Alt-End is pressed, and we have a one keysym from each
+         * group, and one key is being released, send Ctrl-Alt-Delete.
+         */
         if(checkCADHotkeyActive()) {
 
             // Check that there is a key pressed for each of the required key classes
@@ -545,12 +561,17 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
                // Don't send this key event through to the client
                event.preventDefault();
 
-               // Log the event
-               console.log('We should trigger Ctrl-Alt-Delete here.');
-
                // Reset the keys pressed
                keysCurrentlyPressed = {};
                keyboard.reset();
+
+               // Send the Ctrl-Alt-Delete event.
+               $rootScope.$broadcast('guacSyntheticKeydown', CTRL_KEY);
+               $rootScope.$broadcast('guacSyntheticKeydown', ALT_KEY);
+               $rootScope.$broadcast('guacSyntheticKeydown', DEL_KEY);
+               $rootScope.$broadcast('guacSyntheticKeyup', DEL_KEY);
+               $rootScope.$broadcast('guacSyntheticKeyup', ALT_KEY);
+               $rootScope.$broadcast('guacSyntheticKeyup', CTRL_KEY);
             }
         }
 
