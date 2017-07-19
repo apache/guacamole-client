@@ -28,6 +28,13 @@
     var RECORDING_URL = 'recording.guac';
 
     /**
+     * The element representing the session recording player.
+     *
+     * @type Element
+     */
+    var player = document.getElementById('player');
+
+    /**
      * The element which will contain the recording display.
      *
      * @type Element
@@ -40,6 +47,13 @@
      * @type Element
      */
     var playPause = document.getElementById('play-pause');
+
+    /**
+     * Button for cancelling in-progress seek operations.
+     *
+     * @type Element
+     */
+    var cancelSeek = document.getElementById('cancel-seek');
 
     /**
      * Text status display indicating the current playback position within the
@@ -163,6 +177,13 @@
             recording.pause();
     };
 
+    // Resume playback when cancel button is clicked
+    cancelSeek.onclick = function cancelSeekOperation(e) {
+        recording.play();
+        player.className = '';
+        e.stopPropagation();
+    };
+
     // Fit display within containing div
     recordingDisplay.onresize = function displayResized(width, height) {
 
@@ -189,7 +210,18 @@
 
     // Seek within recording if slider is moved
     positionSlider.onchange = function sliderPositionChanged() {
-        recording.seek(positionSlider.value);
+
+        // Request seek
+        recording.seek(positionSlider.value, function seekComplete() {
+
+            // Seek has completed
+            player.className = '';
+
+        });
+
+        // Seek is in progress
+        player.className = 'seeking';
+
     };
 
 })();

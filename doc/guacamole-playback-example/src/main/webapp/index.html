@@ -28,10 +28,19 @@
     <body>
 
         <!-- Guacamole recording player -->
-        <div class="player">
+        <div id="player">
 
             <!-- Player display -->
-            <div id="display"></div>
+            <div id="display">
+                <div class="notification-container">
+                    <div class="seek-notification">
+                        <p>
+                            Seek in progress...
+                            <button id="cancel-seek">Cancel</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
 
             <!-- Player controls -->
             <div class="controls">
