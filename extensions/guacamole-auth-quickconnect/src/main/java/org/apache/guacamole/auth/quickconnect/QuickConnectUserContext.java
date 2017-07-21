@@ -112,6 +112,7 @@ public class QuickConnectUserContext implements UserContext {
     public QuickConnectUserContext(AuthenticationProvider authProvider,
             Map<String, GuacamoleConfiguration> configs) {
         this(authProvider, UUID.randomUUID().toString(), configs);
+        logger.debug(">>>QuickConnect<<< Constructor with authProvider and configs.");
     }
 
     /**
@@ -216,6 +217,9 @@ public class QuickConnectUserContext implements UserContext {
     @Override
     public Directory<User> getUserDirectory()
             throws GuacamoleException {
+
+        logger.debug(">>>QuickConnect<<< Returning the entire user directory: {}", userDirectory.getIdentifiers());
+
         return userDirectory;
     }
 

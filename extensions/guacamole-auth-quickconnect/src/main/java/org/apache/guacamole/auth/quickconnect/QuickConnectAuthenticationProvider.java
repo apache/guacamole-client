@@ -21,11 +21,14 @@ package org.apache.guacamole.auth.quickconnect;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
+import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.apache.guacamole.net.auth.simple.SimpleAuthenticationProvider;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
@@ -40,8 +43,6 @@ public class QuickConnectAuthenticationProvider extends SimpleAuthenticationProv
      * Logger for this class.
      */
     private final Logger logger = LoggerFactory.getLogger(QuickConnectAuthenticationProvider.class);
-
-    private Map<String, GuacamoleConfiguration> quickConnections = new HashMap<String, GuacamoleConfiguration>();
 
     private UserContext userContext = null;
 
@@ -70,18 +71,13 @@ public class QuickConnectAuthenticationProvider extends SimpleAuthenticationProv
     public AuthenticatedUser authenticateUser(Credentials credentials)
         throws GuacamoleException {
 
-        logger.debug(">>>QuickConnect<<< authenticateUser NOT IMPLEMENTED.");
+        logger.debug(">>>QuickConnect<<< authenticateUser running for user {}.", credentials.getUsername());
 
-        GuacamoleConfiguration config = new GuacamoleConfiguration();
+        String username = credentials.getUsername();
+        if(username == null || username.isEmpty())
+            throw new GuacamoleInvalidCredentialsException("You must login.", CredentialsInfo.USERNAME_PASSWORD);
 
-        config.setProtocol("ssh");
-        config.setParameter("hostname","ussalxapps005t.cotyww.com");
-        config.setParameter("port","22");
-
-        quickConnections.put("Adhoc 1", config);
-
-        if (userContext == null)
-            userContext = new QuickConnectUserContext(this, credentials.getUsername(), quickConnections);
+        userContext = new QuickConnectUserContext(this, credentials.getUsername());
 
         return null;
 
@@ -94,18 +90,11 @@ public class QuickConnectAuthenticationProvider extends SimpleAuthenticationProv
 
         logger.debug(">>>QuickConnect<<< Retrieving configurations for user {}", credentials.getUsername());
 
-        GuacamoleConfiguration config = new GuacamoleConfiguration();
-
-        config.setProtocol("ssh");
-        config.setParameter("hostname","ussalxapps005t.cotyww.com");
-        config.setParameter("port","22");
-
-        quickConnections.put("Adhoc 1", config);
-
         if(userContext == null)
-            userContext = new QuickConnectUserContext(this, credentials.getUsername(), quickConnections);
+            userContext = new QuickConnectUserContext(this, credentials.getUsername());
 
-        return quickConnections;
+        return Collections.<String, GuacamoleConfiguration>emptyMap();
+
     }
 
     private Map<String, GuacamoleConfiguration>
@@ -160,7 +149,7 @@ public class QuickConnectAuthenticationProvider extends SimpleAuthenticationProv
         // Return user context restricted to authorized configs
         // return new QuickConnectUserContext(this, authenticatedUser.getIdentifier(), configs);
 
-        return userContext;
+        return new QuickConnectUserContext(this, authenticatedUser.getIdentifier());
 
     }
 
