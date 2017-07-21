@@ -23,8 +23,6 @@
 angular.module('guacQuickConnect').controller('quickconnectController', ['$scope', '$injector', '$log',
         function manageConnectionController($scope, $injector, $log) {
 
-    $log.debug('In quickconnectController...');
-
     // Required types
     var ClientIdentifier    = $injector.get('ClientIdentifier');
     var Connection          = $injector.get('Connection');
@@ -58,8 +56,6 @@ angular.module('guacQuickConnect').controller('quickconnectController', ['$scope
      */
     $scope.quickConnect = function quickConnect() {
 
-        $log.debug('Got saveConnection() call.');
-
         // Construct parameters from URI...
         /**
          * Parse URL into the following components:
@@ -75,14 +71,10 @@ angular.module('guacQuickConnect').controller('quickconnectController', ['$scope
          * [17] - JS Route
          */
         var regexURL = /^(((rdp|ssh|telnet|vnc)?):\/)?\/?((.*?)(:(.*?)|)@)?([^:\/\s]+)(:([^\/]*))?((\/\w+\/)*)([-\w.\/]+[^#?\s]*)?(\?([^#]*))?(#(.*))?$/g;
-        $log.debug(regexURL);
         var urlArray = regexURL.exec($scope.uri);
-        $log.debug($scope.uri);
-        $log.debug(urlArray);
 
         var gettingProtocols = schemaService.getProtocols('quickconnect');
         gettingProtocols.success(function checkProtocol(supportedProtocols) {
-            $log.debug(supportedProtocols);
             if (!(urlArray[3] in supportedProtocols)) {
                 guacNotification.showStatus({
                     'className' : 'error',
@@ -94,6 +86,8 @@ angular.module('guacQuickConnect').controller('quickconnectController', ['$scope
             }
             var port = 0;
             var urlParams = Array();
+
+            // Default port assignments for various protocols.
             switch(urlArray[3]) {
                 case 'rdp':
                     port = 3389;
@@ -111,23 +105,29 @@ angular.module('guacQuickConnect').controller('quickconnectController', ['$scope
                     port = 0;
             }
 
+            // If the port is explicitly set, overwrite the default
             if (!isNaN(urlArray[10]))
                 port = parseInt(urlArray[10]);
 
+            // Parse out any additional URI parameters on the connection string into an array.
             if (!(typeof urlArray[15] === 'undefined'))
                 urlParams = JSON.parse('{"' + decodeURI(urlArray[15]).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}');
 
-            console.log(urlParams);
-
             var connParams = {};
+
+            // If hostname is undefined, assume localhost
             if (!(typeof urlArray[8] === 'undefined'))
                 connParams['hostname'] = urlArray[8];
             else
                 connParams['hostname'] = 'localhost';
+
+            // Username and password
             if (!(typeof urlArray[5] === 'undefined'))
                 connParams['username'] = urlArray[5];
             if (!(typeof urlArray[7] === 'undefined'))
                 connParams['password'] = urlArray[7];
+
+            // Additional connection parameters
             connParams['port'] = port;
             connParams['read-only'] = 'read-only' in urlParams ? urlParams['read-only'] : '';
             connParams['swap-red-blue'] = 'swap-red-blue' in urlParams ? urlParams['swap-red-blue'] : '';
@@ -145,21 +145,23 @@ angular.module('guacQuickConnect').controller('quickconnectController', ['$scope
             connParams['private-key'] = 'private-key' in urlParams ? urlParams['private-key'] : '';
             connParams['passphrase'] = 'passphrase' in urlParams ? urlParams['passphrase'] : '';
 
+            // Set up the name of the connection based on various parts of the URI
             var connName = urlArray[3] + '://';
             if(!(typeof connParams['username'] === 'undefined'))
                 connName += connParams['username'] + '@';
             connName += connParams['hostname'] + ':' + connParams['port'];
-            
+
+            // Create the new connection            
             $scope.connection = new Connection({
                 name : connName,
                 protocol : urlArray[3],
                 parameters: connParams
             });
-            console.log($scope.connection);
 
+            // Save the new connection into the QuickConnect datasource.
             connectionService.saveConnection($scope.selectedDataSource, $scope.connection)
             .success(function runConnection(newConnection) {
-                $log.debug('Connection saved - we should run it, now: ' + newConnection.identifier);
+                // If the save succeeds, launch the new connection.
                 $location.url('/client/' + ClientIdentifier.toString({
                             dataSource : $scope.selectedDataSource,
                             type       : ClientIdentifier.Types.CONNECTION,
@@ -177,30 +179,7 @@ angular.module('guacQuickConnect').controller('quickconnectController', ['$scope
 
         });
 
-        
-
         return;
-
-        /*
-        $scope.connection.parameters = $scope.parameters;
-
-        // Save the connection
-        connectionService.saveConnection($scope.selectedDataSource, $scope.connection)
-        .success(function savedConnection(newConnection) {
-            $log.debug('Connection saved successfully: ' + newConnection);
-            // $location.url('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        })
-
-        // Notify of any errors
-        .error(function connectionSaveFailed(error) {
-            guacNotification.showStatus({
-                'className'  : 'error',
-                'title'      : 'MANAGE_CONNECTION.DIALOG_HEADER_ERROR',
-                'text'       : error.translatableMessage,
-                'actions'    : [ ACKNOWLEDGE_ACTION ]
-            });
-        });
-        */
 
     };
 

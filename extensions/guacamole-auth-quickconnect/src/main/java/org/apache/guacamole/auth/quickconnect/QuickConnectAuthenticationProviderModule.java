@@ -71,8 +71,10 @@ public class QuickConnectAuthenticationProviderModule extends AbstractModule {
         bind(Environment.class).toInstance(environment); 
 
         // Bind QuickConnect-specific classes;
+        bind(QuickConnectConnectionGroup.class);
         bind(QuickConnectDirectory.class);
         bind(QuickConnectUserContext.class);
+        bind(QuickConnection.class);
 
     }
 

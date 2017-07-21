@@ -18,7 +18,7 @@
  */
 
 /**
- * Module which provides Adhoc connection capability
+ * Module which provides QuickConnect capability
  */
 angular.module('guacQuickConnect', [
     'form'

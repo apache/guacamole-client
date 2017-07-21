@@ -1,7 +1,9 @@
 <meta name="before" content=".recent-connections" />
 <div class="header" ng-controller="quickconnectController">
     <div class="quickconnect-container">
-        <input type=text class="quickconnect-field" placeholder="Enter Connection URI" ng-model="uri" />
+        <form action="#" ng-submit="quickConnect()">
+            <input type=text class="quickconnect-field" placeholder="Enter Connection URI" ng-model="uri" />
+        </form>
     </div>
     <button class="quickconnect-button" ng-click="quickConnect()">Connect</button>
 </div>

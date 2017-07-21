@@ -37,6 +37,11 @@ import org.apache.guacamole.token.TokenFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class providing the necessary hooks into the Guacamole Client authentication
+ * process so that the QuickConnect functionality can be initialized and be used
+ * throughout the web client.
+ */
 public class QuickConnectAuthenticationProvider extends SimpleAuthenticationProvider {
 
     /**
@@ -44,16 +49,15 @@ public class QuickConnectAuthenticationProvider extends SimpleAuthenticationProv
      */
     private final Logger logger = LoggerFactory.getLogger(QuickConnectAuthenticationProvider.class);
 
-    private UserContext userContext = null;
-
-    @Inject
-    private Provider<QuickConnectUserContext> userContextProvider;
+    /**
+     * userContext for this authentication provider.
+     */
+    private UserContext userContext;
 
     @Override
     public String getIdentifier() {
         return "quickconnect";
     }
-
 
     /**
      * For QuickConnect, authenticateUser simply returns null because this
@@ -71,13 +75,9 @@ public class QuickConnectAuthenticationProvider extends SimpleAuthenticationProv
     public AuthenticatedUser authenticateUser(Credentials credentials)
         throws GuacamoleException {
 
-        logger.debug(">>>QuickConnect<<< authenticateUser running for user {}.", credentials.getUsername());
-
         String username = credentials.getUsername();
-        if(username == null || username.isEmpty())
+        if (username == null || username.isEmpty())
             throw new GuacamoleInvalidCredentialsException("You must login.", CredentialsInfo.USERNAME_PASSWORD);
-
-        userContext = new QuickConnectUserContext(this, credentials.getUsername());
 
         return null;
 
@@ -88,66 +88,13 @@ public class QuickConnectAuthenticationProvider extends SimpleAuthenticationProv
         getAuthorizedConfigurations(Credentials credentials)
         throws GuacamoleException {
 
-        logger.debug(">>>QuickConnect<<< Retrieving configurations for user {}", credentials.getUsername());
-
-        if(userContext == null)
-            userContext = new QuickConnectUserContext(this, credentials.getUsername());
-
         return Collections.<String, GuacamoleConfiguration>emptyMap();
-
-    }
-
-    private Map<String, GuacamoleConfiguration>
-            getFilteredAuthorizedConfigurations(Credentials credentials)
-            throws GuacamoleException {
-
-        logger.debug(">>>QuickConnect<<< Filtering configurations.");
-
-        // Get configurations
-        Map<String, GuacamoleConfiguration> configs =
-                getAuthorizedConfigurations(credentials);
-
-        // Return as unauthorized if not authorized to retrieve configs
-        if (configs == null)
-            return null;
-
-        // Build credential TokenFilter
-        TokenFilter tokenFilter = new TokenFilter();
-        StandardTokens.addStandardTokens(tokenFilter, credentials);
-
-        // Filter each configuration
-        for (GuacamoleConfiguration config : configs.values())
-            tokenFilter.filterValues(config.getParameters());
-
-        return configs;
-
-    }
-
-    private Map<String, GuacamoleConfiguration>
-            getFilteredAuthorizedConfigurations(AuthenticatedUser authenticatedUser)
-            throws GuacamoleException {
-
-        // Pull using credentials
-        return getFilteredAuthorizedConfigurations(authenticatedUser.getCredentials());
 
     }
 
     @Override
     public UserContext getUserContext(AuthenticatedUser authenticatedUser)
             throws GuacamoleException {
-
-        logger.debug(">>>QuickConnect<<< getUserContext for {}", authenticatedUser.getCredentials().getUsername());
-
-        // Get configurations
-        // Map<String, GuacamoleConfiguration> configs =
-        //         getFilteredAuthorizedConfigurations(authenticatedUser);
-
-        // Return as unauthorized if not authorized to retrieve configs
-        // if (configs == null)
-        //     return null;
-
-        // Return user context restricted to authorized configs
-        // return new QuickConnectUserContext(this, authenticatedUser.getIdentifier(), configs);
 
         return new QuickConnectUserContext(this, authenticatedUser.getIdentifier());
 

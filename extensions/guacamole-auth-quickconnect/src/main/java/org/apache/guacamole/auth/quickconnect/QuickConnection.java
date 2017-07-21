@@ -39,6 +39,9 @@ import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
+/**
+ * A type of Connection specific to this authentication extension.
+ */
 public class QuickConnection extends AbstractConnection {
 
     /**
@@ -51,10 +54,26 @@ public class QuickConnection extends AbstractConnection {
      */
     private int activeConnections;
 
+    /**
+     * Empty connection constructor.
+     */
     public QuickConnection() {
 
     }
 
+    /**
+     * Constructor that takes a name, identifier, and GuacamoleConfiguration
+     * and builds a QuickConnection from it.
+     *
+     * @param name
+     *     The name of the connection.
+     * @param identifier
+     *     The unique identifier of this connection within this
+     *     authentication module.
+     * @param config
+     *     The GuacamoleConfiguration object to store in this
+     *     QuickConnection.
+     */
     public QuickConnection(String name, String identifier,
             GuacamoleConfiguration config) {
 
@@ -69,6 +88,14 @@ public class QuickConnection extends AbstractConnection {
 
     }
 
+    /**
+     * Constructs a QuickConnection from a generic Connection
+     * object, copying over the relevant data and initializing
+     * the rest.
+     *
+     * @param object
+     *     The generic Connection object to be copied.
+     */
     public QuickConnection(Connection object) {
 
         setName(object.getName());

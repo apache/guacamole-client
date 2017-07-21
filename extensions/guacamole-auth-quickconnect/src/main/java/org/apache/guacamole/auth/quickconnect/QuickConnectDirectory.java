@@ -68,35 +68,38 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
     public QuickConnectDirectory(Collection<Connection> connections, ConnectionGroup rootGroup) {
         super(connections);
         this.rootGroup = (QuickConnectConnectionGroup)rootGroup;
-        logger.debug(">>>QuickConnect<<< Created new directory.");
-
     }
 
+    /**
+     * Returns the current counter and then increments it.
+     *
+     * @returns
+     *     An Integer representing the next available connection
+     *     ID to get used when adding connections.
+     */
     private Integer getNextConnectionID() {
         return CONNECTION_ID++;
     }
 
     @Override
     public void add(Connection object) throws GuacamoleException {
-        logger.debug(">>>QuickConnect<<< Adding connection object.");
+
+        // Get the next connection ID.
         String connectionId = getNextConnectionID().toString();
+
+        // Set up identifier and parent on original object.
         object.setIdentifier(connectionId);
         object.setParentIdentifier(ROOT_IDENTIFIER);
-        /*
-        SimpleConnection newConn = new SimpleConnection(
-            object.getName(),
-            connectionId,
-            object.getConfiguration()
-        );
-        newConn.setParentIdentifier(ROOT_IDENTIFIER);
-        */
+
+        // Add connection to the directory
         putConnection(new QuickConnection(object));
+
+        // Add connection to the tree
         this.rootGroup.addConnectionIdentifier(connectionId);
     }
 
     @Override
     public void update(Connection object) throws GuacamoleException {
-        logger.debug(">>>QuickConnect<<< Updating connection object.");
         putConnection(object);
     }
 

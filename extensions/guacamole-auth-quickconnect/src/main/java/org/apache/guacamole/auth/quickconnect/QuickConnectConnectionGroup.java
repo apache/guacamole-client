@@ -31,6 +31,11 @@ import org.apache.guacamole.net.auth.AbstractConnectionGroup;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 
+/**
+ * Provides a very simple, single-level connection group used
+ * for temporarily storing the QuickConnections created by
+ * users.
+ */
 class QuickConnectConnectionGroup extends AbstractConnectionGroup {
 
     /**
@@ -38,6 +43,15 @@ class QuickConnectConnectionGroup extends AbstractConnectionGroup {
      */
     private Set<String> connectionIdentifiers;
 
+    /**
+     * Set up a QuickConnectConnectionGroup with a name and identifier, and
+     * an empty set of child connections.
+     *
+     * @param name
+     *     The name of the QuickConnectConnectionGroup.
+     * @param identifier
+     *     The identifier of the QuickConnectConnectionGroup.
+     */
     public QuickConnectConnectionGroup(String name, String identifier) {
 
         setName(name);
@@ -48,15 +62,20 @@ class QuickConnectConnectionGroup extends AbstractConnectionGroup {
 
     }
 
-    public QuickConnectConnectionGroup(String name, String identifier,
-        Collection<String> connectionIdentifiers) {
-
-        setName(name);
-        setIdentifier(identifier);
-        setType(ConnectionGroup.Type.ORGANIZATIONAL);
-
-        this.connectionIdentifiers = new HashSet<String>(connectionIdentifiers);
-
+    /**
+     * Add a connection identifier to this connection group, and
+     * return the identifier if the add succeeds, else return null.
+     *
+     * @param identifier
+     *     The identifier of the connection to add to the group.
+     * @return
+     *     The String identifier of the connection if the add
+     *     operation was successful; otherwise null.
+     */
+    public String addConnectionIdentifier(String identifier) {
+        if (connectionIdentifiers.add(identifier))
+            return identifier;
+        return null;
     }
 
     @Override
@@ -88,12 +107,6 @@ class QuickConnectConnectionGroup extends AbstractConnectionGroup {
     public GuacamoleTunnel connect(GuacamoleClientInformation info) 
             throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
-    }
-
-    public String addConnectionIdentifier(String identifier) {
-        if (connectionIdentifiers.add(identifier))
-            return identifier;
-        return null;
     }
 
 }

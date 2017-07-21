@@ -47,9 +47,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An extremely simple UserContext implementation which provides access to
- * a defined and restricted set of GuacamoleConfigurations. Access to
- * querying or modifying either users or permissions is denied.
+ * A simple implementation of UserContext to support the QuickConnect
+ * extension, primarily used for storing connections the user has
+ * created using the QuickConnect bar in the webapp.
  */
 public class QuickConnectUserContext implements UserContext {
 
@@ -98,104 +98,38 @@ public class QuickConnectUserContext implements UserContext {
     private final ConnectionGroup rootGroup;
 
     /**
-     * Creates a new SimpleUserContext which provides access to only those
-     * configurations within the given Map. The username is assigned
-     * arbitrarily.
+     * Construct a QuickConnectUserContext using the authProvider and
+     * the username.
      *
      * @param authProvider
-     *     The AuthenticationProvider creating this UserContext.
-     *
-     * @param configs
-     *     A Map of all configurations for which the user associated with this
-     *     UserContext has read access.
-     */
-    public QuickConnectUserContext(AuthenticationProvider authProvider,
-            Map<String, GuacamoleConfiguration> configs) {
-        this(authProvider, UUID.randomUUID().toString(), configs);
-        logger.debug(">>>QuickConnect<<< Constructor with authProvider and configs.");
-    }
-
-    /**
-     * Creates a new SimpleUserContext for the user with the given username
-     * which provides access to only those configurations within the given Map.
-     *
-     * @param authProvider
-     *     The AuthenticationProvider creating this UserContext.
-     *
+     *     The authentication provider module instantiating this
+     *     this class.
      * @param username
-     *     The username of the user associated with this UserContext.
-     *
-     * @param configs
-     *     A Map of all configurations for which the user associated with
-     *     this UserContext has read access.
+     *     The name of the user logging in and using this class.
      */
-    public QuickConnectUserContext(AuthenticationProvider authProvider,
-            String username, Map<String, GuacamoleConfiguration> configs) {
-
-        Collection<String> connectionIdentifiers = new ArrayList<String>(configs.size());
-        Collection<String> connectionGroupIdentifiers = Collections.singleton(ROOT_IDENTIFIER);
-        
-        // Produce collection of connections from given configs
-        Collection<Connection> connections = new ArrayList<Connection>(configs.size());
-        for (Map.Entry<String, GuacamoleConfiguration> configEntry : configs.entrySet()) {
-
-            // Get connection identifier and configuration
-            String identifier = configEntry.getKey();
-            GuacamoleConfiguration config = configEntry.getValue();
-
-            // Add as simple connection
-            Connection connection = new SimpleConnection(identifier, identifier, config);
-            connection.setParentIdentifier(ROOT_IDENTIFIER);
-            connections.add(connection);
-
-            // Add identifier to overall set of identifiers
-            connectionIdentifiers.add(identifier);
-            
-        }
-        
-        // Add root group that contains only the given configurations
-        this.rootGroup = new QuickConnectConnectionGroup(
-            ROOT_IDENTIFIER, ROOT_IDENTIFIER,
-            connectionIdentifiers
-        );
-
-        // Build new user from credentials
-        this.self = new SimpleUser(username, connectionIdentifiers,
-                connectionGroupIdentifiers);
-
-        // Create directories for new user
-        this.userDirectory = new SimpleUserDirectory(self);
-        this.connectionDirectory = new QuickConnectDirectory(connections,this.rootGroup);
-        this.connectionGroupDirectory = new SimpleConnectionGroupDirectory(Collections.singleton(this.rootGroup));
-
-        // Associate provided AuthenticationProvider
-        this.authProvider = authProvider;
-
-    }
-
     public QuickConnectUserContext(AuthenticationProvider authProvider,
             String username) {
 
+        // Initialize the rootGroup to a basic connection group with a
+        // single root identifier.
         this.rootGroup = new QuickConnectConnectionGroup(
             ROOT_IDENTIFIER, ROOT_IDENTIFIER
         );
 
+        // Initialize the user to a SimpleUser with the username, no
+        // preexisting connections, and the single root group.
         this.self = new SimpleUser(username,
             Collections.<String>emptyList(),
             Collections.singleton(ROOT_IDENTIFIER)
         );
 
+        // Initialize each of the directories associated with the userContext.
         this.userDirectory = new SimpleUserDirectory(self);
         this.connectionDirectory = new QuickConnectDirectory(Collections.<Connection>emptyList(), this.rootGroup);
         this.connectionGroupDirectory = new SimpleConnectionGroupDirectory(Collections.singleton(this.rootGroup));
 
+        // Set the authProvider to the calling authProvider object.
         this.authProvider = authProvider;
-
-    }
-
-    public void setConfigs(Map<String, GuacamoleConfiguration> configs) {
-
-        return;
 
     }
 
@@ -217,35 +151,23 @@ public class QuickConnectUserContext implements UserContext {
     @Override
     public Directory<User> getUserDirectory()
             throws GuacamoleException {
-
-        logger.debug(">>>QuickConnect<<< Returning the entire user directory: {}", userDirectory.getIdentifiers());
-
         return userDirectory;
     }
 
     @Override
     public Directory<Connection> getConnectionDirectory()
             throws GuacamoleException {
-
-        logger.debug(">>>QuickConnect<<< Returning the entire connection directory: {}", connectionDirectory.getIdentifiers());
-
         return connectionDirectory;
     }
 
     @Override
     public Directory<ConnectionGroup> getConnectionGroupDirectory()
             throws GuacamoleException {
-
-        logger.debug(">>>QuickConnect<<< Returning the entire group directory: {}", connectionGroupDirectory.getIdentifiers());
-
         return connectionGroupDirectory;
     }
 
     @Override
     public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
-
-        logger.debug(">>>QuickConnect<<< Returning the entire root Connection Group: {}", rootGroup);
-
         return rootGroup;
     }
 
