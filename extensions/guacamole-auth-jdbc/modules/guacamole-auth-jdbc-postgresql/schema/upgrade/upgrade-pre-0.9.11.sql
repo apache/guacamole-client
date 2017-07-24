@@ -51,4 +51,5 @@ CREATE TABLE guacamole_user_password_history (
 
 );
 
-CREATE INDEX ON guacamole_user_password_history(user_id);
+CREATE INDEX guacamole_user_password_history_user_id
+    ON guacamole_user_password_history(user_id);

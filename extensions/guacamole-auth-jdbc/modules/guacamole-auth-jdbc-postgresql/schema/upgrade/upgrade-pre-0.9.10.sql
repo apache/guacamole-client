@@ -125,7 +125,8 @@ CREATE TABLE guacamole_sharing_profile (
 
 );
 
-CREATE INDEX ON guacamole_sharing_profile(primary_connection_id);
+CREATE INDEX guacamole_sharing_profile_primary_connection_id
+    ON guacamole_sharing_profile(primary_connection_id);
 
 --
 -- Add table of sharing profile parameters
@@ -145,7 +146,8 @@ CREATE TABLE guacamole_sharing_profile_parameter (
 
 );
 
-CREATE INDEX ON guacamole_sharing_profile_parameter(sharing_profile_id);
+CREATE INDEX guacamole_sharing_profile_parameter_sharing_profile_id
+    ON guacamole_sharing_profile_parameter(sharing_profile_id);
 
 --
 -- Object-level permission table for sharing profiles
@@ -169,8 +171,11 @@ CREATE TABLE guacamole_sharing_profile_permission (
 
 );
 
-CREATE INDEX ON guacamole_sharing_profile_permission(sharing_profile_id);
-CREATE INDEX ON guacamole_sharing_profile_permission(user_id);
+CREATE INDEX guacamole_sharing_profile_permission_sharing_profile_id
+    ON guacamole_sharing_profile_permission(sharing_profile_id);
+
+CREATE INDEX guacamole_sharing_profile_permission_user_id
+    ON guacamole_sharing_profile_permission(user_id);
 
 --
 -- Add new (optional) sharing profile ID and name columns to connection history
@@ -187,4 +192,5 @@ ALTER TABLE guacamole_connection_history
     FOREIGN KEY (sharing_profile_id)
     REFERENCES guacamole_sharing_profile (sharing_profile_id) ON DELETE SET NULL;
 
-CREATE INDEX ON guacamole_connection_history(sharing_profile_id);
+CREATE INDEX guacamole_connection_history_sharing_profile_id
+    ON guacamole_connection_history(sharing_profile_id);
