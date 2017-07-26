@@ -47,3 +47,18 @@ ALTER TABLE guacamole_connection
     REFERENCES guacamole_connection(connection_id)
     ON DELETE SET NULL
     ON UPDATE CASCADE;
+
+--
+-- Check template_connection to make sure it is
+-- not set to itself.
+--
+
+DELIMITER $
+CREATE TRIGGER `template_connection_self_check` BEFORE UPDATE ON `guacamole_connection`
+FOR EACH ROW
+BEGIN
+    IF new.`connection_id` = new.`template_connection` THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot set connection template to itself.';
+    END IF;
+END$
+DELIMITER ;

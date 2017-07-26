@@ -85,6 +85,16 @@ CREATE TABLE `guacamole_connection` (
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DELIMITER $
+CREATE TRIGGER `template_connection_self_check` BEFORE INSERT ON `guacamole_connection`
+FOR EACH ROW
+BEGIN
+    IF new.`connection_id` = new.`template_connection` THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot set connection template to itself.';
+    END IF;
+END$
+DELIMITER ;
+
 --
 -- Table of users. Each user has a unique username and a hashed password
 -- with corresponding salt. Although the authentication system will always set
