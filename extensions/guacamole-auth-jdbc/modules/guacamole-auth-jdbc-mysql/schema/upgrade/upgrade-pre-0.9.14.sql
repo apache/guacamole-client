@@ -37,3 +37,13 @@ ALTER TABLE guacamole_connection
 
 ALTER TABLE guacamole_connection_history
     ADD COLUMN remote_host VARCHAR(256) DEFAULT NULL;
+
+--
+-- Add template_connection to guacamole_connection
+--
+
+ALTER TABLE guacamole_connection
+    ADD COLUMN template_connection int(11)
+    REFERENCES guacamole_connection(connection_id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE;
