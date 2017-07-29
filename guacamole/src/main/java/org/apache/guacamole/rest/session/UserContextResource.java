@@ -172,7 +172,7 @@ public class UserContextResource {
                 userContext.getConnectionDirectory());
     }
 
-    @Path("connections/{protocol}")
+    @Path("connections/protocol/{protocol}")
     public DirectoryResource<Connection, APIConnection> getConnectionDirectoryForProtocolResource(
             @PathParam("protocol") String protocol) throws GuacamoleException {
         return connectionDirectoryResourceFactory.create(userContext,
