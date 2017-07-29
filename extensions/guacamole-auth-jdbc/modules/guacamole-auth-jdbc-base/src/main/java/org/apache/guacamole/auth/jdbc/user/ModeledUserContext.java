@@ -25,6 +25,7 @@ import org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupDirectory;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionDirectory;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.ArrayList;
 import java.util.Collection;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
@@ -45,6 +46,7 @@ import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.simple.SimpleActivityRecordSet;
+import org.apache.guacamole.net.auth.simple.SimpleConnectionDirectory;
 
 /**
  * UserContext implementation which is driven by an arbitrary, underlying
@@ -137,6 +139,21 @@ public class ModeledUserContext extends RestrictedObject
     @Override
     public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
         return connectionDirectory;
+    }
+
+    @Override
+    public Directory<Connection> getConnectionDirectory(String protocol) throws GuacamoleException {
+
+        Collection<Connection> allConnections = connectionDirectory.getAll(connectionDirectory.getIdentifiers());
+        Collection<Connection> protocolConnections = new ArrayList<Connection>();
+        for (Connection connection : allConnections) {
+            String connProtocol = connection.getConfiguration().getProtocol();
+            if(connProtocol != null && connProtocol.equals(protocol))
+                protocolConnections.add(connection);
+        }
+
+        return new SimpleConnectionDirectory(protocolConnections);
+
     }
 
     @Override

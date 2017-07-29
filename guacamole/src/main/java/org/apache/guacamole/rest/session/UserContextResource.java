@@ -26,6 +26,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
@@ -169,6 +170,13 @@ public class UserContextResource {
             throws GuacamoleException {
         return connectionDirectoryResourceFactory.create(userContext,
                 userContext.getConnectionDirectory());
+    }
+
+    @Path("connections/{protocol}")
+    public DirectoryResource<Connection, APIConnection> getConnectionDirectoryForProtocolResource(
+            @PathParam("protocol") String protocol) throws GuacamoleException {
+        return connectionDirectoryResourceFactory.create(userContext,
+                userContext.getConnectionDirectory(protocol));
     }
 
     /**

@@ -160,6 +160,22 @@ public class SharedUserContext implements UserContext {
     }
 
     @Override
+    public Directory<Connection> getConnectionDirectory(String protocol)
+            throws GuacamoleException {
+
+        SharedConnectionDirectory protocolDirectory = new SharedConnectionDirectory();
+        Collection<Connection> allConnections = connectionDirectory.getAll(connectionDirectory.getIdentifiers());
+        for (Connection connection : allConnections) {
+            String connProtocol = connection.getConfiguration().getProtocol();
+            if (connProtocol != null && connProtocol.equals(protocol))
+                protocolDirectory.add(connection);
+        }
+
+        return protocolDirectory;
+
+    }
+
+    @Override
     public Directory<ConnectionGroup> getConnectionGroupDirectory() {
         return connectionGroupDirectory;
     }

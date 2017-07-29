@@ -98,6 +98,9 @@ public interface UserContext {
     Directory<Connection> getConnectionDirectory()
             throws GuacamoleException;
 
+    Directory<Connection> getConnectionDirectory(String protocol)
+            throws GuacamoleException;
+
     /**
      * Retrieves a Directory which can be used to view and manipulate
      * connection groups and their members, but only as allowed by the

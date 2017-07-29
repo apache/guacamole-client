@@ -188,6 +188,21 @@ public class SimpleUserContext implements UserContext {
     }
 
     @Override
+    public Directory<Connection> getConnectionDirectory(String protocol)
+            throws GuacamoleException {
+
+        Collection<Connection> allConnections = connectionDirectory.getAll(connectionDirectory.getIdentifiers());
+        Collection<Connection> protocolConnections = new ArrayList<Connection>();
+        for(Connection connection : allConnections) {
+            if (protocol.equals(connection.getConfiguration().getProtocol()))
+                protocolConnections.add(connection);
+        }
+
+        return new SimpleConnectionDirectory(protocolConnections);
+
+    }
+
+    @Override
     public Directory<ConnectionGroup> getConnectionGroupDirectory()
             throws GuacamoleException {
         return connectionGroupDirectory;
