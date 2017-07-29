@@ -119,6 +119,22 @@ angular.module('rest').factory('connectionService', ['$injector',
  
     };
 
+    service.getConnectionsByProtocol = function getConnectionsByProtocol(dataSource, protocol) {
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token: authenticationService.getCurrentToken()
+        };
+
+        // Retrieve connection parameters
+        return $http({
+            method  : 'GET',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/protocol/' + encodeURIComponent(protocol),
+            params  : httpParameters
+        });
+
+    };
+
     /**
      * Makes a request to the REST API to save a connection, returning a
      * promise that can be used for processing the results of the call. If the
