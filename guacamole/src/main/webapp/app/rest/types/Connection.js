@@ -68,6 +68,12 @@ angular.module('rest').factory('Connection', [function defineConnection() {
         this.protocol = template.protocol;
 
         /**
+         * The ID of the connection to use as a template for this connection.
+         *
+         * @type String
+        this.connectionTemplate = template.connectionTemplate;
+
+        /**
          * Connection configuration parameters, as dictated by the protocol in
          * use, arranged as name/value pairs. This information may not be
          * available until directly queried. If this information is

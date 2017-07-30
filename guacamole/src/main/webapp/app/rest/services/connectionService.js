@@ -119,6 +119,23 @@ angular.module('rest').factory('connectionService', ['$injector',
  
     };
 
+    service.getConnectionTemplates = function getConnectionTemplates(dataSource, id) {
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Retrieve connection templates
+        return $http({
+            cache   : cacheService.connections,
+            method  : 'GET',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id) + '/templates',
+            params  : httpParameters
+        });
+
+    };
+
     service.getConnectionsByProtocol = function getConnectionsByProtocol(dataSource, protocol) {
 
         // Build HTTP parameters set

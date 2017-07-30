@@ -209,6 +209,7 @@
         "FIELD_HEADER_LOCATION" : "Location:",
         "FIELD_HEADER_NAME"     : "Name:",
         "FIELD_HEADER_PROTOCOL" : "Protocol:",
+        "FIELD_HEADER_TEMPLATE" : "Template:",
 
         "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
@@ -313,7 +314,6 @@
 
         "FIELD_HEADER_CLIENT_NAME"     : "Client name:",
         "FIELD_HEADER_COLOR_DEPTH"     : "Color depth:",
-        "FIELD_HEADER_CONNECTION"      : "Select connection:",
         "FIELD_HEADER_CONSOLE"         : "Administrator console:",
         "FIELD_HEADER_CONSOLE_AUDIO"   : "Support audio in console:",
         "FIELD_HEADER_CREATE_DRIVE_PATH" : "Automatically create drive:",
@@ -408,8 +408,7 @@
         "SECTION_HEADER_PRECONNECTION_PDU"  : "Preconnection PDU / Hyper-V",
         "SECTION_HEADER_RECORDING"          : "Screen Recording",
         "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
-        "SECTION_HEADER_SFTP"               : "SFTP",
-        "SECTION_HEADER_TEMPLATE"           : "Template connection"
+        "SECTION_HEADER_SFTP"               : "SFTP"
 
     },
 
@@ -417,7 +416,6 @@
 
         "FIELD_HEADER_COLOR_SCHEME" : "Color scheme:",
         "FIELD_HEADER_COMMAND"     : "Execute command:",
-        "FIELD_HEADER_CONNECTION"  : "Select connection:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
         "FIELD_HEADER_FONT_NAME"   : "Font name:",
@@ -467,7 +465,6 @@
         "SECTION_HEADER_RECORDING"      : "Screen Recording",
         "SECTION_HEADER_SESSION"        : "Session / Environment",
         "SECTION_HEADER_SFTP"           : "SFTP",
-        "SECTION_HEADER_TEMPLATE"       : "Template connection",
         "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)"
 
     },
@@ -475,7 +472,6 @@
     "PROTOCOL_TELNET" : {
 
         "FIELD_HEADER_COLOR_SCHEME"   : "Color scheme:",
-        "FIELD_HEADER_CONNECTION"     : "Select connection:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
         "FIELD_HEADER_FONT_NAME"      : "Font name:",
@@ -519,8 +515,7 @@
         "SECTION_HEADER_DISPLAY"        : "Display",
         "SECTION_HEADER_RECORDING"      : "Screen Recording",
         "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)",
-        "SECTION_HEADER_NETWORK"        : "Network",
-        "SECTION_HEADER_TEMPLATE"       : "Template connection"
+        "SECTION_HEADER_NETWORK"        : "Network"
 
     },
 
@@ -529,7 +524,6 @@
         "FIELD_HEADER_AUDIO_SERVERNAME" : "Audio server name:",
         "FIELD_HEADER_CLIPBOARD_ENCODING" : "Encoding:",
         "FIELD_HEADER_COLOR_DEPTH"      : "Color depth:",
-        "FIELD_HEADER_CONNECTION"       : "Select connection:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
         "FIELD_HEADER_CURSOR"           : "Cursor:",
         "FIELD_HEADER_DEST_HOST"        : "Destination host:",
@@ -578,8 +572,7 @@
         "SECTION_HEADER_NETWORK"        : "Network",
         "SECTION_HEADER_RECORDING"      : "Screen Recording",
         "SECTION_HEADER_REPEATER"       : "VNC Repeater",
-        "SECTION_HEADER_SFTP"           : "SFTP",
-        "SECTION_HEADER_TEMPLATE"       : "Template connection"
+        "SECTION_HEADER_SFTP"           : "SFTP"
 
     },
 

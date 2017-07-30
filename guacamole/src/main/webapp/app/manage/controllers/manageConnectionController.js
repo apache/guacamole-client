@@ -20,8 +20,8 @@
 /**
  * The controller for editing or creating connections.
  */
-angular.module('manage').controller('manageConnectionController', ['$scope', '$injector',
-        function manageConnectionController($scope, $injector) {
+angular.module('manage').controller('manageConnectionController', ['$scope', '$injector', '$log',
+        function manageConnectionController($scope, $injector, $log) {
 
     // Required types
     var Connection          = $injector.get('Connection');
@@ -83,6 +83,13 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      * @type Object.<String, Protocol>
      */
     $scope.protocols = null;
+
+    /**
+     * Possible templates for the connection.
+     *
+     * @type Object.<String, Connection>
+     */
+    $scope.connectionTemplates = null;
 
     /**
      * The root connection group of the connection group hierarchy.
@@ -169,6 +176,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     $scope.isLoaded = function isLoaded() {
 
         return $scope.protocols            !== null
+            && $scope.connectionTemplates  !== null
             && $scope.rootGroup            !== null
             && $scope.connection           !== null
             && $scope.parameters           !== null
@@ -246,6 +254,11 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         connectionService.getConnection($scope.selectedDataSource, identifier)
         .success(function connectionRetrieved(connection) {
             $scope.connection = connection;
+            connectionService.getConnectionsByProtocol($scope.selectedDataSource, connection.protocol)
+            .success(function connectionsRetrieved(connections) {
+                $scope.connectionTemplates = connections;
+                $log.debug($scope.connectionTemplates);
+            });
         });
 
         // Pull connection history
@@ -274,6 +287,11 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         connectionService.getConnection($scope.selectedDataSource, cloneSourceIdentifier)
         .success(function connectionRetrieved(connection) {
             $scope.connection = connection;
+            connectionService.getConnectionsByProtocols($scope.selectedDataSource, connection.protocol)
+            .success(function connectionsRetrieved(connections) {
+                $scope.connectionTemplates = connections;
+                $log.debug($scope.connectionTemplates);
+            });
             
             // Clear the identifier field because this connection is new
             delete $scope.connection.identifier;
@@ -294,6 +312,11 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         $scope.connection = new Connection({
             protocol         : 'vnc',
             parentIdentifier : $location.search().parent
+        });
+        connectionService.getConnectionsByProtocol($scope.selectedDataSource, $scope.connection.protocol)
+        .success(function connectionsRetrieved(connections) {
+            $scope.connectionTemplates = connections;
+            $log.debug($scope.connectionTemplates);
         });
         $scope.historyEntryWrappers = [];
         $scope.parameters = {};
