@@ -494,4 +494,17 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
 
     };
 
+    /**
+     * Reload templates for the selected protocol.
+     */
+    $scope.loadTemplates = function loadTemplates() {
+
+        connectionService.getConnectionsByProtocol($scope.selectedDataSource, $scope.connection.protocol)
+        .success(function retrievedConnections(connections) {
+            $scope.connectionTemplates = connections;
+            $log.debug($scope.connectionTemplates);
+        });
+
+    };
+
 }]);

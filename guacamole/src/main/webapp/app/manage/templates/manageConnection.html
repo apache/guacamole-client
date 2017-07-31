@@ -32,7 +32,7 @@
             <tr>
                 <th>{{'MANAGE_CONNECTION.FIELD_HEADER_PROTOCOL' | translate}}</th>
                 <td>
-                    <select ng-model="connection.protocol" ng-options="name as getProtocolName(protocol.name) | translate for (name, protocol) in protocols | orderBy: name"></select>
+                    <select ng-model="connection.protocol" ng-options="name as getProtocolName(protocol.name) | translate for (name, protocol) in protocols | orderBy: name" ng-change="loadTemplates()"></select>
                 </td>
             </tr>
 
@@ -41,6 +41,7 @@
                 <th>{{'MANAGE_CONNECTION.FIELD_HEADER_TEMPLATE' | translate}}</th>
                 <td>
                     <select ng-model="connection.connectionTemplate">
+                        <option value=''>--Select Template--</option>
                         <option ng-repeat="item in connectionTemplates" value="{{ item.identifier }}">{{ item.name }}</option>
                     </select>
                 </td>
