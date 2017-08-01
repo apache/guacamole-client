@@ -40,7 +40,7 @@
             <tr>
                 <th>{{'MANAGE_CONNECTION.FIELD_HEADER_TEMPLATE' | translate}}</th>
                 <td>
-                    <select ng-model="connection.connectionTemplate" ng-change="loadTemplateConnection(connection.connectionTemplate)">
+                    <select ng-model="connection.templateConnection" ng-change="loadTemplateConnection(connection.templateConnection)">
                         <option value=''>--Select Template--</option>
                         <option ng-repeat="item in connectionTemplates" value="{{ item.identifier }}">{{ item.name }}</option>
                     </select>

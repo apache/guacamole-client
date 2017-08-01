@@ -272,16 +272,16 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
             .success(function connectionsRetrieved(connections) {
                 $scope.connectionTemplates = connections;
             });
-            if ($scope.connection.connectionTemplate != null && $scope.connection.connectionTemplate != "") {
+            if ($scope.connection.templateConnection != null && $scope.connection.templateConnection != "") {
 
                 // Retrieve the connection identified as the template
-                connectionService.getConnection($scope.selectedDataSource, $scope.connection.connectionTemplate)
+                connectionService.getConnection($scope.selectedDataSource, $scope.connection.templateConnection)
                 .success(function templateRetrieved(templateConnection) {
                     $scope.templateConnection = templateConnection;
                 });
 
                 // Retrieve the parameters from the connection identified as the template
-                connectionService.getConnectionParameters($scope.selectedDataSource, $scope.connection.connectionTemplate)
+                connectionService.getConnectionParameters($scope.selectedDataSource, $scope.connection.templateConnection)
                 .success(function templateParametersRetrieved(templateParameters) {
                     $scope.templateParameters = templateParameters;
                 });
@@ -321,16 +321,16 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
                 $scope.connectionTemplates = connections;
             });
 
-            if ($scope.connection.connectionTemplate != null && $scope.connection.connectionTemplate != '') {
+            if ($scope.connection.templateConnection != null && $scope.connection.templateConnection != '') {
 
                 // Retrieve the connection identified as the template
-                connectionService.getConnection($scope.selectedDataSource, $scope.connection.connectionTemplate)
+                connectionService.getConnection($scope.selectedDataSource, $scope.connection.templateConnection)
                 .success(function templateRetrieved(templateConnection) {
                     $scope.templateConnection = templateConnection;
                 });
 
                 // Retrieve the parameters from the connection identified as the template
-                connectionService.getConnectionParameters($scope.selectedDataSource, $scope.connection.connectionTemplate)
+                connectionService.getConnectionParameters($scope.selectedDataSource, $scope.connection.templateConnection)
                 .success(function templateParametersRetrieved(templateParameters) {
                     $scope.templateParameters = templateParameters;
                 });

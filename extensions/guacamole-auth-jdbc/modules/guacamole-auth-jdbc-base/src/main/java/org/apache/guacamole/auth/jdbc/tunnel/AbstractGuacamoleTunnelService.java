@@ -419,6 +419,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 ModeledConnection connection = activeConnection.getConnection();
                 String identifier = connection.getIdentifier();
                 String parentIdentifier = connection.getParentIdentifier();
+                String templateConnection = connection.getTemplateConnection();
 
                 // Release connection
                 activeConnections.remove(identifier, activeConnection);

@@ -69,6 +69,11 @@ public class ConnectionModel extends ChildObjectModel {
     private boolean failoverOnly;
 
     /**
+     * The ID of the connection that this connection is a template of.
+     */
+    private String templateConnection;
+
+    /**
      * The identifiers of all readable sharing profiles associated with this
      * connection.
      */
@@ -227,6 +232,30 @@ public class ConnectionModel extends ChildObjectModel {
      */
     public void setFailoverOnly(boolean failoverOnly) {
         this.failoverOnly = failoverOnly;
+    }
+
+    /**
+     * Returns the connection ID of the connection that is a template
+     * for this connection, or null if nothing is set.
+     *
+     * @return
+     *     The identifier of the connection that is this
+     *     connection's template, or null if not set.
+     */
+    public String getTemplateConnection() {
+        return templateConnection;
+    }
+
+    /**
+     * Sets the template for this connection, taking an integer
+     * that is the numeric ID of the template connection.
+     *
+     * @param templateConnection
+     *     The identifier of the connection to be used as a
+     *     template for this connection.
+     */
+    public void setTemplateConnection(String templateConnection) {
+        this.templateConnection = templateConnection;
     }
 
     /**

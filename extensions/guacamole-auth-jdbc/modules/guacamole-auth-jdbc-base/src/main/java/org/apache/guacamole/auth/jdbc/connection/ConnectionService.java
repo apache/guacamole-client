@@ -117,6 +117,7 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
         // Set model contents through ModeledConnection, copying the provided connection
         connection.setParentIdentifier(object.getParentIdentifier());
         connection.setName(object.getName());
+        connection.setTemplateConnection(object.getTemplateConnection());
         connection.setConfiguration(object.getConfiguration());
         connection.setAttributes(object.getAttributes());
 
