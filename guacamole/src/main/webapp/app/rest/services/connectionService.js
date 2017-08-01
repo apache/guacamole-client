@@ -119,23 +119,20 @@ angular.module('rest').factory('connectionService', ['$injector',
  
     };
 
-    service.getConnectionTemplates = function getConnectionTemplates(dataSource, id) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
-        // Retrieve connection templates
-        return $http({
-            cache   : cacheService.connections,
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id) + '/templates',
-            params  : httpParameters
-        });
-
-    };
-
+    /**
+     * Makes a request to the REST API to get all connections of the specified
+     * protocol, returning a promise that provides the corresponding connections
+     * if successful.
+     *
+     * @param {String} dataSource
+     *     The current dataSource being referenced.
+     * @param {String} protocol
+     *     The protocol for which to pull connections.
+     *
+     * @returns {Promise.<Object.<Connection>>}
+     *     A promise which will resolve with a set of connections upon success.
+     */
     service.getConnectionsByProtocol = function getConnectionsByProtocol(dataSource, protocol) {
 
         // Build HTTP parameters set
