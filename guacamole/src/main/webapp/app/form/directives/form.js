@@ -64,7 +64,15 @@ angular.module('form').directive('guacForm', [function form() {
              *
              * @type Boolean
              */
-            modelOnly : '='
+            modelOnly : '=',
+
+            /**
+             * The object that will receive the placeholders that will then be
+             * passed on to the individual fields.
+             *
+             * @type String[]
+             */
+            placeholders : '='
 
         },
         templateUrl: 'app/form/templates/form.html',
@@ -90,6 +98,14 @@ angular.module('form').directive('guacForm', [function form() {
              * @type Object.<String, String>
              */
             $scope.values = {};
+
+            /**
+             * The object which will receive any placeholders assigned
+             * to fields inside the form.
+             *
+             * @type Object.<String>
+             */
+            $scope.placeholders = {};
 
             /**
              * Produces the translation string for the section header of the
@@ -169,6 +185,17 @@ angular.module('form').directive('guacForm', [function form() {
                 // Otherwise, use blank model
                 else
                     $scope.values = {};
+
+            });
+
+            // Update placeholders when they change
+            $scope.$watch('placeholders', function setPlaceholder(placeholders) {
+
+                if (placeholders)
+                    $scope.placeholders = placeholders;
+
+                else
+                    $scope.placeholders = {};
 
             });
 

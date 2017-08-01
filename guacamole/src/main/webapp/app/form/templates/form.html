@@ -9,7 +9,8 @@
         <div class="fields">
             <guac-form-field ng-repeat="field in form.fields" namespace="namespace"
                              ng-if="isVisible(field)"
-                             field="field" model="values[field.name]"></guac-form-field>
+                             field="field" model="values[field.name]"
+                             placeholder="placeholders[field.name]"></guac-form-field>
         </div>
 
     </div>
