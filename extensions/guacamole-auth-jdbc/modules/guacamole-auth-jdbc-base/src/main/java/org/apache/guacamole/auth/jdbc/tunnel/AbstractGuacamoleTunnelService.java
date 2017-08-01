@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -232,6 +233,20 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         Collection<ConnectionParameterModel> parameters = connectionParameterMapper.select(connection.getIdentifier());
         for (ConnectionParameterModel parameter : parameters)
             config.setParameter(parameter.getName(), parameter.getValue());
+
+        // Get template parameters
+        String templateConnection = connection.getTemplateConnection();
+        if (templateConnection != null && !templateConnection.equals("")) {
+            parameters = connectionParameterMapper.select(templateConnection);
+            for (ConnectionParameterModel parameter : parameters) {
+
+                // Do not use template value if original one has been set.
+                String origValue = config.getParameter(parameter.getName());
+                if (origValue == null)
+                    config.setParameter(parameter.getName(), parameter.getValue());
+
+            }
+        }
 
         // Build token filter containing credential tokens
         TokenFilter tokenFilter = new TokenFilter();
