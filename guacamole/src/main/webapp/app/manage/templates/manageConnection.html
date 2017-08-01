@@ -42,7 +42,9 @@
                 <td>
                     <select ng-model="connection.templateConnection" ng-change="loadTemplateConnection(connection.templateConnection)">
                         <option value=''>--Select Template--</option>
-                        <option ng-repeat="item in connectionTemplates" value="{{ item.identifier }}">{{ item.name }}</option>
+                        <option
+                            ng-repeat="item in connectionTemplates" value="{{ item.identifier }}"
+                            ng-selected="{{ item.identifier == connection.templateConnection }}">{{ item.name }}</option>
                     </select>
                 </td>
             </tr>

@@ -551,8 +551,11 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
 
     $scope.loadTemplateConnection = function loadTemplateConnection(identifier) {
 
-        if (identifier == '')
+        if (identifier == '') {
+            $scope.templateConnection = null;
+            $scope.templateParameters = null;
             return;
+        }
 
         connectionService.getConnection($scope.selectedDataSource, identifier)
         .success(function retrievedConnection(connection) {
