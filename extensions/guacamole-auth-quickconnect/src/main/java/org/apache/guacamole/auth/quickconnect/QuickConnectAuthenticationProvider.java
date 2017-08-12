@@ -19,10 +19,7 @@
 
 package org.apache.guacamole.auth.quickconnect;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
@@ -32,10 +29,6 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsExce
 import org.apache.guacamole.net.auth.simple.SimpleAuthenticationProvider;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
-import org.apache.guacamole.token.StandardTokens;
-import org.apache.guacamole.token.TokenFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class providing the necessary hooks into the Guacamole Client authentication
@@ -43,11 +36,6 @@ import org.slf4j.LoggerFactory;
  * throughout the web client.
  */
 public class QuickConnectAuthenticationProvider extends SimpleAuthenticationProvider {
-
-    /**
-     * Logger for this class.
-     */
-    private final Logger logger = LoggerFactory.getLogger(QuickConnectAuthenticationProvider.class);
 
     /**
      * userContext for this authentication provider.

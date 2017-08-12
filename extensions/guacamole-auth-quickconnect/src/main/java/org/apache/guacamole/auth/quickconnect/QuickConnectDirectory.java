@@ -19,28 +19,17 @@
 
 package org.apache.guacamole.auth.quickconnect;
 
-import com.google.inject.Inject;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.ConnectionGroup;
-import org.apache.guacamole.net.auth.simple.SimpleConnection;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionDirectory;
 import org.apache.guacamole.net.auth.Connection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the Connection Directory, stored
  * completely in-memory.
  */
 public class QuickConnectDirectory extends SimpleConnectionDirectory {
-
-    /**
-     * Logger for this class.
-     */
-    private final Logger logger = LoggerFactory.getLogger(QuickConnectDirectory.class);
 
     /**
      * The unique identifier of the root connection group.
@@ -64,6 +53,8 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
      * @param connections
      *     A Collection of all connections that should be present in this
      *     connection directory.
+     * @param rootGroup
+     *     A group that should be at the base of this directory.
      */
     public QuickConnectDirectory(Collection<Connection> connections, ConnectionGroup rootGroup) {
         super(connections);

@@ -147,7 +147,7 @@ angular.module('guacQuickConnect').controller('quickconnectController', ['$scope
 
             // Set up the name of the connection based on various parts of the URI
             var connName = urlArray[3] + '://';
-            if(!(typeof connParams['username'] === 'undefined'))
+            if (!(typeof connParams['username'] === 'undefined'))
                 connName += connParams['username'] + '@';
             connName += connParams['hostname'] + ':' + connParams['port'];
 

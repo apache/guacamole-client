@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.quickconnect;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;

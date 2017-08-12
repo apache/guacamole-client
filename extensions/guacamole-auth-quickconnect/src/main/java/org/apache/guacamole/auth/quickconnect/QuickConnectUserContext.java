@@ -19,11 +19,8 @@
 
 package org.apache.guacamole.auth.quickconnect;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.UUID;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.ActiveConnection;
@@ -35,16 +32,11 @@ import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
-import org.apache.guacamole.net.auth.simple.SimpleConnection;
-import org.apache.guacamole.net.auth.simple.SimpleConnectionGroup;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionGroupDirectory;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionRecordSet;
 import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 import org.apache.guacamole.net.auth.simple.SimpleUser;
 import org.apache.guacamole.net.auth.simple.SimpleUserDirectory;
-import org.apache.guacamole.protocol.GuacamoleConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A simple implementation of UserContext to support the QuickConnect
@@ -52,11 +44,6 @@ import org.slf4j.LoggerFactory;
  * created using the QuickConnect bar in the webapp.
  */
 public class QuickConnectUserContext implements UserContext {
-
-    /**
-     * Logger for this class.
-     */
-    private final Logger logger = LoggerFactory.getLogger(QuickConnectUserContext.class);
 
     /**
      * The unique identifier of the root connection group.
