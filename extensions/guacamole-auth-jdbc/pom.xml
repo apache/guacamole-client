@@ -70,6 +70,7 @@
         <!-- Database-specific implementations -->
         <module>modules/guacamole-auth-jdbc-mysql</module>
         <module>modules/guacamole-auth-jdbc-postgresql</module>
+        <module>modules/guacamole-auth-jdbc-sqlserver</module>
 
     </modules>
 
