@@ -90,7 +90,7 @@
     <!-- Search for specific connection records -->
     <select id="search" resultMap="ConnectionRecordResultMap">
 
-        SELECT
+        SELECT TOP (#{limit,jdbcType=INTEGER})
             [guacamole].[connection_history].connection_id,
             [guacamole].[connection_history].connection_name,
             [guacamole].[connection_history].remote_host,
@@ -139,14 +139,12 @@
             <if test="sortPredicate.descending">DESC</if>
         </foreach>
 
-        LIMIT #{limit,jdbcType=INTEGER}
-
     </select>
 
     <!-- Search for specific connection records -->
     <select id="searchReadable" resultMap="ConnectionRecordResultMap">
 
-        SELECT
+        SELECT TOP (#{limit,jdbcType=INTEGER})
             [guacamole].[connection_history].connection_id,
             [guacamole].[connection_history].connection_name,
             [guacamole].[connection_history].remote_host,
@@ -208,8 +206,6 @@
             </choose>
             <if test="sortPredicate.descending">DESC</if>
         </foreach>
-
-        LIMIT #{limit,jdbcType=INTEGER}
 
     </select>
 

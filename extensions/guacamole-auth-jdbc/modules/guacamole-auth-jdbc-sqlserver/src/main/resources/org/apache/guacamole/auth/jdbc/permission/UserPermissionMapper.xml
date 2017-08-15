@@ -124,12 +124,10 @@
             </foreach>
         AS permissions
         JOIN [guacamole].[user] ON [guacamole].[user].username = permissions.username
-        WHERE (permissions.user_id, permissions.permission, [guacamole].[user].user_id) NOT IN (
-            SELECT
-                [guacamole].[user_permission].user_id,
-                [guacamole].[user_permission].permission,
-                [guacamole].[user_permission].affected_user_id
-            FROM [guacamole].[user_permission]
+        WHERE NOT EXISTS (SELECT 1 FROM [guacamole].[user_permission]
+            WHERE [guacamole].[user_permission].user_id = permissions.user_id
+            AND [guacamole].[user_permission].permission = permissions.permission
+            AND [guacamole].[user_permission].affected_user_id = [guacamole].[user].user_id
         );
 
     </insert>

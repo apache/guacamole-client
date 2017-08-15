@@ -63,11 +63,11 @@
     <delete id="delete" parameterType="org.apache.guacamole.auth.jdbc.permission.SystemPermissionModel">
 
         DELETE FROM [guacamole].[system_permission]
-        WHERE (user_id, permission) IN
+        WHERE
             <foreach collection="permissions" item="permission"
-                     open="(" separator="," close=")">
-                (#{permission.userID,jdbcType=INTEGER},
-                 #{permission.type,jdbcType=VARCHAR})
+                     open="(" separator=" OR " close=")">
+                     (user_id = #{permission.userID,jdbcType=INTEGER}
+                      AND permission = #{permission.type,jdbcType=VARCHAR})
             </foreach>
 
     </delete>
@@ -89,11 +89,9 @@
                        #{permission.type,jdbcType=VARCHAR} AS permission
             </foreach>
         AS permissions
-        WHERE (user_id, permission) NOT IN (
-            SELECT
-                [guacamole].[system_permission].user_id,
-                [guacamole].[system_permission].permission
-            FROM [guacamole].[system_permission]
+        WHERE NOT EXISTS (SELECT 1 FROM [guacamole].[system_permission]
+            WHERE [guacamole].[system_permission].user_id = permissions.user_id
+            AND [guacamole].[system_permission].permission = permissions.permission
         );
 
     </insert>

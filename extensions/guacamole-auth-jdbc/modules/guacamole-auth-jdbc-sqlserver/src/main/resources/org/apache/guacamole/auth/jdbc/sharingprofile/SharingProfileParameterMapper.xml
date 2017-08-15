@@ -57,7 +57,7 @@
         )
         VALUES 
             <foreach collection="parameters" item="parameter" separator=",">
-                (#{parameter.sharingProfileIdentifier,jdbcType=INTEGER}
+                (#{parameter.sharingProfileIdentifier,jdbcType=INTEGER},
                  #{parameter.name,jdbcType=VARCHAR},
                  #{parameter.value,jdbcType=VARCHAR})
             </foreach>

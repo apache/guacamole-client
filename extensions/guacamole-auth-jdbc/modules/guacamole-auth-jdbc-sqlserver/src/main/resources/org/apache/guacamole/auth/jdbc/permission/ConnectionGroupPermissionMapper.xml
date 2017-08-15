@@ -117,12 +117,10 @@
                        #{permission.objectIdentifier,jdbcType=INTEGER} AS connection_group_id
             </foreach>
         AS permissions
-        WHERE (user_id, permission, connection_group_id) NOT IN (
-            SELECT
-                [guacamole].[connection_group_permission].user_id,
-                [guacamole].[connection_group_permission].permission,
-                [guacamole].[connection_group_permission].connection_group_id
-            FROM [guacamole].[connection_group_permission]
+        WHERE NOT EXISTS (SELECT 1 FROM [guacamole].[connection_group_permission]
+            WHERE [guacamole].[connection_group_permission].user_id = permissions.user_id AND
+            [guacamole].[connection_group_permission].permission = permissions.permission AND
+            [guacamole].[connection_group_permission].connection_group_id = permissions.connection_group_id
         );
 
     </insert>
