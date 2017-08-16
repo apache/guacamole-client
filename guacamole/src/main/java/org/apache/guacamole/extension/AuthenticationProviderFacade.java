@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.extension;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
@@ -66,58 +65,8 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
      *     The AuthenticationProvider subclass to instantiate.
      */
     public AuthenticationProviderFacade(Class<? extends AuthenticationProvider> authProviderClass) {
-
-        AuthenticationProvider instance = null;
-        
-        try {
-            // Attempt to instantiate the authentication provider
-            instance = authProviderClass.getConstructor().newInstance();
-        }
-        catch (NoSuchMethodException e) {
-            logger.error("The authentication extension in use is not properly defined. "
-                       + "Please contact the developers of the extension or, if you "
-                       + "are the developer, turn on debug-level logging.");
-            logger.debug("AuthenticationProvider is missing a default constructor.", e);
-        }
-        catch (SecurityException e) {
-            logger.error("The Java security mananager is preventing authentication extensions "
-                       + "from being loaded. Please check the configuration of Java or your "
-                       + "servlet container.");
-            logger.debug("Creation of AuthenticationProvider disallowed by security manager.", e);
-        }
-        catch (InstantiationException e) {
-            logger.error("The authentication extension in use is not properly defined. "
-                       + "Please contact the developers of the extension or, if you "
-                       + "are the developer, turn on debug-level logging.");
-            logger.debug("AuthenticationProvider cannot be instantiated.", e);
-        }
-        catch (IllegalAccessException e) {
-            logger.error("The authentication extension in use is not properly defined. "
-                       + "Please contact the developers of the extension or, if you "
-                       + "are the developer, turn on debug-level logging.");
-            logger.debug("Default constructor of AuthenticationProvider is not public.", e);
-        }
-        catch (IllegalArgumentException e) {
-            logger.error("The authentication extension in use is not properly defined. "
-                       + "Please contact the developers of the extension or, if you "
-                       + "are the developer, turn on debug-level logging.");
-            logger.debug("Default constructor of AuthenticationProvider cannot accept zero arguments.", e);
-        } 
-        catch (InvocationTargetException e) {
-
-            // Obtain causing error - create relatively-informative stub error if cause is unknown
-            Throwable cause = e.getCause();
-            if (cause == null)
-                cause = new GuacamoleException("Error encountered during initialization.");
-            
-            logger.error("Authentication extension failed to start: {}", cause.getMessage());
-            logger.debug("AuthenticationProvider instantiation failed.", e);
-
-        }
-       
-        // Associate instance, if any
-        authProvider = instance;
-
+        authProvider = ProviderFactory.newInstance("authentication provider",
+            authProviderClass);
     }
 
     @Override
