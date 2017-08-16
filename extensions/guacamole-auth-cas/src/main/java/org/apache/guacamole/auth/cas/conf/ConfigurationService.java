@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.cas.conf;
 
 import com.google.inject.Inject;
+import java.io.File;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 
@@ -66,6 +67,22 @@ public class ConfigurationService {
      */
     public String getRedirectURI() throws GuacamoleException {
         return environment.getRequiredProperty(CASGuacamoleProperties.CAS_REDIRECT_URI);
+    }
+
+    /**
+     * Returns the path to the file that contains the private key
+     * used to decrypt the credential that is sent encrypted by CAS,
+     * or null if no key is defined.
+     *
+     * @return
+     *     The path to the private key to decrypt the ClearPass
+     *     credential returned by CAS.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public File getClearpassKey() throws GuacamoleException {
+        return environment.getProperty(CASGuacamoleProperties.CAS_CLEARPASS_KEY);
     }
 
 }

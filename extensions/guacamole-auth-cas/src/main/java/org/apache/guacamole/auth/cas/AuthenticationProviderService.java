@@ -21,11 +21,26 @@ package org.apache.guacamole.auth.cas;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.spec.KeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Enumeration;
+import javax.crypto.Cipher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
@@ -34,12 +49,20 @@ import org.apache.guacamole.auth.cas.conf.ConfigurationService;
 import org.apache.guacamole.auth.cas.form.CASTicketField;
 import org.apache.guacamole.auth.cas.ticket.TicketValidationService;
 import org.apache.guacamole.auth.cas.user.AuthenticatedUser;
+import org.jasig.cas.client.authentication.AttributePrincipal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service providing convenience functions for the CAS AuthenticationProvider
  * implementation.
  */
 public class AuthenticationProviderService {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
 
     /**
      * Service for retrieving CAS configuration information.
@@ -83,7 +106,13 @@ public class AuthenticationProviderService {
             String ticket = request.getParameter(CASTicketField.PARAMETER_NAME);
             if (ticket != null) {
                 AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-                authenticatedUser.init(ticketService.processUsername(ticket), credentials);
+                AttributePrincipal principal = ticketService.validateTicket(ticket);
+                String username = principal.getName();
+                credentials.setUsername(username);
+                String clearPass = decryptPassword(principal.getAttributes().get("credential").toString());
+                if (clearPass != null && !clearPass.isEmpty())
+                    credentials.setPassword(clearPass);
+                authenticatedUser.init(username, credentials);
                 return authenticatedUser;
             }
         }
@@ -102,6 +131,78 @@ public class AuthenticationProviderService {
 
             }))
         );
+
+    }
+
+    /**
+     * Takes an encrypted string representing a password provided by
+     * the CAS ClearPass service and decrypts it using the private
+     * key configured for this extension.  Returns null if it is
+     * unable to decrypt the password.
+     *
+     * @param encryptedPassword
+     *     A string with the encrypted password provided by the
+     *     CAS service.
+     *
+     * @return
+     *     The decrypted password, or null if it is unable to
+     *     decrypt the password.
+     * @throws GuacamoleException
+     *     If unable to get Guacamole configuration data
+     */
+    private final String decryptPassword(String encryptedPassword)
+            throws GuacamoleException {
+
+        // If we get nothing, we return nothing.
+        if (encryptedPassword == null || encryptedPassword.isEmpty())
+            return null;
+
+        try {
+
+            // Open and read the file specified in the configuration.
+            File keyFile = new File(new LocalEnvironment().getGuacamoleHome(), confService.getClearpassKey().toString());
+            InputStream keyInput = new BufferedInputStream(new FileInputStream(keyFile));
+            final byte[] keyBytes = new byte[(int) keyFile.length()];
+            keyInput.read(keyBytes);
+            keyInput.close();
+      
+            // Set up decryption infrastructure
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            KeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes); 
+            final PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
+            final Cipher cipher = Cipher.getInstance(privateKey.getAlgorithm());
+            final byte[] pass64 = DatatypeConverter.parseBase64Binary(encryptedPassword);
+            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+
+            // Decrypt and return a new string.
+            final byte[] cipherData = cipher.doFinal(pass64);
+            return new String(cipherData);
+        }
+        catch (FileNotFoundException e) {
+            logger.error("ClearPass key file not found, password will not be decrypted.");
+            logger.debug("Error locating the ClearPass key file: {}", e.getMessage());
+            return null;
+        }
+        catch (IOException e) {
+            logger.error("Error reading ClearPass key file, password will not be decrypted.");
+            logger.debug("Error reading the ClearPass key file: {}", e.getMessage());
+            return null;
+        }
+        catch (NoSuchAlgorithmException e) {
+            logger.error("Unable to find the specified algorithm, password will not be decrypted.");
+            logger.debug("Algorithm was not found: {}", e.getMessage());
+            return null;
+        }
+        catch (InvalidKeyException e) {
+            logger.error("Invalid key was loaded, password will not be decrypted.");
+            logger.debug("The loaded key was invalid: {}", e.getMessage());
+            return null;
+        }
+        catch (Throwable t) {
+            logger.error("Error decrypting password, it will not be available as a token.");
+            logger.debug("Error in one of the components to decrypt the password: {}", t.getMessage());
+            return null;
+        }
 
     }
 

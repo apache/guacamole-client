@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.cas.conf;
 
+import org.apache.guacamole.properties.FileGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
 /**
@@ -54,6 +55,18 @@ public class CASGuacamoleProperties {
 
         @Override
         public String getName() { return "cas-redirect-uri"; }
+
+    };
+
+    /**
+     * The location of the private key file used to retrieve the
+     * password if CAS is configured to support ClearPass.
+     */
+    public static final FileGuacamoleProperty CAS_CLEARPASS_KEY =
+            new FileGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "cas-clearpass-key"; }
 
     };
 

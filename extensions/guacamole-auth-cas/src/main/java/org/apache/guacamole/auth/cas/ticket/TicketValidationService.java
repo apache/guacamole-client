@@ -57,9 +57,7 @@ public class TicketValidationService {
      *     If the ID ticket is not valid, the username claim type is missing, or
      *     guacamole.properties could not be parsed.
      */
-    public String processUsername(String ticket) throws GuacamoleException {
-
-        AttributePrincipal principal = null;
+    public AttributePrincipal validateTicket(String ticket) throws GuacamoleException {
 
         // Retrieve the configured CAS URL, establish a ticket validator,
         // and then attempt to validate the supplied ticket.  If that succeeds,
@@ -70,14 +68,11 @@ public class TicketValidationService {
         try {
             String confRedirectURI = confService.getRedirectURI();
             Assertion a = validator.validate(ticket, confRedirectURI);
-            principal = a.getPrincipal();
+            return a.getPrincipal();
         } 
         catch (TicketValidationException e) {
             throw new GuacamoleException("Ticket validation failed.", e);
         }
-
-        // Return the principal name as the username.
-        return principal.getName();
 
     }
 
