@@ -24,9 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.guacamole.GuacamoleAuthenticationRejectedException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
+import org.apache.guacamole.GuacamoleSession;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -35,7 +37,9 @@ import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleCredentialsException;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
-import org.apache.guacamole.GuacamoleSession;
+import org.apache.guacamole.net.event.AuthenticationFailureEvent;
+import org.apache.guacamole.net.event.AuthenticationSuccessEvent;
+import org.apache.guacamole.rest.event.ListenerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +77,12 @@ public class AuthenticationService {
      */
     @Inject
     private AuthTokenGenerator authTokenGenerator;
+
+    /**
+     * The service to use to notify registered authentication listeners
+     */
+    @Inject
+    private ListenerService listenerService;
 
     /**
      * Regular expression which matches any IPv4 address.
@@ -208,6 +218,50 @@ public class AuthenticationService {
     }
 
     /**
+     * Notify all bound AuthenticationSuccessListeners that a successful authentication
+     * has occurred. If any of the bound listeners returns false (indicating that the
+     * authentication should be rejected) a GuacamoleRejectedAuthenticationException is
+     * thrown.
+     *
+     * @param authenticatedUser
+     *      The user that was successfully authenticated
+     * @param session
+     *      Existing session for the user (if any)
+     * @throws GuacamoleException
+     *      If a filter throws an exception or if any filter rejects the authentication
+     */
+    private void notifyAuthenticationSuccessListeners(
+            AuthenticatedUser authenticatedUser, GuacamoleSession session)
+            throws GuacamoleException {
+        UserContext userContext = null;
+        if (session != null) {
+            userContext = session.getUserContext(
+                authenticatedUser.getAuthenticationProvider().getIdentifier());
+        }
+
+        AuthenticationSuccessEvent event = new AuthenticationSuccessEvent(
+            userContext, authenticatedUser.getCredentials());
+
+        boolean ok = listenerService.authenticationSucceeded(event);
+        if (!ok) {
+            throw new GuacamoleAuthenticationRejectedException();
+        }
+    }
+
+    /**
+     * Notify all bound AuthenticationFailureListeners that an authentication has failed.
+     *
+     * @param credentials
+     *      The credentials that failed to authenticate
+     * @throws GuacamoleException
+     *      If a filter throws an exception
+     */
+    private void notifyAuthenticationFailureListeners(Credentials credentials)
+            throws GuacamoleException {
+        listenerService.authenticationFailed(new AuthenticationFailureEvent(credentials));
+    }
+
+    /**
      * Returns the AuthenticatedUser associated with the given session and
      * credentials, performing a fresh authentication and creating a new
      * AuthenticatedUser if necessary.
@@ -232,11 +286,17 @@ public class AuthenticationService {
         try {
 
             // Re-authenticate user if session exists
-            if (existingSession != null)
-                return updateAuthenticatedUser(existingSession.getAuthenticatedUser(), credentials);
+            if (existingSession != null) {
+                AuthenticatedUser updatedUser = updateAuthenticatedUser(
+                        existingSession.getAuthenticatedUser(), credentials);
+                notifyAuthenticationSuccessListeners(updatedUser, existingSession);
+                return updatedUser;
+            }
 
             // Otherwise, attempt authentication as a new user
-            AuthenticatedUser authenticatedUser = AuthenticationService.this.authenticateUser(credentials);
+            AuthenticatedUser authenticatedUser = authenticateUser(credentials);
+            notifyAuthenticationSuccessListeners(authenticatedUser, null);
+
             if (logger.isInfoEnabled())
                 logger.info("User \"{}\" successfully authenticated from {}.",
                         authenticatedUser.getIdentifier(),
@@ -248,6 +308,8 @@ public class AuthenticationService {
 
         // Log and rethrow any authentication errors
         catch (GuacamoleException e) {
+
+            notifyAuthenticationFailureListeners(credentials);
 
             // Get request and username for sake of logging
             HttpServletRequest request = credentials.getRequest();
