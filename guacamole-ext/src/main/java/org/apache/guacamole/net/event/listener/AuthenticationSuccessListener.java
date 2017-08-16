@@ -28,7 +28,7 @@ import org.apache.guacamole.net.event.AuthenticationSuccessEvent;
  * the authenticationSucceeded() hook has the opportunity to cancel the
  * authentication and force it to fail.
  */
-public interface AuthenticationSuccessListener {
+public interface AuthenticationSuccessListener extends Listener {
 
     /**
      * Event hook which fires immediately after a user's authentication attempt
