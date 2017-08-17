@@ -233,6 +233,7 @@ public class AuthenticationService {
     private void notifyAuthenticationSuccessListeners(
             AuthenticatedUser authenticatedUser, GuacamoleSession session)
             throws GuacamoleException {
+
         UserContext userContext = null;
         if (session != null) {
             userContext = session.getUserContext(
@@ -258,6 +259,7 @@ public class AuthenticationService {
      */
     private void notifyAuthenticationFailureListeners(Credentials credentials)
             throws GuacamoleException {
+
         listenerService.authenticationFailed(new AuthenticationFailureEvent(credentials));
     }
 

@@ -15,7 +15,6 @@
  *  KIND, either express or implied.  See the License for the
  *  specific language governing permissions and limitations
  *  under the License.
- *
  */
 
 package org.apache.guacamole.extension;
@@ -56,7 +55,7 @@ class ListenerFacade implements ListenerProvider {
      * listener implements the AuthenticationSuccessListener interface.
      *
      * @param
-     *      e The AuthenticationSuccessEvent describing the authentication
+     *      event The AuthenticationSuccessEvent describing the authentication
      *        success that just occurred.
      * @return
      *      false if the delegate listener rejects the successful authentication,
@@ -66,10 +65,10 @@ class ListenerFacade implements ListenerProvider {
      *      if the delegate listener throws this exception
      */
     @Override
-    public boolean authenticationSucceeded(AuthenticationSuccessEvent e)
+    public boolean authenticationSucceeded(AuthenticationSuccessEvent event)
             throws GuacamoleException {
         return !(delegate instanceof AuthenticationSuccessListener)
-                || ((AuthenticationSuccessListener) delegate).authenticationSucceeded(e);
+                || ((AuthenticationSuccessListener) delegate).authenticationSucceeded(event);
     }
 
     /**
@@ -77,17 +76,17 @@ class ListenerFacade implements ListenerProvider {
      * listener implements the AuthenticationSuccessListener interface.
      *
      * @param
-     *      e The AuthenticationFailureEvent describing the authentication
+     *      event The AuthenticationFailureEvent describing the authentication
      *        failure that just occurred.
      *
      * @throws GuacamoleException
      *      if the delegate listener throws this exception
      */
     @Override
-    public void authenticationFailed(AuthenticationFailureEvent e)
+    public void authenticationFailed(AuthenticationFailureEvent event)
             throws GuacamoleException {
         if (delegate instanceof AuthenticationFailureListener) {
-            ((AuthenticationFailureListener) delegate).authenticationFailed(e);
+            ((AuthenticationFailureListener) delegate).authenticationFailed(event);
         }
     }
 
@@ -96,7 +95,7 @@ class ListenerFacade implements ListenerProvider {
      * listener implements the TunnelConnectListener interface.
      *
      * @param
-     *      e The TunnelConnectEvent describing the tunnel that was just connected
+     *      event The TunnelConnectEvent describing the tunnel that was just connected
 
      * @return
      *      false if the delegate listener rejects the tunnel connection,
@@ -106,10 +105,10 @@ class ListenerFacade implements ListenerProvider {
      *      if the delegate listener throws this exception
      */
     @Override
-    public boolean tunnelConnected(TunnelConnectEvent e)
+    public boolean tunnelConnected(TunnelConnectEvent event)
             throws GuacamoleException {
         return !(delegate instanceof TunnelConnectListener)
-                || ((TunnelConnectListener) delegate).tunnelConnected(e);
+                || ((TunnelConnectListener) delegate).tunnelConnected(event);
     }
 
     /**
@@ -117,7 +116,7 @@ class ListenerFacade implements ListenerProvider {
      * listener implements the TunnelCloseListener interface.
      *
      * @param
-     *      e The TunnelCloseEvent describing the tunnel that is to be close
+     *      event The TunnelCloseEvent describing the tunnel that is to be close
 
      * @return
      *      false if the delegate listener rejects the tunnel close request,
@@ -127,9 +126,9 @@ class ListenerFacade implements ListenerProvider {
      *      if the delegate listener throws this exception
      */
     @Override
-    public boolean tunnelClosed(TunnelCloseEvent e) throws GuacamoleException {
+    public boolean tunnelClosed(TunnelCloseEvent event) throws GuacamoleException {
         return !(delegate instanceof TunnelCloseListener)
-                || ((TunnelCloseListener) delegate).tunnelClosed(e);
+                || ((TunnelCloseListener) delegate).tunnelClosed(event);
     }
 
 }

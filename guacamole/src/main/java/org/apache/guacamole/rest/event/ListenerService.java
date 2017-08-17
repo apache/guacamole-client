@@ -15,30 +15,26 @@
  *  KIND, either express or implied.  See the License for the
  *  specific language governing permissions and limitations
  *  under the License.
- *
  */
 
 package org.apache.guacamole.rest.event;
 
+import java.util.List;
 import com.google.inject.Inject;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.extension.ListenerProvider;
 import org.apache.guacamole.net.event.AuthenticationFailureEvent;
 import org.apache.guacamole.net.event.AuthenticationSuccessEvent;
-import org.apache.guacamole.net.event.TunnelCloseEvent;
 import org.apache.guacamole.net.event.TunnelConnectEvent;
+import org.apache.guacamole.net.event.TunnelCloseEvent;
 import org.apache.guacamole.net.event.listener.AuthenticationFailureListener;
 import org.apache.guacamole.net.event.listener.AuthenticationSuccessListener;
 import org.apache.guacamole.net.event.listener.TunnelCloseListener;
 import org.apache.guacamole.net.event.listener.TunnelConnectListener;
 
-import java.util.List;
-
 /**
  * A service used to notify listeners registered by extensions when events of
  * interest occur.
- *
- * @author Carl Harris
  */
 public class ListenerService implements ListenerProvider {
 
@@ -50,7 +46,8 @@ public class ListenerService implements ListenerProvider {
      * are allowed to veto a successful authentication by returning false from the
      * listener method. Regardless of whether a particular listener rejects the
      * successful authentication, all listeners are notified.
-     * @param e
+     *
+     * @param event
      *      The AuthenticationSuccessEvent describing the successful authentication
      *      that just occurred.
      *
@@ -62,11 +59,11 @@ public class ListenerService implements ListenerProvider {
      *      some listeners may not receive the authentication success event notification.
      */
     @Override
-    public boolean authenticationSucceeded(AuthenticationSuccessEvent e)
+    public boolean authenticationSucceeded(AuthenticationSuccessEvent event)
             throws GuacamoleException {
         boolean result = true;
         for (AuthenticationSuccessListener listener : listeners) {
-            result = result && listener.authenticationSucceeded(e);
+            result = result && listener.authenticationSucceeded(event);
         }
         return result;
     }
@@ -74,7 +71,7 @@ public class ListenerService implements ListenerProvider {
     /**
      * Notifies all bound listeners of an authentication failure event.
      *
-     * @param e
+     * @param event
      *      The AuthenticationSuccessEvent describing the authentication failure
      *      that just occurred.
      *
@@ -83,10 +80,10 @@ public class ListenerService implements ListenerProvider {
      *      some listeners may not receive the authentication failure event notification.
      */
     @Override
-    public void authenticationFailed(AuthenticationFailureEvent e)
+    public void authenticationFailed(AuthenticationFailureEvent event)
             throws GuacamoleException {
         for (AuthenticationFailureListener listener : listeners) {
-            listener.authenticationFailed(e);
+            listener.authenticationFailed(event);
         }
     }
 
@@ -95,7 +92,7 @@ public class ListenerService implements ListenerProvider {
      * are allowed to veto a tunnel connection by returning false from the
      * listener method. Regardless of whether a particular listener rejects the
      * tunnel connection, all listeners are notified.
-     * @param e
+     * @param event
      *      The TunnelConnectedEvent describing the tunnel that was just connected
      *
      * @return
@@ -106,11 +103,11 @@ public class ListenerService implements ListenerProvider {
      *      some listeners may not receive the tunnel connected event notification.
      */
     @Override
-    public boolean tunnelConnected(TunnelConnectEvent e)
+    public boolean tunnelConnected(TunnelConnectEvent event)
             throws GuacamoleException {
         boolean result = true;
         for (TunnelConnectListener listener : listeners) {
-            result = result && listener.tunnelConnected(e);
+            result = result && listener.tunnelConnected(event);
         }
         return result;
     }
@@ -120,7 +117,7 @@ public class ListenerService implements ListenerProvider {
      * are allowed to veto the request to close a tunnel by returning false from
      * the listener method. Regardless of whether a particular listener rejects the
      * tunnel close request, all listeners are notified.
-     * @param e
+     * @param event
      *      The TunnelCloseEvent describing the tunnel that is to be closed
      *
      * @return
@@ -131,10 +128,10 @@ public class ListenerService implements ListenerProvider {
      *      some listeners may not receive the tunnel close event notification.
      */
     @Override
-    public boolean tunnelClosed(TunnelCloseEvent e) throws GuacamoleException {
+    public boolean tunnelClosed(TunnelCloseEvent event) throws GuacamoleException {
         boolean result = true;
         for (TunnelCloseListener listener : listeners) {
-            result = result && listener.tunnelClosed(e);
+            result = result && listener.tunnelClosed(event);
         }
         return result;
     }
