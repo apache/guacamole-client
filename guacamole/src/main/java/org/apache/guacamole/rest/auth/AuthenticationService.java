@@ -295,7 +295,7 @@ public class AuthenticationService {
             }
 
             // Otherwise, attempt authentication as a new user
-            AuthenticatedUser authenticatedUser = authenticateUser(credentials);
+            AuthenticatedUser authenticatedUser = AuthenticationService.this.authenticateUser(credentials);
             notifyAuthenticationSuccessListeners(authenticatedUser, null);
 
             if (logger.isInfoEnabled())
