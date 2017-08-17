@@ -243,8 +243,7 @@ public class AuthenticationService {
         AuthenticationSuccessEvent event = new AuthenticationSuccessEvent(
             userContext, authenticatedUser.getCredentials());
 
-        boolean ok = listenerService.authenticationSucceeded(event);
-        if (!ok) {
+        if (!listenerService.authenticationSucceeded(event)) {
             throw new GuacamoleAuthenticationRejectedException();
         }
     }
