@@ -91,8 +91,7 @@ public class TunnelRequestService {
     private void notifyTunnelConnectListeners(UserContext userContext,
             Credentials credentials, GuacamoleTunnel tunnel) throws GuacamoleException {
         TunnelConnectEvent event = new TunnelConnectEvent(userContext, credentials, tunnel);
-        boolean ok = listenerService.tunnelConnected(event);
-        if (!ok) {
+        if (!listenerService.tunnelConnected(event)) {
             try {
                 tunnel.close();
             }
