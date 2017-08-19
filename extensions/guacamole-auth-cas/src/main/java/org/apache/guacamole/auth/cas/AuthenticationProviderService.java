@@ -109,9 +109,12 @@ public class AuthenticationProviderService {
                 AttributePrincipal principal = ticketService.validateTicket(ticket);
                 String username = principal.getName();
                 credentials.setUsername(username);
-                String clearPass = decryptPassword(principal.getAttributes().get("credential").toString());
-                if (clearPass != null && !clearPass.isEmpty())
-                    credentials.setPassword(clearPass);
+                Object credObj = principal.getAttributes().get("credential");
+                if (credObj != null) {
+                    String clearPass = decryptPassword(credObj.toString());
+                    if (clearPass != null && !clearPass.isEmpty())
+                        credentials.setPassword(clearPass);
+                }
                 authenticatedUser.init(username, credentials);
                 return authenticatedUser;
             }
