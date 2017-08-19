@@ -113,7 +113,7 @@ public class TicketValidationService {
         }
         catch (Throwable t) {
             logger.error("Error validating ticket with CAS server: {}", t.getMessage());
-            throw new GuacamoleInsufficientCredentialsException("Error validating ticket with CAS server.", t, CredentialsInfo.USERNAME_PASSWORD);
+            throw new GuacamoleInsufficientCredentialsException("CAS login failed.", CredentialsInfo.USERNAME_PASSWORD);
         }
 
     }
