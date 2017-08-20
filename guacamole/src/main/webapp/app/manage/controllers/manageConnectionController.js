@@ -270,6 +270,12 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
             $scope.connection = connection;
             connectionService.getConnectionsByProtocol($scope.selectedDataSource, connection.protocol)
             .success(function connectionsRetrieved(connections) {
+                for (var templConn in connections) {
+                    if (templConn == identifier)
+                        delete connections[templConn];
+                    else if (connections[templConn].templateConnection != null)
+                        delete connections[templConn];
+                }
                 $scope.connectionTemplates = connections;
             });
             if ($scope.connection.templateConnection != null && $scope.connection.templateConnection != "") {
@@ -316,8 +322,11 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         connectionService.getConnection($scope.selectedDataSource, cloneSourceIdentifier)
         .success(function connectionRetrieved(connection) {
             $scope.connection = connection;
-            connectionService.getConnectionsByProtocols($scope.selectedDataSource, connection.protocol)
+            connectionService.getConnectionsByProtocol($scope.selectedDataSource, connection.protocol)
             .success(function connectionsRetrieved(connections) {
+                for (var templConn in connections)
+                    if (connections[templConn].templateConnection != null)
+                        delete connections[templConn];
                 $scope.connectionTemplates = connections;
             });
 
@@ -359,6 +368,9 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         });
         connectionService.getConnectionsByProtocol($scope.selectedDataSource, $scope.connection.protocol)
         .success(function connectionsRetrieved(connections) {
+            for (var templConn in connections)
+                if (connections[templConn].templateConnection != null)
+                    delete connections[templConn];
             $scope.connectionTemplates = connections;
         });
         $scope.historyEntryWrappers = [];
@@ -544,24 +556,30 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
 
         connectionService.getConnectionsByProtocol($scope.selectedDataSource, $scope.connection.protocol)
         .success(function retrievedConnections(connections) {
+            for (var templConn in connections) {
+                if (identifier && templConn == identifier)
+                    delete connections[templConn];
+                else if (connections[templConn].templateConnection != null)
+                    delete connections[templConn];
+            }
             $scope.connectionTemplates = connections;
         });
 
     };
 
-    $scope.loadTemplateConnection = function loadTemplateConnection(identifier) {
+    $scope.loadTemplateConnection = function loadTemplateConnection(templIdentifier) {
 
-        if (identifier == '') {
+        if (templIdentifier == '') {
             $scope.templateConnection = null;
             $scope.templateParameters = null;
             return;
         }
 
-        connectionService.getConnection($scope.selectedDataSource, identifier)
+        connectionService.getConnection($scope.selectedDataSource, templIdentifier)
         .success(function retrievedConnection(connection) {
             $scope.templateConnection = connection;
         });
-        connectionService.getConnectionParameters($scope.selectedDataSource, identifier)
+        connectionService.getConnectionParameters($scope.selectedDataSource, templIdentifier)
         .success(function retrievedParameters(parameters) {
             $scope.templateParameters = parameters;
         });
