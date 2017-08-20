@@ -30,6 +30,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     var PermissionSet       = $injector.get('PermissionSet');
 
     // Required services
+    var $filter                  = $injector.get('$filter');
     var $location                = $injector.get('$location');
     var $routeParams             = $injector.get('$routeParams');
     var $translate               = $injector.get('$translate');
@@ -276,7 +277,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
                     else if (connections[templConn].templateConnection != null)
                         delete connections[templConn];
                 }
-                $scope.connectionTemplates = connections;
+                $scope.connectionTemplates = $filter('orderBy')(connections, 'name');
             });
             if ($scope.connection.templateConnection != null && $scope.connection.templateConnection != "") {
 
@@ -327,7 +328,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
                 for (var templConn in connections)
                     if (connections[templConn].templateConnection != null)
                         delete connections[templConn];
-                $scope.connectionTemplates = connections;
+                $scope.connectionTemplates = $filter('orderBy')(connections, 'name');
             });
 
             if ($scope.connection.templateConnection != null && $scope.connection.templateConnection != '') {
@@ -371,7 +372,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
             for (var templConn in connections)
                 if (connections[templConn].templateConnection != null)
                     delete connections[templConn];
-            $scope.connectionTemplates = connections;
+            $scope.connectionTemplates = $filter('orderBy')(connections, 'name');
         });
         $scope.historyEntryWrappers = [];
         $scope.parameters = {};
