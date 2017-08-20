@@ -69,4 +69,21 @@ angular.module('form').controller('passwordFieldController', ['$scope',
 
     };
 
+    /**
+     * Retrieves the password placeholder, based on whether the field
+     * is visible or not.
+     */
+    $scope.getPasswordPlaceholder = function getPasswordPlaceholder() {
+
+        if (!$scope.placeholder)
+            return null;
+
+        if ($scope.passwordInputType === 'password' && $scope.placeholder != '')
+            return Array($scope.placeholder.length).join('*');
+
+        else
+            return $scope.placeholder;
+
+    }
+
 }]);
