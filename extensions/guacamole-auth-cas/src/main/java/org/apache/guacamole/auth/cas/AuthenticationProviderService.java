@@ -39,9 +39,9 @@ import javax.crypto.Cipher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.DatatypeConverter;
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.environment.LocalEnvironment;
+import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.form.Field;
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
@@ -69,6 +69,12 @@ public class AuthenticationProviderService {
      */
     @Inject
     private ConfigurationService confService;
+
+    /**
+     * The Guacamole server environment.
+     */
+    @Inject
+    private Environment environment;
 
     /**
      * Service for validating received ID tickets.
@@ -150,6 +156,7 @@ public class AuthenticationProviderService {
      * @return
      *     The decrypted password, or null if it is unable to
      *     decrypt the password.
+     *
      * @throws GuacamoleException
      *     If unable to get Guacamole configuration data
      */
@@ -163,7 +170,7 @@ public class AuthenticationProviderService {
         try {
 
             // Open and read the file specified in the configuration.
-            File keyFile = new File(new LocalEnvironment().getGuacamoleHome(), confService.getClearpassKey().toString());
+            File keyFile = new File(environment.getGuacamoleHome(), confService.getClearpassKey().toString());
             InputStream keyInput = new BufferedInputStream(new FileInputStream(keyFile));
             final byte[] keyBytes = new byte[(int) keyFile.length()];
             keyInput.read(keyBytes);
