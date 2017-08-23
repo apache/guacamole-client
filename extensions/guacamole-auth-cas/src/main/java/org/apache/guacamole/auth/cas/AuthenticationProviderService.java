@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
+import java.lang.IllegalArgumentException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -190,27 +191,32 @@ public class AuthenticationProviderService {
         }
         catch (FileNotFoundException e) {
             logger.error("ClearPass key file not found, password will not be decrypted.");
-            logger.debug("Error locating the ClearPass key file: {}", e.getMessage());
+            logger.debug("Error locating the ClearPass key file: {}", e);
             return null;
         }
         catch (IOException e) {
             logger.error("Error reading ClearPass key file, password will not be decrypted.");
-            logger.debug("Error reading the ClearPass key file: {}", e.getMessage());
+            logger.debug("Error reading the ClearPass key file: {}", e);
             return null;
         }
         catch (NoSuchAlgorithmException e) {
             logger.error("Unable to find the specified algorithm, password will not be decrypted.");
-            logger.debug("Algorithm was not found: {}", e.getMessage());
+            logger.debug("Algorithm was not found: {}", e);
             return null;
         }
         catch (InvalidKeyException e) {
             logger.error("Invalid key was loaded, password will not be decrypted.");
-            logger.debug("The loaded key was invalid: {}", e.getMessage());
+            logger.debug("The loaded key was invalid: {}", e);
+            return null;
+        }
+        catch (IllegalArgumentException e) {
+            logger.error("Failed to parse Base64 data, password will not be decrypted.");
+            logger.debug("Data received was not valid Base64 data, so decryption cannot continue: {}", e);
             return null;
         }
         catch (Throwable t) {
             logger.error("Error decrypting password, it will not be available as a token.");
-            logger.debug("Error in one of the components to decrypt the password: {}", t.getMessage());
+            logger.debug("Error in one of the components to decrypt the password: {}", t);
             return null;
         }
 
