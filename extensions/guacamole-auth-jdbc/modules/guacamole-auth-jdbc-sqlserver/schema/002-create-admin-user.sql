@@ -33,7 +33,7 @@ FROM (
     JOIN [dbo].[guacamole_user] ON permissions.username = [dbo].[guacamole_user].[username]
     JOIN [dbo].[guacamole_user] affected ON permissions.affected_username = affected.username;
 
-INSERT INTO [dbo].[system_permission]
+INSERT INTO [dbo].[guacamole_system_permission]
 SELECT user_id, permission
 FROM (
     SELECT 'guacadmin' AS username, 'CREATE_CONNECTION' AS permission

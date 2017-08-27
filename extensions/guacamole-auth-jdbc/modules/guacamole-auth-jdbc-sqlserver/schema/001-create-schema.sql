@@ -18,12 +18,6 @@
  */
 
 /**
- * Create the guacamole schema.
- */
-CREATE SCHEMA [dbo]
-GO
-
-/**
  * List for permission data type.
  */
 CREATE RULE [dbo].[guacamole_permission_list] 
