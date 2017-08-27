@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-openid</artifactId>
     <packaging>jar</packaging>
-    <version>0.9.11-incubating</version>
+    <version>0.9.13-incubating</version>
     <name>guacamole-auth-openid</name>
     <url>http://guacamole.incubator.apache.org/</url>
 
@@ -130,7 +130,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.9.11-incubating</version>
+            <version>0.9.13-incubating</version>
             <scope>provided</scope>
         </dependency>
 
