@@ -51,13 +51,13 @@
     <!-- Select all connection identifiers -->
     <select id="selectIdentifiers" resultType="string">
         SELECT connection_id 
-        FROM [guacamole].[connection]
+        FROM [dbo].[guacamole_connection]
     </select>
 
     <!-- Select identifiers of all readable connections -->
     <select id="selectReadableIdentifiers" resultType="string">
         SELECT connection_id
-        FROM [guacamole].[connection_permission]
+        FROM [dbo].[guacamole_connection_permission]
         WHERE
             user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'READ'
@@ -66,7 +66,7 @@
     <!-- Select all connection identifiers within a particular connection group -->
     <select id="selectIdentifiersWithin" resultType="string">
         SELECT connection_id 
-        FROM [guacamole].[connection]
+        FROM [dbo].[guacamole_connection]
         WHERE
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
@@ -74,9 +74,9 @@
 
     <!-- Select identifiers of all readable connections within a particular connection group -->
     <select id="selectReadableIdentifiersWithin" resultType="string">
-        SELECT [guacamole].[connection].connection_id
-        FROM [guacamole].[connection]
-        JOIN [guacamole].[connection_permission] ON [guacamole].[connection_permission].connection_id = [guacamole].[connection].connection_id
+        SELECT [dbo].[guacamole_connection].connection_id
+        FROM [dbo].[guacamole_connection]
+        JOIN [dbo].[guacamole_connection_permission] ON [dbo].[guacamole_connection_permission].connection_id = [dbo].[guacamole_connection].connection_id
         WHERE
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
@@ -100,7 +100,7 @@
             proxy_encryption_method,
             connection_weight,
             failover_only
-        FROM [guacamole].[connection]
+        FROM [dbo].[guacamole_connection]
         WHERE connection_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
@@ -108,7 +108,7 @@
             </foreach>;
 
         SELECT primary_connection_id, sharing_profile_id
-        FROM [guacamole].[sharing_profile]
+        FROM [dbo].[guacamole_sharing_profile]
         WHERE primary_connection_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
@@ -122,7 +122,7 @@
             resultSets="connections,sharingProfiles">
 
         SELECT
-            [guacamole].[connection].connection_id,
+            [dbo].[guacamole_connection].connection_id,
             connection_name,
             parent_id,
             protocol,
@@ -133,9 +133,9 @@
             proxy_encryption_method,
             connection_weight,
             failover_only
-        FROM [guacamole].[connection]
-        JOIN [guacamole].[connection_permission] ON [guacamole].[connection_permission].connection_id = [guacamole].[connection].connection_id
-        WHERE [guacamole].[connection].connection_id IN
+        FROM [dbo].[guacamole_connection]
+        JOIN [dbo].[guacamole_connection_permission] ON [dbo].[guacamole_connection_permission].connection_id = [dbo].[guacamole_connection].connection_id
+        WHERE [dbo].[guacamole_connection].connection_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}
@@ -143,9 +143,9 @@
             AND user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'READ';
 
-        SELECT primary_connection_id, [guacamole].[sharing_profile].sharing_profile_id
-        FROM [guacamole].[sharing_profile]
-        JOIN [guacamole].[sharing_profile_permission] ON [guacamole].[sharing_profile_permission].sharing_profile_id = [guacamole].[sharing_profile].sharing_profile_id
+        SELECT primary_connection_id, [dbo].[guacamole_sharing_profile].sharing_profile_id
+        FROM [dbo].[guacamole_sharing_profile]
+        JOIN [dbo].[guacamole_sharing_profile_permission] ON [dbo].[guacamole_sharing_profile_permission].sharing_profile_id = [dbo].[guacamole_sharing_profile].sharing_profile_id
         WHERE primary_connection_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
@@ -171,7 +171,7 @@
             proxy_encryption_method,
             connection_weight,
             failover_only
-        FROM [guacamole].[connection]
+        FROM [dbo].[guacamole_connection]
         WHERE 
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
@@ -181,7 +181,7 @@
 
     <!-- Delete single connection by identifier -->
     <delete id="delete">
-        DELETE FROM [guacamole].[connection]
+        DELETE FROM [dbo].[guacamole_connection]
         WHERE connection_id = #{identifier,jdbcType=INTEGER}
     </delete>
 
@@ -189,7 +189,7 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="object.objectID"
             parameterType="org.apache.guacamole.auth.jdbc.connection.ConnectionModel">
 
-        INSERT INTO [guacamole].[connection] (
+        INSERT INTO [dbo].[guacamole_connection] (
             connection_name,
             parent_id,
             protocol,
@@ -218,7 +218,7 @@
 
     <!-- Update single connection -->
     <update id="update" parameterType="org.apache.guacamole.auth.jdbc.connection.ConnectionModel">
-        UPDATE [guacamole].[connection]
+        UPDATE [dbo].[guacamole_connection]
         SET connection_name          = #{object.name,jdbcType=VARCHAR},
             parent_id                = #{object.parentIdentifier,jdbcType=INTEGER},
             protocol                 = #{object.protocol,jdbcType=VARCHAR},

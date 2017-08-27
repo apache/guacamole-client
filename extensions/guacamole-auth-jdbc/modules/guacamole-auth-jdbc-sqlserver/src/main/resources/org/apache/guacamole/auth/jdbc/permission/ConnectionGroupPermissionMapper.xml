@@ -36,13 +36,13 @@
     <select id="select" resultMap="ConnectionGroupPermissionResultMap">
 
         SELECT
-            [guacamole].[connection_group_permission].user_id,
+            [dbo].[guacamole_connection_group_permission].user_id,
             username,
             permission,
             connection_group_id
-        FROM [guacamole].[connection_group_permission]
-        JOIN [guacamole].[user] ON [guacamole].[connection_group_permission].user_id = [guacamole].[user].user_id
-        WHERE [guacamole].[connection_group_permission].user_id = #{user.objectID,jdbcType=INTEGER}
+        FROM [dbo].[guacamole_connection_group_permission]
+        JOIN [dbo].[guacamole_user] ON [dbo].[guacamole_connection_group_permission].user_id = [dbo].[guacamole_user].user_id
+        WHERE [dbo].[guacamole_connection_group_permission].user_id = #{user.objectID,jdbcType=INTEGER}
 
     </select>
 
@@ -50,14 +50,14 @@
     <select id="selectOne" resultMap="ConnectionGroupPermissionResultMap">
 
         SELECT
-            [guacamole].[connection_group_permission].user_id,
+            [dbo].[guacamole_connection_group_permission].user_id,
             username,
             permission,
             connection_group_id
-        FROM [guacamole].[connection_group_permission]
-        JOIN [guacamole].[user] ON [guacamole].[connection_group_permission].user_id = [guacamole].[user].user_id
+        FROM [dbo].[guacamole_connection_group_permission]
+        JOIN [dbo].[guacamole_user] ON [dbo].[guacamole_connection_group_permission].user_id = [dbo].[guacamole_user].user_id
         WHERE
-            [guacamole].[connection_group_permission].user_id = #{user.objectID,jdbcType=INTEGER}
+            [dbo].[guacamole_connection_group_permission].user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = #{type,jdbcType=VARCHAR}
             AND connection_group_id = #{identifier,jdbcType=INTEGER}
 
@@ -67,7 +67,7 @@
     <select id="selectAccessibleIdentifiers" resultType="string">
 
         SELECT DISTINCT connection_group_id 
-        FROM [guacamole].[connection_group_permission]
+        FROM [dbo].[guacamole_connection_group_permission]
         WHERE
             user_id = #{user.objectID,jdbcType=INTEGER}
             AND connection_group_id IN
@@ -86,7 +86,7 @@
     <!-- Delete all given permissions -->
     <delete id="delete" parameterType="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
 
-        DELETE FROM [guacamole].[connection_group_permission]
+        DELETE FROM [dbo].[guacamole_connection_group_permission]
         WHERE (user_id, permission, connection_group_id) IN
             <foreach collection="permissions" item="permission"
                      open="(" separator="," close=")">
@@ -100,7 +100,7 @@
     <!-- Insert all given permissions -->
     <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
 
-        INSERT INTO [guacamole].[connection_group_permission] (
+        INSERT INTO [dbo].[guacamole_connection_group_permission] (
             user_id,
             permission,
             connection_group_id
@@ -117,10 +117,10 @@
                        #{permission.objectIdentifier,jdbcType=INTEGER} AS connection_group_id
             </foreach>
         AS permissions
-        WHERE NOT EXISTS (SELECT 1 FROM [guacamole].[connection_group_permission]
-            WHERE [guacamole].[connection_group_permission].user_id = permissions.user_id AND
-            [guacamole].[connection_group_permission].permission = permissions.permission AND
-            [guacamole].[connection_group_permission].connection_group_id = permissions.connection_group_id
+        WHERE NOT EXISTS (SELECT 1 FROM [dbo].[guacamole_connection_group_permission]
+            WHERE [dbo].[guacamole_connection_group_permission].user_id = permissions.user_id AND
+            [dbo].[guacamole_connection_group_permission].permission = permissions.permission AND
+            [dbo].[guacamole_connection_group_permission].connection_group_id = permissions.connection_group_id
         );
 
     </insert>

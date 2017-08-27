@@ -36,14 +36,14 @@
     <select id="select" resultMap="UserPermissionResultMap">
 
         SELECT
-            [guacamole].[user_permission].user_id,
-            [guacamole].[user].username,
+            [dbo].[guacamole_user_permission].user_id,
+            [dbo].[guacamole_user].username,
             permission,
             affected.username AS affected_username
-        FROM [guacamole].[user_permission]
-        JOIN [guacamole].[user] ON [guacamole].[user_permission].user_id = [guacamole].[user].user_id
-        JOIN [guacamole].[user] affected ON [guacamole].[user_permission].affected_user_id = affected.user_id
-        WHERE [guacamole].[user_permission].user_id = #{user.objectID,jdbcType=INTEGER}
+        FROM [dbo].[guacamole_user_permission]
+        JOIN [dbo].[guacamole_user] ON [dbo].[guacamole_user_permission].user_id = [dbo].[guacamole_user].user_id
+        JOIN [dbo].[guacamole_user] affected ON [dbo].[guacamole_user_permission].affected_user_id = affected.user_id
+        WHERE [dbo].[guacamole_user_permission].user_id = #{user.objectID,jdbcType=INTEGER}
 
     </select>
 
@@ -51,15 +51,15 @@
     <select id="selectOne" resultMap="UserPermissionResultMap">
 
         SELECT
-            [guacamole].[user_permission].user_id,
-            [guacamole].[user].username,
+            [dbo].[guacamole_user_permission].user_id,
+            [dbo].[guacamole_user].username,
             permission,
             affected.username AS affected_username
-        FROM [guacamole].[user_permission]
-        JOIN [guacamole].[user] ON [guacamole].[user_permission].user_id = [guacamole].[user].user_id
-        JOIN [guacamole].[user] affected ON [guacamole].[user_permission].affected_user_id = affected.user_id
+        FROM [dbo].[guacamole_user_permission]
+        JOIN [dbo].[guacamole_user] ON [dbo].[guacamole_user_permission].user_id = [dbo].[guacamole_user].user_id
+        JOIN [dbo].[guacamole_user] affected ON [dbo].[guacamole_user_permission].affected_user_id = affected.user_id
         WHERE
-            [guacamole].[user_permission].user_id = #{user.objectID,jdbcType=INTEGER}
+            [dbo].[guacamole_user_permission].user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = #{type,jdbcType=VARCHAR}
             AND affected.username = #{identifier,jdbcType=INTEGER}
 
@@ -69,10 +69,10 @@
     <select id="selectAccessibleIdentifiers" resultType="string">
 
         SELECT DISTINCT username
-        FROM [guacamole].[user_permission]
-        JOIN [guacamole].[user] ON [guacamole].[user_permission].affected_user_id = [guacamole].[user].user_id
+        FROM [dbo].[guacamole_user_permission]
+        JOIN [dbo].[guacamole_user] ON [dbo].[guacamole_user_permission].affected_user_id = [dbo].[guacamole_user].user_id
         WHERE
-            [guacamole].[user_permission].user_id = #{user.objectID,jdbcType=INTEGER}
+            [dbo].[guacamole_user_permission].user_id = #{user.objectID,jdbcType=INTEGER}
             AND username IN
                 <foreach collection="identifiers" item="identifier"
                          open="(" separator="," close=")">
@@ -89,11 +89,11 @@
     <!-- Delete all given permissions -->
     <delete id="delete" parameterType="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
 
-        DELETE FROM [guacamole].[user_permission]
-        USING [guacamole].[user] affected
+        DELETE FROM [dbo].[guacamole_user_permission]
+        USING [dbo].[guacamole_user] affected
         WHERE
-            [guacamole].[user_permission].affected_user_id = affected.user_id
-            AND ([guacamole].[user_permission].user_id, permission, affected.username) IN
+            [dbo].[guacamole_user_permission].affected_user_id = affected.user_id
+            AND ([dbo].[guacamole_user_permission].user_id, permission, affected.username) IN
                 <foreach collection="permissions" item="permission"
                          open="(" separator="," close=")">
                     (#{permission.userID,jdbcType=INTEGER},
@@ -106,7 +106,7 @@
     <!-- Insert all given permissions -->
     <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
 
-        INSERT INTO [guacamole].[user_permission] (
+        INSERT INTO [dbo].[guacamole_user_permission] (
             user_id,
             permission,
             affected_user_id
@@ -114,7 +114,7 @@
         SELECT DISTINCT
             permissions.user_id,
             permissions.permission,
-            [guacamole].[user].user_id
+            [dbo].[guacamole_user].user_id
         FROM
             <foreach collection="permissions" item="permission"
                      open="(" separator="UNION ALL" close=")">
@@ -123,11 +123,11 @@
                        #{permission.objectIdentifier,jdbcType=INTEGER}                       AS username
             </foreach>
         AS permissions
-        JOIN [guacamole].[user] ON [guacamole].[user].username = permissions.username
-        WHERE NOT EXISTS (SELECT 1 FROM [guacamole].[user_permission]
-            WHERE [guacamole].[user_permission].user_id = permissions.user_id
-            AND [guacamole].[user_permission].permission = permissions.permission
-            AND [guacamole].[user_permission].affected_user_id = [guacamole].[user].user_id
+        JOIN [dbo].[guacamole_user] ON [dbo].[guacamole_user].username = permissions.username
+        WHERE NOT EXISTS (SELECT 1 FROM [dbo].[guacamole_user_permission]
+            WHERE [dbo].[guacamole_user_permission].user_id = permissions.user_id
+            AND [dbo].[guacamole_user_permission].permission = permissions.permission
+            AND [dbo].[guacamole_user_permission].affected_user_id = [dbo].[guacamole_user].user_id
         );
 
     </insert>

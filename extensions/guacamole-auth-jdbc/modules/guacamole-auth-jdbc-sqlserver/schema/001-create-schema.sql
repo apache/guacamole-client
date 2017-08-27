@@ -20,13 +20,13 @@
 /**
  * Create the guacamole schema.
  */
-CREATE SCHEMA [guacamole]
+CREATE SCHEMA [dbo]
 GO
 
 /**
  * List for permission data type.
  */
-CREATE RULE [guacamole].[guacamole_permission_list] 
+CREATE RULE [dbo].[guacamole_permission_list] 
     AS
     @list IN ('READ','UPDATE','DELETE','ADMINISTER')
 GO
@@ -34,7 +34,7 @@ GO
 /**
  * List for system permission data type.
  */
-CREATE RULE [guacamole].[guacamole_system_permission_list] 
+CREATE RULE [dbo].[guacamole_system_permission_list] 
     AS
     @list IN ('CREATE_CONNECTION',
         'CREATE_CONNECTION_GROUP',
@@ -46,12 +46,12 @@ GO
 /**
  * The permission data type.
  */
-CREATE TYPE [guacamole].[guacamole_permission] FROM [nvarchar](10) NOT NULL
+CREATE TYPE [dbo].[guacamole_permission] FROM [nvarchar](10) NOT NULL
 
 /**
  * The system permission data type.
  */
-CREATE TYPE [guacamole].[guacamole_system_permission] FROM [nvarchar](32) NOT NULL
+CREATE TYPE [dbo].[guacamole_system_permission] FROM [nvarchar](32) NOT NULL
 GO
 
 /**
@@ -59,7 +59,7 @@ GO
  */
 SET ANSI_NULLS ON
 SET QUOTED_IDENTIFIER ON
-CREATE TABLE [guacamole].[guacamole_connection_group](
+CREATE TABLE [dbo].[guacamole_connection_group](
     [connection_group_id] [int] IDENTITY(1,1) NOT NULL,
     [parent_id] [int] NULL,
     [connection_group_name] [nvarchar](128) NOT NULL,
@@ -81,23 +81,23 @@ CREATE TABLE [guacamole].[guacamole_connection_group](
 /**
  * Foreign keys for connection_group table.
  */
-ALTER TABLE [guacamole].[guacamole_connection_group]
+ALTER TABLE [dbo].[guacamole_connection_group]
     WITH CHECK ADD CONSTRAINT [FK_guacamole_connection_group_connection_group_id] FOREIGN KEY([parent_id])
-    REFERENCES [guacamole].[guacamole_connection_group] ([connection_group_id])
-ALTER TABLE [guacamole].[guacamole_connection_group]
+    REFERENCES [dbo].[guacamole_connection_group] ([connection_group_id])
+ALTER TABLE [dbo].[guacamole_connection_group]
     CHECK CONSTRAINT [FK_guacamole_connection_group_connection_group_id]
-ALTER TABLE [guacamole].[guacamole_connection_group]
+ALTER TABLE [dbo].[guacamole_connection_group]
     WITH CHECK ADD CONSTRAINT [CK_guacamole_connection_group_type] 
     CHECK (([type]='BALANCING' OR [type]='ORGANIZATIONAL'))
-ALTER TABLE [guacamole].[guacamole_connection_group]
+ALTER TABLE [dbo].[guacamole_connection_group]
     CHECK CONSTRAINT [CK_guacamole_connection_group_type]
 
 /**
  * Default values for connection_group table.
  */
-ALTER TABLE [guacamole].[guacamole_connection_group]
+ALTER TABLE [dbo].[guacamole_connection_group]
     ADD CONSTRAINT [DF_guacamole_connection_group_type] DEFAULT (N'ORGANIZATIONAL') FOR [type]
-ALTER TABLE [guacamole].[guacamole_connection_group]
+ALTER TABLE [dbo].[guacamole_connection_group]
     ADD CONSTRAINT [DF_guacamole_connection_group_enable_session_affinity] DEFAULT ((0)) FOR [enable_session_affinity]
 GO
 
@@ -106,7 +106,7 @@ GO
  */
 SET ANSI_NULLS ON
 SET QUOTED_IDENTIFIER ON
-CREATE TABLE [guacamole].[guacamole_connection](
+CREATE TABLE [dbo].[guacamole_connection](
     [connection_id] [int] IDENTITY(1,1) NOT NULL,
     [connection_name] [nvarchar](128) NOT NULL,
     [parent_id] [int] NULL,
@@ -129,17 +129,17 @@ CREATE TABLE [guacamole].[guacamole_connection](
         ON [PRIMARY]
 ) ON [PRIMARY]
 
-ALTER TABLE [guacamole].[guacamole_connection]
+ALTER TABLE [dbo].[guacamole_connection]
     WITH CHECK ADD CONSTRAINT [FK_guacamole_connection_connection_group] FOREIGN KEY([parent_id])
-REFERENCES [guacamole].[guacamole_connection_group] ([connection_group_id])
-ALTER TABLE [guacamole].[guacamole_connection]
+REFERENCES [dbo].[guacamole_connection_group] ([connection_group_id])
+ALTER TABLE [dbo].[guacamole_connection]
     CHECK CONSTRAINT [FK_guacamole_connection_connection_group]
-ALTER TABLE [guacamole].[guacamole_connection]
+ALTER TABLE [dbo].[guacamole_connection]
     WITH CHECK ADD CONSTRAINT [CK_proxy_encryption_method]
     CHECK  (([proxy_encryption_method]='SSL' OR [proxy_encryption_method]='NONE'))
-ALTER TABLE [guacamole].[guacamole_connection]
+ALTER TABLE [dbo].[guacamole_connection]
     CHECK CONSTRAINT [CK_proxy_encryption_method]
-ALTER TABLE [guacamole].[guacamole_connection]
+ALTER TABLE [dbo].[guacamole_connection]
     ADD CONSTRAINT [DF_guacamole_connection_failover_only] DEFAULT ((0)) FOR [failover_only]
 GO
 
@@ -148,7 +148,7 @@ GO
  */
 SET ANSI_NULLS ON
 SET QUOTED_IDENTIFIER ON
-CREATE TABLE [guacamole].[guacamole_user](
+CREATE TABLE [dbo].[guacamole_user](
     [user_id] [int] IDENTITY(1,1) NOT NULL,
     [username] [nvarchar](128) NOT NULL,
     [password_hash] [binary](32) NOT NULL,
@@ -179,9 +179,9 @@ CREATE TABLE [guacamole].[guacamole_user](
 /**
  * Defaults for user table
  */
-ALTER TABLE [guacamole].[guacamole_user]
+ALTER TABLE [dbo].[guacamole_user]
     ADD CONSTRAINT [DF_guacamole_user_disabled] DEFAULT ((0)) FOR [disabled]
-ALTER TABLE [guacamole].[guacamole_user]
+ALTER TABLE [dbo].[guacamole_user]
     ADD CONSTRAINT [DF_guacamole_user_expired] DEFAULT ((0)) FOR [expired]
 GO
 
@@ -191,7 +191,7 @@ GO
  */
 SET ANSI_NULLS ON
 SET QUOTED_IDENTIFIER ON
-CREATE TABLE [guacamole].[guacamole_sharing_profile](
+CREATE TABLE [dbo].[guacamole_sharing_profile](
     [sharing_profile_id] [int] IDENTITY(1,1) NOT NULL,
     [sharing_profile_name] [nvarchar](128) NOT NULL,
     [primary_connection_id] [int] NOT NULL,
@@ -209,12 +209,12 @@ CREATE TABLE [guacamole].[guacamole_sharing_profile](
 /**
  * Foreign keys for sharing_profile table.
  */
-ALTER TABLE [guacamole].[guacamole_sharing_profile]
+ALTER TABLE [dbo].[guacamole_sharing_profile]
     WITH CHECK ADD CONSTRAINT [FK_guacamole_sharing_profile_connection] FOREIGN KEY([primary_connection_id])
-    REFERENCES [guacamole].[guacamole_connection] ([connection_id])
+    REFERENCES [dbo].[guacamole_connection] ([connection_id])
         ON UPDATE CASCADE
         ON DELETE CASCADE
-ALTER TABLE [guacamole].[guacamole_sharing_profile]
+ALTER TABLE [dbo].[guacamole_sharing_profile]
     CHECK CONSTRAINT [FK_guacamole_sharing_profile_connection]
 GO
 
@@ -224,7 +224,7 @@ GO
  */
 SET ANSI_NULLS ON
 SET QUOTED_IDENTIFIER ON
-CREATE TABLE [guacamole].[guacamole_connection_parameter](
+CREATE TABLE [dbo].[guacamole_connection_parameter](
     [connection_id] [int] NOT NULL,
     [parameter_name] [nvarchar](128) NOT NULL,
     [parameter_value] [nvarchar](max) NOT NULL,
@@ -242,12 +242,12 @@ CREATE TABLE [guacamole].[guacamole_connection_parameter](
 /**
  * Foreign keys for the connection_parameter table.
  */
-ALTER TABLE [guacamole].[guacamole_connection_parameter]
+ALTER TABLE [dbo].[guacamole_connection_parameter]
     WITH CHECK ADD CONSTRAINT [FK_guacamole_connection_parameter_connection] FOREIGN KEY([connection_id])
-    REFERENCES [guacamole].[guacamole_connection] ([connection_id])
+    REFERENCES [dbo].[guacamole_connection] ([connection_id])
         ON UPDATE CASCADE
         ON DELETE CASCADE
-ALTER TABLE [guacamole].[guacamole_connection_parameter]
+ALTER TABLE [dbo].[guacamole_connection_parameter]
     CHECK CONSTRAINT [FK_guacamole_connection_parameter_connection]
 GO
 
@@ -257,7 +257,7 @@ GO
  */
 SET ANSI_NULLS ON
 SET QUOTED_IDENTIFIER ON
-CREATE TABLE [guacamole].[guacamole_sharing_profile_parameter](
+CREATE TABLE [dbo].[guacamole_sharing_profile_parameter](
     [sharing_profile_id] [int] NOT NULL,
     [parameter_name] [nvarchar](128) NOT NULL,
     [parameter_value] [nvarchar](max) NOT NULL,
@@ -276,12 +276,12 @@ CREATE TABLE [guacamole].[guacamole_sharing_profile_parameter](
  * Foreign keys for the sharing_profile_parameter
  * table.
  */
-ALTER TABLE [guacamole].[guacamole_sharing_profile_parameter]
+ALTER TABLE [dbo].[guacamole_sharing_profile_parameter]
     WITH CHECK ADD CONSTRAINT [FK_guacamole_sharing_profile_parameter_sharing_profile] FOREIGN KEY([sharing_profile_id])
-    REFERENCES [guacamole].[guacamole_sharing_profile] ([sharing_profile_id])
+    REFERENCES [dbo].[guacamole_sharing_profile] ([sharing_profile_id])
         ON UPDATE CASCADE
         ON DELETE CASCADE
-ALTER TABLE [guacamole].[guacamole_sharing_profile_parameter]
+ALTER TABLE [dbo].[guacamole_sharing_profile_parameter]
     CHECK CONSTRAINT [FK_guacamole_sharing_profile_parameter_sharing_profile]
 GO
 
@@ -291,10 +291,10 @@ GO
  */
 SET ANSI_NULLS ON
 SET QUOTED_IDENTIFIER ON
-CREATE TABLE [guacamole].[guacamole_connection_permission](
+CREATE TABLE [dbo].[guacamole_connection_permission](
     [user_id] [int] NOT NULL,
     [connection_id] [int] NOT NULL,
-    [permission] [guacamole].[guacamole_permission] NOT NULL,
+    [permission] [dbo].[guacamole_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_connection_permission] PRIMARY KEY CLUSTERED 
         ([user_id] ASC, [connection_id] ASC, [permission] ASC)
@@ -309,19 +309,19 @@ CREATE TABLE [guacamole].[guacamole_connection_permission](
 /**
  * Foreign keys for the connection_permission table.
  */
-ALTER TABLE [guacamole].[guacamole_connection_permission]
+ALTER TABLE [dbo].[guacamole_connection_permission]
     WITH CHECK ADD CONSTRAINT [FK_guacamole_connection_permission_connection1] FOREIGN KEY([connection_id])
-    REFERENCES [guacamole].[guacamole_connection] ([connection_id])
+    REFERENCES [dbo].[guacamole_connection] ([connection_id])
         ON UPDATE CASCADE
         ON DELETE CASCADE
-ALTER TABLE [guacamole].[guacamole_connection_permission]
+ALTER TABLE [dbo].[guacamole_connection_permission]
     CHECK CONSTRAINT [FK_guacamole_connection_permission_connection1]
-ALTER TABLE [guacamole].[guacamole_connection_permission]
+ALTER TABLE [dbo].[guacamole_connection_permission]
     WITH CHECK ADD  CONSTRAINT [FK_guacamole_connection_permission_user1] FOREIGN KEY([user_id])
-    REFERENCES [guacamole].[guacamole_user] ([user_id])
+    REFERENCES [dbo].[guacamole_user] ([user_id])
         ON UPDATE CASCADE
         ON DELETE CASCADE
-ALTER TABLE [guacamole].[guacamole_connection_permission]
+ALTER TABLE [dbo].[guacamole_connection_permission]
     CHECK CONSTRAINT [FK_guacamole_connection_permission_user1]
 GO
 
@@ -331,10 +331,10 @@ GO
  */
 SET ANSI_NULLS ON
 SET QUOTED_IDENTIFIER ON
-CREATE TABLE [guacamole].[guacamole_connection_group_permission](
+CREATE TABLE [dbo].[guacamole_connection_group_permission](
     [user_id] [int] NOT NULL,
     [connection_group_id] [int] NOT NULL,
-    [permission] [guacamole].[guacamole_permission] NOT NULL,
+    [permission] [dbo].[guacamole_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_connection_group_permission] PRIMARY KEY CLUSTERED 
         ([user_id] ASC,	[connection_group_id] ASC, [permission] ASC)
@@ -349,19 +349,19 @@ CREATE TABLE [guacamole].[guacamole_connection_group_permission](
 /**
  * Foreign keys for the connection_group_permission table.
  */
-ALTER TABLE [guacamole].[guacamole_connection_group_permission] 
+ALTER TABLE [dbo].[guacamole_connection_group_permission] 
     WITH CHECK ADD CONSTRAINT [FK_guacamole_connection_group_permission_connection_group] FOREIGN KEY([connection_group_id])
-    REFERENCES [guacamole].[guacamole_connection_group] ([connection_group_id])
+    REFERENCES [dbo].[guacamole_connection_group] ([connection_group_id])
         ON UPDATE CASCADE
         ON DELETE CASCADE
-ALTER TABLE [guacamole].[guacamole_connection_group_permission]
+ALTER TABLE [dbo].[guacamole_connection_group_permission]
     CHECK CONSTRAINT [FK_guacamole_connection_group_permission_connection_group]
-ALTER TABLE [guacamole].[guacamole_connection_group_permission]
+ALTER TABLE [dbo].[guacamole_connection_group_permission]
     WITH CHECK ADD CONSTRAINT [FK_guacamole_connection_group_permission_user] FOREIGN KEY([user_id])
-    REFERENCES [guacamole].[guacamole_user] ([user_id])
+    REFERENCES [dbo].[guacamole_user] ([user_id])
         ON UPDATE CASCADE
         ON DELETE CASCADE
-ALTER TABLE [guacamole].[guacamole_connection_group_permission]
+ALTER TABLE [dbo].[guacamole_connection_group_permission]
     CHECK CONSTRAINT [FK_guacamole_connection_group_permission_user]
 GO
 
@@ -371,10 +371,10 @@ GO
  */
 SET ANSI_NULLS ON
 SET QUOTED_IDENTIFIER ON
-CREATE TABLE [guacamole].[guacamole_sharing_profile_permission](
+CREATE TABLE [dbo].[guacamole_sharing_profile_permission](
     [user_id] [int] NOT NULL,
     [sharing_profile_id] [int] NOT NULL,
-    [permission] [guacamole].[guacamole_permission] NOT NULL,
+    [permission] [dbo].[guacamole_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_sharing_profile_permission] PRIMARY KEY CLUSTERED 
         ([user_id] ASC, [sharing_profile_id] ASC, [permission] ASC)
@@ -389,19 +389,19 @@ CREATE TABLE [guacamole].[guacamole_sharing_profile_permission](
 /**
  * Foreign keys for the sharing_profile_permission table.
  */
-ALTER TABLE [guacamole].[guacamole_sharing_profile_permission]
+ALTER TABLE [dbo].[guacamole_sharing_profile_permission]
     WITH CHECK ADD CONSTRAINT [FK_guacamole_sharing_profile_permission_sharing_profile] FOREIGN KEY([sharing_profile_id])
-    REFERENCES [guacamole].[guacamole_sharing_profile] ([sharing_profile_id])
+    REFERENCES [dbo].[guacamole_sharing_profile] ([sharing_profile_id])
         ON UPDATE CASCADE
         ON DELETE CASCADE
-ALTER TABLE [guacamole].[guacamole_sharing_profile_permission]
+ALTER TABLE [dbo].[guacamole_sharing_profile_permission]
     CHECK CONSTRAINT [FK_guacamole_sharing_profile_permission_sharing_profile]
-ALTER TABLE [guacamole].[guacamole_sharing_profile_permission]
+ALTER TABLE [dbo].[guacamole_sharing_profile_permission]
     WITH CHECK ADD  CONSTRAINT [FK_guacamole_sharing_profile_permission_user] FOREIGN KEY([user_id])
-    REFERENCES [guacamole].[guacamole_user] ([user_id])
+    REFERENCES [dbo].[guacamole_user] ([user_id])
         ON UPDATE CASCADE
         ON DELETE CASCADE
-ALTER TABLE [guacamole].[guacamole_sharing_profile_permission]
+ALTER TABLE [dbo].[guacamole_sharing_profile_permission]
     CHECK CONSTRAINT [FK_guacamole_sharing_profile_permission_user]
 GO
 
@@ -411,9 +411,9 @@ GO
  */
 SET ANSI_NULLS ON
 SET QUOTED_IDENTIFIER ON
-CREATE TABLE [guacamole].[guacamole_system_permission](
+CREATE TABLE [dbo].[guacamole_system_permission](
     [user_id] [int] NOT NULL,
-    [permission] [guacamole].[guacamole_system_permission] NOT NULL,
+    [permission] [dbo].[guacamole_system_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_system_permission] PRIMARY KEY CLUSTERED 
         ([user_id] ASC,	[permission] ASC)
@@ -428,12 +428,12 @@ CREATE TABLE [guacamole].[guacamole_system_permission](
 /**
  * Foreign keys for system_permission table.
  */
-ALTER TABLE [guacamole].[guacamole_system_permission]
+ALTER TABLE [dbo].[guacamole_system_permission]
     WITH CHECK ADD CONSTRAINT [FK_guacamole_system_permission_user] FOREIGN KEY([user_id])
-    REFERENCES [guacamole].[guacamole_user] ([user_id])
+    REFERENCES [dbo].[guacamole_user] ([user_id])
         ON UPDATE CASCADE
         ON DELETE CASCADE
-ALTER TABLE [guacamole].[guacamole_system_permission]
+ALTER TABLE [dbo].[guacamole_system_permission]
     CHECK CONSTRAINT [FK_guacamole_system_permission_user]
 GO
 
@@ -443,10 +443,10 @@ GO
  */
 SET ANSI_NULLS ON
 SET QUOTED_IDENTIFIER ON
-CREATE TABLE [guacamole].[guacamole_user_permission](
+CREATE TABLE [dbo].[guacamole_user_permission](
     [user_id] [int] NOT NULL,
     [affected_user_id] [int] NOT NULL,
-    [permission] [guacamole].[guacamole_permission] NOT NULL,
+    [permission] [dbo].[guacamole_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_user_permission] PRIMARY KEY CLUSTERED 
         ([user_id] ASC,	[affected_user_id] ASC,	[permission] ASC)
@@ -461,17 +461,17 @@ CREATE TABLE [guacamole].[guacamole_user_permission](
 /**
  * Foreign keys for user_permission table.
  */
-ALTER TABLE [guacamole].[guacamole_user_permission]
+ALTER TABLE [dbo].[guacamole_user_permission]
     WITH CHECK ADD CONSTRAINT [FK_guacamole_user_permission_user] FOREIGN KEY([user_id])
-    REFERENCES [guacamole].[guacamole_user] ([user_id])
+    REFERENCES [dbo].[guacamole_user] ([user_id])
         ON UPDATE CASCADE
         ON DELETE CASCADE
-ALTER TABLE [guacamole].[guacamole_user_permission]
+ALTER TABLE [dbo].[guacamole_user_permission]
     CHECK CONSTRAINT [FK_guacamole_user_permission_user]
-ALTER TABLE [guacamole].[guacamole_user_permission]
+ALTER TABLE [dbo].[guacamole_user_permission]
     WITH CHECK ADD CONSTRAINT [FK_guacamole_user_permission_user1] FOREIGN KEY([affected_user_id])
-    REFERENCES [guacamole].[guacamole_user] ([user_id])
-ALTER TABLE [guacamole].[guacamole_user_permission]
+    REFERENCES [dbo].[guacamole_user] ([user_id])
+ALTER TABLE [dbo].[guacamole_user_permission]
     CHECK CONSTRAINT [FK_guacamole_user_permission_user1]
 GO
 
@@ -481,7 +481,7 @@ GO
  */
 SET ANSI_NULLS ON
 SET QUOTED_IDENTIFIER ON
-CREATE TABLE [guacamole].[guacamole_connection_history](
+CREATE TABLE [dbo].[guacamole_connection_history](
     [history_id] [int] IDENTITY(1,1) NOT NULL,
     [user_id] [int] NULL,
     [username] [nvarchar](128) NOT NULL,
@@ -506,24 +506,24 @@ CREATE TABLE [guacamole].[guacamole_connection_history](
 /**
  * Foreign keys for connection_history table
  */
-ALTER TABLE [guacamole].[guacamole_connection_history]
+ALTER TABLE [dbo].[guacamole_connection_history]
     WITH CHECK ADD CONSTRAINT [FK_guacamole_connection_history_connection] FOREIGN KEY([connection_id])
-    REFERENCES [guacamole].[guacamole_connection] ([connection_id])
+    REFERENCES [dbo].[guacamole_connection] ([connection_id])
         ON UPDATE CASCADE
         ON DELETE SET NULL
-ALTER TABLE [guacamole].[guacamole_connection_history]
+ALTER TABLE [dbo].[guacamole_connection_history]
     CHECK CONSTRAINT [FK_guacamole_connection_history_connection]
-ALTER TABLE [guacamole].[guacamole_connection_history]
+ALTER TABLE [dbo].[guacamole_connection_history]
     WITH CHECK ADD  CONSTRAINT [FK_guacamole_connection_history_sharing_profile] FOREIGN KEY([sharing_profile_id])
-    REFERENCES [guacamole].[guacamole_sharing_profile] ([sharing_profile_id])
-ALTER TABLE [guacamole].[guacamole_connection_history]
+    REFERENCES [dbo].[guacamole_sharing_profile] ([sharing_profile_id])
+ALTER TABLE [dbo].[guacamole_connection_history]
     CHECK CONSTRAINT [FK_guacamole_connection_history_sharing_profile]
-ALTER TABLE [guacamole].[guacamole_connection_history]
+ALTER TABLE [dbo].[guacamole_connection_history]
     WITH CHECK ADD CONSTRAINT [FK_guacamole_connection_history_user] FOREIGN KEY([user_id])
-    REFERENCES [guacamole].[guacamole_user] ([user_id])
+    REFERENCES [dbo].[guacamole_user] ([user_id])
         ON UPDATE CASCADE
         ON DELETE SET NULL
-ALTER TABLE [guacamole].[guacamole_connection_history]
+ALTER TABLE [dbo].[guacamole_connection_history]
     CHECK CONSTRAINT [FK_guacamole_connection_history_user]
 GO
 
@@ -534,7 +534,7 @@ GO
  */
 SET ANSI_NULLS ON
 SET QUOTED_IDENTIFIER ON
-CREATE TABLE [guacamole].[guacamole_user_password_history](
+CREATE TABLE [dbo].[guacamole_user_password_history](
     [password_history_id] [int] IDENTITY(1,1) NOT NULL,
     [user_id] [int] NOT NULL,
     [password_hash] [binary](32) NOT NULL,
@@ -554,11 +554,11 @@ CREATE TABLE [guacamole].[guacamole_user_password_history](
 /**
  * Foreign keys for user_password_history table
  */
-ALTER TABLE [guacamole].[guacamole_user_password_history]
+ALTER TABLE [dbo].[guacamole_user_password_history]
     WITH CHECK ADD  CONSTRAINT [FK_guacamole_user_password_history_user] FOREIGN KEY([user_id])
-    REFERENCES [guacamole].[guacamole_user] ([user_id])
+    REFERENCES [dbo].[guacamole_user] ([user_id])
         ON UPDATE CASCADE
         ON DELETE CASCADE
-ALTER TABLE [guacamole].[guacamole_user_password_history]
+ALTER TABLE [dbo].[guacamole_user_password_history]
     CHECK CONSTRAINT [FK_guacamole_user_password_history_user]
 GO

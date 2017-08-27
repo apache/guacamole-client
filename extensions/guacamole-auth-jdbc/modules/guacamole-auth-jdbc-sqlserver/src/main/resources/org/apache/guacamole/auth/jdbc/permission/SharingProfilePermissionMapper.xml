@@ -36,13 +36,13 @@
     <select id="select" resultMap="SharingProfilePermissionResultMap">
 
         SELECT
-            [guacamole].[sharing_profile_permission].user_id,
+            [dbo].[guacamole_sharing_profile_permission].user_id,
             username,
             permission,
             sharing_profile_id
-        FROM [guacamole].[sharing_profile_permission]
-        JOIN [guacamole].[user] ON [guacamole].[sharing_profile_permission].user_id = [guacamole].[user].user_id
-        WHERE [guacamole].[sharing_profile_permission].user_id = #{user.objectID,jdbcType=INTEGER}
+        FROM [dbo].[guacamole_sharing_profile_permission]
+        JOIN [dbo].[guacamole_user] ON [dbo].[guacamole_sharing_profile_permission].user_id = [dbo].[guacamole_user].user_id
+        WHERE [dbo].[guacamole_sharing_profile_permission].user_id = #{user.objectID,jdbcType=INTEGER}
 
     </select>
 
@@ -50,14 +50,14 @@
     <select id="selectOne" resultMap="SharingProfilePermissionResultMap">
 
         SELECT
-            [guacamole].[sharing_profile_permission].user_id,
+            [dbo].[guacamole_sharing_profile_permission].user_id,
             username,
             permission,
             sharing_profile_id
-        FROM [guacamole].[sharing_profile_permission]
-        JOIN [guacamole].[user] ON [guacamole].[sharing_profile_permission].user_id = [guacamole].[user].user_id
+        FROM [dbo].[guacamole_sharing_profile_permission]
+        JOIN [dbo].[guacamole_user] ON [dbo].[guacamole_sharing_profile_permission].user_id = [dbo].[guacamole_user].user_id
         WHERE
-            [guacamole].[sharing_profile_permission].user_id = #{user.objectID,jdbcType=INTEGER}
+            [dbo].[guacamole_sharing_profile_permission].user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = #{type,jdbcType=VARCHAR}
             AND sharing_profile_id = #{identifier,jdbcType=INTEGER}
 
@@ -67,7 +67,7 @@
     <select id="selectAccessibleIdentifiers" resultType="string">
 
         SELECT DISTINCT sharing_profile_id
-        FROM [guacamole].[sharing_profile_permission]
+        FROM [dbo].[guacamole_sharing_profile_permission]
         WHERE
             user_id = #{user.objectID,jdbcType=INTEGER}
             AND sharing_profile_id IN
@@ -86,7 +86,7 @@
     <!-- Delete all given permissions -->
     <delete id="delete" parameterType="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
 
-        DELETE FROM [guacamole].[sharing_profile_permission]
+        DELETE FROM [dbo].[guacamole_sharing_profile_permission]
         WHERE
             <foreach collection="permissions" item="permission"
                      open="(" separator=" OR " close=")">
@@ -100,7 +100,7 @@
     <!-- Insert all given permissions -->
     <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
 
-        INSERT INTO [guacamole].[sharing_profile_permission] (
+        INSERT INTO [dbo].[guacamole_sharing_profile_permission] (
             user_id,
             permission,
             sharing_profile_id
@@ -117,10 +117,10 @@
                        #{permission.objectIdentifier,jdbcType=INTEGER} AS sharing_profile_id
             </foreach>
         AS permissions
-        WHERE NOT EXISTS (SELECT 1 FROM [guacamole].[sharing_profile_permission]
-            WHERE [guacamole].[sharing_profile_permission].user_id = permissions.user_id
-            AND [guacamole].[sharing_profile_permission].permission = permissions.permission
-            AND [guacamole].[sharing_profile_permission].sharing_profile_id = permissions.sharing_profile_id
+        WHERE NOT EXISTS (SELECT 1 FROM [dbo].[guacamole_sharing_profile_permission]
+            WHERE [dbo].[guacamole_sharing_profile_permission].user_id = permissions.user_id
+            AND [dbo].[guacamole_sharing_profile_permission].permission = permissions.permission
+            AND [dbo].[guacamole_sharing_profile_permission].sharing_profile_id = permissions.sharing_profile_id
         );
 
     </insert>

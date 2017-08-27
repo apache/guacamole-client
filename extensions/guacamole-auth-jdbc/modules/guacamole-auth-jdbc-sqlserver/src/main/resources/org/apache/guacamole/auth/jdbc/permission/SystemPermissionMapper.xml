@@ -35,12 +35,12 @@
     <select id="select" resultMap="SystemPermissionResultMap">
 
         SELECT
-            [guacamole].[system_permission].user_id,
+            [dbo].[guacamole_system_permission].user_id,
             username,
             permission
-        FROM [guacamole].[system_permission]
-        JOIN [guacamole].[user] ON [guacamole].[system_permission].user_id = [guacamole].[user].user_id
-        WHERE [guacamole].[system_permission].user_id = #{user.objectID,jdbcType=INTEGER}
+        FROM [dbo].[guacamole_system_permission]
+        JOIN [dbo].[guacamole_user] ON [dbo].[guacamole_system_permission].user_id = [dbo].[guacamole_user].user_id
+        WHERE [dbo].[guacamole_system_permission].user_id = #{user.objectID,jdbcType=INTEGER}
 
     </select>
 
@@ -48,13 +48,13 @@
     <select id="selectOne" resultMap="SystemPermissionResultMap">
 
         SELECT
-            [guacamole].[system_permission].user_id,
+            [dbo].[guacamole_system_permission].user_id,
             username,
             permission
-        FROM [guacamole].[system_permission]
-        JOIN [guacamole].[user] ON [guacamole].[system_permission].user_id = [guacamole].[user].user_id
+        FROM [dbo].[guacamole_system_permission]
+        JOIN [dbo].[guacamole_user] ON [dbo].[guacamole_system_permission].user_id = [dbo].[guacamole_user].user_id
         WHERE
-            [guacamole].[system_permission].user_id = #{user.objectID,jdbcType=INTEGER}
+            [dbo].[guacamole_system_permission].user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = #{type,jdbcType=VARCHAR}
 
     </select>
@@ -62,7 +62,7 @@
     <!-- Delete all given permissions -->
     <delete id="delete" parameterType="org.apache.guacamole.auth.jdbc.permission.SystemPermissionModel">
 
-        DELETE FROM [guacamole].[system_permission]
+        DELETE FROM [dbo].[guacamole_system_permission]
         WHERE
             <foreach collection="permissions" item="permission"
                      open="(" separator=" OR " close=")">
@@ -75,7 +75,7 @@
     <!-- Insert all given permissions -->
     <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.permission.SystemPermissionModel">
 
-        INSERT INTO [guacamole].[system_permission] (
+        INSERT INTO [dbo].[guacamole_system_permission] (
             user_id,
             permission
         )
@@ -89,9 +89,9 @@
                        #{permission.type,jdbcType=VARCHAR} AS permission
             </foreach>
         AS permissions
-        WHERE NOT EXISTS (SELECT 1 FROM [guacamole].[system_permission]
-            WHERE [guacamole].[system_permission].user_id = permissions.user_id
-            AND [guacamole].[system_permission].permission = permissions.permission
+        WHERE NOT EXISTS (SELECT 1 FROM [dbo].[guacamole_system_permission]
+            WHERE [dbo].[guacamole_system_permission].user_id = permissions.user_id
+            AND [dbo].[guacamole_system_permission].permission = permissions.permission
         );
 
     </insert>

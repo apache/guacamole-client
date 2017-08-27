@@ -36,13 +36,13 @@
     <select id="select" resultMap="ConnectionPermissionResultMap">
 
         SELECT
-            [guacamole].[connection_permission].user_id,
+            [dbo].[guacamole_connection_permission].user_id,
             username,
             permission,
             connection_id
-        FROM [guacamole].[connection_permission]
-        JOIN [guacamole].[user] ON [guacamole].[connection_permission].user_id = [guacamole].[user].user_id
-        WHERE [guacamole].[connection_permission].user_id = #{user.objectID,jdbcType=INTEGER}
+        FROM [dbo].[guacamole_connection_permission]
+        JOIN [dbo].[guacamole_user] ON [dbo].[guacamole_connection_permission].user_id = [dbo].[guacamole_user].user_id
+        WHERE [dbo].[guacamole_connection_permission].user_id = #{user.objectID,jdbcType=INTEGER}
 
     </select>
 
@@ -50,14 +50,14 @@
     <select id="selectOne" resultMap="ConnectionPermissionResultMap">
 
         SELECT
-            [guacamole].[connection_permission].user_id,
+            [dbo].[guacamole_connection_permission].user_id,
             username,
             permission,
             connection_id
-        FROM [guacamole].[connection_permission]
-        JOIN [guacamole].[user] ON [guacamole].[connection_permission].user_id = [guacamole].[user].user_id
+        FROM [dbo].[guacamole_connection_permission]
+        JOIN [dbo].[guacamole_user] ON [dbo].[guacamole_connection_permission].user_id = [dbo].[guacamole_user].user_id
         WHERE
-            [guacamole].[connection_permission].user_id = #{user.objectID,jdbcType=INTEGER}
+            [dbo].[guacamole_connection_permission].user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = #{type,jdbcType=VARCHAR}
             AND connection_id = #{identifier,jdbcType=INTEGER}
 
@@ -67,7 +67,7 @@
     <select id="selectAccessibleIdentifiers" resultType="string">
 
         SELECT DISTINCT connection_id 
-        FROM [guacamole].[connection_permission]
+        FROM [dbo].[guacamole_connection_permission]
         WHERE
             user_id = #{user.objectID,jdbcType=INTEGER}
             AND connection_id IN
@@ -86,7 +86,7 @@
     <!-- Delete all given permissions -->
     <delete id="delete" parameterType="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
 
-        DELETE FROM [guacamole].[connection_permission]
+        DELETE FROM [dbo].[guacamole_connection_permission]
         WHERE
             <foreach collection="permissions" item="permission"
                      open="(" separator=" OR " close=")">
@@ -100,7 +100,7 @@
     <!-- Insert all given permissions -->
     <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
 
-        INSERT INTO [guacamole].[connection_permission] (
+        INSERT INTO [dbo].[guacamole_connection_permission] (
             user_id,
             permission,
             connection_id
@@ -117,10 +117,10 @@
                        #{permission.objectIdentifier,jdbcType=INTEGER} AS connection_id
             </foreach>
         AS permissions
-        WHERE NOT EXISTS ( SELECT 1 FROM [guacamole].[connection_permission]
-            WHERE [guacamole].[connection_permission].user_id = permissions.user_id AND
-            [guacamole].[connection_permission].permission = permissions.permission AND
-            [guacamole].[connection_permission].connection_id = permissions.connection_id
+        WHERE NOT EXISTS ( SELECT 1 FROM [dbo].[guacamole_connection_permission]
+            WHERE [dbo].[guacamole_connection_permission].user_id = permissions.user_id AND
+            [dbo].[guacamole_connection_permission].permission = permissions.permission AND
+            [dbo].[guacamole_connection_permission].connection_id = permissions.connection_id
         );
 
     </insert>
