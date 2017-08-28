@@ -82,19 +82,23 @@ public class AuthenticationProviderService {
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 
-        String token = null;
+        String username = null;
 
-        // Pull OpenID token from request if present
+        // Validate OpenID token in request, if present, and derive username
         HttpServletRequest request = credentials.getRequest();
-        if (request != null)
-            token = request.getParameter(TokenField.PARAMETER_NAME);
+        if (request != null) {
+            String token = request.getParameter(TokenField.PARAMETER_NAME);
+            if (token != null)
+                username = tokenService.processUsername(token);
+        }
 
-        // If token provided, validate and produce authenticated user
-        if (token != null) {
+        // If the username was successfully retrieved from the token, produce
+        // authenticated user
+        if (username != null) {
 
             // Create corresponding authenticated user
             AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-            authenticatedUser.init(tokenService.processUsername(token), credentials);
+            authenticatedUser.init(username, credentials);
             return authenticatedUser;
 
         }
