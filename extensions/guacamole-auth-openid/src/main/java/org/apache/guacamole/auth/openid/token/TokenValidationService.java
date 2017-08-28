@@ -22,8 +22,6 @@ package org.apache.guacamole.auth.openid.token;
 import com.google.inject.Inject;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleSecurityException;
-import org.apache.guacamole.GuacamoleServerException;
 import org.jose4j.jwk.HttpsJwks;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
@@ -82,8 +80,8 @@ public class TokenValidationService {
         // Create JWT consumer for validating received token
         JwtConsumer jwtConsumer = new JwtConsumerBuilder()
                 .setRequireExpirationTime()
-                .setMaxFutureValidityInMinutes(300)
-                .setAllowedClockSkewInSeconds(30)
+                .setMaxFutureValidityInMinutes(confService.getMaxTokenValidity())
+                .setAllowedClockSkewInSeconds(confService.getAllowedClockSkew())
                 .setRequireSubject()
                 .setExpectedIssuer(confService.getIssuer())
                 .setExpectedAudience(confService.getClientID())

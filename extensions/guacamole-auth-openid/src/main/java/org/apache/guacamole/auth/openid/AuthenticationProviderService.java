@@ -118,9 +118,10 @@ public class AuthenticationProviderService {
                 // to the authorization page via JavaScript)
                 new TokenField(
                     confService.getAuthorizationEndpoint(),
+                    confService.getScope(),
                     confService.getClientID(),
                     confService.getRedirectURI(),
-                    nonceService.generate(30000 /* FIXME: Calculate appropriate value based on configuration */)
+                    nonceService.generate(confService.getMaxNonceValidity() * 60000L)
                 )
 
             }))

@@ -52,6 +52,10 @@ public class TokenField extends Field {
      *     The full URL of the endpoint accepting OpenID authentication
      *     requests.
      *
+     * @param scope
+     *     The space-delimited list of OpenID scopes to request from the
+     *     identity provider, such as "openid" or "openid email profile".
+     *
      * @param clientID
      *     The ID of the OpenID client. This is normally determined ahead of
      *     time by the OpenID service through some manual credential request
@@ -65,8 +69,8 @@ public class TokenField extends Field {
      *     A random string unique to this request. To defend against replay
      *     attacks, this value must cease being valid after its first use.
      */
-    public TokenField(String authorizationEndpoint, String clientID,
-            String redirectURI, String nonce) {
+    public TokenField(String authorizationEndpoint, String scope,
+            String clientID, String redirectURI, String nonce) {
 
         // Init base field properties
         super(PARAMETER_NAME, "GUAC_OPENID_TOKEN");
@@ -74,7 +78,7 @@ public class TokenField extends Field {
         // Build authorization URI from given values
         try {
             this.authorizationURI = authorizationEndpoint
-                    + "?scope=openid%20email%20profile"
+                    + "?scope=" + URLEncoder.encode(scope, "UTF-8")
                     + "&response_type=id_token"
                     + "&client_id=" + URLEncoder.encode(clientID, "UTF-8")
                     + "&redirect_uri=" + URLEncoder.encode(redirectURI, "UTF-8")
