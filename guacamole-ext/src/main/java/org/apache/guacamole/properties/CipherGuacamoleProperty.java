@@ -47,6 +47,9 @@ public abstract class CipherGuacamoleProperty implements GuacamoleProperty<Ciphe
     @Override
     public Cipher parseValue(String value) throws GuacamoleException {
 
+        if (value == null || value.isEmpty())
+            return null;
+
         try {
 
             final Environment environment = new LocalEnvironment();

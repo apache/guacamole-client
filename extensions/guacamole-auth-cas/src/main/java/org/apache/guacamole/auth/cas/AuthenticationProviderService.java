@@ -173,16 +173,24 @@ public class AuthenticationProviderService {
 
             final Cipher cipher = confService.getClearpassCipher();
 
-            // Decrypt and return a new string.
-            final byte[] pass64 = DatatypeConverter.parseBase64Binary(encryptedPassword);
-            final byte[] cipherData = cipher.doFinal(pass64);
-            return new String(cipherData);
+            if (cipher != null) {
+
+                // Decode and decrypt, and return a new string.
+                final byte[] pass64 = DatatypeConverter.parseBase64Binary(encryptedPassword);
+                final byte[] cipherData = cipher.doFinal(pass64);
+                return new String(cipherData);
+
+            }
+
         }
         catch (Throwable t) {
             logger.error("Failed to decrypt the data, password token will not be available.");
             logger.debug("Failed to either convert Base64 or decrypt the password.  CAS Password will not be available inside Guacamole.  Exception is: {}", t);
             return null;
         }
+
+        logger.warn("Encrypted password provided by CAS, but no Private Key was available to decrypt it.");
+        return null;
 
     }
 
