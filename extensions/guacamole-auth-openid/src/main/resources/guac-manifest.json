@@ -9,10 +9,20 @@
         "org.apache.guacamole.auth.openid.OpenIDAuthenticationProvider"
     ],
 
+    "translations" : [
+        "translations/en.json"
+    ],
+
     "js" : [
-        "openidModule.js",
-        "openidController.js",
-        "openidConfig.js"
-    ]
+        "openid.min.js"
+    ],
+
+    "css" : [
+        "openid.min.css"
+    ],
+
+    "resources" : {
+        "templates/openidTokenField.html" : "text/html"
+    }
 
 }

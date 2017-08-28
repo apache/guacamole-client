@@ -25,8 +25,9 @@ angular.module('guacOpenID').config(['formServiceProvider',
 
     // Define field for token from OpenID service
     formServiceProvider.registerFieldType("GUAC_OPENID_TOKEN", {
-        controller : 'guacOpenIDController',
-        module     : 'guacOpenID'
+        templateUrl : 'app/ext/guac-openid/templates/openidTokenField.html',
+        controller  : 'guacOpenIDController',
+        module      : 'guacOpenID'
     });
 
 }]);
