@@ -20,15 +20,12 @@
 package org.apache.guacamole.auth.openid.form;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.net.URLEncoder;
-import java.security.SecureRandom;
 import org.apache.guacamole.form.Field;
 
 /**
- * Field definition which represents the token returned by an OpenID service.
- * Within the user interface, this will be rendered as an appropriate "Log in
- * with ..." button which links to the OpenID service.
+ * Field definition which represents the token returned by an OpenID Connect
+ * service.
  */
 public class TokenField extends Field {
 
@@ -44,29 +41,12 @@ public class TokenField extends Field {
     private final String authorizationURI;
 
     /**
-     * Cryptographically-secure random number generator for generating the
-     * required nonce.
-     */
-    private static final SecureRandom random = new SecureRandom();
-
-    /**
-     * Generates a cryptographically-secure nonce value. The nonce is intended
-     * to be used to prevent replay attacks.
-     *
-     * @return
-     *     A cryptographically-secure nonce value.
-     */
-    private static String generateNonce() {
-        return new BigInteger(130, random).toString(32);
-    }
-
-    /**
-     * Creates a new OpenID "id_token" field which links to the given OpenID
-     * service using the provided client ID. Successful authentication at the
-     * OpenID service will result in the client being redirected to the specified
-     * redirect URI. The OpenID token will be embedded in the fragment (the part
-     * following the hash symbol) of that URI, which the JavaScript side of
-     * this extension will move to the query parameters.
+     * Creates a new field which requests authentication via OpenID connect.
+     * Successful authentication at the OpenID Connect service will result in
+     * the client being redirected to the specified redirect URI. The OpenID
+     * token will be embedded in the fragment (the part following the hash
+     * symbol) of that URI, which the JavaScript side of this extension will
+     * move to the query parameters.
      *
      * @param authorizationEndpoint
      *     The full URL of the endpoint accepting OpenID authentication
@@ -80,9 +60,13 @@ public class TokenField extends Field {
      * @param redirectURI
      *     The URI that the OpenID service should redirect to upon successful
      *     authentication.
+     *
+     * @param nonce
+     *     A random string unique to this request. To defend against replay
+     *     attacks, this value must cease being valid after its first use.
      */
     public TokenField(String authorizationEndpoint, String clientID,
-            String redirectURI) {
+            String redirectURI, String nonce) {
 
         // Init base field properties
         super(PARAMETER_NAME, "GUAC_OPENID_TOKEN");
@@ -94,7 +78,7 @@ public class TokenField extends Field {
                     + "&response_type=id_token"
                     + "&client_id=" + URLEncoder.encode(clientID, "UTF-8")
                     + "&redirect_uri=" + URLEncoder.encode(redirectURI, "UTF-8")
-                    + "&nonce=" + generateNonce();
+                    + "&nonce=" + nonce;
         }
 
         // Java is required to provide UTF-8 support

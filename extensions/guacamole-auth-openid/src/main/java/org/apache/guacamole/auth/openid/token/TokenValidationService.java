@@ -52,6 +52,12 @@ public class TokenValidationService {
     private ConfigurationService confService;
 
     /**
+     * Service for validating and generating unique nonce values.
+     */
+    @Inject
+    private NonceService nonceService;
+
+    /**
      * Validates and parses the given ID token, returning the username contained
      * therein, as defined by the username claim type given in
      * guacamole.properties. If the username claim type is missing or the ID
@@ -90,6 +96,20 @@ public class TokenValidationService {
 
             // Validate JWT
             JwtClaims claims = jwtConsumer.processToClaims(token);
+
+            // Verify a nonce is present
+            String nonce = claims.getStringClaimValue("nonce");
+            if (nonce == null) {
+                logger.info("Rejected OpenID token without nonce.");
+                return null;
+            }
+
+            // Verify that we actually generated the nonce, and that it has not
+            // already been used
+            if (!nonceService.isValid(nonce)) {
+                logger.debug("Rejected OpenID token with invalid/old nonce.");
+                return null;
+            }
 
             // Pull username from claims
             String username = claims.getStringClaimValue(usernameClaim);

@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.openid;
 
 import com.google.inject.AbstractModule;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
+import org.apache.guacamole.auth.openid.token.NonceService;
 import org.apache.guacamole.auth.openid.token.TokenValidationService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
@@ -74,6 +75,7 @@ public class OpenIDAuthenticationProviderModule extends AbstractModule {
 
         // Bind openid-specific services
         bind(ConfigurationService.class);
+        bind(NonceService.class);
         bind(TokenValidationService.class);
 
     }

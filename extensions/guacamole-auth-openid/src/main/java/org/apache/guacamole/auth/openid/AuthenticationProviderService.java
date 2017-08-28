@@ -25,6 +25,7 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
 import org.apache.guacamole.auth.openid.form.TokenField;
+import org.apache.guacamole.auth.openid.token.NonceService;
 import org.apache.guacamole.auth.openid.token.TokenValidationService;
 import org.apache.guacamole.auth.openid.user.AuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
@@ -51,6 +52,12 @@ public class AuthenticationProviderService {
      */
     @Inject
     private ConfigurationService confService;
+
+    /**
+     * Service for validating and generating unique nonce values.
+     */
+    @Inject
+    private NonceService nonceService;
 
     /**
      * Service for validating received ID tokens.
@@ -112,7 +119,8 @@ public class AuthenticationProviderService {
                 new TokenField(
                     confService.getAuthorizationEndpoint(),
                     confService.getClientID(),
-                    confService.getRedirectURI()
+                    confService.getRedirectURI(),
+                    nonceService.generate(30000 /* FIXME: Calculate appropriate value based on configuration */)
                 )
 
             }))
