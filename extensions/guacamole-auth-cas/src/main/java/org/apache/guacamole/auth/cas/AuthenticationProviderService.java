@@ -37,6 +37,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Enumeration;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.DatatypeConverter;
@@ -170,53 +171,16 @@ public class AuthenticationProviderService {
 
         try {
 
-            // Open and read the file specified in the configuration.
-            File keyFile = new File(environment.getGuacamoleHome(), confService.getClearpassKey().toString());
-            InputStream keyInput = new BufferedInputStream(new FileInputStream(keyFile));
-            final byte[] keyBytes = new byte[(int) keyFile.length()];
-            keyInput.read(keyBytes);
-            keyInput.close();
-      
-            // Set up decryption infrastructure
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            KeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes); 
-            final PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
-            final Cipher cipher = Cipher.getInstance(privateKey.getAlgorithm());
-            final byte[] pass64 = DatatypeConverter.parseBase64Binary(encryptedPassword);
-            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            final Cipher cipher = confService.getClearpassCipher();
 
             // Decrypt and return a new string.
+            final byte[] pass64 = DatatypeConverter.parseBase64Binary(encryptedPassword);
             final byte[] cipherData = cipher.doFinal(pass64);
             return new String(cipherData);
         }
-        catch (FileNotFoundException e) {
-            logger.error("ClearPass key file not found, password will not be decrypted.");
-            logger.debug("Error locating the ClearPass key file: {}", e);
-            return null;
-        }
-        catch (IOException e) {
-            logger.error("Error reading ClearPass key file, password will not be decrypted.");
-            logger.debug("Error reading the ClearPass key file: {}", e);
-            return null;
-        }
-        catch (NoSuchAlgorithmException e) {
-            logger.error("Unable to find the specified algorithm, password will not be decrypted.");
-            logger.debug("Algorithm was not found: {}", e);
-            return null;
-        }
-        catch (InvalidKeyException e) {
-            logger.error("Invalid key was loaded, password will not be decrypted.");
-            logger.debug("The loaded key was invalid: {}", e);
-            return null;
-        }
-        catch (IllegalArgumentException e) {
-            logger.error("Failed to parse Base64 data, password will not be decrypted.");
-            logger.debug("Data received was not valid Base64 data, so decryption cannot continue: {}", e);
-            return null;
-        }
         catch (Throwable t) {
-            logger.error("Error decrypting password, it will not be available as a token.");
-            logger.debug("Error in one of the components to decrypt the password: {}", t);
+            logger.error("Failed to decrypt the data, password token will not be available.");
+            logger.debug("Failed to either convert Base64 or decrypt the password.  CAS Password will not be available inside Guacamole.  Exception is: {}", t);
             return null;
         }
 
