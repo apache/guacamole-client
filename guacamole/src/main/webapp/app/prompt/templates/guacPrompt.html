@@ -1,0 +1,27 @@
+<div class="prompt" ng-class="prompt.className">
+
+    <!-- Prompt title -->
+    <div ng-show="prompt.title" class="title-bar">
+        <div class="title">{{prompt.title | translate}}</div>
+    </div>
+
+    <div class="body">
+
+        <!-- Prompt text -->
+        <p ng-show="prompt.text" class="text"
+           translate="{{prompt.text.key}}"
+           translate-values="{{prompt.text.variables}}"></p>
+
+        <!-- Form or fields -->
+        <guac-prompt-form>
+
+        </guac-prompt-form>
+
+    </div>
+
+    <!-- Buttons -->
+    <div ng-show="prompt.actions.length" class="buttons">
+        <button ng-repeat="action in prompt.actions" ng-click="action.callback()" ng-class="action.className">{{action.name | translate}}</button>
+    </div>
+
+</div>
