@@ -50,6 +50,7 @@ import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.directory.DirectoryResource;
 import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
 import org.apache.guacamole.rest.sharingprofile.APISharingProfile;
+import org.apache.guacamole.token.TokenFilter;
 
 /**
  * A REST resource which abstracts the operations available on an existing
@@ -191,6 +192,14 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
 
         // Return a new resource which provides access to only those SharingProfiles
         return sharingProfileDirectoryResourceFactory.create(userContext, sharingProfiles);
+
+    }
+
+    @GET
+    @Path("prompts")
+    public Map<String, List<Integer>> getPrompts() throws GuacamoleException {
+
+       return TokenFilter.getPrompts(connection.getConfiguration().getParameters()); 
 
     }
 

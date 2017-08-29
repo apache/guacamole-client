@@ -19,7 +19,10 @@
 
 package org.apache.guacamole.token;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,7 +41,7 @@ public class TokenFilter {
      * escape character preceding the token, the name of the token, and the
      * entire token itself.
      */
-    private final Pattern tokenPattern = Pattern.compile("(.*?)(^|.)(\\$\\{([A-Za-z0-9_]*)\\})");
+    private static final Pattern tokenPattern = Pattern.compile("(.*?)(^|.)(\\$\\{([A-Za-z0-9_]*)\\})");
 
     /**
      * The index of the capturing group within tokenPattern which matches
@@ -224,6 +227,85 @@ public class TokenFilter {
             
         }
         
+    }
+
+    /**
+     * Given an arbitrary map containing string values, return a map that contains
+     * the parameter names and an array of instances in those parameters where
+     * prompts should occur.
+     *
+     * @param parameters
+     *     The parameters to search for prompts.
+     *
+     * @return
+     *     A map where the key is the parameter name and the value is an array
+     *     of 0-indexed instances in the parameter that need to be prompted.
+     */
+    public static Map<String, List<Integer>> getPrompts(Map<?, String> parameters) {
+
+        Map<String, List<Integer>> prompts = new HashMap<String, List<Integer>>();
+        final String fullPromptString = "${" + PromptTokens.PROMPT_TOKEN_STRING + "}";
+
+        // Loop through each parameter entry
+        for (Map.Entry<?, String> entry : parameters.entrySet()) {
+
+            String key = entry.getKey().toString();
+            String value = entry.getValue();
+
+            // If the entire parameter value equals one of the tokens,
+            // add it to the list with the -1 sentinel and go to next
+            // entry.
+            if (value.equals(PromptTokens.PROMPT_TOKEN_NUMERIC) ||
+                value.equals(fullPromptString)) {
+
+                prompts.put(key, Collections.singletonList(-1));
+                continue;
+
+            }
+
+            Matcher tokenMatcher = tokenPattern.matcher(value);
+
+            // For each possible token
+            while (tokenMatcher.find()) {
+
+                // Pull possible leading text and first char before possible token
+                String literal = tokenMatcher.group(LEADING_TEXT_GROUP);
+                String escape = tokenMatcher.group(ESCAPE_CHAR_GROUP);
+
+                // If char before token is '$', the token itself is escaped
+                if ("$".equals(escape)) {
+                    String notToken = tokenMatcher.group(TOKEN_GROUP);
+                    continue;
+                }
+
+                // If char is not '$', interpret as a token
+                else {
+
+                    // Pull token value
+                    String tokenName = tokenMatcher.group(TOKEN_NAME_GROUP);
+                    if (tokenName.equals(PromptTokens.PROMPT_TOKEN_STRING)) {
+                        List<Integer> paramList = prompts.get(key);
+
+                        // If no current list exists, create it and upate the map.
+                        if (paramList == null) {
+                            paramList = new ArrayList<Integer>();
+                            paramList.add(0);
+                            prompts.put(key, paramList);
+                        }
+
+                        // Add the new position to the list.
+                        else
+                            paramList.add(paramList.size());    
+                    }
+
+                }
+
+            }
+
+        }
+
+        return prompts;
+
     }
 
 }
