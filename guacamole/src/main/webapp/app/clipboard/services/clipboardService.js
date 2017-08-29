@@ -57,10 +57,9 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      *
      * @type Element
      */
-    var clipboardContent = document.createElement('div');
+    var clipboardContent = document.createElement('textarea');
 
     // Ensure clipboard target is selectable but not visible
-    clipboardContent.setAttribute('contenteditable', 'true');
     clipboardContent.className = 'clipboard-service-target';
 
     // Add clipboard target to DOM
@@ -167,7 +166,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
 
         // Copy the given value into the clipboard DOM element
         if (typeof data.data === 'string')
-            clipboardContent.textContent = data.data;
+            clipboardContent.value = data.data;
         else {
             clipboardContent.innerHTML = '';
             var img = document.createElement('img');
@@ -400,7 +399,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
             pushSelection();
 
             // Clear and select the clipboard DOM element
-            clipboardContent.innerHTML = '';
+            clipboardContent.value = '';
             clipboardContent.focus();
             selectAll(clipboardContent);
 
@@ -431,7 +430,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
                 else
                     deferred.resolve(new ClipboardData({
                         type : 'text/plain',
-                        data : clipboardContent.textContent
+                        data : clipboardContent.value
                     }));
 
             }
