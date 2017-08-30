@@ -272,7 +272,7 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     public String getSQLServerDatabase() throws GuacamoleException {
         return getRequiredProperty(SQLServerGuacamoleProperties.SQLSERVER_DATABASE);
     }
-    
+
     /**
      * Returns the username that should be used when authenticating with the
      * SQLServer database containing the Guacamole authentication tables.
@@ -301,6 +301,24 @@ public class SQLServerEnvironment extends JDBCEnvironment {
      */
     public String getSQLServerPassword() throws GuacamoleException {
         return getRequiredProperty(SQLServerGuacamoleProperties.SQLSERVER_PASSWORD);
+    }
+
+    /**
+     * Returns whether or not to use the SourceForge JTDS driver for more
+     * generic JTDS connections instead of the Microsoft-provided JDBC driver.
+     *
+     * @return
+     *     True if the JTDS driver should be used; false by default.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the property value, or if the
+     *     value was not set, as this property is required.
+     */
+    public Boolean getSQLServerJTDSDriver() throws GuacamoleException {
+        return getProperty(
+            SQLServerGuacamoleProperties.SQLSERVER_JTDS_DRIVER,
+            false
+        );
     }
     
 }
