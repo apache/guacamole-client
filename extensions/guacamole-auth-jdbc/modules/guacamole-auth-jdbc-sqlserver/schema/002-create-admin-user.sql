@@ -43,4 +43,4 @@ FROM (
         UNION SELECT 'guacadmin' AS username, 'ADMINISTER' AS permission)
     permissions
     JOIN [dbo].[guacamole_user] ON permissions.username = [dbo].[guacamole_user].[username];
-GO
+GO;
