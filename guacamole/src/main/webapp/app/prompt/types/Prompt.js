@@ -73,6 +73,13 @@ angular.module('prompt').factory('Prompt', [function definePrompt() {
          */
         this.prompts = template.prompts;
 
+        /**
+         * The connection this prompt applies to.
+         *
+         * @type Connection
+         */
+        this.connection = template.connection;
+
     };
 
     return Prompt;

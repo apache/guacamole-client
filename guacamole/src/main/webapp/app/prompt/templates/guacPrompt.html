@@ -13,9 +13,9 @@
            translate-values="{{prompt.text.variables}}"></p>
 
         <!-- Form or fields -->
-        <guac-prompt-form>
-
-        </guac-prompt-form>
+        <guac-form namespace="getNamespace(prompt.connection.protocol)"
+                   content="prompt.prompts"
+                   model="parameters"></guac-form>
 
     </div>
 

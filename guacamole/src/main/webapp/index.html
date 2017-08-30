@@ -41,6 +41,13 @@
                     <guac-notification notification="guacNotification.getStatus()"></guac-notification>
                 </div>
             </div>
+
+            <!-- Global prompt dialog -->
+            <div ng-class="{shown: guacPrompt.getStatus()}" class="status-outer">
+                <div class="status-middle">
+                    <guac-prompt prompt="guacPrompt.getStatus()"></guac-prompt>
+                </div>
+            </div>
             
             <div id="content" ng-view>
             </div>
