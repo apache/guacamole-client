@@ -21,7 +21,9 @@ package org.apache.guacamole.protocol;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * An abstract representation of Guacamole client information, including all
@@ -58,6 +60,11 @@ public class GuacamoleClientInformation {
      * The list of image mimetypes reported by the client to be supported.
      */
     private final List<String> imageMimetypes = new ArrayList<String>();
+
+    /**
+     * Additional, client-provided connection parameters.
+     */
+    private final Map<String, List<String>> parameters = new HashMap<String, List<String>>();
 
     /**
      * Returns the optimal screen width requested by the client, in pixels.
@@ -143,6 +150,17 @@ public class GuacamoleClientInformation {
      */
     public List<String> getImageMimetypes() {
         return imageMimetypes;
+    }
+
+    /**
+     * Returns the map of parameters provided by the client.  To add or remove
+     * parameters the returned map can be modified.
+     *
+     * @return
+     *     The map of parameters provided by the client.
+     */
+    public Map<String, List<String>> getParameters() {
+        return parameters;
     }
 
 }
