@@ -44,6 +44,12 @@ public class TokenFilter {
     private static final Pattern tokenPattern = Pattern.compile("(.*?)(^|.)(\\$\\{([A-Za-z0-9_]*)\\})");
 
     /**
+     * Regular expression which matches the prompt token, specifically, with
+     * groups to match leading text, escape characters, etc.
+     */
+    private static final Pattern promptPattern = Pattern.compile("(.*?)(^|.)(\\$\\{" + PromptTokens.PROMPT_TOKEN_STRING + "\\})");
+
+    /**
      * The index of the capturing group within tokenPattern which matches
      * non-token text preceding a possible token.
      */
@@ -209,6 +215,75 @@ public class TokenFilter {
     }
 
     /**
+     * Filter a given input string for prompt tokens, replacing
+     * occurences of the prompt token with the corresponding
+     * input provided in the tokens list.
+     *
+     * @param input
+     *     String to filter for prompt tokens.
+     * @param tokens
+     *     List of 0-indexed strings provided to replace
+     *     occurences of the prompt token with.
+     *
+     * @return
+     *     The filtered string, with occurences of the
+     *     prompt token replaced with provided input.
+     */
+    public String filter(String input, List<String> tokens) {
+
+        // If no prompt values where provided, just return the input.
+        if (tokens == null || tokens.size() < 1)
+            return input;
+
+        // If the entire input is equal to one of the tokens, return the first value.
+        if (input.equals(PromptTokens.PROMPT_TOKEN_STRING) || input.equals(PromptTokens.PROMPT_TOKEN_NUMERIC))
+            return tokens.get(0);
+
+        StringBuilder output = new StringBuilder();
+        Matcher promptMatcher = promptPattern.matcher(input);
+
+        // Track last regex match
+        int endOfLastMatch = 0;
+        int matchCounter = 0;
+
+        // For each occurrence of the prompt token
+        while (promptMatcher.find()) {
+            String literal = promptMatcher.group(LEADING_TEXT_GROUP);
+            String escape = promptMatcher.group(ESCAPE_CHAR_GROUP);
+
+            output.append(literal);
+
+            if ("$".equals(escape)) {
+                String notToken = promptMatcher.group(TOKEN_GROUP);
+                output.append(notToken);
+            }
+
+            else {
+                output.append(escape);
+
+                String tokenValue = tokens.get(matchCounter);
+
+                if (tokenValue == null)
+                    output.append(promptMatcher.group(TOKEN_GROUP));
+
+                else
+                    output.append(tokenValue);
+
+            }
+
+            // Update last regex match and increment counter
+            endOfLastMatch = promptMatcher.end();
+            matchCounter++;
+
+        }
+
+        output.append(input.substring(endOfLastMatch));
+
+        return output.toString();
+
+    }
+
+    /**
      * Given an arbitrary map containing String values, replace each non-null
      * value with the corresponding filtered value.
      *
@@ -305,6 +380,34 @@ public class TokenFilter {
         }
 
         return prompts;
+
+    }
+
+    /**
+     * Walk through each parameter and look for user-provided input in prompts.
+     * If input is found, filter the parameter entry, replacing the prompt token
+     * with the user-provided value.
+     *
+     * @param parameters
+     *     Configuration parameters pulled from the connection configuration.
+     * @param prompts
+     *     Data provided via input from the user.
+     */
+    public void filterPrompts(Map<?, String> parameters, Map<String, List<String>> prompts) {
+
+        for (Map.Entry<?, String> entry : parameters.entrySet()) {
+
+            String parameter = entry.getKey().toString();
+            String currentValue = entry.getValue();
+            List<String> promptValues = prompts.get(parameter);
+
+            if (promptValues == null || promptValues.size() < 1)
+                continue;
+
+            if (currentValue != null && !currentValue.equals(""))
+                entry.setValue(filter(currentValue, promptValues));
+
+        }
 
     }
 

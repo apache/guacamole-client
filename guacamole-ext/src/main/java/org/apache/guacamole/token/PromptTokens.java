@@ -37,12 +37,4 @@ public class PromptTokens {
      */
     public static final String PROMPT_TOKEN_STRING = "GUAC_PROMPT";
 
-    public void addPromptTokens(TokenFilter filter, Map<String, Map<Integer, String>> userInput) {
-        // Not yet implemented.
-    }
-
-    public void addPromptToken(TokenFilter filter, String parameter, Integer index, String value) {
-        // Not yet implemented.
-    }
-
 }

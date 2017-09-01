@@ -21,7 +21,10 @@ package org.apache.guacamole.tunnel;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleSession;
@@ -38,6 +41,7 @@ import org.apache.guacamole.net.event.TunnelConnectEvent;
 import org.apache.guacamole.rest.auth.AuthenticationService;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 import org.apache.guacamole.rest.event.ListenerService;
+import org.apache.guacamole.token.TokenFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -169,6 +173,40 @@ public class TunnelRequestService {
         return info;
     }
 
+    protected void getUserInput(TunnelRequest request, Connection connection,
+            GuacamoleClientInformation info) throws GuacamoleException {
+
+        // Get the connection configuration
+        Map<String, List<Integer>> prompts = TokenFilter.getPrompts(connection.getConfiguration().getParameters());
+        Map<String, List<String>> clientParameters = info.getParameters();
+
+        for (Map.Entry<String, List<Integer>> entry : prompts.entrySet()) {
+            String parameter = entry.getKey();
+            List<Integer> values = entry.getValue();
+            logger.debug(">>>PROMPT<<< Looking for parameter {}", parameter);
+            if (values.size() == 1 && values.get(0) == -1) {
+                String userValue = request.getParameter(parameter);
+                if (userValue == null)
+                    throw new GuacamoleException("Expected parameter was not provided: " + parameter);
+                logger.debug(">>>PROMPT<<< Adding parameter {} value {}", parameter, userValue);
+                clientParameters.put(parameter, Collections.singletonList(userValue));
+            }
+            else {
+                List<String> valueList = new ArrayList<String>();
+                for (int i = 0; i < values.size(); i++) {
+                    String userValue = request.getParameter(parameter + "[" + i + "]");
+                    if (userValue == null)
+                        throw new GuacamoleException("Expected parameter was not provided: " + parameter);
+                    valueList.add(userValue);
+                    logger.debug(">>>PROMPT<<< Getting the {} value for parameter {}: {}", i, parameter, userValue);
+                    
+                }
+                clientParameters.put(parameter, valueList);
+            }
+        }
+
+    }
+
     /**
      * Creates a new tunnel using which is connected to the connection or
      * connection group identifier by the given ID. Client information
@@ -195,7 +233,7 @@ public class TunnelRequestService {
      */
     protected GuacamoleTunnel createConnectedTunnel(UserContext context,
             final TunnelRequest.Type type, String id,
-            GuacamoleClientInformation info)
+            GuacamoleClientInformation info, TunnelRequest request)
             throws GuacamoleException {
 
         // Create connected tunnel from identifier
@@ -214,6 +252,9 @@ public class TunnelRequestService {
                     logger.info("Connection \"{}\" does not exist for user \"{}\".", id, context.self().getIdentifier());
                     throw new GuacamoleSecurityException("Requested connection is not authorized.");
                 }
+
+                // Get the user input
+                getUserInput(request, connection, info);
 
                 // Connect tunnel
                 tunnel = connection.connect(info);
@@ -390,7 +431,7 @@ public class TunnelRequestService {
         try {
 
             // Create connected tunnel using provided connection ID and client information
-            GuacamoleTunnel tunnel = createConnectedTunnel(userContext, type, id, info);
+            GuacamoleTunnel tunnel = createConnectedTunnel(userContext, type, id, info, request);
 
             // Notify listeners to allow connection to be vetoed
             fireTunnelConnectEvent(session.getAuthenticatedUser(),

@@ -219,7 +219,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      *     the given connection.
      */
     private GuacamoleConfiguration getGuacamoleConfiguration(RemoteAuthenticatedUser user,
-            ModeledConnection connection) {
+            ModeledConnection connection, GuacamoleClientInformation info) {
 
         // Generate configuration from available data
         GuacamoleConfiguration config = new GuacamoleConfiguration();
@@ -239,6 +239,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
 
         // Filter the configuration
         tokenFilter.filterValues(config.getParameters());
+        tokenFilter.filterPrompts(config.getParameters(),info.getParameters());
 
         return config;
         
@@ -485,7 +486,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             if (activeConnection.isPrimaryConnection()) {
                 activeConnections.put(connection.getIdentifier(), activeConnection);
                 activeConnectionGroups.put(connection.getParentIdentifier(), activeConnection);
-                config = getGuacamoleConfiguration(activeConnection.getUser(), connection);
+                config = getGuacamoleConfiguration(activeConnection.getUser(), connection, info);
             }
 
             // If we ARE joining an active connection, generate a configuration
