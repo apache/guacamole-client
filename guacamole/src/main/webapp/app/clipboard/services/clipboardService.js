@@ -86,6 +86,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
     };
 
     // Prevent events generated due to execCommand() from disturbing external things
+    clipboardContent.addEventListener('cut',   stopEventPropagation);
     clipboardContent.addEventListener('copy',  stopEventPropagation);
     clipboardContent.addEventListener('paste', stopEventPropagation);
 
