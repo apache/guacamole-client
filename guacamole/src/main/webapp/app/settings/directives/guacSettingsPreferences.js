@@ -192,6 +192,9 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                 $scope.canChangePassword = PermissionSet.hasUserPermission(permissions,
                         PermissionSet.ObjectPermissionType.UPDATE, username);
                         
+            })
+            .error(function permissionsFailed(error) {
+                $scope.canChangePassword = false;
             });
 
             /**
