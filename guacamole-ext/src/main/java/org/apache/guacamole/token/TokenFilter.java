@@ -316,9 +316,9 @@ public class TokenFilter {
      *     A map where the key is the parameter name and the value is an array
      *     of 0-indexed instances in the parameter that need to be prompted.
      */
-    public static Map<String, List<Integer>> getPrompts(Map<?, String> parameters) {
+    public static Map<String, Integer> getPrompts(Map<?, String> parameters) {
 
-        Map<String, List<Integer>> prompts = new HashMap<String, List<Integer>>();
+        Map<String, Integer> prompts = new HashMap<String, Integer>();
         final String fullPromptString = "${" + PromptTokens.PROMPT_TOKEN_STRING + "}";
 
         // Loop through each parameter entry
@@ -333,12 +333,13 @@ public class TokenFilter {
             if (value.equals(PromptTokens.PROMPT_TOKEN_NUMERIC) ||
                 value.equals(fullPromptString)) {
 
-                prompts.put(key, Collections.singletonList(-1));
+                prompts.put(key, -1);
                 continue;
 
             }
 
             Matcher tokenMatcher = tokenPattern.matcher(value);
+            Integer count = 0;
 
             // For each possible token
             while (tokenMatcher.find()) {
@@ -358,24 +359,14 @@ public class TokenFilter {
 
                     // Pull token value
                     String tokenName = tokenMatcher.group(TOKEN_NAME_GROUP);
-                    if (tokenName.equals(PromptTokens.PROMPT_TOKEN_STRING)) {
-                        List<Integer> paramList = prompts.get(key);
-
-                        // If no current list exists, create it and upate the map.
-                        if (paramList == null) {
-                            paramList = new ArrayList<Integer>();
-                            paramList.add(0);
-                            prompts.put(key, paramList);
-                        }
-
-                        // Add the new position to the list.
-                        else
-                            paramList.add(paramList.size());    
-                    }
+                    if (tokenName.equals(PromptTokens.PROMPT_TOKEN_STRING))
+                        count++;
 
                 }
 
             }
+            if (count > 0)
+                prompts.put(key,count);
 
         }
 

@@ -36,6 +36,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
     // Required services
     var $document              = $injector.get('$document');
+    var $log                   = $injector.get('$log');
     var $q                     = $injector.get('$q');
     var $rootScope             = $injector.get('$rootScope');
     var $window                = $injector.get('$window');
@@ -43,6 +44,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var connectionGroupService = $injector.get('connectionGroupService');
     var connectionService      = $injector.get('connectionService');
     var requestService         = $injector.get('requestService');
+    var guacPrompt             = $injector.get('guacPrompt');
     var tunnelService          = $injector.get('tunnelService');
     var guacAudio              = $injector.get('guacAudio');
     var guacHistory            = $injector.get('guacHistory');
@@ -302,6 +304,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      */
     ManagedClient.getInstance = function getInstance(id, connectionParameters) {
 
+        $log.debug(connectionParameters);
         var tunnel;
 
         // If WebSocket available, try to use it.
@@ -504,27 +507,72 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         // Parse connection details from ID
         var clientIdentifier = ClientIdentifier.fromString(id);
 
-        // Connect the Guacamole client
-        getConnectString(clientIdentifier, connectionParameters)
-        .then(function connectClient(connectString) {
-            client.connect(connectString);
+        var gettingConnectionData = $q.defer();
+        // If using a connection, pull connection name
+        if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION)
+            gettingConnectionData = connectionService.getConnection(clientIdentifier.dataSource, clientIdentifier.id);
+
+        // If using a connection group, pull connection name
+        else if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION_GROUP)
+            gettingConnectionData = connectionGroupService.getConnectionGroup(clientIdentifier.dataSource, clientIdentifier.id);
+        
+        else
+            gettingConnectionData.reject('Invalid connection type.');
+
+        // Get Connection Prompts
+        var gettingConnectionPrompts = connectionService.getConnectionPrompts(clientIdentifier.dataSource, clientIdentifier.id);
+        
+        $q.all([gettingConnectionData,gettingConnectionPrompts])
+        .then(function connectClient(clientData) {
+
+
+            $log.debug(clientData);
+            var connData = clientData[0].data;
+            var connPrompts = clientData[1].data;
+            /*
+            var userData = '';
+            angular.forEach(connPrompts, function(value, key) {
+
+                if (userData != '')
+                    userData += '&';
+
+                if (value[0] == -1) {
+                    var response = prompt('Please enter value for parameter ' + key);
+                    userData += encodeURIComponent(key) + '=' + encodeURIComponent(response);
+                }
+
+                else {
+                    for (i = 0; i < value.length; i++) {
+                        if (i > 0)
+                            userData += '&';
+                        response = prompt('Please enter value for ' + value + ' instance in parameter ' + key);
+                        userData += encodeURIComponent(key + '[' + i + ']') + '=' + encodeURIComponent(response);
+                    }
+                }
+
+            });
+            $log.debug(userData);
+            */
+            guacPrompt.getUserInput(connPrompts,connData)
+            .then(function receivedUserInput(data) {
+                $log.debug(data);
+                // connectionParameters = (connectionParameters ? connectionParameters + userData : userData);
+                // $log.debug(connectionParameters);
+            });
+            
+            // Connect the Guacamole client
+            getConnectString(clientIdentifier, connectionParameters)
+            .then(function connectClient(connectString) {
+                $log.debug('We would try the connection, if it were not commented out.');
+                // client.connect(connectString);
+                // guacPrompt.showPrompt(false);
+            });
         });
 
-        // If using a connection, pull connection name
-        if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION) {
-            connectionService.getConnection(clientIdentifier.dataSource, clientIdentifier.id)
-            .then(function connectionRetrieved(connection) {
-                managedClient.name = managedClient.title = connection.name;
-            }, requestService.WARN);
-        }
-        
-        // If using a connection group, pull connection name
-        else if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION_GROUP) {
-            connectionGroupService.getConnectionGroup(clientIdentifier.dataSource, clientIdentifier.id)
-            .then(function connectionGroupRetrieved(group) {
-                managedClient.name = managedClient.title = group.name;
-            }, requestService.WARN);
-        }
+
+        gettingConnectionData.success(function connectionRetrieved(connection) {
+            managedClient.name = managedClient.title = connection.name;
+        });
 
         return managedClient;
 

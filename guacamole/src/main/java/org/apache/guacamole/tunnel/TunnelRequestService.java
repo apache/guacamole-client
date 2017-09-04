@@ -177,14 +177,14 @@ public class TunnelRequestService {
             GuacamoleClientInformation info) throws GuacamoleException {
 
         // Get the connection configuration
-        Map<String, List<Integer>> prompts = TokenFilter.getPrompts(connection.getConfiguration().getParameters());
+        Map<String, Integer> prompts = TokenFilter.getPrompts(connection.getConfiguration().getParameters());
         Map<String, List<String>> clientParameters = info.getParameters();
 
-        for (Map.Entry<String, List<Integer>> entry : prompts.entrySet()) {
+        for (Map.Entry<String, Integer> entry : prompts.entrySet()) {
             String parameter = entry.getKey();
-            List<Integer> values = entry.getValue();
+            Integer positions = entry.getValue();
             logger.debug(">>>PROMPT<<< Looking for parameter {}", parameter);
-            if (values.size() == 1 && values.get(0) == -1) {
+            if (positions == -1) {
                 String userValue = request.getParameter(parameter);
                 if (userValue == null)
                     throw new GuacamoleException("Expected parameter was not provided: " + parameter);
@@ -193,7 +193,7 @@ public class TunnelRequestService {
             }
             else {
                 List<String> valueList = new ArrayList<String>();
-                for (int i = 0; i < values.size(); i++) {
+                for (int i = 0; i < positions; i++) {
                     String userValue = request.getParameter(parameter + "[" + i + "]");
                     if (userValue == null)
                         throw new GuacamoleException("Expected parameter was not provided: " + parameter);

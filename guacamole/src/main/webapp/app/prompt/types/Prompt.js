@@ -80,6 +80,13 @@ angular.module('prompt').factory('Prompt', [function definePrompt() {
          */
         this.connection = template.connection;
 
+        /**
+         * Where to store the user responses.
+         *
+         * @type Array
+         */
+        this.responses = template.responses || {};
+
     };
 
     return Prompt;

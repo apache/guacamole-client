@@ -23,6 +23,8 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.Consumes;
@@ -32,6 +34,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.form.Field;
+import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.Directory;
@@ -43,13 +48,16 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
-import org.apache.guacamole.rest.history.APIConnectionRecord;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
+import org.apache.guacamole.protocols.ProtocolInfo;
+import org.apache.guacamole.rest.directory.DirectoryView;
 import org.apache.guacamole.rest.directory.DirectoryObjectResource;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.directory.DirectoryResource;
 import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
+import org.apache.guacamole.rest.history.APIConnectionRecord;
 import org.apache.guacamole.rest.sharingprofile.APISharingProfile;
+import org.apache.guacamole.token.PromptEntry;
 import org.apache.guacamole.token.TokenFilter;
 
 /**
@@ -78,6 +86,12 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
     @Inject
     private DirectoryResourceFactory<SharingProfile, APISharingProfile>
             sharingProfileDirectoryResourceFactory;
+
+    /**
+     * The current server environment.
+     */
+    @Inject
+    private Environment environment;
 
     /**
      * Creates a new ConnectionResource which exposes the operations and
@@ -197,9 +211,31 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
 
     @GET
     @Path("prompts")
-    public Map<String, List<Integer>> getPrompts() throws GuacamoleException {
+    public List<PromptEntry> getPrompts() throws GuacamoleException {
 
-       return TokenFilter.getPrompts(connection.getConfiguration().getParameters()); 
+        List<PromptEntry> promptEntries = new ArrayList<PromptEntry>();
+
+        Map <?, String> parameters = connection.getConfiguration().getParameters();
+        Map <String, Integer> prompts = TokenFilter.getPrompts(parameters);
+        Collection<Form> myForms = environment.getProtocol(connection.getConfiguration().getProtocol()).getConnectionForms();
+
+        for (Map.Entry<String, Integer> entry : prompts.entrySet()) {
+            String parameter = entry.getKey();
+            Integer positions = entry.getValue();
+            String value = parameters.get(parameter);
+            formLoop:
+            for (Form form : myForms) {
+                Collection<Field> myFields = form.getFields();
+                for (Field field : myFields) {
+                    if (parameter.equals(field.getName())) {
+                        promptEntries.add(new PromptEntry(field,positions,value));
+                        break formLoop;
+                    }
+                }
+            }
+        }
+
+        return promptEntries;
 
     }
 

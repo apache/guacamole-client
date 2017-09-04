@@ -37,8 +37,37 @@ angular.module('prompt').directive('guacPrompt', [function guacPrompt() {
         },
 
         templateUrl: 'app/prompt/templates/guacPrompt.html',
-        controller: ['$scope', function guacPromptController($scope) {
+        controller: ['$scope', '$injector', '$log', function guacPromptController($scope,$injector,$log) {
 
+            var translationStringService = $injector.get('translationStringService');
+
+            /**
+             * Returns the translation string namespace for the protocol having the
+             * given name. The namespace will be of the form:
+             *
+             * <code>PROTOCOL_NAME</code>
+             *
+             * where <code>NAME</code> is the protocol name transformed via
+             * translationStringService.canonicalize().
+             *
+             * @param {String} protocolName
+             *     The name of the protocol.
+             *
+             * @returns {String}
+             *     The translation namespace for the protocol specified, or null if no
+             *     namespace could be generated.
+             */
+            $scope.getNamespace = function getNamespace(protocolName) {
+
+                $log.debug('Getting namespace for protocol ' + protocolName);
+
+                // Do not generate a namespace if no protocol is selected
+                if (!protocolName)
+                    return null;
+
+                return 'PROTOCOL_' + translationStringService.canonicalize(protocolName);
+
+            };
         }]
 
     };

@@ -24,6 +24,9 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
         function guacPrompt($injector) {
 
     // Required services
+    var $location             = $injector.get('$location');
+    var $log                  = $injector.get('$log');
+    var $q                    = $injector.get('$q');
     var $rootScope            = $injector.get('$rootScope');
     var sessionStorageFactory = $injector.get('sessionStorageFactory');
 
@@ -35,7 +38,7 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
      * 
      * @type Function
      */
-    var storedStatus = sessionStorageFactory.create(false);
+    var storedPrompt = sessionStorageFactory.create(false);
 
     /**
      * Retrieves the current status prompt, which may simply be false if
@@ -43,8 +46,9 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
      * 
      * @type Prompt|Boolean
      */
-    service.getStatus = function getStatus() {
-        return storedStatus();
+    service.getPrompt = function getPrompt() {
+        $log.debug('Retrieving stored prompt object.');
+        return storedPrompt();
     };
 
     /**
@@ -58,7 +62,7 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
      * @example
      * 
      * // To show a status message with actions
-     * guacPrompt.showStatus({
+     * guacPrompt.showPrompt({
      *     'title'      : 'Disconnected',
      *     'text'       : {
      *         'key' : 'NAMESPACE.SOME_TRANSLATION_KEY'
@@ -72,16 +76,60 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
      * });
      * 
      * // To hide the status message
-     * guacPrompt.showStatus(false);
+     * guacPrompt.showPrompt(false);
      */
-    service.showStatus = function showStatus(status) {
-        if (!storedStatus() || !status)
-            storedStatus(status);
+    service.showPrompt = function showPrompt(status) {
+        $log.debug('Displaying prompts with object ' + JSON.stringify(status));
+        if (!storedPrompt() || !status)
+            storedPrompt(status);
+    };
+
+    /**
+     * Prompt for fields.
+     */
+    service.getUserInput = function getUserInput(prompts,connection) {
+
+        $log.debug('Received prompt object: ' + JSON.stringify(prompts));
+        $log.debug('Received connection object: ' + JSON.stringify(connection));
+
+        var deferred = $q.defer();
+        var responses = {};
+        var homeUrl = '/';
+
+        service.showPrompt({
+            'title'     : 'Connection Parameters for ' + connection.name,
+            'connection' : connection,
+            'text'      : {
+                key     : 'Please provide the following parameters to complete the connection:'
+            },
+            'prompts'   : prompts,
+            'actions'   : [{
+                'name'  : 'Connect',
+                'callback' : function() {
+                    deferred.resolve(responses);
+                    service.showPrompt(false);
+                },
+            },
+            {
+                'name'  : 'Cancel',
+                'callback' : function() {
+                    deferred.reject();
+                    service.showPrompt(false);
+                    $location.url(homeUrl);
+                },
+            }],
+            'responses' : responses
+        });
+
+        $log.debug('One day, we will return those prompts, we promise!');
+        return deferred.promise;
+
     };
 
     // Hide status upon navigation
     $rootScope.$on('$routeChangeSuccess', function() {
-        service.showStatus(false);
+        $log.debug('Moved on to somewhere else.');
+        service.showPrompt(false);
     });
 
     return service;
