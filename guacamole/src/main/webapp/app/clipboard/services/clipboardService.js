@@ -135,14 +135,23 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     var selectAll = function selectAll(element) {
 
-        // Generate a range which selects all nodes within the given element
-        var range = document.createRange();
-        range.selectNodeContents(element);
+        // Use the select() function defined for input elements, if available
+        if (element.select)
+            element.select();
 
-        // Replace any current selection with the generated range
-        var selection = $window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
+        // Fallback to manual manipulation of the selection
+        else {
+
+            // Generate a range which selects all nodes within the given element
+            var range = document.createRange();
+            range.selectNodeContents(element);
+
+            // Replace any current selection with the generated range
+            var selection = $window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+        }
 
     };
 
@@ -175,6 +184,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
         }
 
         // Select all data within the clipboard target
+        clipboardContent.focus();
         selectAll(clipboardContent);
 
         // Attempt to copy data from clipboard element into local clipboard
