@@ -45,6 +45,14 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
     var CLIPBOARD_READ_DELAY = 100;
 
     /**
+     * The promise associated with the current pending clipboard read attempt.
+     * If no clipboard read is active, this will be null.
+     *
+     * @type Promise.<ClipboardData>
+     */
+    var pendingRead = null;
+
+    /**
      * Reference to the window.document object.
      *
      * @private
@@ -78,6 +86,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
     };
 
     // Prevent events generated due to execCommand() from disturbing external things
+    clipboardContent.addEventListener('cut',   stopEventPropagation);
     clipboardContent.addEventListener('copy',  stopEventPropagation);
     clipboardContent.addEventListener('paste', stopEventPropagation);
 
@@ -398,7 +407,15 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     service.getLocalClipboard = function getLocalClipboard() {
 
+        // If the clipboard is already being read, do not overlap the read
+        // attempts; instead share the result across all requests
+        if (pendingRead)
+            return pendingRead;
+
         var deferred = $q.defer();
+
+        // Mark read attempt as in progress
+        pendingRead = deferred.promise;
 
         // Wait for the next event queue run before attempting to read
         // clipboard data (in case the copy/cut has not yet completed)
@@ -466,6 +483,9 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
                 clipboardContent.blur();
                 originalElement.focus();
                 popSelection();
+
+                // No read is pending any longer
+                pendingRead = null;
 
             });
 
