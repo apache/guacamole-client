@@ -19,39 +19,12 @@
 
 package org.apache.guacamole.net.auth;
 
-import java.util.Collection;
 import org.apache.guacamole.GuacamoleException;
 
 /**
  * The set of all available connection records, or a subset of those records.
  */
-public interface ConnectionRecordSet {
-
-    /**
-     * All properties of connection records which can be used as sorting
-     * criteria.
-     */
-    enum SortableProperty {
-
-        /**
-         * The date and time when the connection associated with the
-         * connection record began.
-         */
-        START_DATE
-
-    };
-
-    /**
-     * Returns all connection records within this set as a standard Collection.
-     *
-     * @return
-     *      A collection containing all connection records within this set.
-     *
-     * @throws GuacamoleException
-     *      If an error occurs while retrieving the connection records within
-     *      this set.
-     */
-    Collection<ConnectionRecord> asCollection() throws GuacamoleException;
+public interface ConnectionRecordSet extends ActivityRecordSet<ConnectionRecord> {
 
     /**
      * Returns the subset of connection records to only those where the
@@ -73,6 +46,7 @@ public interface ConnectionRecordSet {
      * @throws GuacamoleException
      *     If an error occurs while restricting the current subset.
      */
+    @Override
     ConnectionRecordSet contains(String value) throws GuacamoleException;
 
     /**
@@ -93,6 +67,7 @@ public interface ConnectionRecordSet {
      * @throws GuacamoleException
      *     If an error occurs while limiting the current subset.
      */
+    @Override
     ConnectionRecordSet limit(int limit) throws GuacamoleException;
 
     /**
@@ -119,6 +94,7 @@ public interface ConnectionRecordSet {
      * @throws GuacamoleException
      *     If an error occurs while sorting the current subset.
      */
+    @Override
     ConnectionRecordSet sort(SortableProperty property, boolean desc)
             throws GuacamoleException;
 
