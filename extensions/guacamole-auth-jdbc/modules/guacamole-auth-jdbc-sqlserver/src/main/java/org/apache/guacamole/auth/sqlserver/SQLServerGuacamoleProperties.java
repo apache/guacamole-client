@@ -200,11 +200,11 @@ public class SQLServerGuacamoleProperties {
     /**
      * Whether or not to use the JTDS driver for SQL Server connections.
      */
-    public static final BooleanGuacamoleProperty
-            SQLSERVER_JTDS_DRIVER = new BooleanGuacamoleProperty() {
+    public static final StringGuacamoleProperty
+            SQLSERVER_DRIVER = new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "sqlserver-use-jtds-driver"; }
+        public String getName() { return "sqlserver-driver"; }
 
     };
 

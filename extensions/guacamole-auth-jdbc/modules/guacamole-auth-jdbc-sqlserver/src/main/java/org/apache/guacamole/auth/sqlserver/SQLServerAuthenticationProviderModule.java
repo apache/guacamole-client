@@ -44,8 +44,8 @@ public class SQLServerAuthenticationProviderModule implements Module {
     /**
      * Whether or not to use JTDS Driver
      */
-    private Boolean useJTDSDriver = false;
-    
+    private String sqlServerDriver;
+
     /**
      * Creates a new SQLServer authentication provider module that configures
      * driver and MyBatis properties using the given environment.
@@ -75,8 +75,8 @@ public class SQLServerAuthenticationProviderModule implements Module {
         // Use UTF-8 in database
         driverProperties.setProperty("characterEncoding", "UTF-8");
 
-        // Capture whether or not to use the JTDS driver.
-        this.useJTDSDriver = environment.getSQLServerJTDSDriver();
+        // Capture which driver to use for the connection.
+        this.sqlServerDriver = environment.getSQLServerDriver();
 
     }
 
@@ -84,8 +84,13 @@ public class SQLServerAuthenticationProviderModule implements Module {
     public void configure(Binder binder) {
 
         // Bind SQLServer-specific properties
-        if (this.useJTDSDriver)
+        // Look at the property to choose the correct driver.
+        if (sqlServerDriver.equals(SQLServerEnvironment.SQLSERVER_DRIVER_JTDS))
             JdbcHelper.SQL_Server_jTDS.configure(binder);
+        else if(sqlServerDriver.equals(SQLServerEnvironment.SQLSERVER_DRIVER_DATADIRECT))
+            JdbcHelper.SQL_Server_DataDirect.configure(binder);
+        else if(sqlServerDriver.equals(SQLServerEnvironment.SQLSERVER_DRIVER_MS))
+            JdbcHelper.SQL_Server_MS_Driver.configure(binder);
         else
             JdbcHelper.SQL_Server_2005_MS_Driver.configure(binder);
         

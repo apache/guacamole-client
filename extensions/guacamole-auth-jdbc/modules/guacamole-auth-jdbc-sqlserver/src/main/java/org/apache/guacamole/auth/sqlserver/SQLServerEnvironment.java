@@ -97,6 +97,30 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     private int DEFAULT_MAX_GROUP_CONNECTIONS = 0;
 
     /**
+     * The value for the sqlserver-driver property that triggers the use of
+     * the open source JTDS driver.
+     */
+    public final static String SQLSERVER_DRIVER_JTDS = "jtds";
+
+    /**
+     * The value for the sqlserver-driver property that triggers the use of
+     * the DataDirect JDBC driver.
+     */
+    public final static String SQLSERVER_DRIVER_DATADIRECT = "datadirect";
+
+    /**
+     * The value for the sqlserver-driver property that triggers the use of
+     * the older Microsoft JDBC driver.
+     */
+    public final static String SQLSERVER_DRIVER_MS = "microsoft";
+
+    /**
+     * The value for the sqlserver-driver property that triggers the use of
+     * the Microsoft JDBC driver.  This is the default.
+     */
+    public final static String SQLSERVER_DRIVER_MS_2005 = "microsoft2005";
+
+    /**
      * Constructs a new SQLServerEnvironment, providing access to SQLServer-specific
      * configuration options.
      * 
@@ -168,6 +192,15 @@ public class SQLServerEnvironment extends JDBCEnvironment {
                     SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER.getName(), DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER);
 
         }
+
+        // Check driver property is one of the acceptable values.
+        String driver = getProperty(SQLServerGuacamoleProperties.SQLSERVER_DRIVER);
+        if (!(driver.equals(SQLSERVER_DRIVER_JTDS) ||
+                                driver.equals(SQLSERVER_DRIVER_DATADIRECT) ||
+                                driver.equals(SQLSERVER_DRIVER_MS) ||
+                                driver.equals(SQLSERVER_DRIVER_MS_2005)))
+            logger.warn("{} property has been set to an invalid value.  The default Microsoft 2005 driver will be used.",
+                        SQLServerGuacamoleProperties.SQLSERVER_DRIVER.getName());
 
     }
 
@@ -314,10 +347,10 @@ public class SQLServerEnvironment extends JDBCEnvironment {
      *     If an error occurs while retrieving the property value, or if the
      *     value was not set, as this property is required.
      */
-    public Boolean getSQLServerJTDSDriver() throws GuacamoleException {
+    public String getSQLServerDriver() throws GuacamoleException {
         return getProperty(
-            SQLServerGuacamoleProperties.SQLSERVER_JTDS_DRIVER,
-            false
+            SQLServerGuacamoleProperties.SQLSERVER_DRIVER,
+            SQLSERVER_DRIVER_MS_2005
         );
     }
     
