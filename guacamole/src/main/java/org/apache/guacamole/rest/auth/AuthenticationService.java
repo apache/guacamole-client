@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.guacamole.GuacamoleAuthenticationRejectedException;
+
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
@@ -218,19 +218,17 @@ public class AuthenticationService {
     }
 
     /**
-     * Notify all bound AuthenticationSuccessListeners that a successful authentication
-     * has occurred. If any of the bound listeners returns false (indicating that the
-     * authentication should be rejected) a GuacamoleRejectedAuthenticationException is
-     * thrown.
+     * Notify all bound listeners that a successful authentication
+     * has occurred.
      *
      * @param authenticatedUser
      *      The user that was successfully authenticated
      * @param session
      *      Existing session for the user (if any)
      * @throws GuacamoleException
-     *      If a filter throws an exception or if any filter rejects the authentication
+     *      If thrown by a listener
      */
-    private void notifyAuthenticationSuccessListeners(
+    private void fireAuthenticationSuccessEvent(
             AuthenticatedUser authenticatedUser, GuacamoleSession session)
             throws GuacamoleException {
 
@@ -240,26 +238,21 @@ public class AuthenticationService {
                 authenticatedUser.getAuthenticationProvider().getIdentifier());
         }
 
-        AuthenticationSuccessEvent event = new AuthenticationSuccessEvent(
-            userContext, authenticatedUser.getCredentials());
-
-        if (!listenerService.authenticationSucceeded(event)) {
-            throw new GuacamoleAuthenticationRejectedException();
-        }
+        listenerService.handleEvent(new AuthenticationSuccessEvent(
+            userContext, authenticatedUser.getCredentials()));
     }
 
     /**
-     * Notify all bound AuthenticationFailureListeners that an authentication has failed.
+     * Notify all bound listeners that an authentication attempt has failed.
      *
      * @param credentials
      *      The credentials that failed to authenticate
      * @throws GuacamoleException
-     *      If a filter throws an exception
+     *      If thrown by a listener
      */
-    private void notifyAuthenticationFailureListeners(Credentials credentials)
+    private void fireAuthenticationFailedEvent(Credentials credentials)
             throws GuacamoleException {
-
-        listenerService.authenticationFailed(new AuthenticationFailureEvent(credentials));
+        listenerService.handleEvent(new AuthenticationFailureEvent(credentials));
     }
 
     /**
@@ -290,13 +283,13 @@ public class AuthenticationService {
             if (existingSession != null) {
                 AuthenticatedUser updatedUser = updateAuthenticatedUser(
                         existingSession.getAuthenticatedUser(), credentials);
-                notifyAuthenticationSuccessListeners(updatedUser, existingSession);
+                fireAuthenticationSuccessEvent(updatedUser, existingSession);
                 return updatedUser;
             }
 
             // Otherwise, attempt authentication as a new user
             AuthenticatedUser authenticatedUser = AuthenticationService.this.authenticateUser(credentials);
-            notifyAuthenticationSuccessListeners(authenticatedUser, null);
+            fireAuthenticationSuccessEvent(authenticatedUser, null);
 
             if (logger.isInfoEnabled())
                 logger.info("User \"{}\" successfully authenticated from {}.",
@@ -310,7 +303,7 @@ public class AuthenticationService {
         // Log and rethrow any authentication errors
         catch (GuacamoleException e) {
 
-            notifyAuthenticationFailureListeners(credentials);
+            fireAuthenticationFailedEvent(credentials);
 
             // Get request and username for sake of logging
             HttpServletRequest request = credentials.getRequest();

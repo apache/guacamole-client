@@ -22,118 +22,32 @@ package org.apache.guacamole.rest.event;
 import java.util.List;
 import com.google.inject.Inject;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.extension.ListenerProvider;
-import org.apache.guacamole.net.event.AuthenticationFailureEvent;
-import org.apache.guacamole.net.event.AuthenticationSuccessEvent;
-import org.apache.guacamole.net.event.TunnelConnectEvent;
-import org.apache.guacamole.net.event.TunnelCloseEvent;
-import org.apache.guacamole.net.event.listener.AuthenticationFailureListener;
-import org.apache.guacamole.net.event.listener.AuthenticationSuccessListener;
-import org.apache.guacamole.net.event.listener.TunnelCloseListener;
-import org.apache.guacamole.net.event.listener.TunnelConnectListener;
+import org.apache.guacamole.net.event.listener.Listener;
 
 /**
  * A service used to notify listeners registered by extensions when events of
  * interest occur.
  */
-public class ListenerService implements ListenerProvider {
+public class ListenerService implements Listener {
 
     @Inject
-    private List<ListenerProvider> listeners;
+    private List<Listener> listeners;
 
     /**
-     * Notifies all bound listeners of an authentication success event. Listeners
-     * are allowed to veto a successful authentication by returning false from the
-     * listener method. Regardless of whether a particular listener rejects the
-     * successful authentication, all listeners are notified.
+     * Notifies registered listeners than an event has occurred. Notification continues
+     * until a given listener throws a GuacamoleException or other runtime exception, or
+     * until all listeners have been notified.
      *
      * @param event
-     *      The AuthenticationSuccessEvent describing the successful authentication
-     *      that just occurred.
+     *     an object that describes the subject event
      *
-     * @return
-     *      false if any bound listener returns false, else true
-     *
-     * @throws GuacamoleException
-     *      If any bound listener throws this exception. If a listener throws an exception
-     *      some listeners may not receive the authentication success event notification.
+     * @throws GuacamoleException if a registered listener throws a GuacamoleException
      */
     @Override
-    public boolean authenticationSucceeded(AuthenticationSuccessEvent event)
-            throws GuacamoleException {
-        boolean result = true;
-        for (AuthenticationSuccessListener listener : listeners) {
-            result = result && listener.authenticationSucceeded(event);
+    public void handleEvent(Object event) throws GuacamoleException {
+        for (final Listener listener : listeners) {
+            listener.handleEvent(event);
         }
-        return result;
-    }
-
-    /**
-     * Notifies all bound listeners of an authentication failure event.
-     *
-     * @param event
-     *      The AuthenticationSuccessEvent describing the authentication failure
-     *      that just occurred.
-     *
-     * @throws GuacamoleException
-     *      If any bound listener throws this exception. If a listener throws an exception
-     *      some listeners may not receive the authentication failure event notification.
-     */
-    @Override
-    public void authenticationFailed(AuthenticationFailureEvent event)
-            throws GuacamoleException {
-        for (AuthenticationFailureListener listener : listeners) {
-            listener.authenticationFailed(event);
-        }
-    }
-
-    /**
-     * Notifies all bound listeners of an tunnel connected event. Listeners
-     * are allowed to veto a tunnel connection by returning false from the
-     * listener method. Regardless of whether a particular listener rejects the
-     * tunnel connection, all listeners are notified.
-     * @param event
-     *      The TunnelConnectedEvent describing the tunnel that was just connected
-     *
-     * @return
-     *      false if any bound listener returns false, else true
-     *
-     * @throws GuacamoleException
-     *      If any bound listener throws this exception. If a listener throws an exception
-     *      some listeners may not receive the tunnel connected event notification.
-     */
-    @Override
-    public boolean tunnelConnected(TunnelConnectEvent event)
-            throws GuacamoleException {
-        boolean result = true;
-        for (TunnelConnectListener listener : listeners) {
-            result = result && listener.tunnelConnected(event);
-        }
-        return result;
-    }
-
-    /**
-     * Notifies all bound listeners of an tunnel close event. Listeners
-     * are allowed to veto the request to close a tunnel by returning false from
-     * the listener method. Regardless of whether a particular listener rejects the
-     * tunnel close request, all listeners are notified.
-     * @param event
-     *      The TunnelCloseEvent describing the tunnel that is to be closed
-     *
-     * @return
-     *      false if any bound listener returns false, else true
-     *
-     * @throws GuacamoleException
-     *      If any bound listener throws this exception. If a listener throws an exception
-     *      some listeners may not receive the tunnel close event notification.
-     */
-    @Override
-    public boolean tunnelClosed(TunnelCloseEvent event) throws GuacamoleException {
-        boolean result = true;
-        for (TunnelCloseListener listener : listeners) {
-            result = result && listener.tunnelClosed(event);
-        }
-        return result;
     }
 
 }

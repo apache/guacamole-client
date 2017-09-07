@@ -25,8 +25,12 @@ import org.apache.guacamole.net.event.TunnelConnectEvent;
 /**
  * A listener whose tunnelConnected() hook will fire immediately after a new
  * tunnel is connected.
+ *
+ * @deprecated
+ *      Listeners should instead implement the {@link Listener} interface
  */
-public interface TunnelConnectListener extends Listener {
+@Deprecated
+public interface TunnelConnectListener {
 
    /**
      * Event hook which fires immediately after a new tunnel is connected.

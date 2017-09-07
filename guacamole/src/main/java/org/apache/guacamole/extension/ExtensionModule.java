@@ -95,8 +95,8 @@ public class ExtensionModule extends ServletModule {
     /**
      * All currently-bound authentication providers, if any.
      */
-    private final List<ListenerProvider> boundListenerProviders =
-            new ArrayList<ListenerProvider>();
+    private final List<Listener> boundListners =
+            new ArrayList<Listener>();
 
     /**
      * Service for adding and retrieving language resources.
@@ -195,19 +195,19 @@ public class ExtensionModule extends ServletModule {
     }
 
     /**
-     * Binds the given Listener class such that any service
-     * requiring access to the Listener can obtain it via
-     * injection, along with any other bound Listener.
-     *
-     * @param listenerClass
-     *     The Listener class to bind.
+     * Binds the given provider class such that a listener is bound for each
+     * listener interface implemented by the provider and such that all bound
+     * listener instances can be obtained via injection.
+     * *
+     * @param providerClass
+     *     The listener provider class to bind
      */
-    private void bindListenerProvider(Class<? extends Listener> listenerClass) {
+    private void bindListeners(Class<?> providerClass) {
 
-        // Bind listener
-        logger.debug("[{}] Binding Listener \"{}\".",
-                boundListenerProviders.size(), listenerClass.getName());
-        boundListenerProviders.add(new ListenerFacade(listenerClass));
+        logger.debug("[{}] Binding listeners \"{}\".",
+                boundListners.size(), providerClass.getName());
+        boundListners.addAll(ListenerFactory.createListeners(providerClass));
+
     }
 
     /**
@@ -218,23 +218,23 @@ public class ExtensionModule extends ServletModule {
      * @param listeners
      *     The Listener classes to bind.
      */
-    private void bindListenerProviders(Collection<Class<Listener>> listeners) {
+    private void bindListeners(Collection<Class<?>> listeners) {
 
         // Bind each listener within extension
-        for (Class<Listener> listener : listeners)
-            bindListenerProvider(listener);
+        for (Class<?> listener : listeners)
+            bindListeners(listener);
     }
 
     /**
-     * Returns a list of all currently-bound ListenerProvider instances.
+     * Returns a list of all currently-bound Listener instances.
      *
      * @return
-     *     A List of all currently-bound ListenerProvider instances. The List is
+     *     A List of all currently-bound Listener instances. The List is
      *     not modifiable.
      */
     @Provides
-    public List<ListenerProvider> getListenerProviders() {
-        return Collections.unmodifiableList(boundListenerProviders);
+    public List<Listener> getListeners() {
+        return Collections.unmodifiableList(boundListners);
     }
 
     /**
@@ -378,7 +378,7 @@ public class ExtensionModule extends ServletModule {
                 bindAuthenticationProviders(extension.getAuthenticationProviderClasses());
 
                 // Attempt to load all listeners
-                bindListenerProviders(extension.getListenerClasses());
+                bindListeners(extension.getListenerClasses());
 
                 // Add any translation resources
                 serveLanguageResources(extension.getTranslationResources());

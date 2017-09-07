@@ -113,7 +113,7 @@ public class Extension {
     /**
      * The collection of all Listener classes defined within the extension.
      */
-    private final Collection<Class<Listener>> listenerClasses;
+    private final Collection<Class<?>> listenerClasses;
 
     /**
      * The resource for the small favicon for the extension. If provided, this
@@ -328,15 +328,15 @@ public class Extension {
      *     If any given class does not exist, or if any given class is not a
      *     subclass of AuthenticationProvider.
      */
-    private Collection<Class<Listener>> getListenerClasses(Collection<String> names)
+    private Collection<Class<?>> getListenerClasses(Collection<String> names)
             throws GuacamoleException {
 
         // If no classnames are provided, just return an empty list
         if (names == null)
-            return Collections.<Class<Listener>>emptyList();
+            return Collections.<Class<?>>emptyList();
 
         // Define all auth provider classes
-        Collection<Class<Listener>> classes = new ArrayList<Class<Listener>>(names.size());
+        Collection<Class<?>> classes = new ArrayList<Class<?>>(names.size());
         for (String name : names)
             classes.add(getListenerClass(name));
 
@@ -578,7 +578,7 @@ public class Extension {
      * @return
      *     All declared listener classes with this extension.
      */
-    public Collection<Class<Listener>> getListenerClasses() {
+    public Collection<Class<?>> getListenerClasses() {
         return listenerClasses;
     }
 

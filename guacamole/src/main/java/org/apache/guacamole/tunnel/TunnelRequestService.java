@@ -25,8 +25,6 @@ import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleSession;
-import org.apache.guacamole.GuacamoleTunnelConnectedException;
-import org.apache.guacamole.GuacamoleTunnelRejectedException;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
@@ -70,10 +68,8 @@ public class TunnelRequestService {
     private ListenerService listenerService;
 
     /**
-     * Notifies bound TunnelConnectListeners that a new tunnel has been connected.
-     * Listeners are allowed to veto a connected tunnel by returning false from the
-     * listener method. If the ListenerService indicates that any listener rejected
-     * the tunnel, the tunnel is closed an GuacamoleTunnelRejectedException is thrown.
+     * Notifies bound listeners that a new tunnel has been connected.
+     * Listeners may veto a connected tunnel by throwing any GuacamoleException.
      *
      * @param userContext
      *      The UserContext associated with the user for whom the tunnel is
@@ -88,25 +84,15 @@ public class TunnelRequestService {
      * @throws GuacamoleException
      *     If thrown by a listener or if any listener vetoes the connected tunnel
      */
-    private void notifyTunnelConnectListeners(UserContext userContext,
+    private void fireTunnelConnectEvent(UserContext userContext,
             Credentials credentials, GuacamoleTunnel tunnel) throws GuacamoleException {
-        TunnelConnectEvent event = new TunnelConnectEvent(userContext, credentials, tunnel);
-        if (!listenerService.tunnelConnected(event)) {
-            try {
-                tunnel.close();
-            }
-            catch (GuacamoleException closeEx) {
-                logger.warn("Error closing rejected tunnel connection: {}", closeEx.getMessage());
-            }
-            throw new GuacamoleTunnelRejectedException();
-        }
+        listenerService.handleEvent(new TunnelConnectEvent(userContext, credentials, tunnel));
     }
 
     /**
-     * Notifies bound TunnelCloseListeners that a tunnel is to be closed.
-     * Listeners are allowed to veto a request to close a tunnel by returning false from
-     * the listener method. If the ListenerService indicates that any listener vetoed the
-     * request to the close the tunnel, a GuacamoleTunnelConnectedException is thrown.
+     * Notifies bound listeners that a tunnel is to be closed.
+     * Listeners are allowed to veto a request to close a tunnel by throwing any
+     * GuacamoleException.
      *
      * @param userContext
      *      The UserContext associated with the user for whom the tunnel is
@@ -119,15 +105,12 @@ public class TunnelRequestService {
      *      The tunnel that was connected
      *
      * @throws GuacamoleException
-     *     If thrown by a listener or if any listener vetoes the request to close the tunnel
+     *     If thrown by a listener.
      */
-    private void notifyTunnelCloseListeners(UserContext userContext,
+    private void fireTunnelClosedEvent(UserContext userContext,
             Credentials credentials, GuacamoleTunnel tunnel)
             throws GuacamoleException {
-        TunnelCloseEvent event = new TunnelCloseEvent(userContext, credentials, tunnel);
-        if (listenerService.tunnelClosed(event)) {
-            throw new GuacamoleTunnelConnectedException();
-        }
+        listenerService.handleEvent(new TunnelCloseEvent(userContext, credentials, tunnel));
     }
 
     /**
@@ -317,7 +300,7 @@ public class TunnelRequestService {
             public void close() throws GuacamoleException {
 
                 // notify listeners to allow close request to be vetoed
-                notifyTunnelCloseListeners(context,
+                fireTunnelClosedEvent(context,
                     session.getAuthenticatedUser().getCredentials(), tunnel);
 
                 long connectionEndTime = System.currentTimeMillis();
@@ -406,7 +389,7 @@ public class TunnelRequestService {
             GuacamoleTunnel tunnel = createConnectedTunnel(userContext, type, id, info);
 
             // Notify listeners to allow connection to be vetoed
-            notifyTunnelConnectListeners(userContext,
+            fireTunnelConnectEvent(userContext,
                     session.getAuthenticatedUser().getCredentials(), tunnel);
 
             // Associate tunnel with session

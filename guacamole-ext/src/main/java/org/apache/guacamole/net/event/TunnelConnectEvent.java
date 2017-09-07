@@ -28,6 +28,10 @@ import org.apache.guacamole.net.auth.UserContext;
  * being connected can be accessed through getTunnel(), and the UserContext
  * associated with the request which is connecting the tunnel can be retrieved
  * with getUserContext().
+ * <p>
+ * If a {@link org.apache.guacamole.net.event.listener.Listener} throws
+ * a GuacamoleException when handling an event of this type, the tunnel connection
+ * is effectively <em>vetoed</em> and will be subsequently closed.
  */
 public class TunnelConnectEvent implements UserEvent, CredentialEvent, TunnelEvent {
 
