@@ -53,13 +53,13 @@
     <!-- Select all connection group identifiers -->
     <select id="selectIdentifiers" resultType="string">
         SELECT connection_group_id 
-        FROM [dbo].[guacamole_connection_group]
+        FROM [guacamole_connection_group]
     </select>
 
     <!-- Select identifiers of all readable connection groups -->
     <select id="selectReadableIdentifiers" resultType="string">
         SELECT connection_group_id
-        FROM [dbo].[guacamole_connection_group_permission]
+        FROM [guacamole_connection_group_permission]
         WHERE
             user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'READ'
@@ -68,7 +68,7 @@
     <!-- Select all connection identifiers within a particular connection group -->
     <select id="selectIdentifiersWithin" resultType="string">
         SELECT connection_group_id 
-        FROM [dbo].[guacamole_connection_group]
+        FROM [guacamole_connection_group]
         WHERE
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
@@ -76,9 +76,9 @@
 
     <!-- Select identifiers of all readable connection groups within a particular connection group -->
     <select id="selectReadableIdentifiersWithin" resultType="string">
-        SELECT [dbo].[guacamole_connection_group].connection_group_id
-        FROM [dbo].[guacamole_connection_group]
-        JOIN [dbo].[guacamole_connection_group_permission] ON [dbo].[guacamole_connection_group_permission].connection_group_id = [dbo].[guacamole_connection_group].connection_group_id
+        SELECT [guacamole_connection_group].connection_group_id
+        FROM [guacamole_connection_group]
+        JOIN [guacamole_connection_group_permission] ON [guacamole_connection_group_permission].connection_group_id = [guacamole_connection_group].connection_group_id
         WHERE
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
@@ -98,7 +98,7 @@
             max_connections,
             max_connections_per_user,
             enable_session_affinity
-        FROM [dbo].[guacamole_connection_group]
+        FROM [guacamole_connection_group]
         WHERE connection_group_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
@@ -106,7 +106,7 @@
             </foreach>;
 
         SELECT parent_id, connection_group_id
-        FROM [dbo].[guacamole_connection_group]
+        FROM [guacamole_connection_group]
         WHERE parent_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
@@ -114,7 +114,7 @@
             </foreach>;
 
         SELECT parent_id, connection_id
-        FROM [dbo].[guacamole_connection]
+        FROM [guacamole_connection]
         WHERE parent_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
@@ -128,16 +128,16 @@
             resultSets="connectionGroups,childConnectionGroups,childConnections">
 
         SELECT
-            [dbo].[guacamole_connection_group].connection_group_id,
+            [guacamole_connection_group].connection_group_id,
             connection_group_name,
             parent_id,
             type,
             max_connections,
             max_connections_per_user,
             enable_session_affinity
-        FROM [dbo].[guacamole_connection_group]
-        JOIN [dbo].[guacamole_connection_group_permission] ON [dbo].[guacamole_connection_group_permission].connection_group_id = [dbo].[guacamole_connection_group].connection_group_id
-        WHERE [dbo].[guacamole_connection_group].connection_group_id IN
+        FROM [guacamole_connection_group]
+        JOIN [guacamole_connection_group_permission] ON [guacamole_connection_group_permission].connection_group_id = [guacamole_connection_group].connection_group_id
+        WHERE [guacamole_connection_group].connection_group_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}
@@ -145,9 +145,9 @@
             AND user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'READ';
 
-        SELECT parent_id, [dbo].[guacamole_connection_group].connection_group_id
-        FROM [dbo].[guacamole_connection_group]
-        JOIN [dbo].[guacamole_connection_group_permission] ON [dbo].[guacamole_connection_group_permission].connection_group_id = [dbo].[guacamole_connection_group].connection_group_id
+        SELECT parent_id, [guacamole_connection_group].connection_group_id
+        FROM [guacamole_connection_group]
+        JOIN [guacamole_connection_group_permission] ON [guacamole_connection_group_permission].connection_group_id = [guacamole_connection_group].connection_group_id
         WHERE parent_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
@@ -156,9 +156,9 @@
             AND user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'READ';
 
-        SELECT parent_id, [dbo].[guacamole_connection].connection_id
-        FROM [dbo].[guacamole_connection]
-        JOIN [dbo].[guacamole_connection_permission] ON [dbo].[guacamole_connection_permission].connection_id = [dbo].[guacamole_connection].connection_id
+        SELECT parent_id, [guacamole_connection].connection_id
+        FROM [guacamole_connection]
+        JOIN [guacamole_connection_permission] ON [guacamole_connection_permission].connection_id = [guacamole_connection].connection_id
         WHERE parent_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
@@ -180,7 +180,7 @@
             max_connections,
             max_connections_per_user,
             enable_session_affinity
-        FROM [dbo].[guacamole_connection_group]
+        FROM [guacamole_connection_group]
         WHERE 
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
@@ -190,7 +190,7 @@
 
     <!-- Delete single connection group by identifier -->
     <delete id="delete">
-        DELETE FROM [dbo].[guacamole_connection_group]
+        DELETE FROM [guacamole_connection_group]
         WHERE connection_group_id = #{identifier,jdbcType=INTEGER}
     </delete>
 
@@ -198,7 +198,7 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="object.objectID"
             parameterType="org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupModel">
 
-        INSERT INTO [dbo].[guacamole_connection_group] (
+        INSERT INTO [guacamole_connection_group] (
             connection_group_name,
             parent_id,
             type,
@@ -219,7 +219,7 @@
 
     <!-- Update single connection group -->
     <update id="update" parameterType="org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupModel">
-        UPDATE [dbo].[guacamole_connection_group]
+        UPDATE [guacamole_connection_group]
         SET connection_group_name    = #{object.name,jdbcType=VARCHAR},
             parent_id                = #{object.parentIdentifier,jdbcType=INTEGER},
             type                     = #{object.type,jdbcType=VARCHAR},

@@ -36,21 +36,21 @@
             sharing_profile_id,
             parameter_name,
             parameter_value
-        FROM [dbo].[guacamole_sharing_profile_parameter]
+        FROM [guacamole_sharing_profile_parameter]
         WHERE
             sharing_profile_id = #{identifier,jdbcType=INTEGER}
     </select>
 
     <!-- Delete all parameters of a given sharing profile -->
     <delete id="delete">
-        DELETE FROM [dbo].[guacamole_sharing_profile_parameter]
+        DELETE FROM [guacamole_sharing_profile_parameter]
         WHERE sharing_profile_id = #{identifier,jdbcType=INTEGER}
     </delete>
 
     <!-- Insert all given parameters -->
     <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterModel">
 
-        INSERT INTO [dbo].[guacamole_sharing_profile_parameter] (
+        INSERT INTO [guacamole_sharing_profile_parameter] (
             sharing_profile_id,
             parameter_name,
             parameter_value

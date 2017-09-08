@@ -46,16 +46,16 @@
     <!-- Select all usernames -->
     <select id="selectIdentifiers" resultType="string">
         SELECT username
-        FROM [dbo].[guacamole_user]
+        FROM [guacamole_user]
     </select>
 
     <!-- Select usernames of all readable users -->
     <select id="selectReadableIdentifiers" resultType="string">
         SELECT username
-        FROM [dbo].[guacamole_user]
-        JOIN [dbo].[guacamole_user_permission] ON affected_user_id = [dbo].[guacamole_user].user_id
+        FROM [guacamole_user]
+        JOIN [guacamole_user_permission] ON affected_user_id = [guacamole_user].user_id
         WHERE
-            [dbo].[guacamole_user_permission].user_id = #{user.objectID,jdbcType=INTEGER}
+            [guacamole_user_permission].user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'READ'
     </select>
 
@@ -79,7 +79,7 @@
             email_address,
             organization,
             organizational_role
-        FROM [dbo].[guacamole_user]
+        FROM [guacamole_user]
         WHERE username IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
@@ -92,7 +92,7 @@
     <select id="selectReadable" resultMap="UserResultMap">
 
         SELECT
-            [dbo].[guacamole_user].user_id,
+            [guacamole_user].user_id,
             username,
             password_hash,
             password_salt,
@@ -108,14 +108,14 @@
             email_address,
             organization,
             organizational_role
-        FROM [dbo].[guacamole_user]
-        JOIN [dbo].[guacamole_user_permission] ON affected_user_id = [dbo].[guacamole_user].user_id
+        FROM [guacamole_user]
+        JOIN [guacamole_user_permission] ON affected_user_id = [guacamole_user].user_id
         WHERE username IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
             </foreach>
-            AND [dbo].[guacamole_user_permission].user_id = #{user.objectID,jdbcType=INTEGER}
+            AND [guacamole_user_permission].user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'READ'
 
     </select>
@@ -140,7 +140,7 @@
             email_address,
             organization,
             organizational_role
-        FROM [dbo].[guacamole_user]
+        FROM [guacamole_user]
         WHERE
             username = #{username,jdbcType=VARCHAR}
 
@@ -148,7 +148,7 @@
 
     <!-- Delete single user by username -->
     <delete id="delete">
-        DELETE FROM [dbo].[guacamole_user]
+        DELETE FROM [guacamole_user]
         WHERE username = #{identifier,jdbcType=VARCHAR}
     </delete>
 
@@ -156,7 +156,7 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="object.objectID"
             parameterType="org.apache.guacamole.auth.jdbc.user.UserModel">
 
-        INSERT INTO [dbo].[guacamole_user] (
+        INSERT INTO [guacamole_user] (
             username,
             password_hash,
             password_salt,
@@ -195,7 +195,7 @@
 
     <!-- Update single user -->
     <update id="update" parameterType="org.apache.guacamole.auth.jdbc.user.UserModel">
-        UPDATE [dbo].[guacamole_user]
+        UPDATE [guacamole_user]
         SET password_hash = #{object.passwordHash,jdbcType=BINARY},
             password_salt = #{object.passwordSalt,jdbcType=BINARY},
             password_date = #{object.passwordDate,jdbcType=TIMESTAMP},

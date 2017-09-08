@@ -36,21 +36,21 @@
             connection_id,
             parameter_name,
             parameter_value
-        FROM [dbo].[guacamole_connection_parameter]
+        FROM [guacamole_connection_parameter]
         WHERE
             connection_id = #{identifier,jdbcType=INTEGER}
     </select>
 
     <!-- Delete all parameters of a given connection -->
     <delete id="delete">
-        DELETE FROM [dbo].[guacamole_connection_parameter]
+        DELETE FROM [guacamole_connection_parameter]
         WHERE connection_id = #{identifier,jdbcType=INTEGER}
     </delete>
 
     <!-- Insert all given parameters -->
     <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.connection.ConnectionParameterModel">
 
-        INSERT INTO [dbo].[guacamole_connection_parameter] (
+        INSERT INTO [guacamole_connection_parameter] (
             connection_id,
             parameter_name,
             parameter_value

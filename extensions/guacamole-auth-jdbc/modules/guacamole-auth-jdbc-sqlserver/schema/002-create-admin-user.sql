@@ -20,20 +20,20 @@
 /**
  * Create the default admin user account and set up full privileges.
  */
-INSERT INTO [dbo].[guacamole_user] (username, password_hash, password_date)
+INSERT INTO [guacamole_user] (username, password_hash, password_date)
 VALUES ('guacadmin', HASHBYTES('SHA2_256', 'guacadmin'), getdate());
 
-INSERT INTO [dbo].[guacamole_user_permission]
-SELECT [dbo].[guacamole_user].[user_id], [affected].[user_id], permission
+INSERT INTO [guacamole_user_permission]
+SELECT [guacamole_user].[user_id], [affected].[user_id], permission
 FROM (
     SELECT 'guacadmin' AS username, 'guacadmin' AS affected_username, 'READ' AS permission
         UNION SELECT 'guacadmin' AS username, 'guacadmin' AS affected_username, 'UPDATE' AS permission
         UNION SELECT 'guacadmin' AS username, 'guacadmin' AS affected_username, 'ADMINISTER' AS permission)
     permissions
-    JOIN [dbo].[guacamole_user] ON permissions.username = [dbo].[guacamole_user].[username]
-    JOIN [dbo].[guacamole_user] affected ON permissions.affected_username = affected.username;
+    JOIN [guacamole_user] ON permissions.username = [guacamole_user].[username]
+    JOIN [guacamole_user] affected ON permissions.affected_username = affected.username;
 
-INSERT INTO [dbo].[guacamole_system_permission]
+INSERT INTO [guacamole_system_permission]
 SELECT user_id, permission
 FROM (
     SELECT 'guacadmin' AS username, 'CREATE_CONNECTION' AS permission
@@ -42,5 +42,5 @@ FROM (
         UNION SELECT 'guacadmin' AS username, 'CREATE_USER' AS permission
         UNION SELECT 'guacadmin' AS username, 'ADMINISTER' AS permission)
     permissions
-    JOIN [dbo].[guacamole_user] ON permissions.username = [dbo].[guacamole_user].[username];
+    JOIN [guacamole_user] ON permissions.username = [guacamole_user].[username];
 GO;

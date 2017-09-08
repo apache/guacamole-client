@@ -33,13 +33,13 @@
     <!-- Select all sharing profile identifiers -->
     <select id="selectIdentifiers" resultType="string">
         SELECT sharing_profile_id
-        FROM [dbo].[guacamole_sharing_profile]
+        FROM [guacamole_sharing_profile]
     </select>
 
     <!-- Select identifiers of all readable sharing profiles -->
     <select id="selectReadableIdentifiers" resultType="string">
         SELECT sharing_profile_id
-        FROM [dbo].[guacamole_sharing_profile_permission]
+        FROM [guacamole_sharing_profile_permission]
         WHERE
             user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'READ'
@@ -52,7 +52,7 @@
             sharing_profile_id,
             sharing_profile_name,
             primary_connection_id
-        FROM [dbo].[guacamole_sharing_profile]
+        FROM [guacamole_sharing_profile]
         WHERE sharing_profile_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
@@ -65,12 +65,12 @@
     <select id="selectReadable" resultMap="SharingProfileResultMap">
 
         SELECT
-            [dbo].[guacamole_sharing_profile].sharing_profile_id,
-            [dbo].[guacamole_sharing_profile].sharing_profile_name,
+            [guacamole_sharing_profile].sharing_profile_id,
+            [guacamole_sharing_profile].sharing_profile_name,
             primary_connection_id
-        FROM [dbo].[guacamole_sharing_profile]
-        JOIN [dbo].[guacamole_sharing_profile_permission] ON [dbo].[guacamole_sharing_profile_permission].sharing_profile_id = [dbo].[guacamole_sharing_profile].sharing_profile_id
-        WHERE [dbo].[guacamole_sharing_profile].sharing_profile_id IN
+        FROM [guacamole_sharing_profile]
+        JOIN [guacamole_sharing_profile_permission] ON [guacamole_sharing_profile_permission].sharing_profile_id = [guacamole_sharing_profile].sharing_profile_id
+        WHERE [guacamole_sharing_profile].sharing_profile_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}
@@ -87,7 +87,7 @@
             sharing_profile_id,
             sharing_profile_name,
             primary_connection_id
-        FROM [dbo].[guacamole_sharing_profile]
+        FROM [guacamole_sharing_profile]
         WHERE 
             primary_connection_id = #{parentIdentifier,jdbcType=INTEGER}
             AND sharing_profile_name = #{name,jdbcType=VARCHAR}
@@ -96,7 +96,7 @@
 
     <!-- Delete single sharing profile by identifier -->
     <delete id="delete">
-        DELETE FROM [dbo].[guacamole_sharing_profile]
+        DELETE FROM [guacamole_sharing_profile]
         WHERE sharing_profile_id = #{identifier,jdbcType=INTEGER}
     </delete>
 
@@ -104,7 +104,7 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="object.objectID"
             parameterType="org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileModel">
 
-        INSERT INTO [dbo].[guacamole_sharing_profile] (
+        INSERT INTO [guacamole_sharing_profile] (
             sharing_profile_name,
             primary_connection_id
         )
@@ -117,7 +117,7 @@
 
     <!-- Update single sharing profile -->
     <update id="update" parameterType="org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileModel">
-        UPDATE [dbo].[guacamole_sharing_profile]
+        UPDATE [guacamole_sharing_profile]
         SET sharing_profile_name  = #{object.name,jdbcType=VARCHAR},
             primary_connection_id = #{object.parentIdentifier,jdbcType=INTEGER}
         WHERE sharing_profile_id = #{object.objectID,jdbcType=INTEGER}

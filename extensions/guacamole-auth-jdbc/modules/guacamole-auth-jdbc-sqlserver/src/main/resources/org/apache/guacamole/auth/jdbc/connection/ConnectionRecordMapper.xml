@@ -40,28 +40,28 @@
     <select id="select" resultMap="ConnectionRecordResultMap">
 
         SELECT
-            [dbo].[guacamole_connection_history].connection_id,
-            [dbo].[guacamole_connection_history].connection_name,
-            [dbo].[guacamole_connection_history].remote_host,
-            [dbo].[guacamole_connection_history].sharing_profile_id,
-            [dbo].[guacamole_connection_history].sharing_profile_name,
-            [dbo].[guacamole_connection_history].user_id,
-            [dbo].[guacamole_connection_history].username,
-            [dbo].[guacamole_connection_history].start_date,
-            [dbo].[guacamole_connection_history].end_date
-        FROM [dbo].[guacamole_connection_history]
+            [guacamole_connection_history].connection_id,
+            [guacamole_connection_history].connection_name,
+            [guacamole_connection_history].remote_host,
+            [guacamole_connection_history].sharing_profile_id,
+            [guacamole_connection_history].sharing_profile_name,
+            [guacamole_connection_history].user_id,
+            [guacamole_connection_history].username,
+            [guacamole_connection_history].start_date,
+            [guacamole_connection_history].end_date
+        FROM [guacamole_connection_history]
         WHERE
-            [dbo].[guacamole_connection_history].connection_id = #{identifier,jdbcType=INTEGER}
+            [guacamole_connection_history].connection_id = #{identifier,jdbcType=INTEGER}
         ORDER BY
-            [dbo].[guacamole_connection_history].start_date DESC,
-            [dbo].[guacamole_connection_history].end_date DESC
+            [guacamole_connection_history].start_date DESC,
+            [guacamole_connection_history].end_date DESC
 
     </select>
 
     <!-- Insert the given connection record -->
     <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel">
 
-        INSERT INTO [dbo].[guacamole_connection_history] (
+        INSERT INTO [guacamole_connection_history] (
             connection_id,
             connection_name,
             remote_host,
@@ -78,7 +78,7 @@
             #{record.remoteHost,jdbcType=VARCHAR},
             #{record.sharingProfileIdentifier,jdbcType=INTEGER},
             #{record.sharingProfileName,jdbcType=VARCHAR},
-            (SELECT user_id FROM [dbo].[guacamole_user]
+            (SELECT user_id FROM [guacamole_user]
              WHERE username = #{record.username,jdbcType=VARCHAR}),
             #{record.username,jdbcType=VARCHAR},
             #{record.startDate,jdbcType=TIMESTAMP},
@@ -91,31 +91,31 @@
     <select id="search" resultMap="ConnectionRecordResultMap">
 
         SELECT TOP (#{limit,jdbcType=INTEGER})
-            [dbo].[guacamole_connection_history].connection_id,
-            [dbo].[guacamole_connection_history].connection_name,
-            [dbo].[guacamole_connection_history].remote_host,
-            [dbo].[guacamole_connection_history].sharing_profile_id,
-            [dbo].[guacamole_connection_history].sharing_profile_name,
-            [dbo].[guacamole_connection_history].user_id,
-            [dbo].[guacamole_connection_history].username,
-            [dbo].[guacamole_connection_history].start_date,
-            [dbo].[guacamole_connection_history].end_date
-        FROM [dbo].[guacamole_connection_history]
+            [guacamole_connection_history].connection_id,
+            [guacamole_connection_history].connection_name,
+            [guacamole_connection_history].remote_host,
+            [guacamole_connection_history].sharing_profile_id,
+            [guacamole_connection_history].sharing_profile_name,
+            [guacamole_connection_history].user_id,
+            [guacamole_connection_history].username,
+            [guacamole_connection_history].start_date,
+            [guacamole_connection_history].end_date
+        FROM [guacamole_connection_history]
 
         <!-- Search terms -->
         <foreach collection="terms" item="term"
                  open="WHERE " separator=" AND ">
             (
 
-                [dbo].[guacamole_connection_history].user_id IN (
+                [guacamole_connection_history].user_id IN (
                     SELECT user_id
-                    FROM [dbo].[guacamole_user]
+                    FROM [guacamole_user]
                     WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN username) > 0
                 )
 
-                OR [dbo].[guacamole_connection_history].connection_id IN (
+                OR [guacamole_connection_history].connection_id IN (
                     SELECT connection_id
-                    FROM [dbo].[guacamole_connection]
+                    FROM [guacamole_connection]
                     WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN connection_name) > 0
                 )
 
@@ -133,7 +133,7 @@
         <foreach collection="sortPredicates" item="sortPredicate"
                  open="ORDER BY " separator=", ">
             <choose>
-                <when test="sortPredicate.property == START_DATE">[dbo].[guacamole_connection_history].start_date</when>
+                <when test="sortPredicate.property == START_DATE">[guacamole_connection_history].start_date</when>
                 <otherwise>1</otherwise>
             </choose>
             <if test="sortPredicate.descending">DESC</if>
@@ -145,45 +145,45 @@
     <select id="searchReadable" resultMap="ConnectionRecordResultMap">
 
         SELECT TOP (#{limit,jdbcType=INTEGER})
-            [dbo].[guacamole_connection_history].connection_id,
-            [dbo].[guacamole_connection_history].connection_name,
-            [dbo].[guacamole_connection_history].remote_host,
-            [dbo].[guacamole_connection_history].sharing_profile_id,
-            [dbo].[guacamole_connection_history].sharing_profile_name,
-            [dbo].[guacamole_connection_history].user_id,
-            [dbo].[guacamole_connection_history].username,
-            [dbo].[guacamole_connection_history].start_date,
-            [dbo].[guacamole_connection_history].end_date
-        FROM [dbo].[guacamole_connection_history]
-        LEFT JOIN [dbo].[guacamole_connection]            ON [dbo].[guacamole_connection_history].connection_id = [dbo].[guacamole_connection].connection_id
-        LEFT JOIN [dbo].[guacamole_user]                  ON [dbo].[guacamole_connection_history].user_id       = [dbo].[guacamole_user].user_id
+            [guacamole_connection_history].connection_id,
+            [guacamole_connection_history].connection_name,
+            [guacamole_connection_history].remote_host,
+            [guacamole_connection_history].sharing_profile_id,
+            [guacamole_connection_history].sharing_profile_name,
+            [guacamole_connection_history].user_id,
+            [guacamole_connection_history].username,
+            [guacamole_connection_history].start_date,
+            [guacamole_connection_history].end_date
+        FROM [guacamole_connection_history]
+        LEFT JOIN [guacamole_connection]            ON [guacamole_connection_history].connection_id = [guacamole_connection].connection_id
+        LEFT JOIN [guacamole_user]                  ON [guacamole_connection_history].user_id       = [guacamole_user].user_id
 
         <!-- Restrict to readable connections -->
-        JOIN [dbo].[guacamole_connection_permission] ON
-                [dbo].[guacamole_connection_history].connection_id = [dbo].[guacamole_connection_permission].connection_id
-            AND [dbo].[guacamole_connection_permission].user_id    = #{user.objectID,jdbcType=INTEGER}
-            AND [dbo].[guacamole_connection_permission].permission = 'READ'
+        JOIN [guacamole_connection_permission] ON
+                [guacamole_connection_history].connection_id = [guacamole_connection_permission].connection_id
+            AND [guacamole_connection_permission].user_id    = #{user.objectID,jdbcType=INTEGER}
+            AND [guacamole_connection_permission].permission = 'READ'
 
         <!-- Restrict to readable users -->
-        JOIN [dbo].[guacamole_user_permission] ON
-                [dbo].[guacamole_connection_history].user_id = [dbo].[guacamole_user_permission].affected_user_id
-            AND [dbo].[guacamole_user_permission].user_id    = #{user.objectID,jdbcType=INTEGER}
-            AND [dbo].[guacamole_user_permission].permission = 'READ'
+        JOIN [guacamole_user_permission] ON
+                [guacamole_connection_history].user_id = [guacamole_user_permission].affected_user_id
+            AND [guacamole_user_permission].user_id    = #{user.objectID,jdbcType=INTEGER}
+            AND [guacamole_user_permission].permission = 'READ'
 
         <!-- Search terms -->
         <foreach collection="terms" item="term"
                  open="WHERE " separator=" AND ">
             (
 
-                [dbo].[guacamole_connection_history].user_id IN (
+                [guacamole_connection_history].user_id IN (
                     SELECT user_id
-                    FROM [dbo].[guacamole_user]
+                    FROM [guacamole_user]
                     WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN username) > 0
                 )
 
-                OR [dbo].[guacamole_connection_history].connection_id IN (
+                OR [guacamole_connection_history].connection_id IN (
                     SELECT connection_id
-                    FROM [dbo].[guacamole_connection]
+                    FROM [guacamole_connection]
                     WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN connection_name) > 0
                 )
 
@@ -201,7 +201,7 @@
         <foreach collection="sortPredicates" item="sortPredicate"
                  open="ORDER BY " separator=", ">
             <choose>
-                <when test="sortPredicate.property == START_DATE">[dbo].[guacamole_connection_history].start_date</when>
+                <when test="sortPredicate.property == START_DATE">[guacamole_connection_history].start_date</when>
                 <otherwise>1</otherwise>
             </choose>
             <if test="sortPredicate.descending">DESC</if>
