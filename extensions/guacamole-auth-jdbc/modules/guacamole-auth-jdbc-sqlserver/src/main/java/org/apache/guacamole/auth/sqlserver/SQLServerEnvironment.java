@@ -195,7 +195,7 @@ public class SQLServerEnvironment extends JDBCEnvironment {
 
         // Check driver property is one of the acceptable values.
         String driver = getProperty(SQLServerGuacamoleProperties.SQLSERVER_DRIVER);
-        if (!(driver.equals(SQLSERVER_DRIVER_JTDS) ||
+        if (driver != null && !(driver.equals(SQLSERVER_DRIVER_JTDS) ||
                                 driver.equals(SQLSERVER_DRIVER_DATADIRECT) ||
                                 driver.equals(SQLSERVER_DRIVER_MS) ||
                                 driver.equals(SQLSERVER_DRIVER_MS_2005)))

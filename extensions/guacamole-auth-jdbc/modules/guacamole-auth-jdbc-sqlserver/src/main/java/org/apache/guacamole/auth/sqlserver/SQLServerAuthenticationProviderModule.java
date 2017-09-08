@@ -87,9 +87,9 @@ public class SQLServerAuthenticationProviderModule implements Module {
         // Look at the property to choose the correct driver.
         if (sqlServerDriver.equals(SQLServerEnvironment.SQLSERVER_DRIVER_JTDS))
             JdbcHelper.SQL_Server_jTDS.configure(binder);
-        else if(sqlServerDriver.equals(SQLServerEnvironment.SQLSERVER_DRIVER_DATADIRECT))
+        else if (sqlServerDriver.equals(SQLServerEnvironment.SQLSERVER_DRIVER_DATADIRECT))
             JdbcHelper.SQL_Server_DataDirect.configure(binder);
-        else if(sqlServerDriver.equals(SQLServerEnvironment.SQLSERVER_DRIVER_MS))
+        else if (sqlServerDriver.equals(SQLServerEnvironment.SQLSERVER_DRIVER_MS))
             JdbcHelper.SQL_Server_MS_Driver.configure(binder);
         else
             JdbcHelper.SQL_Server_2005_MS_Driver.configure(binder);
