@@ -145,7 +145,7 @@ public interface UserContext {
     /**
      * Retrieves all connection records visible to current user. The resulting
      * set of connection records can be further filtered and ordered using the
-     * methods defined on ConnectionRecordSet.
+     * methods defined on ActivityRecordSet.
      *
      * @return
      *     A set of all connection records visible to the current user.
@@ -153,7 +153,8 @@ public interface UserContext {
      * @throws GuacamoleException
      *     If an error occurs while retrieving the connection records.
      */
-    ConnectionRecordSet getConnectionHistory() throws GuacamoleException;
+    ActivityRecordSet<ConnectionRecord> getConnectionHistory()
+            throws GuacamoleException;
 
     /**
      * Retrieves a connection group which can be used to view and manipulate

@@ -28,17 +28,18 @@ import org.apache.guacamole.auth.ldap.connection.ConnectionService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.ActiveConnection;
+import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
-import org.apache.guacamole.net.auth.ConnectionRecordSet;
+import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.simple.SimpleActivityRecordSet;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionGroup;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionGroupDirectory;
-import org.apache.guacamole.net.auth.simple.SimpleConnectionRecordSet;
 import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 import org.apache.guacamole.net.auth.simple.SimpleUser;
 import org.slf4j.Logger;
@@ -204,9 +205,9 @@ public class UserContext implements org.apache.guacamole.net.auth.UserContext {
     }
 
     @Override
-    public ConnectionRecordSet getConnectionHistory()
+    public ActivityRecordSet<ConnectionRecord> getConnectionHistory()
             throws GuacamoleException {
-        return new SimpleConnectionRecordSet();
+        return new SimpleActivityRecordSet<ConnectionRecord>();
     }
 
     @Override
