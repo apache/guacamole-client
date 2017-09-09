@@ -157,6 +157,19 @@ public interface UserContext {
             throws GuacamoleException;
 
     /**
+     * Retrieves all user records visible to current user. The resulting
+     * set of user records can be further filtered and ordered using the
+     * methods defined on ActivityRecordSet.
+     *
+     * @return
+     *     A set of all user records visible to the current user.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the user records.
+     */
+    ActivityRecordSet<UserRecord> getUserHistory() throws GuacamoleException;
+
+    /**
      * Retrieves a connection group which can be used to view and manipulate
      * connections, but only as allowed by the permissions given to the user of 
      * this UserContext.

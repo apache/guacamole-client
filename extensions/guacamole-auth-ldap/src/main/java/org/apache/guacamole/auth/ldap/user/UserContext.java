@@ -37,6 +37,7 @@ import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.UserRecord;
 import org.apache.guacamole.net.auth.simple.SimpleActivityRecordSet;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionGroup;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionGroupDirectory;
@@ -208,6 +209,12 @@ public class UserContext implements org.apache.guacamole.net.auth.UserContext {
     public ActivityRecordSet<ConnectionRecord> getConnectionHistory()
             throws GuacamoleException {
         return new SimpleActivityRecordSet<ConnectionRecord>();
+    }
+
+    @Override
+    public ActivityRecordSet<UserRecord> getUserHistory()
+            throws GuacamoleException {
+        return new SimpleActivityRecordSet<UserRecord>();
     }
 
     @Override
