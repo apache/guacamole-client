@@ -39,6 +39,7 @@
                 javaType="org.apache.guacamole.net.auth.GuacamoleProxyConfiguration$EncryptionMethod"/>
         <result column="connection_weight"        property="connectionWeight"      jdbcType="INTEGER"/>
         <result column="failover_only"            property="failoverOnly"          jdbcType="BOOLEAN"/>
+        <result column="last_active"              property="lastActive"            jdbcType="TIMESTAMP"/>
 
         <!-- Associated sharing profiles -->
         <collection property="sharingProfileIdentifiers" resultSet="sharingProfiles" ofType="java.lang.String"
@@ -89,8 +90,8 @@
             resultSets="connections,sharingProfiles">
 
         SELECT
-            connection_id,
-            connection_name,
+            guacamole_connection.connection_id,
+            guacamole_connection.connection_name,
             parent_id,
             protocol,
             max_connections,
@@ -99,13 +100,16 @@
             proxy_port,
             proxy_encryption_method,
             connection_weight,
-            failover_only
+            failover_only,
+            MAX(start_date) AS last_active
         FROM guacamole_connection
-        WHERE connection_id IN
+        JOIN guacamole_connection_history ON guacamole_connection_history.connection_id = guacamole_connection.connection_id
+        WHERE guacamole_connection.connection_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}::integer
-            </foreach>;
+            </foreach>
+        GROUP BY guacamole_connection.connection_id;
 
         SELECT primary_connection_id, sharing_profile_id
         FROM guacamole_sharing_profile
@@ -123,7 +127,7 @@
 
         SELECT
             guacamole_connection.connection_id,
-            connection_name,
+            guacamole_connection.connection_name,
             parent_id,
             protocol,
             max_connections,
@@ -132,16 +136,19 @@
             proxy_port,
             proxy_encryption_method,
             connection_weight,
-            failover_only
+            failover_only,
+            MAX(start_date) AS last_active
         FROM guacamole_connection
         JOIN guacamole_connection_permission ON guacamole_connection_permission.connection_id = guacamole_connection.connection_id
+        JOIN guacamole_connection_history ON guacamole_connection_history.connection_id = guacamole_connection.connection_id
         WHERE guacamole_connection.connection_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}::integer
             </foreach>
             AND user_id = #{user.objectID,jdbcType=INTEGER}
-            AND permission = 'READ';
+            AND permission = 'READ'
+        GROUP BY guacamole_connection.connection_id;
 
         SELECT primary_connection_id, guacamole_sharing_profile.sharing_profile_id
         FROM guacamole_sharing_profile
@@ -160,8 +167,8 @@
     <select id="selectOneByName" resultMap="ConnectionResultMap">
 
         SELECT
-            connection_id,
-            connection_name,
+            guacamole_connection.connection_id,
+            guacamole_connection.connection_name,
             parent_id,
             protocol,
             max_connections,
@@ -170,12 +177,15 @@
             proxy_port,
             proxy_encryption_method,
             connection_weight,
-            failover_only
+            failover_only,
+            MAX(start_date) AS last_active
         FROM guacamole_connection
+        JOIN guacamole_connection_history ON guacamole_connection_history.connection_id = guacamole_connection.connection_id
         WHERE 
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}::integer</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
-            AND connection_name = #{name,jdbcType=VARCHAR}
+            AND guacamole_connection.connection_name = #{name,jdbcType=VARCHAR}
+        GROUP BY guacamole_connection.connection_id
 
     </select>
 
