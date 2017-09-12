@@ -37,3 +37,27 @@ ALTER TABLE guacamole_connection
 
 ALTER TABLE guacamole_connection_history
     ADD COLUMN remote_host VARCHAR(256) DEFAULT NULL;
+
+--
+-- User login/logout history
+--
+
+CREATE TABLE guacamole_user_history (
+
+  `history_id`           int(11)      NOT NULL AUTO_INCREMENT,
+  `user_id`              int(11)      DEFAULT NULL,
+  `username`             varchar(128) NOT NULL,
+  `remote_host`          varchar(256) DEFAULT NULL,
+  `start_date`           datetime     NOT NULL,
+  `end_date`             datetime     DEFAULT NULL,
+
+  PRIMARY KEY (history_id),
+  KEY `user_id` (`user_id`),
+  KEY `start_date` (`start_date`),
+  KEY `end_date` (`end_date`),
+
+  CONSTRAINT guacamole_user_history_ibfk_1
+    FOREIGN KEY (user_id)
+    REFERENCES guacamole_user (user_id) ON DELETE SET NULL
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

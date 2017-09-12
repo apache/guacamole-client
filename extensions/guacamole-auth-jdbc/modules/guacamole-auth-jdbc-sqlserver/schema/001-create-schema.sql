@@ -505,6 +505,37 @@ CREATE NONCLUSTERED INDEX [IX_guacamole_connection_history_end_date]
 GO
 
 --
+-- User login/logout history
+--
+
+CREATE TABLE [guacamole_user_history] (
+
+    [history_id]           [int] IDENTITY(1,1) NOT NULL,
+    [user_id]              [int]               DEFAULT NULL,
+    [username]             [nvarchar](128)     NOT NULL,
+    [remote_host]          [nvarchar](256)     DEFAULT NULL,
+    [start_date]           [datetime]          NOT NULL,
+    [end_date]             [datetime]          DEFAULT NULL,
+
+    PRIMARY KEY (history_id),
+
+    CONSTRAINT FK_guacamole_user_history_user_id
+        FOREIGN KEY (user_id)
+        REFERENCES guacamole_user (user_id) ON DELETE SET NULL
+
+);
+
+CREATE NONCLUSTERED INDEX [IX_guacamole_user_history_user_id]
+    ON [guacamole_user_history] ([user_id]);
+
+CREATE NONCLUSTERED INDEX [IX_guacamole_user_history_start_date]
+    ON [guacamole_user_history] ([start_date]);
+
+CREATE NONCLUSTERED INDEX [IX_guacamole_user_history_end_date]
+    ON [guacamole_user_history] ([end_date]);
+GO
+
+--
 -- The user_password_history table stores password history
 -- for users, allowing for enforcing rules associated with
 -- reuse of passwords.
