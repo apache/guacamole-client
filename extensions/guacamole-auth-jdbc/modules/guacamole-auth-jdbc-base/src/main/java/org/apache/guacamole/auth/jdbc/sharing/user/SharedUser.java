@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.jdbc.sharing.user;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
@@ -88,6 +89,14 @@ public class SharedUser implements User {
     @Override
     public void setAttributes(Map<String, String> attributes) {
         // Do nothing - no attributes supported
+    }
+
+    @Override
+    public Date getLastActive() {
+
+        // History is not recorded for shared users
+        return null;
+
     }
 
     @Override

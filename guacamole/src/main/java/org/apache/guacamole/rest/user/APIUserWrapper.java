@@ -20,6 +20,7 @@
 package org.apache.guacamole.rest.user;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
@@ -113,6 +114,11 @@ public class APIUserWrapper implements User {
     public ObjectPermissionSet getActiveConnectionPermissions()
             throws GuacamoleException {
         throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
+    }
+
+    @Override
+    public Date getLastActive() {
+        return null;
     }
 
     @Override

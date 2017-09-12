@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -101,6 +102,18 @@ public interface Connection extends Identifiable, Connectable {
      *     A map of all attribute identifiers to their corresponding values.
      */
     void setAttributes(Map<String, String> attributes);
+
+    /**
+     * Returns the date and time that this connection was last used. If the
+     * connection was never used, the time that the connection was last used is
+     * unknown, or this information is not visible to the current user, this
+     * may be null.
+     *
+     * @return
+     *     The date and time this connection was last used, or null if this
+     *     information is unavailable or inapplicable.
+     */
+    Date getLastActive();
 
     /**
      * Returns a list of ConnectionRecords representing the usage history

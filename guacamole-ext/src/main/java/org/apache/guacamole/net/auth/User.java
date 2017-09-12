@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
@@ -100,6 +101,17 @@ public interface User extends Identifiable {
      *     A map of all attribute identifiers to their corresponding values.
      */
     void setAttributes(Map<String, String> attributes);
+
+    /**
+     * Returns the date and time that this user was last active. If the user
+     * was never active, the time that the user was last active is unknown, or
+     * this information is not visible to the current user, this may be null.
+     *
+     * @return
+     *     The date and time this user was last active, or null if this
+     *     information is unavailable or inapplicable.
+     */
+    Date getLastActive();
 
     /**
      * Returns a list of ActivityRecords representing the login history

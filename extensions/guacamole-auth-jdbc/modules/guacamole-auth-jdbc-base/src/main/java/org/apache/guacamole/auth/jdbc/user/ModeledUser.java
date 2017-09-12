@@ -795,6 +795,11 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     }
 
     @Override
+    public Date getLastActive() {
+        return null;
+    }
+
+    @Override
     public List<ActivityRecord> getHistory() throws GuacamoleException {
         return Collections.<ActivityRecord>emptyList();
     }
