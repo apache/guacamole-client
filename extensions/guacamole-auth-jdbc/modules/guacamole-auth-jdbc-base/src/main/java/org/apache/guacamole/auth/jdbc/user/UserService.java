@@ -21,16 +21,24 @@ package org.apache.guacamole.auth.jdbc.user;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
+import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
+import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
+import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
+import org.apache.guacamole.auth.jdbc.base.ModeledActivityRecord;
+import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.apache.guacamole.auth.jdbc.permission.UserPermissionMapper;
@@ -38,8 +46,10 @@ import org.apache.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicyService;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.PasswordField;
+import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
+import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
@@ -116,7 +126,13 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      */
     @Inject
     private UserPermissionMapper userPermissionMapper;
-    
+
+    /**
+     * Mapper for accessing user login history.
+     */
+    @Inject
+    private UserRecordMapper userRecordMapper;
+
     /**
      * Provider for creating users.
      */
@@ -459,5 +475,120 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         logger.info("Expired password of user \"{}\" has been reset.", username);
 
     }
+
+    /**
+     * Returns a ActivityRecord object which is backed by the given model.
+     *
+     * @param model
+     *     The model object to use to back the returned connection record
+     *     object.
+     *
+     * @return
+     *     A connection record object which is backed by the given model.
+     */
+    protected ActivityRecord getObjectInstance(ActivityRecordModel model) {
+        return new ModeledActivityRecord(model);
+    }
+
+    /**
+     * Returns a list of ActivityRecord objects which are backed by the
+     * models in the given list.
+     *
+     * @param models
+     *     The model objects to use to back the activity record objects
+     *     within the returned list.
+     *
+     * @return
+     *     A list of activity record objects which are backed by the models
+     *     in the given list.
+     */
+    protected List<ActivityRecord> getObjectInstances(List<ActivityRecordModel> models) {
+
+        // Create new list of records by manually converting each model
+        List<ActivityRecord> objects = new ArrayList<ActivityRecord>(models.size());
+        for (ActivityRecordModel model : models)
+            objects.add(getObjectInstance(model));
+
+        return objects;
+
+    }
+
+    /**
+     * Retrieves the login history of the given user, including any active
+     * sessions.
+     *
+     * @param authenticatedUser
+     *     The user retrieving the login history.
+     *
+     * @param user
+     *     The user whose history is being retrieved.
+     *
+     * @return
+     *     The login history of the given user, including any active sessions.
+     *
+     * @throws GuacamoleException
+     *     If permission to read the login history is denied.
+     */
+    public List<ActivityRecord> retrieveHistory(ModeledAuthenticatedUser authenticatedUser,
+            ModeledUser user) throws GuacamoleException {
+
+        String username = user.getIdentifier();
+
+        // Retrieve history only if READ permission is granted
+        if (hasObjectPermission(authenticatedUser, username, ObjectPermission.Type.READ))
+            return getObjectInstances(userRecordMapper.select(username));
+
+        // The user does not have permission to read the history
+        throw new GuacamoleSecurityException("Permission denied.");
+
+    }
+
+    /**
+     * Retrieves user login history records matching the given criteria.
+     * Retrieves up to <code>limit</code> user history records matching the
+     * given terms and sorted by the given predicates. Only history records
+     * associated with data that the given user can read are returned.
+     *
+     * @param user
+     *     The user retrieving the login history.
+     *
+     * @param requiredContents
+     *     The search terms that must be contained somewhere within each of the
+     *     returned records.
+     *
+     * @param sortPredicates
+     *     A list of predicates to sort the returned records by, in order of
+     *     priority.
+     *
+     * @param limit
+     *     The maximum number of records that should be returned.
+     *
+     * @return
+     *     The login history of the given user, including any active sessions.
+     *
+     * @throws GuacamoleException
+     *     If permission to read the user login history is denied.
+     */
+    public List<ActivityRecord> retrieveHistory(ModeledAuthenticatedUser user,
+            Collection<ActivityRecordSearchTerm> requiredContents,
+            List<ActivityRecordSortPredicate> sortPredicates, int limit)
+            throws GuacamoleException {
+
+        List<ActivityRecordModel> searchResults;
+
+        // Bypass permission checks if the user is a system admin
+        if (user.getUser().isAdministrator())
+            searchResults = userRecordMapper.search(requiredContents,
+                    sortPredicates, limit);
+
+        // Otherwise only return explicitly readable history records
+        else
+            searchResults = userRecordMapper.searchReadable(user.getUser().getModel(),
+                    requiredContents, sortPredicates, limit);
+
+        return getObjectInstances(searchResults);
+
+    }
+
 
 }

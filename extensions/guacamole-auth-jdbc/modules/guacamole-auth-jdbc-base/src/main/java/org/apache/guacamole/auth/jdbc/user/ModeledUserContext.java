@@ -99,6 +99,12 @@ public class ModeledUserContext extends RestrictedObject
      */
     @Inject
     private Provider<ConnectionRecordSet> connectionRecordSetProvider;
+
+    /**
+     * Provider for creating user record sets.
+     */
+    @Inject
+    private Provider<UserRecordSet> userRecordSetProvider;
     
     @Override
     public void init(ModeledAuthenticatedUser currentUser) {
@@ -167,7 +173,9 @@ public class ModeledUserContext extends RestrictedObject
     @Override
     public ActivityRecordSet<ActivityRecord> getUserHistory()
             throws GuacamoleException {
-        return new SimpleActivityRecordSet<ActivityRecord>();
+        UserRecordSet userRecordSet = userRecordSetProvider.get();
+        userRecordSet.init(getCurrentUser());
+        return userRecordSet;
     }
 
     @Override
