@@ -56,69 +56,36 @@ public class SQLServerEnvironment extends JDBCEnvironment {
      * The default value for the maximum number of connections to be
      * allowed to the Guacamole server overall.
      */
-    private final int DEFAULT_ABSOLUTE_MAX_CONNECTIONS = 0;
+    private static final int DEFAULT_ABSOLUTE_MAX_CONNECTIONS = 0;
 
     /**
      * The default value for the default maximum number of connections to be
-     * allowed per user to any one connection. Note that, as long as the
-     * legacy "disallow duplicate" and "disallow simultaneous" properties are
-     * still supported, these cannot be constants, as the legacy properties
-     * dictate the values that should be used in the absence of the correct
-     * properties.
+     * allowed per user to any one connection.
      */
-    private int DEFAULT_MAX_CONNECTIONS_PER_USER = 1;
+    private static final int DEFAULT_MAX_CONNECTIONS_PER_USER = 1;
 
     /**
      * The default value for the default maximum number of connections to be
-     * allowed per user to any one connection group. Note that, as long as the
-     * legacy "disallow duplicate" and "disallow simultaneous" properties are
-     * still supported, these cannot be constants, as the legacy properties
-     * dictate the values that should be used in the absence of the correct
-     * properties.
+     * allowed per user to any one connection group.
      */
-    private int DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER = 1;
+    private static final int DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER = 1;
 
     /**
      * The default value for the default maximum number of connections to be
-     * allowed to any one connection. Note that, as long as the legacy
-     * "disallow duplicate" and "disallow simultaneous" properties are still
-     * supported, these cannot be constants, as the legacy properties dictate
-     * the values that should be used in the absence of the correct properties.
+     * allowed to any one connection.
      */
-    private int DEFAULT_MAX_CONNECTIONS = 0;
+    private static final int DEFAULT_MAX_CONNECTIONS = 0;
 
     /**
      * The default value for the default maximum number of connections to be
-     * allowed to any one connection group. Note that, as long as the legacy
-     * "disallow duplicate" and "disallow simultaneous" properties are still
-     * supported, these cannot be constants, as the legacy properties dictate
-     * the values that should be used in the absence of the correct properties.
+     * allowed to any one connection group.
      */
-    private int DEFAULT_MAX_GROUP_CONNECTIONS = 0;
+    private static final int DEFAULT_MAX_GROUP_CONNECTIONS = 0;
 
     /**
-     * The value for the sqlserver-driver property that triggers the use of
-     * the open source JTDS driver.
+     * The default SQLServer driver to use.
      */
-    public final static String SQLSERVER_DRIVER_JTDS = "jtds";
-
-    /**
-     * The value for the sqlserver-driver property that triggers the use of
-     * the DataDirect JDBC driver.
-     */
-    public final static String SQLSERVER_DRIVER_DATADIRECT = "datadirect";
-
-    /**
-     * The value for the sqlserver-driver property that triggers the use of
-     * the older Microsoft JDBC driver.
-     */
-    public final static String SQLSERVER_DRIVER_MS = "microsoft";
-
-    /**
-     * The value for the sqlserver-driver property that triggers the use of
-     * the Microsoft JDBC driver.  This is the default.
-     */
-    public final static String SQLSERVER_DRIVER_MS_2005 = "microsoft2005";
+    public static final SQLServerDriver SQLSERVER_DEFAULT_DRIVER = SQLServerDriver.MICROSOFT_2005;
 
     /**
      * Constructs a new SQLServerEnvironment, providing access to SQLServer-specific
@@ -132,75 +99,6 @@ public class SQLServerEnvironment extends JDBCEnvironment {
 
         // Init underlying JDBC environment
         super();
-
-        // Read legacy concurrency-related property
-        Boolean disallowSimultaneous = getProperty(SQLServerGuacamoleProperties.SQLSERVER_DISALLOW_SIMULTANEOUS_CONNECTIONS);
-        Boolean disallowDuplicate    = getProperty(SQLServerGuacamoleProperties.SQLSERVER_DISALLOW_DUPLICATE_CONNECTIONS);
-
-        // Legacy "simultaneous" property dictates only the maximum number of
-        // connections per connection
-        if (disallowSimultaneous != null) {
-
-            // Translate legacy property
-            if (disallowSimultaneous) {
-                DEFAULT_MAX_CONNECTIONS       = 1;
-                DEFAULT_MAX_GROUP_CONNECTIONS = 0;
-            }
-            else {
-                DEFAULT_MAX_CONNECTIONS       = 0;
-                DEFAULT_MAX_GROUP_CONNECTIONS = 0;
-            }
-
-            // Warn of deprecation
-            logger.warn("The \"{}\" property is deprecated. Use \"{}\" and \"{}\" instead.",
-                    SQLServerGuacamoleProperties.SQLSERVER_DISALLOW_SIMULTANEOUS_CONNECTIONS.getName(),
-                    SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_CONNECTIONS.getName(),
-                    SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS.getName());
-
-            // Inform of new equivalent
-            logger.info("To achieve the same result of setting \"{}\" to \"{}\", set \"{}\" to \"{}\" and \"{}\" to \"{}\".",
-                    SQLServerGuacamoleProperties.SQLSERVER_DISALLOW_SIMULTANEOUS_CONNECTIONS.getName(), disallowSimultaneous,
-                    SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_CONNECTIONS.getName(),           DEFAULT_MAX_CONNECTIONS,
-                    SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS.getName(),     DEFAULT_MAX_GROUP_CONNECTIONS);
-
-        }
-
-        // Legacy "duplicate" property dictates whether connections and groups
-        // may be used concurrently only by different users
-        if (disallowDuplicate != null) {
-
-            // Translate legacy property
-            if (disallowDuplicate) {
-                DEFAULT_MAX_CONNECTIONS_PER_USER       = 1;
-                DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER = 1;
-            }
-            else {
-                DEFAULT_MAX_CONNECTIONS_PER_USER       = 0;
-                DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER = 0;
-            }
-
-            // Warn of deprecation
-            logger.warn("The \"{}\" property is deprecated. Use \"{}\" and \"{}\" instead.",
-                    SQLServerGuacamoleProperties.SQLSERVER_DISALLOW_DUPLICATE_CONNECTIONS.getName(),
-                    SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_CONNECTIONS_PER_USER.getName(),
-                    SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS.getName());
-
-            // Inform of new equivalent
-            logger.info("To achieve the same result of setting \"{}\" to \"{}\", set \"{}\" to \"{}\" and \"{}\" to \"{}\".",
-                    SQLServerGuacamoleProperties.SQLSERVER_DISALLOW_DUPLICATE_CONNECTIONS.getName(),         disallowDuplicate,
-                    SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_CONNECTIONS_PER_USER.getName(),       DEFAULT_MAX_CONNECTIONS_PER_USER,
-                    SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER.getName(), DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER);
-
-        }
-
-        // Check driver property is one of the acceptable values.
-        String driver = getProperty(SQLServerGuacamoleProperties.SQLSERVER_DRIVER);
-        if (driver != null && !(driver.equals(SQLSERVER_DRIVER_JTDS) ||
-                                driver.equals(SQLSERVER_DRIVER_DATADIRECT) ||
-                                driver.equals(SQLSERVER_DRIVER_MS) ||
-                                driver.equals(SQLSERVER_DRIVER_MS_2005)))
-            logger.warn("{} property has been set to an invalid value.  The default Microsoft 2005 driver will be used.",
-                        SQLServerGuacamoleProperties.SQLSERVER_DRIVER.getName());
 
     }
 
@@ -337,20 +235,19 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     }
 
     /**
-     * Returns whether or not to use the SourceForge JTDS driver for more
-     * generic JTDS connections instead of the Microsoft-provided JDBC driver.
+     * Returns which JDBC driver should be used to make the SQLServer/TDS connection.
      *
      * @return
-     *     True if the JTDS driver should be used; false by default.
+     *     Which TDS-compatible JDBC driver should be used.
      *
      * @throws GuacamoleException
      *     If an error occurs while retrieving the property value, or if the
      *     value was not set, as this property is required.
      */
-    public String getSQLServerDriver() throws GuacamoleException {
+    public SQLServerDriver getSQLServerDriver() throws GuacamoleException {
         return getProperty(
             SQLServerGuacamoleProperties.SQLSERVER_DRIVER,
-            SQLSERVER_DRIVER_MS_2005
+            SQLSERVER_DEFAULT_DRIVER
         );
     }
     

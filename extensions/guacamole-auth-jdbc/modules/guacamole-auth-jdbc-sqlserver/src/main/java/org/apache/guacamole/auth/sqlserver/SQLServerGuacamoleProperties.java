@@ -198,10 +198,10 @@ public class SQLServerGuacamoleProperties {
     };
 
     /**
-     * Whether or not to use the JTDS driver for SQL Server connections.
+     * Which TDS-compatible JDBC driver should be used for the connection.
      */
-    public static final StringGuacamoleProperty
-            SQLSERVER_DRIVER = new StringGuacamoleProperty() {
+    public static final SQLServerDriverProperty
+            SQLSERVER_DRIVER = new SQLServerDriverProperty() {
 
         @Override
         public String getName() { return "sqlserver-driver"; }

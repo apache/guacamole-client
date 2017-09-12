@@ -42,9 +42,9 @@ public class SQLServerAuthenticationProviderModule implements Module {
     private final Properties driverProperties = new Properties();
 
     /**
-     * Whether or not to use JTDS Driver
+     * Which SQL Server driver should be used.
      */
-    private String sqlServerDriver;
+    private SQLServerDriver sqlServerDriver;
 
     /**
      * Creates a new SQLServer authentication provider module that configures
@@ -83,16 +83,25 @@ public class SQLServerAuthenticationProviderModule implements Module {
     @Override
     public void configure(Binder binder) {
 
-        // Bind SQLServer-specific properties
-        // Look at the property to choose the correct driver.
-        if (sqlServerDriver.equals(SQLServerEnvironment.SQLSERVER_DRIVER_JTDS))
-            JdbcHelper.SQL_Server_jTDS.configure(binder);
-        else if (sqlServerDriver.equals(SQLServerEnvironment.SQLSERVER_DRIVER_DATADIRECT))
-            JdbcHelper.SQL_Server_DataDirect.configure(binder);
-        else if (sqlServerDriver.equals(SQLServerEnvironment.SQLSERVER_DRIVER_MS))
-            JdbcHelper.SQL_Server_MS_Driver.configure(binder);
-        else
-            JdbcHelper.SQL_Server_2005_MS_Driver.configure(binder);
+        // Bind SQLServer-specific properties with the configured driver.
+        switch(sqlServerDriver) {
+            case JTDS:
+                JdbcHelper.SQL_Server_jTDS.configure(binder);
+                break;
+
+            case DATA_DIRECT:
+                JdbcHelper.SQL_Server_DataDirect.configure(binder);
+                break;
+
+            case MICROSOFT_LEGACY:
+                JdbcHelper.SQL_Server_MS_Driver.configure(binder);
+                break;
+
+            case MICROSOFT_2005:
+            default:
+                JdbcHelper.SQL_Server_2005_MS_Driver.configure(binder);
+
+        }
         
         // Bind MyBatis properties
         Names.bindProperties(binder, myBatisProperties);
