@@ -795,7 +795,7 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     }
 
     @Override
-    public Date getLastActive() {
+    public Timestamp getLastActive() {
         return getModel().getLastActive();
     }
 

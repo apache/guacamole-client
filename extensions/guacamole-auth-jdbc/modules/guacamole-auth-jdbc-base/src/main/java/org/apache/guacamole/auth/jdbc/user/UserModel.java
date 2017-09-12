@@ -118,7 +118,7 @@ public class UserModel extends ObjectModel {
      * The date and time that this user was last active, or null if this user
      * has never logged in.
      */
-    private Date lastActive;
+    private Timestamp lastActive;
 
     /**
      * Creates a new, empty user.
@@ -479,7 +479,7 @@ public class UserModel extends ObjectModel {
      *     The date and time that this user was last active, or null if this
      *     user has never logged in.
      */
-    public Date getLastActive() {
+    public Timestamp getLastActive() {
         return lastActive;
     }
 
@@ -493,7 +493,7 @@ public class UserModel extends ObjectModel {
      *     The date and time that this user was last active, or null if this
      *     user has never logged in.
      */
-    public void setLastActive(Date lastActive) {
+    public void setLastActive(Timestamp lastActive) {
         this.lastActive = lastActive;
     }
 
