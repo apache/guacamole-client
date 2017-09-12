@@ -31,6 +31,7 @@
         <result column="password_salt"       property="passwordSalt"       jdbcType="BINARY"/>
         <result column="password_date"       property="passwordDate"       jdbcType="TIMESTAMP"/>
         <result column="disabled"            property="disabled"           jdbcType="BOOLEAN"/>
+        <result column="expired"             property="expired"            jdbcType="BOOLEAN"/>
         <result column="access_window_start" property="accessWindowStart"  jdbcType="TIME"/>
         <result column="access_window_end"   property="accessWindowEnd"    jdbcType="TIME"/>
         <result column="valid_from"          property="validFrom"          jdbcType="DATE"/>
