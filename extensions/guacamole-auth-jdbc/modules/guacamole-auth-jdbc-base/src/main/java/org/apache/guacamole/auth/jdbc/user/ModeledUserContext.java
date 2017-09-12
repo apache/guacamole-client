@@ -36,6 +36,7 @@ import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileDirectory;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.ActiveConnection;
+import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Connection;
@@ -43,7 +44,6 @@ import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
-import org.apache.guacamole.net.auth.UserRecord;
 import org.apache.guacamole.net.auth.simple.SimpleActivityRecordSet;
 
 /**
@@ -165,9 +165,9 @@ public class ModeledUserContext extends RestrictedObject
     }
 
     @Override
-    public ActivityRecordSet<UserRecord> getUserHistory()
+    public ActivityRecordSet<ActivityRecord> getUserHistory()
             throws GuacamoleException {
-        return new SimpleActivityRecordSet<UserRecord>();
+        return new SimpleActivityRecordSet<ActivityRecord>();
     }
 
     @Override

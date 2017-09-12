@@ -28,6 +28,7 @@ import org.apache.guacamole.auth.jdbc.sharing.connectiongroup.SharedRootConnecti
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.ActiveConnection;
+import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Connection;
@@ -37,7 +38,6 @@ import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
-import org.apache.guacamole.net.auth.UserRecord;
 import org.apache.guacamole.net.auth.simple.SimpleActivityRecordSet;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionGroupDirectory;
 import org.apache.guacamole.net.auth.simple.SimpleDirectory;
@@ -182,9 +182,9 @@ public class SharedUserContext implements UserContext {
     }
 
     @Override
-    public ActivityRecordSet<UserRecord> getUserHistory()
+    public ActivityRecordSet<ActivityRecord> getUserHistory()
             throws GuacamoleException {
-        return new SimpleActivityRecordSet<UserRecord>();
+        return new SimpleActivityRecordSet<ActivityRecord>();
     }
 
     @Override

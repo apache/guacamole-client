@@ -27,6 +27,7 @@ import java.util.UUID;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.ActiveConnection;
+import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Connection;
@@ -36,7 +37,6 @@ import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
-import org.apache.guacamole.net.auth.UserRecord;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -217,9 +217,9 @@ public class SimpleUserContext implements UserContext {
     }
 
     @Override
-    public ActivityRecordSet<UserRecord> getUserHistory()
+    public ActivityRecordSet<ActivityRecord> getUserHistory()
             throws GuacamoleException {
-        return new SimpleActivityRecordSet<UserRecord>();
+        return new SimpleActivityRecordSet<ActivityRecord>();
     }
 
     @Override
