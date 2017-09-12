@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
+import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
 import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
 import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.ActivityRecordSet.SortableProperty;
@@ -52,8 +54,8 @@ public class ConnectionRecordSet extends RestrictedObject
      * connection record not matching each of the strings within the collection 
      * will be excluded from the results.
      */
-    private final Set<ConnectionRecordSearchTerm> requiredContents = 
-            new HashSet<ConnectionRecordSearchTerm>();
+    private final Set<ActivityRecordSearchTerm> requiredContents =
+            new HashSet<ActivityRecordSearchTerm>();
     
     /**
      * The maximum number of connection history records that should be returned
@@ -66,8 +68,8 @@ public class ConnectionRecordSet extends RestrictedObject
      * records, describing the properties involved and the sort order for those 
      * properties.
      */
-    private final List<ConnectionRecordSortPredicate> connectionRecordSortPredicates =
-            new ArrayList<ConnectionRecordSortPredicate>();
+    private final List<ActivityRecordSortPredicate> connectionRecordSortPredicates =
+            new ArrayList<ActivityRecordSortPredicate>();
     
     @Override
     public Collection<ConnectionRecord> asCollection()
@@ -79,7 +81,7 @@ public class ConnectionRecordSet extends RestrictedObject
     @Override
     public ConnectionRecordSet contains(String value)
             throws GuacamoleException {
-        requiredContents.add(new ConnectionRecordSearchTerm(value));
+        requiredContents.add(new ActivityRecordSearchTerm(value));
         return this;
     }
 
@@ -93,7 +95,7 @@ public class ConnectionRecordSet extends RestrictedObject
     public ConnectionRecordSet sort(SortableProperty property, boolean desc)
             throws GuacamoleException {
         
-        connectionRecordSortPredicates.add(new ConnectionRecordSortPredicate(
+        connectionRecordSortPredicates.add(new ActivityRecordSortPredicate(
             property,
             desc
         ));
