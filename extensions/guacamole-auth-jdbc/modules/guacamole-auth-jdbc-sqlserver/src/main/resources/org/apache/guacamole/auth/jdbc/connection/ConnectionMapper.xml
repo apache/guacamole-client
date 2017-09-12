@@ -103,7 +103,7 @@
             failover_only,
             MAX(start_date) AS last_active
         FROM [guacamole_connection]
-        JOIN [guacamole_connection_history] ON [guacamole_connection_history].connection_id = [guacamole_connection].connection_id
+        LEFT JOIN [guacamole_connection_history] ON [guacamole_connection_history].connection_id = [guacamole_connection].connection_id
         WHERE [guacamole_connection].connection_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
@@ -140,7 +140,7 @@
             MAX(start_date) AS last_active
         FROM [guacamole_connection]
         JOIN [guacamole_connection_permission] ON [guacamole_connection_permission].connection_id = [guacamole_connection].connection_id
-        JOIN [guacamole_connection_history] ON [guacamole_connection_history].connection_id = [guacamole_connection].connection_id
+        LEFT JOIN [guacamole_connection_history] ON [guacamole_connection_history].connection_id = [guacamole_connection].connection_id
         WHERE [guacamole_connection].connection_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
@@ -180,7 +180,7 @@
             failover_only,
             MAX(start_date) AS last_active
         FROM [guacamole_connection]
-        JOIN [guacamole_connection_history] ON [guacamole_connection_history].connection_id = [guacamole_connection].connection_id
+        LEFT JOIN [guacamole_connection_history] ON [guacamole_connection_history].connection_id = [guacamole_connection].connection_id
         WHERE 
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
