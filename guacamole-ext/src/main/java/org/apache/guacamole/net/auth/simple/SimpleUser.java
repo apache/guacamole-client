@@ -22,10 +22,12 @@ package org.apache.guacamole.net.auth.simple;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AbstractUser;
+import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
@@ -161,6 +163,11 @@ public class SimpleUser extends AbstractUser {
     @Override
     public void setAttributes(Map<String, String> attributes) {
         // Do nothing - there are no attributes
+    }
+
+    @Override
+    public List<ActivityRecord> getHistory() throws GuacamoleException {
+        return Collections.<ActivityRecord>emptyList();
     }
 
     @Override

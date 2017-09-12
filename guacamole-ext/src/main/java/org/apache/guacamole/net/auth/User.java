@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -99,6 +100,23 @@ public interface User extends Identifiable {
      *     A map of all attribute identifiers to their corresponding values.
      */
     void setAttributes(Map<String, String> attributes);
+
+    /**
+     * Returns a list of ActivityRecords representing the login history
+     * of this user, including any active sessions. ActivityRecords
+     * in this list will be sorted in descending order of end time (active
+     * sessions are first), and then in descending order of start time
+     * (newer sessions are first).
+     *
+     * @return
+     *     A list of ActivityRecords representing the login history of this
+     *     User.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while reading the history of this user, or if
+     *     permission is denied.
+     */
+    List<? extends ActivityRecord> getHistory() throws GuacamoleException;
 
     /**
      * Returns all system-level permissions given to this user.

@@ -29,6 +29,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObject;
@@ -49,6 +50,7 @@ import org.apache.guacamole.form.Form;
 import org.apache.guacamole.form.TextField;
 import org.apache.guacamole.form.TimeField;
 import org.apache.guacamole.form.TimeZoneField;
+import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
@@ -790,6 +792,11 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
      */
     public boolean isExpired() {
         return getModel().isExpired();
+    }
+
+    @Override
+    public List<ActivityRecord> getHistory() throws GuacamoleException {
+        return Collections.<ActivityRecord>emptyList();
     }
 
 }
