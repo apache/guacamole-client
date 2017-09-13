@@ -57,6 +57,17 @@ public interface UserRecordMapper {
     int insert(@Param("record") ActivityRecordModel record);
 
     /**
+     * Updates the given user login record.
+     *
+     * @param record
+     *     The user login record to update.
+     *
+     * @return
+     *     The number of rows updated.
+     */
+    int update(@Param("record") ActivityRecordModel record);
+
+    /**
      * Searches for up to <code>limit</code> user login records that contain
      * the given terms, sorted by the given predicates, regardless of whether
      * the data they are associated with is is readable by any particular user.

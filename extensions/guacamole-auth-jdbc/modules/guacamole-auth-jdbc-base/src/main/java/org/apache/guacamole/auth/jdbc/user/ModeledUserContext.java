@@ -231,7 +231,11 @@ public class ModeledUserContext extends RestrictedObject
 
     @Override
     public void invalidate() {
-        // Nothing to invalidate
+
+        // Record logout time
+        userRecord.setEndDate(new Date());
+        userRecordMapper.update(userRecord);
+
     }
 
 }

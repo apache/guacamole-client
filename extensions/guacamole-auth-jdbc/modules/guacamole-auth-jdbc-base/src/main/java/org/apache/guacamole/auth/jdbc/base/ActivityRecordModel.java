@@ -28,6 +28,11 @@ import java.util.Date;
 public class ActivityRecordModel {
 
     /**
+     * The ID of this object in the database, if any.
+     */
+    private Integer recordID;
+
+    /**
      * The database ID of the user associated with this activity record.
      */
     private Integer userID;
@@ -52,6 +57,27 @@ public class ActivityRecordModel {
      * the activity is still in progress.
      */
     private Date endDate;
+
+    /**
+     * Returns the ID of this record in the database, if it exists.
+     *
+     * @return
+     *     The ID of this record in the database, or null if this record was
+     *     not retrieved from the database.
+     */
+    public Integer getRecordID() {
+        return recordID;
+    }
+
+    /**
+     * Sets the database ID of this record to the given value.
+     *
+     * @param recordID
+     *     The ID to assign to this object.
+     */
+    public void setRecordID(Integer recordID) {
+        this.recordID = recordID;
+    }
 
     /**
      * Returns the database ID of the user associated with this activity
