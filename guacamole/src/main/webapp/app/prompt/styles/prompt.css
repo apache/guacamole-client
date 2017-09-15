@@ -22,6 +22,10 @@
     box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.125);
     background: white;
     color: black;
+
+    vertical-align: middle;
+    display: inline-block;
+    max-width: 9in;
 }
 
 .prompt.error {
@@ -47,4 +51,36 @@
 
     padding: 0.5em;
     margin-bottom: 1em;
+}
+
+.prompt .parameter {
+    width: 100%;
+    text-align: left;
+    display: table-row;
+}
+
+.prompt .parameter .label {
+    display: table-cell;
+    padding: 2px 5px 2px 5px;
+}
+
+.prompt .parameter .labeled-field .field-header {
+    display: none;
+}
+
+.prompt .parameter .labeled-field .form-field {
+    display: table-cell;
+    padding: 1px 5px 1px 5px;
+}
+
+.prompt .header {
+    display: table-row;
+    text-align: center;
+    width: 100%;
+}
+
+.prompt .header .label {
+    display: table-cell;
+    text-align: center;
+    font-weight: bold;
 }

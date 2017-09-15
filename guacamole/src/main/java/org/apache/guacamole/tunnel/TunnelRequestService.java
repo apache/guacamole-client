@@ -177,32 +177,23 @@ public class TunnelRequestService {
             GuacamoleClientInformation info) throws GuacamoleException {
 
         // Get the connection configuration
-        Map<String, Integer> prompts = TokenFilter.getPrompts(connection.getConfiguration().getParameters());
+        Map<String, List<String>> prompts = TokenFilter.getPrompts(connection.getConfiguration().getParameters());
         Map<String, List<String>> clientParameters = info.getParameters();
 
-        for (Map.Entry<String, Integer> entry : prompts.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : prompts.entrySet()) {
             String parameter = entry.getKey();
-            Integer positions = entry.getValue();
+            List<String> positions = entry.getValue();
             logger.debug(">>>PROMPT<<< Looking for parameter {}", parameter);
-            if (positions == -1) {
-                String userValue = request.getParameter(parameter);
+            List<String> valueList = new ArrayList<String>();
+            for (int i = 0; i < positions.size(); i++) {
+                String userValue = request.getParameter(parameter + "[" + i + "]");
                 if (userValue == null)
                     throw new GuacamoleException("Expected parameter was not provided: " + parameter);
-                logger.debug(">>>PROMPT<<< Adding parameter {} value {}", parameter, userValue);
-                clientParameters.put(parameter, Collections.singletonList(userValue));
-            }
-            else {
-                List<String> valueList = new ArrayList<String>();
-                for (int i = 0; i < positions; i++) {
-                    String userValue = request.getParameter(parameter + "[" + i + "]");
-                    if (userValue == null)
-                        throw new GuacamoleException("Expected parameter was not provided: " + parameter);
-                    valueList.add(userValue);
-                    logger.debug(">>>PROMPT<<< Getting the {} value for parameter {}: {}", i, parameter, userValue);
+                valueList.add(userValue);
+                logger.debug(">>>PROMPT<<< Getting the {} value for parameter {}: {}", i, parameter, userValue);
                     
-                }
-                clientParameters.put(parameter, valueList);
             }
+            clientParameters.put(parameter, valueList);
         }
 
     }

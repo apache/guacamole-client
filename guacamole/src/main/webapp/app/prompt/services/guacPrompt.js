@@ -28,6 +28,7 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
     var $log                  = $injector.get('$log');
     var $q                    = $injector.get('$q');
     var $rootScope            = $injector.get('$rootScope');
+    var $window               = $injector.get('$window');
     var sessionStorageFactory = $injector.get('sessionStorageFactory');
 
     var service = {};
@@ -47,7 +48,6 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
      * @type Prompt|Boolean
      */
     service.getPrompt = function getPrompt() {
-        $log.debug('Retrieving stored prompt object.');
         return storedPrompt();
     };
 
@@ -79,7 +79,6 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
      * guacPrompt.showPrompt(false);
      */
     service.showPrompt = function showPrompt(status) {
-        $log.debug('Displaying prompts with object ' + JSON.stringify(status));
         if (!storedPrompt() || !status)
             storedPrompt(status);
     };
@@ -106,6 +105,7 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
             'actions'   : [{
                 'name'  : 'Connect',
                 'callback' : function() {
+                    $log.debug('Received responses: ' + responses);
                     deferred.resolve(responses);
                     service.showPrompt(false);
                 },
@@ -113,6 +113,7 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
             {
                 'name'  : 'Cancel',
                 'callback' : function() {
+                    $log.debug('Cancelling connection and going home.');
                     deferred.reject();
                     service.showPrompt(false);
                     $location.url(homeUrl);
@@ -126,9 +127,20 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
 
     };
 
+    var preventEvent = function(event) {
+        if (service.getPrompt())
+            event.stopPropagation();
+    };
+
+    $window.addEventListener('input', preventEvent, true);
+    $window.addEventListener('keydown', preventEvent, true);
+    $window.addEventListener('keypress', preventEvent, true);
+    $window.addEventListener('keyup', preventEvent, true);
+    $window.addEventListener('click', preventEvent, false);
+
+
     // Hide status upon navigation
     $rootScope.$on('$routeChangeSuccess', function() {
-        $log.debug('Moved on to somewhere else.');
         service.showPrompt(false);
     });
 

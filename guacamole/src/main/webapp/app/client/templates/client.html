@@ -36,6 +36,13 @@
         <guac-file-transfer-manager client="client"></guac-file-transfer-manager>
     </div>
 
+    <!-- Prompts -->
+    <div id="prompt-dialog" ng-class="{shown: getPrompt()}" class="status-outer">
+        <div class="status-middle">
+            <guac-prompt prompt="getPrompt()" client="client"></guac-prompt>
+        </div>
+    </div>
+
     <!-- Menu -->
     <div class="menu" ng-class="{open: menu.shown}" id="guac-menu">
         <div class="menu-content" ng-if="menu.shown">

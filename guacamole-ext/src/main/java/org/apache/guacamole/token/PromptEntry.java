@@ -20,27 +20,34 @@
 package org.apache.guacamole.token;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.guacamole.form.Field;
 
 public class PromptEntry {
 
     private Field field;
 
-    private Integer positions;
-
     private String value;
 
-    public PromptEntry(Field field, Integer positions, String value) {
+    private Boolean wholeParameter;
+
+    private List<String> positions;
+
+    public PromptEntry(Field field, String value, Boolean wholeParameter,
+            List<String> positions) {
         this.field = field;
-        this.positions = positions;
         this.value = value;
+        this.wholeParameter = wholeParameter;
+        this.positions = positions;
     }
 
     public PromptEntry(Field field) {
         this.field = field;
-        this.positions = -1;
         this.value = "-1";
+        this.wholeParameter = true;
+        this.positions = Collections.<String>singletonList("-1");
     }
 
     public Field getField() {
@@ -51,20 +58,28 @@ public class PromptEntry {
         this.field = field;
     }
 
-    public Integer getPositions() {
-        return positions;
-    }
-
-    public void setPositions(Integer positions) {
-        this.positions = positions;
-    }
-
     public String getValue() {
         return value;
     }
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public Boolean getWholeParameter() {
+        return wholeParameter;
+    }
+
+    public void setWholeParameter(Boolean wholeParameter) {
+        this.wholeParameter = wholeParameter;
+    }
+
+    public List<String> getPositions() {
+        return positions;
+    }
+
+    public void setPositions(List<String> positions) {
+        this.positions = positions;
     }
 
 }

@@ -525,48 +525,43 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         $q.all([gettingConnectionData,gettingConnectionPrompts])
         .then(function connectClient(clientData) {
 
-
             $log.debug(clientData);
             var connData = clientData[0].data;
             var connPrompts = clientData[1].data;
-            /*
-            var userData = '';
-            angular.forEach(connPrompts, function(value, key) {
-
-                if (userData != '')
-                    userData += '&';
-
-                if (value[0] == -1) {
-                    var response = prompt('Please enter value for parameter ' + key);
-                    userData += encodeURIComponent(key) + '=' + encodeURIComponent(response);
-                }
-
-                else {
-                    for (i = 0; i < value.length; i++) {
-                        if (i > 0)
-                            userData += '&';
-                        response = prompt('Please enter value for ' + value + ' instance in parameter ' + key);
-                        userData += encodeURIComponent(key + '[' + i + ']') + '=' + encodeURIComponent(response);
-                    }
-                }
-
-            });
-            $log.debug(userData);
-            */
             guacPrompt.getUserInput(connPrompts,connData)
             .then(function receivedUserInput(data) {
                 $log.debug(data);
-                // connectionParameters = (connectionParameters ? connectionParameters + userData : userData);
-                // $log.debug(connectionParameters);
+                var userData = '';
+                for (var key in data) {
+                    var param = data[key];
+                    for (var idx in param) {
+                        var inst = param[idx];
+                        if (userData != '')
+                            userData += '&';
+                        userData += key + '[' + idx + ']=' + inst;
+                    }
+                }
+                connectionParameters = (connectionParameters ? connectionParameters + '&' + userData : userData);
+                $log.debug(connectionParameters);
+                getConnectString(clientIdentifier, connectionParameters)
+                .then(function connectClient(connectString) {
+                    client.connect(connectString);
+                    guacPrompt.showPrompt(false);
+                });
+            })
+            .catch(function noUserInput(reason) {
+                $log.debug(reason);
+
+                // Disconnect, if connected
+                client.disconnect();
+
+                // Update state
+                ManagedClientState.setConnectionState(managedClient.clientState,
+                    ManagedClientState.ConnectionState.CLIENT_ERROR,
+                    reason);
+
             });
             
-            // Connect the Guacamole client
-            getConnectString(clientIdentifier, connectionParameters)
-            .then(function connectClient(connectString) {
-                $log.debug('We would try the connection, if it were not commented out.');
-                // client.connect(connectString);
-                // guacPrompt.showPrompt(false);
-            });
         });
 
 

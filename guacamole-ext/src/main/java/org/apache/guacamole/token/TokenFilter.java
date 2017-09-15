@@ -316,9 +316,9 @@ public class TokenFilter {
      *     A map where the key is the parameter name and the value is an array
      *     of 0-indexed instances in the parameter that need to be prompted.
      */
-    public static Map<String, Integer> getPrompts(Map<?, String> parameters) {
+    public static Map<String, List<String>> getPrompts(Map<?, String> parameters) {
 
-        Map<String, Integer> prompts = new HashMap<String, Integer>();
+        Map<String, List<String>> prompts = new HashMap<String, List<String>>();
         final String fullPromptString = "${" + PromptTokens.PROMPT_TOKEN_STRING + "}";
 
         // Loop through each parameter entry
@@ -328,29 +328,29 @@ public class TokenFilter {
             String value = entry.getValue();
 
             // If the entire parameter value equals one of the tokens,
-            // add it to the list with the -1 sentinel and go to next
+            // add it to the list and go to next
             // entry.
             if (value.equals(PromptTokens.PROMPT_TOKEN_NUMERIC) ||
                 value.equals(fullPromptString)) {
 
-                prompts.put(key, -1);
+                prompts.put(key, Collections.<String>singletonList(""));
                 continue;
 
             }
 
-            Matcher tokenMatcher = tokenPattern.matcher(value);
-            Integer count = 0;
+            Matcher promptMatcher = promptPattern.matcher(value);
+            List<String> promptList = new ArrayList<String>();
 
             // For each possible token
-            while (tokenMatcher.find()) {
+            while (promptMatcher.find()) {
 
                 // Pull possible leading text and first char before possible token
-                String literal = tokenMatcher.group(LEADING_TEXT_GROUP);
-                String escape = tokenMatcher.group(ESCAPE_CHAR_GROUP);
+                String literal = promptMatcher.group(LEADING_TEXT_GROUP);
+                String escape = promptMatcher.group(ESCAPE_CHAR_GROUP);
 
                 // If char before token is '$', the token itself is escaped
                 if ("$".equals(escape)) {
-                    String notToken = tokenMatcher.group(TOKEN_GROUP);
+                    String notToken = promptMatcher.group(TOKEN_GROUP);
                     continue;
                 }
 
@@ -358,15 +358,17 @@ public class TokenFilter {
                 else {
 
                     // Pull token value
-                    String tokenName = tokenMatcher.group(TOKEN_NAME_GROUP);
-                    if (tokenName.equals(PromptTokens.PROMPT_TOKEN_STRING))
-                        count++;
+                    String token = promptMatcher.group(TOKEN_GROUP);
+                    if (token.equals(fullPromptString)) {
+                        String pretext = literal + escape;
+                        promptList.add(pretext);
+                    }
 
                 }
 
             }
-            if (count > 0)
-                prompts.put(key,count);
+            if (promptList.size() > 0)
+                prompts.put(key,promptList);
 
         }
 

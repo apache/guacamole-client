@@ -12,10 +12,28 @@
            translate="{{prompt.text.key}}"
            translate-values="{{prompt.text.variables}}"></p>
 
-        <!-- Form or fields -->
-        <guac-form namespace="getNamespace(prompt.connection.protocol)"
-                   content="prompt.prompts"
-                   model="prompt.responses"></guac-form>
+        <!-- Parmaeters to Prompt -->
+        <div class="header">
+            <div class="label">
+                Parameter
+            </div>
+            <div class="label">
+                Input
+            </div>
+        </div>
+        <div ng-repeat="parameter in prompt.prompts" class="parameter">
+            <div class="label">
+                {{ parameter.field.name }}
+            </div>
+            <div>
+                <guac-prompt-field
+                    ng-repeat="position in parameter.positions track by $index"
+                    pretext="position"
+                    field="parameter.field"
+                    namespace="getNamespace(prompt.connection.protocol)"
+                    model="prompt.responses[parameter.field.name][$index]"></guac-prompt-field>
+            </div>
+        </div>
 
     </div>
 

@@ -32,7 +32,14 @@ angular.module('prompt').directive('guacPrompt', [function guacPrompt() {
              *
              * @type Prompt|Object 
              */
-            prompt : '='
+            prompt : '=',
+
+            /**
+             * The client calling this prompt.
+             *
+             * @type ManagedClient
+             */
+            client : '='
 
         },
 
@@ -40,6 +47,8 @@ angular.module('prompt').directive('guacPrompt', [function guacPrompt() {
         controller: ['$scope', '$injector', '$log', function guacPromptController($scope,$injector,$log) {
 
             var translationStringService = $injector.get('translationStringService');
+
+            $scope.responses = {};
 
             /**
              * Returns the translation string namespace for the protocol having the
@@ -59,8 +68,6 @@ angular.module('prompt').directive('guacPrompt', [function guacPrompt() {
              */
             $scope.getNamespace = function getNamespace(protocolName) {
 
-                $log.debug('Getting namespace for protocol ' + protocolName);
-
                 // Do not generate a namespace if no protocol is selected
                 if (!protocolName)
                     return null;
@@ -68,6 +75,45 @@ angular.module('prompt').directive('guacPrompt', [function guacPrompt() {
                 return 'PROTOCOL_' + translationStringService.canonicalize(protocolName);
 
             };
+
+            $scope.getNumber = function getNumber(num) {
+                return new Array(num);
+            };
+
+            // Update string value and re-assign to model when field is changed
+            $scope.$watch('prompt.responses', function setModel(model) {
+
+                // Assign new model only if provided
+                if (model)
+                    $scope.responses = model;
+
+                // Otherwise, use blank model
+                else
+                    $scope.responses = {};
+
+            });
+
+            $scope.getFields = function getFields(prompt) {
+
+                var formFields = [];
+
+                var PromptFinder = /(.*?)(^|.)(\$\{GUAC_PROMPT\})/g;
+                for (i = 0; (promptArray = PromptFinder.exec(prompt.value)) !== null; i++) {
+                    formFields[i] = {};
+                    $log.debug('>>>PROMPT<<< FOUND:' + promptArray);
+                    if (promptArray[1] !== undefined && promptArray[1] != '')
+                        formFields[i]['pretext'] = promptArray[1];
+                    if (promptArray[2] !== undefined && promptArray[2] != '$') {
+                        formFields[i]['pretext'] += promptArray[2];
+                        formFields[i]['field'] = prompt.field;
+                    }
+                }
+
+                $log.debug('>>>PROMPT<<< ' + formFields);
+                return formFields;
+
+            };
+
         }]
 
     };

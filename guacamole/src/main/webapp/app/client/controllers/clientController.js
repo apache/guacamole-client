@@ -35,6 +35,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var clipboardService      = $injector.get('clipboardService');
     var guacClientManager     = $injector.get('guacClientManager');
     var guacNotification      = $injector.get('guacNotification');
+    var guacPrompt            = $injector.get('guacPrompt');
     var iconService           = $injector.get('iconService');
     var preferenceService     = $injector.get('preferenceService');
     var requestService        = $injector.get('requestService');
@@ -908,6 +909,23 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         return !!$scope.client.uploads.length;
 
+    };
+
+    /**
+     * Returns whether or not a prompt is available/populated.
+     * If there is no client defined, the answer is automatically
+     * no.  Otherwise, it returns the value from the
+     * guacPrompt service.
+     *
+     * @returns {Boolean|Prompt}
+     *     Returns either false if no prompt is available
+     *     or the Prompt object.
+     */
+    $scope.getPrompt = function getPrompt() {
+        if (!$scope.client)
+            return false;
+
+        return guacPrompt.getPrompt();
     };
 
     /**

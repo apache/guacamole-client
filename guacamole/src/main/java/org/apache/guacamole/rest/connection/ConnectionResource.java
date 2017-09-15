@@ -216,19 +216,22 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
         List<PromptEntry> promptEntries = new ArrayList<PromptEntry>();
 
         Map <?, String> parameters = connection.getConfiguration().getParameters();
-        Map <String, Integer> prompts = TokenFilter.getPrompts(parameters);
+        Map <String, List<String>> prompts = TokenFilter.getPrompts(parameters);
         Collection<Form> myForms = environment.getProtocol(connection.getConfiguration().getProtocol()).getConnectionForms();
 
-        for (Map.Entry<String, Integer> entry : prompts.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : prompts.entrySet()) {
             String parameter = entry.getKey();
-            Integer positions = entry.getValue();
+            List<String> positions = entry.getValue();
             String value = parameters.get(parameter);
             formLoop:
             for (Form form : myForms) {
                 Collection<Field> myFields = form.getFields();
                 for (Field field : myFields) {
+                    Boolean wholeParameter = true;
+                    if (positions.size() > 1)
+                        wholeParameter = false;
                     if (parameter.equals(field.getName())) {
-                        promptEntries.add(new PromptEntry(field,positions,value));
+                        promptEntries.add(new PromptEntry(field,value,wholeParameter,positions));
                         break formLoop;
                     }
                 }
