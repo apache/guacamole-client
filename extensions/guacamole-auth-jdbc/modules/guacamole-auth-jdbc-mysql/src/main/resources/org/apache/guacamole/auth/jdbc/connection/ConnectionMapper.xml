@@ -146,7 +146,7 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
             </foreach>
-            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND guacamole_connection_permission.user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'READ'
         GROUP BY guacamole_connection.connection_id;
 
