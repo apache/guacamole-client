@@ -21,19 +21,32 @@
     </div>
 
     <!-- List of users this user has access to -->
-    <div class="user-list">
-        <div ng-repeat="manageableUser in manageableUserPage" class="user list-item">
-            <a ng-href="#/manage/{{manageableUser.dataSource}}/users/{{manageableUser.user.username}}">
-                <div class="caption">
-                    <div class="icon user"></div>
-                    <span class="name">{{manageableUser.user.username}}</span>
-                </div>
-            </a>
-        </div>
-    </div>
+    <table class="sorted user-list">
+        <thead>
+            <tr>
+                <th guac-sort-order="order" guac-sort-property="'user.username'" class="username">
+                    {{'SETTINGS_USERS.TABLE_HEADER_USERNAME' | translate}}
+                </th>
+                <th guac-sort-order="order" guac-sort-property="'user.lastActive'" class="last-active">
+                    {{'SETTINGS_USERS.TABLE_HEADER_LAST_ACTIVE' | translate}}
+                </th>
+            </tr>
+        </thead>
+        <tbody ng-class="{loading: !isLoaded()}">
+            <tr ng-repeat="manageableUser in manageableUserPage" class="user">
+                <td class="username">
+                    <a ng-href="#/manage/{{manageableUser.dataSource}}/users/{{manageableUser.user.username}}">
+                        <div class="icon user"></div>
+                        <span class="name">{{manageableUser.user.username}}</span>
+                    </a>
+                </td>
+                <td class="last-active">{{manageableUser.user.lastActive | date : dateFormat}}</td>
+            </tr>
+        </tbody>
+    </table>
 
     <!-- Pager controls for user list -->
     <guac-pager page="manageableUserPage" page-size="25"
-                items="filteredManageableUsers | orderBy : 'user.username'"></guac-pager>
+                items="filteredManageableUsers | orderBy : order.predicate"></guac-pager>
 
 </div>

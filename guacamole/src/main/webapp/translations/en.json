@@ -675,9 +675,14 @@
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
         "HELP_USERS" : "Click or tap on a user below to manage that user. Depending on your access level, users can be added and deleted, and their passwords can be changed.",
 
-        "SECTION_HEADER_USERS"       : "Users"
+        "SECTION_HEADER_USERS"       : "Users",
+
+        "TABLE_HEADER_LAST_ACTIVE" : "Last active",
+        "TABLE_HEADER_USERNAME"    : "Username"
 
     },
     

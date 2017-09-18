@@ -524,9 +524,13 @@
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
         "HELP_USERS" : "Нажмите на пользователя, чтобы управлять им. В зависимости от прав доступа возможно добавление и удаление пользователей, а также изменение паролей.",
 
-        "SECTION_HEADER_USERS"       : "Пользователи"
+        "SECTION_HEADER_USERS"       : "Пользователи",
+
+        "TABLE_HEADER_USERNAME" : "Имя пользователя"
 
     },
 

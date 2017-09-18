@@ -598,9 +598,13 @@
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
         "HELP_USERS" : "Klicke oder Tippe auf einen Benutzer um diesen zu verwalten. Abhänig von Ihrer Zugriffsebene können Benutzer hinzugefügt, gelöscht bzw. dessen Passwort geändert werden.",
 
-        "SECTION_HEADER_USERS"       : "Benutzer"
+        "SECTION_HEADER_USERS"       : "Benutzer",
+
+        "TABLE_HEADER_USERNAME" : "Benutzername"
 
     },
     
