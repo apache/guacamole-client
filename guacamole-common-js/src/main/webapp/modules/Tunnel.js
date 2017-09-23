@@ -306,7 +306,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
             var message_xmlhttprequest = new XMLHttpRequest();
             message_xmlhttprequest.open("POST", TUNNEL_WRITE + tunnel.uuid);
             message_xmlhttprequest.withCredentials = withCredentials;
-            message_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+            message_xmlhttprequest.setRequestHeader("Content-type", "application/octet-stream");
 
             // Once response received, send next queued event.
             message_xmlhttprequest.onreadystatechange = function() {
