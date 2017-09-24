@@ -21,7 +21,7 @@ package org.apache.guacamole.auth.cas.conf;
 
 import com.google.inject.Inject;
 import java.io.File;
-import javax.crypto.Cipher;
+import java.security.PrivateKey;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 
@@ -82,7 +82,7 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public Cipher getClearpassCipher() throws GuacamoleException {
+    public PrivateKey getClearpassKey() throws GuacamoleException {
         return environment.getProperty(CASGuacamoleProperties.CAS_CLEARPASS_KEY);
     }
 

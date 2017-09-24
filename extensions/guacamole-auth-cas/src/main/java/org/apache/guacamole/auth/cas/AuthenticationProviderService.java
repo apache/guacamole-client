@@ -44,6 +44,7 @@ import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
@@ -166,31 +167,37 @@ public class AuthenticationProviderService {
             throws GuacamoleException {
 
         // If we get nothing, we return nothing.
-        if (encryptedPassword == null || encryptedPassword.isEmpty())
+        if (encryptedPassword == null || encryptedPassword.isEmpty()) {
+            logger.warn("No or empty encrypted password, no password will be available.");
             return null;
+        }
+
+        final PrivateKey clearpassKey = confService.getClearpassKey();
+        if (clearpassKey == null) {
+            logger.warn("No private key available to decrypt password.");
+            return null;
+        }
 
         try {
 
-            final Cipher cipher = confService.getClearpassCipher();
+            final Cipher cipher = Cipher.getInstance(clearpassKey.getAlgorithm());
 
-            if (cipher != null) {
+            if (cipher == null)
+                throw new GuacamoleServerException("Failed to initialize cipher object with private key.");
 
-                // Decode and decrypt, and return a new string.
-                final byte[] pass64 = DatatypeConverter.parseBase64Binary(encryptedPassword);
-                final byte[] cipherData = cipher.doFinal(pass64);
-                return new String(cipherData);
+            // Initialize the Cipher in decrypt mode.
+            cipher.init(Cipher.DECRYPT_MODE, clearpassKey);
 
-            }
+            // Decode and decrypt, and return a new string.
+            final byte[] pass64 = DatatypeConverter.parseBase64Binary(encryptedPassword);
+            final byte[] cipherData = cipher.doFinal(pass64);
+            return new String(cipherData);
 
         }
         catch (Throwable t) {
-            logger.error("Failed to decrypt the data, password token will not be available.");
             logger.debug("Failed to either convert Base64 or decrypt the password.  CAS Password will not be available inside Guacamole.  Exception is: {}", t);
-            return null;
+            throw new GuacamoleServerException("Failed to decrypt CAS ClearPass password.", t);
         }
-
-        logger.warn("Encrypted password provided by CAS, but no Private Key was available to decrypt it.");
-        return null;
 
     }
 

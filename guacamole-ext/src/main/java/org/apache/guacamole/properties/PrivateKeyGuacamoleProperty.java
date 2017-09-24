@@ -33,29 +33,25 @@ import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 
 /**
  * A GuacamoleProperty whose value is derived from a private key file.
  */
-public abstract class CipherGuacamoleProperty implements GuacamoleProperty<Cipher>  {
+public abstract class PrivateKeyGuacamoleProperty implements GuacamoleProperty<PrivateKey>  {
 
     @Override
-    public Cipher parseValue(String value) throws GuacamoleException {
+    public PrivateKey parseValue(String value) throws GuacamoleServerException {
 
         if (value == null || value.isEmpty())
             return null;
 
         try {
 
-            final Environment environment = new LocalEnvironment();
-
             // Open and read the file specified in the configuration.
-            File keyFile = new File(environment.getGuacamoleHome(), value);
+            File keyFile = new File(value);
             InputStream keyInput = new BufferedInputStream(new FileInputStream(keyFile));
             final byte[] keyBytes = new byte[(int) keyFile.length()];
             keyInput.read(keyBytes);
@@ -64,30 +60,20 @@ public abstract class CipherGuacamoleProperty implements GuacamoleProperty<Ciphe
             // Set up decryption infrastructure
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             KeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
-            final PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
-            final Cipher cipher = Cipher.getInstance(privateKey.getAlgorithm());
-            cipher.init(Cipher.DECRYPT_MODE, privateKey);
-
-            return cipher;
+            return keyFactory.generatePrivate(keySpec);
 
         }
         catch (FileNotFoundException e) {
-            throw new GuacamoleException("Could not find the specified key file.", e);
+            throw new GuacamoleServerException("Could not find the specified key file.", e);
         }
         catch (IOException e) {
-            throw new GuacamoleException("Could not read in the specified key file.", e);
+            throw new GuacamoleServerException("Could not read in the specified key file.", e);
         }
         catch (NoSuchAlgorithmException e) {
-            throw new GuacamoleException("Specified algorithm does not exist.", e);
-        }
-        catch (InvalidKeyException e) {
-            throw new GuacamoleException("Specified key is invalid.", e);
+            throw new GuacamoleServerException("Specified algorithm does not exist.", e);
         }
         catch (InvalidKeySpecException e) {
-            throw new GuacamoleException("Invalid KeySpec initialization.", e);
-        }
-        catch (NoSuchPaddingException e) {
-            throw new GuacamoleException("No such padding exception.", e);
+            throw new GuacamoleServerException("Invalid KeySpec initialization.", e);
         }
 
     }
