@@ -73,6 +73,8 @@ public class AuthenticationProviderService {
             String username = request.getHeader(confService.getHttpAuthHeader());
 
             if (username != null) {
+                //  Write username to the credentials object to make tokenfilter work
+                credentials.setUsername(username);
                 AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
                 authenticatedUser.init(username, credentials);
                 return authenticatedUser;
