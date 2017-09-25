@@ -95,7 +95,7 @@ public class ExtensionModule extends ServletModule {
     /**
      * All currently-bound authentication providers, if any.
      */
-    private final List<Listener> boundListners =
+    private final List<Listener> boundListeners =
             new ArrayList<Listener>();
 
     /**
@@ -205,8 +205,8 @@ public class ExtensionModule extends ServletModule {
     private void bindListeners(Class<?> providerClass) {
 
         logger.debug("[{}] Binding listeners \"{}\".",
-                boundListners.size(), providerClass.getName());
-        boundListners.addAll(ListenerFactory.createListeners(providerClass));
+                boundListeners.size(), providerClass.getName());
+        boundListeners.addAll(ListenerFactory.createListeners(providerClass));
 
     }
 
@@ -234,7 +234,7 @@ public class ExtensionModule extends ServletModule {
      */
     @Provides
     public List<Listener> getListeners() {
-        return Collections.unmodifiableList(boundListners);
+        return Collections.unmodifiableList(boundListeners);
     }
 
     /**
