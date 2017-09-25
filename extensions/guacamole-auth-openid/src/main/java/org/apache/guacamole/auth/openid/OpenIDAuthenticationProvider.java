@@ -107,4 +107,9 @@ public class OpenIDAuthenticationProvider implements AuthenticationProvider {
 
     }
 
+    @Override
+    public void shutdown() {
+        // Do nothing
+    }
+
 }
