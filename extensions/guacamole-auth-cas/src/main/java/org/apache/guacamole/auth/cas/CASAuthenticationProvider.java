@@ -107,4 +107,9 @@ public class CASAuthenticationProvider implements AuthenticationProvider {
 
     }
 
+    @Override
+    public void shutdown() {
+        // Do nothing
+    }
+
 }

@@ -49,4 +49,11 @@ public interface AuthenticatedUser extends Identifiable {
      */
     Credentials getCredentials();
 
+    /**
+     * Invalidates this authenticated user and their associated token such that
+     * they are no longer logged in. This function will be automatically
+     * invoked when the user logs out, or when their session expires.
+     */
+    void invalidate();
+
 }

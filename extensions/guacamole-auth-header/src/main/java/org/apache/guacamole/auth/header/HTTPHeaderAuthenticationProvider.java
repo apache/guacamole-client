@@ -107,4 +107,9 @@ public class HTTPHeaderAuthenticationProvider implements AuthenticationProvider 
 
     }
 
+    @Override
+    public void shutdown() {
+        // Do nothing
+    }
+
 }

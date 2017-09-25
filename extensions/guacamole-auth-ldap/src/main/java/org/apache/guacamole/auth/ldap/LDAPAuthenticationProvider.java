@@ -103,5 +103,10 @@ public class LDAPAuthenticationProvider implements AuthenticationProvider {
         return context;
     }
 
+    @Override
+    public void shutdown() {
+        // Do nothing
+    }
+
 }
 

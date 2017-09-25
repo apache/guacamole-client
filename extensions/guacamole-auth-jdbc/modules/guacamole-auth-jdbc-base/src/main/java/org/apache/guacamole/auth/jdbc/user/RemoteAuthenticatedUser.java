@@ -136,4 +136,9 @@ public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
         return authenticationProvider;
     }
 
+    @Override
+    public void invalidate() {
+        // Nothing to invalidate
+    }
+
 }

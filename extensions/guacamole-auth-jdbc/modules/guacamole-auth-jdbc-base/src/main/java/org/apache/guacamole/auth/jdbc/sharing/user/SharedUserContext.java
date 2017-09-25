@@ -204,4 +204,9 @@ public class SharedUserContext implements UserContext {
         return Collections.<Form>emptyList();
     }
 
+    @Override
+    public void invalidate() {
+        // Nothing to invalidate
+    }
+
 }

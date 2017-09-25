@@ -234,4 +234,9 @@ public class SimpleUserContext implements UserContext {
         return Collections.<Form>emptyList();
     }
 
+    @Override
+    public void invalidate() {
+        // Nothing to invalidate
+    }
+
 }

@@ -209,4 +209,10 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
         
     }
 
+    @Override
+    public void shutdown() {
+        if (authProvider != null)
+            authProvider.shutdown();
+    }
+
 }

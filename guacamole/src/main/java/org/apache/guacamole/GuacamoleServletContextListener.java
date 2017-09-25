@@ -21,14 +21,17 @@ package org.apache.guacamole;
 
 import org.apache.guacamole.tunnel.TunnelModule;
 import com.google.inject.Guice;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Stage;
 import com.google.inject.servlet.GuiceServletContextListener;
+import java.util.List;
 import javax.servlet.ServletContextEvent;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.extension.ExtensionModule;
 import org.apache.guacamole.log.LogModule;
+import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.rest.RESTServiceModule;
 import org.apache.guacamole.rest.auth.HashTokenSessionMap;
 import org.apache.guacamole.rest.auth.TokenSessionMap;
@@ -56,6 +59,12 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
      */
     private TokenSessionMap sessionMap;
 
+    /**
+     * List of all authentication providers from all loaded extensions.
+     */
+    @Inject
+    private List<AuthenticationProvider> authProviders;
+
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
 
@@ -75,13 +84,21 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
 
     @Override
     protected Injector getInjector() {
-        return Guice.createInjector(Stage.PRODUCTION,
+
+        // Create injector
+        Injector injector = Guice.createInjector(Stage.PRODUCTION,
             new EnvironmentModule(environment),
             new LogModule(environment),
             new ExtensionModule(environment),
             new RESTServiceModule(sessionMap),
             new TunnelModule()
         );
+
+        // Inject any annotated members of this class
+        injector.injectMembers(this);
+
+        return injector;
+
     }
 
     @Override
@@ -92,6 +109,12 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
         // Shutdown TokenSessionMap
         if (sessionMap != null)
             sessionMap.shutdown();
+
+        // Unload all extensions
+        if (authProviders != null) {
+            for (AuthenticationProvider authProvider : authProviders)
+                authProvider.shutdown();
+        }
 
     }
 
