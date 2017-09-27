@@ -24,6 +24,7 @@ import com.google.inject.Provider;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -230,6 +231,11 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
     public Set<String> getSharingProfileIdentifiers()
             throws GuacamoleException {
         return getModel().getSharingProfileIdentifiers();
+    }
+
+    @Override
+    public Date getLastActive() {
+        return null;
     }
 
     @Override

@@ -143,9 +143,11 @@ public interface UserContext {
             throws GuacamoleException;
 
     /**
-     * Retrieves all connection records visible to current user. The resulting
-     * set of connection records can be further filtered and ordered using the
-     * methods defined on ConnectionRecordSet.
+     * Retrieves all connection records visible to current user. Connection
+     * history records describe the start and end times of connections, and
+     * correspond to the times that users connect or disconnect to individual
+     * remote desktops. The resulting set of connection records can be further
+     * filtered and ordered using the methods defined on ActivityRecordSet.
      *
      * @return
      *     A set of all connection records visible to the current user.
@@ -153,7 +155,23 @@ public interface UserContext {
      * @throws GuacamoleException
      *     If an error occurs while retrieving the connection records.
      */
-    ConnectionRecordSet getConnectionHistory() throws GuacamoleException;
+    ActivityRecordSet<ConnectionRecord> getConnectionHistory()
+            throws GuacamoleException;
+
+    /**
+     * Retrieves all user history records visible to current user. User history
+     * records describe the start and end times of user sessions, and correspond
+     * to the times that users logged in or out. The resulting set of user
+     * records can be further filtered and ordered using the methods defined on
+     * ActivityRecordSet.
+     *
+     * @return
+     *     A set of all user records visible to the current user.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the user records.
+     */
+    ActivityRecordSet<ActivityRecord> getUserHistory() throws GuacamoleException;
 
     /**
      * Retrieves a connection group which can be used to view and manipulate

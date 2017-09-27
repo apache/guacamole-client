@@ -22,39 +22,40 @@ package org.apache.guacamole.net.auth.simple;
 import java.util.Collection;
 import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.net.auth.ConnectionRecord;
+import org.apache.guacamole.net.auth.ActivityRecord;
+import org.apache.guacamole.net.auth.ActivityRecordSet;
+import org.apache.guacamole.net.auth.ActivityRecordSet.SortableProperty;
 
 /**
- * An immutable and empty ConnectionRecordSet.
+ * An immutable and empty ActivityRecordSet.
  *
- * @deprecated
- *     Use {@link SimpleActivityRecordSet}&lt;{@link ConnectionRecord}&gt;
- *     instead.
+ * @param <RecordType>
+ *     The type of ActivityRecord contained within this set.
  */
-@Deprecated
-public class SimpleConnectionRecordSet implements org.apache.guacamole.net.auth.ConnectionRecordSet {
+public class SimpleActivityRecordSet<RecordType extends ActivityRecord>
+        implements ActivityRecordSet<RecordType> {
 
     @Override
-    public Collection<ConnectionRecord> asCollection()
+    public Collection<RecordType> asCollection()
             throws GuacamoleException {
-        return Collections.<ConnectionRecord>emptyList();
+        return Collections.<RecordType>emptyList();
     }
 
     @Override
-    public org.apache.guacamole.net.auth.ConnectionRecordSet contains(String value)
+    public ActivityRecordSet<RecordType> contains(String value)
             throws GuacamoleException {
         return this;
     }
 
     @Override
-    public org.apache.guacamole.net.auth.ConnectionRecordSet limit(int limit)
+    public ActivityRecordSet<RecordType> limit(int limit)
             throws GuacamoleException {
         return this;
     }
 
     @Override
-    public org.apache.guacamole.net.auth.ConnectionRecordSet sort(SortableProperty property, boolean desc)
-            throws GuacamoleException {
+    public ActivityRecordSet<RecordType> sort(SortableProperty property,
+            boolean desc) throws GuacamoleException {
         return this;
     }
 

@@ -21,7 +21,7 @@ package org.apache.guacamole.rest.history;
 
 import javax.ws.rs.core.Response;
 import org.apache.guacamole.GuacamoleClientException;
-import org.apache.guacamole.net.auth.ConnectionRecordSet;
+import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.rest.APIException;
 
 /**
@@ -38,7 +38,7 @@ public class APIConnectionRecordSortPredicate {
 
     /**
      * All possible property name strings and their corresponding
-     * ConnectionRecordSet.SortableProperty values.
+     * ActivityRecordSet.SortableProperty values.
      */
     public enum SortableProperty {
 
@@ -46,24 +46,24 @@ public class APIConnectionRecordSortPredicate {
          * The date that the connection associated with the connection record
          * began (connected).
          */
-        startDate(ConnectionRecordSet.SortableProperty.START_DATE);
+        startDate(ActivityRecordSet.SortableProperty.START_DATE);
 
         /**
-         * The ConnectionRecordSet.SortableProperty that this property name
+         * The ActivityRecordSet.SortableProperty that this property name
          * string represents.
          */
-        public final ConnectionRecordSet.SortableProperty recordProperty;
+        public final ActivityRecordSet.SortableProperty recordProperty;
 
         /**
          * Creates a new SortableProperty which associates the property name
          * string (identical to its own name) with the given
-         * ConnectionRecordSet.SortableProperty value.
+         * ActivityRecordSet.SortableProperty value.
          *
          * @param recordProperty
-         *     The ConnectionRecordSet.SortableProperty value to associate with
+         *     The ActivityRecordSet.SortableProperty value to associate with
          *     the new SortableProperty.
          */
-        SortableProperty(ConnectionRecordSet.SortableProperty recordProperty) {
+        SortableProperty(ActivityRecordSet.SortableProperty recordProperty) {
             this.recordProperty = recordProperty;
         }
 
@@ -72,7 +72,7 @@ public class APIConnectionRecordSortPredicate {
     /**
      * The property to use when sorting ConnectionRecords.
      */
-    private ConnectionRecordSet.SortableProperty property;
+    private ActivityRecordSet.SortableProperty property;
 
     /**
      * Whether the requested sort order is descending (true) or ascending
@@ -102,7 +102,7 @@ public class APIConnectionRecordSortPredicate {
             value = value.substring(DESCENDING_PREFIX.length());
         }
 
-        // Parse sorting property into ConnectionRecordSet.SortableProperty
+        // Parse sorting property into ActivityRecordSet.SortableProperty
         try {
             this.property = SortableProperty.valueOf(value).recordProperty;
         }
@@ -118,15 +118,15 @@ public class APIConnectionRecordSortPredicate {
     }
 
     /**
-     * Returns the SortableProperty defined by ConnectionRecordSet which
+     * Returns the SortableProperty defined by ActivityRecordSet which
      * represents the property requested.
      *
      * @return
-     *     The ConnectionRecordSet.SortableProperty which refers to the same
+     *     The ActivityRecordSet.SortableProperty which refers to the same
      *     property as the string originally provided when this
      *     APIConnectionRecordSortPredicate was created.
      */
-    public ConnectionRecordSet.SortableProperty getProperty() {
+    public ActivityRecordSet.SortableProperty getProperty() {
         return property;
     }
 

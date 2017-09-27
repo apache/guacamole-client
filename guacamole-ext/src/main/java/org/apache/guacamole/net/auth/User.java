@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -99,6 +101,34 @@ public interface User extends Identifiable {
      *     A map of all attribute identifiers to their corresponding values.
      */
     void setAttributes(Map<String, String> attributes);
+
+    /**
+     * Returns the date and time that this user was last active. If the user
+     * was never active, the time that the user was last active is unknown, or
+     * this information is not visible to the current user, this may be null.
+     *
+     * @return
+     *     The date and time this user was last active, or null if this
+     *     information is unavailable or inapplicable.
+     */
+    Date getLastActive();
+
+    /**
+     * Returns a list of ActivityRecords representing the login history
+     * of this user, including any active sessions. ActivityRecords
+     * in this list will be sorted in descending order of end time (active
+     * sessions are first), and then in descending order of start time
+     * (newer sessions are first).
+     *
+     * @return
+     *     A list of ActivityRecords representing the login history of this
+     *     User.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while reading the history of this user, or if
+     *     permission is denied.
+     */
+    List<? extends ActivityRecord> getHistory() throws GuacamoleException;
 
     /**
      * Returns all system-level permissions given to this user.
