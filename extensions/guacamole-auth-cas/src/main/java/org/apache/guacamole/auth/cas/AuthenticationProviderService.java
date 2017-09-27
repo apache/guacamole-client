@@ -117,7 +117,6 @@ public class AuthenticationProviderService {
                 AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
                 AttributePrincipal principal = ticketService.validateTicket(ticket);
                 String username = principal.getName();
-                credentials.setUsername(username);
                 Object credObj = principal.getAttributes().get("credential");
                 if (credObj != null) {
                     String clearPass = decryptPassword(credObj.toString());
