@@ -1,0 +1,33 @@
+<assembly
+    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+    
+    <id>dist</id>
+    <baseDirectory>${project.artifactId}-${project.version}</baseDirectory>
+
+    <!-- Output tar.gz -->
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+
+    <!-- Include docs and extension .jar -->
+    <fileSets>
+
+        <!-- Include docs -->
+        <fileSet>
+            <directory>doc</directory>
+        </fileSet>
+
+        <!-- Include extension .jar -->
+        <fileSet>
+            <directory>target</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+
+    </fileSets>
+
+</assembly>
