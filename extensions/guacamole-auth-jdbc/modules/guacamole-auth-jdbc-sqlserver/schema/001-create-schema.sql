@@ -41,11 +41,13 @@ GO;
  * The permission data type.
  */
 CREATE TYPE [guacamole_permission] FROM [nvarchar](10) NOT NULL;
+EXEC sp_bindrule 'guacamole_permission_list','guacamole_permission';
 
 /**
  * The system permission data type.
  */
 CREATE TYPE [guacamole_system_permission] FROM [nvarchar](32) NOT NULL;
+EXEC sp_bindrule 'guacamole_system_permission_list','guacamole_system_permission';
 GO;
 
 /**
