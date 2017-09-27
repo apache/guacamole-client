@@ -18,6 +18,17 @@
  */
 
 /**
+ * Turn on ANSI_NULLS for the entire DB to make it ISO-compliant.
+ */
+ALTER DATABASE CURRENT SET ANSI_NULLS ON;
+GO;
+
+/**
+ * Turn on QUOTED_IDENTIFIER for the entire DB.
+ */
+ALTER DATABASE CURRENT SET QUOTED_IDENTIFIER ON;
+
+/**
  * List for permission data type.
  */
 CREATE RULE [guacamole_permission_list] 
@@ -53,8 +64,6 @@ GO;
 /**
  * The connection_group table stores organizational and balancing groups.
  */
-SET ANSI_NULLS ON;
-SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [guacamole_connection_group](
     [connection_group_id] [int] IDENTITY(1,1) NOT NULL,
     [parent_id] [int] NULL,
@@ -65,13 +74,7 @@ CREATE TABLE [guacamole_connection_group](
     [enable_session_affinity] [bit] NOT NULL,
 
     CONSTRAINT [PK_guacmaole_connection_group] PRIMARY KEY CLUSTERED
-        ([connection_group_id] ASC)
-        WITH (PAD_INDEX = OFF,
-            STATISTICS_NORECOMPUTE = OFF,
-            IGNORE_DUP_KEY = OFF,
-            ALLOW_ROW_LOCKS = ON,
-            ALLOW_PAGE_LOCKS = ON)
-       ON [PRIMARY]
+        ([connection_group_id] ASC) ON [PRIMARY]
 ) ON [PRIMARY];
 
 /**
@@ -100,8 +103,6 @@ GO;
 /**
  * The connection table, for storing connections and attributes.
  */
-SET ANSI_NULLS ON;
-SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [guacamole_connection](
     [connection_id] [int] IDENTITY(1,1) NOT NULL,
     [connection_name] [nvarchar](128) NOT NULL,
@@ -116,13 +117,7 @@ CREATE TABLE [guacamole_connection](
     [failover_only] [bit] NOT NULL,
 
     CONSTRAINT [PK_guacamole_connection] PRIMARY KEY CLUSTERED
-	([connection_id] ASC)
-        WITH (PAD_INDEX = OFF, 
-            STATISTICS_NORECOMPUTE = OFF,
-            IGNORE_DUP_KEY = OFF,
-            ALLOW_ROW_LOCKS = ON,
-            ALLOW_PAGE_LOCKS = ON)
-        ON [PRIMARY]
+	([connection_id] ASC) ON [PRIMARY]
 ) ON [PRIMARY];
 
 ALTER TABLE [guacamole_connection]
@@ -142,8 +137,6 @@ GO;
 /**
  * The user table stores user accounts, passwords, and properties.
  */
-SET ANSI_NULLS ON;
-SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [guacamole_user](
     [user_id] [int] IDENTITY(1,1) NOT NULL,
     [username] [nvarchar](128) NOT NULL,
@@ -163,13 +156,7 @@ CREATE TABLE [guacamole_user](
     [organizational_role] [nvarchar](256) NULL,
 
     CONSTRAINT [PK_guacamole_user] PRIMARY KEY CLUSTERED 
-        ([user_id] ASC)
-        WITH (PAD_INDEX = OFF,
-            STATISTICS_NORECOMPUTE = OFF,
-            IGNORE_DUP_KEY = OFF,
-            ALLOW_ROW_LOCKS = ON,
-            ALLOW_PAGE_LOCKS = ON)
-        ON [PRIMARY]
+        ([user_id] ASC) ON [PRIMARY]
 ) ON [PRIMARY];
 
 /**
@@ -185,21 +172,13 @@ GO;
  * The sharing_profile table stores profiles that allow
  * connections to be shared amongst multiple users.
  */
-SET ANSI_NULLS ON;
-SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [guacamole_sharing_profile](
     [sharing_profile_id] [int] IDENTITY(1,1) NOT NULL,
     [sharing_profile_name] [nvarchar](128) NOT NULL,
     [primary_connection_id] [int] NOT NULL,
 
     CONSTRAINT [PK_guacamole_sharing_profile] PRIMARY KEY CLUSTERED 
-        ([sharing_profile_id] ASC)
-        WITH (PAD_INDEX = OFF,
-            STATISTICS_NORECOMPUTE = OFF,
-            IGNORE_DUP_KEY = OFF,
-            ALLOW_ROW_LOCKS = ON,
-            ALLOW_PAGE_LOCKS = ON)
-        ON [PRIMARY]
+        ([sharing_profile_id] ASC) ON [PRIMARY]
 ) ON [PRIMARY];
 
 /**
@@ -218,21 +197,13 @@ GO;
  * The connection_parameter table stores parameters for
  * connection objects.
  */
-SET ANSI_NULLS ON;
-SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [guacamole_connection_parameter](
     [connection_id] [int] NOT NULL,
     [parameter_name] [nvarchar](128) NOT NULL,
     [parameter_value] [nvarchar](4000) NOT NULL,
 
     CONSTRAINT [PK_guacamole_connection_parameter] PRIMARY KEY CLUSTERED 
-        ([connection_id] ASC, [parameter_name] ASC)
-        WITH (PAD_INDEX = OFF,
-            STATISTICS_NORECOMPUTE = OFF,
-            IGNORE_DUP_KEY = OFF,
-            ALLOW_ROW_LOCKS = ON,
-            ALLOW_PAGE_LOCKS = ON)
-        ON [PRIMARY]
+        ([connection_id] ASC, [parameter_name] ASC) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 /**
@@ -251,21 +222,13 @@ GO;
  * The sharing_profile_parameter table stores parameters
  * for sharing_profile objects.
  */
-SET ANSI_NULLS ON;
-SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [guacamole_sharing_profile_parameter](
     [sharing_profile_id] [int] NOT NULL,
     [parameter_name] [nvarchar](128) NOT NULL,
     [parameter_value] [nvarchar](4000) NOT NULL,
 
     CONSTRAINT [PK_guacamole_sharing_profile_parameter] PRIMARY KEY CLUSTERED 
-        ([sharing_profile_id] ASC, [parameter_name] ASC)
-        WITH (PAD_INDEX = OFF,
-            STATISTICS_NORECOMPUTE = OFF,
-            IGNORE_DUP_KEY = OFF,
-            ALLOW_ROW_LOCKS = ON,
-            ALLOW_PAGE_LOCKS = ON)
-        ON [PRIMARY]
+        ([sharing_profile_id] ASC, [parameter_name] ASC) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 /**
@@ -285,21 +248,13 @@ GO;
  * The connection_permission table stores permission
  * mappings for connection objects.
  */
-SET ANSI_NULLS ON;
-SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [guacamole_connection_permission](
     [user_id] [int] NOT NULL,
     [connection_id] [int] NOT NULL,
     [permission] [guacamole_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_connection_permission] PRIMARY KEY CLUSTERED 
-        ([user_id] ASC, [connection_id] ASC, [permission] ASC)
-        WITH (PAD_INDEX = OFF,
-            STATISTICS_NORECOMPUTE = OFF,
-            IGNORE_DUP_KEY = OFF,
-            ALLOW_ROW_LOCKS = ON,
-            ALLOW_PAGE_LOCKS = ON)
-        ON [PRIMARY]
+        ([user_id] ASC, [connection_id] ASC, [permission] ASC) ON [PRIMARY]
 ) ON [PRIMARY];
 
 /**
@@ -325,21 +280,13 @@ GO;
  * The connection_group_permission table stores permission mappings for
  * connection_group objects.
  */
-SET ANSI_NULLS ON;
-SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [guacamole_connection_group_permission](
     [user_id] [int] NOT NULL,
     [connection_group_id] [int] NOT NULL,
     [permission] [guacamole_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_connection_group_permission] PRIMARY KEY CLUSTERED 
-        ([user_id] ASC,	[connection_group_id] ASC, [permission] ASC)
-        WITH (PAD_INDEX = OFF,
-            STATISTICS_NORECOMPUTE = OFF,
-            IGNORE_DUP_KEY = OFF,
-            ALLOW_ROW_LOCKS = ON,
-            ALLOW_PAGE_LOCKS = ON) 
-        ON [PRIMARY]
+        ([user_id] ASC,	[connection_group_id] ASC, [permission] ASC) ON [PRIMARY]
 ) ON [PRIMARY];
 
 /**
@@ -365,21 +312,13 @@ GO;
  * The sharing_profile_permission table stores permission
  * mappings for sharing_profile objects.
  */
-SET ANSI_NULLS ON;
-SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [guacamole_sharing_profile_permission](
     [user_id] [int] NOT NULL,
     [sharing_profile_id] [int] NOT NULL,
     [permission] [guacamole_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_sharing_profile_permission] PRIMARY KEY CLUSTERED 
-        ([user_id] ASC, [sharing_profile_id] ASC, [permission] ASC)
-        WITH (PAD_INDEX = OFF,
-            STATISTICS_NORECOMPUTE = OFF,
-            IGNORE_DUP_KEY = OFF,
-            ALLOW_ROW_LOCKS = ON,
-            ALLOW_PAGE_LOCKS = ON)
-        ON [PRIMARY]
+        ([user_id] ASC, [sharing_profile_id] ASC, [permission] ASC) ON [PRIMARY]
 ) ON [PRIMARY];
 
 /**
@@ -405,20 +344,12 @@ GO;
  * The system_permission table stores permission mappings
  * for system-level operations.
  */
-SET ANSI_NULLS ON;
-SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [guacamole_system_permission](
     [user_id] [int] NOT NULL,
     [permission] [guacamole_system_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_system_permission] PRIMARY KEY CLUSTERED 
-        ([user_id] ASC,	[permission] ASC)
-        WITH (PAD_INDEX = OFF,
-            STATISTICS_NORECOMPUTE = OFF,
-            IGNORE_DUP_KEY = OFF,
-            ALLOW_ROW_LOCKS = ON,
-            ALLOW_PAGE_LOCKS = ON)
-        ON [PRIMARY]
+        ([user_id] ASC,	[permission] ASC) ON [PRIMARY]
 ) ON [PRIMARY];
 
 /**
@@ -437,21 +368,13 @@ GO;
  * The user_permission table stores permission mappings
  * for users to other users.
  */
-SET ANSI_NULLS ON;
-SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [guacamole_user_permission](
     [user_id] [int] NOT NULL,
     [affected_user_id] [int] NOT NULL,
     [permission] [guacamole_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_user_permission] PRIMARY KEY CLUSTERED 
-        ([user_id] ASC,	[affected_user_id] ASC,	[permission] ASC)
-        WITH (PAD_INDEX = OFF,
-            STATISTICS_NORECOMPUTE = OFF,
-            IGNORE_DUP_KEY = OFF,
-            ALLOW_ROW_LOCKS = ON,
-            ALLOW_PAGE_LOCKS = ON)
-        ON [PRIMARY]
+        ([user_id] ASC,	[affected_user_id] ASC,	[permission] ASC) ON [PRIMARY]
 ) ON [PRIMARY];
 
 /**
@@ -475,8 +398,6 @@ GO;
  * The connection_history table stores records for historical
  * connections.
  */
-SET ANSI_NULLS ON;
-SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [guacamole_connection_history](
     [history_id] [int] IDENTITY(1,1) NOT NULL,
     [user_id] [int] NULL,
@@ -490,13 +411,7 @@ CREATE TABLE [guacamole_connection_history](
     [end_date] [datetime] NULL,
 
     CONSTRAINT [PK_guacamole_connection_history] PRIMARY KEY CLUSTERED 
-        ([history_id] ASC)
-        WITH (PAD_INDEX = OFF,
-            STATISTICS_NORECOMPUTE = OFF,
-            IGNORE_DUP_KEY = OFF,
-            ALLOW_ROW_LOCKS = ON,
-            ALLOW_PAGE_LOCKS = ON)
-        ON [PRIMARY]
+        ([history_id] ASC) ON [PRIMARY]
 ) ON [PRIMARY];
 
 /**
@@ -510,7 +425,7 @@ ALTER TABLE [guacamole_connection_history]
 ALTER TABLE [guacamole_connection_history]
     CHECK CONSTRAINT [FK_guacamole_connection_history_connection];
 ALTER TABLE [guacamole_connection_history]
-    WITH CHECK ADD  CONSTRAINT [FK_guacamole_connection_history_sharing_profile] FOREIGN KEY([sharing_profile_id])
+    WITH CHECK ADD CONSTRAINT [FK_guacamole_connection_history_sharing_profile] FOREIGN KEY([sharing_profile_id])
     REFERENCES [guacamole_sharing_profile] ([sharing_profile_id]);
 ALTER TABLE [guacamole_connection_history]
     CHECK CONSTRAINT [FK_guacamole_connection_history_sharing_profile];
@@ -528,8 +443,6 @@ GO;
  * for users, allowing for enforcing rules associated with
  * reuse of passwords.
  */
-SET ANSI_NULLS ON;
-SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [guacamole_user_password_history](
     [password_history_id] [int] IDENTITY(1,1) NOT NULL,
     [user_id] [int] NOT NULL,
@@ -538,13 +451,7 @@ CREATE TABLE [guacamole_user_password_history](
     [password_date] [datetime] NOT NULL,
 
     CONSTRAINT [PK_guacamole_user_password_history] PRIMARY KEY CLUSTERED 
-        ([password_history_id] ASC)
-        WITH (PAD_INDEX = OFF,
-            STATISTICS_NORECOMPUTE = OFF,
-            IGNORE_DUP_KEY = OFF,
-            ALLOW_ROW_LOCKS = ON,
-            ALLOW_PAGE_LOCKS = ON)
-        ON [PRIMARY]
+        ([password_history_id] ASC) ON [PRIMARY]
 ) ON [PRIMARY];
 
 /**
