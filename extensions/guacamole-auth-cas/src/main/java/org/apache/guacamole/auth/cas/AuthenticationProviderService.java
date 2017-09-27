@@ -36,8 +36,10 @@ import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Enumeration;
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.DatatypeConverter;
@@ -193,9 +195,23 @@ public class AuthenticationProviderService {
             return new String(cipherData);
 
         }
-        catch (Throwable t) {
-            logger.debug("Failed to either convert Base64 or decrypt the password.  CAS Password will not be available inside Guacamole.  Exception is: {}", t);
-            throw new GuacamoleServerException("Failed to decrypt CAS ClearPass password.", t);
+        catch (BadPaddingException e) {
+            throw new GuacamoleServerException("Bad padding when decrypting cipher data.", e);
+        }
+        catch (IllegalBlockSizeException e) {
+            throw new GuacamoleServerException("Illegal block size while opening private key.", e);
+        }
+        catch (InvalidKeyException e) {
+            throw new GuacamoleServerException("Specified private key for ClearPass decryption is invalid.", e);
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new GuacamoleServerException("Unexpected algorithm for the private key.", e);
+        }
+        catch (NoSuchPaddingException e) {
+            throw new GuacamoleServerException("No such padding tryingto initialize cipher with private key.", e);
+        }
+        finally {
+            logger.debug("Yah.");
         }
 
     }
