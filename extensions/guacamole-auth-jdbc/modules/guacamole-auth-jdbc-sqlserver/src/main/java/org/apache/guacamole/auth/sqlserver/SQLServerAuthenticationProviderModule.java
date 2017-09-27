@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.sqlserver;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
+import java.lang.UnsupportedOperationException;
 import java.util.Properties;
 import org.apache.guacamole.GuacamoleException;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
@@ -98,9 +99,13 @@ public class SQLServerAuthenticationProviderModule implements Module {
                 break;
 
             case MICROSOFT_2005:
-            default:
                 JdbcHelper.SQL_Server_2005_MS_Driver.configure(binder);
+                break;
 
+            default:
+                throw new UnsupportedOperationException(
+                    "A driver has been specified that is not supported by this module."
+                );
         }
         
         // Bind MyBatis properties
