@@ -21,32 +21,11 @@ package org.apache.guacamole.auth.cas;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.IOException;
-import java.lang.IllegalArgumentException;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.spec.KeySpec;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Arrays;
-import java.util.Enumeration;
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
@@ -54,20 +33,12 @@ import org.apache.guacamole.auth.cas.conf.ConfigurationService;
 import org.apache.guacamole.auth.cas.form.CASTicketField;
 import org.apache.guacamole.auth.cas.ticket.TicketValidationService;
 import org.apache.guacamole.auth.cas.user.AuthenticatedUser;
-import org.jasig.cas.client.authentication.AttributePrincipal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Service providing convenience functions for the CAS AuthenticationProvider
  * implementation.
  */
 public class AuthenticationProviderService {
-
-    /**
-     * Logger for this class.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
 
     /**
      * Service for retrieving CAS configuration information.
@@ -116,16 +87,17 @@ public class AuthenticationProviderService {
         if (request != null) {
             String ticket = request.getParameter(CASTicketField.PARAMETER_NAME);
             if (ticket != null) {
-                AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-                AttributePrincipal principal = ticketService.validateTicket(ticket);
-                String username = principal.getName();
-                Object credObj = principal.getAttributes().get("credential");
-                if (credObj != null) {
-                    String clearPass = decryptPassword(credObj.toString());
-                    if (clearPass != null && !clearPass.isEmpty())
-                        credentials.setPassword(clearPass);
+                Credentials ticketCredentials = ticketService.validateTicket(ticket);
+                if (ticketCredentials != null) {
+                    String username = ticketCredentials.getUsername();
+                    if (username != null)
+                        credentials.setUsername(username);
+                    String password = ticketCredentials.getPassword();
+                    if (password != null)
+                        credentials.setPassword(password);
                 }
-                authenticatedUser.init(username, credentials);
+                AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+                authenticatedUser.init(credentials.getUsername(), credentials);
                 return authenticatedUser;
             }
         }
@@ -144,72 +116,6 @@ public class AuthenticationProviderService {
 
             }))
         );
-
-    }
-
-    /**
-     * Takes an encrypted string representing a password provided by
-     * the CAS ClearPass service and decrypts it using the private
-     * key configured for this extension.  Returns null if it is
-     * unable to decrypt the password.
-     *
-     * @param encryptedPassword
-     *     A string with the encrypted password provided by the
-     *     CAS service.
-     *
-     * @return
-     *     The decrypted password, or null if it is unable to
-     *     decrypt the password.
-     *
-     * @throws GuacamoleException
-     *     If unable to get Guacamole configuration data
-     */
-    private final String decryptPassword(String encryptedPassword)
-            throws GuacamoleException {
-
-        // If we get nothing, we return nothing.
-        if (encryptedPassword == null || encryptedPassword.isEmpty()) {
-            logger.warn("No or empty encrypted password, no password will be available.");
-            return null;
-        }
-
-        final PrivateKey clearpassKey = confService.getClearpassKey();
-        if (clearpassKey == null) {
-            logger.warn("No private key available to decrypt password.");
-            return null;
-        }
-
-        try {
-
-            final Cipher cipher = Cipher.getInstance(clearpassKey.getAlgorithm());
-
-            if (cipher == null)
-                throw new GuacamoleServerException("Failed to initialize cipher object with private key.");
-
-            // Initialize the Cipher in decrypt mode.
-            cipher.init(Cipher.DECRYPT_MODE, clearpassKey);
-
-            // Decode and decrypt, and return a new string.
-            final byte[] pass64 = DatatypeConverter.parseBase64Binary(encryptedPassword);
-            final byte[] cipherData = cipher.doFinal(pass64);
-            return new String(cipherData);
-
-        }
-        catch (BadPaddingException e) {
-            throw new GuacamoleServerException("Bad padding when decrypting cipher data.", e);
-        }
-        catch (IllegalBlockSizeException e) {
-            throw new GuacamoleServerException("Illegal block size while opening private key.", e);
-        }
-        catch (InvalidKeyException e) {
-            throw new GuacamoleServerException("Specified private key for ClearPass decryption is invalid.", e);
-        }
-        catch (NoSuchAlgorithmException e) {
-            throw new GuacamoleServerException("Unexpected algorithm for the private key.", e);
-        }
-        catch (NoSuchPaddingException e) {
-            throw new GuacamoleServerException("No such padding tryingto initialize cipher with private key.", e);
-        }
 
     }
 
