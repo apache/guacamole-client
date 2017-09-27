@@ -20,8 +20,11 @@
 /**
  * Create the default admin user account and set up full privileges.
  */
-INSERT INTO [guacamole_user] (username, password_hash, password_date)
-VALUES ('guacadmin', HASHBYTES('SHA2_256', 'guacadmin'), getdate());
+INSERT INTO [guacamole_user] (username, password_hash, password_salt, password_date)
+VALUES ('guacadmin', 
+    0xCA458A7D494E3BE824F5E1E175A1556C0F8EEF2C2D7DF3633BEC4A29C4411960,
+    0xFE24ADC5E11E2B25288D1704ABE67A79E342ECC26064CE69C5B3177795A82264,
+    getdate());
 
 INSERT INTO [guacamole_user_permission]
 SELECT [guacamole_user].[user_id], [affected].[user_id], permission
