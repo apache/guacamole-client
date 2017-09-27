@@ -210,9 +210,6 @@ public class AuthenticationProviderService {
         catch (NoSuchPaddingException e) {
             throw new GuacamoleServerException("No such padding tryingto initialize cipher with private key.", e);
         }
-        finally {
-            logger.debug("Yah.");
-        }
 
     }
 
