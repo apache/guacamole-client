@@ -71,12 +71,11 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the path to the file that contains the private key
-     * used to decrypt the credential that is sent encrypted by CAS,
-     * or null if no key is defined.
+     * Returns the PrivateKey used to decrypt the credential object
+     * sent encrypted by CAS, or null if no key is defined.
      *
      * @return
-     *     The path to the private key to decrypt the ClearPass
+     *     The PrivateKey used to decrypt the ClearPass
      *     credential returned by CAS.
      *
      * @throws GuacamoleException

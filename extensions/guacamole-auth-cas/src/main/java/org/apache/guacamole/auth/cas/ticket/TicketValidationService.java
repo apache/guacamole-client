@@ -42,20 +42,19 @@ public class TicketValidationService {
     private ConfigurationService confService;
 
     /**
-     * Validates and parses the given ID ticket, returning the username contained
-     * therein, as defined by the username claim type given in
-     * guacamole.properties. If the username claim type is missing or the ID
-     * ticket is invalid, an exception is thrown instead.
+     * Validates and parses the given ID ticket, returning the AttributePrincipal
+     * derived from the parameters provided by the CAS server in the ticket.  If the
+     * ticket is invalid an exception is thrown.
      *
      * @param ticket
      *     The ID ticket to validate and parse.
      *
      * @return
-     *     The username contained within the given ID ticket.
+     *     The AttributePrincipal derived from parameters provided in the ticket.
      *
      * @throws GuacamoleException
-     *     If the ID ticket is not valid, the username claim type is missing, or
-     *     guacamole.properties could not be parsed.
+     *     If the ID ticket is not valid or guacamole.properties could
+     *     not be parsed.
      */
     public AttributePrincipal validateTicket(String ticket) throws GuacamoleException {
 
