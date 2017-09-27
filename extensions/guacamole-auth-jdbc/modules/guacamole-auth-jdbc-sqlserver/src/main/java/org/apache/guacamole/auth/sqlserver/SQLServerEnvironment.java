@@ -50,7 +50,7 @@ public class SQLServerEnvironment extends JDBCEnvironment {
      * Whether a database user account is required by default for authentication
      * to succeed.
      */
-    private static final boolean DEFAULT_USER_REQUIRED = true;
+    private static final boolean DEFAULT_USER_REQUIRED = false;
 
     /**
      * The default value for the maximum number of connections to be
