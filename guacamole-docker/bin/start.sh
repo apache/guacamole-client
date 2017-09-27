@@ -328,7 +328,11 @@ END
 ##
 start_guacamole() {
 
+    # Remove standard Tomcat root.
+    rm -rf /usr/local/tomcat/webapps/ROOT
+    
     # Install webapp
+    ln -sf /opt/guacamole/guacamole.war /usr/local/tomcat/webapps/ROOT.war
     ln -sf /opt/guacamole/guacamole.war /usr/local/tomcat/webapps/
 
     # Start tomcat
