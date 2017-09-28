@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.quickconnect;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
@@ -168,6 +169,11 @@ public class QuickConnection extends AbstractConnection {
     @Override
     public List<ConnectionRecord> getHistory() throws GuacamoleException {
         return Collections.<ConnectionRecord>emptyList();
+    }
+
+    @Override
+    public Date getLastActive() {
+        return null;
     }
 
 }

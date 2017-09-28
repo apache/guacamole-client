@@ -24,16 +24,18 @@ import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.ActiveConnection;
+import org.apache.guacamole.net.auth.ActivityRecord;
+import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
-import org.apache.guacamole.net.auth.ConnectionRecordSet;
+import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.auth.simple.SimpleActivityRecordSet;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionGroupDirectory;
-import org.apache.guacamole.net.auth.simple.SimpleConnectionRecordSet;
 import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 import org.apache.guacamole.net.auth.simple.SimpleUser;
 import org.apache.guacamole.net.auth.simple.SimpleUserDirectory;
@@ -131,6 +133,11 @@ public class QuickConnectUserContext implements UserContext {
     }
 
     @Override
+    public void invalidate() {
+        // Do nothing.
+    }
+
+    @Override
     public AuthenticationProvider getAuthenticationProvider() {
         return authProvider;
     }
@@ -139,6 +146,12 @@ public class QuickConnectUserContext implements UserContext {
     public Directory<User> getUserDirectory()
             throws GuacamoleException {
         return userDirectory;
+    }
+
+    @Override
+    public ActivityRecordSet<ActivityRecord> getUserHistory()
+            throws GuacamoleException {
+        return new SimpleActivityRecordSet<ActivityRecord>();
     }
 
     @Override
@@ -171,9 +184,9 @@ public class QuickConnectUserContext implements UserContext {
     }
 
     @Override
-    public ConnectionRecordSet getConnectionHistory()
+    public ActivityRecordSet<ConnectionRecord> getConnectionHistory()
             throws GuacamoleException {
-        return new SimpleConnectionRecordSet();
+        return new SimpleActivityRecordSet<ConnectionRecord>();
     }
 
     @Override
