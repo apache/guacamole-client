@@ -127,7 +127,7 @@
         </foreach>
 
         <!-- Bind sort property enum values for sake of readability -->
-        <bind name="START_DATE"      value="@org.apache.guacamole.net.auth.ConnectionRecordSet$SortableProperty@START_DATE"/>
+        <bind name="START_DATE" value="@org.apache.guacamole.net.auth.ActivityRecordSet$SortableProperty@START_DATE"/>
 
         <!-- Sort predicates -->
         <foreach collection="sortPredicates" item="sortPredicate"
@@ -195,7 +195,7 @@
         </foreach>
 
         <!-- Bind sort property enum values for sake of readability -->
-        <bind name="START_DATE"      value="@org.apache.guacamole.net.auth.ConnectionRecordSet$SortableProperty@START_DATE"/>
+        <bind name="START_DATE" value="@org.apache.guacamole.net.auth.ActivityRecordSet$SortableProperty@START_DATE"/>
 
         <!-- Sort predicates -->
         <foreach collection="sortPredicates" item="sortPredicate"
