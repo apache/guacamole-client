@@ -42,10 +42,10 @@ GO;
 CREATE RULE [guacamole_system_permission_list] 
     AS
     @list IN ('CREATE_CONNECTION',
-        'CREATE_CONNECTION_GROUP',
-        'CREATE_SHARING_PROFILE',
-        'CREATE_USER',
-        'ADMINISTER');
+              'CREATE_CONNECTION_GROUP',
+              'CREATE_SHARING_PROFILE',
+              'CREATE_USER',
+              'ADMINISTER');
 GO;
 
 /**
@@ -65,16 +65,16 @@ GO;
  * The connection_group table stores organizational and balancing groups.
  */
 CREATE TABLE [guacamole_connection_group](
-    [connection_group_id] [int] IDENTITY(1,1) NOT NULL,
-    [parent_id] [int] NULL,
-    [connection_group_name] [nvarchar](128) NOT NULL,
-    [type] [nvarchar](32) NOT NULL,
-    [max_connections] [int] NULL,
+    [connection_group_id]      [int] IDENTITY(1,1) NOT NULL,
+    [parent_id]                [int] NULL,
+    [connection_group_name]    [nvarchar](128) NOT NULL,
+    [type]                     [nvarchar](32) NOT NULL,
+    [max_connections]          [int] NULL,
     [max_connections_per_user] [int] NULL,
-    [enable_session_affinity] [bit] NOT NULL,
+    [enable_session_affinity]  [bit] NOT NULL,
 
     CONSTRAINT [PK_guacmaole_connection_group] PRIMARY KEY CLUSTERED
-        ([connection_group_id] ASC) ON [PRIMARY]
+               ([connection_group_id] ASC) ON [PRIMARY]
 ) ON [PRIMARY];
 
 /**
@@ -82,7 +82,7 @@ CREATE TABLE [guacamole_connection_group](
  */
 ALTER TABLE [guacamole_connection_group]
     WITH CHECK ADD CONSTRAINT [FK_guacamole_connection_group_connection_group_id] FOREIGN KEY([parent_id])
-    REFERENCES [guacamole_connection_group] ([connection_group_id]);
+    REFERENCES                [guacamole_connection_group] ([connection_group_id]);
 ALTER TABLE [guacamole_connection_group]
     CHECK CONSTRAINT [FK_guacamole_connection_group_connection_group_id];
 ALTER TABLE [guacamole_connection_group]
@@ -104,17 +104,17 @@ GO;
  * The connection table, for storing connections and attributes.
  */
 CREATE TABLE [guacamole_connection](
-    [connection_id] [int] IDENTITY(1,1) NOT NULL,
-    [connection_name] [nvarchar](128) NOT NULL,
-    [parent_id] [int] NULL,
-    [protocol] [nvarchar](32) NOT NULL,
-    [proxy_port] [int] NULL,
-    [proxy_hostname] [nvarchar](512) NULL,
-    [proxy_encryption_method] [nvarchar](4) NULL,
-    [max_connections] [int] NULL,
+    [connection_id]            [int] IDENTITY(1,1) NOT NULL,
+    [connection_name]          [nvarchar](128) NOT NULL,
+    [parent_id]                [int] NULL,
+    [protocol]                 [nvarchar](32) NOT NULL,
+    [proxy_port]               [int] NULL,
+    [proxy_hostname]           [nvarchar](512) NULL,
+    [proxy_encryption_method]  [nvarchar](4) NULL,
+    [max_connections]          [int] NULL,
     [max_connections_per_user] [int] NULL,
-    [connection_weight] [int] NULL,
-    [failover_only] [bit] NOT NULL,
+    [connection_weight]        [int] NULL,
+    [failover_only]            [bit] NOT NULL,
 
     CONSTRAINT [PK_guacamole_connection] PRIMARY KEY CLUSTERED
 	([connection_id] ASC) ON [PRIMARY]
@@ -138,22 +138,22 @@ GO;
  * The user table stores user accounts, passwords, and properties.
  */
 CREATE TABLE [guacamole_user](
-    [user_id] [int] IDENTITY(1,1) NOT NULL,
-    [username] [nvarchar](128) NOT NULL,
-    [password_hash] [binary](32) NOT NULL,
-    [password_salt] [binary](32) NULL,
-    [password_date] [datetime] NOT NULL,
-    [disabled] [bit] NOT NULL,
-    [expired] [bit] NOT NULL,
-    [access_window_start] [time](7) NULL,
-    [access_window_end] [time](7) NULL,
-    [valid_from] [date] NULL,
-    [valid_until] [date] NULL,
-    [timezone] [nvarchar](64) NULL,
-    [full_name] [nvarchar](256) NULL,
-    [email_address] [nvarchar](256) NULL,
-    [organization] [nvarchar](256) NULL,
-    [organizational_role] [nvarchar](256) NULL,
+    [user_id]               [int] IDENTITY(1,1) NOT NULL,
+    [username]              [nvarchar](128) NOT NULL,
+    [password_hash]         [binary](32) NOT NULL,
+    [password_salt]         [binary](32) NULL,
+    [password_date]         [datetime] NOT NULL,
+    [disabled]              [bit] NOT NULL,
+    [expired]               [bit] NOT NULL,
+    [access_window_start]   [time](7) NULL,
+    [access_window_end]     [time](7) NULL,
+    [valid_from]            [date] NULL,
+    [valid_until]           [date] NULL,
+    [timezone]              [nvarchar](64) NULL,
+    [full_name]             [nvarchar](256) NULL,
+    [email_address]         [nvarchar](256) NULL,
+    [organization]          [nvarchar](256) NULL,
+    [organizational_role]   [nvarchar](256) NULL,
 
     CONSTRAINT [PK_guacamole_user] PRIMARY KEY CLUSTERED 
         ([user_id] ASC) ON [PRIMARY]
@@ -173,8 +173,8 @@ GO;
  * connections to be shared amongst multiple users.
  */
 CREATE TABLE [guacamole_sharing_profile](
-    [sharing_profile_id] [int] IDENTITY(1,1) NOT NULL,
-    [sharing_profile_name] [nvarchar](128) NOT NULL,
+    [sharing_profile_id]    [int] IDENTITY(1,1) NOT NULL,
+    [sharing_profile_name]  [nvarchar](128) NOT NULL,
     [primary_connection_id] [int] NOT NULL,
 
     CONSTRAINT [PK_guacamole_sharing_profile] PRIMARY KEY CLUSTERED 
@@ -198,8 +198,8 @@ GO;
  * connection objects.
  */
 CREATE TABLE [guacamole_connection_parameter](
-    [connection_id] [int] NOT NULL,
-    [parameter_name] [nvarchar](128) NOT NULL,
+    [connection_id]   [int] NOT NULL,
+    [parameter_name]  [nvarchar](128) NOT NULL,
     [parameter_value] [nvarchar](4000) NOT NULL,
 
     CONSTRAINT [PK_guacamole_connection_parameter] PRIMARY KEY CLUSTERED 
@@ -224,8 +224,8 @@ GO;
  */
 CREATE TABLE [guacamole_sharing_profile_parameter](
     [sharing_profile_id] [int] NOT NULL,
-    [parameter_name] [nvarchar](128) NOT NULL,
-    [parameter_value] [nvarchar](4000) NOT NULL,
+    [parameter_name]     [nvarchar](128) NOT NULL,
+    [parameter_value]    [nvarchar](4000) NOT NULL,
 
     CONSTRAINT [PK_guacamole_sharing_profile_parameter] PRIMARY KEY CLUSTERED 
         ([sharing_profile_id] ASC, [parameter_name] ASC) ON [PRIMARY]
@@ -249,9 +249,9 @@ GO;
  * mappings for connection objects.
  */
 CREATE TABLE [guacamole_connection_permission](
-    [user_id] [int] NOT NULL,
+    [user_id]       [int] NOT NULL,
     [connection_id] [int] NOT NULL,
-    [permission] [guacamole_permission] NOT NULL,
+    [permission]    [guacamole_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_connection_permission] PRIMARY KEY CLUSTERED 
         ([user_id] ASC, [connection_id] ASC, [permission] ASC) ON [PRIMARY]
@@ -281,9 +281,9 @@ GO;
  * connection_group objects.
  */
 CREATE TABLE [guacamole_connection_group_permission](
-    [user_id] [int] NOT NULL,
+    [user_id]             [int] NOT NULL,
     [connection_group_id] [int] NOT NULL,
-    [permission] [guacamole_permission] NOT NULL,
+    [permission]          [guacamole_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_connection_group_permission] PRIMARY KEY CLUSTERED 
         ([user_id] ASC,	[connection_group_id] ASC, [permission] ASC) ON [PRIMARY]
@@ -313,9 +313,9 @@ GO;
  * mappings for sharing_profile objects.
  */
 CREATE TABLE [guacamole_sharing_profile_permission](
-    [user_id] [int] NOT NULL,
+    [user_id]            [int] NOT NULL,
     [sharing_profile_id] [int] NOT NULL,
-    [permission] [guacamole_permission] NOT NULL,
+    [permission]         [guacamole_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_sharing_profile_permission] PRIMARY KEY CLUSTERED 
         ([user_id] ASC, [sharing_profile_id] ASC, [permission] ASC) ON [PRIMARY]
@@ -345,7 +345,7 @@ GO;
  * for system-level operations.
  */
 CREATE TABLE [guacamole_system_permission](
-    [user_id] [int] NOT NULL,
+    [user_id]    [int] NOT NULL,
     [permission] [guacamole_system_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_system_permission] PRIMARY KEY CLUSTERED 
@@ -369,9 +369,9 @@ GO;
  * for users to other users.
  */
 CREATE TABLE [guacamole_user_permission](
-    [user_id] [int] NOT NULL,
+    [user_id]          [int] NOT NULL,
     [affected_user_id] [int] NOT NULL,
-    [permission] [guacamole_permission] NOT NULL,
+    [permission]       [guacamole_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_user_permission] PRIMARY KEY CLUSTERED 
         ([user_id] ASC,	[affected_user_id] ASC,	[permission] ASC) ON [PRIMARY]
@@ -399,16 +399,16 @@ GO;
  * connections.
  */
 CREATE TABLE [guacamole_connection_history](
-    [history_id] [int] IDENTITY(1,1) NOT NULL,
-    [user_id] [int] NULL,
-    [username] [nvarchar](128) NOT NULL,
-    [remote_host] [nvarchar](256) NULL,
-    [connection_id] [int] NULL,
-    [connection_name] [nvarchar](128) NOT NULL,
-    [sharing_profile_id] [int] NULL,
+    [history_id]           [int] IDENTITY(1,1) NOT NULL,
+    [user_id]              [int] NULL,
+    [username]             [nvarchar](128) NOT NULL,
+    [remote_host]          [nvarchar](256) NULL,
+    [connection_id]        [int] NULL,
+    [connection_name]      [nvarchar](128) NOT NULL,
+    [sharing_profile_id]   [int] NULL,
     [sharing_profile_name] [nvarchar](128) NULL,
-    [start_date] [datetime] NOT NULL,
-    [end_date] [datetime] NULL,
+    [start_date]           [datetime] NOT NULL,
+    [end_date]             [datetime] NULL,
 
     CONSTRAINT [PK_guacamole_connection_history] PRIMARY KEY CLUSTERED 
         ([history_id] ASC) ON [PRIMARY]
@@ -445,10 +445,10 @@ GO;
  */
 CREATE TABLE [guacamole_user_password_history](
     [password_history_id] [int] IDENTITY(1,1) NOT NULL,
-    [user_id] [int] NOT NULL,
-    [password_hash] [binary](32) NOT NULL,
-    [password_salt] [binary](32) NULL,
-    [password_date] [datetime] NOT NULL,
+    [user_id]             [int] NOT NULL,
+    [password_hash]       [binary](32) NOT NULL,
+    [password_salt]       [binary](32) NULL,
+    [password_date]       [datetime] NOT NULL,
 
     CONSTRAINT [PK_guacamole_user_password_history] PRIMARY KEY CLUSTERED 
         ([password_history_id] ASC) ON [PRIMARY]
