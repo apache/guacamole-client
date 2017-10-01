@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+
+<mapper namespace="org.apache.guacamole.auth.jdbc.permission.UserPermissionMapper" >
+
+    <!-- Result mapper for user permissions -->
+    <resultMap id="UserPermissionResultMap" type="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
+        <result column="user_id"           property="userID"           jdbcType="INTEGER"/>
+        <result column="username"          property="username"         jdbcType="VARCHAR"/>
+        <result column="permission"        property="type"             jdbcType="VARCHAR"
+                javaType="org.apache.guacamole.net.auth.permission.ObjectPermission$Type"/>
+        <result column="affected_username" property="objectIdentifier" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!-- Select all permissions for a given user -->
+    <select id="select" resultMap="UserPermissionResultMap">
+
+        SELECT
+            [guacamole_user_permission].user_id,
+            [guacamole_user].username,
+            permission,
+            affected.username AS affected_username
+        FROM [guacamole_user_permission]
+        JOIN [guacamole_user] ON [guacamole_user_permission].user_id = [guacamole_user].user_id
+        JOIN [guacamole_user] affected ON [guacamole_user_permission].affected_user_id = affected.user_id
+        WHERE [guacamole_user_permission].user_id = #{user.objectID,jdbcType=INTEGER}
+
+    </select>
+
+    <!-- Select the single permission matching the given criteria -->
+    <select id="selectOne" resultMap="UserPermissionResultMap">
+
+        SELECT
+            [guacamole_user_permission].user_id,
+            [guacamole_user].username,
+            permission,
+            affected.username AS affected_username
+        FROM [guacamole_user_permission]
+        JOIN [guacamole_user] ON [guacamole_user_permission].user_id = [guacamole_user].user_id
+        JOIN [guacamole_user] affected ON [guacamole_user_permission].affected_user_id = affected.user_id
+        WHERE
+            [guacamole_user_permission].user_id = #{user.objectID,jdbcType=INTEGER}
+            AND permission = #{type,jdbcType=VARCHAR}
+            AND affected.username = #{identifier,jdbcType=INTEGER}
+
+    </select>
+
+    <!-- Select identifiers accessible by the given user for the given permissions -->
+    <select id="selectAccessibleIdentifiers" resultType="string">
+
+        SELECT DISTINCT username
+        FROM [guacamole_user_permission]
+        JOIN [guacamole_user] ON [guacamole_user_permission].affected_user_id = [guacamole_user].user_id
+        WHERE
+            [guacamole_user_permission].user_id = #{user.objectID,jdbcType=INTEGER}
+            AND username IN
+                <foreach collection="identifiers" item="identifier"
+                         open="(" separator="," close=")">
+                    #{identifier,jdbcType=INTEGER}
+                </foreach>
+            AND permission IN
+                <foreach collection="permissions" item="permission"
+                         open="(" separator="," close=")">
+                    #{permission,jdbcType=VARCHAR}
+                </foreach>
+
+    </select>
+
+    <!-- Delete all given permissions -->
+    <delete id="delete" parameterType="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
+
+        DELETE FROM [guacamole_user_permission]
+        USING [guacamole_user] affected
+        WHERE
+            [guacamole_user_permission].affected_user_id = affected.user_id
+            AND ([guacamole_user_permission].user_id, permission, affected.username) IN
+                <foreach collection="permissions" item="permission"
+                         open="(" separator="," close=")">
+                    (#{permission.userID,jdbcType=INTEGER},
+                     #{permission.type,jdbcType=VARCHAR},
+                     #{permission.objectIdentifier,jdbcType=INTEGER})
+                </foreach>
+
+    </delete>
+
+    <!-- Insert all given permissions -->
+    <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
+
+        INSERT INTO [guacamole_user_permission] (
+            user_id,
+            permission,
+            affected_user_id
+        )
+        SELECT DISTINCT
+            permissions.user_id,
+            permissions.permission,
+            [guacamole_user].user_id
+        FROM
+            <foreach collection="permissions" item="permission"
+                     open="(" separator="UNION ALL" close=")">
+                SELECT #{permission.userID,jdbcType=INTEGER}                                 AS user_id,
+                       #{permission.type,jdbcType=VARCHAR} AS permission,
+                       #{permission.objectIdentifier,jdbcType=INTEGER}                       AS username
+            </foreach>
+        AS permissions
+        JOIN [guacamole_user] ON [guacamole_user].username = permissions.username
+        WHERE NOT EXISTS (SELECT 1 FROM [guacamole_user_permission]
+            WHERE [guacamole_user_permission].user_id = permissions.user_id
+            AND [guacamole_user_permission].permission = permissions.permission
+            AND [guacamole_user_permission].affected_user_id = [guacamole_user].user_id
+        );
+
+    </insert>
+
+</mapper>

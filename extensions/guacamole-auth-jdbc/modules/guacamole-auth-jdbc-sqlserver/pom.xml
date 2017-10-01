@@ -24,9 +24,9 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-auth-jdbc-dist</artifactId>
+    <artifactId>guacamole-auth-jdbc-sqlserver</artifactId>
     <packaging>jar</packaging>
-    <name>guacamole-auth-jdbc-dist</name>
+    <name>guacamole-auth-jdbc-sqlserver</name>
     <url>http://guacamole.incubator.apache.org/</url>
 
     <properties>
@@ -43,24 +43,38 @@
     <build>
         <plugins>
 
-            <!-- Assembly plugin - for easy distribution -->
+            <!-- Written for 1.6 -->
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.3</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
                 <configuration>
-                    <finalName>${project.parent.artifactId}-${project.parent.version}</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <descriptors>
-                        <descriptor>project-assembly.xml</descriptor>
-                    </descriptors>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <compilerArgs>
+                        <arg>-Xlint:all</arg>
+                        <arg>-Werror</arg>
+                    </compilerArgs>
+                    <fork>true</fork>
                 </configuration>
+            </plugin>
+
+            <!-- Copy dependencies prior to packaging -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
                 <executions>
                     <execution>
-                        <id>make-dist-archive</id>
-                        <phase>package</phase>
+                        <id>unpack-dependencies</id>
+                        <phase>prepare-package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>unpack-dependencies</goal>
                         </goals>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -73,7 +87,7 @@
 
                 <configuration>
                     <excludes>
-                        <exclude>src/licenses/**/*</exclude>
+                        <exclude>**/*.json</exclude>
                     </excludes>
                 </configuration>
 
@@ -95,24 +109,17 @@
 
     <dependencies>
 
-        <!-- MySQL Authentication Extension -->
+        <!-- Guacamole Extension API -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-auth-jdbc-mysql</artifactId>
-            <version>0.9.13-incubating</version>
+            <artifactId>guacamole-ext</artifactId>
+            <scope>provided</scope>
         </dependency>
 
-        <!-- PostgreSQL Authentication Extension -->
+        <!-- Guacamole JDBC Authentication -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-auth-jdbc-postgresql</artifactId>
-            <version>0.9.13-incubating</version>
-        </dependency>
-
-        <!-- SQL Server Authentication Extension -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-auth-jdbc-sqlserver</artifactId>
+            <artifactId>guacamole-auth-jdbc-base</artifactId>
             <version>0.9.13-incubating</version>
         </dependency>
 
