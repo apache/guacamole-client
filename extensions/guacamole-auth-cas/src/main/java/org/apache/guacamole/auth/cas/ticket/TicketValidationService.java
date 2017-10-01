@@ -63,6 +63,9 @@ public class TicketValidationService {
      *
      * @param ticket
      *     The ID ticket to validate and parse.
+     * @param credentials
+     *     The Credentials object to store retrieved username and
+     *     password values in.
      *
      * @return
      *     The username derived from the ticket.
