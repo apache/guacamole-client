@@ -27,6 +27,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.nio.charset.Charset;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
@@ -83,6 +84,7 @@ public class TicketValidationService {
         String casServerUrl = confService.getAuthorizationEndpoint();
         Cas20ProxyTicketValidator validator = new Cas20ProxyTicketValidator(casServerUrl);
         validator.setAcceptAnyProxy(true);
+        validator.setEncoding("UTF-8");
         try {
             String confRedirectURI = confService.getRedirectURI();
             Assertion a = validator.validate(ticket, confRedirectURI);
@@ -155,7 +157,7 @@ public class TicketValidationService {
             // Decode and decrypt, and return a new string.
             final byte[] pass64 = DatatypeConverter.parseBase64Binary(encryptedPassword);
             final byte[] cipherData = cipher.doFinal(pass64);
-            return new String(cipherData);
+            return new String(cipherData, Charset.forName("UTF-8"));
 
         }
         catch (BadPaddingException e) {
