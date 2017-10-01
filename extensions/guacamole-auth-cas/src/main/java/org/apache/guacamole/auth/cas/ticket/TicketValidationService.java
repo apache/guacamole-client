@@ -57,21 +57,21 @@ public class TicketValidationService {
     private ConfigurationService confService;
 
     /**
-     * Validates and parses the given ID ticket, returning the Credentials object
-     * derived from the parameters provided by the CAS server in the ticket.  If the
+     * Validates and parses the given ID ticket, returning the username
+     * provided by the CAS server in the ticket.  If the
      * ticket is invalid an exception is thrown.
      *
      * @param ticket
      *     The ID ticket to validate and parse.
      *
      * @return
-     *     The Credentials object derived from parameters provided in the ticket.
+     *     The username derived from the ticket.
      *
      * @throws GuacamoleException
      *     If the ID ticket is not valid or guacamole.properties could
      *     not be parsed.
      */
-    public Credentials validateTicket(String ticket) throws GuacamoleException {
+    public String validateTicket(String ticket, Credentials credentials) throws GuacamoleException {
 
         // Retrieve the configured CAS URL, establish a ticket validator,
         // and then attempt to validate the supplied ticket.  If that succeeds,
@@ -80,7 +80,6 @@ public class TicketValidationService {
         Cas20ProxyTicketValidator validator = new Cas20ProxyTicketValidator(casServerUrl);
         validator.setAcceptAnyProxy(true);
         try {
-            Credentials ticketCredentials = new Credentials();
             String confRedirectURI = confService.getRedirectURI();
             Assertion a = validator.validate(ticket, confRedirectURI);
             AttributePrincipal principal =  a.getPrincipal();
@@ -88,17 +87,17 @@ public class TicketValidationService {
             // Retrieve username and set the credentials.
             String username = principal.getName();
             if (username != null)
-                ticketCredentials.setUsername(username);
+                credentials.setUsername(username);
 
             // Retrieve password, attempt decryption, and set credentials.
             Object credObj = principal.getAttributes().get("credential");
             if (credObj != null) {
                 String clearPass = decryptPassword(credObj.toString());
                 if (clearPass != null && !clearPass.isEmpty())
-                    ticketCredentials.setPassword(clearPass);
+                    credentials.setPassword(clearPass);
             }
 
-            return ticketCredentials;
+            return username;
 
         } 
         catch (TicketValidationException e) {

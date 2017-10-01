@@ -87,18 +87,12 @@ public class AuthenticationProviderService {
         if (request != null) {
             String ticket = request.getParameter(CASTicketField.PARAMETER_NAME);
             if (ticket != null) {
-                Credentials ticketCredentials = ticketService.validateTicket(ticket);
-                if (ticketCredentials != null) {
-                    String username = ticketCredentials.getUsername();
-                    if (username != null)
-                        credentials.setUsername(username);
-                    String password = ticketCredentials.getPassword();
-                    if (password != null)
-                        credentials.setPassword(password);
+                String username = ticketService.validateTicket(ticket, credentials);
+                if (username != null) {
+                    AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+                    authenticatedUser.init(username, credentials);
+                    return authenticatedUser;
                 }
-                AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-                authenticatedUser.init(credentials.getUsername(), credentials);
-                return authenticatedUser;
             }
         }
 
