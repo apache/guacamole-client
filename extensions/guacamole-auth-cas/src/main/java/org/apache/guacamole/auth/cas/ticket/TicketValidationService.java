@@ -140,7 +140,7 @@ public class TicketValidationService {
 
         final PrivateKey clearpassKey = confService.getClearpassKey();
         if (clearpassKey == null) {
-            logger.warn("No private key available to decrypt password.");
+            logger.debug("No private key available to decrypt password.");
             return null;
         }
 
