@@ -70,10 +70,10 @@ public abstract class PrivateKeyGuacamoleProperty implements GuacamoleProperty<P
             throw new GuacamoleServerException("Could not read in the specified key file.", e);
         }
         catch (NoSuchAlgorithmException e) {
-            throw new GuacamoleServerException("Key is not in expected RSA algorithm.", e);
+            throw new GuacamoleServerException("RSA algorithm is not available.", e);
         }
         catch (InvalidKeySpecException e) {
-            throw new GuacamoleServerException("KeyS is not in expected PKCS8 encoding.", e);
+            throw new GuacamoleServerException("Key is not in expected PKCS8 encoding.", e);
         }
 
     }
