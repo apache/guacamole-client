@@ -209,16 +209,34 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
 
     }
 
+    /**
+     * Returns a resource which provides a read-only copy of the prompts for
+     * a particular connection, which need to be filled in by the user before
+     * the connection can be completed.
+     *
+     * @return
+     *     A read-only resource with the prompts that the user needs to fill
+     *     in before a connection can be completed.
+     *
+     * @throws GuacamoleException
+     *     If the prompt entries associated with this connection cannot be
+     *     retrieved.
+     */
     @GET
     @Path("prompts")
     public List<PromptEntry> getPrompts() throws GuacamoleException {
 
         List<PromptEntry> promptEntries = new ArrayList<PromptEntry>();
 
+        // Get the connection configuration parameters and then filter for prompts.
         Map <?, String> parameters = connection.getConfiguration().getParameters();
         Map <String, List<String>> prompts = TokenFilter.getPrompts(parameters);
+
+        // Get protocol information for the configured protocol.
         Collection<Form> myForms = environment.getProtocol(connection.getConfiguration().getProtocol()).getConnectionForms();
 
+        // Loop through each prompt and find the matching Field object for the
+        // parameter.
         for (Map.Entry<String, List<String>> entry : prompts.entrySet()) {
             String parameter = entry.getKey();
             List<String> positions = entry.getValue();
@@ -227,11 +245,8 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
             for (Form form : myForms) {
                 Collection<Field> myFields = form.getFields();
                 for (Field field : myFields) {
-                    Boolean wholeParameter = true;
-                    if (positions.size() > 1)
-                        wholeParameter = false;
                     if (parameter.equals(field.getName())) {
-                        promptEntries.add(new PromptEntry(field,value,wholeParameter,positions));
+                        promptEntries.add(new PromptEntry(field,value,positions));
                         break formLoop;
                     }
                 }

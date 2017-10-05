@@ -47,7 +47,7 @@ public class TokenFilter {
      * Regular expression which matches the prompt token, specifically, with
      * groups to match leading text, escape characters, etc.
      */
-    private static final Pattern promptPattern = Pattern.compile("(.*?)(^|.)(\\$\\{" + PromptTokens.PROMPT_TOKEN_STRING + "\\})");
+    private static final Pattern promptPattern = Pattern.compile("(.*?)(^|.)(\\$\\{" + StandardTokens.PROMPT_TOKEN_STRING + "\\})");
 
     /**
      * The index of the capturing group within tokenPattern which matches
@@ -221,6 +221,7 @@ public class TokenFilter {
      *
      * @param input
      *     String to filter for prompt tokens.
+     *
      * @param tokens
      *     List of 0-indexed strings provided to replace
      *     occurences of the prompt token with.
@@ -235,8 +236,8 @@ public class TokenFilter {
         if (tokens == null || tokens.size() < 1)
             return input;
 
-        // If the entire input is equal to one of the tokens, return the first value.
-        if (input.equals(PromptTokens.PROMPT_TOKEN_STRING) || input.equals(PromptTokens.PROMPT_TOKEN_NUMERIC))
+        // If input is equal to the numeric token, return immediately.
+        if (input.equals(StandardTokens.PROMPT_TOKEN_NUMERIC))
             return tokens.get(0);
 
         StringBuilder output = new StringBuilder();
@@ -319,7 +320,6 @@ public class TokenFilter {
     public static Map<String, List<String>> getPrompts(Map<?, String> parameters) {
 
         Map<String, List<String>> prompts = new HashMap<String, List<String>>();
-        final String fullPromptString = "${" + PromptTokens.PROMPT_TOKEN_STRING + "}";
 
         // Loop through each parameter entry
         for (Map.Entry<?, String> entry : parameters.entrySet()) {
@@ -327,15 +327,11 @@ public class TokenFilter {
             String key = entry.getKey().toString();
             String value = entry.getValue();
 
-            // If the entire parameter value equals one of the tokens,
-            // add it to the list and go to next
-            // entry.
-            if (value.equals(PromptTokens.PROMPT_TOKEN_NUMERIC) ||
-                value.equals(fullPromptString)) {
-
+            // If the entire parameter value equals the numeric prompt
+            // token, add it and go to the next entry.
+            if (value.equals(StandardTokens.PROMPT_TOKEN_NUMERIC)) {
                 prompts.put(key, Collections.<String>singletonList(""));
                 continue;
-
             }
 
             Matcher promptMatcher = promptPattern.matcher(value);
@@ -354,16 +350,10 @@ public class TokenFilter {
                     continue;
                 }
 
-                // If char is not '$', interpret as a token
+                // If char is not '$', interpret as a prompt
                 else {
-
-                    // Pull token value
-                    String token = promptMatcher.group(TOKEN_GROUP);
-                    if (token.equals(fullPromptString)) {
-                        String pretext = literal + escape;
-                        promptList.add(pretext);
-                    }
-
+                    String pretext = literal + escape;
+                    promptList.add(pretext);
                 }
 
             }
@@ -383,6 +373,7 @@ public class TokenFilter {
      *
      * @param parameters
      *     Configuration parameters pulled from the connection configuration.
+     *
      * @param prompts
      *     Data provided via input from the user.
      */

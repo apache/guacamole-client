@@ -173,6 +173,26 @@ public class TunnelRequestService {
         return info;
     }
 
+    /**
+     * Given a TunnelRequest, Connection, and GuacamoleClientInformation, go through
+     * any prompts for the given connection, and add the user-provided values to
+     * the list of parameters for the client.
+     *
+     * @param request
+     *     The TunnelRequest object that contains potential user-provided
+     *     input.
+     *
+     * @param connection
+     *     The Connection object for which parameters are being provided.
+     *
+     * @param info
+     *     The GuacamoleClientInformation object where the user-provided
+     *     parameters will be stored.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs retrieving the connection, configuration, or
+     *     parameters, or if a required parameter was not provided.
+     */
     protected void getUserInput(TunnelRequest request, Connection connection,
             GuacamoleClientInformation info) throws GuacamoleException {
 
@@ -180,18 +200,17 @@ public class TunnelRequestService {
         Map<String, List<String>> prompts = TokenFilter.getPrompts(connection.getConfiguration().getParameters());
         Map<String, List<String>> clientParameters = info.getParameters();
 
+        // Loop through prompts for a connection and grab the associated user-provided
+        // data.
         for (Map.Entry<String, List<String>> entry : prompts.entrySet()) {
             String parameter = entry.getKey();
             List<String> positions = entry.getValue();
-            logger.debug(">>>PROMPT<<< Looking for parameter {}", parameter);
             List<String> valueList = new ArrayList<String>();
             for (int i = 0; i < positions.size(); i++) {
                 String userValue = request.getParameter(parameter + "[" + i + "]");
                 if (userValue == null)
                     throw new GuacamoleException("Expected parameter was not provided: " + parameter);
                 valueList.add(userValue);
-                logger.debug(">>>PROMPT<<< Getting the {} value for parameter {}: {}", i, parameter, userValue);
-                    
             }
             clientParameters.put(parameter, valueList);
         }
@@ -215,6 +234,9 @@ public class TunnelRequestService {
      *
      * @param info
      *     Information describing the connected Guacamole client.
+     *
+     * @param request
+     *     The TunnelRequest coming in to the serve.
      *
      * @return
      *     A new tunnel, connected as required by the request.

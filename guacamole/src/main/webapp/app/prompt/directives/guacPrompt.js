@@ -18,7 +18,7 @@
  */
 
 /**
- * A directive for the guacamole client.
+ * A directive for the prompt display for the client.
  */
 angular.module('prompt').directive('guacPrompt', [function guacPrompt() {
 
@@ -44,10 +44,15 @@ angular.module('prompt').directive('guacPrompt', [function guacPrompt() {
         },
 
         templateUrl: 'app/prompt/templates/guacPrompt.html',
-        controller: ['$scope', '$injector', '$log', function guacPromptController($scope,$injector,$log) {
+        controller: ['$scope', '$injector', function guacPromptController($scope,$injector) {
 
             var translationStringService = $injector.get('translationStringService');
 
+            /**
+             * The data the user enters.
+             *
+             * @type Object
+             */
             $scope.responses = {};
 
             /**
@@ -76,10 +81,6 @@ angular.module('prompt').directive('guacPrompt', [function guacPrompt() {
 
             };
 
-            $scope.getNumber = function getNumber(num) {
-                return new Array(num);
-            };
-
             // Update string value and re-assign to model when field is changed
             $scope.$watch('prompt.responses', function setModel(model) {
 
@@ -93,26 +94,6 @@ angular.module('prompt').directive('guacPrompt', [function guacPrompt() {
 
             });
 
-            $scope.getFields = function getFields(prompt) {
-
-                var formFields = [];
-
-                var PromptFinder = /(.*?)(^|.)(\$\{GUAC_PROMPT\})/g;
-                for (i = 0; (promptArray = PromptFinder.exec(prompt.value)) !== null; i++) {
-                    formFields[i] = {};
-                    $log.debug('>>>PROMPT<<< FOUND:' + promptArray);
-                    if (promptArray[1] !== undefined && promptArray[1] != '')
-                        formFields[i]['pretext'] = promptArray[1];
-                    if (promptArray[2] !== undefined && promptArray[2] != '$') {
-                        formFields[i]['pretext'] += promptArray[2];
-                        formFields[i]['field'] = prompt.field;
-                    }
-                }
-
-                $log.debug('>>>PROMPT<<< ' + formFields);
-                return formFields;
-
-            };
 
         }]
 

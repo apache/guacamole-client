@@ -51,6 +51,16 @@ public class StandardTokens {
     public static final String CLIENT_ADDRESS_TOKEN = "GUAC_CLIENT_ADDRESS";
 
     /**
+     * The token that triggers prompts for numeric fields.
+     */
+    public static final String PROMPT_TOKEN_NUMERIC = "-1";
+
+    /**
+     * The token that triggers prompts for string fields.
+     */
+    public static final String PROMPT_TOKEN_STRING = "GUAC_PROMPT";
+
+    /**
      * The name of the date token (server-local time) added via
      * addStandardTokens().
      */

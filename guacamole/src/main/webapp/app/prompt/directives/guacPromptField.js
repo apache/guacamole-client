@@ -18,7 +18,7 @@
  */
 
 /**
- * A directive for the guacamole client.
+ * A directive for the prompt field for the client.
  */
 angular.module('prompt').directive('guacPromptField', [function guacPromptField() {
 
@@ -57,18 +57,7 @@ angular.module('prompt').directive('guacPromptField', [function guacPromptField(
 
         },
 
-        templateUrl: 'app/prompt/templates/guacPromptField.html',
-        controller: ['$scope', '$injector', '$log', function guacPromptFieldController($scope,$injector,$log) {
-
-            var translationStringService = $injector.get('translationStringService');
-
-            $scope.responses = {};
-
-            $scope.$watch('pretext', function(newtext) {
-                $log.debug('>>>PROMPT<<< pretext: ' + newtext);
-            });
-
-        }]
+        templateUrl: 'app/prompt/templates/guacPromptField.html'
 
     };
 }]);

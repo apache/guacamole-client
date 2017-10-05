@@ -18,14 +18,13 @@
  */
 
 /**
- * Service for displaying prompts and modal status dialogs.
+ * Service for displaying prompts as modal dialogs.
  */
 angular.module('prompt').factory('guacPrompt', ['$injector',
         function guacPrompt($injector) {
 
     // Required services
     var $location             = $injector.get('$location');
-    var $log                  = $injector.get('$log');
     var $q                    = $injector.get('$q');
     var $rootScope            = $injector.get('$rootScope');
     var $window               = $injector.get('$window');
@@ -34,16 +33,16 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
     var service = {};
 
     /**
-     * Getter/setter which retrieves or sets the current status prompt,
-     * which may simply be false if no status is currently shown.
+     * Object which retrieves or sets the current prompts,
+     * or false if no prompt is currently shown.
      * 
      * @type Function
      */
     var storedPrompt = sessionStorageFactory.create(false);
 
     /**
-     * Retrieves the current status prompt, which may simply be false if
-     * no status is currently shown.
+     * Retrieves the current prompt, or false if no prompt
+     * is currently shown.
      * 
      * @type Prompt|Boolean
      */
@@ -52,31 +51,11 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
     };
 
     /**
-     * Shows or hides the given prompt as a modal status. If a status
-     * prompt is currently shown, no further statuses will be shown
-     * until the current status is hidden.
+     * Shows or hides the given prompt as a modal dialog.  Only one
+     * prompt dialog will be shown at a time.
      *
      * @param {Prompt|Boolean|Object} status
-     *     The status prompt to show.
-     *
-     * @example
-     * 
-     * // To show a status message with actions
-     * guacPrompt.showPrompt({
-     *     'title'      : 'Disconnected',
-     *     'text'       : {
-     *         'key' : 'NAMESPACE.SOME_TRANSLATION_KEY'
-     *     },
-     *     'actions'    : {
-     *         'name'       : 'reconnect',
-     *         'callback'   : function () {
-     *             // Reconnection code goes here
-     *         }
-     *     }
-     * });
-     * 
-     * // To hide the status message
-     * guacPrompt.showPrompt(false);
+     *     The prompt object to show.
      */
     service.showPrompt = function showPrompt(status) {
         if (!storedPrompt() || !status)
@@ -84,12 +63,20 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
     };
 
     /**
-     * Prompt for fields.
+     * Taking a list of prompts and a connection, display the prompt
+     * dialog for the user to fill out, and return a promise that
+     * responses will be provided.
+     *
+     * @param prompts
+     *     The list of prompts to display to the user.
+     *
+     * @param connection
+     *     The connection that the prompts are being used for.
+     *
+     * @returns
+     *     A promise for responses that the user will fill in.
      */
     service.getUserInput = function getUserInput(prompts,connection) {
-
-        $log.debug('Received prompt object: ' + JSON.stringify(prompts));
-        $log.debug('Received connection object: ' + JSON.stringify(connection));
 
         var deferred = $q.defer();
         var responses = {};
@@ -105,7 +92,6 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
             'actions'   : [{
                 'name'  : 'Connect',
                 'callback' : function() {
-                    $log.debug('Received responses: ' + responses);
                     deferred.resolve(responses);
                     service.showPrompt(false);
                 },
@@ -113,7 +99,6 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
             {
                 'name'  : 'Cancel',
                 'callback' : function() {
-                    $log.debug('Cancelling connection and going home.');
                     deferred.reject();
                     service.showPrompt(false);
                     $location.url(homeUrl);
@@ -122,16 +107,26 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
             'responses' : responses
         });
 
-        $log.debug('One day, we will return those prompts, we promise!');
         return deferred.promise;
 
     };
 
+    /**
+     * Method to stop propagation of events.
+     *
+     * @param event
+     *     The event to stop.
+     */
     var preventEvent = function(event) {
         if (service.getPrompt())
             event.stopPropagation();
     };
 
+    /**
+     * When the prompt object is displayed, prevent keypress and
+     * mouse clicks from propagating through to the client so that
+     * the prompt dialog can be completed.
+     */
     $window.addEventListener('input', preventEvent, true);
     $window.addEventListener('keydown', preventEvent, true);
     $window.addEventListener('keypress', preventEvent, true);

@@ -25,59 +25,131 @@ import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.form.Field;
 
+/**
+ * A class that collects all of the information required to
+ * to display a prompt to the user during client connection.
+ */
 public class PromptEntry {
 
+    /**
+     * The Field data associated with the prompt.
+     */
     private Field field;
 
+    /**
+     * The entire value for the parameter being prompted.
+     */
     private String value;
 
-    private Boolean wholeParameter;
-
+    /**
+     * A 0-indexed list of String data up to the position of each
+     * prompt.
+     */
     private List<String> positions;
 
-    public PromptEntry(Field field, String value, Boolean wholeParameter,
-            List<String> positions) {
+    /**
+     * Constructor that collects all of the data and assigns it.
+     *
+     * @param field
+     *     The Field object for the prompt.
+     *
+     * @param value
+     *     The entire parameter value including prompt tokens.
+     *
+     * @param positions
+     *     0-indexed list of text leading up to the position of each
+     *     prompt.
+     */
+    public PromptEntry(Field field, String value, List<String> positions) {
+
         this.field = field;
         this.value = value;
-        this.wholeParameter = wholeParameter;
         this.positions = positions;
     }
 
+    /**
+     * Constructor that takes only field data and fills in defaults
+     * for the rest of the entries, assuming the entire parameter
+     * is being prompted.
+     *
+     * @param field
+     * Field object for this prompt.
+     */
     public PromptEntry(Field field) {
         this.field = field;
         this.value = "-1";
-        this.wholeParameter = true;
-        this.positions = Collections.<String>singletonList("-1");
+        this.positions = Collections.<String>singletonList("");
     }
 
+    /**
+     * Return the Field object for this PromptEntry.
+     *
+     * @return
+     *     The Field object for this prompt.
+     */
     public Field getField() {
         return field;
     }
 
+    /**
+     * Set the Field object for this PromptEntry.
+     *
+     * @param field
+     *     The Field object for this prompt.
+     */
     public void setField(Field field) {
         this.field = field;
     }
 
+    /**
+     * Get the entire String value for this
+     * parameter.
+     *
+     * @return
+     *     The String value for this parameter.
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * Set the String value of the parameter
+     * being prompted.
+     *
+     * @param value
+     *     The value of the parameter being
+     *     prompted.
+     */
     public void setValue(String value) {
         this.value = value;
     }
 
-    public Boolean getWholeParameter() {
-        return wholeParameter;
-    }
-
-    public void setWholeParameter(Boolean wholeParameter) {
-        this.wholeParameter = wholeParameter;
-    }
-
+    /**
+     * Return the list of positions which is
+     * a 0-indexed list of strings where the
+     * string is any text preceeding the prompt
+     * token.
+     *
+     * @return
+     *     A 0-indexed list of strings, where
+     *     each string is any text leading up to
+     *     the prompt token.
+     */
     public List<String> getPositions() {
         return positions;
     }
 
+    /**
+     * Set the list of positions, where the list
+     * is a 0-indexed list of Strings and where
+     * the string object is any text leading
+     * up to the prompt token.
+     *
+     * @param positions
+     *     A 0-indexed list of Strings, where
+     *     each string is any text leading up to
+     *     the prompt token.
+     */
     public void setPositions(List<String> positions) {
         this.positions = positions;
     }

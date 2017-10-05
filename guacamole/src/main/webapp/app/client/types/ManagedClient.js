@@ -36,7 +36,6 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
     // Required services
     var $document              = $injector.get('$document');
-    var $log                   = $injector.get('$log');
     var $q                     = $injector.get('$q');
     var $rootScope             = $injector.get('$rootScope');
     var $window                = $injector.get('$window');
@@ -304,7 +303,6 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      */
     ManagedClient.getInstance = function getInstance(id, connectionParameters) {
 
-        $log.debug(connectionParameters);
         var tunnel;
 
         // If WebSocket available, try to use it.
@@ -521,16 +519,19 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
         // Get Connection Prompts
         var gettingConnectionPrompts = connectionService.getConnectionPrompts(clientIdentifier.dataSource, clientIdentifier.id);
-        
+
+        // When we've received connection data and prompts, display prompts to user.        
         $q.all([gettingConnectionData,gettingConnectionPrompts])
         .then(function connectClient(clientData) {
 
-            $log.debug(clientData);
             var connData = clientData[0].data;
             var connPrompts = clientData[1].data;
+
+            // Display the prompts, then process them
             guacPrompt.getUserInput(connPrompts,connData)
             .then(function receivedUserInput(data) {
-                $log.debug(data);
+
+                // Create a parameter string from the received data
                 var userData = '';
                 for (var key in data) {
                     var param = data[key];
@@ -542,7 +543,8 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                     }
                 }
                 connectionParameters = (connectionParameters ? connectionParameters + '&' + userData : userData);
-                $log.debug(connectionParameters);
+
+                // Get the connection string, and then connect.
                 getConnectString(clientIdentifier, connectionParameters)
                 .then(function connectClient(connectString) {
                     client.connect(connectString);
@@ -550,7 +552,6 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                 });
             })
             .catch(function noUserInput(reason) {
-                $log.debug(reason);
 
                 // Disconnect, if connected
                 client.disconnect();
@@ -564,7 +565,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             
         });
 
-
+        // Set the window title.
         gettingConnectionData.success(function connectionRetrieved(connection) {
             managedClient.name = managedClient.title = connection.name;
         });

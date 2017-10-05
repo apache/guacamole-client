@@ -119,6 +119,20 @@ angular.module('rest').factory('connectionService', ['$injector',
  
     };
 
+    /**
+     * Requests the prompts for a given dataSource and connection from the
+     * REST API, return a promise that provides a list of PromptEntry objects
+     * if the request is successful.
+     *
+     * @param {String} dataSource
+     *     The name of the dataSource where the connection is configured.
+     *
+     * @param {String} id
+     *     The identifier of the connection.
+     *
+     * @returns {Promise.<List.<Object>>}
+     *     A list of PromptEntry objects when request successful.
+     */
     service.getConnectionPrompts = function getConnectionPrompts(dataSource, id) {
 
         // Build HTTP parameters set
