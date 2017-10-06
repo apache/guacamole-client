@@ -82,30 +82,35 @@ angular.module('prompt').factory('guacPrompt', ['$injector',
         var responses = {};
         var homeUrl = '/';
 
-        service.showPrompt({
-            'title'     : 'Connection Parameters for ' + connection.name,
-            'connection' : connection,
-            'text'      : {
-                key     : 'Please provide the following parameters to complete the connection:'
-            },
-            'prompts'   : prompts,
-            'actions'   : [{
-                'name'  : 'Connect',
-                'callback' : function() {
-                    deferred.resolve(responses);
-                    service.showPrompt(false);
+        if (prompts.length < 1)
+            deferred.resolve();
+
+        else {
+            service.showPrompt({
+                'title'     : 'Connection Parameters for ' + connection.name,
+                'connection' : connection,
+                'text'      : {
+                    key     : 'Please provide the following parameters to complete the connection:'
                 },
-            },
-            {
-                'name'  : 'Cancel',
-                'callback' : function() {
-                    deferred.reject();
-                    service.showPrompt(false);
-                    $location.url(homeUrl);
+                'prompts'   : prompts,
+                'actions'   : [{
+                    'name'  : 'Connect',
+                    'callback' : function() {
+                        deferred.resolve(responses);
+                        service.showPrompt(false);
+                    },
                 },
-            }],
-            'responses' : responses
-        });
+                {
+                    'name'  : 'Cancel',
+                    'callback' : function() {
+                        deferred.reject();
+                        service.showPrompt(false);
+                        $location.url(homeUrl);
+                    },
+                }],
+                'responses' : responses
+            });
+        }
 
         return deferred.promise;
 
