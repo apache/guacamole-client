@@ -39,12 +39,12 @@ public interface Listener {
      * details.
      *
      * @param event
-     *     an object that describes the subject event
+     *     An object that describes the event that has occurred.
      *
      * @throws GuacamoleException
      *     If the listener wishes to stop notification of the event to subsequent
      *     listeners. For some event types, this acts to veto an action in progress;
-     *     e.g. treating a successful authentication as though it failed
+     *     e.g. treating a successful authentication as though it failed.
      */
     void handleEvent(Object event) throws GuacamoleException;
 

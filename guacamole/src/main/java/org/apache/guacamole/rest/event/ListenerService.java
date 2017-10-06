@@ -30,6 +30,9 @@ import org.apache.guacamole.net.event.listener.Listener;
  */
 public class ListenerService implements Listener {
 
+    /**
+     * The collection of registered listeners.
+     */
     @Inject
     private List<Listener> listeners;
 
@@ -39,9 +42,10 @@ public class ListenerService implements Listener {
      * until all listeners have been notified.
      *
      * @param event
-     *     an object that describes the subject event
+     *      An object that describes the event that has occurred.
      *
-     * @throws GuacamoleException if a registered listener throws a GuacamoleException
+     * @throws GuacamoleException
+     *      If a registered listener throws a GuacamoleException.
      */
     @Override
     public void handleEvent(Object event) throws GuacamoleException {

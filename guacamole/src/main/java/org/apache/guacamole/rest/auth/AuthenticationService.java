@@ -79,7 +79,7 @@ public class AuthenticationService {
     private AuthTokenGenerator authTokenGenerator;
 
     /**
-     * The service to use to notify registered authentication listeners
+     * The service to use to notify registered authentication listeners.
      */
     @Inject
     private ListenerService listenerService;
@@ -222,11 +222,13 @@ public class AuthenticationService {
      * has occurred.
      *
      * @param authenticatedUser
-     *      The user that was successfully authenticated
+     *      The user that was successfully authenticated.
+     *
      * @param session
-     *      Existing session for the user (if any)
+     *      The existing session for the user (if any).
+     *
      * @throws GuacamoleException
-     *      If thrown by a listener
+     *      If thrown by a listener.
      */
     private void fireAuthenticationSuccessEvent(
             AuthenticatedUser authenticatedUser, GuacamoleSession session)
@@ -246,9 +248,10 @@ public class AuthenticationService {
      * Notify all bound listeners that an authentication attempt has failed.
      *
      * @param credentials
-     *      The credentials that failed to authenticate
+     *      The credentials that failed to authenticate.
+     *
      * @throws GuacamoleException
-     *      If thrown by a listener
+     *      If thrown by a listener.
      */
     private void fireAuthenticationFailedEvent(Credentials credentials)
             throws GuacamoleException {

@@ -380,7 +380,7 @@ public class ExtensionManifest {
      * class name.
      *
      * @param listeners
-     *      a collection of classnames for all listeners within the extension
+     *      A collection of classnames for all listeners within the extension.
      */
     public void setListeners(Collection<String> listeners) {
         this.listeners = listeners;

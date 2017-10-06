@@ -45,10 +45,10 @@ class ListenerFactory {
      * objects that adapt the legacy listener interfaces will be returned.
      *
      * @param providerClass
-     *      a class that represents a listener provider
+     *      A class that represents a listener.
      *
      * @return
-     *      list of listeners represented by the given provider class
+     *      The list of listeners represented by the given provider class.
      */
     static List<Listener> createListeners(Class<?> providerClass) {
 
@@ -62,6 +62,16 @@ class ListenerFactory {
 
     }
 
+    /**
+     * Creates a list of adapters for the given object, based on the legacy
+     * listener interfaces it implements.
+     *
+     * @param provider
+     *      An object that implements zero or more legacy listener interfaces.
+     *
+     * @return
+     *      The list of listeners represented by the given provider class.
+     */
     @SuppressWarnings("deprecation")
     private static List<Listener> createListenerAdapters(Object provider) {
 
@@ -98,13 +108,16 @@ class ListenerFactory {
     @SuppressWarnings("deprecation")
     private static class AuthenticationSuccessListenerAdapter implements Listener {
 
+        /**
+         * The delegate listener for this adapter.
+         */
         private final AuthenticationSuccessListener delegate;
 
         /**
-         * Constructs a new adapter.
+         * Constructs a new adapter that delivers events to the given delegate.
          *
          * @param delegate
-         *      the delegate listener
+         *      The delegate listener.
          */
         AuthenticationSuccessListenerAdapter(AuthenticationSuccessListener delegate) {
             this.delegate = delegate;
@@ -116,10 +129,10 @@ class ListenerFactory {
          * to veto the authentication success event. All other event types are ignored.
          *
          * @param event
-         *     an object that describes the subject event
+         *     An object that describes the event that occurred.
          *
          * @throws GuacamoleException
-         *      if thrown by the delegate listener
+         *      If thrown by the delegate listener.
          */
         @Override
         public void handleEvent(Object event) throws GuacamoleException {
@@ -140,13 +153,16 @@ class ListenerFactory {
     @SuppressWarnings("deprecation")
     private static class AuthenticationFailureListenerAdapter implements Listener {
 
+        /**
+         * The delegate listener for this adapter.
+         */
         private final AuthenticationFailureListener delegate;
 
         /**
-         * Constructs a new adapter.
+         * Constructs a new adapter that delivers events to the given delegate.
          *
          * @param delegate
-         *      the delegate listener
+         *      The delegate listener.
          */
         AuthenticationFailureListenerAdapter(AuthenticationFailureListener delegate) {
             this.delegate = delegate;
@@ -157,10 +173,10 @@ class ListenerFactory {
          * listener. All other event types are ignored.
          *
          * @param event
-         *     an object that describes the subject event
+         *     An object that describes the event that occurred.
          *
          * @throws GuacamoleException
-         *      if thrown by the delegate listener
+         *      If thrown by the delegate listener.
          */
         @Override
         public void handleEvent(Object event) throws GuacamoleException {
@@ -178,13 +194,16 @@ class ListenerFactory {
     @SuppressWarnings("deprecation")
     private static class TunnelConnectListenerAdapter implements Listener {
 
+        /**
+         * The delegate listener for this adapter.
+         */
         private final TunnelConnectListener delegate;
 
         /**
-         * Constructs a new adapter.
+         * Constructs a new adapter that delivers events to the given delegate.
          *
          * @param delegate
-         *      the delegate listener
+         *      The delegate listener.
          */
         TunnelConnectListenerAdapter(TunnelConnectListener delegate) {
             this.delegate = delegate;
@@ -196,10 +215,10 @@ class ListenerFactory {
          * to veto the tunnel connect event. All other event types are ignored.
          *
          * @param event
-         *     an object that describes the subject event
+         *     An object that describes the event that occurred.
          *
          * @throws GuacamoleException
-         *      if thrown by the delegate listener
+         *      If thrown by the delegate listener.
          */
         @Override
         public void handleEvent(Object event) throws GuacamoleException {
@@ -219,13 +238,16 @@ class ListenerFactory {
     @SuppressWarnings("deprecation")
     private static class TunnelCloseListenerAdapter implements Listener {
 
+        /**
+         * The delegate listener for this adapter.
+         */
         private final TunnelCloseListener delegate;
 
         /**
-         * Constructs a new adapter.
+         * Constructs a new adapter that delivers events to the given delegate.
          *
          * @param delegate
-         *      the delegate listener
+         *      The delegate listener.
          */
         TunnelCloseListenerAdapter(TunnelCloseListener delegate) {
             this.delegate = delegate;
@@ -237,10 +259,10 @@ class ListenerFactory {
          * to veto the tunnel connect event. All other event types are ignored.
          *
          * @param event
-         *     an object that describes the subject event
+         *     An object that describes the event that occurred.
          *
          * @throws GuacamoleException
-         *      if thrown by the delegate listener
+         *      If thrown by the delegate listener.
          */
         @Override
         public void handleEvent(Object event) throws GuacamoleException {

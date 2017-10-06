@@ -76,13 +76,13 @@ public class TunnelRequestService {
      *      being created.
      *
      * @param credentials
-     *      Credentials that authenticate the user
+     *      Credentials that authenticate the user.
      *
      * @param tunnel
-     *      The tunnel that was connected
+     *      The tunnel that was connected.
      *
      * @throws GuacamoleException
-     *     If thrown by a listener or if any listener vetoes the connected tunnel
+     *     If thrown by a listener or if any listener vetoes the connected tunnel.
      */
     private void fireTunnelConnectEvent(UserContext userContext,
             Credentials credentials, GuacamoleTunnel tunnel) throws GuacamoleException {
@@ -99,10 +99,10 @@ public class TunnelRequestService {
      *      being created.
      *
      * @param credentials
-     *      Credentials that authenticate the user
+     *      Credentials that authenticate the user.
      *
      * @param tunnel
-     *      The tunnel that was connected
+     *      The tunnel that was connected.
      *
      * @throws GuacamoleException
      *     If thrown by a listener.

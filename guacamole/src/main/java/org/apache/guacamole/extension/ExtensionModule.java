@@ -198,13 +198,13 @@ public class ExtensionModule extends ServletModule {
      * Binds the given provider class such that a listener is bound for each
      * listener interface implemented by the provider and such that all bound
      * listener instances can be obtained via injection.
-     * *
+     *
      * @param providerClass
-     *     The listener provider class to bind
+     *     The listener class to bind.
      */
-    private void bindListeners(Class<?> providerClass) {
+    private void bindListener(Class<?> providerClass) {
 
-        logger.debug("[{}] Binding listeners \"{}\".",
+        logger.debug("[{}] Binding listener \"{}\".",
                 boundListeners.size(), providerClass.getName());
         boundListeners.addAll(ListenerFactory.createListeners(providerClass));
 
@@ -222,7 +222,7 @@ public class ExtensionModule extends ServletModule {
 
         // Bind each listener within extension
         for (Class<?> listener : listeners)
-            bindListeners(listener);
+            bindListener(listener);
     }
 
     /**

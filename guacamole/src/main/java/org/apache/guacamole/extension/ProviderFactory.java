@@ -26,24 +26,30 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Static factory method for creating provider instances and logging unexpected outcomes
- * with sufficient detail to allow user/developer debugging.
+ * A utility for creating provider instances and logging unexpected outcomes
+ * with sufficient detail to allow debugging.
  */
 class ProviderFactory {
 
+    /**
+     * Logger used to log unexpected outcomes.
+     */
     private static final Logger logger = LoggerFactory.getLogger(ProviderFactory.class);
 
     /**
      * Creates an instance of the specified provider class using the no-arg constructor.
      *
      * @param typeName
-     *      The provider type name used for log messages (e.g. "authentication provider")
+     *      The provider type name used for log messages; e.g. "authentication provider".
+     *
      * @param providerClass
-     *      The provider class to instantiate
+     *      The provider class to instantiate.
+     *
      * @param <T>
-     *      The provider type
+     *      The provider type.
+     *
      * @return
-     *      A provider instance or null if no instance was created due to error
+     *      A provider instance or null if no instance was created due to error.
      */
     static <T> T newInstance(String typeName, Class<? extends T> providerClass) {
         T instance = null;
