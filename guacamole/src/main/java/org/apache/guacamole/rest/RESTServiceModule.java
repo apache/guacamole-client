@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.rest;
 
+import org.apache.guacamole.rest.event.ListenerService;
 import org.apache.guacamole.rest.session.UserContextResourceFactory;
 import org.apache.guacamole.rest.session.SessionRESTService;
 import com.google.inject.Scopes;
@@ -76,6 +77,7 @@ public class RESTServiceModule extends ServletModule {
         bind(TokenSessionMap.class).toInstance(tokenSessionMap);
 
         // Bind low-level services
+        bind(ListenerService.class);
         bind(AuthenticationService.class);
         bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
 

@@ -26,19 +26,26 @@ import org.apache.guacamole.net.event.AuthenticationFailureEvent;
  * A listener whose authenticationFailed() hook will fire immediately
  * after a user's authentication attempt fails. Note that this hook cannot
  * be used to cancel the authentication failure.
+ *
+ * @deprecated
+ *      Listeners should instead implement the {@link Listener} interface.
  */
-public interface AuthenticationFailureListener  {
+@Deprecated
+public interface AuthenticationFailureListener {
 
     /**
      * Event hook which fires immediately after a user's authentication attempt
      * fails.
      *
-     * @param e The AuthenticationFailureEvent describing the authentication
-     *          failure that just occurred.
-     * @throws GuacamoleException If an error occurs while handling the
-     *                            authentication failure event. Note that
-     *                            throwing an exception will NOT cause the
-     *                            authentication failure to be canceled.
+     * @param e
+     *      The AuthenticationFailureEvent describing the authentication
+     *      failure that just occurred.
+     *
+     * @throws GuacamoleException
+     *      If an error occurs while handling the authentication failure event.
+     *      Note that throwing an exception will NOT cause the authentication
+     *      failure to be canceled (which makes no sense), but it will prevent
+     *      subsequent listeners from receiving the notification.
      */
     void authenticationFailed(AuthenticationFailureEvent e)
             throws GuacamoleException;

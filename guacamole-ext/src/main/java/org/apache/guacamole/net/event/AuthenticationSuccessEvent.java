@@ -26,6 +26,11 @@ import org.apache.guacamole.net.auth.UserContext;
  * An event which is triggered whenever a user's credentials pass
  * authentication. The credentials that passed authentication are included
  * within this event, and can be retrieved using getCredentials().
+ * <p>
+ * If a {@link org.apache.guacamole.net.event.listener.Listener} throws
+ * a GuacamoleException when handling an event of this type, successful authentication
+ * is effectively <em>vetoed</em> and will be subsequently processed as though the
+ * authentication failed.
  */
 public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent {
 

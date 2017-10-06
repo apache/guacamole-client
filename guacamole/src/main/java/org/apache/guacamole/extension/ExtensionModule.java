@@ -34,6 +34,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
+import org.apache.guacamole.net.event.listener.Listener;
 import org.apache.guacamole.resource.Resource;
 import org.apache.guacamole.resource.ResourceServlet;
 import org.apache.guacamole.resource.SequenceResource;
@@ -90,6 +91,12 @@ public class ExtensionModule extends ServletModule {
      */
     private final List<AuthenticationProvider> boundAuthenticationProviders =
             new ArrayList<AuthenticationProvider>();
+
+    /**
+     * All currently-bound authentication providers, if any.
+     */
+    private final List<Listener> boundListeners =
+            new ArrayList<Listener>();
 
     /**
      * Service for adding and retrieving language resources.
@@ -185,6 +192,49 @@ public class ExtensionModule extends ServletModule {
     @Provides
     public List<AuthenticationProvider> getAuthenticationProviders() {
         return Collections.unmodifiableList(boundAuthenticationProviders);
+    }
+
+    /**
+     * Binds the given provider class such that a listener is bound for each
+     * listener interface implemented by the provider and such that all bound
+     * listener instances can be obtained via injection.
+     *
+     * @param providerClass
+     *     The listener class to bind.
+     */
+    private void bindListener(Class<?> providerClass) {
+
+        logger.debug("[{}] Binding listener \"{}\".",
+                boundListeners.size(), providerClass.getName());
+        boundListeners.addAll(ListenerFactory.createListeners(providerClass));
+
+    }
+
+    /**
+     * Binds each of the the given Listener classes such that any
+     * service requiring access to the Listener can obtain it via
+     * injection.
+     *
+     * @param listeners
+     *     The Listener classes to bind.
+     */
+    private void bindListeners(Collection<Class<?>> listeners) {
+
+        // Bind each listener within extension
+        for (Class<?> listener : listeners)
+            bindListener(listener);
+    }
+
+    /**
+     * Returns a list of all currently-bound Listener instances.
+     *
+     * @return
+     *     A List of all currently-bound Listener instances. The List is
+     *     not modifiable.
+     */
+    @Provides
+    public List<Listener> getListeners() {
+        return Collections.unmodifiableList(boundListeners);
     }
 
     /**
@@ -326,6 +376,9 @@ public class ExtensionModule extends ServletModule {
 
                 // Attempt to load all authentication providers
                 bindAuthenticationProviders(extension.getAuthenticationProviderClasses());
+
+                // Attempt to load all listeners
+                bindListeners(extension.getListenerClasses());
 
                 // Add any translation resources
                 serveLanguageResources(extension.getTranslationResources());
