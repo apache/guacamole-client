@@ -367,7 +367,7 @@ public class ExtensionManifest {
      * class name.
      *
      * @return
-     *      a collection of classnames for all listeners within the extension
+     *      A collection of classnames for all listeners within the extension.
      */
     public Collection<String> getListeners() {
         return listeners;

@@ -29,7 +29,7 @@ import org.apache.guacamole.net.event.AuthenticationSuccessEvent;
  * authentication and force it to fail.
  *
  * @deprecated
- *      Listeners should instead implement the {@link Listener} interface
+ *      Listeners should instead implement the {@link Listener} interface.
  */
 @Deprecated
 public interface AuthenticationSuccessListener {

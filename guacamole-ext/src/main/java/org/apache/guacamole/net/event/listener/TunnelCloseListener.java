@@ -23,7 +23,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.event.TunnelCloseEvent;
 
 /**
- * A listener whose tunnelClosed() hook will fire immediately after an
+ * A listener whose tunnelClosed() hook will fire immediately before an
  * existing tunnel is closed.
  *
  * @deprecated
