@@ -21,29 +21,36 @@
 # Dockerfile for guacamole-client
 #
 
-# Start from Tomcat image
-FROM tomcat:8.0.20-jre8
+# Use args for Tomcat image label to allow image builder to choose alternatives
+# such as `--build-arg TOMCAT_JRE=jre8-alpine`
+#
+ARG TOMCAT_VERSION=8.0.20
+ARG TOMCAT_JRE=jre8
 
-# Environment variables
+# Use official maven image for the build
+FROM maven:3-jdk-8 AS builder
+
+# Build environment variables
 ENV \
-    BUILD_DIR=/tmp/guacamole-docker-BUILD \
-    BUILD_DEPENDENCIES="                  \
-        maven                             \
-        openjdk-8-jdk-headless"
+    BUILD_DIR=/tmp/guacamole-docker-BUILD
 
 # Add configuration scripts
-COPY guacamole-docker/bin /opt/guacamole/bin/
+COPY guacamole-docker/bin/ /opt/guacamole/bin/
 
 # Copy source to container for sake of build
 COPY . "$BUILD_DIR"
 
-# Build latest guacamole-client and authentication
-RUN apt-get update                                                    && \
-    apt-get install -y --no-install-recommends $BUILD_DEPENDENCIES    && \
-    /opt/guacamole/bin/build-guacamole.sh "$BUILD_DIR" /opt/guacamole && \
-    rm -Rf "$BUILD_DIR"                                               && \
-    rm -Rf /var/lib/apt/lists/*                                       && \
-    apt-get purge -y --auto-remove $BUILD_DEPENDENCIES
+# Run the build itself
+RUN /opt/guacamole/bin/build-guacamole.sh "$BUILD_DIR" /opt/guacamole
+
+# For the runtime image, we start with the official Tomcat distribution
+FROM tomcat:${TOMCAT_VERSION}-${TOMCAT_JRE}
+
+# This is where the build artifacts go in the runtime image
+WORKDIR /opt/guacamole
+
+# Copy artifacts from builder image into this image
+COPY --from=builder /opt/guacamole/ .
 
 # Start Guacamole under Tomcat, listening on 0.0.0.0:8080
 EXPOSE 8080
