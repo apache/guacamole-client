@@ -54,7 +54,6 @@ mkdir -p "$DESTINATION"
 
 cd "$BUILD_DIR"
 mvn package
-rm -Rf ~/.m2
 
 #
 # Copy guacamole.war to destination
