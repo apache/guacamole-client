@@ -223,7 +223,6 @@
                 <configuration>
                     <excludes>
                         <exclude>src/main/webapp/app/*/templates/*.html</exclude>
-                        <exclude>src/main/webapp/generated/**</exclude>
                         <exclude>**/*.json</exclude>
                         <exclude>src/licenses/**/*</exclude>
                     </excludes>
