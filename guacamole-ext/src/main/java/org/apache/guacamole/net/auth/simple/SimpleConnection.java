@@ -38,6 +38,7 @@ import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
 import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
+import org.apache.guacamole.token.TokenFilter;
 
 /**
  * An extremely basic Connection implementation.
@@ -97,6 +98,10 @@ public class SimpleConnection extends AbstractConnection {
     @Override
     public GuacamoleTunnel connect(GuacamoleClientInformation info)
             throws GuacamoleException {
+
+        // Filter in connection-time information
+        TokenFilter tokenFilter = new TokenFilter();
+        tokenFilter.filterPrompts(config.getParameters(),info.getParameters());
 
         // Retrieve proxy configuration from environment
         Environment environment = new LocalEnvironment();
