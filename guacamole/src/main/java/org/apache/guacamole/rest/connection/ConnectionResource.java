@@ -240,13 +240,12 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
         for (Map.Entry<String, List<String>> entry : prompts.entrySet()) {
             String parameter = entry.getKey();
             List<String> positions = entry.getValue();
-            String value = parameters.get(parameter);
             formLoop:
             for (Form form : myForms) {
                 Collection<Field> myFields = form.getFields();
                 for (Field field : myFields) {
                     if (parameter.equals(field.getName())) {
-                        promptEntries.add(new PromptEntry(field,value,positions));
+                        promptEntries.add(new PromptEntry(field,positions));
                         break formLoop;
                     }
                 }

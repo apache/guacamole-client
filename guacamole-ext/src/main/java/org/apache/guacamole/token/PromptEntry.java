@@ -37,11 +37,6 @@ public class PromptEntry {
     private Field field;
 
     /**
-     * The entire value for the parameter being prompted.
-     */
-    private String value;
-
-    /**
      * A 0-indexed list of String data up to the position of each
      * prompt.
      */
@@ -53,17 +48,13 @@ public class PromptEntry {
      * @param field
      *     The Field object for the prompt.
      *
-     * @param value
-     *     The entire parameter value including prompt tokens.
-     *
      * @param positions
      *     0-indexed list of text leading up to the position of each
      *     prompt.
      */
-    public PromptEntry(Field field, String value, List<String> positions) {
+    public PromptEntry(Field field, List<String> positions) {
 
         this.field = field;
-        this.value = value;
         this.positions = positions;
     }
 
@@ -77,7 +68,6 @@ public class PromptEntry {
      */
     public PromptEntry(Field field) {
         this.field = field;
-        this.value = "-1";
         this.positions = Collections.<String>singletonList("");
     }
 
@@ -99,29 +89,6 @@ public class PromptEntry {
      */
     public void setField(Field field) {
         this.field = field;
-    }
-
-    /**
-     * Get the entire String value for this
-     * parameter.
-     *
-     * @return
-     *     The String value for this parameter.
-     */
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * Set the String value of the parameter
-     * being prompted.
-     *
-     * @param value
-     *     The value of the parameter being
-     *     prompted.
-     */
-    public void setValue(String value) {
-        this.value = value;
     }
 
     /**
