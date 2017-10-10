@@ -1,4 +1,4 @@
 <select ng-model="model">
-    <option ng-if="getFieldPlaceholder()" selected="selected" disabled="disabled" value="{{ getFieldPlaceholder() }}" class="placeholder">{{ getFieldOption(getFieldPlaceholder()) | translate }}</option>
+    <option ng-if="getFieldPlaceholder()" selected="selected" disabled="disabled" value="{{ getFieldPlaceholder() }}" class="templatevalue">{{ getFieldOption(getFieldPlaceholder()) | translate }}</option>
     <option ng-repeat="option in field.options | orderBy: value" value="{{ option }}">{{ getFieldOption(option) | translate }}</option>
 </select>

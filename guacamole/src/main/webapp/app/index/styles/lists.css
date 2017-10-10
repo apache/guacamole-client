@@ -75,9 +75,12 @@
 
 .placeholder {
 
-    color: gray;
+    color: rgba(255, 255, 255, 0.5);
+    text-shadow: -1px -1px rgba(0, 0, 0, 0.5);
     text-align: center;
-    font-style: italic;
+    opacity: 0.5;
+
+    font-size: 2em;
+    font-weight: bolder;
 
 }
-

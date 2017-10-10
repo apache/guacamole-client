@@ -47,3 +47,8 @@ textarea {
 .templated {
     background: lightgray;
 }
+
+.templatevalue {
+    color: gray;
+    font-style: italic;
+}
