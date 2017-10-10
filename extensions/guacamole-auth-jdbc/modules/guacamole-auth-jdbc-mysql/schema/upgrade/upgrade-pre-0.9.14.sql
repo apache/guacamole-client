@@ -37,3 +37,28 @@ ALTER TABLE guacamole_connection
 
 ALTER TABLE guacamole_connection_history
     ADD COLUMN remote_host VARCHAR(256) DEFAULT NULL;
+
+--
+-- Add template_connection_id to guacamole_connection
+--
+
+ALTER TABLE guacamole_connection
+    ADD COLUMN template_connection_id int(11)
+    REFERENCES guacamole_connection(connection_id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE;
+
+--
+-- Check template_connection_id to make sure it is
+-- not set to itself.
+--
+
+DELIMITER $
+CREATE TRIGGER `template_connection_id_self_check` BEFORE UPDATE ON `guacamole_connection`
+FOR EACH ROW
+BEGIN
+    IF new.`connection_id` = new.`template_connection_id` THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot set connection template to itself.';
+    END IF;
+END$
+DELIMITER ;

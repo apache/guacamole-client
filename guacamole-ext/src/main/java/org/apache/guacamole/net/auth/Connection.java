@@ -66,6 +66,26 @@ public interface Connection extends Identifiable, Connectable {
     public void setParentIdentifier(String parentIdentifier);
 
     /**
+     * Returns the identifier of the connection to use as a template
+     * for this connection.
+     *
+     * @return
+     *     The identifier of the connection to use as a template 
+     *     for this connection, or null if no template is defined.
+     */
+    public String getTemplateConnectionId();
+
+    /**
+     * Sets the identifier of the connection to use as a template
+     * for this connection.
+     *
+     * @param templateConnectionId
+     *     The identifier of the connection to use as a template
+     *     for this connection.
+     */
+    public void setTemplateConnectionId(String templateConnectionId);
+
+    /**
      * Returns the GuacamoleConfiguration associated with this Connection. Note
      * that because configurations may contain sensitive information, some data
      * in this configuration may be omitted or tokenized.

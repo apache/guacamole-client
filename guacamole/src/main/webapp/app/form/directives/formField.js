@@ -53,7 +53,13 @@ angular.module('form').directive('guacFormField', [function formField() {
              *
              * @type String
              */
-            model : '='
+            model : '=',
+
+            /**
+             * The property which contains the placeholder for the
+             * field.
+             */
+            placeholder : '='
 
         },
         templateUrl: 'app/form/templates/formField.html',
@@ -95,6 +101,22 @@ angular.module('form').directive('guacFormField', [function formField() {
                         + '.FIELD_HEADER_' + translationStringService.canonicalize($scope.field.name);
 
             };
+
+            /**
+             * Checks for a placeholder value for the current field and returns
+             * it if found.
+             *
+             * @returns {String}
+             *     The string to use for the placeholder for the field.
+             */
+            $scope.getFieldPlaceholder = function getFieldPlaceholder() {
+
+                if(!$scope.field || !$scope.field.name || !$scope.placeholder)
+                    return null;
+
+                return $scope.placeholder;
+
+            }
 
             /**
              * Returns whether the current field should be displayed.

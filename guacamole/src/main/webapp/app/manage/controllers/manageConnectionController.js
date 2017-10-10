@@ -107,6 +107,13 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     $scope.parameters = null;
 
     /**
+     * The parameters from the template associated with this connection, if any.
+     *
+     * @type Object.<String, String>
+     */
+    $scope.templateParameters = null;
+
+    /**
      * The date format for use within the connection history.
      *
      * @type String
@@ -246,6 +253,16 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         connectionService.getConnection($scope.selectedDataSource, identifier)
         .success(function connectionRetrieved(connection) {
             $scope.connection = connection;
+            if ($scope.connection.templateConnectionId != null && $scope.connection.templateConnectionId != "") {
+
+                // Retrieve the parameters from the connection identified as the template
+                connectionService.getConnectionParameters($scope.selectedDataSource, $scope.connection.templateConnectionId)
+                .success(function templateParametersRetrieved(templateParameters) {
+                    $scope.templateParameters = templateParameters;
+                });
+
+            }
+
         });
 
         // Pull connection history
@@ -274,6 +291,15 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         connectionService.getConnection($scope.selectedDataSource, cloneSourceIdentifier)
         .success(function connectionRetrieved(connection) {
             $scope.connection = connection;
+            if ($scope.connection.templateConnectionId != null && $scope.connection.templateConnectionId != '') {
+
+                // Retrieve the parameters from the connection identified as the template
+                connectionService.getConnectionParameters($scope.selectedDataSource, $scope.connection.templateConnectionId)
+                .success(function templateParametersRetrieved(templateParameters) {
+                    $scope.templateParameters = templateParameters;
+                });
+
+            }
             
             // Clear the identifier field because this connection is new
             delete $scope.connection.identifier;
@@ -470,5 +496,19 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         });
 
     };
+
+    $scope.$watch('connection.templateConnectionId', function templateConnectionChange(templateConnectionId) {
+
+        if ($scope.isLoaded() && (templateConnectionId == null || templateConnectionId == '')) {
+            $scope.templateParameters = null;
+            return;
+        }
+
+        connectionService.getConnectionParameters($scope.selectedDataSource, templateConnectionId)
+        .success(function retrievedParameters(parameters) {
+            $scope.templateParameters = parameters;
+        });
+
+    });
 
 }]);

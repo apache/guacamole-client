@@ -84,6 +84,16 @@ public class APIConnectionWrapper implements Connection {
     }
 
     @Override
+    public String getTemplateConnectionId() {
+        return apiConnection.getTemplateConnectionId();
+    }
+
+    @Override
+    public void setTemplateConnectionId(String templateConnectionId) {
+        apiConnection.setTemplateConnectionId(templateConnectionId);
+    }
+
+    @Override
     public int getActiveConnections() {
         return apiConnection.getActiveConnections();
     }

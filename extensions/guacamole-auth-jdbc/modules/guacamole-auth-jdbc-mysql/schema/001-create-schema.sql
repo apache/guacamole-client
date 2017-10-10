@@ -69,14 +69,31 @@ CREATE TABLE `guacamole_connection` (
   `connection_weight`        int(11),
   `failover_only`            boolean NOT NULL DEFAULT 0,
 
+  -- Connection templating
+  `template_connection_id`      int(11),
+
   PRIMARY KEY (`connection_id`),
   UNIQUE KEY `connection_name_parent` (`connection_name`, `parent_id`),
 
   CONSTRAINT `guacamole_connection_ibfk_1`
     FOREIGN KEY (`parent_id`)
-    REFERENCES `guacamole_connection_group` (`connection_group_id`) ON DELETE CASCADE
+    REFERENCES `guacamole_connection_group` (`connection_group_id`) ON DELETE CASCADE,
+
+  CONSTRAINT `template_connection_id_ibfk_1`
+    FOREIGN KEY (`template_connection_id`)
+    REFERENCES `guacamole_connection` (`connection_id`) ON DELETE SET NULL ON UPDATE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DELIMITER $
+CREATE TRIGGER `template_connection_id_self_check` BEFORE INSERT ON `guacamole_connection`
+FOR EACH ROW
+BEGIN
+    IF new.`connection_id` = new.`template_connection_id` THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot set connection template to itself.';
+    END IF;
+END$
+DELIMITER ;
 
 --
 -- Table of users. Each user has a unique username and a hashed password

@@ -17,38 +17,28 @@
  * under the License.
  */
 
-input[type=checkbox], input[type=number], input[type=text], input[type=email], input[type=radio], label, textarea {
-    -webkit-tap-highlight-color: rgba(128,192,128,0.5);
-}
+.template-chooser .dropdown {
 
-div.location, span.template, input[type=text], input[type=email], input[type=number], input[type=password], textarea {
-    border: 1px solid #777;
-    -moz-border-radius: 0.2em;
-    -webkit-border-radius: 0.2em;
-    -khtml-border-radius: 0.2em;
-    border-radius: 0.2em;
-    width: 100%;
-    max-width: 16em;
-    padding: 0.25em;
-    font-size: 0.8em;
-    background: white;
-    cursor: text;
-}
+    position: absolute;
+    z-index: 2;
+    margin-top: -1px;
 
-textarea {
-    max-width: none;
-    width: 30em;
-    height: 10em;
-    white-space: pre;
-    word-wrap: normal;
+    width: 3in;
+    max-height: 2in;
     overflow: auto;
+
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    background: white;
+
+    font-size: 10pt;
+
 }
 
-.templated {
-    background: lightgray;
+.list-item .name.disabled {
+    color: silver;
 }
 
-.templatevalue {
-    color: gray;
-    font-style: italic;
+input.clear {
+    background-color: black;
+    height: 1em;
 }

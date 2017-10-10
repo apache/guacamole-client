@@ -203,6 +203,19 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
     }
 
     @Override
+    public String getTemplateConnectionId() {
+        return getModel().getTemplateConnectionId();
+    }
+
+    @Override
+    public void setTemplateConnectionId(String templateConnectionId) {
+        if (templateConnectionId != null && templateConnectionId.equals(""))
+            getModel().setTemplateConnectionId(null);
+        else
+            getModel().setTemplateConnectionId(templateConnectionId);
+    }
+
+    @Override
     public GuacamoleConfiguration getConfiguration() {
 
         // If configuration has been manually set, return that

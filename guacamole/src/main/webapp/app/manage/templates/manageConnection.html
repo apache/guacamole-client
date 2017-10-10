@@ -1,4 +1,3 @@
-
 <div class="view" ng-class="{loading: !isLoaded()}">
 
     <!-- Main property editor -->
@@ -35,13 +34,25 @@
                     <select ng-model="connection.protocol" ng-options="name as getProtocolName(protocol.name) | translate for (name, protocol) in protocols | orderBy: name"></select>
                 </td>
             </tr>
+
+            <!-- Edit connection template -->
+            <tr>
+                <th>{{'MANAGE_CONNECTION.FIELD_HEADER_TEMPLATE' | translate}}</th>
+                <td>
+                    <template-chooser
+                        data-data-source="selectedDataSource" root-group="rootGroup"
+                        value="connection.templateConnectionId" protocol="connection.protocol"
+                        connection-id="connection.identifier"></template-chooser>
+                </td>
+            </tr>
         </table>
     </div>
 
     <!-- Connection attributes section -->
     <div class="attributes">
         <guac-form namespace="'CONNECTION_ATTRIBUTES'" content="attributes"
-                   model="connection.attributes" model-only="!canChangeAllAttributes()"></guac-form>
+                   model="connection.attributes" model-only="!canChangeAllAttributes()"
+                   placeholders="templateConnection.attributes"></guac-form>
     </div>
 
     <!-- Connection parameters -->
@@ -49,7 +60,7 @@
     <div class="section connection-parameters" ng-class="{loading: !parameters}">
         <guac-form namespace="getNamespace(connection.protocol)"
                    content="protocols[connection.protocol].connectionForms"
-                   model="parameters"></guac-form>
+                   model="parameters" placeholders="templateParameters"></guac-form>
     </div>
 
     <!-- Form action buttons -->

@@ -68,6 +68,16 @@ public abstract class AbstractConnection extends AbstractIdentifiable
     }
 
     @Override
+    public String getTemplateConnectionId() {
+        return null;
+    }
+
+    @Override
+    public void setTemplateConnectionId(String templateConnectionId) {
+        // Do nothing.
+    }
+
+    @Override
     public GuacamoleConfiguration getConfiguration() {
         return configuration;
     }

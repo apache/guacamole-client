@@ -9,6 +9,7 @@
 
         "ACTION_ACKNOWLEDGE"        : "OK",
         "ACTION_CANCEL"             : "Cancel",
+        "ACTION_CLEAR"              : "Clear",
         "ACTION_CLONE"              : "Clone",
         "ACTION_CONTINUE"           : "Continue",
         "ACTION_DELETE"             : "Delete",
@@ -200,6 +201,7 @@
         "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
         "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
+        "ACTION_CLEAR"                : "@:APP.ACTION_CLEAR",
         "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
         "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
 
@@ -209,6 +211,7 @@
         "FIELD_HEADER_LOCATION" : "Location:",
         "FIELD_HEADER_NAME"     : "Name:",
         "FIELD_HEADER_PROTOCOL" : "Protocol:",
+        "FIELD_HEADER_TEMPLATE" : "Template:",
 
         "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
@@ -463,8 +466,8 @@
         "SECTION_HEADER_NETWORK"        : "Network",
         "SECTION_HEADER_RECORDING"      : "Screen Recording",
         "SECTION_HEADER_SESSION"        : "Session / Environment",
-        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)",
-        "SECTION_HEADER_SFTP"           : "SFTP"
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)"
 
     },
 

@@ -3,6 +3,7 @@
            ng-model="model"
            ng-hide="readOnly"
            autocorrect="off"
-           autocapitalize="off"/>
+           autocapitalize="off"
+           placeholder="{{ getFieldPlaceholder() }}"/>
     <a href="mailto:{{model}}" ng-show="readOnly">{{model}}</a>
 </div>

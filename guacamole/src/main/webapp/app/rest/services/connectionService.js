@@ -119,6 +119,7 @@ angular.module('rest').factory('connectionService', ['$injector',
  
     };
 
+
     /**
      * Makes a request to the REST API to save a connection, returning a
      * promise that can be used for processing the results of the call. If the

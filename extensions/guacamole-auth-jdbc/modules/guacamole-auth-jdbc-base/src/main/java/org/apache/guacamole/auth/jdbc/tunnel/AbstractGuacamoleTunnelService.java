@@ -233,6 +233,20 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         for (ConnectionParameterModel parameter : parameters)
             config.setParameter(parameter.getName(), parameter.getValue());
 
+        // Get template parameters
+        String templateConnectionId = connection.getTemplateConnectionId();
+        if (templateConnectionId != null && !templateConnectionId.equals("")) {
+            parameters = connectionParameterMapper.select(templateConnectionId);
+            for (ConnectionParameterModel parameter : parameters) {
+
+                // Do not use template value if original one has been set.
+                String origValue = config.getParameter(parameter.getName());
+                if (origValue == null)
+                    config.setParameter(parameter.getName(), parameter.getValue());
+
+            }
+        }
+
         // Build token filter containing credential tokens
         TokenFilter tokenFilter = new TokenFilter();
         StandardTokens.addStandardTokens(tokenFilter, user);
@@ -419,6 +433,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 ModeledConnection connection = activeConnection.getConnection();
                 String identifier = connection.getIdentifier();
                 String parentIdentifier = connection.getParentIdentifier();
+                String templateConnectionId = connection.getTemplateConnectionId();
 
                 // Release connection
                 activeConnections.remove(identifier, activeConnection);

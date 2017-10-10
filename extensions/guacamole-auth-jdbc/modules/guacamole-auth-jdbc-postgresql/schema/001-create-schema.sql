@@ -116,6 +116,9 @@ CREATE TABLE guacamole_connection (
   proxy_hostname          varchar(512),
   proxy_encryption_method guacamole_proxy_encryption_method,
 
+  -- Connection templating
+  template_connection_id  integer,
+
   PRIMARY KEY (connection_id),
 
   CONSTRAINT connection_name_parent
@@ -124,7 +127,17 @@ CREATE TABLE guacamole_connection (
   CONSTRAINT guacamole_connection_ibfk_1
     FOREIGN KEY (parent_id)
     REFERENCES guacamole_connection_group (connection_group_id)
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
+
+  CONSTRAINT template_connection_id_ibfk_1
+    FOREIGN KEY (template_connection_id)
+    REFERENCES guacamole_connection (connection_id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
+
+  CONSTRAINT template_connection_id_self_check
+    CHECK (template_connection_id != connection_id)
+    
 
 );
 
