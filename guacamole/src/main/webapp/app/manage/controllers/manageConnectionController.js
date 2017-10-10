@@ -87,13 +87,6 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     $scope.protocols = null;
 
     /**
-     * Possible templates for the connection.
-     *
-     * @type Object.<String, Connection>
-     */
-    $scope.connectionTemplates = null;
-
-    /**
      * The root connection group of the connection group hierarchy.
      *
      * @type ConnectionGroup
@@ -106,13 +99,6 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      * @type Connection
      */
     $scope.connection = null;
-
-    /**
-     * The connection object for an associated template connection, if applicable.
-     *
-     * @type String
-     */
-    $scope.templateConnectionId = null;
 
     /**
      * The parameter name/value pairs associated with the connection being
@@ -192,7 +178,6 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     $scope.isLoaded = function isLoaded() {
 
         return $scope.protocols            !== null
-            && $scope.connectionTemplates  !== null
             && $scope.rootGroup            !== null
             && $scope.connection           !== null
             && $scope.parameters           !== null
@@ -270,16 +255,6 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         connectionService.getConnection($scope.selectedDataSource, identifier)
         .success(function connectionRetrieved(connection) {
             $scope.connection = connection;
-            connectionService.getConnectionsByProtocol($scope.selectedDataSource, connection.protocol)
-            .success(function connectionsRetrieved(connections) {
-                for (var templConn in connections) {
-                    if (templConn == identifier)
-                        delete connections[templConn];
-                    else if (connections[templConn].templateConnectionId != null)
-                        delete connections[templConn];
-                }
-                $scope.connectionTemplates = $filter('orderBy')(connections, 'name');
-            });
             if ($scope.connection.templateConnectionId != null && $scope.connection.templateConnectionId != "") {
 
                 // Retrieve the parameters from the connection identified as the template
@@ -318,14 +293,6 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         connectionService.getConnection($scope.selectedDataSource, cloneSourceIdentifier)
         .success(function connectionRetrieved(connection) {
             $scope.connection = connection;
-            connectionService.getConnectionsByProtocol($scope.selectedDataSource, connection.protocol)
-            .success(function connectionsRetrieved(connections) {
-                for (var templConn in connections)
-                    if (connections[templConn].templateConnectionId != null)
-                        delete connections[templConn];
-                $scope.connectionTemplates = $filter('orderBy')(connections, 'name');
-            });
-
             if ($scope.connection.templateConnectionId != null && $scope.connection.templateConnectionId != '') {
 
                 // Retrieve the parameters from the connection identified as the template
@@ -355,13 +322,6 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         $scope.connection = new Connection({
             protocol         : 'vnc',
             parentIdentifier : $location.search().parent
-        });
-        connectionService.getConnectionsByProtocol($scope.selectedDataSource, $scope.connection.protocol)
-        .success(function connectionsRetrieved(connections) {
-            for (var templConn in connections)
-                if (connections[templConn].templateConnectionId != null)
-                    delete connections[templConn];
-            $scope.connectionTemplates = $filter('orderBy')(connections, 'name');
         });
         $scope.historyEntryWrappers = [];
         $scope.parameters = {};
@@ -539,26 +499,11 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
 
     };
 
-    $scope.loadTemplateConnection = function loadTemplateConnection(templIdentifier) {
+    $scope.$watch('connection.templateConnectionId', function templateConnectionChange(templateConnectionId) {
 
-        if (templIdentifier == '') {
-            $scope.templateConnectionId = null;
-            $scope.templateParameters = null;
-            return;
-        }
+        $log.debug('>>>INHERIT<<< Template Changed: ' + templateConnectionId);
 
-        connectionService.getConnectionParameters($scope.selectedDataSource, templIdentifier)
-        .success(function retrievedParameters(parameters) {
-            $scope.templateParameters = parameters;
-        });
-
-    };
-
-    $scope.$watch('templateConnectionId', function templateConnectionChange(templateConnectionId) {
-
-        $log.debug('>>>INHERIT<<< Template Changed: ' + JSON.stringify(templateConnectionId));
-
-        if (templateConnectionId == null || templateConnectionId == '') {
+        if ($scope.isLoaded() && (templateConnectionId == null || templateConnectionId == '')) {
             $scope.templateParameters = null;
             return;
         }
