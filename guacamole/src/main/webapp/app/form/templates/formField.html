@@ -1,4 +1,4 @@
-<label class="labeled-field" ng-class="{empty: !model}" ng-show="isFieldVisible()">
+<label class="labeled-field" ng-class="{empty: !model, templated: !model && getFieldPlaceholder() }" ng-show="isFieldVisible()">
 
     <!-- Field header -->
     <span class="field-header">{{getFieldHeader() | translate}}</span>
