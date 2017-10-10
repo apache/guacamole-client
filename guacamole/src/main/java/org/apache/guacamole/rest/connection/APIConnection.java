@@ -163,21 +163,21 @@ public class APIConnection {
     }
 
     /**
-     * Returns the identifiers for the template connection.
+     * Returns the identifier for the template connection.
      * 
      * @return
-     *     The identifier for the parent connection.
+     *     The identifier for the template connection.
      */
     public String getTemplateConnectionId() {
         return templateConnectionId;
     }
 
     /**
-     * Sets the template connection identifiers for this
+     * Sets the template connection identifier for this
      * connection.
      *
      * @param templateConnectionId
-     *     The connection identifiers for the template
+     *     The connection identifier for the template
      *     for this connection.
      */
     public void setTemplateConnectionId(String templateConnectionId) {

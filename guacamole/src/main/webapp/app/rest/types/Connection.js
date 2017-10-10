@@ -71,7 +71,7 @@ angular.module('rest').factory('Connection', [function defineConnection() {
          * The ID of the connection to use as a template for this connection.
          *
          * @type String
-        this.templateConnection = template.templateConnection;
+        this.templateConnectionId = template.templateConnectionId;
 
         /**
          * Connection configuration parameters, as dictated by the protocol in

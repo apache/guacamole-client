@@ -69,7 +69,7 @@ public class ConnectionModel extends ChildObjectModel {
     private boolean failoverOnly;
 
     /**
-     * The ID of the connection that this connection is a template of.
+     * The ID of the connection to use as a template for this connection.
      */
     private String templateConnectionId;
 
@@ -235,12 +235,12 @@ public class ConnectionModel extends ChildObjectModel {
     }
 
     /**
-     * Returns the connection ID of the connection that is a template
-     * for this connection, or null if nothing is set.
+     * Returns the connection ID of the connection to use as a
+     * template for this connection, or null if nothing is set.
      *
      * @return
-     *     The identifier of the connection that is this
-     *     connection's template, or null if not set.
+     *     The identifier of the connection to use as a
+     *     template, or null if not set.
      */
     public String getTemplateConnectionId() {
         return templateConnectionId;

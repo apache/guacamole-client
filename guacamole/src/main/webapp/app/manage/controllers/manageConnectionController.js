@@ -32,7 +32,6 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     // Required services
     var $filter                  = $injector.get('$filter');
     var $location                = $injector.get('$location');
-    var $log                     = $injector.get('$log');
     var $routeParams             = $injector.get('$routeParams');
     var $translate               = $injector.get('$translate');
     var authenticationService    = $injector.get('authenticationService');
@@ -500,8 +499,6 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     };
 
     $scope.$watch('connection.templateConnectionId', function templateConnectionChange(templateConnectionId) {
-
-        $log.debug('>>>INHERIT<<< Template Changed: ' + templateConnectionId);
 
         if ($scope.isLoaded() && (templateConnectionId == null || templateConnectionId == '')) {
             $scope.templateParameters = null;

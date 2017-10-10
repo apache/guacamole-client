@@ -73,7 +73,7 @@ angular.module('manage').directive('templateChooser', [function templateChooser(
         },
 
         templateUrl: 'app/manage/templates/templateChooser.html',
-        controller: ['$scope', '$log', function templateChooserController($scope,$log) {
+        controller: ['$scope', function templateChooserController($scope) {
 
             /**
              * Map of unique identifiers to their corresponding connection

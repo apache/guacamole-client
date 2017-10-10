@@ -183,20 +183,6 @@ public class UserContext implements org.apache.guacamole.net.auth.UserContext {
     }
 
     @Override
-    public Directory<Connection> getConnectionDirectory(String protocol)
-            throws GuacamoleException {
-
-        Directory<Connection> protocolDirectory = new SimpleDirectory<Connection>();
-        Collection<Connection> allConnections = connectionDirectory.getAll(connectionDirectory.getIdentifiers());
-        for (Connection connection : allConnections)
-            if (protocol.equals(connection.getConfiguration().getProtocol()))
-                protocolDirectory.add(connection);
-
-        return protocolDirectory;
-
-    }
-
-    @Override
     public Directory<ConnectionGroup> getConnectionGroupDirectory()
             throws GuacamoleException {
         return connectionGroupDirectory;

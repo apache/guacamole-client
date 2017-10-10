@@ -66,22 +66,22 @@ public interface Connection extends Identifiable, Connectable {
     public void setParentIdentifier(String parentIdentifier);
 
     /**
-     * Returns the identifier of the template connection for this
-     * connection.
+     * Returns the identifier of the connection to use as a template
+     * for this connection.
      *
      * @return
-     *     The identifier of the template connection for this connection
-     *     or null if no template is defined.
+     *     The identifier of the connection to use as a template 
+     *     for this connection, or null if no template is defined.
      */
     public String getTemplateConnectionId();
 
     /**
-     * Sets the identifier of the template connection for this
-     * connection.
+     * Sets the identifier of the connection to use as a template
+     * for this connection.
      *
      * @param templateConnectionId
-     *     The identifier of the template connection for this
-     *     connection.
+     *     The identifier of the connection to use as a template
+     *     for this connection.
      */
     public void setTemplateConnectionId(String templateConnectionId);
 
