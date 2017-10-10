@@ -115,6 +115,7 @@ CREATE TABLE [guacamole_connection](
     [max_connections_per_user] [int] NULL,
     [connection_weight]        [int] NULL,
     [failover_only]            [bit] NOT NULL,
+    [template_connection_id]   [int] NULL,
 
     CONSTRAINT [PK_guacamole_connection] PRIMARY KEY CLUSTERED
 	([connection_id] ASC) ON [PRIMARY]
@@ -132,6 +133,14 @@ ALTER TABLE [guacamole_connection]
     CHECK CONSTRAINT [CK_proxy_encryption_method];
 ALTER TABLE [guacamole_connection]
     ADD CONSTRAINT [DF_guacamole_connection_failover_only] DEFAULT ((0)) FOR [failover_only];
+ALTER TABLE [guacamole_connection]
+    WITH CHECK ADD CONSTRAINT [FK_guacamole_template_connection_id] FOREIGN KEY([template_connection_id])
+    REFERENCES [guacamole_connection] ([connection_id]);
+ALTER TABLE [guacamole_connection]
+    CHECK CONSTRAINT [FK_guacamole_template_connection_id];
+ALTER TABLE [guacamole_connection]
+    WITH CHECK ADD CONSTRAINT [CK_guacamole_template_connection_id_self]
+    CHECK (([template_connection_id] <> [connection_id]));
 GO;
 
 /**
