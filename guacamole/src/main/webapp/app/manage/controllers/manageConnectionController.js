@@ -30,7 +30,6 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     var PermissionSet       = $injector.get('PermissionSet');
 
     // Required services
-    var $filter                  = $injector.get('$filter');
     var $location                = $injector.get('$location');
     var $routeParams             = $injector.get('$routeParams');
     var $translate               = $injector.get('$translate');
