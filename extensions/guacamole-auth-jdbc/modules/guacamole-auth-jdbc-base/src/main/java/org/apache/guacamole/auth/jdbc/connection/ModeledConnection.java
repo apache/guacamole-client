@@ -203,16 +203,16 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
     }
 
     @Override
-    public String getTemplateConnection() {
-        return getModel().getTemplateConnection();
+    public String getTemplateConnectionId() {
+        return getModel().getTemplateConnectionId();
     }
 
     @Override
-    public void setTemplateConnection(String templateConnection) {
-        if (templateConnection != null && templateConnection.equals(""))
-            getModel().setTemplateConnection(null);
+    public void setTemplateConnectionId(String templateConnectionId) {
+        if (templateConnectionId != null && templateConnectionId.equals(""))
+            getModel().setTemplateConnectionId(null);
         else
-            getModel().setTemplateConnection(templateConnection);
+            getModel().setTemplateConnectionId(templateConnectionId);
     }
 
     @Override

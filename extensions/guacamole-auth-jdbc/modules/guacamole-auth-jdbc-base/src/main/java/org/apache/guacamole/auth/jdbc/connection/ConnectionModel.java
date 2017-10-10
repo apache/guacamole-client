@@ -71,7 +71,7 @@ public class ConnectionModel extends ChildObjectModel {
     /**
      * The ID of the connection that this connection is a template of.
      */
-    private String templateConnection;
+    private String templateConnectionId;
 
     /**
      * The identifiers of all readable sharing profiles associated with this
@@ -242,20 +242,20 @@ public class ConnectionModel extends ChildObjectModel {
      *     The identifier of the connection that is this
      *     connection's template, or null if not set.
      */
-    public String getTemplateConnection() {
-        return templateConnection;
+    public String getTemplateConnectionId() {
+        return templateConnectionId;
     }
 
     /**
      * Sets the template for this connection, taking an integer
      * that is the numeric ID of the template connection.
      *
-     * @param templateConnection
+     * @param templateConnectionId
      *     The identifier of the connection to be used as a
      *     template for this connection.
      */
-    public void setTemplateConnection(String templateConnection) {
-        this.templateConnection = templateConnection;
+    public void setTemplateConnectionId(String templateConnectionId) {
+        this.templateConnectionId = templateConnectionId;
     }
 
     /**

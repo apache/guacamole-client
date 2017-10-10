@@ -39,20 +39,20 @@ ALTER TABLE guacamole_connection_history
     ADD COLUMN remote_host VARCHAR(256) DEFAULT NULL;
 
 --
--- Add template_connection to guacamole_connection
+-- Add template_connection_id to guacamole_connection
 --
 
 ALTER TABLE guacamole_connection
-    ADD COLUMN template_connection int
+    ADD COLUMN template_connection_id int
     REFERENCES guacamole_connection(connection_id)
     ON DELETE SET NULL
     ON UPDATE CASCADE;
 
 --
--- Add constraint to check template_connection
+-- Add constraint to check template_connection_id
 -- is not set to itself
 --
 
 ALTER TABLE guacamole_connection
-    ADD CONSTRAINT template_connection_self_check
-    CHECK (template_connection != connection_id);
+    ADD CONSTRAINT template_connection_id_self_check
+    CHECK (template_connection_id != connection_id);

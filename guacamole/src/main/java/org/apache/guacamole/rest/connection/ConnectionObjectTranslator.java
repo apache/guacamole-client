@@ -55,7 +55,7 @@ public class ConnectionObjectTranslator
         existingObject.setConfiguration(config);
         existingObject.setParentIdentifier(object.getParentIdentifier());
         existingObject.setName(object.getName());
-        existingObject.setTemplateConnection(object.getTemplateConnection());
+        existingObject.setTemplateConnectionId(object.getTemplateConnectionId());
         existingObject.setAttributes(object.getAttributes());
 
     }

@@ -73,17 +73,17 @@ public interface Connection extends Identifiable, Connectable {
      *     The identifier of the template connection for this connection
      *     or null if no template is defined.
      */
-    public String getTemplateConnection();
+    public String getTemplateConnectionId();
 
     /**
      * Sets the identifier of the template connection for this
      * connection.
      *
-     * @param templateConnection
+     * @param templateConnectionId
      *     The identifier of the template connection for this
      *     connection.
      */
-    public void setTemplateConnection(String templateConnection);
+    public void setTemplateConnectionId(String templateConnectionId);
 
     /**
      * Returns the GuacamoleConfiguration associated with this Connection. Note

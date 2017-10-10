@@ -68,12 +68,12 @@ public abstract class AbstractConnection extends AbstractIdentifiable
     }
 
     @Override
-    public String getTemplateConnection() {
+    public String getTemplateConnectionId() {
         return null;
     }
 
     @Override
-    public void setTemplateConnection(String templateConnection) {
+    public void setTemplateConnectionId(String templateConnectionId) {
         // Do nothing.
     }
 

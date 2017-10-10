@@ -103,12 +103,12 @@ public class SharedConnection implements Connection {
     }
 
     @Override
-    public String getTemplateConnection() {
-        return definition.getActiveConnection().getConnection().getTemplateConnection();
+    public String getTemplateConnectionId() {
+        return definition.getActiveConnection().getConnection().getTemplateConnectionId();
     }
 
     @Override
-    public void setTemplateConnection(String templateConnection) {
+    public void setTemplateConnectionId(String templateConnectionId) {
         throw new UnsupportedOperationException("Shared connections are immutable.");
     }
 
