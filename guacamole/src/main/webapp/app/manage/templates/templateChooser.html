@@ -1,0 +1,22 @@
+<div class="template-chooser">
+
+    <!-- Chosen template name -->
+    <span ng-click="toggleMenu()" class="template">{{chosenTemplateName}}</span>
+
+    <!-- Button to clear template -->
+    <input type="image" src="images/x.png" class="danger clear" ng-click="clearTemplate();"></input>
+
+    <!-- Dropdown hierarchical menu of groups -->
+    <div ng-show="menuOpen" class="dropdown">
+        <guac-group-list
+            context="templateListContext"
+            show-root-group="true"
+            connection-groups="rootGroups"
+            templates="{
+                'connection-group' : 'app/manage/templates/templateChooserConnectionGroup.html',
+                'connection'       : 'app/manage/templates/templateChooserConnection.html'
+            }"/>
+    </div>
+
+
+</div>

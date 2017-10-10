@@ -1,4 +1,3 @@
-
 <div class="view" ng-class="{loading: !isLoaded()}">
 
     <!-- Main property editor -->
@@ -32,7 +31,7 @@
             <tr>
                 <th>{{'MANAGE_CONNECTION.FIELD_HEADER_PROTOCOL' | translate}}</th>
                 <td>
-                    <select ng-model="connection.protocol" ng-options="name as getProtocolName(protocol.name) | translate for (name, protocol) in protocols | orderBy: name" ng-change="loadTemplates()"></select>
+                    <select ng-model="connection.protocol" ng-options="name as getProtocolName(protocol.name) | translate for (name, protocol) in protocols | orderBy: name"></select>
                 </td>
             </tr>
 
@@ -40,12 +39,10 @@
             <tr>
                 <th>{{'MANAGE_CONNECTION.FIELD_HEADER_TEMPLATE' | translate}}</th>
                 <td>
-                    <select ng-model="connection.templateConnection" ng-change="loadTemplateConnection(connection.templateConnection)">
-                        <option value=''>--Select Template--</option>
-                        <option
-                            ng-repeat="item in connectionTemplates" value="{{ item.identifier }}"
-                            ng-selected="{{ item.identifier == connection.templateConnection }}">{{ item.name }}</option>
-                    </select>
+                    <template-chooser
+                        data-data-source="selectedDataSource" root-group="rootGroup"
+                        value="connection.templateConnectionId" protocol="connection.protocol"
+                        connection-id="connection.identifier"></template-chooser>
                 </td>
             </tr>
         </table>
