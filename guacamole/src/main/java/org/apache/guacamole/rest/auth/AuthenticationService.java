@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
 import org.apache.guacamole.GuacamoleSession;
@@ -236,8 +237,14 @@ public class AuthenticationService {
 
         UserContext userContext = null;
         if (session != null) {
-            userContext = session.getUserContext(
-                authenticatedUser.getAuthenticationProvider().getIdentifier());
+            try {
+                userContext = session.getUserContext(
+                    authenticatedUser.getAuthenticationProvider().getIdentifier());
+            }
+            catch (GuacamoleResourceNotFoundException e) {
+                logger.warn("Resource not found when getting user context.");
+                logger.debug("Received exception when getting user context.", e);
+            }
         }
 
         listenerService.handleEvent(new AuthenticationSuccessEvent(
