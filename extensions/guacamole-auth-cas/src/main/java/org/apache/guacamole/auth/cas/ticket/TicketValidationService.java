@@ -173,7 +173,7 @@ public class TicketValidationService {
             throw new GuacamoleServerException("Unexpected algorithm for the private key.", e);
         }
         catch (NoSuchPaddingException e) {
-            throw new GuacamoleServerException("No such padding tryingto initialize cipher with private key.", e);
+            throw new GuacamoleServerException("No such padding trying to initialize cipher with private key.", e);
         }
 
     }
