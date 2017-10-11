@@ -55,18 +55,19 @@ public abstract class PrivateKeyGuacamoleProperty implements GuacamoleProperty<P
             InputStream keyInput = new BufferedInputStream(new FileInputStream(keyFile));
             int keyLength = (int) keyFile.length();
             final byte[] keyBytes = new byte[keyLength];
-            int keyRead = keyInput.read(keyBytes);
-
-            // Error reading any bytes out of the key.
-            if (keyRead == -1)
-                throw new GuacamoleServerException("Failed to get any bytes while reading key.");
+            int totalBytesRead = 0;
+            for(int keyRead = keyInput.read(keyBytes, 0, keyBytes.length);
+                    keyRead >= 0;
+                    keyRead = keyInput.read(keyBytes, totalBytesRead, (keyBytes.length - totalBytesRead))) {
+                totalBytesRead += keyRead;
+            }
 
             // Zero-sized key
-            else if(keyRead == 0)
+            if (totalBytesRead == 0)
                 throw new GuacamoleServerException("Failed to ready key because key is empty.");
 
             // Fewer bytes read than contained in the key
-            else if (keyRead < keyLength)
+            else if (totalBytesRead < keyLength)
                 throw new GuacamoleServerException("Unable to read the full length of the key.");
 
             keyInput.close();
