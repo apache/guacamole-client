@@ -69,6 +69,11 @@ public class RadiusAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
+    public void shutdown() {
+        // Do nothing
+    }
+
+    @Override
     public AuthenticatedUser authenticateUser(Credentials credentials) throws GuacamoleException {
 
         AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
