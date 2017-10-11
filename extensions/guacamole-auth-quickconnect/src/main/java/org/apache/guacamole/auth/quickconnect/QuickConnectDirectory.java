@@ -21,9 +21,11 @@ package org.apache.guacamole.auth.quickconnect;
 
 import java.util.Collection;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.quickconnect.utility.QCParser;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionDirectory;
 import org.apache.guacamole.net.auth.Connection;
+import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * Implementation of the Connection Directory, stored
@@ -87,6 +89,75 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
 
         // Add connection to the tree
         this.rootGroup.addConnectionIdentifier(connectionId);
+    }
+
+    /**
+     * Create a connection object on the tree using an existing
+     * QuickConnection connection, after setting the identifier
+     * and parent object.
+     *
+     * @param object
+     *     The QuickConnection object to add to the tree.
+     *
+     * @returns
+     *     The connectionId of the object added to the directory.
+     *
+     * @throws GuacamoleException
+     *     If an error is encountered adding the object to the
+     *     directory.
+     */
+    public String put(QuickConnection object) throws GuacamoleException {
+
+        // Get the next connection ID.
+        String connectionId = getNextConnectionID().toString();
+
+        // Set up identifier and parent on object.
+        object.setIdentifier(connectionId);
+        object.setParentIdentifier(ROOT_IDENTIFIER);
+
+        // Add connection to the directory
+        putConnection(object);
+
+        // Add connection to the tree
+        this.rootGroup.addConnectionIdentifier(connectionId);
+
+        return connectionId;
+
+    }
+
+    /**
+     * Create a QuickConnection object from a GuacamoleConfiguration
+     * and get an ID and place it on the tree.
+     *
+     * @param config
+     *     The GuacamoleConfiguration to use to create the
+     *     QuickConnection object.
+     *
+     * @returns
+     *     The connectionId of the object creation in the directory.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs adding the object to the tree.
+     */
+    public String create(GuacamoleConfiguration config) throws GuacamoleException {
+
+        // Get the next connection ID
+        String connectionId = getNextConnectionID().toString();
+
+        // Generate a name for the configuration
+        String name = QCParser.getName(config);
+
+        // Create a new connection and set parent identifier.
+        Connection connection = new QuickConnection(name, connectionId, config);
+        connection.setParentIdentifier(ROOT_IDENTIFIER);
+
+        // Place the object in directory
+        putConnection(connection);
+
+        // Add connection to the tree.
+        this.rootGroup.addConnectionIdentifier(connectionId);
+
+        return connectionId;
     }
 
     @Override

@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.quickconnect;
 
 import java.util.Collection;
 import java.util.Collections;
+import org.apache.guacamole.auth.quickconnect.rest.QuickConnectREST;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.ActiveConnection;
@@ -50,7 +51,7 @@ public class QuickConnectUserContext implements UserContext {
     /**
      * The unique identifier of the root connection group.
      */
-    private static final String ROOT_IDENTIFIER = "ROOT";
+    public static final String ROOT_IDENTIFIER = "ROOT";
 
     /**
      * The AuthenticationProvider that created this UserContext.
@@ -129,7 +130,7 @@ public class QuickConnectUserContext implements UserContext {
 
     @Override
     public Object getResource() throws GuacamoleException {
-        return null;
+        return new QuickConnectREST(this);
     }
 
     @Override
