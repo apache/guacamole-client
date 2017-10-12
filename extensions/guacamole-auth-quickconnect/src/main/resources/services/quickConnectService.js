@@ -26,6 +26,7 @@ angular.module('guacQuickConnect').factory('quickConnectService', ['$injector',
     // Required services
     var $http                 = $injector.get('$http');
     var authenticationService = $injector.get('authenticationService');
+    var cacheService          = $injector.get('cacheService');
     
     var service = {};
     
@@ -52,6 +53,11 @@ angular.module('guacQuickConnect').factory('quickConnectService', ['$injector',
             params  : httpParameters,
             data    : $.param({uri: uri }),
             headers : {'Content-Type': 'application/x-www-form-urlencoded'}
+        })
+        .success(function connectionCreated() {
+            // Clear connections and users from cache.
+            cacheService.connections.removeAll();
+            cacheService.users.removeAll();
         });
 
     };
