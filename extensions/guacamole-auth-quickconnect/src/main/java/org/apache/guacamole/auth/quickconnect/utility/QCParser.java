@@ -92,9 +92,9 @@ public class QCParser {
 
         if (userInfo != null && !userInfo.equals("")) {
             String[] authenticators = userInfo.split(":");
-            if (authenticators[0] != null)
+            if (authenticators.length > 0 && authenticators[0] != null)
                 username = authenticators[0];
-            if (authenticators[1] != null)
+            if (authenticators.length > 1 && authenticators[1] != null)
                 password = authenticators[1];
         }
 

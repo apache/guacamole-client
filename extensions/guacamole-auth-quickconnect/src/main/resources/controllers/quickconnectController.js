@@ -51,7 +51,7 @@ angular.module('guacQuickConnect').controller('quickconnectController', ['$scope
      */
     $scope.quickConnect = function quickConnect() {
 
-        quickConnectService.createConnection(encodeURIComponent($scope.uri))
+        quickConnectService.createConnection($scope.uri)
         .success(function createdConnection(connectionId) {
             $location.url('/client/' + ClientIdentifier.toString({
                 dataSource : 'quickconnect',
