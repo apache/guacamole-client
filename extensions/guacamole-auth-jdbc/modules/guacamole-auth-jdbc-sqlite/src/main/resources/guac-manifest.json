@@ -1,0 +1,28 @@
+{
+
+    "guacamoleVersion" : "0.9.13-incubating",
+
+    "name"      : "SQLite Authentication",
+    "namespace" : "guac-sqlite",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.sqlite.SQLiteAuthenticationProvider",
+        "org.apache.guacamole.auth.sqlite.SQLiteSharedAuthenticationProvider"
+    ],
+
+    "css" : [
+        "styles/jdbc.css"
+    ],
+
+    "html" : [
+        "html/shared-connection.html"
+    ],
+
+    "translations" : [
+        "translations/en.json",
+        "translations/fr.json",
+        "translations/ru.json"
+    ]
+
+}
+

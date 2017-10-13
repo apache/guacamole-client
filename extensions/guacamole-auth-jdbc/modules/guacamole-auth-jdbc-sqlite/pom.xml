@@ -24,10 +24,10 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-auth-jdbc-base</artifactId>
+    <artifactId>guacamole-auth-jdbc-sqlite</artifactId>
     <packaging>jar</packaging>
-    <name>guacamole-auth-jdbc-base</name>
-    <url>http://guacamole.apache.org/</url>
+    <name>guacamole-auth-jdbc-sqlite</name>
+    <url>http://guacamole.incubator.apache.org/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -36,7 +36,7 @@
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-auth-jdbc</artifactId>
-        <version>0.9.14</version>
+        <version>0.9.13-incubating</version>
         <relativePath>../../</relativePath>
     </parent>
 
@@ -59,6 +59,26 @@
                 </configuration>
             </plugin>
 
+            <!-- Copy dependencies prior to packaging -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>unpack-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Verify format using Apache RAT -->
             <plugin>
                 <groupId>org.apache.rat</groupId>
@@ -68,7 +88,6 @@
                 <configuration>
                     <excludes>
                         <exclude>**/*.json</exclude>
-                        <exclude>src/main/resources/html/*.html</exclude>
                     </excludes>
                 </configuration>
 
@@ -90,14 +109,6 @@
 
     <dependencies>
 
-        <!-- Java servlet API -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Guacamole Extension API -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
@@ -105,37 +116,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- MyBatis -->
+        <!-- Guacamole JDBC Authentication -->
         <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.2.8</version>
-        </dependency>
-        
-        <!-- MyBatis Guice -->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis-guice</artifactId>
-            <version>3.9</version>
-        </dependency>
-
-        <!-- Guice -->
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-multibindings</artifactId>
-            <version>3.0</version>
-        </dependency>
-
-        <!-- Guava - Utility Library -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>18.0</version>
+            <groupId>org.apache.guacamole</groupId>
+            <artifactId>guacamole-auth-jdbc-base</artifactId>
+            <version>0.9.13-incubating</version>
         </dependency>
 
     </dependencies>

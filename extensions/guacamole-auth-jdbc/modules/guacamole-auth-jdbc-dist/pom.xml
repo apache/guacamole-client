@@ -109,6 +109,13 @@
             <version>0.9.14</version>
         </dependency>
 
+        <!-- SQLite Authentication Extension -->
+        <dependency>
+            <groupId>org.apache.guacamole</groupId>
+            <artifactId>guacamole-auth-jdbc-sqlite</artifactId>
+            <version>0.9.13-incubating</version>
+        </dependency>
+
         <!-- SQL Server Authentication Extension -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
