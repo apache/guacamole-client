@@ -248,7 +248,7 @@ public class AuthenticationService {
         }
 
         listenerService.handleEvent(new AuthenticationSuccessEvent(
-            userContext, authenticatedUser.getCredentials()));
+            userContext, authenticatedUser));
     }
 
     /**

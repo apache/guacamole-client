@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.net.event;
 
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
 
@@ -32,7 +33,7 @@ import org.apache.guacamole.net.auth.UserContext;
  * is effectively <em>vetoed</em> and will be subsequently processed as though the
  * authentication failed.
  */
-public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent {
+public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent, AuthenticatedUserEvent {
 
     /**
      * The UserContext associated with the request that is connecting the
@@ -43,7 +44,7 @@ public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent {
     /**
      * The credentials which passed authentication.
      */
-    private Credentials credentials;
+    private AuthenticatedUser authenticatedUser;
 
     /**
      * Creates a new AuthenticationSuccessEvent which represents a successful
@@ -51,11 +52,11 @@ public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent {
      *
      * @param context The UserContext created as a result of successful
      *                authentication.
-     * @param credentials The credentials which passed authentication.
+     * @param authenticatedUser The user which passed authentication.
      */
-    public AuthenticationSuccessEvent(UserContext context, Credentials credentials) {
+    public AuthenticationSuccessEvent(UserContext context, AuthenticatedUser authenticatedUser) {
         this.context = context;
-        this.credentials = credentials;
+        this.authenticatedUser = authenticatedUser;
     }
 
     @Override
@@ -65,7 +66,14 @@ public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent {
 
     @Override
     public Credentials getCredentials() {
-        return credentials;
+        if (authenticatedUser == null)
+            return null;
+        else
+            return authenticatedUser.getCredentials();
+    }
+
+    public AuthenticatedUser getAuthenticatedUser() {
+        return authenticatedUser;
     }
 
 }
