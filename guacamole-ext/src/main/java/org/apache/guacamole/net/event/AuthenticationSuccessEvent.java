@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.net.event;
 
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
@@ -33,13 +35,8 @@ import org.apache.guacamole.net.auth.UserContext;
  * is effectively <em>vetoed</em> and will be subsequently processed as though the
  * authentication failed.
  */
-public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent, AuthenticatedUserEvent {
-
-    /**
-     * The UserContext associated with the request that is connecting the
-     * tunnel, if any.
-     */
-    private UserContext context;
+public class AuthenticationSuccessEvent implements
+        UserEvent, CredentialEvent, AuthenticatedUserEvent, AuthenticationProviderEvent {
 
     /**
      * The credentials which passed authentication.
@@ -50,30 +47,36 @@ public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent, A
      * Creates a new AuthenticationSuccessEvent which represents a successful
      * authentication attempt with the given credentials.
      *
-     * @param context The UserContext created as a result of successful
-     *                authentication.
      * @param authenticatedUser The user which passed authentication.
      */
-    public AuthenticationSuccessEvent(UserContext context, AuthenticatedUser authenticatedUser) {
-        this.context = context;
+    public AuthenticationSuccessEvent(AuthenticatedUser authenticatedUser) {
         this.authenticatedUser = authenticatedUser;
     }
 
     @Override
-    public UserContext getUserContext() {
-        return context;
+    public UserContext getUserContext() throws GuacamoleException {
+        if (authenticatedUser == null)
+            return null;
+        return authenticatedUser.getAuthenticationProvider().getUserContext(authenticatedUser);
     }
 
     @Override
     public Credentials getCredentials() {
         if (authenticatedUser == null)
             return null;
-        else
-            return authenticatedUser.getCredentials();
+        return authenticatedUser.getCredentials();
     }
 
+    @Override
     public AuthenticatedUser getAuthenticatedUser() {
         return authenticatedUser;
+    }
+
+    @Override
+    public AuthenticationProvider getAuthenticationProvider() {
+        if (authenticatedUser == null)
+            return null;
+        return authenticatedUser.getAuthenticationProvider();
     }
 
 }

@@ -235,20 +235,8 @@ public class AuthenticationService {
             AuthenticatedUser authenticatedUser, GuacamoleSession session)
             throws GuacamoleException {
 
-        UserContext userContext = null;
-        if (session != null) {
-            try {
-                userContext = session.getUserContext(
-                    authenticatedUser.getAuthenticationProvider().getIdentifier());
-            }
-            catch (GuacamoleResourceNotFoundException e) {
-                logger.warn("Resource not found when getting user context.");
-                logger.debug("Received exception when getting user context.", e);
-            }
-        }
-
         listenerService.handleEvent(new AuthenticationSuccessEvent(
-            userContext, authenticatedUser));
+            authenticatedUser));
     }
 
     /**

@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.net.event;
 
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
@@ -32,7 +33,10 @@ public interface UserEvent {
      *
      * @return The current UserContext of the user triggering the event, if
      *         any, or null if no UserContext is associated with the event.
+     *
+     * @throws GuacamoleException
+     *     If the UserContext object cannot be retrieved.
      */
-    UserContext getUserContext();
+    UserContext getUserContext() throws GuacamoleException;
 
 }
