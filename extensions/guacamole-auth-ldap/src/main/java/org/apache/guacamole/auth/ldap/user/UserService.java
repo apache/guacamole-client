@@ -124,7 +124,8 @@ public class UserService {
 
                 }
                 catch (LDAPReferralException e) {
-                    logger.warn("Ignoring LDAP Referral while querying users.");
+                    logger.warn("Ignoring LDAP Referral while querying users on referral: \"{}\"", e.getFailedReferral());
+                    logger.debug("Received exception when trying to follow LDAP referral", e);
                 }
             }
 
