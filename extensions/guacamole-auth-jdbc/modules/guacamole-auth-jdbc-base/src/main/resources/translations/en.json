@@ -67,7 +67,7 @@
         "NAME" : "SQL Server"
     },
 
-    "DATA_SOURCe_SQLSERVER_SHARED" : {
+    "DATA_SOURCE_SQLSERVER_SHARED" : {
         "NAME" : "Shared Connections (SQL Server)"
     },
 
