@@ -20,6 +20,10 @@
         "templates/quickconnectField.html"
     ],
 
+    "translations" : [
+        "translations/en.json"
+    ],
+
     "resources" : {
         "templates/quickconnectField.html" : "text/html"
     }
