@@ -20,10 +20,13 @@
 package org.apache.guacamole.net.event;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An event which is triggered whenever a user's credentials pass
@@ -39,9 +42,29 @@ public class AuthenticationSuccessEvent implements
         UserEvent, CredentialEvent, AuthenticatedUserEvent, AuthenticationProviderEvent {
 
     /**
-     * The credentials which passed authentication.
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationSuccessEvent.class);
+
+    /**
+     * The UserContext, if any, for the user which passed authentication.
+     */
+    private UserContext userContext;
+
+    /**
+     * The AuthenticatedUser which passed authentication.
      */
     private AuthenticatedUser authenticatedUser;
+
+    /**
+     * The credentials which passed authentication.
+     */
+    private Credentials credentials;
+
+    /**
+     * The authentication provider which accepted the credentials.
+     */
+    private AuthenticationProvider authProvider;
 
     /**
      * Creates a new AuthenticationSuccessEvent which represents a successful
@@ -49,22 +72,29 @@ public class AuthenticationSuccessEvent implements
      *
      * @param authenticatedUser The user which passed authentication.
      */
-    public AuthenticationSuccessEvent(AuthenticatedUser authenticatedUser) {
+    public AuthenticationSuccessEvent(AuthenticatedUser authenticatedUser) throws GuacamoleException {
         this.authenticatedUser = authenticatedUser;
+        try {
+            if (authenticatedUser != null) {
+                this.userContext = authenticatedUser.getAuthenticationProvider().getUserContext(authenticatedUser);
+                this.credentials = authenticatedUser.getCredentials();
+                this.authProvider = authenticatedUser.getAuthenticationProvider();
+            }
+        }
+        catch (GuacamoleResourceNotFoundException e) {
+            logger.warn("No user context available while creating AuthenticationSuccessEvent");
+            logger.debug("Received an exception attempting to retrieve the UserContext.", e);
+        }
     }
 
     @Override
-    public UserContext getUserContext() throws GuacamoleException {
-        if (authenticatedUser == null)
-            return null;
-        return authenticatedUser.getAuthenticationProvider().getUserContext(authenticatedUser);
+    public UserContext getUserContext() {
+        return userContext;
     }
 
     @Override
     public Credentials getCredentials() {
-        if (authenticatedUser == null)
-            return null;
-        return authenticatedUser.getCredentials();
+        return credentials;
     }
 
     @Override
@@ -74,9 +104,7 @@ public class AuthenticationSuccessEvent implements
 
     @Override
     public AuthenticationProvider getAuthenticationProvider() {
-        if (authenticatedUser == null)
-            return null;
-        return authenticatedUser.getAuthenticationProvider();
+        return authProvider;
     }
 
 }
