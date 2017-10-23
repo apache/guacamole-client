@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.jdbc.sharing.connection;
 
 import com.google.inject.Inject;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -144,6 +145,11 @@ public class SharedConnection implements Connection {
     @Override
     public void setAttributes(Map<String, String> attributes) {
         // Do nothing - changing attributes not supported
+    }
+
+    @Override
+    public Date getLastActive() {
+        return null;
     }
 
     @Override

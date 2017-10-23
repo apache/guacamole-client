@@ -28,8 +28,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.ConnectionRecord;
-import org.apache.guacamole.net.auth.ConnectionRecordSet;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
@@ -92,7 +92,7 @@ public class HistoryResource {
             throws GuacamoleException {
 
         // Retrieve overall connection history
-        ConnectionRecordSet history = userContext.getConnectionHistory();
+        ActivityRecordSet<ConnectionRecord> history = userContext.getConnectionHistory();
 
         // Restrict to records which contain the specified strings
         for (String required : requiredContents) {

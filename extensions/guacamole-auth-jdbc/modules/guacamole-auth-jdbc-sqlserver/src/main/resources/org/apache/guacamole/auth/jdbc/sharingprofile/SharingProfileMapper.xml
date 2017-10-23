@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+
+<mapper namespace="org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileMapper">
+
+    <!-- Result mapper for sharing profile objects -->
+    <resultMap id="SharingProfileResultMap" type="org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileModel">
+        <id     column="sharing_profile_id"    property="objectID"         jdbcType="INTEGER"/>
+        <result column="sharing_profile_name"  property="name"             jdbcType="VARCHAR"/>
+        <result column="primary_connection_id" property="parentIdentifier" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!-- Select all sharing profile identifiers -->
+    <select id="selectIdentifiers" resultType="string">
+        SELECT sharing_profile_id
+        FROM [guacamole_sharing_profile]
+    </select>
+
+    <!-- Select identifiers of all readable sharing profiles -->
+    <select id="selectReadableIdentifiers" resultType="string">
+        SELECT sharing_profile_id
+        FROM [guacamole_sharing_profile_permission]
+        WHERE
+            user_id = #{user.objectID,jdbcType=INTEGER}
+            AND permission = 'READ'
+    </select>
+
+    <!-- Select multiple sharing profiles by identifier -->
+    <select id="select" resultMap="SharingProfileResultMap">
+
+        SELECT
+            sharing_profile_id,
+            sharing_profile_name,
+            primary_connection_id
+        FROM [guacamole_sharing_profile]
+        WHERE sharing_profile_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=INTEGER}
+            </foreach>
+
+    </select>
+
+    <!-- Select multiple sharing profiles by identifier only if readable -->
+    <select id="selectReadable" resultMap="SharingProfileResultMap">
+
+        SELECT
+            [guacamole_sharing_profile].sharing_profile_id,
+            [guacamole_sharing_profile].sharing_profile_name,
+            primary_connection_id
+        FROM [guacamole_sharing_profile]
+        JOIN [guacamole_sharing_profile_permission] ON [guacamole_sharing_profile_permission].sharing_profile_id = [guacamole_sharing_profile].sharing_profile_id
+        WHERE [guacamole_sharing_profile].sharing_profile_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=INTEGER}
+            </foreach>
+            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND permission = 'READ'
+
+    </select>
+
+    <!-- Select single sharing profile by name -->
+    <select id="selectOneByName" resultMap="SharingProfileResultMap">
+
+        SELECT
+            sharing_profile_id,
+            sharing_profile_name,
+            primary_connection_id
+        FROM [guacamole_sharing_profile]
+        WHERE 
+            primary_connection_id = #{parentIdentifier,jdbcType=INTEGER}
+            AND sharing_profile_name = #{name,jdbcType=VARCHAR}
+
+    </select>
+
+    <!-- Delete single sharing profile by identifier -->
+    <delete id="delete">
+        DELETE FROM [guacamole_sharing_profile]
+        WHERE sharing_profile_id = #{identifier,jdbcType=INTEGER}
+    </delete>
+
+    <!-- Insert single sharing profile -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="object.objectID"
+            parameterType="org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileModel">
+
+        INSERT INTO [guacamole_sharing_profile] (
+            sharing_profile_name,
+            primary_connection_id
+        )
+        VALUES (
+            #{object.name,jdbcType=VARCHAR},
+            #{object.parentIdentifier,jdbcType=INTEGER}
+        )
+
+    </insert>
+
+    <!-- Update single sharing profile -->
+    <update id="update" parameterType="org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileModel">
+        UPDATE [guacamole_sharing_profile]
+        SET sharing_profile_name  = #{object.name,jdbcType=VARCHAR},
+            primary_connection_id = #{object.parentIdentifier,jdbcType=INTEGER}
+        WHERE sharing_profile_id = #{object.objectID,jdbcType=INTEGER}
+    </update>
+
+</mapper>

@@ -23,12 +23,16 @@ import java.util.Collection;
 import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.ConnectionRecord;
-import org.apache.guacamole.net.auth.ConnectionRecordSet;
 
 /**
  * An immutable and empty ConnectionRecordSet.
+ *
+ * @deprecated
+ *     Use {@link SimpleActivityRecordSet}&lt;{@link ConnectionRecord}&gt;
+ *     instead.
  */
-public class SimpleConnectionRecordSet implements ConnectionRecordSet {
+@Deprecated
+public class SimpleConnectionRecordSet implements org.apache.guacamole.net.auth.ConnectionRecordSet {
 
     @Override
     public Collection<ConnectionRecord> asCollection()
@@ -37,19 +41,19 @@ public class SimpleConnectionRecordSet implements ConnectionRecordSet {
     }
 
     @Override
-    public ConnectionRecordSet contains(String value)
+    public org.apache.guacamole.net.auth.ConnectionRecordSet contains(String value)
             throws GuacamoleException {
         return this;
     }
 
     @Override
-    public ConnectionRecordSet limit(int limit)
+    public org.apache.guacamole.net.auth.ConnectionRecordSet limit(int limit)
             throws GuacamoleException {
         return this;
     }
 
     @Override
-    public ConnectionRecordSet sort(SortableProperty property, boolean desc)
+    public org.apache.guacamole.net.auth.ConnectionRecordSet sort(SortableProperty property, boolean desc)
             throws GuacamoleException {
         return this;
     }

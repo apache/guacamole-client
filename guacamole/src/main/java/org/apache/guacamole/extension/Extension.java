@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+import org.apache.guacamole.net.event.listener.Listener;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.apache.guacamole.GuacamoleException;
@@ -108,6 +109,11 @@ public class Extension {
      * extension.
      */
     private final Collection<Class<AuthenticationProvider>> authenticationProviderClasses;
+
+    /**
+     * The collection of all Listener classes defined within the extension.
+     */
+    private final Collection<Class<?>> listenerClasses;
 
     /**
      * The resource for the small favicon for the extension. If provided, this
@@ -266,6 +272,80 @@ public class Extension {
     }
 
     /**
+     * Retrieve the Listener subclass having the given name. If
+     * the class having the given name does not exist or isn't actually a
+     * subclass of Listener, an exception will be thrown.
+     *
+     * @param name
+     *     The name of the Listener class to retrieve.
+     *
+     * @return
+     *     The subclass of Listener having the given name.
+     *
+     * @throws GuacamoleException
+     *     If no such class exists, or if the class with the given name is not
+     *     a subclass of Listener.
+     */
+    @SuppressWarnings("unchecked") // We check this ourselves with isAssignableFrom()
+    private Class<Listener> getListenerClass(String name)
+            throws GuacamoleException {
+
+        try {
+
+            // Get listener class
+            Class<?> listenerClass = classLoader.loadClass(name);
+
+            // Verify the located class is actually a subclass of Listener
+            if (!Listener.class.isAssignableFrom(listenerClass))
+                throw new GuacamoleServerException("Listeners MUST implement a Listener subclass.");
+
+            // Return located class
+            return (Class<Listener>) listenerClass;
+
+        }
+        catch (ClassNotFoundException e) {
+            throw new GuacamoleException("Listener class not found.", e);
+        }
+        catch (LinkageError e) {
+            throw new GuacamoleException("Listener class cannot be loaded (wrong version of API?).", e);
+        }
+
+    }
+
+    /**
+     * Returns a new collection of all Listener subclasses having the given names.
+     * If any class does not exist or isn't actually subclass of Listener, an
+     * exception will be thrown, an no further Listener classes will be loaded.
+     *
+     * @param names
+     *     The names of the AuthenticationProvider classes to retrieve.
+     *
+     * @return
+     *     A new collection of all AuthenticationProvider subclasses having the
+     *     given names.
+     *
+     * @throws GuacamoleException
+     *     If any given class does not exist, or if any given class is not a
+     *     subclass of AuthenticationProvider.
+     */
+    private Collection<Class<?>> getListenerClasses(Collection<String> names)
+            throws GuacamoleException {
+
+        // If no classnames are provided, just return an empty list
+        if (names == null)
+            return Collections.<Class<?>>emptyList();
+
+        // Define all auth provider classes
+        Collection<Class<?>> classes = new ArrayList<Class<?>>(names.size());
+        for (String name : names)
+            classes.add(getListenerClass(name));
+
+        // Callers should not rely on modifying the result
+        return Collections.unmodifiableCollection(classes);
+    }
+
+
+    /**
      * Loads the given file as an extension, which must be a .jar containing
      * a guac-manifest.json file describing its contents.
      *
@@ -362,6 +442,9 @@ public class Extension {
 
         // Define authentication providers
         authenticationProviderClasses = getAuthenticationProviderClasses(manifest.getAuthProviders());
+
+        // Define listeners
+        listenerClasses = getListenerClasses(manifest.getListeners());
 
         // Get small icon resource if provided
         if (manifest.getSmallIcon() != null)
@@ -486,6 +569,17 @@ public class Extension {
      */
     public Collection<Class<AuthenticationProvider>> getAuthenticationProviderClasses() {
         return authenticationProviderClasses;
+    }
+
+    /**
+     * Returns all declared listener classes associated wit this extension. Listeners are
+     * declared within the extension manifest.
+     *
+     * @return
+     *     All declared listener classes with this extension.
+     */
+    public Collection<Class<?>> getListenerClasses() {
+        return listenerClasses;
     }
 
     /**

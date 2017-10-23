@@ -20,6 +20,7 @@
 package org.apache.guacamole.rest.connection;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -129,6 +130,11 @@ public class APIConnectionWrapper implements Connection {
     @Override
     public GuacamoleTunnel connect(GuacamoleClientInformation info) throws GuacamoleException {
         throw new UnsupportedOperationException("Operation not supported.");
+    }
+
+    @Override
+    public Date getLastActive() {
+        return null;
     }
 
     @Override

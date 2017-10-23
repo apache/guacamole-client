@@ -52,10 +52,10 @@
 
 .clipboard-service-target {
     position: fixed;
-    left: -1px;
-    right: -1px;
-    width: 1px;
-    height: 1px;
+    left: -1em;
+    right: -1em;
+    width: 1em;
+    height: 1em;
     white-space: pre;
     overflow: hidden;
 }

@@ -63,6 +63,14 @@
         "NAME" : "Shared Connections (PostgreSQL)"
     },
 
+    "DATA_SOURCE_SQLSERVER" : {
+        "NAME" : "SQL Server"
+    },
+
+    "DATA_SOURCe_SQLSERVER_SHARED" : {
+        "NAME" : "Shared Connections (SQL Server)"
+    },
+
     "HOME" : {
         "INFO_SHARED_BY" : "Shared by {USERNAME}"
     },

@@ -104,4 +104,9 @@ public abstract class InjectedAuthenticationProvider implements AuthenticationPr
                 authenticatedUser, credentials);
     }
 
+    @Override
+    public void shutdown() {
+        // Do nothing
+    }
+
 }

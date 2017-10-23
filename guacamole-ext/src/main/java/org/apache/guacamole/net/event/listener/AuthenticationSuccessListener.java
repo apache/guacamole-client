@@ -27,7 +27,11 @@ import org.apache.guacamole.net.event.AuthenticationSuccessEvent;
  * authentication attempt succeeds. If a user successfully authenticates,
  * the authenticationSucceeded() hook has the opportunity to cancel the
  * authentication and force it to fail.
+ *
+ * @deprecated
+ *      Listeners should instead implement the {@link Listener} interface.
  */
+@Deprecated
 public interface AuthenticationSuccessListener {
 
     /**
@@ -35,15 +39,18 @@ public interface AuthenticationSuccessListener {
      * succeeds. The return value of this hook dictates whether the
      * successful authentication attempt is canceled.
      *
-     * @param e The AuthenticationFailureEvent describing the authentication
-     *          failure that just occurred.
-     * @return true if the successful authentication attempt should be
-     *         allowed, or false if the attempt should be denied, causing
-     *         the attempt to effectively fail.
-     * @throws GuacamoleException If an error occurs while handling the
-     *                            authentication success event. Throwing an
-     *                            exception will also cancel the authentication
-     *                            success.
+     * @param e
+     *      The AuthenticationFailureEvent describing the authentication
+     *      failure that just occurred.
+     *
+     * @return
+     *      true if the successful authentication attempt should be
+     *      allowed, or false if the attempt should be denied, causing
+     *      the attempt to effectively fail.
+     *
+     * @throws GuacamoleException
+     *      If an error occurs while handling the authentication success event.
+     *      Throwing an exception will also cancel the authentication success.
      */
     boolean authenticationSucceeded(AuthenticationSuccessEvent e)
             throws GuacamoleException;

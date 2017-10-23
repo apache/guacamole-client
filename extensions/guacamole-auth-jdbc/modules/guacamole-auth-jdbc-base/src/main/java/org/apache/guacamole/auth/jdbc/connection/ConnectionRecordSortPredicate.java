@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.connection;
 
-import org.apache.guacamole.net.auth.ConnectionRecordSet;
+import org.apache.guacamole.net.auth.ActivityRecordSet;
 
 /**
  * A sort predicate which species the property to use when sorting connection
@@ -30,7 +30,7 @@ public class ConnectionRecordSortPredicate {
     /**
      * The property to use when sorting ConnectionRecords.
      */
-    private final ConnectionRecordSet.SortableProperty property;
+    private final ActivityRecordSet.SortableProperty property;
 
     /**
      * Whether the sort order is descending (true) or ascending (false).
@@ -47,7 +47,7 @@ public class ConnectionRecordSortPredicate {
      * @param descending 
      *     Whether the sort order is descending (true) or ascending (false).
      */
-    public ConnectionRecordSortPredicate(ConnectionRecordSet.SortableProperty property, 
+    public ConnectionRecordSortPredicate(ActivityRecordSet.SortableProperty property,
             boolean descending) {
         this.property   = property;
         this.descending = descending;
@@ -59,7 +59,7 @@ public class ConnectionRecordSortPredicate {
      * @return
      *     The property that should be used when sorting ConnectionRecords.
      */
-    public ConnectionRecordSet.SortableProperty getProperty() {
+    public ActivityRecordSet.SortableProperty getProperty() {
         return property;
     }
 

@@ -27,15 +27,17 @@ import java.util.List;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
+import org.apache.guacamole.net.auth.ActivityRecordSet;
+import org.apache.guacamole.net.auth.ActivityRecordSet.SortableProperty;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 
 /**
- * A JDBC implementation of ConnectionRecordSet. Calls to asCollection() will 
- * query connection history records from the database. Which records are
- * returned will be determined by the values passed in earlier.
+ * A JDBC implementation of ActivityRecordSet for ConnectionRecords. Calls to
+ * asCollection() will query connection history records from the database. Which
+ * records are returned will be determined by the values passed in earlier.
  */
 public class ConnectionRecordSet extends RestrictedObject
-        implements org.apache.guacamole.net.auth.ConnectionRecordSet {
+        implements ActivityRecordSet<ConnectionRecord> {
 
     /**
      * Service for managing connection objects.

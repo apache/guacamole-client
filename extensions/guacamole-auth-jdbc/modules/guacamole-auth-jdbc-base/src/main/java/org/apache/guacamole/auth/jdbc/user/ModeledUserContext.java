@@ -36,12 +36,15 @@ import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileDirectory;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.ActiveConnection;
+import org.apache.guacamole.net.auth.ActivityRecord;
+import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.simple.SimpleActivityRecordSet;
 
 /**
  * UserContext implementation which is driven by an arbitrary, underlying
@@ -162,6 +165,12 @@ public class ModeledUserContext extends RestrictedObject
     }
 
     @Override
+    public ActivityRecordSet<ActivityRecord> getUserHistory()
+            throws GuacamoleException {
+        return new SimpleActivityRecordSet<ActivityRecord>();
+    }
+
+    @Override
     public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
 
         // Build and return a root group for the current user
@@ -189,6 +198,11 @@ public class ModeledUserContext extends RestrictedObject
     @Override
     public Collection<Form> getSharingProfileAttributes() {
         return ModeledSharingProfile.ATTRIBUTES;
+    }
+
+    @Override
+    public void invalidate() {
+        // Nothing to invalidate
     }
 
 }

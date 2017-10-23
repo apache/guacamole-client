@@ -252,6 +252,13 @@ public class GuacamoleSession {
             }
         }
 
+        // Invalidate all user contextx
+        for (UserContext userContext : userContexts)
+            userContext.invalidate();
+
+        // Invalidate the authenticated user object
+        authenticatedUser.invalidate();
+
     }
     
 }

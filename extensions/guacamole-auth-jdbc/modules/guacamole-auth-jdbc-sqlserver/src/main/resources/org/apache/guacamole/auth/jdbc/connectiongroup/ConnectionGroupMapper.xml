@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+
+<mapper namespace="org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupMapper" >
+
+    <!-- Result mapper for connection objects -->
+    <resultMap id="ConnectionGroupResultMap" type="org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupModel" >
+
+        <!-- Connection group properties -->
+        <id     column="connection_group_id"      property="objectID"               jdbcType="INTEGER"/>
+        <result column="connection_group_name"    property="name"                   jdbcType="VARCHAR"/>
+        <result column="parent_id"                property="parentIdentifier"       jdbcType="INTEGER"/>
+        <result column="type"                     property="type"                   jdbcType="VARCHAR"
+                javaType="org.apache.guacamole.net.auth.ConnectionGroup$Type"/>
+        <result column="max_connections"          property="maxConnections"         jdbcType="INTEGER"/>
+        <result column="max_connections_per_user" property="maxConnectionsPerUser"  jdbcType="INTEGER"/>
+        <result column="enable_session_affinity"  property="sessionAffinityEnabled" jdbcType="INTEGER"/>
+
+        <!-- Child connection groups -->
+        <collection property="connectionGroupIdentifiers" resultSet="childConnectionGroups" ofType="java.lang.String"
+                    column="connection_group_id" foreignColumn="parent_id">
+            <result column="connection_group_id"/>
+        </collection>
+
+        <!-- Child connections -->
+        <collection property="connectionIdentifiers" resultSet="childConnections" ofType="java.lang.String"
+                    column="connection_group_id" foreignColumn="parent_id">
+            <result column="connection_id"/>
+        </collection>
+
+    </resultMap>
+
+    <!-- Select all connection group identifiers -->
+    <select id="selectIdentifiers" resultType="string">
+        SELECT connection_group_id 
+        FROM [guacamole_connection_group]
+    </select>
+
+    <!-- Select identifiers of all readable connection groups -->
+    <select id="selectReadableIdentifiers" resultType="string">
+        SELECT connection_group_id
+        FROM [guacamole_connection_group_permission]
+        WHERE
+            user_id = #{user.objectID,jdbcType=INTEGER}
+            AND permission = 'READ'
+    </select>
+
+    <!-- Select all connection identifiers within a particular connection group -->
+    <select id="selectIdentifiersWithin" resultType="string">
+        SELECT connection_group_id 
+        FROM [guacamole_connection_group]
+        WHERE
+            <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}</if>
+            <if test="parentIdentifier == null">parent_id IS NULL</if>
+    </select>
+
+    <!-- Select identifiers of all readable connection groups within a particular connection group -->
+    <select id="selectReadableIdentifiersWithin" resultType="string">
+        SELECT [guacamole_connection_group].connection_group_id
+        FROM [guacamole_connection_group]
+        JOIN [guacamole_connection_group_permission] ON [guacamole_connection_group_permission].connection_group_id = [guacamole_connection_group].connection_group_id
+        WHERE
+            <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}</if>
+            <if test="parentIdentifier == null">parent_id IS NULL</if>
+            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND permission = 'READ'
+    </select>
+
+    <!-- Select multiple connection groups by identifier -->
+    <select id="select" resultMap="ConnectionGroupResultMap"
+            resultSets="connectionGroups,childConnectionGroups,childConnections">
+
+        SELECT
+            connection_group_id,
+            connection_group_name,
+            parent_id,
+            type,
+            max_connections,
+            max_connections_per_user,
+            enable_session_affinity
+        FROM [guacamole_connection_group]
+        WHERE connection_group_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=INTEGER}
+            </foreach>;
+
+        SELECT parent_id, connection_group_id
+        FROM [guacamole_connection_group]
+        WHERE parent_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=INTEGER}
+            </foreach>;
+
+        SELECT parent_id, connection_id
+        FROM [guacamole_connection]
+        WHERE parent_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=INTEGER}
+            </foreach>;
+
+    </select>
+
+    <!-- Select multiple connection groups by identifier only if readable -->
+    <select id="selectReadable" resultMap="ConnectionGroupResultMap"
+            resultSets="connectionGroups,childConnectionGroups,childConnections">
+
+        SELECT
+            [guacamole_connection_group].connection_group_id,
+            connection_group_name,
+            parent_id,
+            type,
+            max_connections,
+            max_connections_per_user,
+            enable_session_affinity
+        FROM [guacamole_connection_group]
+        JOIN [guacamole_connection_group_permission] ON [guacamole_connection_group_permission].connection_group_id = [guacamole_connection_group].connection_group_id
+        WHERE [guacamole_connection_group].connection_group_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=INTEGER}
+            </foreach>
+            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND permission = 'READ';
+
+        SELECT parent_id, [guacamole_connection_group].connection_group_id
+        FROM [guacamole_connection_group]
+        JOIN [guacamole_connection_group_permission] ON [guacamole_connection_group_permission].connection_group_id = [guacamole_connection_group].connection_group_id
+        WHERE parent_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=INTEGER}
+            </foreach>
+            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND permission = 'READ';
+
+        SELECT parent_id, [guacamole_connection].connection_id
+        FROM [guacamole_connection]
+        JOIN [guacamole_connection_permission] ON [guacamole_connection_permission].connection_id = [guacamole_connection].connection_id
+        WHERE parent_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=INTEGER}
+            </foreach>
+            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND permission = 'READ';
+
+    </select>
+
+    <!-- Select single connection group by name -->
+    <select id="selectOneByName" resultMap="ConnectionGroupResultMap">
+
+        SELECT
+            connection_group_id,
+            connection_group_name,
+            parent_id,
+            type,
+            max_connections,
+            max_connections_per_user,
+            enable_session_affinity
+        FROM [guacamole_connection_group]
+        WHERE 
+            <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}</if>
+            <if test="parentIdentifier == null">parent_id IS NULL</if>
+            AND connection_group_name = #{name,jdbcType=VARCHAR}
+
+    </select>
+
+    <!-- Delete single connection group by identifier -->
+    <delete id="delete">
+        DELETE FROM [guacamole_connection_group]
+        WHERE connection_group_id = #{identifier,jdbcType=INTEGER}
+    </delete>
+
+    <!-- Insert single connection -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="object.objectID"
+            parameterType="org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupModel">
+
+        INSERT INTO [guacamole_connection_group] (
+            connection_group_name,
+            parent_id,
+            type,
+            max_connections,
+            max_connections_per_user,
+            enable_session_affinity
+        )
+        VALUES (
+            #{object.name,jdbcType=VARCHAR},
+            #{object.parentIdentifier,jdbcType=INTEGER},
+            #{object.type,jdbcType=VARCHAR},
+            #{object.maxConnections,jdbcType=INTEGER},
+            #{object.maxConnectionsPerUser,jdbcType=INTEGER},
+            #{object.sessionAffinityEnabled,jdbcType=INTEGER}
+        )
+
+    </insert>
+
+    <!-- Update single connection group -->
+    <update id="update" parameterType="org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupModel">
+        UPDATE [guacamole_connection_group]
+        SET connection_group_name    = #{object.name,jdbcType=VARCHAR},
+            parent_id                = #{object.parentIdentifier,jdbcType=INTEGER},
+            type                     = #{object.type,jdbcType=VARCHAR},
+            max_connections          = #{object.maxConnections,jdbcType=INTEGER},
+            max_connections_per_user = #{object.maxConnectionsPerUser,jdbcType=INTEGER},
+            enable_session_affinity  = #{object.sessionAffinityEnabled,jdbcType=INTEGER}
+        WHERE connection_group_id = #{object.objectID,jdbcType=INTEGER}
+    </update>
+
+</mapper>

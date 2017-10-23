@@ -260,4 +260,9 @@ public abstract class SimpleAuthenticationProvider
         
     }
 
+    @Override
+    public void shutdown() {
+        // Do nothing
+    }
+
 }

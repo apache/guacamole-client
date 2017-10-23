@@ -45,6 +45,14 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
     var CLIPBOARD_READ_DELAY = 100;
 
     /**
+     * The promise associated with the current pending clipboard read attempt.
+     * If no clipboard read is active, this will be null.
+     *
+     * @type Promise.<ClipboardData>
+     */
+    var pendingRead = null;
+
+    /**
      * Reference to the window.document object.
      *
      * @private
@@ -57,10 +65,9 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      *
      * @type Element
      */
-    var clipboardContent = document.createElement('div');
+    var clipboardContent = document.createElement('textarea');
 
     // Ensure clipboard target is selectable but not visible
-    clipboardContent.setAttribute('contenteditable', 'true');
     clipboardContent.className = 'clipboard-service-target';
 
     // Add clipboard target to DOM
@@ -79,6 +86,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
     };
 
     // Prevent events generated due to execCommand() from disturbing external things
+    clipboardContent.addEventListener('cut',   stopEventPropagation);
     clipboardContent.addEventListener('copy',  stopEventPropagation);
     clipboardContent.addEventListener('paste', stopEventPropagation);
 
@@ -136,14 +144,23 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     var selectAll = function selectAll(element) {
 
-        // Generate a range which selects all nodes within the given element
-        var range = document.createRange();
-        range.selectNodeContents(element);
+        // Use the select() function defined for input elements, if available
+        if (element.select)
+            element.select();
 
-        // Replace any current selection with the generated range
-        var selection = $window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
+        // Fallback to manual manipulation of the selection
+        else {
+
+            // Generate a range which selects all nodes within the given element
+            var range = document.createRange();
+            range.selectNodeContents(element);
+
+            // Replace any current selection with the generated range
+            var selection = $window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+        }
 
     };
 
@@ -167,7 +184,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
 
         // Copy the given value into the clipboard DOM element
         if (typeof data.data === 'string')
-            clipboardContent.textContent = data.data;
+            clipboardContent.value = data.data;
         else {
             clipboardContent.innerHTML = '';
             var img = document.createElement('img');
@@ -176,6 +193,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
         }
 
         // Select all data within the clipboard target
+        clipboardContent.focus();
         selectAll(clipboardContent);
 
         // Attempt to copy data from clipboard element into local clipboard
@@ -389,7 +407,15 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     service.getLocalClipboard = function getLocalClipboard() {
 
+        // If the clipboard is already being read, do not overlap the read
+        // attempts; instead share the result across all requests
+        if (pendingRead)
+            return pendingRead;
+
         var deferred = $q.defer();
+
+        // Mark read attempt as in progress
+        pendingRead = deferred.promise;
 
         // Wait for the next event queue run before attempting to read
         // clipboard data (in case the copy/cut has not yet completed)
@@ -399,52 +425,83 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
             var originalElement = document.activeElement;
             pushSelection();
 
+            /**
+             * Attempts to paste the clipboard contents into the
+             * currently-focused element. The promise related to the current
+             * attempt to read the clipboard will be resolved or rejected
+             * depending on whether the attempt to paste succeeds.
+             */
+            var performPaste = function performPaste() {
+
+                // Attempt paste local clipboard into clipboard DOM element
+                if (document.execCommand('paste')) {
+
+                    // If the pasted data is a single image, resolve with a blob
+                    // containing that image
+                    var currentImage = service.getImageContent(clipboardContent);
+                    if (currentImage) {
+
+                        // Convert the image's data URL into a blob
+                        var blob = service.parseDataURL(currentImage);
+                        if (blob) {
+                            deferred.resolve(new ClipboardData({
+                                type : blob.type,
+                                data : blob
+                            }));
+                        }
+
+                        // Reject if conversion fails
+                        else
+                            deferred.reject();
+
+                    } // end if clipboard is an image
+
+                    // Otherwise, assume the clipboard contains plain text
+                    else
+                        deferred.resolve(new ClipboardData({
+                            type : 'text/plain',
+                            data : clipboardContent.value
+                        }));
+
+                }
+
+                // Otherwise, reading from the clipboard has failed
+                else
+                    deferred.reject();
+
+            };
+
+            // Clean up event listener and selection once the paste attempt has
+            // completed
+            deferred.promise['finally'](function cleanupReadAttempt() {
+
+                // Do not use future changes in focus
+                clipboardContent.removeEventListener('focus', performPaste);
+
+                // Unfocus the clipboard DOM event to avoid mobile keyboard opening,
+                // restoring whichever element was originally focused
+                clipboardContent.blur();
+                originalElement.focus();
+                popSelection();
+
+                // No read is pending any longer
+                pendingRead = null;
+
+            });
+
+            // Ensure clipboard element is blurred (and that the "focus" event
+            // will fire)
+            clipboardContent.blur();
+            clipboardContent.addEventListener('focus', performPaste);
+
             // Clear and select the clipboard DOM element
-            clipboardContent.innerHTML = '';
+            clipboardContent.value = '';
             clipboardContent.focus();
             selectAll(clipboardContent);
 
-            // Attempt paste local clipboard into clipboard DOM element
-            if (document.activeElement === clipboardContent && document.execCommand('paste')) {
-
-                // If the pasted data is a single image, resolve with a blob
-                // containing that image
-                var currentImage = service.getImageContent(clipboardContent);
-                if (currentImage) {
-
-                    // Convert the image's data URL into a blob
-                    var blob = service.parseDataURL(currentImage);
-                    if (blob) {
-                        deferred.resolve(new ClipboardData({
-                            type : blob.type,
-                            data : blob
-                        }));
-                    }
-
-                    // Reject if conversion fails
-                    else
-                        deferred.reject();
-
-                } // end if clipboard is an image
-
-                // Otherwise, assume the clipboard contains plain text
-                else
-                    deferred.resolve(new ClipboardData({
-                        type : 'text/plain',
-                        data : clipboardContent.textContent
-                    }));
-
-            }
-
-            // Otherwise, reading from the clipboard has failed
-            else
+            // If focus failed to be set, we cannot read the clipboard
+            if (document.activeElement !== clipboardContent)
                 deferred.reject();
-
-            // Unfocus the clipboard DOM event to avoid mobile keyboard opening,
-            // restoring whichever element was originally focused
-            clipboardContent.blur();
-            originalElement.focus();
-            popSelection();
 
         }, CLIPBOARD_READ_DELAY);
 

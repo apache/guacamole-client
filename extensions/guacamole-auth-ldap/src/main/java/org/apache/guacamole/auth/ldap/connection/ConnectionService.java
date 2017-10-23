@@ -123,7 +123,7 @@ public class ConnectionService {
 
             // Build token filter containing credential tokens
             TokenFilter tokenFilter = new TokenFilter();
-            StandardTokens.addStandardTokens(tokenFilter, user.getCredentials());
+            StandardTokens.addStandardTokens(tokenFilter, user);
 
             // Produce connections for each readable configuration
             Map<String, Connection> connections = new HashMap<String, Connection>();

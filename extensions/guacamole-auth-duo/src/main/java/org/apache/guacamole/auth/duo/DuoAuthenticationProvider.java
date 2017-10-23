@@ -102,4 +102,9 @@ public class DuoAuthenticationProvider implements AuthenticationProvider {
         return context;
     }
 
+    @Override
+    public void shutdown() {
+        // Do nothing
+    }
+
 }

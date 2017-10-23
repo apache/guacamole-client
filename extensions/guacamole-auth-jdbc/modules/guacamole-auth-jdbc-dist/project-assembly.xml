@@ -49,6 +49,14 @@
             </includes>
         </dependencySet>
 
+        <!-- SQL Server extension .jar -->
+        <dependencySet>
+            <outputDirectory>sqlserver</outputDirectory>
+            <includes>
+                <include>org.apache.guacamole:guacamole-auth-jdbc-sqlserver</include>
+            </includes>
+        </dependencySet>
+
     </dependencySets>
 
     <!-- Include extension schema scripts -->
@@ -70,6 +78,12 @@
         <fileSet>
             <outputDirectory>postgresql/schema</outputDirectory>
             <directory>../guacamole-auth-jdbc-postgresql/schema</directory>
+        </fileSet>
+
+        <!-- SQL Server schema scripts -->
+        <fileSet>
+            <outputDirectory>sqlserver/schema</outputDirectory>
+            <directory>../guacamole-auth-jdbc-sqlserver/schema</directory>
         </fileSet>
 
     </fileSets>

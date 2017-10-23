@@ -21,6 +21,7 @@ package org.apache.guacamole.token;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
@@ -135,6 +136,33 @@ public class StandardTokens {
 
         // Add any tokens which do not require credentials
         addStandardTokens(filter);
+
+    }
+
+    /**
+     * Adds tokens which are standardized by guacamole-ext to the given
+     * TokenFilter using the values from the given AuthenticatedUser object,
+     * including any associated credentials. These standardized tokens include
+     * the current username (GUAC_USERNAME), password (GUAC_PASSWORD), and the
+     * server date and time (GUAC_DATE and GUAC_TIME respectively). If either
+     * the username or password are not set within the given user or their
+     * provided credentials, the corresponding token(s) will remain unset.
+     *
+     * @param filter
+     *     The TokenFilter to add standard tokens to.
+     *
+     * @param user
+     *     The AuthenticatedUser to use when populating the GUAC_USERNAME and
+     *     GUAC_PASSWORD tokens.
+     */
+    public static void addStandardTokens(TokenFilter filter, AuthenticatedUser user) {
+
+        // Default to the authenticated user's username for the GUAC_USERNAME
+        // token
+        filter.setToken(USERNAME_TOKEN, user.getIdentifier());
+
+        // Add tokens specific to credentials
+        addStandardTokens(filter, user.getCredentials());
 
     }
 

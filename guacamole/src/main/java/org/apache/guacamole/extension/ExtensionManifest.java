@@ -88,6 +88,11 @@ public class ExtensionManifest {
     private Collection<String> authProviders;
 
     /**
+     * The names of all listener classes within this extension, if any.
+     */
+    private Collection<String> listeners;
+
+    /**
      * The path to the small favicon. If provided, this will replace the default
      * Guacamole icon.
      */
@@ -353,6 +358,32 @@ public class ExtensionManifest {
      */
     public void setAuthProviders(Collection<String> authProviders) {
         this.authProviders = authProviders;
+    }
+
+    /**
+     * Returns the classnames of all listener classes within the extension.
+     * These classnames are defined within the manifest by the "listeners"
+     * property as an array of strings, where each string is a listener
+     * class name.
+     *
+     * @return
+     *      A collection of classnames for all listeners within the extension.
+     */
+    public Collection<String> getListeners() {
+        return listeners;
+    }
+
+    /**
+     * Sets the classnames of all listener classes within the extension.
+     * These classnames are defined within the manifest by the "listeners"
+     * property as an array of strings, where each string is a listener
+     * class name.
+     *
+     * @param listeners
+     *      A collection of classnames for all listeners within the extension.
+     */
+    public void setListeners(Collection<String> listeners) {
+        this.listeners = listeners;
     }
 
     /**
