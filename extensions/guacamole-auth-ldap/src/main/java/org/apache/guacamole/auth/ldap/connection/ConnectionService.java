@@ -277,14 +277,13 @@ public class ConnectionService {
 
                 catch (LDAPReferralException e) {
                     if (confService.getFollowReferrals()) {
-                        logger.error("Could not follow referral.", e.getMessage());
+                        logger.error("Could not follow referral: {}", e.getFailedReferral());
                         logger.debug("Error encountered trying to follow referral.", e);
                         throw new GuacamoleServerException("Could not follow LDAP referral.", e);
                     }
                     else {
                         logger.warn("Given a referral, but referrals are disabled.", e.getMessage());
                         logger.debug("Got a referral, but configured to not follow them.", e);
-                        continue;
                     }
                 }
             }

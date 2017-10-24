@@ -28,6 +28,10 @@ import org.apache.guacamole.GuacamoleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class that implements the necessary authentication handling
+ * for following referrals in LDAP connections.
+ */
 public class ReferralAuthHandler implements LDAPAuthHandler {
 
     /**
@@ -41,35 +45,14 @@ public class ReferralAuthHandler implements LDAPAuthHandler {
     private final LDAPAuthProvider ldapAuth;
 
     /**
-     * Service for retrieving LDAP server configuration information.
+     * Creates a ReferralAuthHandler object to handle authentication when
+     * following referrals in a LDAP connection, using the provided dn and
+     * password.
+     *
+     * @throws GuacamoleException
+     *     If exceptions are caught while converting the password from a string
+     *     into a byte array.
      */
-    @Inject
-    private ConfigurationService confService;
-
-
-    public ReferralAuthHandler() throws GuacamoleException {
-        String binddn = confService.getSearchBindDN();
-        String password = confService.getSearchBindPassword();
-        byte[] passwordBytes;
-        try {
-
-            // Convert password into corresponding byte array
-            if (password != null)
-                passwordBytes = password.getBytes("UTF-8");
-            else
-                passwordBytes = null;
-
-        }
-        catch (UnsupportedEncodingException e) {
-            logger.error("Unexpected lack of support for UTF-8: {}", e.getMessage());
-            logger.debug("Support for UTF-8 (as required by Java spec) not found.", e);
-            throw new GuacamoleException("Could not set password due to missing support for UTF-8 encoding.");
-        }
-
-        ldapAuth = new LDAPAuthProvider(binddn, passwordBytes);
-
-    }
-
     public ReferralAuthHandler(String dn, String password) throws GuacamoleException {
         byte[] passwordBytes;
         try {

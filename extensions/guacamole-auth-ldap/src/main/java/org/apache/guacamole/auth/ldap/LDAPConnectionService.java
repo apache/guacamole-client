@@ -121,8 +121,7 @@ public class LDAPConnectionService {
         // Set whether or not we follow referrals
         ldapConstraints.setReferralFollowing(confService.getFollowReferrals());
 
-        // If the referral auth method is set to bind, we set it using the existing
-        // username and password.
+        // Set referral authentication to use the provided credentials.
         if (userDN != null && !userDN.isEmpty())
             ldapConstraints.setReferralHandler(new ReferralAuthHandler(userDN, password));
 
