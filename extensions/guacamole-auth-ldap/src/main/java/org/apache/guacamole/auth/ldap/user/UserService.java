@@ -300,7 +300,6 @@ public class UserService {
                     else {
                         logger.warn("Given a referral, not following it.", e.getMessage());
                         logger.debug("Given a referral, but configured to not follow them.", e);
-                        continue;
                     }
                 }
             }

@@ -201,7 +201,6 @@ public class ConnectionService {
                     else {
                         logger.warn("Given a referral, but referrals are disabled.", e.getMessage());
                         logger.debug("Got a referral, but configured to not follow them.", e);
-                        continue;
                     }
                 }
 
