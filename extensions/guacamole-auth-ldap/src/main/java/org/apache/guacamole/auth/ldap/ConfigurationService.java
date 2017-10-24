@@ -316,6 +316,7 @@ public class ConfigurationService {
      *     The search filter that should be used when querying the
      *     LDAP server for users that are valid in Guacamole, or
      *     "(objectClass=*)" if not specified.
+     *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
@@ -324,37 +325,6 @@ public class ConfigurationService {
             LDAPGuacamoleProperties.LDAP_USER_SEARCH_FILTER,
             "(objectClass=*)"
         );
-    }
-
-    /**
-     * Returns the authentication method to use during referral following.
-     *
-     * @return
-     *     The authentication method to use during referral following
-     *     as configured in guacamole.properties or as derived from
-     *     other configuration options.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public String getReferralAuthentication() throws GuacamoleException {
-        String confMethod = environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_REFERRAL_AUTHENTICATION
-        );
-
-        if (confMethod == null)
-
-            if (getSearchBindDN() != null && getSearchBindPassword() != null)
-                return "bind";
-
-            else
-                return "anonymous";
-
-        else if (confMethod.equals("bind") && (getSearchBindDN() == null || getSearchBindPassword() == null))
-            throw new GuacamoleException("Referral is set to bind with credentials, but credentials are not configured.");
-
-        return confMethod;
-
     }
 
     /**

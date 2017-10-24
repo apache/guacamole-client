@@ -196,16 +196,6 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
-     * Authentication method to use to follow referrals
-     */
-    public static final StringGuacamoleProperty LDAP_REFERRAL_AUTHENTICATION = new StringGuacamoleProperty() {
-
-        @Override
-        public String getName() { return "ldap-referral-authentication"; }
-
-    };
-
-    /**
      * Number of seconds to wait for LDAP operations to complete
      */
     public static final IntegerGuacamoleProperty LDAP_OPERATION_TIMEOUT = new IntegerGuacamoleProperty() {

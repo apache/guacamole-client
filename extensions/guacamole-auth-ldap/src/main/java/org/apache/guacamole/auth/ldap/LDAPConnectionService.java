@@ -123,8 +123,7 @@ public class LDAPConnectionService {
 
         // If the referral auth method is set to bind, we set it using the existing
         // username and password.
-        String refAuthMethod = confService.getReferralAuthentication();
-        if (refAuthMethod != null && refAuthMethod.equals("bind"))
+        if (userDN != null && !userDN.isEmpty())
             ldapConstraints.setReferralHandler(new ReferralAuthHandler(userDN, password));
 
         // Set the maximum number of referrals we follow
