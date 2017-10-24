@@ -46,4 +46,4 @@ FROM (
         UNION SELECT 'guacadmin' AS username, 'ADMINISTER' AS permission)
     permissions
     JOIN [guacamole_user] ON permissions.username = [guacamole_user].[username];
-GO;
+GO
