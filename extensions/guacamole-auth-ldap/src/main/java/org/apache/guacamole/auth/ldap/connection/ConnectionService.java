@@ -30,6 +30,7 @@ import org.apache.directory.api.ldap.model.cursor.SearchCursor;
 import org.apache.directory.api.ldap.model.entry.Attribute;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.exception.LdapReferralException;
 import org.apache.directory.api.ldap.model.message.Response;
 import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.apache.directory.api.ldap.model.message.SearchRequestImpl;
@@ -132,6 +133,9 @@ public class ConnectionService {
             request.setTimeLimit(confService.getOperationTimeout());
             request.setTypesOnly(false);
 
+            if(confService.getFollowReferrals())
+                request.followReferrals();
+
             SearchCursor results = ldapConnection.search(request);
 
             // Build token filter containing credential tokens
@@ -180,30 +184,24 @@ public class ConnectionService {
 
                         String parameter = (String)parameters.next();
 
-                            // Parse parameter
-                            int equals = parameter.indexOf('=');
-                            if (equals != -1) {
+                        // Parse parameter
+                        int equals = parameter.indexOf('=');
+                        if (equals != -1) {
 
-                                // Parse name
-                                String name = parameter.substring(0, equals);
-                                String value = parameter.substring(equals+1);
+                            // Parse name
+                            String name = parameter.substring(0, equals);
+                            String value = parameter.substring(equals+1);
 
-                                config.setParameter(name, value);
-
-                            }
+                            config.setParameter(name, value);
 
                         }
 
                     }
 
-                    // Filter the configuration, substituting all defined tokens
-                    tokenFilter.filterValues(config.getParameters());
+                }
 
-                    // Store connection using cn for both identifier and name
-                    String name = cn.getStringValue();
-                    Connection connection = new SimpleConnection(name, name, config);
-                    connection.setParentIdentifier(LDAPAuthenticationProvider.ROOT_CONNECTION_GROUP);
-                    connections.put(name, connection);
+                // Filter the configuration, substituting all defined tokens
+                tokenFilter.filterValues(config.getParameters());
 
                 // Store connection using cn for both identifier and name
                 String name = cn.getString();
@@ -217,11 +215,14 @@ public class ConnectionService {
             return connections;
 
         }
+        catch (LdapReferralException e) {
+            throw new GuacamoleServerException("Error while processing LDAP referrals.", e);
+        }
         catch (LdapException e) {
-            throw new GuacamoleServerException("Error while querying for connections.", e);
+            throw new GuacamoleServerException("Error while querying LDAP for connections.", e);
         }
         catch (CursorException e) {
-            throw new GuacamoleServerException("Error while iterating over LDAP search results.", e);
+            throw new GuacamoleServerException("Error while iterating over LDAP connection search results.", e);
         }
 
     }
@@ -272,6 +273,9 @@ public class ConnectionService {
             request.setSizeLimit(confService.getMaxResults());
             request.setTimeLimit(confService.getOperationTimeout());
             request.setTypesOnly(false);
+
+            if (confService.getFollowReferrals())
+                request.followReferrals();
 
             SearchCursor userRoleGroupResults = ldapConnection.search(request);
 

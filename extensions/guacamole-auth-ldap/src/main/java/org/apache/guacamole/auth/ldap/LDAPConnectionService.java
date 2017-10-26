@@ -29,7 +29,6 @@ import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
-import org.apache.guacamole.auth.ldap.ReferralAuthHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,27 +117,6 @@ public class LDAPConnectionService {
 
         // Obtain appropriately-configured LdapConnection instance
         LdapNetworkConnection ldapConnection = createLdapConnection();
-
-        // Configure LDAP connection constraints
-        LDAPConstraints ldapConstraints = ldapConnection.getConstraints();
-        if (ldapConstraints == null)
-          ldapConstraints = new LDAPConstraints();
-
-        // Set whether or not we follow referrals
-        ldapConstraints.setReferralFollowing(confService.getFollowReferrals());
-
-        // Set referral authentication to use the provided credentials.
-        if (userDN != null && !userDN.isEmpty())
-            ldapConstraints.setReferralHandler(new ReferralAuthHandler(userDN, password));
-
-        // Set the maximum number of referrals we follow
-        ldapConstraints.setHopLimit(confService.getMaxReferralHops());
-
-        // Set timelimit to wait for LDAP operations, converting to ms
-        ldapConstraints.setTimeLimit(confService.getOperationTimeout() * 1000);
-
-        // Apply the constraints to the connection
-        ldapConnection.setConstraints(ldapConstraints);
 
         try {
 

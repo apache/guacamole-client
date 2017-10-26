@@ -291,4 +291,22 @@ public class ConfigurationService {
         );
     }
 
+    /**
+     * Returns a boolean value that determines whether or not LDAP
+     * search operations follow referrals in the tree.
+     *
+     * @return
+     *     True if LDAP referrals will be followed; false if not.
+     *     Default is false.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public Boolean getFollowReferrals() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_FOLLOW_REFERRALS,
+            false
+        );
+    }
+
 }

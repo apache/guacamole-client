@@ -30,6 +30,7 @@ import org.apache.directory.api.ldap.model.entry.Attribute;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
+import org.apache.directory.api.ldap.model.exception.LdapReferralException;
 import org.apache.directory.api.ldap.model.message.Response;
 import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.apache.directory.api.ldap.model.message.SearchRequestImpl;
@@ -111,6 +112,10 @@ public class UserService {
             request.setSizeLimit(confService.getMaxResults());
             request.setTimeLimit(confService.getOperationTimeout());
             request.setTypesOnly(false);
+
+            if (confService.getFollowReferrals())
+                request.followReferrals();
+
             SearchCursor results = ldapConnection.search(request);
 
             // Read all visible users
@@ -140,11 +145,14 @@ public class UserService {
             }
 
         }
+        catch (LdapReferralException e) {
+            throw new GuacamoleServerException("Error while processing LDAP referrals.", e);
+        }
         catch (LdapException e) {
-            throw new GuacamoleServerException("Error while querying users.", e);
+            throw new GuacamoleServerException("Error while querying LDAP users.", e);
         }
         catch (CursorException e) {
-            throw new GuacamoleServerException("Error while iterating over LDAP search results.", e);
+            throw new GuacamoleServerException("Error while iterating over LDAP user search results.", e);
         }
 
     }
@@ -284,6 +292,10 @@ public class UserService {
             request.setSizeLimit(confService.getMaxResults());
             request.setTimeLimit(confService.getOperationTimeout());
             request.setTypesOnly(false);
+
+            if (confService.getFollowReferrals())
+                request.followReferrals();
+
             SearchCursor results = ldapConnection.search(request);
 
             // Add all DNs for found users

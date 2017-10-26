@@ -176,7 +176,17 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
-     * A time limit on LDAP operations.
+     * Whether or not to follow referrals.
+     */
+    public static final BooleanGuacamoleProperty LDAP_FOLLOW_REFERRALS = new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ldap-follow-referrals"; }
+
+    };
+
+    /**
+     * Number of seconds to wait for LDAP operations to complete.
      */
     public static final IntegerGuacamoleProperty LDAP_OPERATION_TIMEOUT = new IntegerGuacamoleProperty() {
 
