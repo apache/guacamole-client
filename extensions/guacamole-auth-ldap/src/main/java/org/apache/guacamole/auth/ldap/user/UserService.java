@@ -20,16 +20,23 @@
 package org.apache.guacamole.auth.ldap.user;
 
 import com.google.inject.Inject;
-import com.novell.ldap.LDAPAttribute;
-import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPEntry;
-import com.novell.ldap.LDAPException;
-import com.novell.ldap.LDAPReferralException;
-import com.novell.ldap.LDAPSearchResults;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.directory.api.ldap.model.cursor.CursorException;
+import org.apache.directory.api.ldap.model.cursor.SearchCursor;
+import org.apache.directory.api.ldap.model.entry.Attribute;
+import org.apache.directory.api.ldap.model.entry.Entry;
+import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
+import org.apache.directory.api.ldap.model.message.Response;
+import org.apache.directory.api.ldap.model.message.SearchScope;
+import org.apache.directory.api.ldap.model.message.SearchRequestImpl;
+import org.apache.directory.api.ldap.model.message.SearchRequest;
+import org.apache.directory.api.ldap.model.message.SearchResultEntry;
+import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.guacamole.auth.ldap.ConfigurationService;
 import org.apache.guacamole.auth.ldap.EscapingService;
 import org.apache.guacamole.GuacamoleException;
@@ -81,7 +88,7 @@ public class UserService {
      * @throws GuacamoleException
      *     If an error occurs preventing retrieval of users.
      */
-    private void putAllUsers(Map<String, User> users, LDAPConnection ldapConnection,
+    private void putAllUsers(Map<String, User> users, LdapConnection ldapConnection,
             String usernameAttribute) throws GuacamoleException {
 
         try {
@@ -96,54 +103,48 @@ public class UserService {
             userSearchFilter.append("=*))");
          
             // Find all Guacamole users underneath base DN
-            LDAPSearchResults results = ldapConnection.search(
-                confService.getUserBaseDN(),
-                LDAPConnection.SCOPE_SUB,
-                userSearchFilter.toString(),
-                null,
-                false,
-                confService.getLDAPSearchConstraints()
-            );
+            SearchRequest request = new SearchRequestImpl();
+            request.setBase(confService.getUserBaseDN());
+            request.setDerefAliases(confService.getDereferenceAliases());
+            request.setScope(SearchScope.SUBTREE);
+            request.setFilter(userSearchFilter.toString());
+            request.setSizeLimit(confService.getMaxResults());
+            request.setTimeLimit(confService.getOperationTimeout());
+            request.setTypesOnly(false);
+            SearchCursor results = ldapConnection.search(request);
 
             // Read all visible users
-            while (results.hasMore()) {
+            while (results.next()) {
 
-                try {
+                // Get the entry
+                Response response = results.get();
 
-                    LDAPEntry entry = results.next();
+                Entry entry;
+                if (response instanceof SearchResultEntry)
+                    entry = ((SearchResultEntry)response).getEntry();
+                else
+                    continue;
 
-                    // Get username from record
-                    LDAPAttribute username = entry.getAttribute(usernameAttribute);
-                    if (username == null) {
-                        logger.warn("Queried user is missing the username attribute \"{}\".", usernameAttribute);
-                        continue;
-                    }
-
-                    // Store user using their username as the identifier
-                    String identifier = username.getStringValue();
-                    if (users.put(identifier, new SimpleUser(identifier)) != null)
-                        logger.warn("Possibly ambiguous user account: \"{}\".", identifier);
-
+                // Get username from record
+                Attribute username = entry.get(usernameAttribute);
+                if (username == null) {
+                    logger.warn("Queried user is missing the username attribute \"{}\".", usernameAttribute);
+                    continue;
                 }
 
-                // Deal with errors trying to follow referrals
-                catch (LDAPReferralException e) {
-                    if (confService.getFollowReferrals()) {
-                        logger.error("Could not follow referral: {}", e.getFailedReferral());
-                        logger.debug("Error encountered trying to follow referral.", e);
-                        throw new GuacamoleServerException("Could not follow LDAP referral.", e);
-                    }
-                    else {
-                        logger.warn("Given a referral, but referrals are disabled. Error was: {}", e.getMessage());
-                        logger.debug("Got a referral, but configured to not follow them.", e);
-                    }
-                }
+                // Store user using their username as the identifier
+                String identifier = username.getString();
+                if (users.put(identifier, new SimpleUser(identifier)) != null)
+                    logger.warn("Possibly ambiguous user account: \"{}\".", identifier);
 
             }
 
         }
-        catch (LDAPException e) {
+        catch (LdapException e) {
             throw new GuacamoleServerException("Error while querying users.", e);
+        }
+        catch (CursorException e) {
+            throw new GuacamoleServerException("Error while iterating over LDAP search results.", e);
         }
 
     }
@@ -164,7 +165,7 @@ public class UserService {
      * @throws GuacamoleException
      *     If an error occurs preventing retrieval of users.
      */
-    public Map<String, User> getUsers(LDAPConnection ldapConnection)
+    public Map<String, User> getUsers(LdapConnection ldapConnection)
             throws GuacamoleException {
 
         // Build map of users by querying each username attribute separately
@@ -265,7 +266,7 @@ public class UserService {
      *     If an error occurs while querying the user DNs, or if the username
      *     attribute property cannot be parsed within guacamole.properties.
      */
-    public List<String> getUserDNs(LDAPConnection ldapConnection,
+    public List<String> getUserDNs(LdapConnection ldapConnection,
             String username) throws GuacamoleException {
 
         try {
@@ -274,33 +275,24 @@ public class UserService {
 
             // Find all Guacamole users underneath base DN and matching the
             // specified username
-            LDAPSearchResults results = ldapConnection.search(
-                confService.getUserBaseDN(),
-                LDAPConnection.SCOPE_SUB,
-                generateLDAPQuery(username),
-                null,
-                false,
-                confService.getLDAPSearchConstraints()
-            );
+
+            SearchRequest request = new SearchRequestImpl();
+            request.setBase(confService.getUserBaseDN());
+            request.setDerefAliases(confService.getDereferenceAliases());
+            request.setScope(SearchScope.SUBTREE);
+            request.setFilter(generateLDAPQuery(username));
+            request.setSizeLimit(confService.getMaxResults());
+            request.setTimeLimit(confService.getOperationTimeout());
+            request.setTypesOnly(false);
+            SearchCursor results = ldapConnection.search(request);
 
             // Add all DNs for found users
-            while (results.hasMore()) {
-                try {
-                    LDAPEntry entry = results.next();
-                    userDNs.add(entry.getDN());
-                }
-          
-                // Deal with errors following referrals
-                catch (LDAPReferralException e) {
-                    if (confService.getFollowReferrals()) {
-                        logger.error("Error trying to follow a referral: {}", e.getFailedReferral());
-                        logger.debug("Encountered an error trying to follow a referral.", e);
-                        throw new GuacamoleServerException("Failed while trying to follow referrals.", e);
-                    }
-                    else {
-                        logger.warn("Given a referral, not following it. Error was: {}", e.getMessage());
-                        logger.debug("Given a referral, but configured to not follow them.", e);
-                    }
+            while (results.next()) {
+                Response response = results.get();
+
+                if (response instanceof SearchResultEntry) {
+                    Entry entry = ((SearchResultEntry)response).getEntry();
+                    userDNs.add(entry.getDn().toString());
                 }
             }
 
@@ -308,8 +300,11 @@ public class UserService {
             return userDNs;
 
         }
-        catch (LDAPException e) {
-            throw new GuacamoleServerException("Error while query user DNs.", e);
+        catch (LdapException e) {
+            throw new GuacamoleServerException("Error while querying user DNs.", e);
+        }
+        catch (CursorException e) {
+            throw new GuacamoleServerException("Error while iterating over LDAP search results.", e);
         }
 
     }
@@ -330,7 +325,7 @@ public class UserService {
      *     If required properties are missing, and thus the user DN cannot be
      *     determined.
      */
-    public String deriveUserDN(String username)
+    public Dn deriveUserDN(String username)
             throws GuacamoleException {
 
         // Pull username attributes from properties
@@ -347,10 +342,17 @@ public class UserService {
         }
 
         // Derive user DN from base DN
-        return
-                    escapingService.escapeDN(usernameAttributes.get(0))
-            + "=" + escapingService.escapeDN(username)
-            + "," + confService.getUserBaseDN();
+        try {
+            return new Dn(
+                        escapingService.escapeDN(usernameAttributes.get(0))
+                + "=" + escapingService.escapeDN(username)
+                + "," + confService.getUserBaseDN()
+            );
+        }
+        catch (LdapInvalidDnException e) {
+            logger.error("Invalid DN while trying to derive DN from username {}", username);
+            return null;
+        }
 
     }
 

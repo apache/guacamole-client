@@ -20,12 +20,13 @@
 package org.apache.guacamole.auth.ldap;
 
 import com.google.inject.Inject;
-import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPConstraints;
-import com.novell.ldap.LDAPException;
-import com.novell.ldap.LDAPJSSESecureSocketFactory;
-import com.novell.ldap.LDAPJSSEStartTLSFactory;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.message.BindRequest;
+import org.apache.directory.api.ldap.model.message.BindRequestImpl;
+import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.directory.ldap.client.api.LdapConnection;
+import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.auth.ldap.ReferralAuthHandler;
@@ -49,18 +50,23 @@ public class LDAPConnectionService {
     private ConfigurationService confService;
 
     /**
-     * Creates a new instance of LDAPConnection, configured as required to use
+     * Creates a new instance of LdapConnection, configured as required to use
      * whichever encryption method is requested within guacamole.properties.
      *
      * @return
-     *     A new LDAPConnection instance which has already been configured to
-     *     use the encryption method requested within guacamole.properties.
+     *     A new LdapConnection instance which has already been configured to
+     *     use the encryption method requested within guacamole.properties, and
+     *     also has the host and port configured.
      *
      * @throws GuacamoleException
      *     If an error occurs while parsing guacamole.properties, or if the
      *     requested encryption method is actually not implemented (a bug).
      */
-    private LDAPConnection createLDAPConnection() throws GuacamoleException {
+    private LdapNetworkConnection createLdapConnection() throws GuacamoleException {
+
+        // Get basic configuration parameters
+        String host = confService.getServerHostname();
+        int port = confService.getServerPort();
 
         // Map encryption method to proper connection and socket factory
         EncryptionMethod encryptionMethod = confService.getEncryptionMethod();
@@ -69,17 +75,17 @@ public class LDAPConnectionService {
             // Unencrypted LDAP connection
             case NONE:
                 logger.debug("Connection to LDAP server without encryption.");
-                return new LDAPConnection();
+                return new LdapNetworkConnection(host, port);
 
             // LDAP over SSL (LDAPS)
             case SSL:
                 logger.debug("Connecting to LDAP server using SSL/TLS.");
-                return new LDAPConnection(new LDAPJSSESecureSocketFactory());
+                return new LdapNetworkConnection(host, port, true);
 
             // LDAP + STARTTLS
             case STARTTLS:
                 logger.debug("Connecting to LDAP server using STARTTLS.");
-                return new LDAPConnection(new LDAPJSSEStartTLSFactory());
+                return new LdapNetworkConnection(host, port, false);
 
             // The encryption method, though known, is not actually
             // implemented. If encountered, this would be a bug.
@@ -107,11 +113,11 @@ public class LDAPConnectionService {
      * @throws GuacamoleException
      *     If an error occurs while binding to the LDAP server.
      */
-    public LDAPConnection bindAs(String userDN, String password)
+    public LdapConnection bindAs(Dn userDN, String password)
             throws GuacamoleException {
 
-        // Obtain appropriately-configured LDAPConnection instance
-        LDAPConnection ldapConnection = createLDAPConnection();
+        // Obtain appropriately-configured LdapConnection instance
+        LdapNetworkConnection ldapConnection = createLdapConnection();
 
         // Configure LDAP connection constraints
         LDAPConstraints ldapConstraints = ldapConnection.getConstraints();
@@ -137,17 +143,14 @@ public class LDAPConnectionService {
         try {
 
             // Connect to LDAP server
-            ldapConnection.connect(
-                confService.getServerHostname(),
-                confService.getServerPort()
-            );
+            ldapConnection.connect();
 
             // Explicitly start TLS if requested
             if (confService.getEncryptionMethod() == EncryptionMethod.STARTTLS)
-                ldapConnection.startTLS();
+                ldapConnection.startTls();
 
         }
-        catch (LDAPException e) {
+        catch (LdapException e) {
             logger.error("Unable to connect to LDAP server: {}", e.getMessage());
             logger.debug("Failed to connect to LDAP server.", e);
             return null;
@@ -156,30 +159,16 @@ public class LDAPConnectionService {
         // Bind using provided credentials
         try {
 
-            byte[] passwordBytes;
-            try {
-
-                // Convert password into corresponding byte array
-                if (password != null)
-                    passwordBytes = password.getBytes("UTF-8");
-                else
-                    passwordBytes = null;
-
-            }
-            catch (UnsupportedEncodingException e) {
-                logger.error("Unexpected lack of support for UTF-8: {}", e.getMessage());
-                logger.debug("Support for UTF-8 (as required by Java spec) not found.", e);
-                disconnect(ldapConnection);
-                return null;
-            }
-
             // Bind as user
-            ldapConnection.bind(LDAPConnection.LDAP_V3, userDN, passwordBytes);
+            BindRequest bindRequest = new BindRequestImpl();
+            bindRequest.setDn(userDN);
+            bindRequest.setCredentials(password);
+            ldapConnection.bind(bindRequest);
 
         }
 
         // Disconnect if an error occurs during bind
-        catch (LDAPException e) {
+        catch (LdapException e) {
             logger.debug("LDAP bind failed.", e);
             disconnect(ldapConnection);
             return null;
@@ -196,15 +185,15 @@ public class LDAPConnectionService {
      * @param ldapConnection
      *     The LDAP connection to disconnect.
      */
-    public void disconnect(LDAPConnection ldapConnection) {
+    public void disconnect(LdapConnection ldapConnection) {
 
         // Attempt disconnect
         try {
-            ldapConnection.disconnect();
+            ldapConnection.close();
         }
 
         // Warn if disconnect unexpectedly fails
-        catch (LDAPException e) {
+        catch (IOException e) {
             logger.warn("Unable to disconnect from LDAP server: {}", e.getMessage());
             logger.debug("LDAP disconnect failed.", e);
         }

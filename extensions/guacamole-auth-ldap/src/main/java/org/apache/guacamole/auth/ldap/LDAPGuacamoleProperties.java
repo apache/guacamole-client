@@ -39,7 +39,7 @@ public class LDAPGuacamoleProperties {
     /**
      * The base DN to search for Guacamole configurations.
      */
-    public static final StringGuacamoleProperty LDAP_CONFIG_BASE_DN = new StringGuacamoleProperty() {
+    public static final LdapDnProperty LDAP_CONFIG_BASE_DN = new LdapDnProperty() {
 
         @Override
         public String getName() { return "ldap-config-base-dn"; }
@@ -52,7 +52,7 @@ public class LDAPGuacamoleProperties {
      * credentials for querying other LDAP users, all users must be direct
      * children of this base DN, varying only by LDAP_USERNAME_ATTRIBUTE.
      */
-    public static final StringGuacamoleProperty LDAP_USER_BASE_DN = new StringGuacamoleProperty() {
+    public static final LdapDnProperty LDAP_USER_BASE_DN = new LdapDnProperty() {
 
         @Override
         public String getName() { return "ldap-user-base-dn"; }
@@ -64,7 +64,7 @@ public class LDAPGuacamoleProperties {
      * will be used for RBAC must be contained somewhere within the subtree of
      * this DN.
      */
-    public static final StringGuacamoleProperty LDAP_GROUP_BASE_DN = new StringGuacamoleProperty() {
+    public static final LdapDnProperty LDAP_GROUP_BASE_DN = new LdapDnProperty() {
 
         @Override
         public String getName() { return "ldap-group-base-dn"; }
@@ -112,7 +112,7 @@ public class LDAPGuacamoleProperties {
      * specified, the DNs of users attempting to log in will be derived from
      * the LDAP_BASE_DN and LDAP_USERNAME_ATTRIBUTE directly.
      */
-    public static final StringGuacamoleProperty LDAP_SEARCH_BIND_DN = new StringGuacamoleProperty() {
+    public static final LdapDnProperty LDAP_SEARCH_BIND_DN = new LdapDnProperty() {
 
         @Override
         public String getName() { return "ldap-search-bind-dn"; }
@@ -176,27 +176,7 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
-     * Whether or not we should follow referrals.
-     */
-    public static final BooleanGuacamoleProperty LDAP_FOLLOW_REFERRALS = new BooleanGuacamoleProperty() {
-
-        @Override
-        public String getName() { return "ldap-follow-referrals"; }
-
-    };
-
-    /**
-     * Maximum number of referral hops to follow.
-     */
-    public static final IntegerGuacamoleProperty LDAP_MAX_REFERRAL_HOPS = new IntegerGuacamoleProperty() {
-
-        @Override
-        public String getName() { return "ldap-max-referral-hops"; }
-
-    };
-
-    /**
-     * Number of seconds to wait for LDAP operations to complete.
+     * A time limit on LDAP operations.
      */
     public static final IntegerGuacamoleProperty LDAP_OPERATION_TIMEOUT = new IntegerGuacamoleProperty() {
 

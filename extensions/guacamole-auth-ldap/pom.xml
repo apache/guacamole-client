@@ -37,14 +37,14 @@
     <build>
         <plugins>
 
-            <!-- Written for 1.6 -->
+            <!-- Written for 1.7 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.3</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <compilerArgs>
                         <arg>-Xlint:all</arg>
                         <arg>-Werror</arg>
@@ -134,11 +134,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- JLDAP -->
+        <!-- Apache Directory LDAP API -->
         <dependency>
-            <groupId>com.novell.ldap</groupId>
-            <artifactId>jldap</artifactId>
-            <version>4.3</version>
+            <groupId>org.apache.directory.api</groupId>
+            <artifactId>api-all</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
         <!-- Guice -->
