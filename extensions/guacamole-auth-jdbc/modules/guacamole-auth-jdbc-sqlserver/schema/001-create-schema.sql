@@ -21,12 +21,13 @@
  * Turn on ANSI_NULLS for the entire DB to make it ISO-compliant.
  */
 ALTER DATABASE CURRENT SET ANSI_NULLS ON;
-GO;
+GO
 
 /**
  * Turn on QUOTED_IDENTIFIER for the entire DB.
  */
 ALTER DATABASE CURRENT SET QUOTED_IDENTIFIER ON;
+GO
 
 /**
  * List for permission data type.
@@ -34,7 +35,7 @@ ALTER DATABASE CURRENT SET QUOTED_IDENTIFIER ON;
 CREATE RULE [guacamole_permission_list] 
     AS
     @list IN ('READ','UPDATE','DELETE','ADMINISTER');
-GO;
+GO
 
 /**
  * List for system permission data type.
@@ -46,7 +47,7 @@ CREATE RULE [guacamole_system_permission_list]
               'CREATE_SHARING_PROFILE',
               'CREATE_USER',
               'ADMINISTER');
-GO;
+GO
 
 /**
  * The permission data type.
@@ -59,7 +60,7 @@ EXEC sp_bindrule 'guacamole_permission_list','guacamole_permission';
  */
 CREATE TYPE [guacamole_system_permission] FROM [nvarchar](32) NOT NULL;
 EXEC sp_bindrule 'guacamole_system_permission_list','guacamole_system_permission';
-GO;
+GO
 
 /**
  * The connection_group table stores organizational and balancing groups.
@@ -98,7 +99,7 @@ ALTER TABLE [guacamole_connection_group]
     ADD CONSTRAINT [DF_guacamole_connection_group_type] DEFAULT (N'ORGANIZATIONAL') FOR [type];
 ALTER TABLE [guacamole_connection_group]
     ADD CONSTRAINT [DF_guacamole_connection_group_enable_session_affinity] DEFAULT ((0)) FOR [enable_session_affinity];
-GO;
+GO
 
 /**
  * The connection table, for storing connections and attributes.
@@ -132,7 +133,7 @@ ALTER TABLE [guacamole_connection]
     CHECK CONSTRAINT [CK_proxy_encryption_method];
 ALTER TABLE [guacamole_connection]
     ADD CONSTRAINT [DF_guacamole_connection_failover_only] DEFAULT ((0)) FOR [failover_only];
-GO;
+GO
 
 /**
  * The user table stores user accounts, passwords, and properties.
@@ -166,7 +167,7 @@ ALTER TABLE [guacamole_user]
     ADD CONSTRAINT [DF_guacamole_user_disabled] DEFAULT ((0)) FOR [disabled];
 ALTER TABLE [guacamole_user]
     ADD CONSTRAINT [DF_guacamole_user_expired] DEFAULT ((0)) FOR [expired];
-GO;
+GO
 
 /**
  * The sharing_profile table stores profiles that allow
@@ -191,7 +192,7 @@ ALTER TABLE [guacamole_sharing_profile]
         ON DELETE CASCADE;
 ALTER TABLE [guacamole_sharing_profile]
     CHECK CONSTRAINT [FK_guacamole_sharing_profile_connection];
-GO;
+GO
 
 /**
  * The connection_parameter table stores parameters for
@@ -204,7 +205,7 @@ CREATE TABLE [guacamole_connection_parameter](
 
     CONSTRAINT [PK_guacamole_connection_parameter] PRIMARY KEY CLUSTERED 
         ([connection_id] ASC, [parameter_name] ASC) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+) ON [PRIMARY];
 
 /**
  * Foreign keys for the connection_parameter table.
@@ -216,7 +217,7 @@ ALTER TABLE [guacamole_connection_parameter]
         ON DELETE CASCADE;
 ALTER TABLE [guacamole_connection_parameter]
     CHECK CONSTRAINT [FK_guacamole_connection_parameter_connection];
-GO;
+GO
 
 /**
  * The sharing_profile_parameter table stores parameters
@@ -229,7 +230,7 @@ CREATE TABLE [guacamole_sharing_profile_parameter](
 
     CONSTRAINT [PK_guacamole_sharing_profile_parameter] PRIMARY KEY CLUSTERED 
         ([sharing_profile_id] ASC, [parameter_name] ASC) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+) ON [PRIMARY];
 
 /**
  * Foreign keys for the sharing_profile_parameter
@@ -242,7 +243,7 @@ ALTER TABLE [guacamole_sharing_profile_parameter]
         ON DELETE CASCADE;
 ALTER TABLE [guacamole_sharing_profile_parameter]
     CHECK CONSTRAINT [FK_guacamole_sharing_profile_parameter_sharing_profile];
-GO;
+GO
 
 /**
  * The connection_permission table stores permission
@@ -274,7 +275,7 @@ ALTER TABLE [guacamole_connection_permission]
         ON DELETE CASCADE;
 ALTER TABLE [guacamole_connection_permission]
     CHECK CONSTRAINT [FK_guacamole_connection_permission_user1];
-GO;
+GO
 
 /**
  * The connection_group_permission table stores permission mappings for
@@ -306,7 +307,7 @@ ALTER TABLE [guacamole_connection_group_permission]
         ON DELETE CASCADE;
 ALTER TABLE [guacamole_connection_group_permission]
     CHECK CONSTRAINT [FK_guacamole_connection_group_permission_user];
-GO;
+GO
 
 /**
  * The sharing_profile_permission table stores permission
@@ -338,7 +339,7 @@ ALTER TABLE [guacamole_sharing_profile_permission]
         ON DELETE CASCADE;
 ALTER TABLE [guacamole_sharing_profile_permission]
     CHECK CONSTRAINT [FK_guacamole_sharing_profile_permission_user];
-GO;
+GO
 
 /**
  * The system_permission table stores permission mappings
@@ -362,7 +363,7 @@ ALTER TABLE [guacamole_system_permission]
         ON DELETE CASCADE;
 ALTER TABLE [guacamole_system_permission]
     CHECK CONSTRAINT [FK_guacamole_system_permission_user];
-GO;
+GO
 
 /**
  * The user_permission table stores permission mappings
@@ -392,7 +393,7 @@ ALTER TABLE [guacamole_user_permission]
     REFERENCES [guacamole_user] ([user_id]);
 ALTER TABLE [guacamole_user_permission]
     CHECK CONSTRAINT [FK_guacamole_user_permission_user1];
-GO;
+GO
 
 /**
  * The connection_history table stores records for historical
@@ -436,7 +437,7 @@ ALTER TABLE [guacamole_connection_history]
         ON DELETE SET NULL;
 ALTER TABLE [guacamole_connection_history]
     CHECK CONSTRAINT [FK_guacamole_connection_history_user];
-GO;
+GO
 
 /**
  * The user_password_history table stores password history
@@ -464,4 +465,4 @@ ALTER TABLE [guacamole_user_password_history]
         ON DELETE CASCADE;
 ALTER TABLE [guacamole_user_password_history]
     CHECK CONSTRAINT [FK_guacamole_user_password_history_user];
-GO;
+GO
