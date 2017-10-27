@@ -57,4 +57,16 @@ public class CASGuacamoleProperties {
 
     };
 
+    /**
+     * The location of the private key file used to retrieve the
+     * password if CAS is configured to support ClearPass.
+     */
+    public static final PrivateKeyGuacamoleProperty CAS_CLEARPASS_KEY =
+            new PrivateKeyGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "cas-clearpass-key"; }
+
+    };
+
 }
