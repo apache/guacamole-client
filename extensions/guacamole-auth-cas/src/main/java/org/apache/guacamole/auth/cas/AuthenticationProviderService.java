@@ -22,11 +22,10 @@ package org.apache.guacamole.auth.cas;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Arrays;
-import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.form.Field;
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
@@ -46,6 +45,12 @@ public class AuthenticationProviderService {
      */
     @Inject
     private ConfigurationService confService;
+
+    /**
+     * The Guacamole server environment.
+     */
+    @Inject
+    private Environment environment;
 
     /**
      * Service for validating received ID tickets.
@@ -82,9 +87,12 @@ public class AuthenticationProviderService {
         if (request != null) {
             String ticket = request.getParameter(CASTicketField.PARAMETER_NAME);
             if (ticket != null) {
-                AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-                authenticatedUser.init(ticketService.processUsername(ticket), credentials);
-                return authenticatedUser;
+                String username = ticketService.validateTicket(ticket, credentials);
+                if (username != null) {
+                    AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+                    authenticatedUser.init(username, credentials);
+                    return authenticatedUser;
+                }
             }
         }
 
