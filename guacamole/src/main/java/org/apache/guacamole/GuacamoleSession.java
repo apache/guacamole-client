@@ -28,6 +28,7 @@ import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.rest.auth.DecoratedUserContext;
 import org.apache.guacamole.tunnel.UserTunnel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +53,7 @@ public class GuacamoleSession {
      * All UserContexts associated with this session. Each
      * AuthenticationProvider may provide its own UserContext.
      */
-    private List<UserContext> userContexts;
+    private List<DecoratedUserContext> userContexts;
 
     /**
      * All currently-active tunnels, indexed by tunnel UUID.
@@ -84,7 +85,7 @@ public class GuacamoleSession {
      */
     public GuacamoleSession(Environment environment,
             AuthenticatedUser authenticatedUser,
-            List<UserContext> userContexts)
+            List<DecoratedUserContext> userContexts)
             throws GuacamoleException {
         this.lastAccessedTime = System.currentTimeMillis();
         this.authenticatedUser = authenticatedUser;
@@ -121,7 +122,7 @@ public class GuacamoleSession {
      *     An unmodifiable list of all UserContexts associated with this
      *     session.
      */
-    public List<UserContext> getUserContexts() {
+    public List<DecoratedUserContext> getUserContexts() {
         return Collections.unmodifiableList(userContexts);
     }
 
@@ -141,12 +142,12 @@ public class GuacamoleSession {
      * @throws GuacamoleException
      *     If no such UserContext exists.
      */
-    public UserContext getUserContext(String authProviderIdentifier)
+    public DecoratedUserContext getUserContext(String authProviderIdentifier)
             throws GuacamoleException {
 
         // Locate and return the UserContext associated with the
         // AuthenticationProvider having the given identifier, if any
-        for (UserContext userContext : getUserContexts()) {
+        for (DecoratedUserContext userContext : getUserContexts()) {
 
             // Get AuthenticationProvider associated with current UserContext
             AuthenticationProvider authProvider = userContext.getAuthenticationProvider();
@@ -170,7 +171,7 @@ public class GuacamoleSession {
      * @param userContexts
      *     The List of UserContexts to associate with this session.
      */
-    public void setUserContexts(List<UserContext> userContexts) {
+    public void setUserContexts(List<DecoratedUserContext> userContexts) {
         this.userContexts = userContexts;
     }
     

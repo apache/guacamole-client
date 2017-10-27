@@ -186,7 +186,7 @@ public class TokenRESTService {
             throw new GuacamoleResourceNotFoundException("No such token.");
 
         // Build list of all available auth providers
-        List<UserContext> userContexts = session.getUserContexts();
+        List<DecoratedUserContext> userContexts = session.getUserContexts();
         List<String> authProviderIdentifiers = new ArrayList<String>(userContexts.size());
         for (UserContext userContext : userContexts)
             authProviderIdentifiers.add(userContext.getAuthenticationProvider().getIdentifier());
