@@ -17,9 +17,9 @@
  * under the License.
  */
 
-package org.apache.guacamole.properties;
+package org.apache.guacamole.auth.cas.conf;
 
-import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -33,6 +33,7 @@ import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
+import org.apache.guacamole.properties.GuacamoleProperty;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
@@ -52,25 +53,18 @@ public abstract class PrivateKeyGuacamoleProperty implements GuacamoleProperty<P
 
             // Open and read the file specified in the configuration.
             File keyFile = new File(value);
-            InputStream keyInput = new BufferedInputStream(new FileInputStream(keyFile));
-            int keyLength = (int) keyFile.length();
-            final byte[] keyBytes = new byte[keyLength];
-            int totalBytesRead = 0;
-            for(int keyRead = keyInput.read(keyBytes, 0, keyBytes.length);
-                    keyRead >= 0;
-                    keyRead = keyInput.read(keyBytes, totalBytesRead, (keyBytes.length - totalBytesRead))) {
-                totalBytesRead += keyRead;
+            FileInputStream keyStreamIn = new FileInputStream(keyFile);
+            ByteArrayOutputStream keyStreamOut = new ByteArrayOutputStream();
+            byte[] keyBuffer = new byte[1024];
+            try {
+                for (int readBytes; (readBytes = keyStreamIn.read(keyBuffer)) != -1;)
+                    keyStreamOut.write(keyBuffer, 0, readBytes);
+            }
+            catch (IOException e) {
+                throw new GuacamoleServerException("IOException while trying to read bytes from file.", e);
             }
 
-            // Zero-sized key
-            if (totalBytesRead == 0)
-                throw new GuacamoleServerException("Failed to ready key because key is empty.");
-
-            // Fewer bytes read than contained in the key
-            else if (totalBytesRead < keyLength)
-                throw new GuacamoleServerException("Unable to read the full length of the key.");
-
-            keyInput.close();
+            final byte[] keyBytes = keyStreamOut.toByteArray();
 
             // Set up decryption infrastructure
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");

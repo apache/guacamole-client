@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.cas.conf;
 
-import org.apache.guacamole.properties.PrivateKeyGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
 /**
