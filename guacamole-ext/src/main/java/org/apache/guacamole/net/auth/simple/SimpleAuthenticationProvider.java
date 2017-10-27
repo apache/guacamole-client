@@ -261,6 +261,16 @@ public abstract class SimpleAuthenticationProvider
     }
 
     @Override
+    public UserContext decorate(UserContext context,
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
+
+        // Simply return the given context, decorating nothing
+        return context;
+
+    }
+
+    @Override
     public void shutdown() {
         // Do nothing
     }

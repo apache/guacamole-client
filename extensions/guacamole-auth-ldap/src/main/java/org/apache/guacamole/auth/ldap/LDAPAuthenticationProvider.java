@@ -104,6 +104,13 @@ public class LDAPAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
+    public UserContext decorate(UserContext context,
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
+        return context;
+    }
+
+    @Override
     public void shutdown() {
         // Do nothing
     }
