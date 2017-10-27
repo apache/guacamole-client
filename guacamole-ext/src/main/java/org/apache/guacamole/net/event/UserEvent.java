@@ -19,20 +19,22 @@
 
 package org.apache.guacamole.net.event;
 
-import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 
 /**
- * Abstract basis for events which may have an associated UserContext when
+ * Abstract basis for events which may have an associated AuthenticatedUser when
  * triggered.
  */
 public interface UserEvent {
 
     /**
-     * Returns the current UserContext of the user triggering the event, if any.
+     * Returns the AuthenticatedUser identifying the user triggering the event,
+     * if any.
      *
-     * @return The current UserContext of the user triggering the event, if
-     *         any, or null if no UserContext is associated with the event.
+     * @return
+     *     The AuthenticatedUser identifying the user triggering the event, if
+     *     any, or null if no AuthenticatedUser is associated with the event.
      */
-    UserContext getUserContext();
+    AuthenticatedUser getAuthenticatedUser();
 
 }

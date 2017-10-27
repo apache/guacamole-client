@@ -20,6 +20,7 @@
 package org.apache.guacamole.net.event;
 
 import org.apache.guacamole.net.GuacamoleTunnel;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
 
@@ -36,42 +37,47 @@ import org.apache.guacamole.net.auth.UserContext;
 public class TunnelConnectEvent implements UserEvent, CredentialEvent, TunnelEvent {
 
     /**
-     * The UserContext associated with the request that is connecting the
+     * The AuthenticatedUser associated with the user that is connecting the
      * tunnel, if any.
      */
-    private UserContext context;
+    private final AuthenticatedUser authenticatedUser;
 
     /**
      * The credentials associated with the request that is connecting the
      * tunnel, if any.
      */
-    private Credentials credentials;
+    private final Credentials credentials;
 
     /**
      * The tunnel being connected.
      */
-    private GuacamoleTunnel tunnel;
+    private final GuacamoleTunnel tunnel;
 
     /**
      * Creates a new TunnelConnectEvent which represents the connecting of the
      * given tunnel via a request associated with the given credentials.
      *
-     * @param context The UserContext associated with the request connecting
-     *                the tunnel.
-     * @param credentials The credentials associated with the request connecting
-     *                    the tunnel.
+     * @param authenticatedUser
+     *     The AuthenticatedUser associated with the user that is connecting the
+     *     tunnel, if any.
+     *
+     * @param credentials
+     *     The credentials associated with the request that connected the
+     *     tunnel. Note that these credentials are not necessarily the same as
+     *     the credentials provided when the user authenticated.
+     *
      * @param tunnel The tunnel being connected.
      */
-    public TunnelConnectEvent(UserContext context, Credentials credentials,
-            GuacamoleTunnel tunnel) {
-        this.context = context;
+    public TunnelConnectEvent(AuthenticatedUser authenticatedUser,
+            Credentials credentials, GuacamoleTunnel tunnel) {
+        this.authenticatedUser = authenticatedUser;
         this.credentials = credentials;
         this.tunnel = tunnel;
     }
 
     @Override
-    public UserContext getUserContext() {
-        return context;
+    public AuthenticatedUser getAuthenticatedUser() {
+        return authenticatedUser;
     }
 
     @Override
