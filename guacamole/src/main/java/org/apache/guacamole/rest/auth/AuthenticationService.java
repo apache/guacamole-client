@@ -224,24 +224,12 @@ public class AuthenticationService {
      * @param authenticatedUser
      *      The user that was successfully authenticated.
      *
-     * @param session
-     *      The existing session for the user (if any).
-     *
      * @throws GuacamoleException
      *      If thrown by a listener.
      */
-    private void fireAuthenticationSuccessEvent(
-            AuthenticatedUser authenticatedUser, GuacamoleSession session)
+    private void fireAuthenticationSuccessEvent(AuthenticatedUser authenticatedUser)
             throws GuacamoleException {
-
-        UserContext userContext = null;
-        if (session != null) {
-            userContext = session.getUserContext(
-                authenticatedUser.getAuthenticationProvider().getIdentifier());
-        }
-
-        listenerService.handleEvent(new AuthenticationSuccessEvent(
-            userContext, authenticatedUser.getCredentials()));
+        listenerService.handleEvent(new AuthenticationSuccessEvent(authenticatedUser));
     }
 
     /**
@@ -286,13 +274,13 @@ public class AuthenticationService {
             if (existingSession != null) {
                 AuthenticatedUser updatedUser = updateAuthenticatedUser(
                         existingSession.getAuthenticatedUser(), credentials);
-                fireAuthenticationSuccessEvent(updatedUser, existingSession);
+                fireAuthenticationSuccessEvent(updatedUser);
                 return updatedUser;
             }
 
             // Otherwise, attempt authentication as a new user
             AuthenticatedUser authenticatedUser = AuthenticationService.this.authenticateUser(credentials);
-            fireAuthenticationSuccessEvent(authenticatedUser, null);
+            fireAuthenticationSuccessEvent(authenticatedUser);
 
             if (logger.isInfoEnabled())
                 logger.info("User \"{}\" successfully authenticated from {}.",

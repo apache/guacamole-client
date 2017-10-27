@@ -20,8 +20,8 @@
 package org.apache.guacamole.net.event;
 
 import org.apache.guacamole.net.GuacamoleTunnel;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
-import org.apache.guacamole.net.auth.UserContext;
 
 /**
  * An event which is triggered whenever a tunnel is being closed. The tunnel
@@ -36,42 +36,48 @@ import org.apache.guacamole.net.auth.UserContext;
 public class TunnelCloseEvent implements UserEvent, CredentialEvent, TunnelEvent {
 
     /**
-     * The UserContext associated with the request that is closing the
+     * The AuthenticatedUser associated with the user that is closing the
      * tunnel, if any.
      */
-    private UserContext context;
+    private final AuthenticatedUser authenticatedUser;
 
     /**
-     * The credentials associated with the request that connected the
-     * tunnel, if any.
+     * The credentials associated with the request that closed the tunnel, if
+     * any.
      */
-    private Credentials credentials;
+    private final Credentials credentials;
 
     /**
      * The tunnel being closed.
      */
-    private GuacamoleTunnel tunnel;
+    private final GuacamoleTunnel tunnel;
 
     /**
      * Creates a new TunnelCloseEvent which represents the closing of the
      * given tunnel via a request associated with the given credentials.
      *
-     * @param context The UserContext associated with the request closing 
-     *                the tunnel.
-     * @param credentials The credentials associated with the request that 
-     *                    connected the tunnel.
-     * @param tunnel The tunnel being closed.
+     * @param authenticatedUser
+     *     The AuthenticatedUser associated with the user that is closing the
+     *     tunnel, if any.
+     *
+     * @param credentials
+     *     The credentials associated with the request that closed the
+     *     tunnel. Note that these credentials are not necessarily the same as
+     *     the credentials provided when the user authenticated.
+     *
+     * @param tunnel
+     *     The tunnel being closed.
      */
-    public TunnelCloseEvent(UserContext context, Credentials credentials,
-            GuacamoleTunnel tunnel) {
-        this.context = context;
+    public TunnelCloseEvent(AuthenticatedUser authenticatedUser,
+            Credentials credentials, GuacamoleTunnel tunnel) {
+        this.authenticatedUser = authenticatedUser;
         this.credentials = credentials;
         this.tunnel = tunnel;
     }
 
     @Override
-    public UserContext getUserContext() {
-        return context;
+    public AuthenticatedUser getAuthenticatedUser() {
+        return authenticatedUser;
     }
 
     @Override
