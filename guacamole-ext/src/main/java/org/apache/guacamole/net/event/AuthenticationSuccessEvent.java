@@ -19,8 +19,14 @@
 
 package org.apache.guacamole.net.event;
 
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleResourceNotFoundException;
+import org.apache.guacamole.net.auth.AuthenticationProvider;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An event which is triggered whenever a user's credentials pass
@@ -32,13 +38,23 @@ import org.apache.guacamole.net.auth.UserContext;
  * is effectively <em>vetoed</em> and will be subsequently processed as though the
  * authentication failed.
  */
-public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent {
+public class AuthenticationSuccessEvent implements
+        UserEvent, CredentialEvent, AuthenticatedUserEvent, AuthenticationProviderEvent {
 
     /**
-     * The UserContext associated with the request that is connecting the
-     * tunnel, if any.
+     * Logger for this class.
      */
-    private UserContext context;
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationSuccessEvent.class);
+
+    /**
+     * The UserContext, if any, for the user which passed authentication.
+     */
+    private UserContext userContext;
+
+    /**
+     * The AuthenticatedUser which passed authentication.
+     */
+    private AuthenticatedUser authenticatedUser;
 
     /**
      * The credentials which passed authentication.
@@ -46,26 +62,49 @@ public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent {
     private Credentials credentials;
 
     /**
+     * The authentication provider which accepted the credentials.
+     */
+    private AuthenticationProvider authProvider;
+
+    /**
      * Creates a new AuthenticationSuccessEvent which represents a successful
      * authentication attempt with the given credentials.
      *
-     * @param context The UserContext created as a result of successful
-     *                authentication.
-     * @param credentials The credentials which passed authentication.
+     * @param authenticatedUser The user which passed authentication.
      */
-    public AuthenticationSuccessEvent(UserContext context, Credentials credentials) {
-        this.context = context;
-        this.credentials = credentials;
+    public AuthenticationSuccessEvent(AuthenticatedUser authenticatedUser) throws GuacamoleException {
+        this.authenticatedUser = authenticatedUser;
+        try {
+            if (authenticatedUser != null) {
+                this.userContext = authenticatedUser.getAuthenticationProvider().getUserContext(authenticatedUser);
+                this.credentials = authenticatedUser.getCredentials();
+                this.authProvider = authenticatedUser.getAuthenticationProvider();
+            }
+        }
+        catch (GuacamoleResourceNotFoundException e) {
+            logger.warn("No user context available while creating AuthenticationSuccessEvent");
+            logger.debug("Received an exception attempting to retrieve the UserContext.", e);
+        }
     }
 
     @Override
     public UserContext getUserContext() {
-        return context;
+        return userContext;
     }
 
     @Override
     public Credentials getCredentials() {
         return credentials;
+    }
+
+    @Override
+    public AuthenticatedUser getAuthenticatedUser() {
+        return authenticatedUser;
+    }
+
+    @Override
+    public AuthenticationProvider getAuthenticationProvider() {
+        return authProvider;
     }
 
 }

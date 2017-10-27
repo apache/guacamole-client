@@ -234,14 +234,8 @@ public class AuthenticationService {
             AuthenticatedUser authenticatedUser, GuacamoleSession session)
             throws GuacamoleException {
 
-        UserContext userContext = null;
-        if (session != null) {
-            userContext = session.getUserContext(
-                authenticatedUser.getAuthenticationProvider().getIdentifier());
-        }
-
         listenerService.handleEvent(new AuthenticationSuccessEvent(
-            userContext, authenticatedUser.getCredentials()));
+            authenticatedUser));
     }
 
     /**

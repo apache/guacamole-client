@@ -19,34 +19,20 @@
 
 package org.apache.guacamole.net.event;
 
-import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.AuthenticationProvider;
 
 /**
- * An event which is triggered whenever a user's credentials fail to be
- * authenticated. The credentials that failed to be authenticated are included
- * within this event, and can be retrieved using getCredentials().
+ * Abstract basis for events which have an authentication provider when
+ * triggered.
  */
-public class AuthenticationFailureEvent implements CredentialEvent {
+public interface AuthenticationProviderEvent {
 
     /**
-     * The credentials which failed authentication.
-     */
-    private Credentials credentials;
-
-    /**
-     * Creates a new AuthenticationFailureEvent which represents the failure
-     * to authenticate the given credentials.
+     * Returns the authentication provider associated with the event.
      *
-     * @param credentials
-     *     The credentials which failed authentication.
+     * @return The authentication provider object associated with the event, if
+     *         any, or null if no provider is associated with the event.
      */
-    public AuthenticationFailureEvent(Credentials credentials) {
-        this.credentials = credentials;
-    }
-
-    @Override
-    public Credentials getCredentials() {
-        return credentials;
-    }
+    AuthenticationProvider getAuthenticationProvider();
 
 }
