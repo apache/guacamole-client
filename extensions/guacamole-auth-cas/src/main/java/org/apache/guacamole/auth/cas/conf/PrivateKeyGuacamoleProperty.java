@@ -56,13 +56,9 @@ public abstract class PrivateKeyGuacamoleProperty implements GuacamoleProperty<P
             FileInputStream keyStreamIn = new FileInputStream(keyFile);
             ByteArrayOutputStream keyStreamOut = new ByteArrayOutputStream();
             byte[] keyBuffer = new byte[1024];
-            try {
-                for (int readBytes; (readBytes = keyStreamIn.read(keyBuffer)) != -1;)
-                    keyStreamOut.write(keyBuffer, 0, readBytes);
-            }
-            catch (IOException e) {
-                throw new GuacamoleServerException("IOException while trying to read bytes from file.", e);
-            }
+
+            for (int readBytes; (readBytes = keyStreamIn.read(keyBuffer)) != -1;)
+                keyStreamOut.write(keyBuffer, 0, readBytes);
 
             final byte[] keyBytes = keyStreamOut.toByteArray();
 
