@@ -34,7 +34,7 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.cas.conf.ConfigurationService;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
+import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
@@ -113,7 +113,7 @@ public class TicketValidationService {
         }
         catch (Throwable t) {
             logger.error("Error validating ticket with CAS server: {}", t.getMessage());
-            throw new GuacamoleInsufficientCredentialsException("CAS login failed.", CredentialsInfo.USERNAME_PASSWORD);
+            throw new GuacamoleInvalidCredentialsException("CAS login failed.", CredentialsInfo.USERNAME_PASSWORD);
         }
 
     }
