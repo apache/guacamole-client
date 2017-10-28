@@ -77,18 +77,8 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
     @Override
     public void add(Connection object) throws GuacamoleException {
 
-        // Get the next connection ID.
-        String connectionId = getNextConnectionID().toString();
+        put(new QuickConnection(object));
 
-        // Set up identifier and parent on original object.
-        object.setIdentifier(connectionId);
-        object.setParentIdentifier(ROOT_IDENTIFIER);
-
-        // Add connection to the directory
-        putConnection(new QuickConnection(object));
-
-        // Add connection to the tree
-        this.rootGroup.addConnectionIdentifier(connectionId);
     }
 
     /**
