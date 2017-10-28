@@ -81,7 +81,8 @@ public abstract class PrivateKeyGuacamoleProperty implements GuacamoleProperty<P
                 throw new GuacamoleServerException("Key is not in expected PKCS8 encoding.", e);
             }
             finally {
-                keyStreamIn.close();
+                if (keyStreamIn != null)
+                    keyStreamIn.close();
             }
         }
         catch (IOException e) {
