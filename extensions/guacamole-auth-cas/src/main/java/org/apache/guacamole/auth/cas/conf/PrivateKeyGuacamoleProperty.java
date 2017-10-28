@@ -60,6 +60,7 @@ public abstract class PrivateKeyGuacamoleProperty implements GuacamoleProperty<P
             for (int readBytes; (readBytes = keyStreamIn.read(keyBuffer)) != -1;)
                 keyStreamOut.write(keyBuffer, 0, readBytes);
 
+            keyStreamIn.close();
             final byte[] keyBytes = keyStreamOut.toByteArray();
 
             // Set up decryption infrastructure
