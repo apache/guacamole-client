@@ -33,6 +33,7 @@ import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.apache.guacamole.rest.auth.TokenRESTService;
 import org.apache.guacamole.rest.auth.AuthTokenGenerator;
 import org.apache.guacamole.rest.auth.AuthenticationService;
+import org.apache.guacamole.rest.auth.DecorationService;
 import org.apache.guacamole.rest.auth.SecureRandomAuthTokenGenerator;
 import org.apache.guacamole.rest.auth.TokenSessionMap;
 import org.apache.guacamole.rest.connection.ConnectionModule;
@@ -80,6 +81,7 @@ public class RESTServiceModule extends ServletModule {
         bind(ListenerService.class);
         bind(AuthenticationService.class);
         bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
+        bind(DecorationService.class);
 
         // Automatically translate GuacamoleExceptions for REST methods
         MethodInterceptor interceptor = new RESTExceptionWrapper();

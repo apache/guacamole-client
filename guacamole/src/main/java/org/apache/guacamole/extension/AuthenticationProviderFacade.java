@@ -173,6 +173,21 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
     }
 
     @Override
+    public UserContext redecorate(UserContext decorated, UserContext context,
+            AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException {
+
+        // Do nothing if underlying auth provider could not be loaded
+        if (authProvider == null)
+            return context;
+
+        // Delegate to underlying auth provider
+        return authProvider.redecorate(decorated, context,
+                authenticatedUser, credentials);
+
+    }
+
+    @Override
     public void shutdown() {
         if (authProvider != null)
             authProvider.shutdown();

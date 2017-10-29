@@ -79,6 +79,12 @@ public class AuthenticationService {
     private AuthTokenGenerator authTokenGenerator;
 
     /**
+     * Service for applying or reapplying layers of decoration.
+     */
+    @Inject
+    private DecorationService decorationService;
+
+    /**
      * The service to use to notify registered authentication listeners.
      */
     @Inject
@@ -357,7 +363,7 @@ public class AuthenticationService {
             List<DecoratedUserContext> oldUserContexts = existingSession.getUserContexts();
             for (DecoratedUserContext userContext : oldUserContexts) {
 
-                UserContext oldUserContext = userContext.getOriginal();
+                UserContext oldUserContext = userContext.getUndecoratedUserContext();
 
                 // Update existing UserContext
                 AuthenticationProvider authProvider = oldUserContext.getAuthenticationProvider();
@@ -365,8 +371,8 @@ public class AuthenticationService {
 
                 // Add to available data, if successful
                 if (updatedUserContext != null)
-                    userContexts.add(new DecoratedUserContext(updatedUserContext,
-                            authenticatedUser, credentials, authProviders));
+                    userContexts.add(decorationService.redecorate(userContext,
+                            updatedUserContext, authenticatedUser, credentials));
 
                 // If unsuccessful, log that this happened, as it may be a bug
                 else
@@ -388,8 +394,8 @@ public class AuthenticationService {
 
                 // Add to available data, if successful
                 if (userContext != null)
-                    userContexts.add(new DecoratedUserContext(userContext,
-                            authenticatedUser, credentials, authProviders));
+                    userContexts.add(decorationService.decorate(userContext,
+                            authenticatedUser, credentials));
 
             }
 

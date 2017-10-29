@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.rest.auth;
 
-import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -28,21 +27,38 @@ import org.apache.guacamole.net.auth.DelegatingUserContext;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
- * A UserContext which has been decorated by all applicable
- * AuthenticationProviders.
+ * A UserContext which has been decorated by an AuthenticationProvider through
+ * invoking decorate() or redecorate().
  */
 public class DecoratedUserContext extends DelegatingUserContext {
 
     /**
      * The original, undecorated UserContext.
      */
-    private final UserContext original;
+    private final UserContext undecoratedUserContext;
 
     /**
-     * Repeatedly decorates the given UserContext, invoking the decorate()
-     * function of each given AuthenticationProvider, wrapping the UserContext
-     * within successive layers of decoration. The AuthenticationProvider which
-     * originated the given UserContext will be ignored.
+     * The AuthenticationProvider which applied this layer of decoration.
+     */
+    private final AuthenticationProvider decoratingAuthenticationProvider;
+
+    /**
+     * The DecoratedUserContext which applies the layer of decoration
+     * immediately beneath this DecoratedUserContext. If no further decoration
+     * has been applied, this will be null.
+     */
+    private final DecoratedUserContext decoratedUserContext;
+
+    /**
+     * Decorates a newly-created UserContext (as would be returned by
+     * getUserContext()), invoking the decorate() function of the given
+     * AuthenticationProvider to apply an additional layer of decoration. If the
+     * AuthenticationProvider originated the given UserContext, this function
+     * has no effect.
+     *
+     * @param authProvider
+     *     The AuthenticationProvider which should be used to decorate the
+     *     given UserContext.
      *
      * @param userContext
      *     The UserContext to decorate.
@@ -55,42 +71,87 @@ public class DecoratedUserContext extends DelegatingUserContext {
      *     The credentials associated with the request which produced the given
      *     UserContext.
      *
-     * @param authProviders
-     *     The AuthenticationProviders which should be used to decorate the
-     *     given UserContext. The order of this list dictates the order in
-     *     which each AuthenticationProvider's decorate() function will be
-     *     invoked.
-     *
      * @return
-     *     A UserContext instance which has been decorated (wrapped) by all
-     *     applicable AuthenticationProviders.
+     *     A UserContext instance which has been decorated (wrapped) by the
+     *     given AuthenticationProvider, or the original UserContext if the
+     *     given AuthenticationProvider originated the UserContext.
      *
      * @throws GuacamoleException
-     *     If any of the given AuthenticationProviders fails while decorating
-     *     the UserContext.
+     *     If the given AuthenticationProvider fails while decorating the
+     *     UserContext.
      */
-    private static UserContext decorate(UserContext userContext,
-            AuthenticatedUser authenticatedUser, Credentials credentials,
-            List<AuthenticationProvider> authProviders) throws GuacamoleException {
+    private static UserContext decorate(AuthenticationProvider authProvider,
+            UserContext userContext, AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException {
 
-        AuthenticationProvider owner = userContext.getAuthenticationProvider();
+        // Skip the AuthenticationProvider which produced the UserContext
+        // being decorated
+        if (authProvider != userContext.getAuthenticationProvider()) {
 
-        // Poll each AuthenticationProvider to decorate the given UserContext
-        for (AuthenticationProvider authProvider : authProviders) {
-
-            // Skip the AuthenticationProvider which produced the UserContext
-            // being decorated
-            if (authProvider == owner)
-                continue;
-
-            // Apply next layer of wrapping around UserContext
+            // Apply layer of wrapping around UserContext
             UserContext decorated = authProvider.decorate(userContext,
                     authenticatedUser, credentials);
 
             // Do not allow misbehaving extensions to wipe out the
             // UserContext entirely
             if (decorated != null)
-                userContext = decorated;
+                return decorated;
+
+        }
+
+        return userContext;
+
+    }
+
+    /**
+     * Redecorates an updated UserContext (as would be returned by
+     * updateUserContext()), invoking the redecorate() function of the given
+     * AuthenticationProvider to apply an additional layer of decoration. If the
+     * AuthenticationProvider originated the given UserContext, this function
+     * has no effect.
+     *
+     * @param decorated
+     *     The DecoratedUserContext associated with an older version of the
+     *     given UserContext.
+     *
+     * @param userContext
+     *     The new version of the UserContext which should be decorated.
+     *
+     * @param authenticatedUser
+     *     The AuthenticatedUser identifying the user associated with the given
+     *     UserContext.
+     *
+     * @param credentials
+     *     The credentials associated with the request which produced the given
+     *     UserContext.
+     *
+     * @return
+     *     A UserContext instance which has been decorated (wrapped) by the
+     *     given AuthenticationProvider, or the original UserContext if the
+     *     given AuthenticationProvider originated the UserContext.
+     *
+     * @throws GuacamoleException
+     *     If the given AuthenticationProvider fails while decorating the
+     *     UserContext.
+     */
+    private static UserContext redecorate(DecoratedUserContext decorated,
+            UserContext userContext, AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException {
+
+        AuthenticationProvider authProvider = decorated.getDecoratingAuthenticationProvider();
+
+        // Skip the AuthenticationProvider which produced the UserContext
+        // being decorated
+        if (authProvider != userContext.getAuthenticationProvider()) {
+
+            // Apply next layer of wrapping around UserContext
+            UserContext redecorated = authProvider.redecorate(decorated,
+                    userContext, authenticatedUser, credentials);
+
+            // Do not allow misbehaving extensions to wipe out the
+            // UserContext entirely
+            if (redecorated != null)
+                return redecorated;
 
         }
 
@@ -100,13 +161,17 @@ public class DecoratedUserContext extends DelegatingUserContext {
 
     /**
      * Creates a new DecoratedUserContext, invoking the the decorate() function
-     * of the given AuthenticationProviders to decorate the provided
-     * UserContext. Decoration by each AuthenticationProvider will occur in the
-     * order given. Only AuthenticationProviders which did not originate the
-     * given UserContext will be used.
+     * of the given AuthenticationProvider to decorate the provided, undecorated
+     * UserContext. If the AuthenticationProvider originated the given
+     * UserContext, then the given UserContext is wrapped without any
+     * decoration.
+     *
+     * @param authProvider
+     *     The AuthenticationProvider which should be used to decorate the
+     *     given UserContext.
      *
      * @param userContext
-     *     The UserContext to decorate.
+     *     The undecorated UserContext to decorate.
      *
      * @param authenticatedUser
      *     The AuthenticatedUser identifying the user associated with the given
@@ -116,32 +181,181 @@ public class DecoratedUserContext extends DelegatingUserContext {
      *     The credentials associated with the request which produced the given
      *     UserContext.
      *
-     * @param authProviders
-     *     The AuthenticationProviders which should be used to decorate the
-     *     given UserContext. The order of this list dictates the order in
-     *     which each AuthenticationProvider's decorate() function will be
-     *     invoked.
+     * @throws GuacamoleException
+     *     If any of the given AuthenticationProviders fails while decorating
+     *     the UserContext.
+     */
+    public DecoratedUserContext(AuthenticationProvider authProvider,
+            UserContext userContext, AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException {
+
+        // Wrap the result of invoking decorate() on the given AuthenticationProvider
+        super(decorate(authProvider, userContext, authenticatedUser, credentials));
+        this.decoratingAuthenticationProvider = authProvider;
+
+        // The wrapped UserContext is undecorated
+        this.undecoratedUserContext = userContext;
+        this.decoratedUserContext = null;
+
+    }
+
+    /**
+     * Creates a new DecoratedUserContext, invoking the the decorate() function
+     * of the given AuthenticationProvider to apply an additional layer of
+     * decoration to a DecoratedUserContext. If the AuthenticationProvider
+     * originated the given UserContext, then the given UserContext is wrapped
+     * without any decoration.
+     *
+     * @param authProvider
+     *     The AuthenticationProvider which should be used to decorate the
+     *     given UserContext.
+     *
+     * @param userContext
+     *     The DecoratedUserContext to decorate.
+     *
+     * @param authenticatedUser
+     *     The AuthenticatedUser identifying the user associated with the given
+     *     UserContext.
+     *
+     * @param credentials
+     *     The credentials associated with the request which produced the given
+     *     UserContext.
      *
      * @throws GuacamoleException
      *     If any of the given AuthenticationProviders fails while decorating
      *     the UserContext.
      */
-    public DecoratedUserContext(UserContext userContext,
-            AuthenticatedUser authenticatedUser, Credentials credentials,
-            List<AuthenticationProvider> authProviders) throws GuacamoleException {
-        super(decorate(userContext, authenticatedUser, credentials, authProviders));
-        this.original = userContext;
+    public DecoratedUserContext(AuthenticationProvider authProvider,
+            DecoratedUserContext userContext, AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException {
+
+        // Wrap the result of invoking decorate() on the given AuthenticationProvider
+        super(decorate(authProvider, userContext, authenticatedUser, credentials));
+        this.decoratingAuthenticationProvider = authProvider;
+
+        // The wrapped UserContext has at least one layer of decoration
+        this.undecoratedUserContext = userContext.getUndecoratedUserContext();
+        this.decoratedUserContext = userContext;
+
     }
 
     /**
-     * Returns the original, undecorated UserContext, as provided to the
-     * constructor of this DecoratedUserContext.
+     * Creates a new DecoratedUserContext, invoking the the redecorate()
+     * function of the given AuthenticationProvider to reapply decoration to the
+     * provided, undecorated UserContext, which has been updated relative to a
+     * past version which was decorated. If the AuthenticationProvider
+     * originated the given UserContext, then the given UserContext is wrapped
+     * without any decoration.
+     *
+     * @param decorated
+     *     The DecoratedUserContext associated with the older version of the
+     *     given UserContext.
+     *
+     * @param userContext
+     *     The undecorated UserContext to decorate.
+     *
+     * @param authenticatedUser
+     *     The AuthenticatedUser identifying the user associated with the given
+     *     UserContext.
+     *
+     * @param credentials
+     *     The credentials associated with the request which produced the given
+     *     UserContext.
+     *
+     * @throws GuacamoleException
+     *     If any of the given AuthenticationProviders fails while decorating
+     *     the UserContext.
+     */
+    public DecoratedUserContext(DecoratedUserContext decorated,
+            UserContext userContext, AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException {
+
+        // Wrap the result of invoking redecorate() on the given AuthenticationProvider
+        super(redecorate(decorated, userContext, authenticatedUser, credentials));
+        this.decoratingAuthenticationProvider = decorated.getDecoratingAuthenticationProvider();
+
+        // The wrapped UserContext is undecorated
+        this.undecoratedUserContext = userContext;
+        this.decoratedUserContext = null;
+
+    }
+
+    /**
+     * Creates a new DecoratedUserContext, invoking the the redecorate()
+     * function of the given AuthenticationProvider to reapply decoration to a
+     * DecoratedUserContext which already has at least one layer of decoration
+     * applied, and which is associated with a UserContext which was updated
+     * relative to a past version which was decorated. If the
+     * AuthenticationProvider originated the given UserContext, then the given
+     * UserContext is wrapped without any decoration.
+     *
+     * @param decorated
+     *     The DecoratedUserContext associated with the older version of the
+     *     UserContext wrapped within one or more layers of decoration.
+     *
+     * @param userContext
+     *     The DecoratedUserContext to decorate.
+     *
+     * @param authenticatedUser
+     *     The AuthenticatedUser identifying the user associated with the given
+     *     UserContext.
+     *
+     * @param credentials
+     *     The credentials associated with the request which produced the given
+     *     UserContext.
+     *
+     * @throws GuacamoleException
+     *     If any of the given AuthenticationProviders fails while decorating
+     *     the UserContext.
+     */
+    public DecoratedUserContext(DecoratedUserContext decorated,
+            DecoratedUserContext userContext, AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException {
+
+        // Wrap the result of invoking redecorate() on the given AuthenticationProvider
+        super(redecorate(decorated, userContext, authenticatedUser, credentials));
+        this.decoratingAuthenticationProvider = decorated.getDecoratingAuthenticationProvider();
+
+        // The wrapped UserContext has at least one layer of decoration
+        this.undecoratedUserContext = userContext.getUndecoratedUserContext();
+        this.decoratedUserContext = userContext;
+
+    }
+
+    /**
+     * Returns the original UserContext with absolutely no layers of decoration
+     * applied.
      *
      * @return
      *     The original, undecorated UserContext.
      */
-    public UserContext getOriginal() {
-        return original;
+    public UserContext getUndecoratedUserContext() {
+        return undecoratedUserContext;
+    }
+
+    /**
+     * Returns the AuthenticationProvider which applied the layer of decoration
+     * represented by this DecoratedUserContext.
+     *
+     * @return
+     *     The AuthenticationProvider which applied this layer of decoration.
+     */
+    public AuthenticationProvider getDecoratingAuthenticationProvider() {
+        return decoratingAuthenticationProvider;
+    }
+
+    /**
+     * Returns the DecoratedUserContext representing the next layer of
+     * decoration, itself decorated by this DecoratedUserContext. If no further
+     * layers of decoration exist, this will be null.
+     *
+     * @return
+     *     The DecoratedUserContext which applies the layer of decoration
+     *     immediately beneath this DecoratedUserContext, or null if no further
+     *     decoration has been applied.
+     */
+    public DecoratedUserContext getDecoratedUserContext() {
+        return decoratedUserContext;
     }
 
 }
