@@ -25,7 +25,7 @@ import java.util.Map;
  * Represents the semantics which apply to an existing connection when shared,
  * along with a human-readable name and unique identifier.
  */
-public interface SharingProfile extends Identifiable {
+public interface SharingProfile extends Identifiable, Attributes {
 
     /**
      * Returns the human-readable name assigned to this SharingProfile.
@@ -92,35 +92,5 @@ public interface SharingProfile extends Identifiable {
      *     key/value pairs.
      */
     public void setParameters(Map<String, String> parameters);
-
-    /**
-     * Returns all attributes associated with this sharing profile. The returned
-     * map may not be modifiable.
-     *
-     * @return
-     *     A map of all attribute identifiers to their corresponding values,
-     *     for all attributes associated with this sharing profile, which may
-     *     not be modifiable.
-     */
-    Map<String, String> getAttributes();
-
-    /**
-     * Sets the given attributes. If an attribute within the map is not
-     * supported, it will simply be dropped. Any attributes not within the
-     * given map will be left untouched. Attributes which are not declared
-     * within getSharingProfileAttributes() of the associated UserContext MUST
-     * NOT be submitted, but other extensions may manipulate the declared
-     * attributes through decorate() and redecorate().
-     *
-     * Implementations may optionally allow storage of unsupported attributes.
-     * Extensions which rely on other extensions to store their attribute
-     * values should verify that such storage is supported by first testing
-     * that the attribute value is retrievable via getAttributes() after being
-     * set.
-     *
-     * @param attributes
-     *     A map of all attribute identifiers to their corresponding values.
-     */
-    void setAttributes(Map<String, String> attributes);
 
 }

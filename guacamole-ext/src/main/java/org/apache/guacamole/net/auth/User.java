@@ -21,7 +21,6 @@ package org.apache.guacamole.net.auth;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
@@ -30,7 +29,7 @@ import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 /**
  * A user of the Guacamole web application.
  */
-public interface User extends Identifiable {
+public interface User extends Identifiable, Attributes {
 
     /**
      * All standard attribute names with semantics defined by the Guacamole web
@@ -80,36 +79,6 @@ public interface User extends Identifiable {
      * @param password The password to set.
      */
     public void setPassword(String password);
-
-    /**
-     * Returns all attributes associated with this user. The returned map may
-     * not be modifiable.
-     *
-     * @return
-     *     A map of all attribute identifiers to their corresponding values,
-     *     for all attributes associated with this user, which may not be
-     *     modifiable.
-     */
-    Map<String, String> getAttributes();
-
-    /**
-     * Sets the given attributes. If an attribute within the map is not
-     * supported, it will simply be dropped. Any attributes not within the given
-     * map will be left untouched. Attributes which are not declared within
-     * getUserAttributes() of the associated UserContext MUST NOT be submitted,
-     * but other extensions may manipulate the declared attributes through
-     * decorate() and redecorate().
-     * 
-     * Implementations may optionally allow storage of unsupported attributes.
-     * Extensions which rely on other extensions to store their attribute
-     * values should verify that such storage is supported by first testing
-     * that the attribute value is retrievable via getAttributes() after being
-     * set.
-     *
-     * @param attributes
-     *     A map of all attribute identifiers to their corresponding values.
-     */
-    void setAttributes(Map<String, String> attributes);
 
     /**
      * Returns the date and time that this user was last active. If the user
