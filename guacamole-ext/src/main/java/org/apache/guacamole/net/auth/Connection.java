@@ -95,8 +95,17 @@ public interface Connection extends Identifiable, Connectable {
 
     /**
      * Sets the given attributes. If an attribute within the map is not
-     * supported, it will simply be dropped. Any attributes not within the
-     * given map will be left untouched.
+     * supported, it will simply be dropped. Any attributes not within the given
+     * map will be left untouched. Attributes which are not declared within
+     * getConnectionAttributes() of the associated UserContext MUST NOT be
+     * submitted, but other extensions may manipulate the declared attributes
+     * through decorate() and redecorate().
+     *
+     * Implementations may optionally allow storage of unsupported attributes.
+     * Extensions which rely on other extensions to store their attribute
+     * values should verify that such storage is supported by first testing
+     * that the attribute value is retrievable via getAttributes() after being
+     * set.
      *
      * @param attributes
      *     A map of all attribute identifiers to their corresponding values.
