@@ -49,38 +49,45 @@ public abstract class PrivateKeyGuacamoleProperty implements GuacamoleProperty<P
         if (value == null || value.isEmpty())
             return null;
 
+        FileInputStream keyStreamIn = null;
+
         try {
+            try {
 
-            // Open and read the file specified in the configuration.
-            File keyFile = new File(value);
-            FileInputStream keyStreamIn = new FileInputStream(keyFile);
-            ByteArrayOutputStream keyStreamOut = new ByteArrayOutputStream();
-            byte[] keyBuffer = new byte[1024];
+                // Open and read the file specified in the configuration.
+                File keyFile = new File(value);
+                keyStreamIn = new FileInputStream(keyFile);
+                ByteArrayOutputStream keyStreamOut = new ByteArrayOutputStream();
+                byte[] keyBuffer = new byte[1024];
 
-            for (int readBytes; (readBytes = keyStreamIn.read(keyBuffer)) != -1;)
-                keyStreamOut.write(keyBuffer, 0, readBytes);
+                for (int readBytes; (readBytes = keyStreamIn.read(keyBuffer)) != -1;)
+                    keyStreamOut.write(keyBuffer, 0, readBytes);
 
-            final byte[] keyBytes = keyStreamOut.toByteArray();
+                final byte[] keyBytes = keyStreamOut.toByteArray();
 
-            // Set up decryption infrastructure
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            KeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
-            return keyFactory.generatePrivate(keySpec);
+                // Set up decryption infrastructure
+                KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+                KeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+                return keyFactory.generatePrivate(keySpec);
 
-        }
-        catch (FileNotFoundException e) {
-            throw new GuacamoleServerException("Could not find the specified key file.", e);
+            }
+            catch (FileNotFoundException e) {
+                throw new GuacamoleServerException("Could not find the specified key file.", e);
+            }
+            catch (NoSuchAlgorithmException e) {
+                throw new GuacamoleServerException("RSA algorithm is not available.", e);
+            }
+            catch (InvalidKeySpecException e) {
+                throw new GuacamoleServerException("Key is not in expected PKCS8 encoding.", e);
+            }
+            finally {
+                if (keyStreamIn != null)
+                    keyStreamIn.close();
+            }
         }
         catch (IOException e) {
             throw new GuacamoleServerException("Could not read in the specified key file.", e);
         }
-        catch (NoSuchAlgorithmException e) {
-            throw new GuacamoleServerException("RSA algorithm is not available.", e);
-        }
-        catch (InvalidKeySpecException e) {
-            throw new GuacamoleServerException("Key is not in expected PKCS8 encoding.", e);
-        }
-
     }
 
 }
