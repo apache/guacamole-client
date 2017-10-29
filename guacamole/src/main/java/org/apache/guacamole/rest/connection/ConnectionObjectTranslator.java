@@ -21,6 +21,7 @@ package org.apache.guacamole.rest.connection;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Connection;
+import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 
@@ -29,7 +30,7 @@ import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
  * objects.
  */
 public class ConnectionObjectTranslator
-        implements DirectoryObjectTranslator<Connection, APIConnection> {
+        extends DirectoryObjectTranslator<Connection, APIConnection> {
 
     @Override
     public APIConnection toExternalObject(Connection object)
@@ -56,6 +57,16 @@ public class ConnectionObjectTranslator
         existingObject.setParentIdentifier(object.getParentIdentifier());
         existingObject.setName(object.getName());
         existingObject.setAttributes(object.getAttributes());
+
+    }
+
+    @Override
+    public void filterExternalObject(UserContext userContext,
+            APIConnection object) throws GuacamoleException {
+
+        // Filter object attributes by defined schema
+        object.setAttributes(filterAttributes(
+                userContext.getConnectionAttributes(), object.getAttributes()));
 
     }
 

@@ -92,7 +92,7 @@ public class UserResource
             @Assisted Directory<User> directory,
             @Assisted User user,
             DirectoryObjectTranslator<User, APIUser> translator) {
-        super(directory, user, translator);
+        super(userContext, directory, user, translator);
         this.userContext = userContext;
         this.directory = directory;
         this.user = user;

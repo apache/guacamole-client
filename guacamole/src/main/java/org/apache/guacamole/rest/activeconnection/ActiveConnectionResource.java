@@ -89,7 +89,7 @@ public class ActiveConnectionResource
             @Assisted Directory<ActiveConnection> directory,
             @Assisted ActiveConnection activeConnection,
             DirectoryObjectTranslator<ActiveConnection, APIActiveConnection> translator) {
-        super(directory, activeConnection, translator);
+        super(userContext, directory, activeConnection, translator);
         this.userContext = userContext;
         this.activeConnection = activeConnection;
     }

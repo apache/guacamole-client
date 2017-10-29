@@ -82,7 +82,7 @@ public class SharingProfileResource
             @Assisted Directory<SharingProfile> directory,
             @Assisted SharingProfile sharingProfile,
             DirectoryObjectTranslator<SharingProfile, APISharingProfile> translator) {
-        super(directory, sharingProfile, translator);
+        super(userContext, directory, sharingProfile, translator);
         this.userContext = userContext;
         this.sharingProfile = sharingProfile;
     }

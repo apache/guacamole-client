@@ -222,6 +222,9 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
         if (object == null)
             throw new GuacamoleClientException("Data must be submitted when creating objects.");
 
+        // Filter/sanitize object contents
+        translator.filterExternalObject(userContext, object);
+
         // Create the new object within the directory
         directory.add(translator.toInternalObject(object));
 

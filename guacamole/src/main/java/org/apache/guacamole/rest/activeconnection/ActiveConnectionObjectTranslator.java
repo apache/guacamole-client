@@ -22,6 +22,7 @@ package org.apache.guacamole.rest.activeconnection;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.net.auth.ActiveConnection;
+import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 
 /**
@@ -30,7 +31,7 @@ import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
  * toExternalObject() is implemented here.
  */
 public class ActiveConnectionObjectTranslator
-        implements DirectoryObjectTranslator<ActiveConnection, APIActiveConnection> {
+        extends DirectoryObjectTranslator<ActiveConnection, APIActiveConnection> {
 
     @Override
     public APIActiveConnection toExternalObject(ActiveConnection object)
@@ -54,6 +55,12 @@ public class ActiveConnectionObjectTranslator
         // Modification not supported for ActiveConnection
         throw new GuacamoleUnsupportedException("Active connection records are read-only.");
 
+    }
+
+    @Override
+    public void filterExternalObject(UserContext context,
+            APIActiveConnection object) throws GuacamoleException {
+        // Nothing to filter on ActiveConnections (no attributes)
     }
 
 }
