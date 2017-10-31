@@ -189,8 +189,14 @@ angular.module('rest').factory('tunnelService', ['$injector',
      */
     service.downloadStream = function downloadStream(tunnel, stream, mimetype, filename) {
 
+        // Work-around for IE missing window.location.origin
+        if (!$window.location.origin)
+            var streamOrigin = $window.location.protocol + '//' + $window.location.hostname + ($window.location.port ? (':' + $window.location.port) : '');
+        else
+            var streamOrigin = $window.location.origin;
+
         // Build download URL
-        var url = $window.location.origin
+        var url = streamOrigin
                 + $window.location.pathname
                 + 'api/session/tunnels/' + encodeURIComponent(tunnel)
                 + '/streams/' + encodeURIComponent(stream.index)
@@ -267,8 +273,14 @@ angular.module('rest').factory('tunnelService', ['$injector',
 
         var deferred = $q.defer();
 
+        // Work-around for IE missing window.location.origin
+        if (!$window.location.origin)
+            var streamOrigin = $window.location.protocol + '//' + $window.location.hostname + ($window.location.port ? (':' + $window.location.port) : '');
+        else
+            var streamOrigin = $window.location.origin;
+
         // Build upload URL
-        var url = $window.location.origin
+        var url = streamOrigin
                 + $window.location.pathname
                 + 'api/session/tunnels/' + encodeURIComponent(tunnel)
                 + '/streams/' + encodeURIComponent(stream.index)
