@@ -48,12 +48,8 @@ public class ReferralAuthHandler implements LDAPAuthHandler {
      * Creates a ReferralAuthHandler object to handle authentication when
      * following referrals in a LDAP connection, using the provided dn and
      * password.
-     *
-     * @throws GuacamoleException
-     *     If exceptions are caught while converting the password from a string
-     *     into a byte array.
      */
-    public ReferralAuthHandler(String dn, String password) throws GuacamoleException {
+    public ReferralAuthHandler(String dn, String password) {
         byte[] passwordBytes;
         try {
 
@@ -67,7 +63,7 @@ public class ReferralAuthHandler implements LDAPAuthHandler {
         catch (UnsupportedEncodingException e) {
             logger.error("Unexpected lack of support for UTF-8: {}", e.getMessage());
             logger.debug("Support for UTF-8 (as required by Java spec) not found.", e); 
-            throw new GuacamoleException("Could not set password due to missing UTF-8 support.");
+            throw new UnsupportedOperationException("Unexpected lack of UTF-8 support.", e);
         }
         ldapAuth = new LDAPAuthProvider(dn, passwordBytes);
     }

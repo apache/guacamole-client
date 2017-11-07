@@ -176,7 +176,7 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
-     * Whether or not we should follow referrals
+     * Whether or not we should follow referrals.
      */
     public static final BooleanGuacamoleProperty LDAP_FOLLOW_REFERRALS = new BooleanGuacamoleProperty() {
 
@@ -186,7 +186,7 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
-     * Maximum number of referral hops to follow
+     * Maximum number of referral hops to follow.
      */
     public static final IntegerGuacamoleProperty LDAP_MAX_REFERRAL_HOPS = new IntegerGuacamoleProperty() {
 
@@ -196,7 +196,7 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
-     * Number of seconds to wait for LDAP operations to complete
+     * Number of seconds to wait for LDAP operations to complete.
      */
     public static final IntegerGuacamoleProperty LDAP_OPERATION_TIMEOUT = new IntegerGuacamoleProperty() {
 

@@ -257,7 +257,7 @@ public class ConfigurationService {
      *
      * @return
      *     The boolean value of whether to follow referrals
-     *     as configured in guacamole.properties
+     *     as configured in guacamole.properties.
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
@@ -295,7 +295,7 @@ public class ConfigurationService {
      *
      * @return
      *     The maximum number of referral hops to follow
-     *     as configured in guacamole.properties
+     *     as configured in guacamole.properties.
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
@@ -328,11 +328,11 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the maximum number of seconds to wait for LDAP operations
+     * Returns the maximum number of seconds to wait for LDAP operations.
      *
      * @return
      *     The maximum number of seconds to wait for LDAP operations
-     *     as configured in guacamole.properties
+     *     as configured in guacamole.properties.
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
