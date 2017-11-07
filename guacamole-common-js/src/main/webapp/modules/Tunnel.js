@@ -564,6 +564,9 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
         // Start waiting for connect
         reset_timeout();
 
+        // Mark the tunnel as connecting
+        tunnel.setState(Guacamole.Tunnel.State.CONNECTING);
+
         // Start tunnel and connect
         var connect_xmlhttprequest = new XMLHttpRequest();
         connect_xmlhttprequest.onreadystatechange = function() {
@@ -759,6 +762,9 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
     this.connect = function(data) {
 
         reset_timeout();
+
+        // Mark the tunnel as connecting
+        tunnel.setState(Guacamole.Tunnel.State.CONNECTING);
 
         // Connect socket
         socket = new WebSocket(tunnelURL + "?" + data, "guacamole");
