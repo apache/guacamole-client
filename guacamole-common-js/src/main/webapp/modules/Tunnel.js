@@ -55,6 +55,25 @@ Guacamole.Tunnel = function() {
     this.sendMessage = function(elements) {};
 
     /**
+     * Changes the stored numeric state of this tunnel, firing the onstatechange
+     * event if the new state is different and a handler has been defined.
+     *
+     * @private
+     * @param {Number} state
+     *     The new state of this tunnel.
+     */
+    this.setState = function(state) {
+
+        // Notify only if state changes
+        if (state !== this.state) {
+            this.state = state;
+            if (this.onstatechange)
+                this.onstatechange(state);
+        }
+
+    };
+
+    /**
      * The current state of this tunnel.
      * 
      * @type {Number}
@@ -239,14 +258,11 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
 
         }
 
-        // Mark as closed
-        tunnel.state = Guacamole.Tunnel.State.CLOSED;
-
         // Reset output message buffer
         sendingMessages = false;
 
-        if (tunnel.onstatechange)
-            tunnel.onstatechange(tunnel.state);
+        // Mark as closed
+        tunnel.setState(Guacamole.Tunnel.State.CLOSED);
 
     }
 
@@ -548,6 +564,9 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
         // Start waiting for connect
         reset_timeout();
 
+        // Mark the tunnel as connecting
+        tunnel.setState(Guacamole.Tunnel.State.CONNECTING);
+
         // Start tunnel and connect
         var connect_xmlhttprequest = new XMLHttpRequest();
         connect_xmlhttprequest.onreadystatechange = function() {
@@ -566,9 +585,8 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
             // Get UUID from response
             tunnel.uuid = connect_xmlhttprequest.responseText;
 
-            tunnel.state = Guacamole.Tunnel.State.OPEN;
-            if (tunnel.onstatechange)
-                tunnel.onstatechange(tunnel.state);
+            // Mark as open
+            tunnel.setState(Guacamole.Tunnel.State.OPEN);
 
             // Start reading data
             handleResponse(makeRequest());
@@ -698,9 +716,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
             tunnel.onerror(status);
 
         // Mark as closed
-        tunnel.state = Guacamole.Tunnel.State.CLOSED;
-        if (tunnel.onstatechange)
-            tunnel.onstatechange(tunnel.state);
+        tunnel.setState(Guacamole.Tunnel.State.CLOSED);
 
         socket.close();
 
@@ -746,6 +762,9 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
     this.connect = function(data) {
 
         reset_timeout();
+
+        // Mark the tunnel as connecting
+        tunnel.setState(Guacamole.Tunnel.State.CONNECTING);
 
         // Connect socket
         socket = new WebSocket(tunnelURL + "?" + data, "guacamole");
@@ -814,9 +833,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
                             tunnel.uuid = elements[0];
 
                         // Tunnel is now open and UUID is available
-                        tunnel.state = Guacamole.Tunnel.State.OPEN;
-                        if (tunnel.onstatechange)
-                            tunnel.onstatechange(tunnel.state);
+                        tunnel.setState(Guacamole.Tunnel.State.OPEN);
 
                     }
 
@@ -1060,25 +1077,6 @@ Guacamole.StaticHTTPTunnel = function StaticHTTPTunnel(url, crossDomain) {
     var xhr = null;
 
     /**
-     * Changes the stored numeric state of this tunnel, firing the onstatechange
-     * event if the new state is different and a handler has been defined.
-     *
-     * @private
-     * @param {Number} state
-     *     The new state of this tunnel.
-     */
-    var setState = function setState(state) {
-
-        // Notify only if state changes
-        if (state !== tunnel.state) {
-            tunnel.state = state;
-            if (tunnel.onstatechange)
-                tunnel.onstatechange(state);
-        }
-
-    };
-
-    /**
      * Returns the Guacamole protocol status code which most closely
      * represents the given HTTP status code.
      *
@@ -1133,7 +1131,7 @@ Guacamole.StaticHTTPTunnel = function StaticHTTPTunnel(url, crossDomain) {
         tunnel.disconnect();
 
         // Connection is now starting
-        setState(Guacamole.Tunnel.State.CONNECTING);
+        tunnel.setState(Guacamole.Tunnel.State.CONNECTING);
 
         // Start a new connection
         xhr = new XMLHttpRequest();
@@ -1160,7 +1158,7 @@ Guacamole.StaticHTTPTunnel = function StaticHTTPTunnel(url, crossDomain) {
             if (xhr.readyState === 3 || xhr.readyState === 4) {
 
                 // Connection is open
-                setState(Guacamole.Tunnel.State.OPEN);
+                tunnel.setState(Guacamole.Tunnel.State.OPEN);
 
                 var buffer = xhr.responseText;
                 var length = buffer.length;
@@ -1200,7 +1198,7 @@ Guacamole.StaticHTTPTunnel = function StaticHTTPTunnel(url, crossDomain) {
         }
 
         // Connection is now closed
-        setState(Guacamole.Tunnel.State.CLOSED);
+        tunnel.setState(Guacamole.Tunnel.State.CLOSED);
 
     };
 
