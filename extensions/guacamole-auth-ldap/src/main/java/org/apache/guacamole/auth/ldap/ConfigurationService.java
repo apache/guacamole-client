@@ -252,6 +252,24 @@ public class ConfigurationService {
     }
 
     /**
+     * Returns the boolean value for whether the connection should
+     * follow referrals or not.  By default, it will not.
+     *
+     * @return
+     *     The boolean value of whether to follow referrals
+     *     as configured in guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public boolean getFollowReferrals() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_FOLLOW_REFERRALS,
+            false
+        );
+    }
+
+    /**
      * Returns a set of LDAPSearchConstraints to apply globally
      * to all LDAP searches.
      *
@@ -273,6 +291,23 @@ public class ConfigurationService {
     }
 
     /**
+     * Returns the maximum number of referral hops to follow.
+     *
+     * @return
+     *     The maximum number of referral hops to follow
+     *     as configured in guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public int getMaxReferralHops() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_MAX_REFERRAL_HOPS,
+            5
+        );
+    }
+
+    /**
      * Returns the search filter that should be used when querying the
      * LDAP server for Guacamole users.  If no filter is specified,
      * a default of "(objectClass=*)" is returned.
@@ -289,6 +324,23 @@ public class ConfigurationService {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_USER_SEARCH_FILTER,
             "(objectClass=*)"
+        );
+    }
+
+    /**
+     * Returns the maximum number of seconds to wait for LDAP operations.
+     *
+     * @return
+     *     The maximum number of seconds to wait for LDAP operations
+     *     as configured in guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public int getOperationTimeout() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_OPERATION_TIMEOUT,
+            30
         );
     }
 

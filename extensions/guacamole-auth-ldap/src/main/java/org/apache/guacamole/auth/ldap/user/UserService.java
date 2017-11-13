@@ -24,6 +24,7 @@ import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
+import com.novell.ldap.LDAPReferralException;
 import com.novell.ldap.LDAPSearchResults;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -107,19 +108,36 @@ public class UserService {
             // Read all visible users
             while (results.hasMore()) {
 
-                LDAPEntry entry = results.next();
+                try {
 
-                // Get username from record
-                LDAPAttribute username = entry.getAttribute(usernameAttribute);
-                if (username == null) {
-                    logger.warn("Queried user is missing the username attribute \"{}\".", usernameAttribute);
-                    continue;
+                    LDAPEntry entry = results.next();
+
+                    // Get username from record
+                    LDAPAttribute username = entry.getAttribute(usernameAttribute);
+                    if (username == null) {
+                        logger.warn("Queried user is missing the username attribute \"{}\".", usernameAttribute);
+                        continue;
+                    }
+
+                    // Store user using their username as the identifier
+                    String identifier = username.getStringValue();
+                    if (users.put(identifier, new SimpleUser(identifier)) != null)
+                        logger.warn("Possibly ambiguous user account: \"{}\".", identifier);
+
                 }
 
-                // Store user using their username as the identifier
-                String identifier = username.getStringValue();
-                if (users.put(identifier, new SimpleUser(identifier)) != null)
-                    logger.warn("Possibly ambiguous user account: \"{}\".", identifier);
+                // Deal with errors trying to follow referrals
+                catch (LDAPReferralException e) {
+                    if (confService.getFollowReferrals()) {
+                        logger.error("Could not follow referral: {}", e.getFailedReferral());
+                        logger.debug("Error encountered trying to follow referral.", e);
+                        throw new GuacamoleServerException("Could not follow LDAP referral.", e);
+                    }
+                    else {
+                        logger.warn("Given a referral, but referrals are disabled. Error was: {}", e.getMessage());
+                        logger.debug("Got a referral, but configured to not follow them.", e);
+                    }
+                }
 
             }
 
@@ -267,8 +285,23 @@ public class UserService {
 
             // Add all DNs for found users
             while (results.hasMore()) {
-                LDAPEntry entry = results.next();
-                userDNs.add(entry.getDN());
+                try {
+                    LDAPEntry entry = results.next();
+                    userDNs.add(entry.getDN());
+                }
+          
+                // Deal with errors following referrals
+                catch (LDAPReferralException e) {
+                    if (confService.getFollowReferrals()) {
+                        logger.error("Error trying to follow a referral: {}", e.getFailedReferral());
+                        logger.debug("Encountered an error trying to follow a referral.", e);
+                        throw new GuacamoleServerException("Failed while trying to follow referrals.", e);
+                    }
+                    else {
+                        logger.warn("Given a referral, not following it. Error was: {}", e.getMessage());
+                        logger.debug("Given a referral, but configured to not follow them.", e);
+                    }
+                }
             }
 
             // Return all discovered DNs (if any)
