@@ -22,8 +22,8 @@
  * the RADIUS server state to maintain the session with the RADIUS
  * server.
  */
-angular.module('guacRadius').controller('radiusStateController', ['$scope', '$element',
-        function radiusStateController($scope, $element) {
+angular.module('guacRadius').controller('radiusStateController', ['$scope', '$injector',
+        function radiusStateController($scope, $injector) {
 
     // Populate the hidden field for the connection state
     $scope.model = $scope.field.radiusState;

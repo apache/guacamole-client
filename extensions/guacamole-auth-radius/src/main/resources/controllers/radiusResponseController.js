@@ -21,8 +21,8 @@
  * Controller for the "GUAC_RADIUS_CHALLENGE_RESPONSE" field which
  * passes the RADIUS server challenge to the user and takes the response.
  */
-angular.module('guacRadius').controller('radiusResponseController', ['$scope', '$element',
-        function radiusResponseController($scope, $element) {
+angular.module('guacRadius').controller('radiusResponseController', ['$scope', '$injector',
+        function radiusResponseController($scope, $injector) {
 
     // Populate the reply message field
     $scope.radiusPlaceholder = $scope.field.replyMsg;
