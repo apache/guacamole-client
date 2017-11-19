@@ -182,8 +182,13 @@ Guacamole.Tunnel.State = {
  *     Whether tunnel requests will be cross-domain, and thus must use CORS
  *     mechanisms and headers. By default, it is assumed that tunnel requests
  *     will be made to the same domain.
+ *
+ * @param {Object} [extraTunnelHeaders={}]
+ *     Key value pairs containing the header names and values of any additional
+ *     headers to be sent in tunnel requests. By default, no extra headers will
+ *     be added.
  */
-Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
+Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
 
     /**
      * Reference to this HTTP tunnel.
@@ -213,6 +218,29 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
      * @private
      */
     var receive_timeout = null;
+
+    /**
+     * Additional headers to be sent in tunnel requests. This dictionary can be
+     * populated with key/value header pairs to pass information such as authentication
+     * tokens, etc.
+     *
+     * @private
+     */
+    var extraHeaders = extraTunnelHeaders || {}
+
+    /**
+     * Adds the configured additional headers to the given request.
+     *
+     * @params {XMLHttpRequest} request
+     *     The request where the configured extra headers will be added.
+     *
+     * @private
+     */
+    function addExtraHeaders(request) {
+        for (var name in tunnel.extraHeaders) {
+            request.setRequestHeader(name, tunnel.extraHeaders[name]);
+        }
+    }
 
     /**
      * Initiates a timeout which, if data is not received, causes the tunnel
@@ -322,6 +350,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
             var message_xmlhttprequest = new XMLHttpRequest();
             message_xmlhttprequest.open("POST", TUNNEL_WRITE + tunnel.uuid);
             message_xmlhttprequest.withCredentials = withCredentials;
+            addExtraHeaders(message_xmlhttprequest);
             message_xmlhttprequest.setRequestHeader("Content-type", "application/octet-stream");
 
             // Once response received, send next queued event.
@@ -553,6 +582,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
         var xmlhttprequest = new XMLHttpRequest();
         xmlhttprequest.open("GET", TUNNEL_READ + tunnel.uuid + ":" + (request_id++));
         xmlhttprequest.withCredentials = withCredentials;
+        addExtraHeaders(xmlhttprequest);
         xmlhttprequest.send(null);
 
         return xmlhttprequest;
@@ -595,6 +625,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
 
         connect_xmlhttprequest.open("POST", TUNNEL_CONNECT, true);
         connect_xmlhttprequest.withCredentials = withCredentials;
+        addExtraHeaders(connect_xmlhttprequest);
         connect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
         connect_xmlhttprequest.send(data);
 
@@ -1137,6 +1168,7 @@ Guacamole.StaticHTTPTunnel = function StaticHTTPTunnel(url, crossDomain) {
         xhr = new XMLHttpRequest();
         xhr.open('GET', url);
         xhr.withCredentials = !!crossDomain;
+        addExtraHeaders(xhr);
         xhr.responseType = 'text';
         xhr.send(null);
 
