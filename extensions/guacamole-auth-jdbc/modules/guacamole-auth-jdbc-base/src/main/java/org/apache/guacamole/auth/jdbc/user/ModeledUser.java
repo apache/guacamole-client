@@ -28,9 +28,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObject;
 import org.apache.guacamole.auth.jdbc.security.PasswordEncryptionService;
@@ -143,6 +144,25 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
         PROFILE,
         ACCOUNT_RESTRICTIONS
     ));
+
+    /**
+     * The names of all attributes which are explicitly supported by this
+     * extension's User objects.
+     */
+    public static final Set<String> ATTRIBUTE_NAMES =
+            Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+                User.Attribute.FULL_NAME,
+                User.Attribute.EMAIL_ADDRESS,
+                User.Attribute.ORGANIZATION,
+                User.Attribute.ORGANIZATIONAL_ROLE,
+                DISABLED_ATTRIBUTE_NAME,
+                EXPIRED_ATTRIBUTE_NAME,
+                ACCESS_WINDOW_START_ATTRIBUTE_NAME,
+                ACCESS_WINDOW_END_ATTRIBUTE_NAME,
+                VALID_FROM_ATTRIBUTE_NAME,
+                VALID_UNTIL_ATTRIBUTE_NAME,
+                TIMEZONE_ATTRIBUTE_NAME
+            )));
 
     /**
      * Service for managing users.
@@ -548,9 +568,15 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     }
 
     @Override
+    public Set<String> getSupportedAttributeNames() {
+        return ATTRIBUTE_NAMES;
+    }
+
+    @Override
     public Map<String, String> getAttributes() {
 
-        Map<String, String> attributes = new HashMap<String, String>();
+        // Include any defined arbitrary attributes
+        Map<String, String> attributes = super.getAttributes();
 
         // Always include unrestricted attributes
         putUnrestrictedAttributes(attributes);
@@ -564,6 +590,9 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
 
     @Override
     public void setAttributes(Map<String, String> attributes) {
+
+        // Set arbitrary attributes
+        super.setAttributes(attributes);
 
         // Always assign unrestricted attributes
         setUnrestrictedAttributes(attributes);

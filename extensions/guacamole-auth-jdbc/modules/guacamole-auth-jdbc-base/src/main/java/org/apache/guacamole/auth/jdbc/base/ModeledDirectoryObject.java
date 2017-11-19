@@ -19,6 +19,11 @@
 
 package org.apache.guacamole.auth.jdbc.base;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import org.apache.guacamole.net.auth.Attributes;
 import org.apache.guacamole.net.auth.Identifiable;
 
 /**
@@ -31,7 +36,7 @@ import org.apache.guacamole.net.auth.Identifiable;
  *     The type of model object that corresponds to this object.
  */
 public abstract class ModeledDirectoryObject<ModelType extends ObjectModel>
-    extends ModeledObject<ModelType> implements Identifiable {
+    extends ModeledObject<ModelType> implements Identifiable, Attributes {
 
     @Override
     public String getIdentifier() {
@@ -41,6 +46,56 @@ public abstract class ModeledDirectoryObject<ModelType extends ObjectModel>
     @Override
     public void setIdentifier(String identifier) {
         getModel().setIdentifier(identifier);
+    }
+
+    /**
+     * Returns the names of all attributes explicitly supported by this object.
+     * Attributes named here have associated mappings within the backing model
+     * object, and thus should not be included in the arbitrary attribute
+     * storage. Any attributes set which do not match these names, such as those
+     * set via other extensions, will be added to arbitrary attribute storage.
+     *
+     * @return
+     *     A read-only Set of the names of all attributes explicitly supported
+     *     (mapped to a property of the backing model) by this object.
+     */
+    public Set<String> getSupportedAttributeNames() {
+        return Collections.<String>emptySet();
+    }
+
+    @Override
+    public Map<String, String> getAttributes() {
+
+        // If no arbitrary attributes are defined, just return an empty map
+        Map<String, String> arbitraryAttributes = getModel().getArbitraryAttributes();
+        if (arbitraryAttributes == null)
+            return new HashMap<String, String>();
+
+        // Otherwise include any defined arbitrary attributes
+        return new HashMap<String, String>(arbitraryAttributes);
+
+    }
+
+    @Override
+    public void setAttributes(Map<String, String> attributes) {
+
+        // Get set of all supported attribute names
+        Set<String> supportedAttributes = getSupportedAttributeNames();
+
+        // Initialize model with empty map if no such map is already present
+        Map<String, String> arbitraryAttributes = getModel().getArbitraryAttributes();
+        if (arbitraryAttributes == null) {
+            arbitraryAttributes = new HashMap<String, String>();
+            getModel().setArbitraryAttributes(arbitraryAttributes);
+        }
+
+        // Store remaining attributes only if not directly mapped to model
+        for (Map.Entry<String, String> attribute : attributes.entrySet()) {
+            String name = attribute.getKey();
+            if (!supportedAttributes.contains(name))
+                arbitraryAttributes.put(name, attribute.getValue());
+        }
+
     }
 
 }

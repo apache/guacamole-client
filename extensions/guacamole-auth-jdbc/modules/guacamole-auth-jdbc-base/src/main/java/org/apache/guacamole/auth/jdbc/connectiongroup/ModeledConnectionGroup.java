@@ -23,7 +23,7 @@ import com.google.inject.Inject;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
@@ -88,6 +88,17 @@ public class ModeledConnectionGroup extends ModeledChildDirectoryObject<Connecti
     public static final Collection<Form> ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(
         CONCURRENCY_LIMITS
     ));
+
+    /**
+     * The names of all attributes which are explicitly supported by this
+     * extension's ConnectionGroup objects.
+     */
+    public static final Set<String> ATTRIBUTE_NAMES =
+            Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+                MAX_CONNECTIONS_NAME,
+                MAX_CONNECTIONS_PER_USER_NAME,
+                ENABLE_SESSION_AFFINITY
+            )));
 
     /**
      * The environment of the Guacamole server.
@@ -157,9 +168,15 @@ public class ModeledConnectionGroup extends ModeledChildDirectoryObject<Connecti
     }
 
     @Override
+    public Set<String> getSupportedAttributeNames() {
+        return ATTRIBUTE_NAMES;
+    }
+
+    @Override
     public Map<String, String> getAttributes() {
 
-        Map<String, String> attributes = new HashMap<String, String>();
+        // Include any defined arbitrary attributes
+        Map<String, String> attributes = super.getAttributes();
 
         // Set connection limit attribute
         attributes.put(MAX_CONNECTIONS_NAME, NumericField.format(getModel().getMaxConnections()));
@@ -176,6 +193,9 @@ public class ModeledConnectionGroup extends ModeledChildDirectoryObject<Connecti
 
     @Override
     public void setAttributes(Map<String, String> attributes) {
+
+        // Set arbitrary attributes
+        super.setAttributes(attributes);
 
         // Translate connection limit attribute
         try { getModel().setMaxConnections(NumericField.parse(attributes.get(MAX_CONNECTIONS_NAME))); }

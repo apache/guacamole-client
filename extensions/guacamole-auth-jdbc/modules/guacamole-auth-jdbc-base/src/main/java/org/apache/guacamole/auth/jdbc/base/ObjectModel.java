@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.jdbc.base;
 
+import java.util.Map;
+
 /**
  * Object representation of a Guacamole object, such as a user or connection,
  * as represented in the database.
@@ -34,7 +36,13 @@ public abstract class ObjectModel {
      * The unique identifier which identifies this object.
      */
     private String identifier;
-    
+
+    /**
+     * Map of all arbitrary attributes associated with this object but not
+     * directly mapped to a particular column.
+     */
+    private Map<String, String> arbitraryAttributes;
+
     /**
      * Creates a new, empty object.
      */
@@ -80,6 +88,37 @@ public abstract class ObjectModel {
      */
     public void setObjectID(Integer objectID) {
         this.objectID = objectID;
+    }
+
+    /**
+     * Returns a map of attribute name/value pairs for all attributes associated
+     * with this model which do not have explicit mappings to actual model
+     * properties. All other attributes (those which are explicitly supported
+     * by the model) should instead be mapped to properties with corresponding
+     * and properly-typed columns.
+     *
+     * @return
+     *     A map of attribute name/value pairs for all attributes associated
+     *     with this model which do not otherwise have explicit mappings to
+     *     properties.
+     */
+    public Map<String, String> getArbitraryAttributes() {
+        return arbitraryAttributes;
+    }
+
+    /**
+     * Sets all arbitrary attribute name/value pairs associated with this
+     * model. The provided map should contain only attributes which are not
+     * explicitly supported by the model, as any explicitly-supported
+     * attributes should instead be mapped to corresponding properties.
+     *
+     * @param arbitraryAttributes
+     *     A map of attribute name/value pairs for all attributes associated
+     *     with this model which do not otherwise have explicit mappings to
+     *     properties.
+     */
+    public void setArbitraryAttributes(Map<String, String> arbitraryAttributes) {
+        this.arbitraryAttributes = arbitraryAttributes;
     }
 
 }
