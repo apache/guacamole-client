@@ -226,19 +226,22 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
      *
      * @private
      */
-    var extraHeaders = extraTunnelHeaders || {}
+    var extraHeaders = extraTunnelHeaders || {};
 
     /**
      * Adds the configured additional headers to the given request.
      *
-     * @params {XMLHttpRequest} request
+     * @param {XMLHttpRequest} request
      *     The request where the configured extra headers will be added.
+     *
+     * @param {Object} headers
+     *     The headers to be added to the request.
      *
      * @private
      */
-    function addExtraHeaders(request) {
-        for (var name in tunnel.extraHeaders) {
-            request.setRequestHeader(name, tunnel.extraHeaders[name]);
+    function addExtraHeaders(request, headers) {
+        for (var name in headers) {
+            request.setRequestHeader(name, headers[name]);
         }
     }
 
@@ -350,7 +353,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
             var message_xmlhttprequest = new XMLHttpRequest();
             message_xmlhttprequest.open("POST", TUNNEL_WRITE + tunnel.uuid);
             message_xmlhttprequest.withCredentials = withCredentials;
-            addExtraHeaders(message_xmlhttprequest);
+            addExtraHeaders(message_xmlhttprequest, extraHeaders);
             message_xmlhttprequest.setRequestHeader("Content-type", "application/octet-stream");
 
             // Once response received, send next queued event.
@@ -582,7 +585,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
         var xmlhttprequest = new XMLHttpRequest();
         xmlhttprequest.open("GET", TUNNEL_READ + tunnel.uuid + ":" + (request_id++));
         xmlhttprequest.withCredentials = withCredentials;
-        addExtraHeaders(xmlhttprequest);
+        addExtraHeaders(xmlhttprequest, extraHeaders);
         xmlhttprequest.send(null);
 
         return xmlhttprequest;
@@ -625,7 +628,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
 
         connect_xmlhttprequest.open("POST", TUNNEL_CONNECT, true);
         connect_xmlhttprequest.withCredentials = withCredentials;
-        addExtraHeaders(connect_xmlhttprequest);
+        addExtraHeaders(connect_xmlhttprequest, extraHeaders);
         connect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
         connect_xmlhttprequest.send(data);
 
