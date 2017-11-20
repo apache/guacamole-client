@@ -19,7 +19,21 @@
 
 package org.apache.guacamole.auth.totp.form;
 
+import com.google.common.io.BaseEncoding;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import javax.ws.rs.core.UriBuilder;
+import javax.xml.bind.DatatypeConverter;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.totp.UserTOTPKey;
 import org.apache.guacamole.form.Field;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * Field which prompts the user for an authentication code generated via TOTP.
@@ -38,11 +52,134 @@ public class AuthenticationCodeField extends Field {
     private static final String FIELD_TYPE_NAME = "GUAC_TOTP_CODE";
 
     /**
+     * The width of QR codes to generate, in pixels.
+     */
+    private static final int QR_CODE_WIDTH = 256;
+
+    /**
+     * The height of QR codes to generate, in pixels.
+     */
+    private static final int QR_CODE_HEIGHT = 256;
+
+    /**
+     * BaseEncoding which encodes/decodes base32.
+     */
+    private static final BaseEncoding BASE32 = BaseEncoding.base32();
+
+    /**
+     * The TOTP key to expose to the user for the sake of enrollment, if any.
+     * If no such key should be exposed to the user, this will be null.
+     */
+    private final UserTOTPKey key;
+
+    /**
      * Creates a new field which prompts the user for an authentication code
-     * generated via TOTP.
+     * generated via TOTP, and provide the user with their TOTP key to
+     * facilitate enrollment.
+     *
+     * @param key
+     *     The TOTP key to expose to the user for the sake of enrollment.
+     */
+    public AuthenticationCodeField(UserTOTPKey key) {
+        super(PARAMETER_NAME, FIELD_TYPE_NAME);
+        this.key = key;
+    }
+
+    /**
+     * Creates a new field which prompts the user for an authentication code
+     * generated via TOTP. The user's TOTP key is not exposed for enrollment.
      */
     public AuthenticationCodeField() {
-        super(PARAMETER_NAME, FIELD_TYPE_NAME);
+        this(null);
+    }
+
+    /**
+     * Returns the "otpauth" URI for the secret key used to generate TOTP codes
+     * for the current user. If the secret key is not being exposed to
+     * facilitate enrollment, null is returned.
+     *
+     * @return
+     *     The "otpauth" URI for the secret key used to generate TOTP codes
+     *     for the current user, or null is the secret ket is not being exposed
+     *     to facilitate enrollment.
+     *
+     * @throws GuacamoleException
+     *     If the configuration information required for generating the key URI
+     *     cannot be read from guacamole.properties.
+     */
+    @JsonProperty("keyUri")
+    public URI getKeyURI() throws GuacamoleException {
+
+        // Do not generate a key URI if no key is being exposed
+        if (key == null)
+            return null;
+
+        // FIXME: Pull from configuration
+        String issuer = "Some Issuer";
+        String algorithm = "SHA1";
+        String digits = "6";
+        String period = "30";
+
+        // Format "otpauth" URL (see https://github.com/google/google-authenticator/wiki/Key-Uri-Format)
+        return UriBuilder.fromUri("otpauth://totp/")
+                .path(issuer + ":" + key.getUsername())
+                .queryParam("secret", BASE32.encode(key.getSecret()))
+                .queryParam("issuer", issuer)
+                .queryParam("algorithm", algorithm)
+                .queryParam("digits", digits)
+                .queryParam("period", period)
+                .build();
+
+    }
+
+    /**
+     * Returns the URL of a QR code describing the user's TOTP key and
+     * configuration. If the key is not being exposed for enrollment, null is
+     * returned.
+     *
+     * @return 
+     *     The URL of a QR code describing the user's TOTP key and
+     *     configuration, or null if the key is not being exposed for
+     *     enrollment.
+     *
+     * @throws GuacamoleException
+     *     If the configuration information required for generating the QR code
+     *     cannot be read from guacamole.properties.
+     */
+    @JsonProperty("qrCode")
+    public String getQRCode() throws GuacamoleException {
+
+        // Do not generate a QR code if no key is being exposed
+        URI keyURI = getKeyURI();
+        if (keyURI == null)
+            return null;
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+        try {
+
+            // Create QR code writer
+            QRCodeWriter writer = new QRCodeWriter();
+            BitMatrix matrix = writer.encode(keyURI.toString(),
+                    BarcodeFormat.QR_CODE, QR_CODE_WIDTH, QR_CODE_HEIGHT);
+
+            // Produce PNG image of TOTP key text
+            MatrixToImageWriter.writeToStream(matrix, "PNG", stream);
+
+        }
+        catch (WriterException e) {
+            throw new IllegalArgumentException("QR code could not be "
+                    + "generated for TOTP key.", e);
+        }
+        catch (IOException e) {
+            throw new IllegalStateException("Image stream of QR code could "
+                    + "not be written.", e);
+        }
+
+        // Return data URI for generated image
+        return "data:image/png;base64,"
+                + DatatypeConverter.printBase64Binary(stream.toByteArray());
+
     }
 
 }

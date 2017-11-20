@@ -76,6 +76,9 @@ public class UserVerificationService {
      * @param context
      *     The UserContext of the user whose TOTP key should be retrieved.
      *
+     * @param username
+     *     The username of the user associated with the given UserContext.
+     *
      * @return
      *     The TOTP key associated with the user having the given UserContext,
      *     or null if the extension storing the user does not support storage
@@ -85,7 +88,8 @@ public class UserVerificationService {
      *     If a new key is generated, but the extension storing the associated
      *     user fails while updating the user account.
      */
-    private UserTOTPKey getKey(UserContext context) throws GuacamoleException {
+    private UserTOTPKey getKey(UserContext context,
+            String username) throws GuacamoleException {
 
         // Retrieve attributes from current user
         User self = context.self();
@@ -96,7 +100,7 @@ public class UserVerificationService {
         if (secret == null) {
 
             // Generate random key for user
-            UserTOTPKey generated = new UserTOTPKey(TOTPGenerator.Mode.SHA1.getRecommendedKeyLength());
+            UserTOTPKey generated = new UserTOTPKey(username, TOTPGenerator.Mode.SHA1.getRecommendedKeyLength());
             if (setKey(context, generated))
                 return generated;
 
@@ -121,7 +125,7 @@ public class UserVerificationService {
 
         // Otherwise, parse value from attributes
         boolean confirmed = "true".equals(attributes.get(TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME));
-        return new UserTOTPKey(key, confirmed);
+        return new UserTOTPKey(username, key, confirmed);
 
     }
 
@@ -205,7 +209,7 @@ public class UserVerificationService {
             return;
 
         // Ignore users which do not have an associated key
-        UserTOTPKey key = getKey(context);
+        UserTOTPKey key = getKey(context, username);
         if (key == null)
             return;
 
@@ -219,7 +223,14 @@ public class UserVerificationService {
         // If no TOTP provided, request one
         if (code == null) {
 
-            // FIXME: Handle key.isConfirmed() for initial prompt
+            // If the user hasn't completed enrollment, request that they do
+            if (!key.isConfirmed())
+                throw new GuacamoleInsufficientCredentialsException(
+                        "LOGIN.INFO_TOTP_REQUIRED", new CredentialsInfo(
+                            Collections.<Field>singletonList(new AuthenticationCodeField(key))
+                        ));
+
+            // Otherwise simply request the user's authentication code
             throw new GuacamoleInsufficientCredentialsException(
                     "LOGIN.INFO_TOTP_REQUIRED", new CredentialsInfo(
                         Collections.<Field>singletonList(new AuthenticationCodeField())

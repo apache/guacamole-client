@@ -1,3 +1,13 @@
 <div class="totp-code-field">
-    <input type="text" ng-model="model" autocorrect="off" autocapitalize="off"/>
+
+    <!-- QR Code (if available) -->
+    <div class="totp-qr-code" ng-show="field.qrCode">
+        <img ng-src="{{field.qrCode}}">
+    </div>
+
+    <!-- Field for entry of the current TOTP code -->
+    <div class="totp-code">
+        <input type="text" ng-model="model" autocorrect="off" autocapitalize="off"/>
+    </div>
+
 </div>

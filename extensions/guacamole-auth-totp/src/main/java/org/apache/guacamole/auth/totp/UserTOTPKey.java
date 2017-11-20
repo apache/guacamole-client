@@ -33,6 +33,11 @@ public class UserTOTPKey {
     private static final Random RANDOM = new SecureRandom();
 
     /**
+     * The username of the user associated with this key.
+     */
+    private final String username;
+
+    /**
      * Whether the associated secret key has been confirmed by the user. A key
      * is confirmed once the user has successfully entered a valid TOTP
      * derived from that key.
@@ -63,16 +68,22 @@ public class UserTOTPKey {
      * Creates a new, unconfirmed, randomly-generated TOTP key having the given
      * length.
      *
+     * @param username
+     *     The username of the user associated with this key.
+     *
      * @param length
      *     The length of the key to generate, in bytes.
      */
-    public UserTOTPKey(int length) {
-        this(generateBytes(length), false);
+    public UserTOTPKey(String username, int length) {
+        this(username, generateBytes(length), false);
     }
 
     /**
      * Creates a new UserTOTPKey containing the given key and having the given
      * confirmed state.
+     *
+     * @param username
+     *     The username of the user associated with this key.
      *
      * @param secret
      *     The raw binary secret key to be used to generate TOTP codes.
@@ -82,9 +93,20 @@ public class UserTOTPKey {
      *     successfully generate the corresponding TOTP codes (the user has
      *     been "enrolled"), false otherwise.
      */
-    public UserTOTPKey(byte[] secret, boolean confirmed) {
+    public UserTOTPKey(String username, byte[] secret, boolean confirmed) {
+        this.username = username;
         this.confirmed = confirmed;
         this.secret = secret;
+    }
+
+    /**
+     * Returns the username of the user associated with this key.
+     *
+     * @return
+     *     The username of the user associated with this key.
+     */
+    public String getUsername() {
+        return username;
     }
 
     /**
