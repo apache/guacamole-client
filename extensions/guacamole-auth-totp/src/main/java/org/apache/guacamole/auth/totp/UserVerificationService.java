@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.totp;
 import com.google.common.io.BaseEncoding;
 import java.security.InvalidKeyException;
 import java.util.Collections;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
@@ -45,6 +46,11 @@ public class UserVerificationService {
      * Logger for this class.
      */
     private final Logger logger = LoggerFactory.getLogger(UserVerificationService.class);
+
+    /**
+     * The name of the user attribute which stores the TOTP key.
+     */
+    private static final String TOTP_KEY_ATTRIBUTE_NAME = "guac-totp-key";
 
     /**
      * The name of the HTTP parameter which will contain the TOTP code provided
@@ -84,10 +90,8 @@ public class UserVerificationService {
      *     UserContext, or null if no TOTP key is associated with the user.
      */
     public String getKey(UserContext context){
-
-        // FIXME: Hard-coded key
-        return "JBSWY3DPEHPK3PXP";
-
+        Map<String, String> attributes = context.self().getAttributes();
+        return attributes.get(TOTP_KEY_ATTRIBUTE_NAME);
     }
 
     /**
