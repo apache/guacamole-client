@@ -245,14 +245,14 @@ public class UserVerificationService {
             if (!key.isConfirmed()) {
                 field.exposeKey(key);
                 throw new GuacamoleInsufficientCredentialsException(
-                        "LOGIN.INFO_TOTP_REQUIRED", new CredentialsInfo(
+                        "TOTP.INFO_ENROLL_REQUIRED", new CredentialsInfo(
                             Collections.<Field>singletonList(field)
                         ));
             }
 
             // Otherwise simply request the user's authentication code
             throw new GuacamoleInsufficientCredentialsException(
-                    "LOGIN.INFO_TOTP_REQUIRED", new CredentialsInfo(
+                    "TOTP.INFO_CODE_REQUIRED", new CredentialsInfo(
                         Collections.<Field>singletonList(field)
                     ));
 
@@ -285,7 +285,7 @@ public class UserVerificationService {
         }
 
         // Provided code is not valid
-        throw new GuacamoleClientException("LOGIN.INFO_TOTP_VERIFICATION_FAILED");
+        throw new GuacamoleClientException("TOTP.INFO_VERIFICATION_FAILED");
 
     }
 

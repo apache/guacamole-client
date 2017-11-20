@@ -5,9 +5,20 @@
     },
 
     "LOGIN" : {
-        "FIELD_HEADER_GUAC_TOTP"        : "Authentication Code",
-        "INFO_TOTP_REQUIRED"            : "Please enter your authentication code to verify your identity.",
-        "INFO_TOTP_VERIFICATION_FAILED" : "Verification failed. Please try again."
+        "FIELD_HEADER_GUAC_TOTP" : ""
+    },
+
+    "TOTP" : {
+
+        "FIELD_PLACEHOLDER_CODE" : "Authentication Code",
+
+        "INFO_CODE_REQUIRED"       : "Please enter your authentication code to verify your identity.",
+        "INFO_ENROLL_REQUIRED"     : "Multi-factor authentication has been enabled on your account.",
+        "INFO_VERIFICATION_FAILED" : "Verification failed. Please try again.",
+
+        "HELP_ENROLL_BARCODE" : "To complete the enrollment process, scan the barcode below with the two-factor authentication app on your phone or device.",
+        "HELP_ENROLL_VERIFY"  : "After scanning the barcode, enter the {DIGITS}-digit authentication code displayed to verify that enrollment was successful."
+
     }
 
 }

@@ -17,4 +17,16 @@
  * under the License.
  */
 
-/* STUB */
+.totp-enroll p {
+    font-size: 0.8em;
+}
+
+.totp-qr-code {
+    text-align: center;
+}
+
+.totp-qr-code img {
+    margin: 1em;
+    border: 1px solid rgba(0,0,0,0.25);
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+}

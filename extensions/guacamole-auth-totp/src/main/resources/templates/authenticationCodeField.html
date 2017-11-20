@@ -1,13 +1,18 @@
 <div class="totp-code-field">
 
-    <!-- QR Code (if available) -->
-    <div class="totp-qr-code" ng-show="field.qrCode">
-        <img ng-src="{{field.qrCode}}">
+    <!-- Enroll user if necessary -->
+    <div class="totp-enroll" ng-show="field.qrCode">
+        <p translate="TOTP.HELP_ENROLL_BARCODE"></p>
+        <div class="totp-qr-code"><img ng-src="{{field.qrCode}}"></div>
+        <p translate="TOTP.HELP_ENROLL_VERIFY"
+           translate-values="{ DIGITS : field.digits }"></p>
     </div>
 
     <!-- Field for entry of the current TOTP code -->
     <div class="totp-code">
-        <input type="text" ng-model="model" autocorrect="off" autocapitalize="off"/>
+        <input type="text"
+               placeholder="{{'TOTP.FIELD_PLACEHOLDER_CODE' |translate}}"
+               ng-model="model" autocorrect="off" autocapitalize="off"/>
     </div>
 
 </div>

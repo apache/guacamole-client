@@ -99,6 +99,28 @@ public class AuthenticationCodeField extends Field {
     }
 
     /**
+     * Returns the number of digits used for each TOTP code. If the user's key
+     * is not being exposed to facilitate enrollment, this value will not be
+     * exposed either.
+     *
+     * @return
+     *     The number of digits used for each TOTP code, or null if the user's
+     *     key is not being exposed to facilitate enrollment.
+     *
+     * @throws GuacamoleException
+     *     If the number of digits cannot be read from guacamole.properties.
+     */
+    public Integer getDigits() throws GuacamoleException {
+
+        // Do not reveal code size unless enrollment is in progress
+        if (key == null)
+            return null;
+
+        return confService.getDigits();
+        
+    }
+
+    /**
      * Returns the "otpauth" URI for the secret key used to generate TOTP codes
      * for the current user. If the secret key is not being exposed to
      * facilitate enrollment, null is returned.
