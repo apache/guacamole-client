@@ -399,4 +399,33 @@ public class TOTPGenerator {
         return generate(System.currentTimeMillis() / 1000);
     }
 
+    /**
+     * Returns the TOTP code which would have been generated immediately prior
+     * to the code returned by invoking generate() with the given timestamp.
+     *
+     * @param time
+     *     The absolute timestamp to use to generate the TOTP code, in seconds
+     *     since midnight, 1970-01-01, UTC (UNIX epoch).
+     *
+     * @return
+     *     The TOTP code which would have been generated immediately prior to
+     *     the the code returned by invoking generate() with the given
+     *     timestamp.
+     */
+    public String previous(long time) {
+        return generate(Math.max(startTime, time - timeStep));
+    }
+
+    /**
+     * Returns the TOTP code which would have been generated immediately prior
+     * to the code currently being returned by generate().
+     *
+     * @return
+     *     The TOTP code which would have been generated immediately prior to
+     *     the code currently being returned by generate().
+     */
+    public String previous() {
+        return previous(System.currentTimeMillis() / 1000);
+    }
+
 }

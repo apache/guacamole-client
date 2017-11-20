@@ -142,7 +142,7 @@ public class UserVerificationService {
             // Verify provided TOTP against value produced by generator
             byte[] key = BASE32.decode(encodedKey);
             TOTPGenerator totp = new TOTPGenerator(key, TOTPGenerator.Mode.SHA1, 6);
-            if (code.equals(totp.generate()))
+            if (code.equals(totp.generate()) || code.equals(totp.previous()))
                 return;
 
         }
