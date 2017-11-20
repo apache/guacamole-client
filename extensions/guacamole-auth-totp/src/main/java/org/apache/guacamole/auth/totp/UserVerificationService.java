@@ -20,6 +20,8 @@
 package org.apache.guacamole.auth.totp;
 
 import com.google.common.io.BaseEncoding;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import java.security.InvalidKeyException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
+import org.apache.guacamole.auth.totp.conf.ConfigurationService;
 import org.apache.guacamole.auth.totp.form.AuthenticationCodeField;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
@@ -67,6 +70,18 @@ public class UserVerificationService {
     private static final BaseEncoding BASE32 = BaseEncoding.base32();
 
     /**
+     * Service for retrieving configuration information.
+     */
+    @Inject
+    private ConfigurationService confService;
+
+    /**
+     * Provider for AuthenticationCodeField instances.
+     */
+    @Inject
+    private Provider<AuthenticationCodeField> codeFieldProvider;
+
+    /**
      * Retrieves and decodes the base32-encoded TOTP key associated with user
      * having the given UserContext. If no TOTP key is associated with the user,
      * a random key is generated and associated with the user. If the extension
@@ -100,7 +115,8 @@ public class UserVerificationService {
         if (secret == null) {
 
             // Generate random key for user
-            UserTOTPKey generated = new UserTOTPKey(username, TOTPGenerator.Mode.SHA1.getRecommendedKeyLength());
+            TOTPGenerator.Mode mode = confService.getMode();
+            UserTOTPKey generated = new UserTOTPKey(username,mode.getRecommendedKeyLength());
             if (setKey(context, generated))
                 return generated;
 
@@ -223,25 +239,32 @@ public class UserVerificationService {
         // If no TOTP provided, request one
         if (code == null) {
 
+            AuthenticationCodeField field = codeFieldProvider.get();
+
             // If the user hasn't completed enrollment, request that they do
-            if (!key.isConfirmed())
+            if (!key.isConfirmed()) {
+                field.exposeKey(key);
                 throw new GuacamoleInsufficientCredentialsException(
                         "LOGIN.INFO_TOTP_REQUIRED", new CredentialsInfo(
-                            Collections.<Field>singletonList(new AuthenticationCodeField(key))
+                            Collections.<Field>singletonList(field)
                         ));
+            }
 
             // Otherwise simply request the user's authentication code
             throw new GuacamoleInsufficientCredentialsException(
                     "LOGIN.INFO_TOTP_REQUIRED", new CredentialsInfo(
-                        Collections.<Field>singletonList(new AuthenticationCodeField())
+                        Collections.<Field>singletonList(field)
                     ));
 
         }
 
         try {
 
+            // Get generator based on user's key and provided configuration
+            TOTPGenerator totp = new TOTPGenerator(key.getSecret(),
+                    confService.getMode(), confService.getDigits());
+
             // Verify provided TOTP against value produced by generator
-            TOTPGenerator totp = new TOTPGenerator(key.getSecret(), TOTPGenerator.Mode.SHA1, 6);
             if (code.equals(totp.generate()) || code.equals(totp.previous())) {
 
                 // Record key as confirmed, if it hasn't already been so recorded

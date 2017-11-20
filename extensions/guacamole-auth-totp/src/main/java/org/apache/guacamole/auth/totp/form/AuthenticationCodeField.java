@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.totp.form;
 
 import com.google.common.io.BaseEncoding;
+import com.google.inject.Inject;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -32,6 +33,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.totp.UserTOTPKey;
+import org.apache.guacamole.auth.totp.conf.ConfigurationService;
 import org.apache.guacamole.form.Field;
 import org.codehaus.jackson.annotate.JsonProperty;
 
@@ -67,30 +69,33 @@ public class AuthenticationCodeField extends Field {
     private static final BaseEncoding BASE32 = BaseEncoding.base32();
 
     /**
+     * Service for retrieving configuration information.
+     */
+    @Inject
+    private ConfigurationService confService;
+
+    /**
      * The TOTP key to expose to the user for the sake of enrollment, if any.
      * If no such key should be exposed to the user, this will be null.
      */
-    private final UserTOTPKey key;
-
-    /**
-     * Creates a new field which prompts the user for an authentication code
-     * generated via TOTP, and provide the user with their TOTP key to
-     * facilitate enrollment.
-     *
-     * @param key
-     *     The TOTP key to expose to the user for the sake of enrollment.
-     */
-    public AuthenticationCodeField(UserTOTPKey key) {
-        super(PARAMETER_NAME, FIELD_TYPE_NAME);
-        this.key = key;
-    }
+    private UserTOTPKey key;
 
     /**
      * Creates a new field which prompts the user for an authentication code
      * generated via TOTP. The user's TOTP key is not exposed for enrollment.
      */
     public AuthenticationCodeField() {
-        this(null);
+        super(PARAMETER_NAME, FIELD_TYPE_NAME);
+    }
+
+    /**
+     * Exposes the given key to facilitate enrollment.
+     *
+     * @param key
+     *     The TOTP key to expose to the user for the sake of enrollment.
+     */
+    public void exposeKey(UserTOTPKey key) {
+        this.key = key;
     }
 
     /**
@@ -114,20 +119,15 @@ public class AuthenticationCodeField extends Field {
         if (key == null)
             return null;
 
-        // FIXME: Pull from configuration
-        String issuer = "Some Issuer";
-        String algorithm = "SHA1";
-        String digits = "6";
-        String period = "30";
-
         // Format "otpauth" URL (see https://github.com/google/google-authenticator/wiki/Key-Uri-Format)
+        String issuer = confService.getIssuer();
         return UriBuilder.fromUri("otpauth://totp/")
                 .path(issuer + ":" + key.getUsername())
                 .queryParam("secret", BASE32.encode(key.getSecret()))
                 .queryParam("issuer", issuer)
-                .queryParam("algorithm", algorithm)
-                .queryParam("digits", digits)
-                .queryParam("period", period)
+                .queryParam("algorithm", confService.getMode())
+                .queryParam("digits", confService.getDigits())
+                .queryParam("period", confService.getPeriod())
                 .build();
 
     }
