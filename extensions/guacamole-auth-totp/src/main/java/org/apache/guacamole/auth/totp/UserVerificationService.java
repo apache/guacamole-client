@@ -28,8 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
+import org.apache.guacamole.auth.totp.form.AuthenticationCodeField;
 import org.apache.guacamole.form.Field;
-import org.apache.guacamole.form.TextField;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.User;
@@ -60,26 +60,6 @@ public class UserVerificationService {
      * confirmed by the user, and the user is thus fully enrolled.
      */
     private static final String TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME = "guac-totp-key-confirmed";
-
-    /**
-     * The name of the HTTP parameter which will contain the TOTP code provided
-     * by the user to verify their identity.
-     */
-    private static final String TOTP_PARAMETER_NAME = "guac-totp";
-
-    /**
-     * The field which should be exposed to the user to request that they
-     * provide their TOTP code.
-     */
-    private static final Field TOTP_FIELD = new TextField(TOTP_PARAMETER_NAME);
-
-    /**
-     * CredentialsInfo object describing the credentials expected for a user
-     * who has verified their identity with TOTP.
-     */
-    private static final CredentialsInfo TOTP_CREDENTIALS = new CredentialsInfo(
-            Collections.singletonList(TOTP_FIELD)
-    );
 
     /**
      * BaseEncoding instance which decoded/encodes base32.
@@ -234,14 +214,16 @@ public class UserVerificationService {
         HttpServletRequest request = credentials.getRequest();
 
         // Retrieve TOTP from request
-        String code = request.getParameter(TOTP_PARAMETER_NAME);
+        String code = request.getParameter(AuthenticationCodeField.PARAMETER_NAME);
 
         // If no TOTP provided, request one
         if (code == null) {
 
             // FIXME: Handle key.isConfirmed() for initial prompt
             throw new GuacamoleInsufficientCredentialsException(
-                    "LOGIN.INFO_TOTP_REQUIRED", TOTP_CREDENTIALS);
+                    "LOGIN.INFO_TOTP_REQUIRED", new CredentialsInfo(
+                        Collections.<Field>singletonList(new AuthenticationCodeField())
+                    ));
 
         }
 

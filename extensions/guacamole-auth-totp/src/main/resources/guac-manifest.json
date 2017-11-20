@@ -11,6 +11,18 @@
 
     "translations" : [
         "translations/en.json"
-    ]
+    ],
+
+    "js" : [
+        "totp.min.js"
+    ],
+
+    "css" : [
+        "totp.min.css"
+    ],
+
+    "resources" : {
+        "templates/authenticationCodeField.html" : "text/html"
+    }
 
 }
