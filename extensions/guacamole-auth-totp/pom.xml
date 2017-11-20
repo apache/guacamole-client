@@ -24,83 +24,75 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-client</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>guacamole-auth-totp</artifactId>
+    <packaging>jar</packaging>
     <version>0.9.14</version>
-    <name>guacamole-client</name>
-    <url>http://guacamole.apache.org/</url>
+    <name>guacamole-auth-totp</name>
+    <url>http://guacamole.incubator.apache.org/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <modules>
-
-        <!-- Guacamole web application -->
-        <module>guacamole</module>
-
-        <!-- Guacamole Java API -->
-        <module>guacamole-common</module>
-
-        <!-- Guacamole webapp extension API -->
-        <module>guacamole-ext</module>
-
-        <!-- Guacamole JavaScript API -->
-        <module>guacamole-common-js</module>
-
-        <!-- Authentication extensions -->
-        <module>extensions/guacamole-auth-cas</module>
-        <module>extensions/guacamole-auth-duo</module>
-        <module>extensions/guacamole-auth-header</module>
-        <module>extensions/guacamole-auth-jdbc</module>
-        <module>extensions/guacamole-auth-ldap</module>
-        <module>extensions/guacamole-auth-openid</module>
-        <module>extensions/guacamole-auth-totp</module>
-
-        <!-- Example web applications using the Guacamole APIs -->
-        <module>doc/guacamole-example</module>
-        <module>doc/guacamole-playback-example</module>
-
-    </modules>
-
-    <profiles>
-        <profile>
-            <id>lgpl-extensions</id>
-            <modules>
-                <module>extensions/guacamole-auth-radius</module>
-            </modules>
-        </profile>
-    </profiles>
-
     <build>
         <plugins>
+
+            <!-- Written for 1.6 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <compilerArgs>
+                        <arg>-Xlint:all</arg>
+                        <arg>-Werror</arg>
+                    </compilerArgs>
+                    <fork>true</fork>
+                </configuration>
+            </plugin>
 
             <!-- Assembly plugin - for easy distribution -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.5.3</version>
-
-                <!-- Build project archive -->
                 <configuration>
                     <finalName>${project.artifactId}-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
-                    <tarLongFileMode>gnu</tarLongFileMode>
                     <descriptors>
-                        <descriptor>project-assembly.xml</descriptor>
+                        <descriptor>src/main/assembly/dist.xml</descriptor>
                     </descriptors>
                 </configuration>
-
-                <!-- Bind archive build to package phase -->
                 <executions>
                     <execution>
-                        <id>make-source-archive</id>
+                        <id>make-dist-archive</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
 
+            <!-- Copy dependencies prior to packaging -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>unpack-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- Verify format using Apache RAT -->
@@ -111,10 +103,8 @@
 
                 <configuration>
                     <excludes>
-                        <exclude>.dockerignore</exclude>
-                        <exclude>CONTRIBUTING</exclude>
-                        <exclude>**/README.md</exclude>
-                        <exclude>extensions/**/*</exclude>
+                        <exclude>**/*.json</exclude>
+                        <exclude>src/licenses/**/*</exclude>
                     </excludes>
                 </configuration>
 
@@ -133,5 +123,37 @@
 
         </plugins>
     </build>
+
+    <dependencies>
+
+       <!-- Guacamole Extension API -->
+        <dependency>
+            <groupId>org.apache.guacamole</groupId>
+            <artifactId>guacamole-ext</artifactId>
+            <version>0.9.14</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Guice -->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-multibindings</artifactId>
+            <version>3.0</version>
+        </dependency>
+
+        <!-- Java servlet API -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
 
 </project>

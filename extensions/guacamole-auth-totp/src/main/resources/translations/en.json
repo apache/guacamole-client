@@ -1,0 +1,13 @@
+{
+
+    "DATA_SOURCE_TOTP" : {
+        "NAME" : "TOTP TFA Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_TOTP"        : "Authentication Code",
+        "INFO_TOTP_REQUIRED"            : "Please enter your authentication code to verify your identity.",
+        "INFO_TOTP_VERIFICATION_FAILED" : "Verification failed. Please try again."
+    }
+
+}
