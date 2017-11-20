@@ -1091,8 +1091,13 @@ Guacamole.ChainedTunnel.prototype = new Guacamole.Tunnel();
  *     Whether tunnel requests will be cross-domain, and thus must use CORS
  *     mechanisms and headers. By default, it is assumed that tunnel requests
  *     will be made to the same domain.
+ *
+ * @param {Object} [extraTunnelHeaders={}]
+ *     Key value pairs containing the header names and values of any additional
+ *     headers to be sent in tunnel requests. By default, no extra headers will
+ *     be added.
  */
-Guacamole.StaticHTTPTunnel = function StaticHTTPTunnel(url, crossDomain) {
+Guacamole.StaticHTTPTunnel = function StaticHTTPTunnel(url, crossDomain, extraTunnelHeaders) {
 
     /**
      * Reference to this Guacamole.StaticHTTPTunnel.
@@ -1109,6 +1114,32 @@ Guacamole.StaticHTTPTunnel = function StaticHTTPTunnel(url, crossDomain) {
      * @type {XMLHttpRequest}
      */
     var xhr = null;
+
+    /**
+     * Additional headers to be sent in tunnel requests. This dictionary can be
+     * populated with key/value header pairs to pass information such as authentication
+     * tokens, etc.
+     *
+     * @private
+     */
+    var extraHeaders = extraTunnelHeaders || {};
+
+    /**
+     * Adds the configured additional headers to the given request.
+     *
+     * @param {XMLHttpRequest} request
+     *     The request where the configured extra headers will be added.
+     *
+     * @param {Object} headers
+     *     The headers to be added to the request.
+     *
+     * @private
+     */
+    function addExtraHeaders(request, headers) {
+        for (var name in headers) {
+            request.setRequestHeader(name, headers[name]);
+        }
+    }
 
     /**
      * Returns the Guacamole protocol status code which most closely
@@ -1171,7 +1202,7 @@ Guacamole.StaticHTTPTunnel = function StaticHTTPTunnel(url, crossDomain) {
         xhr = new XMLHttpRequest();
         xhr.open('GET', url);
         xhr.withCredentials = !!crossDomain;
-        addExtraHeaders(xhr);
+        addExtraHeaders(xhr, extraHeaders);
         xhr.responseType = 'text';
         xhr.send(null);
 
