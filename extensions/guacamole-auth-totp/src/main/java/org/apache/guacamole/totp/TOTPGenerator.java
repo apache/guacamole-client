@@ -124,19 +124,19 @@ public class TOTPGenerator {
          * TOTP mode which generates hashes using SHA1. TOTP in SHA1 mode
          * requires 160-bit keys.
          */
-        SHA1("HmacSHA1"),
+        SHA1("HmacSHA1", 20),
 
         /**
          * TOTP mode which generates hashes using SHA256. TOTP in SHA256 mode
          * requires 256-bit keys.
          */
-        SHA256("HmacSHA256"),
+        SHA256("HmacSHA256", 32),
 
         /**
          * TOTP mode which generates hashes using SHA512. TOTP in SHA512 mode
          * requires 512-bit keys.
          */
-        SHA512("HmacSHA512");
+        SHA512("HmacSHA512", 64);
 
         /**
          * The name of the HMAC algorithm which the TOTP implementation should
@@ -146,6 +146,13 @@ public class TOTPGenerator {
         private final String algorithmName;
 
         /**
+         * The recommended length of keys generated for TOTP in this mode, in
+         * bytes. Keys are recommended to be the same length as the hash
+         * involved.
+         */
+        private final int recommendedKeyLength;
+
+        /**
          * Creates a new TOTP operating mode which is associated with the
          * given HMAC algorithm.
          *
@@ -153,9 +160,14 @@ public class TOTPGenerator {
          *     The name of the HMAC algorithm which the TOTP implementation
          *     should use when operating in this mode, in the format required
          *     by Mac.getInstance().
+         *
+         * @param recommendedKeyLength
+         *     The recommended length of keys generated for TOTP in this mode,
+         *     in bytes.
          */
-        private Mode(String algorithmName) {
+        private Mode(String algorithmName, int recommendedKeyLength) {
             this.algorithmName = algorithmName;
+            this.recommendedKeyLength = recommendedKeyLength;
         }
 
         /**
@@ -169,6 +181,19 @@ public class TOTPGenerator {
          */
         public String getAlgorithmName() {
             return algorithmName;
+        }
+
+        /**
+         * Returns the recommended length of keys generated for TOTP in this
+         * mode, in bytes. Keys are recommended to be the same length as the
+         * hash involved.
+         *
+         * @return
+         *     The recommended length of keys generated for TOTP in this mode,
+         *     in bytes.
+         */
+        public int getRecommendedKeyLength() {
+            return recommendedKeyLength;
         }
 
     }
