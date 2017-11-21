@@ -26,7 +26,6 @@ angular.module('guacTOTP').config(['formServiceProvider',
     // Define field for the TOTP code provided by the user
     formServiceProvider.registerFieldType('GUAC_TOTP_CODE', {
         module      : 'guacTOTP',
-        controller  : 'authenticationCodeFieldController',
         templateUrl : 'app/ext/totp/templates/authenticationCodeField.html'
     });
 
