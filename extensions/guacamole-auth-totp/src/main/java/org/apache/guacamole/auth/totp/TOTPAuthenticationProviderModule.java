@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.totp;
 
+import org.apache.guacamole.auth.totp.user.UserVerificationService;
 import com.google.inject.AbstractModule;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.totp.conf.ConfigurationService;

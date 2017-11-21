@@ -32,7 +32,7 @@ import java.net.URI;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.totp.UserTOTPKey;
+import org.apache.guacamole.auth.totp.user.UserTOTPKey;
 import org.apache.guacamole.auth.totp.conf.ConfigurationService;
 import org.apache.guacamole.form.Field;
 import org.codehaus.jackson.annotate.JsonProperty;

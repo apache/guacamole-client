@@ -19,9 +19,11 @@
 
 package org.apache.guacamole.auth.totp;
 
+import org.apache.guacamole.auth.totp.user.UserVerificationService;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.totp.user.TOTPUserContext;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -104,7 +106,7 @@ public class TOTPAuthenticationProvider implements AuthenticationProvider {
 
         // User has been verified, and authentication should be allowed to
         // continue
-        return context;
+        return new TOTPUserContext(context);
 
     }
 
@@ -112,7 +114,7 @@ public class TOTPAuthenticationProvider implements AuthenticationProvider {
     public UserContext redecorate(UserContext decorated, UserContext context,
             AuthenticatedUser authenticatedUser, Credentials credentials)
             throws GuacamoleException {
-        return context;
+        return new TOTPUserContext(context);
     }
 
     @Override

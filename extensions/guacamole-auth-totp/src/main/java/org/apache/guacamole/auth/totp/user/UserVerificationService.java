@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.totp;
+package org.apache.guacamole.auth.totp.user;
 
 import com.google.common.io.BaseEncoding;
 import com.google.inject.Inject;
@@ -52,17 +52,6 @@ public class UserVerificationService {
      * Logger for this class.
      */
     private final Logger logger = LoggerFactory.getLogger(UserVerificationService.class);
-
-    /**
-     * The name of the user attribute which stores the TOTP key.
-     */
-    private static final String TOTP_KEY_SECRET_ATTRIBUTE_NAME = "guac-totp-key-secret";
-
-    /**
-     * The name of the user attribute defines whether the TOTP key has been
-     * confirmed by the user, and the user is thus fully enrolled.
-     */
-    private static final String TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME = "guac-totp-key-confirmed";
 
     /**
      * BaseEncoding instance which decoded/encodes base32.
@@ -111,7 +100,7 @@ public class UserVerificationService {
         Map<String, String> attributes = context.self().getAttributes();
 
         // If no key is defined, attempt to generate a new key
-        String secret = attributes.get(TOTP_KEY_SECRET_ATTRIBUTE_NAME);
+        String secret = attributes.get(TOTPUser.TOTP_KEY_SECRET_ATTRIBUTE_NAME);
         if (secret == null) {
 
             // Generate random key for user
@@ -140,7 +129,7 @@ public class UserVerificationService {
         }
 
         // Otherwise, parse value from attributes
-        boolean confirmed = "true".equals(attributes.get(TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME));
+        boolean confirmed = "true".equals(attributes.get(TOTPUser.TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME));
         return new UserTOTPKey(username, key, confirmed);
 
     }
@@ -173,14 +162,14 @@ public class UserVerificationService {
         Map<String, String> attributes = new HashMap<String, String>();
 
         // Set/overwrite current TOTP key state
-        attributes.put(TOTP_KEY_SECRET_ATTRIBUTE_NAME, BASE32.encode(key.getSecret()));
-        attributes.put(TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME, key.isConfirmed() ? "true" : "false");
+        attributes.put(TOTPUser.TOTP_KEY_SECRET_ATTRIBUTE_NAME, BASE32.encode(key.getSecret()));
+        attributes.put(TOTPUser.TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME, key.isConfirmed() ? "true" : "false");
         self.setAttributes(attributes);
 
         // Confirm that attributes have actually been set
         Map<String, String> setAttributes = self.getAttributes();
-        if (!setAttributes.containsKey(TOTP_KEY_SECRET_ATTRIBUTE_NAME)
-                || !setAttributes.containsKey(TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME))
+        if (!setAttributes.containsKey(TOTPUser.TOTP_KEY_SECRET_ATTRIBUTE_NAME)
+                || !setAttributes.containsKey(TOTPUser.TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME))
             return false;
 
         // Update user object
