@@ -122,7 +122,7 @@ public abstract class DecoratingDirectory<ObjectType extends Identifiable>
 
     @Override
     public void add(ObjectType object) throws GuacamoleException {
-        super.add(undecorate(object));
+        super.add(decorate(object));
     }
 
     @Override
