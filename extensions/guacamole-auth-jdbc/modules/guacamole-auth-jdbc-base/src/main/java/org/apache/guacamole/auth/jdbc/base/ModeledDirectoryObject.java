@@ -65,35 +65,32 @@ public abstract class ModeledDirectoryObject<ModelType extends ObjectModel>
 
     @Override
     public Map<String, String> getAttributes() {
-
-        // If no arbitrary attributes are defined, just return an empty map
-        Map<String, String> arbitraryAttributes = getModel().getArbitraryAttributes();
-        if (arbitraryAttributes == null)
-            return new HashMap<String, String>();
-
-        // Otherwise include any defined arbitrary attributes
-        return new HashMap<String, String>(arbitraryAttributes);
-
+        return new HashMap<String, String>(getModel().getArbitraryAttributeMap());
     }
 
     @Override
     public void setAttributes(Map<String, String> attributes) {
 
+        ArbitraryAttributeMap arbitraryAttributes = getModel().getArbitraryAttributeMap();
+
         // Get set of all supported attribute names
         Set<String> supportedAttributes = getSupportedAttributeNames();
 
-        // Initialize model with empty map if no such map is already present
-        Map<String, String> arbitraryAttributes = getModel().getArbitraryAttributes();
-        if (arbitraryAttributes == null) {
-            arbitraryAttributes = new HashMap<String, String>();
-            getModel().setArbitraryAttributes(arbitraryAttributes);
-        }
-
         // Store remaining attributes only if not directly mapped to model
         for (Map.Entry<String, String> attribute : attributes.entrySet()) {
+
             String name = attribute.getKey();
-            if (!supportedAttributes.contains(name))
-                arbitraryAttributes.put(name, attribute.getValue());
+            String value = attribute.getValue();
+
+            // Handle null attributes as explicit removal of that attribute,
+            // as the underlying model cannot store null attribute values
+            if (!supportedAttributes.contains(name)) {
+                if (value == null)
+                    arbitraryAttributes.remove(name);
+                else
+                    arbitraryAttributes.put(name, value);
+            }
+
         }
 
     }

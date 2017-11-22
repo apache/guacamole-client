@@ -132,5 +132,28 @@ public interface ModeledDirectoryObjectMapper<ModelType> {
      *     The number of rows updated.
      */
     int update(@Param("object") ModelType object);
-    
+
+    /**
+     * Deletes any arbitrary attributes currently associated with the given
+     * object in the database.
+     *
+     * @param object
+     *     The object whose arbitrary attributes should be deleted.
+     *
+     * @return
+     *     The number of rows deleted.
+     */
+    int deleteAttributes(@Param("object") ModelType object);
+
+    /**
+     * Inserts all arbitrary attributes associated with the given object.
+     *
+     * @param object
+     *     The object whose arbitrary attributes should be inserted.
+     *
+     * @return
+     *     The number of rows inserted.
+     */
+    int insertAttributes(@Param("object") ModelType object);
+
 }

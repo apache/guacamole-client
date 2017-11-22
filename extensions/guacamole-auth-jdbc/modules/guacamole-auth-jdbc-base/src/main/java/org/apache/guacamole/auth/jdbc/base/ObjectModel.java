@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.base;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Object representation of a Guacamole object, such as a user or connection,
@@ -41,7 +41,8 @@ public abstract class ObjectModel {
      * Map of all arbitrary attributes associated with this object but not
      * directly mapped to a particular column.
      */
-    private Map<String, String> arbitraryAttributes;
+    private ArbitraryAttributeMap arbitraryAttributes =
+            new ArbitraryAttributeMap();
 
     /**
      * Creates a new, empty object.
@@ -102,23 +103,47 @@ public abstract class ObjectModel {
      *     with this model which do not otherwise have explicit mappings to
      *     properties.
      */
-    public Map<String, String> getArbitraryAttributes() {
+    public ArbitraryAttributeMap getArbitraryAttributeMap() {
         return arbitraryAttributes;
     }
 
     /**
-     * Sets all arbitrary attribute name/value pairs associated with this
-     * model. The provided map should contain only attributes which are not
-     * explicitly supported by the model, as any explicitly-supported
-     * attributes should instead be mapped to corresponding properties.
+     * Returns whether at least one arbitrary attribute name/value pair has
+     * been associated with this object.
+     *
+     * @return
+     *     true if this object has at least one arbitrary attribute set, false
+     *     otherwise.
+     */
+    public boolean hasArbitraryAttributes() {
+        return !arbitraryAttributes.isEmpty();
+    }
+
+    /**
+     * Returns a Collection view of the equivalent attribute model objects
+     * which make up the map of arbitrary attribute name/value pairs returned
+     * by getArbitraryAttributeMap(). Additions and removals on the returned
+     * Collection directly affect the attribute map.
+     *
+     * @return
+     *      A Collection view of the map returned by
+     *      getArbitraryAttributeMap().
+     */
+    public Collection<ArbitraryAttributeModel> getArbitraryAttributes() {
+        return arbitraryAttributes.toModelCollection();
+    }
+
+    /**
+     * Replaces all arbitrary attributes associated with this object with the
+     * attribute name/value pairs within the given collection of model objects.
      *
      * @param arbitraryAttributes
-     *     A map of attribute name/value pairs for all attributes associated
-     *     with this model which do not otherwise have explicit mappings to
-     *     properties.
+     *     The Collection of model objects containing the attribute name/value
+     *     pairs which should replace all currently-stored arbitrary attributes,
+     *     if any.
      */
-    public void setArbitraryAttributes(Map<String, String> arbitraryAttributes) {
-        this.arbitraryAttributes = arbitraryAttributes;
+    public void setArbitraryAttributes(Collection<ArbitraryAttributeModel> arbitraryAttributes) {
+        this.arbitraryAttributes = ArbitraryAttributeMap.fromModelCollection(arbitraryAttributes);
     }
 
 }
