@@ -23,6 +23,7 @@ import org.apache.guacamole.auth.totp.user.UserVerificationService;
 import com.google.inject.AbstractModule;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.totp.conf.ConfigurationService;
+import org.apache.guacamole.auth.totp.user.CodeUsageTrackingService;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -73,6 +74,7 @@ public class TOTPAuthenticationProviderModule extends AbstractModule {
         bind(Environment.class).toInstance(environment);
 
         // Bind TOTP-specific services
+        bind(CodeUsageTrackingService.class);
         bind(ConfigurationService.class);
         bind(UserVerificationService.class);
 

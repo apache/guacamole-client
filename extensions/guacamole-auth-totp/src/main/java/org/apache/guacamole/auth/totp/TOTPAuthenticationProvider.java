@@ -23,6 +23,7 @@ import org.apache.guacamole.auth.totp.user.UserVerificationService;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.totp.user.CodeUsageTrackingService;
 import org.apache.guacamole.auth.totp.user.TOTPUserContext;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -119,7 +120,7 @@ public class TOTPAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public void shutdown() {
-        // Do nothing
+        injector.getInstance(CodeUsageTrackingService.class).shutdown();
     }
 
 }

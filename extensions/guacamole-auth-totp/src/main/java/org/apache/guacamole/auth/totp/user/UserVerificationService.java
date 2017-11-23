@@ -65,6 +65,12 @@ public class UserVerificationService {
     private ConfigurationService confService;
 
     /**
+     * Service for tracking whether TOTP codes have been used.
+     */
+    @Inject
+    private CodeUsageTrackingService codeService;
+
+    /**
      * Provider for AuthenticationCodeField instances.
      */
     @Inject
@@ -254,7 +260,8 @@ public class UserVerificationService {
                     confService.getMode(), confService.getDigits());
 
             // Verify provided TOTP against value produced by generator
-            if (code.equals(totp.generate()) || code.equals(totp.previous())) {
+            if ((code.equals(totp.generate()) || code.equals(totp.previous()))
+                    && codeService.useCode(username, code)) {
 
                 // Record key as confirmed, if it hasn't already been so recorded
                 if (!key.isConfirmed()) {
