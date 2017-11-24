@@ -6,7 +6,7 @@
         <p translate="TOTP.HELP_ENROLL_BARCODE"></p>
 
         <!-- Barcode and key details -->
-        <div class="totp-qr-code"><img ng-src="{{field.qrCode}}"></div>
+        <div class="totp-qr-code"><img ng-src="{{field.qrCode}}" ng-click="openKeyURI()"></div>
         <h3 class="totp-details-header">
             {{'TOTP.SECTION_HEADER_DETAILS' | translate}}
             <a class="totp-show-details" ng-click="showDetails()">{{'TOTP.ACTION_SHOW_DETAILS' | translate}}</a>
