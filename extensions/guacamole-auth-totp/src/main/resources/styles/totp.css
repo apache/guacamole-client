@@ -75,6 +75,7 @@ h3.totp-details-header::before {
 
 .totp-details th {
     padding-right: 0.25em;
+    text-align: left;
 }
 
 .totp-details td {
