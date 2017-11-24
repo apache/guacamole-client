@@ -17,7 +17,7 @@
  * under the License.
  */
 
-.totp-enroll p {
+.totp-enroll p, .totp-details {
     font-size: 0.8em;
 }
 
@@ -29,4 +29,58 @@
     margin: 1em;
     border: 1px solid rgba(0,0,0,0.25);
     box-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+}
+
+h3.totp-details-header {
+    font-size: 0.8em;
+}
+
+h3.totp-details-header::before {
+    content: '▸ ';
+}
+
+.totp-details-visible h3.totp-details-header::before {
+    content: '▾ ';
+}
+
+.totp-details,
+.totp-hide-details {
+    display: none;
+}
+
+.totp-details-visible .totp-details {
+    display: table;
+}
+
+.totp-details-visible .totp-hide-details {
+    display: inline;
+}
+
+.totp-details-visible .totp-show-details {
+    display: none;
+}
+
+.totp-hide-details, .totp-show-details {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+    margin: 0 0.25em;
+    font-weight: normal;
+}
+
+.totp-details {
+    margin: 0 auto;
+}
+
+.totp-details th {
+    padding-right: 0.25em;
+}
+
+.totp-details td {
+    font-family: monospace;
+}
+
+.totp-detail {
+    display: inline-block;
+    margin: 0 0.25em;
 }
