@@ -35,6 +35,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.totp.user.UserTOTPKey;
 import org.apache.guacamole.auth.totp.conf.ConfigurationService;
 import org.apache.guacamole.form.Field;
+import org.apache.guacamole.totp.TOTPGenerator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
@@ -99,6 +100,46 @@ public class AuthenticationCodeField extends Field {
     }
 
     /**
+     * Returns the username of the user associated with the key being used to
+     * generate TOTP codes. If the user's key is not being exposed to facilitate
+     * enrollment, this value will not be exposed either.
+     *
+     * @return
+     *     The username of the user associated with the key being used to
+     *     generate TOTP codes, or null if the user's key is not being exposed
+     *     to facilitate enrollment.
+     */
+    public String getUsername() {
+
+        // Do not reveal TOTP mode unless enrollment is in progress
+        if (key == null)
+            return null;
+
+        return key.getUsername();
+
+    }
+
+    /**
+     * Returns the base32-encoded secret key that is being used to generate TOTP
+     * codes for the authenticating user. If the user's key is not being exposed
+     * to facilitate enrollment, this value will not be exposed either.
+     *
+     * @return
+     *     The base32-encoded secret key that is being used to generate TOTP
+     *     codes for the authenticating user, or null if the user's key is not
+     *     being exposed to facilitate enrollment.
+     */
+    public String getSecret() {
+
+        // Do not reveal TOTP mode unless enrollment is in progress
+        if (key == null)
+            return null;
+
+        return BASE32.encode(key.getSecret());
+
+    }
+
+    /**
      * Returns the number of digits used for each TOTP code. If the user's key
      * is not being exposed to facilitate enrollment, this value will not be
      * exposed either.
@@ -118,6 +159,74 @@ public class AuthenticationCodeField extends Field {
 
         return confService.getDigits();
         
+    }
+
+    /**
+     * Returns the human-readable name of the entity issuing user accounts. If
+     * the user's key is not being exposed to facilitate enrollment, this value
+     * will not be exposed either.
+     *
+     * @return
+     *     The human-readable name of the entity issuing user accounts, or null
+     *     if the user's key is not being exposed to facilitate enrollment.
+     *
+     * @throws GuacamoleException
+     *     If the issuer cannot be read from guacamole.properties.
+     */
+    public String getIssuer() throws GuacamoleException {
+
+        // Do not reveal code issuer unless enrollment is in progress
+        if (key == null)
+            return null;
+
+        return confService.getIssuer();
+
+    }
+
+    /**
+     * Returns the mode that TOTP code generation is operating in. This value
+     * will be one of "SHA1", "SHA256", or "SHA512". If the user's key is not
+     * being exposed to facilitate enrollment, this value will not be exposed
+     * either.
+     *
+     * @return
+     *     The mode that TOTP code generation is operating in, such as "SHA1",
+     *     "SHA256", or "SHA512", or null if the user's key is not being
+     *     exposed to facilitate enrollment.
+     *
+     * @throws GuacamoleException
+     *     If the TOTP mode cannot be read from guacamole.properties.
+     */
+    public TOTPGenerator.Mode getMode() throws GuacamoleException {
+
+        // Do not reveal TOTP mode unless enrollment is in progress
+        if (key == null)
+            return null;
+
+        return confService.getMode();
+
+    }
+
+    /**
+     * Returns the number of seconds that each TOTP code remains valid. If the
+     * user's key is not being exposed to facilitate enrollment, this value will
+     * not be exposed either.
+     *
+     * @return
+     *     The number of seconds that each TOTP code remains valid, or null if
+     *     the user's key is not being exposed to facilitate enrollment.
+     *
+     * @throws GuacamoleException
+     *     If the period cannot be read from guacamole.properties.
+     */
+    public Integer getPeriod() throws GuacamoleException {
+
+        // Do not reveal code period unless enrollment is in progress
+        if (key == null)
+            return null;
+
+        return confService.getPeriod();
+
     }
 
     /**
