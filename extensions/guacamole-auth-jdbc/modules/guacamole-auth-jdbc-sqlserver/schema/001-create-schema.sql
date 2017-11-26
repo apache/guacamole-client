@@ -18,20 +18,6 @@
 --
 
 --
--- Turn on ANSI_NULLS for the entire DB to make it ISO-compliant.
---
-
-ALTER DATABASE CURRENT SET ANSI_NULLS ON;
-GO
-
---
--- Turn on QUOTED_IDENTIFIER for the entire DB.
---
-
-ALTER DATABASE CURRENT SET QUOTED_IDENTIFIER ON;
-GO
-
---
 -- Connection group types
 --
 
