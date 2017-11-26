@@ -559,6 +559,9 @@ CREATE TRIGGER [guacamole_delete_user]
    INSTEAD OF DELETE
 AS BEGIN
 
+    -- Do not take trigger into account when producing row counts for the DELETE
+    SET NOCOUNT ON;
+
     -- Delete all associated permissions not covered by ON DELETE CASCADE
     DELETE FROM [guacamole_user_permission]
     WHERE
@@ -583,6 +586,9 @@ CREATE TRIGGER [guacamole_delete_connection]
    INSTEAD OF DELETE
 AS BEGIN
 
+    -- Do not take trigger into account when producing row counts for the DELETE
+    SET NOCOUNT ON;
+
     -- Delete associated sharing profiles
     DELETE FROM [guacamole_sharing_profile]
     WHERE [primary_connection_id] IN (SELECT [connection_id] FROM DELETED);
@@ -604,6 +610,9 @@ CREATE TRIGGER [guacamole_delete_connection_group]
    ON [guacamole_connection_group]
    INSTEAD OF DELETE
 AS BEGIN
+
+    -- Do not take trigger into account when producing row counts for the DELETE
+    SET NOCOUNT ON;
 
     -- Delete all requested connection groups, including descendants
     WITH [connection_groups] ([connection_group_id]) AS (
@@ -636,6 +645,9 @@ CREATE TRIGGER [guacamole_delete_sharing_profile]
    ON [guacamole_sharing_profile]
    INSTEAD OF DELETE
 AS BEGIN
+
+    -- Do not take trigger into account when producing row counts for the DELETE
+    SET NOCOUNT ON;
 
     -- Delete all associated permissions not covered by ON DELETE CASCADE
     UPDATE [guacamole_connection_history]
