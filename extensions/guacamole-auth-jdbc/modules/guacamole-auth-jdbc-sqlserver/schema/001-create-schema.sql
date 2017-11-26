@@ -124,12 +124,10 @@ CREATE TABLE [guacamole_connection_group] (
     CONSTRAINT [AK_guacamole_connection_group_name_parent]
         UNIQUE ([connection_group_name], [parent_id]),
 
-    -- NOTE: SQL Server does not allow ON DELETE CASCADE for this column
-    -- due to the potential for cycles. Lacking this, deletion of connection
-    -- groups will fail if they contain other connection groups.
     CONSTRAINT [FK_guacamole_connection_group_parent_id]
         FOREIGN KEY ([parent_id])
         REFERENCES [guacamole_connection_group] ([connection_group_id])
+        -- ON DELETE CASCADE handled by guacamole_delete_connection_group trigger
 
 );
 
@@ -171,7 +169,7 @@ CREATE TABLE [guacamole_connection] (
     CONSTRAINT [FK_guacamole_connection_parent_id]
         FOREIGN KEY ([parent_id])
         REFERENCES [guacamole_connection_group] ([connection_group_id])
-        ON DELETE CASCADE
+        -- ON DELETE CASCADE handled by guacamole_delete_connection_group trigger
 
 );
 
@@ -249,7 +247,7 @@ CREATE TABLE [guacamole_sharing_profile] (
     CONSTRAINT [FK_guacamole_sharing_profile_primary_connection_id]
         FOREIGN KEY ([primary_connection_id])
         REFERENCES [guacamole_connection] ([connection_id])
-        ON DELETE CASCADE
+        -- ON DELETE CASCADE handled by guacamole_delete_connection trigger
 
 );
 
@@ -446,17 +444,15 @@ CREATE TABLE [guacamole_user_permission] (
     CONSTRAINT [PK_guacamole_user_permission]
         PRIMARY KEY CLUSTERED ([user_id], [affected_user_id], [permission]),
 
-    -- NOTE: SQL Server does not allow ON DELETE CASCADE for this column
-    -- due to the potential for multiple deletion paths. Lacking this, deletion
-    -- of users associated with permissions granted to other users will fail.
     CONSTRAINT [FK_guacamole_user_permission_affected_user_id]
         FOREIGN KEY ([affected_user_id])
         REFERENCES [guacamole_user] ([user_id]),
+        -- ON DELETE CASCADE handled by guacamole_delete_user trigger
 
     CONSTRAINT [FK_guacamole_user_permission_user_id]
         FOREIGN KEY ([user_id])
         REFERENCES [guacamole_user] ([user_id])
-        ON DELETE CASCADE
+        -- ON DELETE CASCADE handled by guacamole_delete_user trigger
 
 );
 
@@ -499,13 +495,10 @@ CREATE TABLE [guacamole_connection_history] (
         REFERENCES [guacamole_connection] ([connection_id])
         ON DELETE SET NULL,
 
-    -- NOTE: SQL Server does not allow ON DELETE SET NULL for this column
-    -- due to the potential for multiple deletion paths. Lacking this, deletion
-    -- of sharing profiles which have previously been used (and thus have
-    -- existing history records) will fail.
     CONSTRAINT [FK_guacamole_connection_history_sharing_profile_id]
         FOREIGN KEY ([sharing_profile_id])
         REFERENCES [guacamole_sharing_profile] ([sharing_profile_id])
+        -- ON DELETE SET NULL handled by guacamole_delete_sharing profile trigger
 
 );
 
@@ -553,4 +546,105 @@ CREATE TABLE [guacamole_user_password_history] (
 
 CREATE NONCLUSTERED INDEX [IX_guacamole_user_password_history_user_id]
     ON [guacamole_user_password_history] ([user_id]);
+GO
+
+--
+-- Handle cascading deletion/updates of records in response to deletion of
+-- guacamole_user records, where such deletion is not already covered by
+-- ON DELETE CASCADE or ON DELETE SET NULL.
+--
+
+CREATE TRIGGER [guacamole_delete_user]
+   ON [guacamole_user]
+   INSTEAD OF DELETE
+AS BEGIN
+
+    -- Delete all associated permissions not covered by ON DELETE CASCADE
+    DELETE FROM [guacamole_user_permission]
+    WHERE
+           [user_id] IN (SELECT [user_id] FROM DELETED)
+        OR [user_id] IN (SELECT [user_id] FROM DELETED);
+
+    -- Perform original deletion
+    DELETE FROM [guacamole_user]
+    WHERE [user_id] IN (SELECT [user_id] FROM DELETED);
+
+END
+GO
+
+--
+-- Handle cascading deletion/updates of records in response to deletion of
+-- guacamole_connection records, where such deletion is not already covered by
+-- ON DELETE CASCADE or ON DELETE SET NULL.
+--
+
+CREATE TRIGGER [guacamole_delete_connection]
+   ON [guacamole_connection]
+   INSTEAD OF DELETE
+AS BEGIN
+
+    -- Delete associated sharing profiles
+    DELETE FROM [guacamole_sharing_profile]
+    WHERE [primary_connection_id] IN (SELECT [connection_id] FROM DELETED);
+
+    -- Perform original deletion
+    DELETE FROM [guacamole_connection]
+    WHERE [connection_id] IN (SELECT [connection_id] FROM DELETED);
+
+END
+GO
+
+--
+-- Handle cascading deletion/updates of records in response to deletion of
+-- guacamole_connection_group records, where such deletion is not already
+-- covered by ON DELETE CASCADE or ON DELETE SET NULL.
+--
+
+CREATE TRIGGER [guacamole_delete_connection_group]
+   ON [guacamole_connection_group]
+   INSTEAD OF DELETE
+AS BEGIN
+
+    -- Delete all requested connection groups, including descendants
+    WITH [connection_groups] ([connection_group_id]) AS (
+        SELECT [connection_group_id] FROM DELETED
+    UNION ALL
+        SELECT [guacamole_connection_group].[connection_group_id]
+        FROM [guacamole_connection_group]
+        JOIN [connection_groups] ON [connection_groups].[connection_group_id] = [guacamole_connection_group].[parent_id]
+    )
+    DELETE FROM [guacamole_connection_group]
+    WHERE [connection_group_id] IN (
+        SELECT [connection_group_id]
+        FROM [connection_groups]
+    );
+
+    -- Delete all child connections
+    DELETE FROM [guacamole_connection]
+    WHERE [parent_id] IN (SELECT [connection_group_id] FROM DELETED);
+
+END
+GO
+
+--
+-- Handle cascading deletion/updates of records in response to deletion of
+-- guacamole_sharing_profile records, where such deletion is not already
+-- covered by ON DELETE CASCADE or ON DELETE SET NULL.
+--
+
+CREATE TRIGGER [guacamole_delete_sharing_profile]
+   ON [guacamole_sharing_profile]
+   INSTEAD OF DELETE
+AS BEGIN
+
+    -- Delete all associated permissions not covered by ON DELETE CASCADE
+    UPDATE [guacamole_connection_history]
+    SET [sharing_profile_id] = NULL
+    WHERE [sharing_profile_id] IN (SELECT [sharing_profile_id] FROM DELETED);
+
+    -- Perform original deletion
+    DELETE FROM [guacamole_sharing_profile]
+    WHERE [sharing_profile_id] IN (SELECT [sharing_profile_id] FROM DELETED);
+
+END
 GO
