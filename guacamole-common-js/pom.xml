@@ -28,7 +28,7 @@
     <packaging>pom</packaging>
     <version>0.9.13-incubating</version>
     <name>guacamole-common-js</name>
-    <url>http://guacamole.incubator.apache.org/</url>
+    <url>http://guacamole.apache.org/</url>
 
     <description>
         The base JavaScript API of the Guacamole project, providing JavaScript
@@ -47,24 +47,10 @@
 
     <!-- Git repository -->
     <scm>
-        <url>https://github.com/apache/incubator-guacamole-client</url>
-        <connection>scm:git:https://git.wip-us.apache.org/repos/asf/incubator-guacamole-client.git</connection>
+        <url>https://github.com/apache/guacamole-client</url>
+        <connection>scm:git:https://git.wip-us.apache.org/repos/asf/guacamole-client.git</connection>
 
     </scm>
-
-    <!-- Developers -->
-    <developers>
-        <developer>
-            <id>mike.jumper</id>
-            <name>Michael Jumper</name>
-            <email>mike.jumper@guac-dev.org</email>
-        </developer>
-        <developer>
-            <id>james.muehlner</id>
-            <name>James Muehlner</name>
-            <email>james.muehlner@guac-dev.org</email>
-        </developer>
-    </developers>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
