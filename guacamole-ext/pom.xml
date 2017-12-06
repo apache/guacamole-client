@@ -50,20 +50,6 @@
         <connection>scm:git:https://git.wip-us.apache.org/repos/asf/guacamole-client.git</connection>
     </scm>
 
-    <!-- Developers -->
-    <developers>
-        <developer>
-            <id>mike.jumper</id>
-            <name>Michael Jumper</name>
-            <email>mike.jumper@guac-dev.org</email>
-        </developer>
-        <developer>
-            <id>james.muehlner</id>
-            <name>James Muehlner</name>
-            <email>james.muehlner@guac-dev.org</email>
-        </developer>
-    </developers>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
