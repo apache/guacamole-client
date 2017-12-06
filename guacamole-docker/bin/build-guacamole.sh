@@ -22,11 +22,11 @@
 ## @fn build-guacamole.sh
 ##
 ## Builds Guacamole, saving "guacamole.war" and all applicable extension .jars
-## using the incubator-guacamole-client source contained within the given
-## directory. Extension files will be grouped by their associated type, with
-## all MySQL files being placed within the "mysql/" subdirectory of the
-## destination, all PostgreSQL files being placed within the "postgresql/"
-## subdirectory of the destination, etc.
+## using the guacamole-client source contained within the given directory.
+## Extension files will be grouped by their associated type, with all MySQL
+## files being placed within the "mysql/" subdirectory of the destination, all
+## PostgreSQL files being placed within the "postgresql/" subdirectory of the
+## destination, etc.
 ##
 ## @param BUILD_DIR
 ##     The directory which currently contains the guacamole-client source and

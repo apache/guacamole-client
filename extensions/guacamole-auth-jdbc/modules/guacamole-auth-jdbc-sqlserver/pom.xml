@@ -27,7 +27,7 @@
     <artifactId>guacamole-auth-jdbc-sqlserver</artifactId>
     <packaging>jar</packaging>
     <name>guacamole-auth-jdbc-sqlserver</name>
-    <url>http://guacamole.incubator.apache.org/</url>
+    <url>http://guacamole.apache.org/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

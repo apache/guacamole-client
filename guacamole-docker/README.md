@@ -1,9 +1,9 @@
 What is Apache Guacamole?
 =========================
 
-[Apache Guacamole](http://guacamole.incubator.apache.org/) is a clientless
-remote desktop gateway. It supports standard protocols like VNC and RDP. We
-call it clientless because no plugins or client software are required.
+[Apache Guacamole](http://guacamole.apache.org/) is a clientless remote desktop
+gateway. It supports standard protocols like VNC and RDP. We call it clientless
+because no plugins or client software are required.
 
 Thanks to HTML5, once Guacamole is installed on a server, all you need to
 access your desktops is a web browser.
@@ -54,12 +54,12 @@ necessary SQL to do this is included in the Guacamole image.
 
 To generate a SQL script which can be used to initialize a fresh PostgreSQL
 database
-[as documented in the Guacamole manual](http://guacamole.incubator.apache.org/doc/gug/jdbc-auth.html#jdbc-auth-postgresql):
+[as documented in the Guacamole manual](http://guacamole.apache.org/doc/gug/jdbc-auth.html#jdbc-auth-postgresql):
 
     docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgres > initdb.sql
 
 Alternatively, you can use the SQL scripts included with
-[guacamole-auth-jdbc](https://github.com/apache/incubator-guacamole-client/tree/0.9.10-incubating/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-postgresql/schema).
+[guacamole-auth-jdbc](https://github.com/apache/guacamole-client/tree/0.9.10-incubating/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-postgresql/schema).
 
 Once this script is generated, you must:
 
@@ -70,7 +70,7 @@ Once this script is generated, you must:
 
 The process for doing this via the `psql` and `createdb` utilities included
 with PostgreSQL is documented in
-[the Guacamole manual](http://guacamole.incubator.apache.org/doc/gug/jdbc-auth.html#jdbc-auth-postgresql).
+[the Guacamole manual](http://guacamole.apache.org/doc/gug/jdbc-auth.html#jdbc-auth-postgresql).
 
 Deploying Guacamole with MySQL authentication
 --------------------------------------------------
@@ -97,12 +97,12 @@ need to do so prior to using Guacamole. A convenience script for generating the
 necessary SQL to do this is included in the Guacamole image.
 
 To generate a SQL script which can be used to initialize a fresh MySQL database
-[as documented in the Guacamole manual](http://guacamole.incubator.apache.org/doc/gug/jdbc-auth.html#jdbc-auth-mysql):
+[as documented in the Guacamole manual](http://guacamole.apache.org/doc/gug/jdbc-auth.html#jdbc-auth-mysql):
 
     docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --mysql > initdb.sql
 
 Alternatively, you can use the SQL scripts included with
-[guacamole-auth-jdbc](https://github.com/apache/incubator-guacamole-client/tree/0.9.10-incubating/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql/schema).
+[guacamole-auth-jdbc](https://github.com/apache/guacamole-client/tree/0.9.10-incubating/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql/schema).
 
 Once this script is generated, you must:
 
@@ -113,7 +113,7 @@ Once this script is generated, you must:
 
 The process for doing this via the `mysql` utility included with MySQL is
 documented in
-[the Guacamole manual](http://guacamole.incubator.apache.org/doc/gug/jdbc-auth.html#jdbc-auth-mysql).
+[the Guacamole manual](http://guacamole.apache.org/doc/gug/jdbc-auth.html#jdbc-auth-mysql).
 
 Reporting issues
 ================

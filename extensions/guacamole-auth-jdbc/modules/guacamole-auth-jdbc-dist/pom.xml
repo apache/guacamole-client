@@ -27,7 +27,7 @@
     <artifactId>guacamole-auth-jdbc-dist</artifactId>
     <packaging>jar</packaging>
     <name>guacamole-auth-jdbc-dist</name>
-    <url>http://guacamole.incubator.apache.org/</url>
+    <url>http://guacamole.apache.org/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

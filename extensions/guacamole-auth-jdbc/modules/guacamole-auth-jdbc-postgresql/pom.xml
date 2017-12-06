@@ -27,7 +27,7 @@
     <artifactId>guacamole-auth-jdbc-postgresql</artifactId>
     <packaging>jar</packaging>
     <name>guacamole-auth-jdbc-postgresql</name>
-    <url>http://guacamole.incubator.apache.org/</url>
+    <url>http://guacamole.apache.org/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
