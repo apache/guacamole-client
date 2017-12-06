@@ -28,7 +28,7 @@
     <packaging>war</packaging>
     <version>0.9.13-incubating</version>
     <name>guacamole</name>
-    <url>http://guacamole.incubator.apache.org/</url>
+    <url>http://guacamole.apache.org/</url>
 
     <description>
         The Guacamole web application, providing authentication and an HTML5
@@ -46,8 +46,8 @@
 
     <!-- Git repository -->
     <scm>
-        <url>https://github.com/apache/incubator-guacamole-client</url>
-        <connection>scm:git:https://git.wip-us.apache.org/repos/asf/incubator-guacamole-client.git</connection>
+        <url>https://github.com/apache/guacamole-client</url>
+        <connection>scm:git:https://git.wip-us.apache.org/repos/asf/guacamole-client.git</connection>
     </scm>
 
     <!-- Developers -->
