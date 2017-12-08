@@ -41,6 +41,12 @@ public class CASTicketField extends Field {
     public static final String PARAMETER_NAME = "ticket";
 
     /**
+     * The standard URI name for the CAS login resource.
+     */
+    private static final String CAS_LOGIN_URI = "login";
+
+
+    /**
      * The full URI which the field should link to.
      */
     private final String authorizationURI;
@@ -57,11 +63,6 @@ public class CASTicketField extends Field {
      *     The full URL of the endpoint accepting CAS authentication
      *     requests.
      *
-     * @param clientID
-     *     The ID of the CAS client. This is normally determined ahead of
-     *     time by the CAS service through some manual credential request
-     *     procedure.
-     *
      * @param redirectURI
      *     The URI that the CAS service should redirect to upon successful
      *     authentication.
@@ -73,8 +74,16 @@ public class CASTicketField extends Field {
 
         // Build authorization URI from given values
         try {
-            this.authorizationURI = authorizationEndpoint
-                    + "?service=" + URLEncoder.encode(redirectURI, "UTF-8");
+            final StringBuilder sb = new StringBuilder();
+            sb.append(authorizationEndpoint);
+            // user might configure the endpoint with a trailing slash
+            if (sb.charAt(sb.length() - 1) != '/') {
+                sb.append('/');
+            }
+            sb.append(CAS_LOGIN_URI);
+            sb.append("?service=");
+            sb.append(URLEncoder.encode(redirectURI, "UTF-8"));
+            this.authorizationURI = sb.toString();
         }
 
         // Java is required to provide UTF-8 support
