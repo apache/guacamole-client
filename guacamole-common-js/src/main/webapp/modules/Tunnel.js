@@ -84,10 +84,21 @@ Guacamole.Tunnel = function() {
      * The maximum amount of time to wait for data to be received, in
      * milliseconds. If data is not received within this amount of time,
      * the tunnel is closed with an error. The default value is 15000.
-     * 
+     *
      * @type {Number}
      */
     this.receiveTimeout = 15000;
+
+    /**
+     * The amount of time to wait for data to be received before considering
+     * the connection to be unstable, in milliseconds. If data is not received
+     * within this amount of time, the tunnel status is updated to warn that
+     * the connection appears unresponsive and may close. The default value is
+     * 1500.
+     * 
+     * @type {Number}
+     */
+    this.unstableThreshold = 1500;
 
     /**
      * The UUID uniquely identifying this tunnel. If not yet known, this will
@@ -165,7 +176,15 @@ Guacamole.Tunnel.State = {
      * 
      * @type {Number}
      */
-    "CLOSED": 2
+    "CLOSED": 2,
+
+    /**
+     * The connection is open, but communication through the tunnel appears to
+     * be disrupted, and the connection may close as a result.
+     *
+     * @type {Number}
+     */
+    "UNSTABLE" : 3
 
 };
 
@@ -220,6 +239,14 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
     var receive_timeout = null;
 
     /**
+     * The current connection stability timeout ID, if any.
+     *
+     * @private
+     * @type {Number}
+     */
+    var unstableTimeout = null;
+
+    /**
      * Additional headers to be sent in tunnel requests. This dictionary can be
      * populated with key/value header pairs to pass information such as authentication
      * tokens, etc.
@@ -253,13 +280,23 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
      */
     function reset_timeout() {
 
-        // Get rid of old timeout (if any)
+        // Get rid of old timeouts (if any)
         window.clearTimeout(receive_timeout);
+        window.clearTimeout(unstableTimeout);
 
-        // Set new timeout
+        // Clear unstable status
+        if (tunnel.state === Guacamole.Tunnel.State.UNSTABLE)
+            tunnel.setState(Guacamole.Tunnel.State.OPEN);
+
+        // Set new timeout for tracking overall connection timeout
         receive_timeout = window.setTimeout(function () {
             close_tunnel(new Guacamole.Status(Guacamole.Status.Code.UPSTREAM_TIMEOUT, "Server timeout."));
         }, tunnel.receiveTimeout);
+
+        // Set new timeout for tracking suspected connection instability
+        unstableTimeout = window.setTimeout(function() {
+            tunnel.setState(Guacamole.Tunnel.State.UNSTABLE);
+        }, tunnel.unstableThreshold);
 
     }
 
@@ -273,6 +310,10 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
      *                                  close;
      */
     function close_tunnel(status) {
+
+        // Get rid of old timeouts (if any)
+        window.clearTimeout(receive_timeout);
+        window.clearTimeout(unstableTimeout);
 
         // Ignore if already closed
         if (tunnel.state === Guacamole.Tunnel.State.CLOSED)
@@ -683,6 +724,14 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
     var receive_timeout = null;
 
     /**
+     * The current connection stability timeout ID, if any.
+     *
+     * @private
+     * @type {Number}
+     */
+    var unstableTimeout = null;
+
+    /**
      * The WebSocket protocol corresponding to the protocol used for the current
      * location.
      * @private
@@ -733,13 +782,23 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
      */
     function reset_timeout() {
 
-        // Get rid of old timeout (if any)
+        // Get rid of old timeouts (if any)
         window.clearTimeout(receive_timeout);
+        window.clearTimeout(unstableTimeout);
 
-        // Set new timeout
+        // Clear unstable status
+        if (tunnel.state === Guacamole.Tunnel.State.UNSTABLE)
+            tunnel.setState(Guacamole.Tunnel.State.OPEN);
+
+        // Set new timeout for tracking overall connection timeout
         receive_timeout = window.setTimeout(function () {
             close_tunnel(new Guacamole.Status(Guacamole.Status.Code.UPSTREAM_TIMEOUT, "Server timeout."));
         }, tunnel.receiveTimeout);
+
+        // Set new timeout for tracking suspected connection instability
+        unstableTimeout = window.setTimeout(function() {
+            tunnel.setState(Guacamole.Tunnel.State.UNSTABLE);
+        }, tunnel.unstableThreshold);
 
     }
 
@@ -753,6 +812,10 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
      *                                  close;
      */
     function close_tunnel(status) {
+
+        // Get rid of old timeouts (if any)
+        window.clearTimeout(receive_timeout);
+        window.clearTimeout(unstableTimeout);
 
         // Ignore if already closed
         if (tunnel.state === Guacamole.Tunnel.State.CLOSED)
