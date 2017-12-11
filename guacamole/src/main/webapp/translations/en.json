@@ -137,6 +137,7 @@
         "TEXT_CLIENT_STATUS_IDLE"         : "Idle.",
         "TEXT_CLIENT_STATUS_CONNECTING"   : "Connecting to Guacamole...",
         "TEXT_CLIENT_STATUS_DISCONNECTED" : "You have been disconnected.",
+        "TEXT_CLIENT_STATUS_UNSTABLE"     : "The network connection to the Guacamole server appears unstable.",
         "TEXT_CLIENT_STATUS_WAITING"      : "Connected to Guacamole. Waiting for response...",
         "TEXT_RECONNECT_COUNTDOWN"        : "Reconnecting in {REMAINING} {REMAINING, plural, one{second} other{seconds}}...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",

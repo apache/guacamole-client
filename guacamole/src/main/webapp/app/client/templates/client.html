@@ -36,6 +36,11 @@
         <guac-file-transfer-manager client="client"></guac-file-transfer-manager>
     </div>
 
+    <!-- Connection stability warning -->
+    <div id="connection-warning" ng-show="isConnectionUnstable()">
+        {{'CLIENT.TEXT_CLIENT_STATUS_UNSTABLE' | translate}}
+    </div>
+
     <!-- Menu -->
     <div class="menu" ng-class="{open: menu.shown}" id="guac-menu">
         <div class="menu-content" ng-if="menu.shown">

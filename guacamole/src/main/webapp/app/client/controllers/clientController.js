@@ -626,6 +626,18 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     };
 
+    /**
+     * Returns whether the current connection has been flagged as unstable due
+     * to an apparent network disruption.
+     *
+     * @returns {Boolean}
+     *     true if the current connection has been flagged as unstable, false
+     *     otherwise.
+     */
+    $scope.isConnectionUnstable = function isConnectionUnstable() {
+        return $scope.client && $scope.client.clientState.connectionState === ManagedClientState.ConnectionState.UNSTABLE;
+    };
+
     // Show status dialog when connection status changes
     $scope.$watch('client.clientState.connectionState', function clientStateChanged(connectionState) {
 
