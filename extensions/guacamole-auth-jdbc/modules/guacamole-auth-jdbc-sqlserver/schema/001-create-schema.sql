@@ -27,7 +27,7 @@ CREATE RULE [guacamole_connection_group_type_list] AS @list IN (
 );
 GO
 
-CREATE TYPE [guacamole_connection_group_type] FROM [nvarchar](16) NOT NULL;
+CREATE TYPE [guacamole_connection_group_type] FROM [nvarchar](16);
 EXEC sp_bindrule
     'guacamole_connection_group_type_list',
     'guacamole_connection_group_type';
@@ -45,7 +45,7 @@ CREATE RULE [guacamole_object_permission_list] AS @list IN (
 );
 GO
 
-CREATE TYPE [guacamole_object_permission] FROM [nvarchar](16) NOT NULL;
+CREATE TYPE [guacamole_object_permission] FROM [nvarchar](16);
 EXEC sp_bindrule
     'guacamole_object_permission_list',
     'guacamole_object_permission';
@@ -64,7 +64,7 @@ CREATE RULE [guacamole_system_permission_list] AS @list IN (
 );
 GO
 
-CREATE TYPE [guacamole_system_permission] FROM [nvarchar](32) NOT NULL;
+CREATE TYPE [guacamole_system_permission] FROM [nvarchar](32);
 EXEC sp_bindrule
     'guacamole_system_permission_list',
     'guacamole_system_permission';
@@ -80,7 +80,7 @@ CREATE RULE [guacamole_proxy_encryption_method_list] AS @list IN (
 );
 GO
 
-CREATE TYPE [guacamole_proxy_encryption_method] FROM [nvarchar](8) NOT NULL;
+CREATE TYPE [guacamole_proxy_encryption_method] FROM [nvarchar](8);
 EXEC sp_bindrule
     'guacamole_proxy_encryption_method_list',
     'guacamole_proxy_encryption_method';
