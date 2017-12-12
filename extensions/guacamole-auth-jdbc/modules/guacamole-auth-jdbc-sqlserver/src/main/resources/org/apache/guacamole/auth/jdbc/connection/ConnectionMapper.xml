@@ -101,15 +101,17 @@
             proxy_encryption_method,
             connection_weight,
             failover_only,
-            MAX(start_date) AS last_active
+            (
+                SELECT MAX(start_date)
+                FROM [guacamole_connection_history]
+                WHERE [guacamole_connection_history].connection_id = [guacamole_connection].connection_id
+            ) AS last_active
         FROM [guacamole_connection]
-        LEFT JOIN [guacamole_connection_history] ON [guacamole_connection_history].connection_id = [guacamole_connection].connection_id
         WHERE [guacamole_connection].connection_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}
-            </foreach>
-        GROUP BY [guacamole_connection].connection_id;
+            </foreach>;
 
         SELECT primary_connection_id, sharing_profile_id
         FROM [guacamole_sharing_profile]
@@ -137,18 +139,20 @@
             proxy_encryption_method,
             connection_weight,
             failover_only,
-            MAX(start_date) AS last_active
+            (
+                SELECT MAX(start_date)
+                FROM [guacamole_connection_history]
+                WHERE [guacamole_connection_history].connection_id = [guacamole_connection].connection_id
+            ) AS last_active
         FROM [guacamole_connection]
         JOIN [guacamole_connection_permission] ON [guacamole_connection_permission].connection_id = [guacamole_connection].connection_id
-        LEFT JOIN [guacamole_connection_history] ON [guacamole_connection_history].connection_id = [guacamole_connection].connection_id
         WHERE [guacamole_connection].connection_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}
             </foreach>
             AND [guacamole_connection_permission].user_id = #{user.objectID,jdbcType=INTEGER}
-            AND permission = 'READ'
-        GROUP BY [guacamole_connection].connection_id;
+            AND permission = 'READ';
 
         SELECT primary_connection_id, [guacamole_sharing_profile].sharing_profile_id
         FROM [guacamole_sharing_profile]
@@ -178,14 +182,16 @@
             proxy_encryption_method,
             connection_weight,
             failover_only,
-            MAX(start_date) AS last_active
+            (
+                SELECT MAX(start_date)
+                FROM [guacamole_connection_history]
+                WHERE [guacamole_connection_history].connection_id = [guacamole_connection].connection_id
+            ) AS last_active
         FROM [guacamole_connection]
-        LEFT JOIN [guacamole_connection_history] ON [guacamole_connection_history].connection_id = [guacamole_connection].connection_id
         WHERE 
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
             AND [guacamole_connection].connection_name = #{name,jdbcType=VARCHAR}
-        GROUP BY [guacamole_connection].connection_id
 
     </select>
 

@@ -80,15 +80,17 @@
             email_address,
             organization,
             organizational_role,
-            MAX(start_date) AS last_active
+            (
+                SELECT MAX(start_date)
+                FROM [guacamole_user_history]
+                WHERE [guacamole_user_history].user_id = [guacamole_user].user_id
+            ) AS last_active
         FROM [guacamole_user]
-        LEFT JOIN [guacamole_user_history] ON [guacamole_user_history].user_id = [guacamole_user].user_id
         WHERE [guacamole_user].username IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
-            </foreach>
-        GROUP BY [guacamole_user].user_id
+            </foreach>;
 
     </select>
 
@@ -112,10 +114,13 @@
             email_address,
             organization,
             organizational_role,
-            MAX(start_date) AS last_active
+            (
+                SELECT MAX(start_date)
+                FROM [guacamole_user_history]
+                WHERE [guacamole_user_history].user_id = [guacamole_user].user_id
+            ) AS last_active
         FROM [guacamole_user]
         JOIN [guacamole_user_permission] ON affected_user_id = [guacamole_user].user_id
-        LEFT JOIN [guacamole_user_history] ON [guacamole_user_history].user_id = [guacamole_user].user_id
         WHERE [guacamole_user].username IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
@@ -123,7 +128,6 @@
             </foreach>
             AND [guacamole_user_permission].user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'READ'
-        GROUP BY [guacamole_user].user_id
 
     </select>
 
@@ -147,12 +151,15 @@
             email_address,
             organization,
             organizational_role,
-            MAX(start_date) AS last_active
+            (
+                SELECT MAX(start_date)
+                FROM [guacamole_user_history]
+                WHERE [guacamole_user_history].user_id = [guacamole_user].user_id
+            ) AS last_active
         FROM [guacamole_user]
         LEFT JOIN [guacamole_user_history] ON [guacamole_user_history].user_id = [guacamole_user].user_id
         WHERE
             [guacamole_user].username = #{username,jdbcType=VARCHAR}
-        GROUP BY [guacamole_user].user_id
 
     </select>
 
