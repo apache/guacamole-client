@@ -336,6 +336,7 @@ CREATE TABLE `guacamole_connection_history` (
   KEY `sharing_profile_id` (`sharing_profile_id`),
   KEY `start_date` (`start_date`),
   KEY `end_date` (`end_date`),
+  KEY `connection_start_date` (`connection_id`, `start_date`),
 
   CONSTRAINT `guacamole_connection_history_ibfk_1`
     FOREIGN KEY (`user_id`)
@@ -368,6 +369,7 @@ CREATE TABLE guacamole_user_history (
   KEY `user_id` (`user_id`),
   KEY `start_date` (`start_date`),
   KEY `end_date` (`end_date`),
+  KEY `user_start_date` (`user_id`, `start_date`),
 
   CONSTRAINT guacamole_user_history_ibfk_1
     FOREIGN KEY (user_id)

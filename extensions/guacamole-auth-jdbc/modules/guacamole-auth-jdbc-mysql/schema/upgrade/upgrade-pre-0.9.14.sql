@@ -39,6 +39,12 @@ ALTER TABLE guacamole_connection_history
     ADD COLUMN remote_host VARCHAR(256) DEFAULT NULL;
 
 --
+-- Add covering index for connection history connection and start date
+--
+
+ALTER TABLE guacamole_connection_history ADD KEY (connection_id, start_date);
+
+--
 -- User login/logout history
 --
 
@@ -55,6 +61,7 @@ CREATE TABLE guacamole_user_history (
   KEY `user_id` (`user_id`),
   KEY `start_date` (`start_date`),
   KEY `end_date` (`end_date`),
+  KEY `user_start_date` (`user_id`, `start_date`),
 
   CONSTRAINT guacamole_user_history_ibfk_1
     FOREIGN KEY (user_id)

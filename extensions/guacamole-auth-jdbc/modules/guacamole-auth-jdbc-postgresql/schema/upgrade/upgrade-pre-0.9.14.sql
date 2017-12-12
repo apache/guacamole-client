@@ -39,6 +39,13 @@ ALTER TABLE guacamole_connection_history
     ADD COLUMN remote_host VARCHAR(256) DEFAULT NULL;
 
 --
+-- Add covering index for connection history connection and start date
+--
+
+CREATE INDEX guacamole_connection_history_connection_id_start_date
+    ON guacamole_connection_history(connection_id, start_date);
+
+--
 -- User login/logout history
 --
 
@@ -67,3 +74,6 @@ CREATE INDEX guacamole_user_history_start_date
 
 CREATE INDEX guacamole_user_history_end_date
     ON guacamole_user_history(end_date);
+
+CREATE INDEX guacamole_user_history_user_id_start_date
+    ON guacamole_user_history(user_id, start_date);
