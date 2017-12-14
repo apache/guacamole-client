@@ -304,9 +304,41 @@ public class LocalEnvironment implements Environment {
         return guacHome;
     }
 
+    /**
+     * Gets the string value for a property name.
+     *
+     * The value may come from either the OS environment or the Properties
+     * collection that was loaded from guacamole.properties. When checking the
+     * environment for the named property, the name is first transformed by
+     * converting all hyphens to underscores and converting the string to
+     * upper case letter, in accordance with common convention for environment
+     * strings.
+     *
+     * @param name
+     *     The name of the property value to retrieve.
+     *
+     * @return
+     *     The corresponding value for the property. If the value is found in
+     *     the OS environment, any corresponding value from the Properties
+     *     collection containing properties from guacamole.properties is
+     *     ignored.
+     */
+    private String getPropertyValue(String name) {
+
+        // transform the name according to common convention
+        final String envName = name.replace('-', '_').toUpperCase();
+        final String envValue = System.getenv(envName);
+
+        if (envValue != null) {
+            return envValue;
+        }
+
+        return properties.getProperty(name);
+    }
+
     @Override
     public <Type> Type getProperty(GuacamoleProperty<Type> property) throws GuacamoleException {
-        return property.parseValue(properties.getProperty(property.getName()));
+        return property.parseValue(getPropertyValue(property.getName()));
     }
 
     @Override
