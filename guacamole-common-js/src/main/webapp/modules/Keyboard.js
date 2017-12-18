@@ -1398,7 +1398,7 @@ Guacamole.Keyboard.InputSink = function InputSink() {
     };
 
     // Automatically refocus input sink if part of DOM
-    document.addEventListener("click", function refocusSink(e) {
+    document.addEventListener("keydown", function refocusSink(e) {
 
         // Do not refocus if focus is on an input field
         var focused = document.activeElement;
@@ -1407,7 +1407,6 @@ Guacamole.Keyboard.InputSink = function InputSink() {
 
         // Refocus input sink instead of handling click
         sink.focus();
-        e.preventDefault();
 
     }, true);
 
