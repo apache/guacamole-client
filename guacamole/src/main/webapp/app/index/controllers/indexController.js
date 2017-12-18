@@ -82,6 +82,10 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
     };
 
+    // Add default destination for input events
+    var sink = new Guacamole.Keyboard.InputSink();
+    $document[0].body.appendChild(sink.getElement());
+
     // Create event listeners at the global level
     var keyboard = new Guacamole.Keyboard($document[0]);
 
