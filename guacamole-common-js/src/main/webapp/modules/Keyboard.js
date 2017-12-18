@@ -1324,3 +1324,91 @@ Guacamole.Keyboard.ModifierState.fromKeyboardEvent = function(e) {
     return state;
     
 };
+
+/**
+ * A hidden input field which attempts to keep itself focused at all times,
+ * except when another input field has been intentionally focused, whether
+ * programatically or by the user. The actual underlying input field, returned
+ * by getElement(), may be used as a reliable source of keyboard-related events,
+ * particularly composition and input events which may require a focused input
+ * field to be dispatched at all.
+ *
+ * @constructor
+ */
+Guacamole.Keyboard.InputSink = function InputSink() {
+
+    /**
+     * Reference to this instance of Guacamole.Keyboard.InputSink.
+     *
+     * @private
+     * @type {Guacamole.Keyboard.InputSink}
+     */
+    var sink = this;
+
+    /**
+     * The underlying input field, styled to be invisible.
+     *
+     * @private
+     * @type {Element}
+     */
+    var field = document.createElement('textarea');
+    field.setAttribute('autofocus', 'autofocus');
+    field.style.position = 'fixed';
+    field.style.border   = 'none';
+    field.style.width    = '10px';
+    field.style.height   = '10px';
+    field.style.left     = '-10px';
+    field.style.top      = '-10px';
+
+    /**
+     * Clears the contents of the underlying field. The actual clearing of the
+     * field is deferred, occurring asynchronously after the call completes.
+     *
+     * @private
+     */
+    var clear = function clear() {
+        window.setTimeout(function deferClear() {
+            field.value = '';
+        }, 0);
+    };
+
+    // Keep internal field contents clear
+    field.addEventListener("change", clear, false);
+    field.addEventListener("input", clear, false);
+
+    /**
+     * Attempts to focus the underlying input field. The focus attempt occurs
+     * asynchronously, and may silently fail depending on browser restrictions.
+     */
+    this.focus = function focus() {
+        window.setTimeout(function deferRefocus() {
+            field.focus(); // Focus must be deferred to work reliably across browsers
+        }, 0);
+    };
+
+    /**
+     * Returns the underlying input field. This input field MUST be manually
+     * added to the DOM for the Guacamole.Keyboard.InputSink to have any
+     * effect.
+     *
+     * @returns {Element}
+     */
+    this.getElement = function getElement() {
+        return field;
+    };
+
+    // Automatically refocus input sink if part of DOM
+    document.addEventListener("click", function refocusSink(e) {
+
+        // Do not refocus if focus is on an input field
+        var focused = document.activeElement;
+        if (focused && focused !== document.body)
+            return;
+
+        // Refocus input sink instead of handling click
+        sink.focus();
+        e.preventDefault();
+
+    }, true);
+
+};
