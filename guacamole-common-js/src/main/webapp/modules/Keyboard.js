@@ -827,6 +827,30 @@ Guacamole.Keyboard = function(element) {
     };
 
     /**
+     * Presses and releases the keys necessary to type the given string of
+     * text.
+     *
+     * @param {String} str
+     *     The string to type.
+     */
+    this.type = function type(str) {
+
+        // Press/release the key corresponding to each character in the string
+        for (var i = 0; i < str.length; i++) {
+
+            // Determine keysym of current character
+            var codepoint = str.codePointAt ? str.codePointAt(i) : str.charCodeAt(i);
+            var keysym = keysym_from_charcode(codepoint);
+
+            // Press and release key for current character
+            guac_keyboard.press(keysym);
+            guac_keyboard.release(keysym);
+
+        }
+
+    };
+
+    /**
      * Resets the state of this keyboard, releasing all keys, and firing keyup
      * events for each released key.
      */
@@ -1182,6 +1206,30 @@ Guacamole.Keyboard = function(element) {
         interpret_events();
 
     }, true);
+
+    // Automatically type text entered into the wrapped element
+    element.addEventListener("input", function(e) {
+
+        // Only intercept if handler set
+        if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
+
+        // Type all content written
+        if (e.data)
+            guac_keyboard.type(e.data);
+
+    }, false);
+
+    // Automatically type the result of composed characters/text
+    element.addEventListener("compositionend", function(e) {
+
+        // Only intercept if handler set
+        if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
+
+        // Type all content written
+        if (e.data)
+            guac_keyboard.type(e.data);
+
+    }, false);
 
 };
 
