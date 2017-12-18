@@ -1470,6 +1470,7 @@ Guacamole.Keyboard.InputSink = function InputSink() {
     this.focus = function focus() {
         window.setTimeout(function deferRefocus() {
             field.focus(); // Focus must be deferred to work reliably across browsers
+            field.select();
         }, 0);
     };
 
@@ -1489,8 +1490,14 @@ Guacamole.Keyboard.InputSink = function InputSink() {
 
         // Do not refocus if focus is on an input field
         var focused = document.activeElement;
-        if (focused && focused !== document.body)
-            return;
+        if (focused && focused !== document.body) {
+
+            // Only consider focused input fields which are actually visible
+            var rect = focused.getBoundingClientRect();
+            if (rect.left + rect.width > 0 && rect.top + rect.height > 0)
+                return;
+
+        }
 
         // Refocus input sink instead of handling click
         sink.focus();
