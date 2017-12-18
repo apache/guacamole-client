@@ -1462,7 +1462,6 @@ Guacamole.Keyboard.InputSink = function InputSink() {
 
     // Keep internal field contents clear
     field.addEventListener("change", clear, false);
-    field.addEventListener("input", clear, false);
 
     /**
      * Attempts to focus the underlying input field. The focus attempt occurs
