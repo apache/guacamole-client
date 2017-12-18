@@ -1232,6 +1232,15 @@ Guacamole.Keyboard = function(element) {
     };
 
     /**
+     * The in-progress composition, if any, such as the intermediate result of
+     * pressing a series of dead keys.
+     *
+     * @private
+     * @type {String}
+     */
+    var inProgressComposition = '';
+
+    /**
      * Handles the given "input" event, typing the data within the input text.
      * If the event is complete (text is provided), handling of "compositionend"
      * events is suspended, as such events may conflict with input events.
@@ -1244,6 +1253,11 @@ Guacamole.Keyboard = function(element) {
 
         // Only intercept if handler set
         if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
+
+        // Ignore input events which represent the in-progress composition,
+        // as reported by composition events
+        if (e.data === inProgressComposition)
+            return;
 
         // Type all content written
         if (e.data && isComposed(e.data)) {
@@ -1279,6 +1293,14 @@ Guacamole.Keyboard = function(element) {
     // Automatically type text entered into the wrapped element
     element.addEventListener("input", handleInput, false);
     element.addEventListener("compositionend", handleComposition, false);
+
+    element.addEventListener("compositionstart", function resetComposition() {
+        inProgressComposition = '';
+    }, false);
+
+    element.addEventListener("compositionupdate", function updateComposition(e) {
+        inProgressComposition = e.data;
+    }, false);
 
 };
 
