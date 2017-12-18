@@ -25,7 +25,7 @@ var Guacamole = Guacamole || {};
  * which represent keys as their corresponding X11 keysym.
  * 
  * @constructor
- * @param {Element} [element]
+ * @param {Element|Document} [element]
  *    The Element to use to provide keyboard events. If omitted, at least one
  *    Element must be manually provided through the listenTo() function for
  *    the Guacamole.Keyboard instance to have any effect.
@@ -1186,7 +1186,7 @@ Guacamole.Keyboard = function Keyboard(element) {
      * events signalled through this Guacamole.Keyboard's onkeydown and
      * onkeyup handlers.
      *
-     * @param {Element} element
+     * @param {Element|Document} element
      *     The Element to attach event listeners to for the sake of handling
      *     key or input events.
      */
