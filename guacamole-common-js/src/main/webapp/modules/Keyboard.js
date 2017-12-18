@@ -1440,8 +1440,8 @@ Guacamole.Keyboard.InputSink = function InputSink() {
      * @type {Element}
      */
     var field = document.createElement('textarea');
-    field.setAttribute('autofocus', 'autofocus');
     field.style.position = 'fixed';
+    field.style.outline  = 'none';
     field.style.border   = 'none';
     field.style.width    = '10px';
     field.style.height   = '10px';
@@ -1463,6 +1463,16 @@ Guacamole.Keyboard.InputSink = function InputSink() {
     // Keep internal field contents clear
     field.addEventListener("change", clear, false);
 
+    // Whenever focus is gained, automatically click to ensure cursor is
+    // actually placed within the field (the field may simply be highlighted or
+    // outlined otherwise)
+    field.addEventListener("focus", function focusReceived() {
+        window.setTimeout(function deferRefocus() {
+            field.click();
+            field.select();
+        }, 0);
+    }, true);
+
     /**
      * Attempts to focus the underlying input field. The focus attempt occurs
      * asynchronously, and may silently fail depending on browser restrictions.
@@ -1470,7 +1480,6 @@ Guacamole.Keyboard.InputSink = function InputSink() {
     this.focus = function focus() {
         window.setTimeout(function deferRefocus() {
             field.focus(); // Focus must be deferred to work reliably across browsers
-            field.select();
         }, 0);
     };
 
