@@ -1208,39 +1208,6 @@ Guacamole.Keyboard = function(element) {
     }, true);
 
     /**
-     * Returns whether the given string is fully composed. A string is fully
-     * composed if it does not end with combining characters.
-     *
-     * @private
-     * @param {String} str
-     *     The string to test.
-     *
-     * @returns {Boolean}
-     *     true of the string is fully composed, false otherwise.
-     */
-    var isComposed = function isComposed(str) {
-
-        // The empty string is fully composed
-        if (!str)
-            return true;
-
-        // Test whether the last character is within the "Combining
-        // Diacritical Marks" Unicode block (U+0300 through U+036F)
-        var lastCodepoint = str.charCodeAt(str.length - 1);
-        return !(lastCodepoint >= 0x0300 && lastCodepoint <= 0x036F);
-
-    };
-
-    /**
-     * The in-progress composition, if any, such as the intermediate result of
-     * pressing a series of dead keys.
-     *
-     * @private
-     * @type {String}
-     */
-    var inProgressComposition = '';
-
-    /**
      * Handles the given "input" event, typing the data within the input text.
      * If the event is complete (text is provided), handling of "compositionend"
      * events is suspended, as such events may conflict with input events.
@@ -1254,13 +1221,8 @@ Guacamole.Keyboard = function(element) {
         // Only intercept if handler set
         if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
 
-        // Ignore input events which represent the in-progress composition,
-        // as reported by composition events
-        if (e.data === inProgressComposition)
-            return;
-
         // Type all content written
-        if (e.data && isComposed(e.data)) {
+        if (e.data && !e.isComposing) {
             element.removeEventListener("compositionend", handleComposition, false);
             guac_keyboard.type(e.data);
         }
@@ -1283,7 +1245,7 @@ Guacamole.Keyboard = function(element) {
         if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
 
         // Type all content written
-        if (e.data && isComposed(e.data)) {
+        if (e.data) {
             element.removeEventListener("input", handleInput, false);
             guac_keyboard.type(e.data);
         }
@@ -1293,14 +1255,6 @@ Guacamole.Keyboard = function(element) {
     // Automatically type text entered into the wrapped element
     element.addEventListener("input", handleInput, false);
     element.addEventListener("compositionend", handleComposition, false);
-
-    element.addEventListener("compositionstart", function resetComposition() {
-        inProgressComposition = '';
-    }, false);
-
-    element.addEventListener("compositionupdate", function updateComposition(e) {
-        inProgressComposition = e.data;
-    }, false);
 
 };
 
