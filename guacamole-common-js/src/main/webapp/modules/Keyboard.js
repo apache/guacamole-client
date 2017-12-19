@@ -1293,7 +1293,7 @@ Guacamole.Keyboard = function Keyboard(element) {
 
             // Type all content written
             if (e.data && !e.isComposing) {
-                element.removeEventListener("compositionend", handleComposition, true);
+                element.removeEventListener("compositionend", handleComposition, false);
                 guac_keyboard.type(e.data);
             }
 
@@ -1319,15 +1319,15 @@ Guacamole.Keyboard = function Keyboard(element) {
 
             // Type all content written
             if (e.data) {
-                element.removeEventListener("input", handleInput, true);
+                element.removeEventListener("input", handleInput, false);
                 guac_keyboard.type(e.data);
             }
 
         };
 
         // Automatically type text entered into the wrapped field
-        element.addEventListener("input", handleInput, true);
-        element.addEventListener("compositionend", handleComposition, true);
+        element.addEventListener("input", handleInput, false);
+        element.addEventListener("compositionend", handleComposition, false);
 
     };
 
