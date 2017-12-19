@@ -1440,13 +1440,16 @@ Guacamole.Keyboard.InputSink = function InputSink() {
      * @type {Element}
      */
     var field = document.createElement('textarea');
-    field.style.position = 'fixed';
-    field.style.outline  = 'none';
-    field.style.border   = 'none';
-    field.style.width    = '10px';
-    field.style.height   = '10px';
-    field.style.left     = '-10px';
-    field.style.top      = '-10px';
+    field.style.position   = 'fixed';
+    field.style.outline    = 'none';
+    field.style.border     = 'none';
+    field.style.height     = '0';
+    field.style.width      = '0';
+    field.style.left       = '0';
+    field.style.bottom     = '0';
+    field.style.resize     = 'none';
+    field.style.background = 'transparent';
+    field.style.color      = 'transparent';
 
     // Keep field clear when modified via normal keypresses
     field.addEventListener("keypress", function clearKeypress(e) {
