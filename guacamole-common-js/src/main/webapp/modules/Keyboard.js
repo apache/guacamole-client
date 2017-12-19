@@ -1448,20 +1448,22 @@ Guacamole.Keyboard.InputSink = function InputSink() {
     field.style.left     = '-10px';
     field.style.top      = '-10px';
 
-    /**
-     * Clears the contents of the underlying field. The actual clearing of the
-     * field is deferred, occurring asynchronously after the call completes.
-     *
-     * @private
-     */
-    var clear = function clear() {
-        window.setTimeout(function deferClear() {
-            field.value = '';
-        }, 0);
-    };
+    // Keep field clear when modified via normal keypresses
+    field.addEventListener("keypress", function clearKeypress(e) {
+        field.value = '';
+    }, false);
 
-    // Keep internal field contents clear
-    field.addEventListener("change", clear, false);
+    // Keep field clear when modofied via composition events
+    field.addEventListener("compositionend", function clearCompletedComposition(e) {
+        if (e.data)
+            field.value = '';
+    }, false);
+
+    // Keep field clear when modofied via input events
+    field.addEventListener("input", function clearCompletedInput(e) {
+        if (e.data && !e.isComposing)
+            field.value = '';
+    }, false);
 
     // Whenever focus is gained, automatically click to ensure cursor is
     // actually placed within the field (the field may simply be highlighted or
