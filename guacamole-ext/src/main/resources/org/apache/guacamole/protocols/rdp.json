@@ -91,14 +91,15 @@
                     "type"    : "ENUM",
                     "options" : [
                         "",
+                        "de-de-qwertz",
                         "en-us-qwerty",
+                        "es-es-qwerty",
+                        "failsafe",
                         "fr-fr-azerty",
                         "fr-ch-qwertz",
-                        "de-de-qwertz",
                         "it-it-qwerty",
                         "ja-jp-qwerty",
-                        "sv-se-qwerty",
-                        "failsafe"
+                        "sv-se-qwerty"
                     ]
                 },
                 {

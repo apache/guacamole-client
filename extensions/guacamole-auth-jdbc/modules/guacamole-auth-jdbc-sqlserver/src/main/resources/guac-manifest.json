@@ -20,6 +20,7 @@
 
     "translations" : [
         "translations/en.json",
+        "translations/es.json",
         "translations/fr.json",
         "translations/ru.json"
     ]

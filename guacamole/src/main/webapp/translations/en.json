@@ -387,6 +387,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "German (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
         "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "US English (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_ES_QWERTY" : "Spanish (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
         "FIELD_OPTION_SERVER_LAYOUT_FR_CH_QWERTZ" : "Swiss French (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "French (Azerty)",
