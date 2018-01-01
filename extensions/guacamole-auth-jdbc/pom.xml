@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-jdbc</artifactId>
     <packaging>pom</packaging>
-    <version>0.9.13-incubating</version>
+    <version>0.9.14</version>
     <name>guacamole-auth-jdbc</name>
     <url>http://guacamole.apache.org/</url>
 
@@ -81,7 +81,7 @@
             <dependency>
                 <groupId>org.apache.guacamole</groupId>
                 <artifactId>guacamole-ext</artifactId>
-                <version>0.9.13-incubating</version>
+                <version>0.9.14</version>
                 <scope>provided</scope>
             </dependency>
 

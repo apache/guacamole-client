@@ -58,8 +58,9 @@ database
 
     docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgres > initdb.sql
 
-Alternatively, you can use the SQL scripts included with
-[guacamole-auth-jdbc](https://github.com/apache/guacamole-client/tree/0.9.10-incubating/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-postgresql/schema).
+Alternatively, you can use the SQL scripts included with the
+guacamole-auth-jdbc extension from
+[the corresponding release](http://guacamole.apache.org/releases/).
 
 Once this script is generated, you must:
 
