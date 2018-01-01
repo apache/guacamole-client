@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-duo</artifactId>
     <packaging>jar</packaging>
-    <version>0.9.13-incubating</version>
+    <version>0.9.14</version>
     <name>guacamole-auth-duo</name>
     <url>http://guacamole.apache.org/</url>
 
@@ -213,7 +213,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.9.13-incubating</version>
+            <version>0.9.14</version>
             <scope>provided</scope>
         </dependency>
 
