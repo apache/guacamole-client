@@ -26,9 +26,9 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-quickconnect</artifactId>
     <packaging>jar</packaging>
-    <version>0.9.13-incubating</version>
+    <version>0.9.14</version>
     <name>guacamole-auth-quickconnect</name>
-    <url>http://guacamole.incubator.apache.org/</url>
+    <url>http://guacamole.apache.org/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -181,7 +181,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.9.13-incubating</version>
+            <version>0.9.14</version>
             <scope>provided</scope>
         </dependency>
 
