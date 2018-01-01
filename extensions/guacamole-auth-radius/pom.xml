@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-radius</artifactId>
     <packaging>jar</packaging>
-    <version>0.9.13-incubating</version>
+    <version>0.9.14</version>
     <name>guacamole-auth-radius</name>
     <url>http://guacamole.incubator.apache.org/</url>
 
@@ -190,7 +190,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-common</artifactId>
-            <version>0.9.10-incubating</version>
+            <version>0.9.14</version>
             <scope>provided</scope>
         </dependency>
 
@@ -198,7 +198,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.9.13-incubating</version>
+            <version>0.9.14</version>
             <scope>provided</scope>
         </dependency>
 
