@@ -187,11 +187,15 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
      *
      * @type Function
      */
-    var getUserMedia = (navigator.mediaDevices.getUserMedia
-            || navigator.getUserMedia
-            || navigator.webkitGetUserMedia
-            || navigator.mozGetUserMedia
-            || navigator.msGetUserMedia).bind(navigator);
+
+    if (navigator.mediaDevices === undefined)
+        navigator.mediaDevices = {};
+
+    if (navigator.mediaDevices.getUserMedia === undefined)
+        navigator.mediaDevices.getUserMedia = (navigator.getUserMedia
+                || navigator.webkitGetUserMedia
+                || navigator.mozGetUserMedia
+                || navigator.msGetUserMedia).bind(navigator);
 
     /**
      * Guacamole.ArrayBufferWriter wrapped around the audio output stream
@@ -420,7 +424,7 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
     var beginAudioCapture = function beginAudioCapture() {
 
         // Attempt to retrieve an audio input stream from the browser
-        getUserMedia({ 'audio' : true }, function streamReceived(stream) {
+        navigator.mediaDevices.getUserMedia({ 'audio' : true }, function streamReceived(stream) {
 
             // Create processing node which receives appropriately-sized audio buffers
             processor = context.createScriptProcessor(BUFFER_SIZE, format.channels, format.channels);
