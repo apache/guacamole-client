@@ -183,11 +183,12 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
 
     /**
      * A function which directly invokes the browser's implementation of
-     * navigator.getUserMedia() with all provided parameters.
+     * navigator.mediaDevices.getUserMedia() with all provided parameters.
      *
      * @type Function
      */
-    var getUserMedia = (navigator.getUserMedia
+    var getUserMedia = (navigator.mediaDevices.getUserMedia
+            || navigator.getUserMedia
             || navigator.webkitGetUserMedia
             || navigator.mozGetUserMedia
             || navigator.msGetUserMedia).bind(navigator);
