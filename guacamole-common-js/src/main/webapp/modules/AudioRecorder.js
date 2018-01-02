@@ -188,10 +188,10 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
      * @type Function
      */
 
-    if (navigator.mediaDevices === undefined)
+    if (!navigator.mediaDevices)
         navigator.mediaDevices = {};
 
-    if (navigator.mediaDevices.getUserMedia === undefined)
+    if (!navigator.mediaDevices.getUserMedia)
         navigator.mediaDevices.getUserMedia = (navigator.getUserMedia
                 || navigator.webkitGetUserMedia
                 || navigator.mozGetUserMedia
