@@ -77,12 +77,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         MENU_KEYS   = angular.extend({}, SHIFT_KEYS, ALT_KEYS, CTRL_KEYS);
 
     /**
-     * Keys needed to support the Ctrl-Alt-End hotkey for sending
-     * Ctrl-Alt-Delete.
+     * Keysym for sending the DELETE key when the Ctrl-Alt-End hotkey
+     * combo is pressed.
      */
-    CAD_KEYS    = angular.extend({}, ALT_KEYS, CTRL_KEYS, END_KEYS);
-    var CTRL_KEY    = 0xFFE3;
-    var ALT_KEY     = 0xFFE9;
     var DEL_KEY     = 0xFFFF;
 
     /**
