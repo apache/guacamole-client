@@ -182,15 +182,18 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
     var context = Guacamole.AudioContextFactory.getAudioContext();
 
     /**
-     * A function which directly invokes the browser's implementation of
-     * navigator.mediaDevices.getUserMedia() with all provided parameters.
-     *
-     * @type Function
+     * Some browsers do not implement navigator.mediaDevices - this
+     * shims in this functionality to ensure code compatibility.
      */
-
     if (!navigator.mediaDevices)
         navigator.mediaDevices = {};
 
+    /**
+     * Browsers that either do not implement navigator.mediaDevices
+     * at all or do not implement it completely need the getUserMedia
+     * method defined.  This shims in this function by detecting
+     * one of the supported legacy methods.
+     */
     if (!navigator.mediaDevices.getUserMedia)
         navigator.mediaDevices.getUserMedia = (navigator.getUserMedia
                 || navigator.webkitGetUserMedia
