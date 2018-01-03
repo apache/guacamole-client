@@ -299,16 +299,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         return true;
     }
 
-    function checkCADHotkeyActive() {
-        for(var keysym in keysCurrentlyPressed) {
-            if(!CAD_KEYS[keysym]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     // Hide menu when the user swipes from the right
     $scope.menuDrag = function menuDrag(inProgress, startX, startY, currentX, currentY, deltaX, deltaY) {
 
@@ -524,12 +514,12 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
          * If only menu keys are pressed, and we have one keysym from each group,
          * and one of the keys is being released, show the menu. 
          */
-        if(checkMenuModeActive()) {
+        if (checkMenuModeActive()) {
             
             // Check that there is a key pressed for each of the required key classes
-            if(!_.isEmpty(_.pick(SHIFT_KEYS, currentKeysPressedKeys)) &&
-               !_.isEmpty(_.pick(ALT_KEYS, currentKeysPressedKeys)) &&
-               !_.isEmpty(_.pick(CTRL_KEYS, currentKeysPressedKeys))
+            if (!_.isEmpty(_.pick(SHIFT_KEYS, currentKeysPressedKeys)) &&
+                !_.isEmpty(_.pick(ALT_KEYS, currentKeysPressedKeys)) &&
+                !_.isEmpty(_.pick(CTRL_KEYS, currentKeysPressedKeys))
             ) {
         
                 // Don't send this key event through to the client
@@ -550,29 +540,13 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
          * If only Ctrl-Alt-End is pressed, and we have a one keysym from each
          * group, and one key is being released, send Ctrl-Alt-Delete.
          */
-        if(checkCADHotkeyActive()) {
-
-            // Check that there is a key pressed for each of the required key classes
-            if(!_.isEmpty(_.pick(ALT_KEYS, currentKeysPressedKeys)) &&
-               !_.isEmpty(_.pick(CTRL_KEYS, currentKeysPressedKeys)) &&
-               !_.isEmpty(_.pick(END_KEYS, currentKeysPressedKeys))
-            ) {
-
-               // Don't send this key event through to the client
-               event.preventDefault();
-
-               // Reset the keys pressed
-               keysCurrentlyPressed = {};
-               keyboard.reset();
-
-               // Send the Ctrl-Alt-Delete event.
-               $rootScope.$broadcast('guacSyntheticKeydown', CTRL_KEY);
-               $rootScope.$broadcast('guacSyntheticKeydown', ALT_KEY);
-               $rootScope.$broadcast('guacSyntheticKeydown', DEL_KEY);
-               $rootScope.$broadcast('guacSyntheticKeyup', DEL_KEY);
-               $rootScope.$broadcast('guacSyntheticKeyup', ALT_KEY);
-               $rootScope.$broadcast('guacSyntheticKeyup', CTRL_KEY);
-            }
+        if (END_KEYS[keysym] &&
+            !_.isEmpty(_.pick(ALT_KEYS, currentKeysPressedKeys)) &&
+            !_.isEmpty(_.pick(CTRL_KEYS, currentKeysPressedKeys))
+        ) {
+                event.preventDefault();
+                delete keysCurrentlyPressed[keysym];
+                $rootScope.$broadcast('guacSyntheticKeydown', DEL_KEY);
         }
 
     });
@@ -581,11 +555,23 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // with any data that appears to have come from those key presses
     $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
 
+        var currentKeysPressedKeys = Object.keys(keysCurrentlyPressed);
+
         // Sync local clipboard with any clipboard data received while this
         // key was pressed (if any) as long as the menu is not open
         var clipboardData = clipboardDataFromKey[keysym];
         if (clipboardData && !$scope.menu.shown)
             clipboardService.setLocalClipboard(clipboardData);
+
+        if (END_KEYS[keysym] &&
+            !_.isEmpty(_.pick(ALT_KEYS, currentKeysPressedKeys)) &&
+            !_.isEmpty(_.pick(CTRL_KEYS, currentKeysPressedKeys))
+        ) {
+
+            event.preventDefault();
+            $rootScope.$broadcast('guacSyntheticKeyup', DEL_KEY);
+
+        }
 
         // Mark key as released
         delete clipboardDataFromKey[keysym];
