@@ -54,7 +54,7 @@ angular.module('rest').factory('User', [function defineUser() {
         this.password = template.password;
 
         /**
-         * The time that this user was last logged in, in seconds since
+         * The time that this user was last logged in, in milliseconds since
          * 1970-01-01 00:00:00 UTC. If this information is unknown or
          * unavailable, this will be null.
          *

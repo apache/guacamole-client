@@ -105,7 +105,7 @@ angular.module('rest').factory('Connection', [function defineConnection() {
         this.sharingProfiles = template.sharingProfiles;
 
         /**
-         * The time that this connection was last used, in seconds since
+         * The time that this connection was last used, in milliseconds since
          * 1970-01-01 00:00:00 UTC. If this information is unknown or
          * unavailable, this will be null.
          *
