@@ -438,6 +438,42 @@ CREATE INDEX guacamole_connection_history_start_date
 CREATE INDEX guacamole_connection_history_end_date
     ON guacamole_connection_history(end_date);
 
+CREATE INDEX guacamole_connection_history_connection_id_start_date
+    ON guacamole_connection_history(connection_id, start_date);
+
+--
+-- User login/logout history
+--
+
+CREATE TABLE guacamole_user_history (
+
+  history_id           serial       NOT NULL,
+  user_id              integer      DEFAULT NULL,
+  username             varchar(128) NOT NULL,
+  remote_host          varchar(256) DEFAULT NULL,
+  start_date           timestamptz  NOT NULL,
+  end_date             timestamptz  DEFAULT NULL,
+
+  PRIMARY KEY (history_id),
+
+  CONSTRAINT guacamole_user_history_ibfk_1
+    FOREIGN KEY (user_id)
+    REFERENCES guacamole_user (user_id) ON DELETE SET NULL
+
+);
+
+CREATE INDEX guacamole_user_history_user_id
+    ON guacamole_user_history(user_id);
+
+CREATE INDEX guacamole_user_history_start_date
+    ON guacamole_user_history(start_date);
+
+CREATE INDEX guacamole_user_history_end_date
+    ON guacamole_user_history(end_date);
+
+CREATE INDEX guacamole_user_history_user_id_start_date
+    ON guacamole_user_history(user_id, start_date);
+
 --
 -- User password history
 --

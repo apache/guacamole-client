@@ -41,6 +41,7 @@
         <result column="email_address"       property="emailAddress"       jdbcType="VARCHAR"/>
         <result column="organization"        property="organization"       jdbcType="VARCHAR"/>
         <result column="organizational_role" property="organizationalRole" jdbcType="VARCHAR"/>
+        <result column="last_active"         property="lastActive"         jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <!-- Select all usernames -->
@@ -63,8 +64,8 @@
     <select id="select" resultMap="UserResultMap">
 
         SELECT
-            user_id,
-            username,
+            [guacamole_user].user_id,
+            [guacamole_user].username,
             password_hash,
             password_salt,
             password_date,
@@ -78,13 +79,18 @@
             full_name,
             email_address,
             organization,
-            organizational_role
+            organizational_role,
+            (
+                SELECT MAX(start_date)
+                FROM [guacamole_user_history]
+                WHERE [guacamole_user_history].user_id = [guacamole_user].user_id
+            ) AS last_active
         FROM [guacamole_user]
-        WHERE username IN
+        WHERE [guacamole_user].username IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
-            </foreach>
+            </foreach>;
 
     </select>
 
@@ -93,7 +99,7 @@
 
         SELECT
             [guacamole_user].user_id,
-            username,
+            [guacamole_user].username,
             password_hash,
             password_salt,
             password_date,
@@ -107,10 +113,15 @@
             full_name,
             email_address,
             organization,
-            organizational_role
+            organizational_role,
+            (
+                SELECT MAX(start_date)
+                FROM [guacamole_user_history]
+                WHERE [guacamole_user_history].user_id = [guacamole_user].user_id
+            ) AS last_active
         FROM [guacamole_user]
         JOIN [guacamole_user_permission] ON affected_user_id = [guacamole_user].user_id
-        WHERE username IN
+        WHERE [guacamole_user].username IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
@@ -124,8 +135,8 @@
     <select id="selectOne" resultMap="UserResultMap">
 
         SELECT
-            user_id,
-            username,
+            [guacamole_user].user_id,
+            [guacamole_user].username,
             password_hash,
             password_salt,
             password_date,
@@ -139,10 +150,16 @@
             full_name,
             email_address,
             organization,
-            organizational_role
+            organizational_role,
+            (
+                SELECT MAX(start_date)
+                FROM [guacamole_user_history]
+                WHERE [guacamole_user_history].user_id = [guacamole_user].user_id
+            ) AS last_active
         FROM [guacamole_user]
+        LEFT JOIN [guacamole_user_history] ON [guacamole_user_history].user_id = [guacamole_user].user_id
         WHERE
-            username = #{username,jdbcType=VARCHAR}
+            [guacamole_user].username = #{username,jdbcType=VARCHAR}
 
     </select>
 

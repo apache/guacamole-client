@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.jdbc.connection;
+package org.apache.guacamole.auth.jdbc.user;
 
 import com.google.inject.Inject;
 import java.util.Collection;
@@ -27,30 +27,31 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
 import org.apache.guacamole.auth.jdbc.base.ModeledActivityRecordSet;
+import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.net.auth.ConnectionRecord;
 
 /**
- * A JDBC implementation of ActivityRecordSet for ConnectionRecords. Calls to
- * asCollection() will query connection history records from the database. Which
- * records are returned will be determined by the values passed in earlier.
+ * A JDBC implementation of ActivityRecordSet for retrieving user login history.
+ * Calls to asCollection() will query user login records from the database.
+ * Which records are returned will be determined by the values passed in
+ * earlier.
  */
-public class ConnectionRecordSet extends ModeledActivityRecordSet<ConnectionRecord> {
+public class UserRecordSet extends ModeledActivityRecordSet<ActivityRecord> {
 
     /**
-     * Service for managing connection objects.
+     * Service for managing user objects.
      */
     @Inject
-    private ConnectionService connectionService;
+    private UserService userService;
     
     @Override
-    protected Collection<ConnectionRecord> retrieveHistory(
+    protected Collection<ActivityRecord> retrieveHistory(
             AuthenticatedUser user, Set<ActivityRecordSearchTerm> requiredContents,
             List<ActivityRecordSortPredicate> sortPredicates, int limit)
             throws GuacamoleException {
 
         // Retrieve history from database
-        return connectionService.retrieveHistory(getCurrentUser(),
+        return userService.retrieveHistory(getCurrentUser(),
                 requiredContents, sortPredicates, limit);
 
     }

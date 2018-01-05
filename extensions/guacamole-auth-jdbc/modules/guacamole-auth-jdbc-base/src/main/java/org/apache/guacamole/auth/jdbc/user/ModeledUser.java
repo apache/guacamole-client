@@ -145,6 +145,12 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     ));
 
     /**
+     * Service for managing users.
+     */
+    @Inject
+    private UserService userService;
+
+    /**
      * Service for hashing passwords.
      */
     @Inject
@@ -795,13 +801,13 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     }
 
     @Override
-    public Date getLastActive() {
-        return null;
+    public Timestamp getLastActive() {
+        return getModel().getLastActive();
     }
 
     @Override
     public List<ActivityRecord> getHistory() throws GuacamoleException {
-        return Collections.<ActivityRecord>emptyList();
+        return userService.retrieveHistory(getCurrentUser(), this);
     }
 
 }

@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.connection;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.base.ChildObjectModel;
@@ -91,6 +92,12 @@ public class ConnectionModel extends ChildObjectModel {
      * the encryption method of the default guacd instance should be used.
      */
     private EncryptionMethod proxyEncryptionMethod;
+
+    /**
+     * The date and time that this connection was last used, or null if this
+     * connection has never been used.
+     */
+    private Date lastActive;
 
     /**
      * Creates a new, empty connection.
@@ -339,6 +346,32 @@ public class ConnectionModel extends ChildObjectModel {
      */
     public void setSharingProfileIdentifiers(Set<String> sharingProfileIdentifiers) {
         this.sharingProfileIdentifiers = sharingProfileIdentifiers;
+    }
+
+    /**
+     * Returns the date and time that this connection was last used, or null if
+     * this connection has never been used.
+     *
+     * @return
+     *     The date and time that this connection was last used, or null if this
+     *     connection has never been used.
+     */
+    public Date getLastActive() {
+        return lastActive;
+    }
+
+    /**
+     * Sets the date and time that this connection was last used. This value is
+     * expected to be set automatically via queries, derived from connection
+     * history records. It does NOT correspond to an actual column, and values
+     * set manually through invoking this function will not persist.
+     *
+     * @param lastActive
+     *     The date and time that this connection was last used, or null if this
+     *     connection has never been used.
+     */
+    public void setLastActive(Date lastActive) {
+        this.lastActive = lastActive;
     }
 
     @Override

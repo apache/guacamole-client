@@ -17,54 +17,57 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.jdbc.connection;
+package org.apache.guacamole.auth.jdbc.base;
 
 
-import org.apache.guacamole.auth.jdbc.base.ModeledActivityRecord;
-import org.apache.guacamole.net.auth.ConnectionRecord;
+import java.util.Date;
+import org.apache.guacamole.net.auth.ActivityRecord;
 
 /**
- * A ConnectionRecord which is backed by a database model.
+ * An ActivityRecord which is backed by a database model.
  */
-public class ModeledConnectionRecord extends ModeledActivityRecord
-        implements ConnectionRecord {
+public class ModeledActivityRecord implements ActivityRecord {
 
     /**
-     * The model object backing this connection record.
+     * The model object backing this activity record.
      */
-    private final ConnectionRecordModel model;
+    private final ActivityRecordModel model;
 
     /**
-     * Creates a new ModeledConnectionRecord backed by the given model object.
+     * Creates a new ModeledActivityRecord backed by the given model object.
      * Changes to this record will affect the backing model object, and changes
      * to the backing model object will affect this record.
      * 
      * @param model
-     *     The model object to use to back this connection record.
+     *     The model object to use to back this activity record.
      */
-    public ModeledConnectionRecord(ConnectionRecordModel model) {
-        super(model);
+    public ModeledActivityRecord(ActivityRecordModel model) {
         this.model = model;
     }
 
     @Override
-    public String getConnectionIdentifier() {
-        return model.getConnectionIdentifier();
+    public Date getStartDate() {
+        return model.getStartDate();
     }
 
     @Override
-    public String getConnectionName() {
-        return model.getConnectionName();
+    public Date getEndDate() {
+        return model.getEndDate();
     }
 
     @Override
-    public String getSharingProfileIdentifier() {
-        return model.getSharingProfileIdentifier();
+    public String getRemoteHost() {
+        return model.getRemoteHost();
     }
 
     @Override
-    public String getSharingProfileName() {
-        return model.getSharingProfileName();
+    public String getUsername() {
+        return model.getUsername();
+    }
+
+    @Override
+    public boolean isActive() {
+        return false;
     }
 
 }
