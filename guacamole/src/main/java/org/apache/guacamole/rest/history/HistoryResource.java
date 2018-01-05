@@ -28,6 +28,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.UserContext;
@@ -88,7 +89,7 @@ public class HistoryResource {
     @Path("connections")
     public List<APIConnectionRecord> getConnectionHistory(
             @QueryParam("contains") List<String> requiredContents,
-            @QueryParam("order") List<APIConnectionRecordSortPredicate> sortPredicates)
+            @QueryParam("order") List<APISortPredicate> sortPredicates)
             throws GuacamoleException {
 
         // Retrieve overall connection history
@@ -101,7 +102,7 @@ public class HistoryResource {
         }
 
         // Sort according to specified ordering
-        for (APIConnectionRecordSortPredicate predicate : sortPredicates)
+        for (APISortPredicate predicate : sortPredicates)
             history = history.sort(predicate.getProperty(), predicate.isDescending());
 
         // Limit to maximum result size
@@ -111,6 +112,61 @@ public class HistoryResource {
         List<APIConnectionRecord> apiRecords = new ArrayList<APIConnectionRecord>();
         for (ConnectionRecord record : history.asCollection())
             apiRecords.add(new APIConnectionRecord(record));
+
+        // Return the converted history
+        return apiRecords;
+
+    }
+
+    /**
+     * Retrieves the login history for all users, restricted by optional filter
+     * parameters.
+     *
+     * @param requiredContents
+     *     The set of strings that each must occur somewhere within the
+     *     returned user records, whether within the associated username or any
+     *     associated date. If non-empty, any user record not matching each of
+     *     the strings within the collection will be excluded from the results.
+     *
+     * @param sortPredicates
+     *     A list of predicates to apply while sorting the resulting user
+     *     records, describing the properties involved and the sort order for
+     *     those properties.
+     *
+     * @return
+     *     A list of user records, describing the start and end times of user
+     *     sessions.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the user history.
+     */
+    @GET
+    @Path("users")
+    public List<APIActivityRecord> getUserHistory(
+            @QueryParam("contains") List<String> requiredContents,
+            @QueryParam("order") List<APISortPredicate> sortPredicates)
+            throws GuacamoleException {
+
+        // Retrieve overall user history
+        ActivityRecordSet<ActivityRecord> history = userContext.getUserHistory();
+
+        // Restrict to records which contain the specified strings
+        for (String required : requiredContents) {
+            if (!required.isEmpty())
+                history = history.contains(required);
+        }
+
+        // Sort according to specified ordering
+        for (APISortPredicate predicate : sortPredicates)
+            history = history.sort(predicate.getProperty(), predicate.isDescending());
+
+        // Limit to maximum result size
+        history = history.limit(MAXIMUM_HISTORY_SIZE);
+
+        // Convert record set to collection of API user records
+        List<APIActivityRecord> apiRecords = new ArrayList<APIActivityRecord>();
+        for (ActivityRecord record : history.asCollection())
+            apiRecords.add(new APIActivityRecord(record));
 
         // Return the converted history
         return apiRecords;

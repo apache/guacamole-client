@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.rest.user;
 
+import java.util.Date;
 import java.util.Map;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -47,6 +48,12 @@ public class APIUser {
     private Map<String, String> attributes;
 
     /**
+     * The date and time that this user was last logged in, or null if this user
+     * has never logged in or this information is unavailable.
+     */
+    private Date lastActive;
+
+    /**
      * Construct a new empty APIUser.
      */
     public APIUser() {}
@@ -60,6 +67,7 @@ public class APIUser {
         // Set user information
         this.username = user.getIdentifier();
         this.password = user.getPassword();
+        this.lastActive = user.getLastActive();
 
         // Associate any attributes
         this.attributes = user.getAttributes();
@@ -120,6 +128,29 @@ public class APIUser {
      */
     public void setAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
+    }
+
+    /**
+     * Returns the date and time that this user was last logged in, or null if
+     * this user has never logged in or this information is unavailable.
+     *
+     * @return
+     *     The date and time that this user was last logged in, or null if this
+     *     user has never logged in or this information is unavailable.
+     */
+    public Date getLastActive() {
+        return lastActive;
+    }
+
+    /**
+     * Sets the date and time that this user was last logged in.
+     *
+     * @param lastActive
+     *     The date and time that this user was last logged in, or null if this
+     *     user has never logged in or this information is unavailable.
+     */
+    public void setLastActive(Date lastActive) {
+        this.lastActive = lastActive;
     }
 
 }

@@ -631,9 +631,13 @@
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
         "HELP_USERS" : "Klik of tik op een van de onderstaande gebruikers om die te beheren. Afhankelijk van uw toegangsniveau kunnen gebruikers worden toegevoegd, verwijderd en hun wachtwoorden gewijzigd.",
 
-        "SECTION_HEADER_USERS"       : "Gebruikers"
+        "SECTION_HEADER_USERS"       : "Gebruikers",
+
+        "TABLE_HEADER_USERNAME" : "Gebruikersnaam"
 
     },
 
