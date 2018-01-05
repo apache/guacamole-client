@@ -278,6 +278,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * Map of all substituted key presses.  If one key is pressed in place of another
      * the value of the substituted key is stored in an object with the keysym of
      * the original key.
+     *
      * @type Object.<Number, Number>
      */
     var substituteKeysPressed = {};
@@ -505,20 +506,17 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     };
 
-    /**
-     * Track pressed keys, opening the Guacamole menu after Ctrl+Alt+Shift, or
-     * send Ctrl-Alt-Delete when Ctrl-Alt-End is pressed.
-     */
+    // Track pressed keys, opening the Guacamole menu after Ctrl+Alt+Shift, or
+    // send Ctrl-Alt-Delete when Ctrl-Alt-End is pressed.
     $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
 
         // Record key as pressed
         keysCurrentlyPressed[keysym] = true;   
         
         var currentKeysPressedKeys = Object.keys(keysCurrentlyPressed);
-        /**
-         * If only menu keys are pressed, and we have one keysym from each group,
-         * and one of the keys is being released, show the menu. 
-         */
+
+        // If only menu keys are pressed, and we have one keysym from each group,
+        // and one of the keys is being released, show the menu. 
         if (checkMenuModeActive()) {
             
             // Check that there is a key pressed for each of the required key classes
@@ -541,10 +539,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             }
         }
 
-        /**
-         * If only Ctrl-Alt-End is pressed, and we have a one keysym from each
-         * group, and one key is being released, send Ctrl-Alt-Delete.
-         */
+        // If only Ctrl-Alt-End is pressed, and we have a one keysym from each
+        // group, and one key is being released, send Ctrl-Alt-Delete.
         if (END_KEYS[keysym] &&
             !_.isEmpty(_.pick(ALT_KEYS, currentKeysPressedKeys)) &&
             !_.isEmpty(_.pick(CTRL_KEYS, currentKeysPressedKeys))
