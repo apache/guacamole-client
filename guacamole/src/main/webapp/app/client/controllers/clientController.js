@@ -275,6 +275,14 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var keysCurrentlyPressed = {};
 
     /**
+     * Map of all substituted key presses.  If one key is pressed in place of another
+     * the value of the substituted key is stored in an object with the keysym of
+     * the original key.
+     * @type Object.<Number, Number>
+     */
+    var substituteKeysPressed = {};
+
+    /**
      * Map of all currently pressed keys (by keysym) to the clipboard contents
      * received from the remote desktop while those keys were pressed. All keys
      * not currently pressed will not have entries within this map.
@@ -543,6 +551,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         ) {
                 event.preventDefault();
                 delete keysCurrentlyPressed[keysym];
+                substituteKeysPressed[keysym] = DEL_KEY;
                 $rootScope.$broadcast('guacSyntheticKeydown', DEL_KEY);
         }
 
@@ -560,19 +569,18 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         if (clipboardData && !$scope.menu.shown)
             clipboardService.setLocalClipboard(clipboardData);
 
-        if (END_KEYS[keysym] &&
-            !_.isEmpty(_.pick(ALT_KEYS, currentKeysPressedKeys)) &&
-            !_.isEmpty(_.pick(CTRL_KEYS, currentKeysPressedKeys))
-        ) {
-
+        // Deal with substitute key presses
+        if (substituteKeysPressed[keysym]) {
             event.preventDefault();
-            $rootScope.$broadcast('guacSyntheticKeyup', DEL_KEY);
-
+            delete substituteKeysPressed[keysym];
+            $rootScope.$broadcast('guacSyntheticKeyup', substituteKeysPressed[keysym]);
         }
 
         // Mark key as released
-        delete clipboardDataFromKey[keysym];
-        delete keysCurrentlyPressed[keysym];
+        else {
+            delete clipboardDataFromKey[keysym];
+            delete keysCurrentlyPressed[keysym];
+        }
 
     });
 
