@@ -235,7 +235,7 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
 
     @Override
     public Date getLastActive() {
-        return null;
+        return getModel().getLastActive();
     }
 
     @Override

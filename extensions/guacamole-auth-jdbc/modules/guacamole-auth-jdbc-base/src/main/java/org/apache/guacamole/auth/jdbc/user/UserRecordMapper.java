@@ -17,47 +17,58 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.jdbc.connection;
+package org.apache.guacamole.auth.jdbc.user;
 
 import java.util.Collection;
 import java.util.List;
+import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
 import org.apache.ibatis.annotations.Param;
-import org.apache.guacamole.auth.jdbc.user.UserModel;
 
 /**
- * Mapper for connection record objects.
+ * Mapper for user login activity records.
  */
-public interface ConnectionRecordMapper {
+public interface UserRecordMapper {
 
     /**
-     * Returns a collection of all connection records associated with the
-     * connection having the given identifier.
+     * Returns a collection of all user login records associated with the user
+     * having the given username.
      *
-     * @param identifier
-     *     The identifier of the connection whose records are to be retrieved.
+     * @param username
+     *     The username of the user whose login records are to be retrieved.
      *
      * @return
-     *     A collection of all connection records associated with the
-     *     connection having the given identifier. This collection will be
-     *     empty if no such connection exists.
+     *     A collection of all user login records associated with the user
+     *     having the given username. This collection will be empty if no such
+     *     user exists.
      */
-    List<ConnectionRecordModel> select(@Param("identifier") String identifier);
+    List<ActivityRecordModel> select(@Param("username") String username);
 
     /**
-     * Inserts the given connection record.
+     * Inserts the given user login record.
      *
      * @param record
-     *     The connection record to insert.
+     *     The user login record to insert.
      *
      * @return
      *     The number of rows inserted.
      */
-    int insert(@Param("record") ConnectionRecordModel record);
+    int insert(@Param("record") ActivityRecordModel record);
 
     /**
-     * Searches for up to <code>limit</code> connection records that contain
+     * Updates the given user login record.
+     *
+     * @param record
+     *     The user login record to update.
+     *
+     * @return
+     *     The number of rows updated.
+     */
+    int update(@Param("record") ActivityRecordModel record);
+
+    /**
+     * Searches for up to <code>limit</code> user login records that contain
      * the given terms, sorted by the given predicates, regardless of whether
      * the data they are associated with is is readable by any particular user.
      * This should only be called on behalf of a system administrator. If
@@ -77,12 +88,12 @@ public interface ConnectionRecordMapper {
      * @return
      *     The results of the search performed with the given parameters.
      */
-    List<ConnectionRecordModel> search(@Param("terms") Collection<ActivityRecordSearchTerm> terms,
+    List<ActivityRecordModel> search(@Param("terms") Collection<ActivityRecordSearchTerm> terms,
             @Param("sortPredicates") List<ActivityRecordSortPredicate> sortPredicates,
             @Param("limit") int limit);
 
     /**
-     * Searches for up to <code>limit</code> connection records that contain
+     * Searches for up to <code>limit</code> user login records that contain
      * the given terms, sorted by the given predicates. Only records that are
      * associated with data explicitly readable by the given user will be
      * returned. If records are needed by a system administrator (who, by
@@ -105,7 +116,7 @@ public interface ConnectionRecordMapper {
      * @return
      *     The results of the search performed with the given parameters.
      */
-    List<ConnectionRecordModel> searchReadable(@Param("user") UserModel user,
+    List<ActivityRecordModel> searchReadable(@Param("user") UserModel user,
             @Param("terms") Collection<ActivityRecordSearchTerm> terms,
             @Param("sortPredicates") List<ActivityRecordSortPredicate> sortPredicates,
             @Param("limit") int limit);

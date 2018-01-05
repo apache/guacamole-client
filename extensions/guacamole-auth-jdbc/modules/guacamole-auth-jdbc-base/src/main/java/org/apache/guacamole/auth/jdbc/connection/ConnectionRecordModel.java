@@ -19,14 +19,14 @@
 
 package org.apache.guacamole.auth.jdbc.connection;
 
-import java.util.Date;
+import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
 
 /**
  * A single connection record representing a past usage of a particular
  * connection. If the connection was being shared, the sharing profile used to
  * join the connection is included in the record.
  */
-public class ConnectionRecordModel {
+public class ConnectionRecordModel extends ActivityRecordModel {
 
     /**
      * The identifier of the connection associated with this connection record.
@@ -52,32 +52,6 @@ public class ConnectionRecordModel {
      * sharing profile at the time that the connection was used.
      */
     private String sharingProfileName;
-
-    /**
-     * The database ID of the user associated with this connection record.
-     */
-    private Integer userID;
-
-    /**
-     * The username of the user associated with this connection record.
-     */
-    private String username;
-
-    /**
-     * The remote host associated with this connection record.
-     */
-    private String remoteHost;
-
-    /**
-     * The time the connection was initiated by the associated user.
-     */
-    private Date startDate;
-
-    /**
-     * The time the connection ended, or null if the end time is not known or
-     * the connection is still running.
-     */
-    private Date endDate;
 
     /**
      * Returns the identifier of the connection associated with this connection
@@ -177,111 +151,6 @@ public class ConnectionRecordModel {
      */
     public void setSharingProfileName(String sharingProfileName) {
         this.sharingProfileName = sharingProfileName;
-    }
-
-    /**
-     * Returns the database ID of the user associated with this connection
-     * record.
-     * 
-     * @return
-     *     The database ID of the user associated with this connection record.
-     */
-    public Integer getUserID() {
-        return userID;
-    }
-
-    /**
-     * Sets the database ID of the user associated with this connection record.
-     *
-     * @param userID
-     *     The database ID of the user to associate with this connection
-     *     record.
-     */
-    public void setUserID(Integer userID) {
-        this.userID = userID;
-    }
-
-    /**
-     * Returns the username of the user associated with this connection record.
-     * 
-     * @return
-     *     The username of the user associated with this connection record.
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * Sets the username of the user associated with this connection record.
-     *
-     * @param username
-     *     The username of the user to associate with this connection record.
-     */
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    /**
-     * Returns the remote host associated with this connection record.
-     *
-     * @return
-     *     The remote host associated with this connection record.
-     */
-    public String getRemoteHost() {
-        return remoteHost;
-    }
-
-    /**
-     * Sets the remote host associated with this connection record.
-     *
-     * @param remoteHost
-     *     The remote host to associate with this connection record.
-     */
-    public void setRemoteHost(String remoteHost) {
-        this.remoteHost = remoteHost;
-    }
-
-    /**
-     * Returns the date that the associated connection was established.
-     *
-     * @return
-     *     The date the associated connection was established.
-     */
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    /**
-     * Sets the date that the associated connection was established.
-     *
-     * @param startDate
-     *     The date that the associated connection was established.
-     */
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    /**
-     * Returns the date that the associated connection ended, or null if no
-     * end date was recorded. The lack of an end date does not necessarily
-     * mean that the connection is still active.
-     *
-     * @return
-     *     The date the associated connection ended, or null if no end date was
-     *     recorded.
-     */
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    /**
-     * Sets the date that the associated connection ended.
-     *
-     * @param endDate
-     *     The date that the associated connection ended.
-     */
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
     }
 
 }

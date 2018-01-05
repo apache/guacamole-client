@@ -115,6 +115,12 @@ public class UserModel extends ObjectModel {
     private String organizationalRole;
 
     /**
+     * The date and time that this user was last active, or null if this user
+     * has never logged in.
+     */
+    private Timestamp lastActive;
+
+    /**
      * Creates a new, empty user.
      */
     public UserModel() {
@@ -463,6 +469,32 @@ public class UserModel extends ObjectModel {
      */
     public void setOrganizationalRole(String organizationalRole) {
         this.organizationalRole = organizationalRole;
+    }
+
+    /**
+     * Returns the date and time that this user was last active, or null if
+     * this user has never logged in.
+     *
+     * @return
+     *     The date and time that this user was last active, or null if this
+     *     user has never logged in.
+     */
+    public Timestamp getLastActive() {
+        return lastActive;
+    }
+
+    /**
+     * Sets the date and time that this user was last active. This value is
+     * expected to be set automatically via queries, derived from user history
+     * records. It does NOT correspond to an actual column, and values set
+     * manually through invoking this function will not persist.
+     *
+     * @param lastActive
+     *     The date and time that this user was last active, or null if this
+     *     user has never logged in.
+     */
+    public void setLastActive(Timestamp lastActive) {
+        this.lastActive = lastActive;
     }
 
 }

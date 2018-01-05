@@ -17,18 +17,18 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.jdbc.connection;
+package org.apache.guacamole.auth.jdbc.base;
 
 import org.apache.guacamole.net.auth.ActivityRecordSet;
 
 /**
- * A sort predicate which species the property to use when sorting connection
+ * A sort predicate which species the property to use when sorting activity
  * records, along with the sort order.
  */
-public class ConnectionRecordSortPredicate {
+public class ActivityRecordSortPredicate {
 
     /**
-     * The property to use when sorting ConnectionRecords.
+     * The property to use when sorting ActivityRecords.
      */
     private final ActivityRecordSet.SortableProperty property;
 
@@ -38,26 +38,26 @@ public class ConnectionRecordSortPredicate {
     private final boolean descending;
     
     /**
-     * Creates a new ConnectionRecordSortPredicate with the given sort property 
+     * Creates a new ActivityRecordSortPredicate with the given sort property
      * and sort order.
      * 
      * @param property 
-     *     The property to use when sorting ConnectionRecords.
+     *     The property to use when sorting ActivityRecords.
      * 
      * @param descending 
      *     Whether the sort order is descending (true) or ascending (false).
      */
-    public ConnectionRecordSortPredicate(ActivityRecordSet.SortableProperty property,
+    public ActivityRecordSortPredicate(ActivityRecordSet.SortableProperty property,
             boolean descending) {
         this.property   = property;
         this.descending = descending;
     }
     
     /**
-     * Returns the property that should be used when sorting ConnectionRecords.
+     * Returns the property that should be used when sorting ActivityRecords.
      *
      * @return
-     *     The property that should be used when sorting ConnectionRecords.
+     *     The property that should be used when sorting ActivityRecords.
      */
     public ActivityRecordSet.SortableProperty getProperty() {
         return property;

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.jdbc.connection;
+package org.apache.guacamole.auth.jdbc.base;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -25,11 +25,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * A search term for querying historical connection records. This will contain
- * a the search term in string form and, if that string appears to be a date. a
- * corresponding date range.
+ * A search term for querying historical records of arbitrary activities. This
+ * will contain a the search term in string form and, if that string appears to
+ * be a date. a corresponding date range.
  */
-public class ConnectionRecordSearchTerm {
+public class ActivityRecordSearchTerm {
     
     /**
      * A pattern that can match a year, year and month, or year and month and
@@ -180,7 +180,7 @@ public class ConnectionRecordSearchTerm {
     }
 
     /**
-     * Creates a new ConnectionRecordSearchTerm representing the given string.
+     * Creates a new ActivityRecordSearchTerm representing the given string.
      * If the given string appears to be a date, the start and end dates of the
      * implied date range will be automatically determined and made available
      * via getStartDate() and getEndDate() respectively.
@@ -188,7 +188,7 @@ public class ConnectionRecordSearchTerm {
      * @param term
      *     The string that should be searched for.
      */
-    public ConnectionRecordSearchTerm(String term) {
+    public ActivityRecordSearchTerm(String term) {
 
         // Search terms absolutely must not be null
         if (term == null)
@@ -281,10 +281,10 @@ public class ConnectionRecordSearchTerm {
     @Override
     public boolean equals(Object obj) {
 
-        if (obj == null || !(obj instanceof ConnectionRecordSearchTerm))
+        if (obj == null || !(obj instanceof ActivityRecordSearchTerm))
             return false;
 
-        return ((ConnectionRecordSearchTerm) obj).getTerm().equals(getTerm());
+        return ((ActivityRecordSearchTerm) obj).getTerm().equals(getTerm());
 
     }
 

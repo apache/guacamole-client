@@ -76,6 +76,7 @@ import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterMapp
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileService;
 import org.apache.guacamole.auth.jdbc.tunnel.RestrictedGuacamoleTunnelService;
 import org.apache.guacamole.auth.jdbc.user.PasswordRecordMapper;
+import org.apache.guacamole.auth.jdbc.user.UserRecordMapper;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
 
@@ -126,6 +127,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         addMapperClass(SharingProfilePermissionMapper.class);
         addMapperClass(UserMapper.class);
         addMapperClass(UserPermissionMapper.class);
+        addMapperClass(UserRecordMapper.class);
         
         // Bind core implementations of guacamole-ext classes
         bind(ActiveConnectionDirectory.class);
