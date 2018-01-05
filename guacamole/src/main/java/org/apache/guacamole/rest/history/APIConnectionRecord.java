@@ -19,13 +19,12 @@
 
 package org.apache.guacamole.rest.history;
 
-import java.util.Date;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 
 /**
  * A connection record which may be exposed through the REST endpoints.
  */
-public class APIConnectionRecord {
+public class APIConnectionRecord extends APIActivityRecord {
 
     /**
      * The identifier of the connection associated with this record.
@@ -48,32 +47,6 @@ public class APIConnectionRecord {
     private final String sharingProfileName;
 
     /**
-     * The date and time the connection began.
-     */
-    private final Date startDate;
-
-    /**
-     * The date and time the connection ended, or null if the connection is
-     * still running or if the end time is unknown.
-     */
-    private final Date endDate;
-
-    /**
-     * The host from which the connection originated, if known.
-     */
-    private final String remoteHost;
-
-    /**
-     * The name of the user who used or is using the connection.
-     */
-    private final String username;
-
-    /**
-     * Whether the connection is currently active.
-     */
-    private final boolean active;
-
-    /**
      * Creates a new APIConnectionRecord, copying the data from the given
      * record.
      *
@@ -81,15 +54,11 @@ public class APIConnectionRecord {
      *     The record to copy data from.
      */
     public APIConnectionRecord(ConnectionRecord record) {
+        super(record);
         this.connectionIdentifier     = record.getConnectionIdentifier();
         this.connectionName           = record.getConnectionName();
         this.sharingProfileIdentifier = record.getSharingProfileIdentifier();
         this.sharingProfileName       = record.getSharingProfileName();
-        this.startDate                = record.getStartDate();
-        this.endDate                  = record.getEndDate();
-        this.remoteHost               = record.getRemoteHost();
-        this.username                 = record.getUsername();
-        this.active                   = record.isActive();
     }
 
     /**
@@ -137,60 +106,6 @@ public class APIConnectionRecord {
      */
     public String getSharingProfileName() {
         return sharingProfileName;
-    }
-
-    /**
-     * Returns the date and time the connection began.
-     *
-     * @return
-     *     The date and time the connection began.
-     */
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    /**
-     * Returns the date and time the connection ended, if applicable.
-     *
-     * @return
-     *     The date and time the connection ended, or null if the connection is
-     *     still running or if the end time is unknown.
-     */
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    /**
-     * Returns the remote host from which this connection originated.
-     *
-     * @return
-     *     The remote host from which this connection originated.
-     */
-    public String getRemoteHost() {
-        return remoteHost;
-    }
-
-    /**
-     * Returns the name of the user who used or is using the connection at the
-     * times given by this connection record.
-     *
-     * @return
-     *     The name of the user who used or is using the associated connection.
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * Returns whether the connection associated with this record is still
-     * active.
-     *
-     * @return
-     *     true if the connection associated with this record is still active,
-     *     false otherwise.
-     */
-    public boolean isActive() {
-        return active;
     }
 
 }

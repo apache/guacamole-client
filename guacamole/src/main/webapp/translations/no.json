@@ -612,9 +612,13 @@
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
         "HELP_USERS" : "Klikk på en bruker under for å administrere den brukeren. Avhengig av din tilgang kan brukere legges til, slettes og passordet kan endres.",
 
-        "SECTION_HEADER_USERS"       : "Brukere"
+        "SECTION_HEADER_USERS"       : "Brukere",
+
+        "TABLE_HEADER_USERNAME" : "Brukernavn"
 
     },
     

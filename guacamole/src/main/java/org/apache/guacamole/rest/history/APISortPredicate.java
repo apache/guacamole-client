@@ -25,10 +25,10 @@ import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.rest.APIException;
 
 /**
- * A sort predicate which species the property to use when sorting connection
+ * A sort predicate which species the property to use when sorting activity
  * records, along with the sort order.
  */
-public class APIConnectionRecordSortPredicate {
+public class APISortPredicate {
 
     /**
      * The prefix which will be included before the name of a sortable property
@@ -43,8 +43,8 @@ public class APIConnectionRecordSortPredicate {
     public enum SortableProperty {
 
         /**
-         * The date that the connection associated with the connection record
-         * began (connected).
+         * The date that the activity associated with the activity record
+         * began.
          */
         startDate(ActivityRecordSet.SortableProperty.START_DATE);
 
@@ -70,7 +70,7 @@ public class APIConnectionRecordSortPredicate {
     }
 
     /**
-     * The property to use when sorting ConnectionRecords.
+     * The property to use when sorting ActivityRecords.
      */
     private ActivityRecordSet.SortableProperty property;
 
@@ -93,7 +93,7 @@ public class APIConnectionRecordSortPredicate {
      * @throws APIException
      *     If the provided sort predicate string is invalid.
      */
-    public APIConnectionRecordSortPredicate(String value)
+    public APISortPredicate(String value)
         throws APIException {
 
         // Parse whether sort order is descending
@@ -124,7 +124,7 @@ public class APIConnectionRecordSortPredicate {
      * @return
      *     The ActivityRecordSet.SortableProperty which refers to the same
      *     property as the string originally provided when this
-     *     APIConnectionRecordSortPredicate was created.
+     *     APISortPredicate was created.
      */
     public ActivityRecordSet.SortableProperty getProperty() {
         return property;

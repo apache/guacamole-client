@@ -20,6 +20,7 @@
 package org.apache.guacamole.rest.connection;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -75,7 +76,13 @@ public class APIConnection {
      * The count of currently active connections using this connection.
      */
     private int activeConnections;
-    
+
+    /**
+     * The date and time that this connection was last used, or null if this
+     * connection has never been used or this information is unavailable.
+     */
+    private Date lastActive;
+
     /**
      * Create an empty APIConnection.
      */
@@ -97,6 +104,7 @@ public class APIConnection {
         this.identifier = connection.getIdentifier();
         this.parentIdentifier = connection.getParentIdentifier();
         this.activeConnections = connection.getActiveConnections();
+        this.lastActive = connection.getLastActive();
         
         // Set protocol from configuration
         GuacamoleConfiguration configuration = connection.getConfiguration();
@@ -255,6 +263,29 @@ public class APIConnection {
      */
     public void setSharingProfiles(Collection<APISharingProfile> sharingProfiles) {
         this.sharingProfiles = sharingProfiles;
+    }
+
+    /**
+     * Returns the date and time that this connection was last used, or null if
+     * this connection has never been used or this information is unavailable.
+     *
+     * @return
+     *     The date and time that this connection was last used, or null if this
+     *     connection has never been used or this information is unavailable.
+     */
+    public Date getLastActive() {
+        return lastActive;
+    }
+
+    /**
+     * Sets the date and time that this connection was last used.
+     *
+     * @param lastActive
+     *     The date and time that this connection was last used, or null if this
+     *     connection has never been used or this information is unavailable.
+     */
+    public void setLastActive(Date lastActive) {
+        this.lastActive = lastActive;
     }
 
 }

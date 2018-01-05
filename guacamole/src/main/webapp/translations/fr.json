@@ -601,9 +601,13 @@
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
         "HELP_USERS" : "Cliquer ou appuyer sur un utilisateur en dessous pour le gérer. Selon vos permissions, les utilisateurs peuvent être ajoutés, supprimés, leur mot de passe changé.",
 
-        "SECTION_HEADER_USERS"       : "Utilisateur"
+        "SECTION_HEADER_USERS"       : "Utilisateur",
+
+        "TABLE_HEADER_USERNAME" : "Identifiant"
 
     },
     

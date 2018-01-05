@@ -36,9 +36,11 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
             // Required types
             var ManageableUser  = $injector.get('ManageableUser');
             var PermissionSet   = $injector.get('PermissionSet');
+            var SortOrder       = $injector.get('SortOrder');
 
             // Required services
             var $location              = $injector.get('$location');
+            var $translate             = $injector.get('$translate');
             var authenticationService  = $injector.get('authenticationService');
             var dataSourceService      = $injector.get('dataSourceService');
             var guacNotification       = $injector.get('guacNotification');
@@ -98,8 +100,36 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
              * @type String[]
              */
             $scope.filteredUserProperties = [
+                'user.lastActive',
                 'user.username'
             ];
+
+            /**
+             * The date format for use for the last active date.
+             *
+             * @type String
+             */
+            $scope.dateFormat = null;
+
+            /**
+             * SortOrder instance which stores the sort order of the listed
+             * users.
+             *
+             * @type SortOrder
+             */
+            $scope.order = new SortOrder([
+                'user.username',
+                '-user.lastActive'
+            ]);
+
+            // Get session date format
+            $translate('SETTINGS_USERS.FORMAT_DATE')
+            .then(function dateFormatReceived(retrievedDateFormat) {
+
+                // Store received date format
+                $scope.dateFormat = retrievedDateFormat;
+
+            });
 
             /**
              * Returns whether critical data has completed being loaded.
@@ -110,7 +140,8 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
              */
             $scope.isLoaded = function isLoaded() {
 
-                return $scope.manageableUsers !== null
+                return $scope.dateFormat      !== null
+                    && $scope.manageableUsers !== null
                     && $scope.permissions     !== null;
 
             };
