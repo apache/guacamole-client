@@ -73,14 +73,21 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         ALT_KEYS    = {0xFFE9 : true, 0xFFEA : true, 0xFE03 : true,
                        0xFFE7 : true, 0xFFE8 : true},
         CTRL_KEYS   = {0xFFE3 : true, 0xFFE4 : true},
-        END_KEYS    = {0xFF57 : true, 0xFFB1 : true},
         MENU_KEYS   = angular.extend({}, SHIFT_KEYS, ALT_KEYS, CTRL_KEYS);
+
+    /**
+     * Keysym for detecting any END key presses, for the purpose of passing through
+     * the Ctrl-Alt-Del sequence to a remote system.
+     */
+    END_KEYS = {0xFF57 : true, 0xFFB1 : true},
 
     /**
      * Keysym for sending the DELETE key when the Ctrl-Alt-End hotkey
      * combo is pressed.
+     *
+     * @type Number
      */
-    var DEL_KEY     = 0xFFFF;
+    var DEL_KEY = 0xFFFF;
 
     /**
      * All client error codes handled and passed off for translation. Any error
@@ -539,8 +546,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             }
         }
 
-        // If only Ctrl-Alt-End is pressed, and we have a one keysym from each
-        // group, and one key is being released, send Ctrl-Alt-Delete.
+        // If one of the End keys is pressed, and we have a one keysym from each
+        // of Ctrl and Alt groups, send Ctrl-Alt-Delete.
         if (END_KEYS[keysym] &&
             !_.isEmpty(_.pick(ALT_KEYS, currentKeysPressedKeys)) &&
             !_.isEmpty(_.pick(CTRL_KEYS, currentKeysPressedKeys))
@@ -556,8 +563,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Update pressed keys as they are released, synchronizing the clipboard
     // with any data that appears to have come from those key presses
     $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
-
-        var currentKeysPressedKeys = Object.keys(keysCurrentlyPressed);
 
         // Sync local clipboard with any clipboard data received while this
         // key was pressed (if any) as long as the menu is not open
