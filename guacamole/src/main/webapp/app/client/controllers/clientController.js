@@ -31,7 +31,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     // Required services
     var $location             = $injector.get('$location');
-    var $rootScope            = $injector.get('$rootScope');
     var authenticationService = $injector.get('authenticationService');
     var clipboardService      = $injector.get('clipboardService');
     var guacClientManager     = $injector.get('guacClientManager');
@@ -79,7 +78,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * Keysym for detecting any END key presses, for the purpose of passing through
      * the Ctrl-Alt-Del sequence to a remote system.
      */
-    END_KEYS = {0xFF57 : true, 0xFFB1 : true},
+    var END_KEYS = {0xFF57 : true, 0xFFB1 : true};
 
     /**
      * Keysym for sending the DELETE key when the Ctrl-Alt-End hotkey
@@ -555,7 +554,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
                 event.preventDefault();
                 delete keysCurrentlyPressed[keysym];
                 substituteKeysPressed[keysym] = DEL_KEY;
-                $rootScope.$broadcast('guacSyntheticKeydown', DEL_KEY);
+                $scope.$broadcast('guacSyntheticKeydown', DEL_KEY);
         }
 
     });
@@ -574,7 +573,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         if (substituteKeysPressed[keysym]) {
             event.preventDefault();
             delete substituteKeysPressed[keysym];
-            $rootScope.$broadcast('guacSyntheticKeyup', substituteKeysPressed[keysym]);
+            $scope.$broadcast('guacSyntheticKeyup', substituteKeysPressed[keysym]);
         }
 
         // Mark key as released
