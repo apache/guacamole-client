@@ -114,8 +114,14 @@ angular.module('rest').factory('UserCredentials', ['$injector', function defineU
      */
     UserCredentials.getLink = function getLink(userCredentials) {
 
+        // Work-around for IE missing window.location.origin
+        if (!$window.location.origin)
+            var linkOrigin = $window.location.protocol + '//' + $window.location.hostname + ($window.location.port ? (':' + $window.location.port) : '');
+        else
+            var linkOrigin = $window.location.origin;
+
         // Build base link
-        var link = $window.location.origin
+        var link = linkOrigin
                  + $window.location.pathname
                  + '#/';
 
