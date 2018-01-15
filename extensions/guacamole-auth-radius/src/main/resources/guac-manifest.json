@@ -17,10 +17,6 @@
         "radius.min.js"
     ],
 
-    "css" : [
-        "radius.min.css"
-    ],
-
     "resources" : {
         "templates/radiusChallengeResponseField.html" : "text/html"
     }

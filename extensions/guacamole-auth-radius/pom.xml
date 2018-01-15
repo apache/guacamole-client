@@ -88,18 +88,6 @@
                             <webappSourceDir>${basedir}/src/main/resources</webappSourceDir>
                             <webappTargetDir>${project.build.directory}/classes</webappTargetDir>
 
-                            <cssSourceDir>/</cssSourceDir>
-                            <cssTargetDir>/</cssTargetDir>
-                            <cssFinalFile>radius.css</cssFinalFile>
-
-                            <cssSourceFiles>
-                                <cssSourceFile>license.txt</cssSourceFile>
-                            </cssSourceFiles>
-
-                            <cssSourceIncludes>
-                                <cssSourceInclude>**/*.css</cssSourceInclude>
-                            </cssSourceIncludes>
-
                             <jsSourceDir>/</jsSourceDir>
                             <jsTargetDir>/</jsTargetDir>
                             <jsFinalFile>radius.js</jsFinalFile>
