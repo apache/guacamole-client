@@ -274,12 +274,12 @@ public class UserService {
      *     If an error occurs while querying the user DNs, or if the username
      *     attribute property cannot be parsed within guacamole.properties.
      */
-    public List<String> getUserDNs(LdapConnection ldapConnection,
+    public List<Dn> getUserDNs(LdapConnection ldapConnection,
             String username) throws GuacamoleException {
 
         try {
 
-            List<String> userDNs = new ArrayList<String>();
+            List<Dn> userDNs = new ArrayList<Dn>();
 
             // Find all Guacamole users underneath base DN and matching the
             // specified username
@@ -304,7 +304,7 @@ public class UserService {
 
                 if (response instanceof SearchResultEntry) {
                     Entry entry = ((SearchResultEntry)response).getEntry();
-                    userDNs.add(entry.getDn().toString());
+                    userDNs.add(entry.getDn());
                 }
             }
 

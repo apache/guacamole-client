@@ -115,7 +115,7 @@ public class AuthenticationProviderService {
             try {
 
                 // Retrieve all DNs associated with the given username
-                List<String> userDNs = userService.getUserDNs(searchConnection, username);
+                List<Dn> userDNs = userService.getUserDNs(searchConnection, username);
                 if (userDNs.isEmpty())
                     return null;
 
@@ -126,13 +126,8 @@ public class AuthenticationProviderService {
                 }
 
                 // Return the single possible DN
-                return new Dn(userDNs.get(0));
+                return userDNs.get(0);
 
-            }
-
-            catch (LdapInvalidDnException e) {
-                logger.error("Invalid DN found for user {}", username);
-                return null;
             }
 
             // Always disconnect
