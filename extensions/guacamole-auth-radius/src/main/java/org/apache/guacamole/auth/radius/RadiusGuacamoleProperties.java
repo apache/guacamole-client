@@ -88,17 +88,17 @@ public class RadiusGuacamoleProperties {
     };
 
     /**
-     * The number of retries when attempting a RADIUS packet transaction.
+     * The maximum number of retries when attempting a RADIUS packet transaction.
      */
-    public static final IntegerGuacamoleProperty RADIUS_RETRIES = new IntegerGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty RADIUS_MAX_RETRIES = new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "radius-retries"; }
+        public String getName() { return "radius-max-retries"; }
 
     };
 
     /**
-     * The network timeout when attempting a RADIUS packet transaction.
+     * The network timeout, in seconds, when attempting a RADIUS packet transaction.
      */
     public static final IntegerGuacamoleProperty RADIUS_TIMEOUT = new IntegerGuacamoleProperty() {
 

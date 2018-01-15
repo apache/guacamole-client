@@ -41,21 +41,28 @@ public class RadiusChallengeResponseField extends Field {
     /**
      * The message the RADIUS server sent back in the challenge.
      */
-    private final String replyMsg;
+    private final String challenge;
 
     /**
-     * Initialize the field with the reply message and the state.
+     * Initialize the field with the challenge sent back by the RADIUS server.
+     *
+     * @param challenge
+     *     The challenge message sent back by the RADIUS server.
      */
-    public RadiusChallengeResponseField(String replyMsg) {
+    public RadiusChallengeResponseField(String challenge) {
         super(PARAMETER_NAME, RADIUS_FIELD_TYPE);
-        this.replyMsg = replyMsg;
+        this.challenge = challenge;
 
     }
 
     /**
-     * Get the value of the replyMsg field.
+     * Get the challenge sent by the RADIUS server.
+     *
+     * @return
+     *     A String that indicates the challenge returned
+     *     by the RADIUS server.
      */
-    public String getReplyMsg() {
-        return replyMsg;
+    public String getChallenge() {
+        return challenge;
     }
 }

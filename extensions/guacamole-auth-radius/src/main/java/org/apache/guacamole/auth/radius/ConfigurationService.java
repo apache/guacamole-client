@@ -53,8 +53,9 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the authentication port of the RADIUS server configured with
-     * guacamole.properties.
+     * Returns the UDP port that will be used to communicate authentication
+     * and authorization information to the RADIUS server, as configured in
+     * guacamole.properties.  By default this will be 1812.
      *
      * @return
      *     The authentication port of the RADIUS server, as configured with
@@ -71,8 +72,9 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the accounting port of the RADIUS server configured with
-     * guacamole.properties. 
+     * Returns the UDP port that will be used to communicate accounting
+     * information to the RADIUS server, as configured in
+     * guacamole.properties.  The default is 1813.
      *
      * @return
      *     The accouting port of the RADIUS server, as configured with
@@ -89,8 +91,9 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the shared secret of the RADIUS server configured with
-     * guacamole.properties. 
+     * Returns the shared secret used to communicate with the RADIUS server,
+     * as configured in guacamole.properties.  This must match the value
+     * in the RADIUS server configuration.
      *
      * @return
      *     The shared secret of the RADIUS server, as configured with
@@ -106,8 +109,11 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the authentication protocol of the RADIUS server
-     * from guacamole.properties.
+     * Returns the authentication protocol Guacamole should use when
+     * communicating with the RADIUS server, as configured in
+     * guacamole.properties.  This must match the configuration
+     * of the RADIUS server, so that the RADIUS server and Guacamole
+     * client are "speaking the same language."
      *
      * @return
      *     The authentication protocol of the RADIUS server, 
@@ -123,8 +129,8 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the number of retries for connecting to the RADIUS server
-     * from guacamole.properties.
+     * Returns the maximum number of retries for connecting to the RADIUS server
+     * from guacamole.properties.  The default number of retries is 5.
      *
      * @return
      *     The number of retries for connection to the RADIUS server,
@@ -133,19 +139,19 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public int getRadiusRetries() throws GuacamoleException {
+    public int getRadiusMaxRetries() throws GuacamoleException {
         return environment.getProperty(
-            RadiusGuacamoleProperties.RADIUS_RETRIES,
+            RadiusGuacamoleProperties.RADIUS_MAX_RETRIES,
             5
         );
     }
 
     /**
-     * Returns the timeout for connecting to the RADIUS server
-     * from guacamole.properties.
+     * Returns the timeout, in seconds, for connecting to the RADIUS server
+     * from guacamole.properties.  The default timeout is 60 seconds.
      *
      * @return
-     *     The timeout for connection to the RADIUS server,
+     *     The timeout, in seconds, for connection to the RADIUS server,
      *     from guacamole.properties.
      *
      * @throws GuacamoleException
@@ -159,8 +165,9 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the CA file for validating certificates for
-     * encrypted connections as specified in guacamole.properties
+     * Returns the CA file for validating certificates for encrypted
+     * connections to the RADIUS server, as configured in
+     * guacamole.properties.
      *
      * @return
      *     The file name for the CA file for validating
@@ -178,7 +185,8 @@ public class ConfigurationService {
     /**
      * Returns the key file for the client for creating encrypted
      * connections to RADIUS servers as specified in
-     * guacamole.properties.
+     * guacamole.properties.  By default a file called radius.pem
+     * is used.
      *
      * @return
      *     The file name for the client certificate/key pair
@@ -213,7 +221,8 @@ public class ConfigurationService {
     /**
      * Returns the type of store that the CA file represents
      * so that it can be correctly processed by the RADIUS
-     * library, as configured in guacamole.properties.
+     * library, as configured in guacamole.properties.  By
+     * default the pem type is used.
      *
      * @return
      *     The type of store that the CA file is encoded
@@ -248,7 +257,8 @@ public class ConfigurationService {
     /**
      * Returns the type of store that the key file represents
      * so that it can be correctly processed by the RADIUS
-     * library, as configured in guacamole.properties.
+     * library, as configured in guacamole.properties.  By
+     * default the pem type is used.
      *
      * @return
      *     The type of store that the key file is encoded
@@ -268,7 +278,9 @@ public class ConfigurationService {
      * Returns the boolean value of whether or not the
      * RADIUS library should trust all server certificates
      * or should validate them against known CA certificates,
-     * as configured in guacamole.properties.
+     * as configured in guacamole.properties.  By default
+     * this is false, indicating that server certificates
+     * must be validated against a known good CA.
      *
      * @return
      *     True if the RADIUS client should trust all

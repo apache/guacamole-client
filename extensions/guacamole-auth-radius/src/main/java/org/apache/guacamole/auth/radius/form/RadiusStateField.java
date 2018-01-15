@@ -45,7 +45,10 @@ public class RadiusStateField extends Field {
     private final String radiusState;
 
     /**
-     * Initialize the field with the reply message and the state.
+     * Initialize the field with the state returned by the RADIUS server.
+     *
+     * @param radiusState
+     *     The state returned by the RADIUS server.
      */
     public RadiusStateField(String radiusState) {
         super(PARAMETER_NAME, RADIUS_FIELD_TYPE);
@@ -53,6 +56,12 @@ public class RadiusStateField extends Field {
 
     }
 
+    /**
+     * Get the state provided by the RADIUS server.
+     *
+     * @return
+     *     The state provided by the RADIUS server.
+     */
     public String getRadiusState() {
         return radiusState;
     }

@@ -26,6 +26,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,11 +69,15 @@ public class RadiusConnectionService {
      * Creates a new instance of RadiusClient, configured with parameters
      * from guacamole.properties.
      *
+     * @return
+     *     A RadiusClient instance, configured with server, shared secret,
+     *     ports, and timeout, as configured in guacamole.properties.
+     *
      * @throws GuacamoleException
      *     If an error occurs while parsing guacamole.properties, or if the
      *     configuration of RadiusClient fails.
      */
-    private RadiusClient createRadiusConnection() {
+    private RadiusClient createRadiusConnection() throws GuacamoleException {
 
         // Create the RADIUS client with the configuration parameters
         try {
@@ -82,20 +87,14 @@ public class RadiusConnectionService {
                                             confService.getRadiusAcctPort(),
                                             confService.getRadiusTimeout());
         }
-        catch (GuacamoleException e) {
-            logger.error("Unable to initialize RADIUS client: {}", e.getMessage());
-            logger.debug("Failed to init RADIUS client.", e);
-        }
         catch (UnknownHostException e) {
-            logger.error("Unable to resolve host: {}", e.getMessage());
             logger.debug("Failed to resolve host.", e);
+            throw new GuacamoleServerException("Unable to resolve RADIUS server host.", e);
         }
         catch (IOException e) {
-            logger.error("Unable to communicate with host: {}", e.getMessage());
             logger.debug("Failed to communicate with host.", e);
+            throw new GuacamoleServerException("Failed to communicate with RADIUS server.", e);
         }
-
-        return null;
 
     }
 
@@ -103,10 +102,19 @@ public class RadiusConnectionService {
      * Creates a new instance of RadiusAuthentictor, configured with
      * parameters specified within guacamole.properties.
      *
+     * @param radiusClient
+     *     A RadiusClient instance that has been initialized to
+     *     communicate with a RADIUS server.
+     *
      * @return
      *     A new RadiusAuthenticator instance which has been configured
      *     with parameters from guacamole.properties, or null if
      *     configuration fails.
+     *
+     * @throws GuacamoleException
+     *     If the configuration cannot be read or the inner protocol is
+     *     not configured when the client is set up for a tunneled
+     *     RADIUS connection.
      */
     private RadiusAuthenticator setupRadiusAuthenticator(RadiusClient radiusClient)
             throws GuacamoleException {
@@ -168,10 +176,13 @@ public class RadiusConnectionService {
      *
      * @param username
      *     The username for the authentication
+     *
+     * @param secret
+     *     The secret, usually a password or challenge response, to send
+     *     to authenticate to the RADIUS server.
+     *
      * @param state
      *     The previous state of the RADIUS connection
-     * @param response
-     *     The response to the RADIUS challenge
      *
      * @return
      *     A RadiusPacket with the response of the server.
@@ -228,12 +239,12 @@ public class RadiusConnectionService {
 
             radAuth.setupRequest(radiusClient, radAcc);
             radAuth.processRequest(radAcc);
-            RadiusResponse reply = radiusClient.sendReceive(radAcc, confService.getRadiusRetries());
+            RadiusResponse reply = radiusClient.sendReceive(radAcc, confService.getRadiusMaxRetries());
 
             // We receive a Challenge not asking for user input, so silently process the challenge
             while((reply instanceof AccessChallenge) && (reply.findAttribute(Attr_ReplyMessage.TYPE) == null)) {
                 radAuth.processChallenge(radAcc, reply);
-                reply = radiusClient.sendReceive(radAcc, confService.getRadiusRetries());
+                reply = radiusClient.sendReceive(radAcc, confService.getRadiusMaxRetries());
             }
             return reply;
         }
@@ -252,6 +263,28 @@ public class RadiusConnectionService {
         }
     }
 
+    /**
+     * Send a challenge response to the RADIUS server by validating the input and
+     * then sending it along to the authenticate method.
+     *
+     * @param username
+     *     The username to send to the RADIUS server for authentication.
+     *
+     * @param response
+     *     The response phrase to send to the RADIUS server in response to the
+     *     challenge previously provided.
+     *
+     * @param state
+     *     The state data provided by the RADIUS server in order to continue
+     *     the RADIUS conversation.
+     *
+     * @return
+     *     A RadiusPacket containing the server's response to the authentication
+     *     attempt.
+     *
+     * @throws GuacamoleException
+     *     If an error is encountered trying to talk to the RADIUS server.
+     */
     public RadiusPacket sendChallengeResponse(String username, String response, String state)
             throws GuacamoleException {
 
