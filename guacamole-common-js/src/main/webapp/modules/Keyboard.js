@@ -66,6 +66,13 @@ Guacamole.Keyboard = function(element) {
     var quirks = {
 
         /**
+         * Whether keyup events are universally unreliable.
+         *
+         * @type {Boolean}
+         */
+        keyupUnreliable: false,
+
+        /**
          * Whether the Alt key is actually a modifier for typable keys and is
          * thus never used for keyboard shortcuts.
          *
@@ -79,8 +86,12 @@ Guacamole.Keyboard = function(element) {
     // available
     if (navigator && navigator.platform) {
 
+        // All keyup events are unreliable on iOS (sadly)
+        if (navigator.platform.match(/ipad|iphone|ipod/i))
+            quirks.keyupUnreliable = true;
+
         // The Alt key on Mac is never used for keyboard shortcuts
-        if (navigator.platform.match(/^mac/i))
+        else if (navigator.platform.match(/^mac/i))
             quirks.altIsTypableOnly = true;
 
     }
@@ -211,7 +222,7 @@ Guacamole.Keyboard = function(element) {
          *
          * @type {Boolean}
          */
-        this.keyupReliable = true;
+        this.keyupReliable = !quirks.keyupUnreliable;
 
         // DOM3 and keyCode are reliable sources if the corresponding key is
         // not a printable key
@@ -1021,7 +1032,7 @@ Guacamole.Keyboard = function(element) {
         } // end if keydown
 
         // Keyup event
-        else if (first instanceof KeyupEvent) {
+        else if (first instanceof KeyupEvent && !quirks.keyupUnreliable) {
 
             // Release specific key if known
             var keysym = first.keysym;
