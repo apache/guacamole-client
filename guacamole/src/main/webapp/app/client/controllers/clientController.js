@@ -551,10 +551,19 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             !_.isEmpty(_.pick(ALT_KEYS, currentKeysPressedKeys)) &&
             !_.isEmpty(_.pick(CTRL_KEYS, currentKeysPressedKeys))
         ) {
-                event.preventDefault();
-                delete keysCurrentlyPressed[keysym];
-                substituteKeysPressed[keysym] = DEL_KEY;
-                $scope.$broadcast('guacSyntheticKeydown', DEL_KEY);
+
+            // Don't send this event through to the client.
+            event.preventDefault();
+
+            // Remove the original key press
+            delete keysCurrentlyPressed[keysym];
+
+            // Record the substituted key press so that it can be
+            // properly dealt with later.
+            substituteKeysPressed[keysym] = DEL_KEY;
+
+            // Send through the delete key.
+            $scope.$broadcast('guacSyntheticKeydown', DEL_KEY);
         }
 
     });
