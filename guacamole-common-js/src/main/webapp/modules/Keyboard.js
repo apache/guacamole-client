@@ -853,6 +853,37 @@ Guacamole.Keyboard = function(element) {
     };
 
     /**
+     * Given the remote and local state of a particular key, resynchronizes the
+     * remote state of that key with the local state through pressing or
+     * releasing keysyms.
+     *
+     * @private
+     * @param {Boolean} remoteState
+     *     Whether the key is currently pressed remotely.
+     *
+     * @param {Boolean} localState
+     *     Whether the key is currently pressed remotely locally. If the state
+     *     of the key is not known, this may be undefined.
+     *
+     * @param {Number[]} keysyms
+     *     The keysyms which represent the key being updated.
+     */
+    var updateModifierState = function updateModifierState(remoteState, localState, keysyms) {
+
+        // Release all related keys if modifier is implicitly released
+        if (remoteState && localState === false) {
+            for (var i = 0; i < keysyms.length; i++) {
+                guac_keyboard.release(keysyms[i]);
+            }
+        }
+
+        // Press if modifier is implicitly pressed
+        else if (!remoteState && localState)
+            guac_keyboard.press(keysyms[0]);
+
+    };
+
+    /**
      * Given a keyboard event, updates the local modifier state and remote
      * key state based on the modifier flags within the event. This function
      * pays no attention to keycodes.
@@ -861,41 +892,41 @@ Guacamole.Keyboard = function(element) {
      * @param {KeyboardEvent} e
      *     The keyboard event containing the flags to update.
      */
-    var update_modifier_state = function update_modifier_state(e) {
+    var syncModifierStates = function syncModifierStates(e) {
 
         // Get state
         var state = Guacamole.Keyboard.ModifierState.fromKeyboardEvent(e);
 
-        // Release alt if implicitly released
-        if (guac_keyboard.modifiers.alt && state.alt === false) {
-            guac_keyboard.release(0xFFE9); // Left alt
-            guac_keyboard.release(0xFFEA); // Right alt
-            guac_keyboard.release(0xFE03); // AltGr
-        }
+        // Resync state of alt
+        updateModifierState(guac_keyboard.modifiers.alt, state.alt, [
+            0xFFE9, // Left alt
+            0xFFEA, // Right alt
+            0xFE03  // AltGr
+        ]);
 
-        // Release shift if implicitly released
-        if (guac_keyboard.modifiers.shift && state.shift === false) {
-            guac_keyboard.release(0xFFE1); // Left shift
-            guac_keyboard.release(0xFFE2); // Right shift
-        }
+        // Resync state of shift
+        updateModifierState(guac_keyboard.modifiers.shift, state.shift, [
+            0xFFE1, // Left shift
+            0xFFE2  // Right shift
+        ]);
 
-        // Release ctrl if implicitly released
-        if (guac_keyboard.modifiers.ctrl && state.ctrl === false) {
-            guac_keyboard.release(0xFFE3); // Left ctrl 
-            guac_keyboard.release(0xFFE4); // Right ctrl 
-        }
+        // Resync state of ctrl
+        updateModifierState(guac_keyboard.modifiers.ctrl, state.ctrl, [
+            0xFFE3, // Left ctrl
+            0xFFE4  // Right ctrl
+        ]);
 
-        // Release meta if implicitly released
-        if (guac_keyboard.modifiers.meta && state.meta === false) {
-            guac_keyboard.release(0xFFE7); // Left meta 
-            guac_keyboard.release(0xFFE8); // Right meta 
-        }
+        // Resync state of meta
+        updateModifierState(guac_keyboard.modifiers.meta, state.meta, [
+            0xFFE7, // Left meta
+            0xFFE8  // Right meta
+        ]);
 
-        // Release hyper if implicitly released
-        if (guac_keyboard.modifiers.hyper && state.hyper === false) {
-            guac_keyboard.release(0xFFEB); // Left hyper
-            guac_keyboard.release(0xFFEC); // Right hyper
-        }
+        // Resync state of hyper
+        updateModifierState(guac_keyboard.modifiers.hyper, state.hyper, [
+            0xFFEB, // Left hyper
+            0xFFEC  // Right hyper
+        ]);
 
         // Update state
         guac_keyboard.modifiers = state;
@@ -1101,7 +1132,7 @@ Guacamole.Keyboard = function(element) {
         else if (e.which) keyCode = e.which;
 
         // Fix modifier states
-        update_modifier_state(e);
+        syncModifierStates(e);
 
         // Ignore (but do not prevent) the "composition" keycode sent by some
         // browsers when an IME is in use (see: http://lists.w3.org/Archives/Public/www-dom/2010JulSep/att-0182/keyCode-spec.html)
@@ -1129,7 +1160,7 @@ Guacamole.Keyboard = function(element) {
         else if (e.which) charCode = e.which;
 
         // Fix modifier states
-        update_modifier_state(e);
+        syncModifierStates(e);
 
         // Log event
         var keypressEvent = new KeypressEvent(charCode);
@@ -1154,7 +1185,7 @@ Guacamole.Keyboard = function(element) {
         else if (e.which) keyCode = e.which;
         
         // Fix modifier states
-        update_modifier_state(e);
+        syncModifierStates(e);
 
         // Log event, call for interpretation
         var keyupEvent = new KeyupEvent(keyCode, e.keyIdentifier, e.key, getEventLocation(e));
