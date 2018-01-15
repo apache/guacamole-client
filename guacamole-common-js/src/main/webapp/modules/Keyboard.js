@@ -100,7 +100,15 @@ Guacamole.Keyboard = function Keyboard(element) {
          *
          * @type {Boolean}
          */
-        altIsTypableOnly: false
+        altIsTypableOnly: false,
+
+        /**
+         * Whether we can rely on receiving a keyup event for the Caps Lock
+         * key.
+         *
+         * @type {Boolean}
+         */
+        capsLockKeyupUnreliable: false
 
     };
 
@@ -112,9 +120,12 @@ Guacamole.Keyboard = function Keyboard(element) {
         if (navigator.platform.match(/ipad|iphone|ipod/i))
             quirks.keyupUnreliable = true;
 
-        // The Alt key on Mac is never used for keyboard shortcuts
-        else if (navigator.platform.match(/^mac/i))
+        // The Alt key on Mac is never used for keyboard shortcuts, and the
+        // Caps Lock key never dispatches keyup events
+        else if (navigator.platform.match(/^mac/i)) {
             quirks.altIsTypableOnly = true;
+            quirks.capsLockKeyupUnreliable = true;
+        }
 
     }
 
@@ -258,6 +269,10 @@ Guacamole.Keyboard = function Keyboard(element) {
         // If a key is pressed while meta is held down, the keyup will
         // never be sent in Chrome (bug #108404)
         if (guac_keyboard.modifiers.meta && this.keysym !== 0xFFE7 && this.keysym !== 0xFFE8)
+            this.keyupReliable = false;
+
+        // We cannot rely on receiving keyup for Caps Lock on certain platforms
+        else if (this.keysym === 0xFFE5 && quirks.capsLockKeyupUnreliable)
             this.keyupReliable = false;
 
         // Determine whether default action for Alt+combinations must be prevented
