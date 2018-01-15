@@ -20,9 +20,6 @@
 package org.apache.guacamole.auth.radius.form;
 
 import org.apache.guacamole.form.Field;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The invisible field that stores the state of the RADIUS

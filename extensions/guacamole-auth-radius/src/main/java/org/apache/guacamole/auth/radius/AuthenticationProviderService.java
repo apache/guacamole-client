@@ -36,14 +36,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.jradius.dictionary.Attr_State;
 import net.jradius.dictionary.Attr_ReplyMessage;
-import net.jradius.exception.UnknownAttributeException;
 import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.AccessAccept;
 import net.jradius.packet.AccessChallenge;
 import net.jradius.packet.AccessReject;
-import net.jradius.packet.AccessRequest;
-import net.jradius.packet.AccessResponse;
-import net.jradius.packet.attribute.AttributeList;
 import net.jradius.packet.attribute.RadiusAttribute;
 
 /**
@@ -62,12 +58,6 @@ public class AuthenticationProviderService {
      */
     @Inject
     private RadiusConnectionService radiusService;
-
-    /**
-     * Service for retrieving RADIUS server configuration information.
-     */
-    @Inject
-    private ConfigurationService confService;
 
     /**
      * Provider for AuthenticatedUser objects.

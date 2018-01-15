@@ -20,8 +20,6 @@
 package org.apache.guacamole.auth.radius;
 
 import com.google.inject.Inject;
-import java.util.Collections;
-import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 
