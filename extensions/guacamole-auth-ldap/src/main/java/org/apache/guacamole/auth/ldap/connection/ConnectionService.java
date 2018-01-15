@@ -29,6 +29,7 @@ import org.apache.directory.api.ldap.model.cursor.CursorException;
 import org.apache.directory.api.ldap.model.cursor.SearchCursor;
 import org.apache.directory.api.ldap.model.entry.Attribute;
 import org.apache.directory.api.ldap.model.entry.Entry;
+import org.apache.directory.api.ldap.model.entry.Value;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.exception.LdapReferralException;
 import org.apache.directory.api.ldap.model.message.Response;
@@ -179,10 +180,9 @@ public class ConnectionService {
                 if (parameterAttribute != null) {
 
                     // For each parameter
-                    Iterator parameters = parameterAttribute.iterator();
-                    while (parameters.hasNext()) {
+                    for (Value<?> paramValue : parameterAttribute) {
 
-                        String parameter = (String)parameters.next();
+                        String parameter = paramValue.getString();
 
                         // Parse parameter
                         int equals = parameter.indexOf('=');
