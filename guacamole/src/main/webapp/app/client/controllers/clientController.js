@@ -64,7 +64,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     var MENU_DRAG_VERTICAL_TOLERANCE = 10;
 
-    /*
+    /**
      * In order to open the guacamole menu, we need to hit ctrl-alt-shift. There are
      * several possible keysysms for each key.
      */
@@ -73,6 +73,20 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
                        0xFFE7 : true, 0xFFE8 : true},
         CTRL_KEYS   = {0xFFE3 : true, 0xFFE4 : true},
         MENU_KEYS   = angular.extend({}, SHIFT_KEYS, ALT_KEYS, CTRL_KEYS);
+
+    /**
+     * Keysym for detecting any END key presses, for the purpose of passing through
+     * the Ctrl-Alt-Del sequence to a remote system.
+     */
+    var END_KEYS = {0xFF57 : true, 0xFFB1 : true};
+
+    /**
+     * Keysym for sending the DELETE key when the Ctrl-Alt-End hotkey
+     * combo is pressed.
+     *
+     * @type Number
+     */
+    var DEL_KEY = 0xFFFF;
 
     /**
      * All client error codes handled and passed off for translation. Any error
@@ -265,6 +279,15 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * @type Object.<Number, Boolean>
      */
     var keysCurrentlyPressed = {};
+
+    /**
+     * Map of all substituted key presses.  If one key is pressed in place of another
+     * the value of the substituted key is stored in an object with the keysym of
+     * the original key.
+     *
+     * @type Object.<Number, Number>
+     */
+    var substituteKeysPressed = {};
 
     /**
      * Map of all currently pressed keys (by keysym) to the clipboard contents
@@ -489,23 +512,23 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     };
 
-    // Track pressed keys, opening the Guacamole menu after Ctrl+Alt+Shift
+    // Track pressed keys, opening the Guacamole menu after Ctrl+Alt+Shift, or
+    // send Ctrl-Alt-Delete when Ctrl-Alt-End is pressed.
     $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
 
         // Record key as pressed
         keysCurrentlyPressed[keysym] = true;   
         
-        /* 
-         * If only menu keys are pressed, and we have one keysym from each group,
-         * and one of the keys is being released, show the menu. 
-         */
-        if(checkMenuModeActive()) {
-            var currentKeysPressedKeys = Object.keys(keysCurrentlyPressed);
+        var currentKeysPressedKeys = Object.keys(keysCurrentlyPressed);
+
+        // If only menu keys are pressed, and we have one keysym from each group,
+        // and one of the keys is being released, show the menu. 
+        if (checkMenuModeActive()) {
             
             // Check that there is a key pressed for each of the required key classes
-            if(!_.isEmpty(_.pick(SHIFT_KEYS, currentKeysPressedKeys)) &&
-               !_.isEmpty(_.pick(ALT_KEYS, currentKeysPressedKeys)) &&
-               !_.isEmpty(_.pick(CTRL_KEYS, currentKeysPressedKeys))
+            if (!_.isEmpty(_.pick(SHIFT_KEYS, currentKeysPressedKeys)) &&
+                !_.isEmpty(_.pick(ALT_KEYS, currentKeysPressedKeys)) &&
+                !_.isEmpty(_.pick(CTRL_KEYS, currentKeysPressedKeys))
             ) {
         
                 // Don't send this key event through to the client
@@ -522,6 +545,27 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             }
         }
 
+        // If one of the End keys is pressed, and we have a one keysym from each
+        // of Ctrl and Alt groups, send Ctrl-Alt-Delete.
+        if (END_KEYS[keysym] &&
+            !_.isEmpty(_.pick(ALT_KEYS, currentKeysPressedKeys)) &&
+            !_.isEmpty(_.pick(CTRL_KEYS, currentKeysPressedKeys))
+        ) {
+
+            // Don't send this event through to the client.
+            event.preventDefault();
+
+            // Remove the original key press
+            delete keysCurrentlyPressed[keysym];
+
+            // Record the substituted key press so that it can be
+            // properly dealt with later.
+            substituteKeysPressed[keysym] = DEL_KEY;
+
+            // Send through the delete key.
+            $scope.$broadcast('guacSyntheticKeydown', DEL_KEY);
+        }
+
     });
 
     // Update pressed keys as they are released, synchronizing the clipboard
@@ -534,9 +578,18 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         if (clipboardData && !$scope.menu.shown)
             clipboardService.setLocalClipboard(clipboardData);
 
+        // Deal with substitute key presses
+        if (substituteKeysPressed[keysym]) {
+            event.preventDefault();
+            delete substituteKeysPressed[keysym];
+            $scope.$broadcast('guacSyntheticKeyup', substituteKeysPressed[keysym]);
+        }
+
         // Mark key as released
-        delete clipboardDataFromKey[keysym];
-        delete keysCurrentlyPressed[keysym];
+        else {
+            delete clipboardDataFromKey[keysym];
+            delete keysCurrentlyPressed[keysym];
+        }
 
     });
 
