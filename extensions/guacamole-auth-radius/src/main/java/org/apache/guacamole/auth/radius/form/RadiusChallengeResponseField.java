@@ -20,9 +20,6 @@
 package org.apache.guacamole.auth.radius.form;
 
 import org.apache.guacamole.form.Field;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A form used to prompt the user for additional information when
