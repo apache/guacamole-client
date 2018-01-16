@@ -27,12 +27,11 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
-import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
+import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.GuacamoleProperty;
 import org.apache.guacamole.protocols.ProtocolInfo;
 import org.slf4j.Logger;
