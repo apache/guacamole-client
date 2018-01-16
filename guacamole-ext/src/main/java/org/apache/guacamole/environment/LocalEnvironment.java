@@ -31,6 +31,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
+import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.GuacamoleProperty;
 import org.apache.guacamole.protocols.ProtocolInfo;
 import org.slf4j.Logger;
@@ -73,6 +74,18 @@ public class LocalEnvironment implements Environment {
     private static final boolean DEFAULT_GUACD_SSL = false;
 
     /**
+     * A property that determines whether environment variables are evaluated
+     * to override properties specified in guacamole.properties.
+     */
+    private static final BooleanGuacamoleProperty ENABLE_ENVIRONMENT_PROPERTIES =
+        new BooleanGuacamoleProperty() {
+            @Override
+            public String getName() {
+                return "enable-environment-properties";
+            }
+        };
+
+    /**
      * All properties read from guacamole.properties.
      */
     private final Properties properties;
@@ -86,6 +99,11 @@ public class LocalEnvironment implements Environment {
      * The map of all available protocols.
      */
     private final Map<String, ProtocolInfo> availableProtocols;
+
+    /**
+     * Flag indicating whether environment variables can override properties.
+     */
+    private final boolean environmentPropertiesEnabled;
 
     /**
      * The Jackson parser for parsing JSON files.
@@ -141,6 +159,8 @@ public class LocalEnvironment implements Environment {
         // Read all protocols
         availableProtocols = readProtocols();
 
+        // Should environment variables override configuration properties?
+        environmentPropertiesEnabled = environmentPropertiesEnabled(properties);
     }
 
     /**
@@ -299,14 +319,74 @@ public class LocalEnvironment implements Environment {
 
     }
 
+    /**
+     * Checks for the presence of the {@link #ENABLE_ENVIRONMENT_PROPERTIES}
+     * property in the given properties collection.
+     *
+     * @param properties
+     *     The properties collection to check.
+     *
+     * @return
+     *     true if the property is present in the given properties collection
+     *     and its parsed value is true
+     *
+     * @throws GuacamoleException If the value specified for the property
+     *                            cannot be successfully parsed as a Boolean
+     *
+     */
+    private static boolean environmentPropertiesEnabled(Properties properties)
+            throws GuacamoleException {
+
+        final Boolean enabled = ENABLE_ENVIRONMENT_PROPERTIES.parseValue(
+                properties.getProperty(ENABLE_ENVIRONMENT_PROPERTIES.getName()));
+
+        return enabled != null && enabled;
+    }
+
     @Override
     public File getGuacamoleHome() {
         return guacHome;
     }
 
+    /**
+     * Gets the string value for a property name.
+     *
+     * The value may come from either the OS environment (if property override
+     * is enabled) or the Properties collection that was loaded from
+     * guacamole.properties. When checking the environment for the named
+     * property, the name is first transformed by converting all hyphens to
+     * underscores and converting the string to upper case letter, in accordance
+     * with common convention for environment strings.
+     *
+     * @param name
+     *     The name of the property value to retrieve.
+     *
+     * @return
+     *     The corresponding value for the property. If property override
+     *     is enabled and the value is found in the OS environment, the value
+     *     from the environment is returned. Otherwise, the value from
+     *     guacamole.properties, if any, is returned.
+     */
+    private String getPropertyValue(String name) {
+
+        // Check for corresponding environment variable if overrides enabled
+        if (environmentPropertiesEnabled) {
+
+            // Transform the name according to common convention
+            final String envName = name.replace('-', '_').toUpperCase();
+            final String envValue = System.getenv(envName);
+
+            if (envValue != null) {
+                return envValue;
+            }
+        }
+
+        return properties.getProperty(name);
+    }
+
     @Override
     public <Type> Type getProperty(GuacamoleProperty<Type> property) throws GuacamoleException {
-        return property.parseValue(properties.getProperty(property.getName()));
+        return property.parseValue(getPropertyValue(property.getName()));
     }
 
     @Override
