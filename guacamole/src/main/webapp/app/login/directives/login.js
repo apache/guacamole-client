@@ -66,7 +66,6 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         var Field = $injector.get('Field');
 
         // Required services
-        var $log                  = $injector.get('$log');
         var $route                = $injector.get('$route');
         var authenticationService = $injector.get('authenticationService');
 
