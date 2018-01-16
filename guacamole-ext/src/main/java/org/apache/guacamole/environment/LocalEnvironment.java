@@ -78,11 +78,11 @@ public class LocalEnvironment implements Environment {
      * A property that determines whether environment variables are evaluated
      * to override properties specified in guacamole.properties.
      */
-    private static final BooleanGuacamoleProperty ENVIRONMENT_PROPERTY_OVERRIDE =
+    private static final BooleanGuacamoleProperty ENABLE_ENVIRONMENT_PROPERTIES =
         new BooleanGuacamoleProperty() {
             @Override
             public String getName() {
-                return "enable-environment-overrides";
+                return "enable-environment-properties";
             }
         };
 
@@ -104,7 +104,7 @@ public class LocalEnvironment implements Environment {
     /**
      * Flag indicating whether environment variables can override properties.
      */
-    private final boolean environmentPropertyOverride;
+    private final boolean environmentPropertiesEnabled;
 
     /**
      * The Jackson parser for parsing JSON files.
@@ -161,7 +161,7 @@ public class LocalEnvironment implements Environment {
         availableProtocols = readProtocols();
 
         // Should environment variables override configuration properties?
-        environmentPropertyOverride = propertyOverrideEnabled(properties);
+        environmentPropertiesEnabled = environmentPropertiesEnabled(properties);
     }
 
     /**
@@ -321,7 +321,7 @@ public class LocalEnvironment implements Environment {
     }
 
     /**
-     * Checks for the presence of the {@link #ENVIRONMENT_PROPERTY_OVERRIDE}
+     * Checks for the presence of the {@link #ENABLE_ENVIRONMENT_PROPERTIES}
      * property in the given properties collection.
      *
      * @param properties
@@ -335,13 +335,13 @@ public class LocalEnvironment implements Environment {
      *                            cannot be successfully parsed as a Boolean
      *
      */
-    private static boolean propertyOverrideEnabled(Properties properties)
+    private static boolean environmentPropertiesEnabled(Properties properties)
             throws GuacamoleException {
 
-        final Boolean enableOverrides = ENVIRONMENT_PROPERTY_OVERRIDE.parseValue(
-                properties.getProperty(ENVIRONMENT_PROPERTY_OVERRIDE.getName()));
+        final Boolean enabled = ENABLE_ENVIRONMENT_PROPERTIES.parseValue(
+                properties.getProperty(ENABLE_ENVIRONMENT_PROPERTIES.getName()));
 
-        return enableOverrides != null && enableOverrides;
+        return enabled != null && enabled;
     }
 
     @Override
@@ -371,7 +371,7 @@ public class LocalEnvironment implements Environment {
     private String getPropertyValue(String name) {
 
         // Check for corresponding environment variable if overrides enabled
-        if (environmentPropertyOverride) {
+        if (environmentPropertiesEnabled) {
 
             // Transform the name according to common convention
             final String envName = name.replace('-', '_').toUpperCase();
