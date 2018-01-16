@@ -25,15 +25,37 @@ var Guacamole = Guacamole || {};
  * which represent keys as their corresponding X11 keysym.
  * 
  * @constructor
- * @param {Element} element The Element to use to provide keyboard events.
+ * @param {Element|Document} [element]
+ *    The Element to use to provide keyboard events. If omitted, at least one
+ *    Element must be manually provided through the listenTo() function for
+ *    the Guacamole.Keyboard instance to have any effect.
  */
-Guacamole.Keyboard = function(element) {
+Guacamole.Keyboard = function Keyboard(element) {
 
     /**
      * Reference to this Guacamole.Keyboard.
      * @private
      */
     var guac_keyboard = this;
+
+    /**
+     * An integer value which uniquely identifies this Guacamole.Keyboard
+     * instance with respect to other Guacamole.Keyboard instances.
+     *
+     * @private
+     * @type {Number}
+     */
+    var guacKeyboardID = Guacamole.Keyboard._nextID++;
+
+    /**
+     * The name of the property which is added to event objects via markEvent()
+     * to note that they have already been handled by this Guacamole.Keyboard.
+     *
+     * @private
+     * @constant
+     * @type {String}
+     */
+    var EVENT_MARKER = '_GUAC_KEYBOARD_HANDLED_BY_' + guacKeyboardID;
 
     /**
      * Fired whenever the user presses a key with the element associated
@@ -459,22 +481,6 @@ Guacamole.Keyboard = function(element) {
         "Compose": [0xFF20],
         "Control": [0xFFE3, 0xFFE3, 0xFFE4],
         "ContextMenu": [0xFF67],
-        "DeadGrave": [0xFE50],
-        "DeadAcute": [0xFE51],
-        "DeadCircumflex": [0xFE52],
-        "DeadTilde": [0xFE53],
-        "DeadMacron": [0xFE54],
-        "DeadBreve": [0xFE55],
-        "DeadAboveDot": [0xFE56],
-        "DeadUmlaut": [0xFE57],
-        "DeadAboveRing": [0xFE58],
-        "DeadDoubleacute": [0xFE59],
-        "DeadCaron": [0xFE5A],
-        "DeadCedilla": [0xFE5B],
-        "DeadOgonek": [0xFE5C],
-        "DeadIota": [0xFE5D],
-        "DeadVoicedSound": [0xFE5E],
-        "DeadSemivoicedSound": [0xFE5F],
         "Delete": [0xFFFF],
         "Down": [0xFF54],
         "End": [0xFF57],
@@ -843,6 +849,30 @@ Guacamole.Keyboard = function(element) {
     };
 
     /**
+     * Presses and releases the keys necessary to type the given string of
+     * text.
+     *
+     * @param {String} str
+     *     The string to type.
+     */
+    this.type = function type(str) {
+
+        // Press/release the key corresponding to each character in the string
+        for (var i = 0; i < str.length; i++) {
+
+            // Determine keysym of current character
+            var codepoint = str.codePointAt ? str.codePointAt(i) : str.charCodeAt(i);
+            var keysym = keysym_from_charcode(codepoint);
+
+            // Press and release key for current character
+            guac_keyboard.press(keysym);
+            guac_keyboard.release(keysym);
+
+        }
+
+    };
+
+    /**
      * Resets the state of this keyboard, releasing all keys, and firing keyup
      * events for each released key.
      */
@@ -1126,80 +1156,195 @@ Guacamole.Keyboard = function(element) {
 
     };
 
-    // When key pressed
-    element.addEventListener("keydown", function(e) {
+    /**
+     * Attempts to mark the given Event as having been handled by this
+     * Guacamole.Keyboard. If the Event has already been marked as handled,
+     * false is returned.
+     *
+     * @param {Event} e
+     *     The Event to mark.
+     *
+     * @returns {Boolean}
+     *     true if the given Event was successfully marked, false if the given
+     *     Event was already marked.
+     */
+    var markEvent = function markEvent(e) {
 
-        // Only intercept if handler set
-        if (!guac_keyboard.onkeydown) return;
+        // Fail if event is already marked
+        if (e[EVENT_MARKER])
+            return false;
 
-        var keyCode;
-        if (window.event) keyCode = window.event.keyCode;
-        else if (e.which) keyCode = e.which;
+        // Mark event otherwise
+        e[EVENT_MARKER] = true;
+        return true;
 
-        // Fix modifier states
-        syncModifierStates(e);
+    };
 
-        // Ignore (but do not prevent) the "composition" keycode sent by some
-        // browsers when an IME is in use (see: http://lists.w3.org/Archives/Public/www-dom/2010JulSep/att-0182/keyCode-spec.html)
-        if (keyCode === 229)
-            return;
+    /**
+     * Attaches event listeners to the given Element, automatically translating
+     * received key, input, and composition events into simple keydown/keyup
+     * events signalled through this Guacamole.Keyboard's onkeydown and
+     * onkeyup handlers.
+     *
+     * @param {Element|Document} element
+     *     The Element to attach event listeners to for the sake of handling
+     *     key or input events.
+     */
+    this.listenTo = function listenTo(element) {
 
-        // Log event
-        var keydownEvent = new KeydownEvent(keyCode, e.keyIdentifier, e.key, getEventLocation(e));
-        eventLog.push(keydownEvent);
+        // When key pressed
+        element.addEventListener("keydown", function(e) {
 
-        // Interpret as many events as possible, prevent default if indicated
-        if (interpret_events())
+            // Only intercept if handler set
+            if (!guac_keyboard.onkeydown) return;
+
+            // Ignore events which have already been handled
+            if (!markEvent(e)) return;
+
+            var keyCode;
+            if (window.event) keyCode = window.event.keyCode;
+            else if (e.which) keyCode = e.which;
+
+            // Fix modifier states
+            syncModifierStates(e);
+
+            // Ignore (but do not prevent) the "composition" keycode sent by some
+            // browsers when an IME is in use (see: http://lists.w3.org/Archives/Public/www-dom/2010JulSep/att-0182/keyCode-spec.html)
+            if (keyCode === 229)
+                return;
+
+            // Log event
+            var keydownEvent = new KeydownEvent(keyCode, e.keyIdentifier, e.key, getEventLocation(e));
+            eventLog.push(keydownEvent);
+
+            // Interpret as many events as possible, prevent default if indicated
+            if (interpret_events())
+                e.preventDefault();
+
+        }, true);
+
+        // When key pressed
+        element.addEventListener("keypress", function(e) {
+
+            // Only intercept if handler set
+            if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
+
+            // Ignore events which have already been handled
+            if (!markEvent(e)) return;
+
+            var charCode;
+            if (window.event) charCode = window.event.keyCode;
+            else if (e.which) charCode = e.which;
+
+            // Fix modifier states
+            syncModifierStates(e);
+
+            // Log event
+            var keypressEvent = new KeypressEvent(charCode);
+            eventLog.push(keypressEvent);
+
+            // Interpret as many events as possible, prevent default if indicated
+            if (interpret_events())
+                e.preventDefault();
+
+        }, true);
+
+        // When key released
+        element.addEventListener("keyup", function(e) {
+
+            // Only intercept if handler set
+            if (!guac_keyboard.onkeyup) return;
+
+            // Ignore events which have already been handled
+            if (!markEvent(e)) return;
+
             e.preventDefault();
 
-    }, true);
+            var keyCode;
+            if (window.event) keyCode = window.event.keyCode;
+            else if (e.which) keyCode = e.which;
 
-    // When key pressed
-    element.addEventListener("keypress", function(e) {
+            // Fix modifier states
+            syncModifierStates(e);
 
-        // Only intercept if handler set
-        if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
+            // Log event, call for interpretation
+            var keyupEvent = new KeyupEvent(keyCode, e.keyIdentifier, e.key, getEventLocation(e));
+            eventLog.push(keyupEvent);
+            interpret_events();
 
-        var charCode;
-        if (window.event) charCode = window.event.keyCode;
-        else if (e.which) charCode = e.which;
+        }, true);
 
-        // Fix modifier states
-        syncModifierStates(e);
+        /**
+         * Handles the given "input" event, typing the data within the input text.
+         * If the event is complete (text is provided), handling of "compositionend"
+         * events is suspended, as such events may conflict with input events.
+         *
+         * @private
+         * @param {InputEvent} e
+         *     The "input" event to handle.
+         */
+        var handleInput = function handleInput(e) {
 
-        // Log event
-        var keypressEvent = new KeypressEvent(charCode);
-        eventLog.push(keypressEvent);
+            // Only intercept if handler set
+            if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
 
-        // Interpret as many events as possible, prevent default if indicated
-        if (interpret_events())
-            e.preventDefault();
+            // Ignore events which have already been handled
+            if (!markEvent(e)) return;
 
-    }, true);
+            // Type all content written
+            if (e.data && !e.isComposing) {
+                element.removeEventListener("compositionend", handleComposition, false);
+                guac_keyboard.type(e.data);
+            }
 
-    // When key released
-    element.addEventListener("keyup", function(e) {
+        };
 
-        // Only intercept if handler set
-        if (!guac_keyboard.onkeyup) return;
+        /**
+         * Handles the given "compositionend" event, typing the data within the
+         * composed text. If the event is complete (composed text is provided),
+         * handling of "input" events is suspended, as such events may conflict
+         * with composition events.
+         *
+         * @private
+         * @param {CompositionEvent} e
+         *     The "compositionend" event to handle.
+         */
+        var handleComposition = function handleComposition(e) {
 
-        e.preventDefault();
+            // Only intercept if handler set
+            if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
 
-        var keyCode;
-        if (window.event) keyCode = window.event.keyCode;
-        else if (e.which) keyCode = e.which;
-        
-        // Fix modifier states
-        syncModifierStates(e);
+            // Ignore events which have already been handled
+            if (!markEvent(e)) return;
 
-        // Log event, call for interpretation
-        var keyupEvent = new KeyupEvent(keyCode, e.keyIdentifier, e.key, getEventLocation(e));
-        eventLog.push(keyupEvent);
-        interpret_events();
+            // Type all content written
+            if (e.data) {
+                element.removeEventListener("input", handleInput, false);
+                guac_keyboard.type(e.data);
+            }
 
-    }, true);
+        };
+
+        // Automatically type text entered into the wrapped field
+        element.addEventListener("input", handleInput, false);
+        element.addEventListener("compositionend", handleComposition, false);
+
+    };
+
+    // Listen to given element, if any
+    if (element)
+        guac_keyboard.listenTo(element);
 
 };
+
+/**
+ * The unique numerical identifier to assign to the next Guacamole.Keyboard
+ * instance.
+ *
+ * @private
+ * @type {Number}
+ */
+Guacamole.Keyboard._nextID = 0;
 
 /**
  * The state of all supported keyboard modifiers.

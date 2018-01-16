@@ -89,6 +89,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
     clipboardContent.addEventListener('cut',   stopEventPropagation);
     clipboardContent.addEventListener('copy',  stopEventPropagation);
     clipboardContent.addEventListener('paste', stopEventPropagation);
+    clipboardContent.addEventListener('input', stopEventPropagation);
 
     /**
      * A stack of past node selection ranges. A range convering the nodes
