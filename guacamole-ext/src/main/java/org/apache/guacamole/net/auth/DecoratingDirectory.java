@@ -99,10 +99,11 @@ public abstract class DecoratingDirectory<ObjectType extends Identifiable>
 
         // Decorate only if object exists
         ObjectType object = super.get(identifier);
-        if (object == null)
-            return object;
+        if (object != null)
+            return decorate(object);
 
-        return decorate(object);
+        return null;
+
     }
 
     @Override
