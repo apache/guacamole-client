@@ -18,7 +18,8 @@
     ],
 
     "resources" : {
-        "templates/radiusChallengeResponseField.html" : "text/html"
+        "templates/radiusResponseField.html" : "text/html",
+        "templates/radiusStateField.html"    : "text/html"
     }
 
 }
