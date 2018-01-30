@@ -79,6 +79,12 @@ public class AuthenticationService {
     private AuthTokenGenerator authTokenGenerator;
 
     /**
+     * Service for applying or reapplying layers of decoration.
+     */
+    @Inject
+    private DecorationService decorationService;
+
+    /**
      * The service to use to notify registered authentication listeners.
      */
     @Inject
@@ -343,26 +349,30 @@ public class AuthenticationService {
      * @throws GuacamoleException
      *     If an error occurs while creating or updating any UserContext.
      */
-    private List<UserContext> getUserContexts(GuacamoleSession existingSession,
+    private List<DecoratedUserContext> getUserContexts(GuacamoleSession existingSession,
             AuthenticatedUser authenticatedUser, Credentials credentials)
             throws GuacamoleException {
 
-        List<UserContext> userContexts = new ArrayList<UserContext>(authProviders.size());
+        List<DecoratedUserContext> userContexts =
+                new ArrayList<DecoratedUserContext>(authProviders.size());
 
         // If UserContexts already exist, update them and add to the list
         if (existingSession != null) {
 
             // Update all old user contexts
-            List<UserContext> oldUserContexts = existingSession.getUserContexts();
-            for (UserContext oldUserContext : oldUserContexts) {
+            List<DecoratedUserContext> oldUserContexts = existingSession.getUserContexts();
+            for (DecoratedUserContext userContext : oldUserContexts) {
+
+                UserContext oldUserContext = userContext.getUndecoratedUserContext();
 
                 // Update existing UserContext
                 AuthenticationProvider authProvider = oldUserContext.getAuthenticationProvider();
-                UserContext userContext = authProvider.updateUserContext(oldUserContext, authenticatedUser, credentials);
+                UserContext updatedUserContext = authProvider.updateUserContext(oldUserContext, authenticatedUser, credentials);
 
                 // Add to available data, if successful
-                if (userContext != null)
-                    userContexts.add(userContext);
+                if (updatedUserContext != null)
+                    userContexts.add(decorationService.redecorate(userContext,
+                            updatedUserContext, authenticatedUser, credentials));
 
                 // If unsuccessful, log that this happened, as it may be a bug
                 else
@@ -384,7 +394,8 @@ public class AuthenticationService {
 
                 // Add to available data, if successful
                 if (userContext != null)
-                    userContexts.add(userContext);
+                    userContexts.add(decorationService.decorate(userContext,
+                            authenticatedUser, credentials));
 
             }
 
@@ -428,7 +439,7 @@ public class AuthenticationService {
 
         // Get up-to-date AuthenticatedUser and associated UserContexts
         AuthenticatedUser authenticatedUser = getAuthenticatedUser(existingSession, credentials);
-        List<UserContext> userContexts = getUserContexts(existingSession, authenticatedUser, credentials);
+        List<DecoratedUserContext> userContexts = getUserContexts(existingSession, authenticatedUser, credentials);
 
         // Update existing session, if it exists
         String authToken;
@@ -513,7 +524,7 @@ public class AuthenticationService {
      * @throws GuacamoleException
      *     If the auth token does not correspond to any logged in user.
      */
-    public List<UserContext> getUserContexts(String authToken)
+    public List<DecoratedUserContext> getUserContexts(String authToken)
             throws GuacamoleException {
         return getGuacamoleSession(authToken).getUserContexts();
     }
