@@ -168,12 +168,12 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
                     else
                         $scope.loginError = error.translatableMessage;
 
-                    // Clear all visible password fields
+                    // Clear all remaining fields that are not username fields
                     angular.forEach($scope.remainingFields, function clearEnteredValueIfPassword(field) {
 
-                        // Remove entered value only if field is a password field
-                        if (field.type === Field.Type.PASSWORD && field.name in $scope.enteredValues)
-                            $scope.enteredValues[field.name] = '';
+                        // If field is not username field, delete it.
+                        if (field.type !== Field.Type.USERNAME && field.name in $scope.enteredValues)
+                            delete $scope.enteredValues[field.name];
 
                     });
                 }
