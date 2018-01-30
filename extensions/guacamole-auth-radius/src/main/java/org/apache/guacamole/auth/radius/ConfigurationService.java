@@ -47,7 +47,7 @@ public class ConfigurationService {
      */
     public String getRadiusServer() throws GuacamoleException {
         return environment.getProperty(
-            RadiusGuacamoleProperties.RADIUS_SERVER,
+            RadiusGuacamoleProperties.RADIUS_HOSTNAME,
             "localhost"
         );
     }

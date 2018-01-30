@@ -58,12 +58,12 @@ public class RadiusGuacamoleProperties {
 
 
     /**
-     * The hostname or ip of the RADIUS server to connect to when authenticating users.
+     * The hostname or IP address of the RADIUS server to connect to when authenticating users.
      */
-    public static final StringGuacamoleProperty RADIUS_SERVER = new StringGuacamoleProperty() {
+    public static final StringGuacamoleProperty RADIUS_HOSTNAME = new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "radius-server"; }
+        public String getName() { return "radius-hostname"; }
 
     };
 
