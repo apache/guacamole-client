@@ -25,6 +25,8 @@
 
     <!-- Result mapper for user objects -->
     <resultMap id="UserResultMap" type="org.apache.guacamole.auth.jdbc.user.UserModel" >
+
+        <!-- User properties -->
         <id     column="user_id"             property="objectID"           jdbcType="INTEGER"/>
         <result column="username"            property="identifier"         jdbcType="VARCHAR"/>
         <result column="password_hash"       property="passwordHash"       jdbcType="BINARY"/>
@@ -42,6 +44,15 @@
         <result column="organization"        property="organization"       jdbcType="VARCHAR"/>
         <result column="organizational_role" property="organizationalRole" jdbcType="VARCHAR"/>
         <result column="last_active"         property="lastActive"         jdbcType="TIMESTAMP"/>
+
+        <!-- Arbitrary attributes -->
+        <collection property="arbitraryAttributes" resultSet="arbitraryAttributes"
+                    ofType="org.apache.guacamole.auth.jdbc.base.ArbitraryAttributeModel"
+                    column="user_id" foreignColumn="user_id">
+            <result property="name"     column="attribute_name"  jdbcType="VARCHAR"/>
+            <result property="value"    column="attribute_value" jdbcType="VARCHAR"/>
+        </collection>
+
     </resultMap>
 
     <!-- Select all usernames -->
@@ -61,7 +72,8 @@
     </select>
 
     <!-- Select multiple users by username -->
-    <select id="select" resultMap="UserResultMap">
+    <select id="select" resultMap="UserResultMap"
+            resultSets="users,arbitraryAttributes">
 
         SELECT
             guacamole_user.user_id,
@@ -88,12 +100,25 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
             </foreach>
-        GROUP BY guacamole_user.user_id
+        GROUP BY guacamole_user.user_id;
+
+        SELECT
+            guacamole_user_attribute.user_id,
+            guacamole_user_attribute.attribute_name,
+            guacamole_user_attribute.attribute_value
+        FROM guacamole_user_attribute
+        JOIN guacamole_user ON guacamole_user.user_id = guacamole_user_attribute.user_id
+        WHERE username IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=VARCHAR}
+            </foreach>;
 
     </select>
 
     <!-- Select multiple users by username only if readable -->
-    <select id="selectReadable" resultMap="UserResultMap">
+    <select id="selectReadable" resultMap="UserResultMap"
+            resultSets="users,arbitraryAttributes">
 
         SELECT
             guacamole_user.user_id,
@@ -123,12 +148,28 @@
             </foreach>
             AND guacamole_user_permission.user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'READ'
-        GROUP BY guacamole_user.user_id
+        GROUP BY guacamole_user.user_id;
+
+        SELECT
+            guacamole_user_attribute.user_id,
+            guacamole_user_attribute.attribute_name,
+            guacamole_user_attribute.attribute_value
+        FROM guacamole_user_attribute
+        JOIN guacamole_user ON guacamole_user.user_id = guacamole_user_attribute.user_id
+        JOIN guacamole_user_permission ON affected_user_id = guacamole_user.user_id
+        WHERE username IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=VARCHAR}
+            </foreach>
+            AND guacamole_user_permission.user_id = #{user.objectID,jdbcType=INTEGER}
+            AND permission = 'READ';
 
     </select>
 
     <!-- Select single user by username -->
-    <select id="selectOne" resultMap="UserResultMap">
+    <select id="selectOne" resultMap="UserResultMap"
+            resultSets="users,arbitraryAttributes">
 
         SELECT
             guacamole_user.user_id,
@@ -152,7 +193,15 @@
         LEFT JOIN guacamole_user_history ON guacamole_user_history.user_id = guacamole_user.user_id
         WHERE
             guacamole_user.username = #{username,jdbcType=VARCHAR}
-        GROUP BY guacamole_user.user_id
+        GROUP BY guacamole_user.user_id;
+
+        SELECT
+            guacamole_user_attribute.user_id,
+            guacamole_user_attribute.attribute_name,
+            guacamole_user_attribute.attribute_value
+        FROM guacamole_user_attribute
+        JOIN guacamole_user ON guacamole_user.user_id = guacamole_user_attribute.user_id
+        WHERE username = #{username,jdbcType=VARCHAR};
 
     </select>
 
@@ -222,5 +271,26 @@
             organizational_role = #{object.organizationalRole,jdbcType=VARCHAR}
         WHERE user_id = #{object.objectID,jdbcType=VARCHAR}
     </update>
+
+    <!-- Delete attributes associated with user -->
+    <delete id="deleteAttributes">
+        DELETE FROM guacamole_user_attribute
+        WHERE user_id = #{object.objectID,jdbcType=INTEGER}
+    </delete>
+
+    <!-- Insert attributes for user -->
+    <insert id="insertAttributes" parameterType="org.apache.guacamole.auth.jdbc.base.ArbitraryAttributeModel">
+        INSERT INTO guacamole_user_attribute (
+            user_id,
+            attribute_name,
+            attribute_value
+        )
+        VALUES
+            <foreach collection="object.arbitraryAttributes" item="attribute" separator=",">
+                (#{object.objectID,jdbcType=INTEGER},
+                 #{attribute.name,jdbcType=VARCHAR},
+                 #{attribute.value,jdbcType=VARCHAR})
+            </foreach>
+    </insert>
 
 </mapper>

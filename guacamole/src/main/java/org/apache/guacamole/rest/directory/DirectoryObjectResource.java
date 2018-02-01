@@ -29,6 +29,7 @@ import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Identifiable;
+import org.apache.guacamole.net.auth.UserContext;
 
 /**
  * A REST resource which abstracts the operations available on an existing
@@ -51,6 +52,12 @@ import org.apache.guacamole.net.auth.Identifiable;
 public abstract class DirectoryObjectResource<InternalType extends Identifiable, ExternalType> {
 
     /**
+     * The UserContext associated with the Directory containing the object
+     * represented by this DirectoryObjectResource.
+     */
+    private final UserContext userContext;
+
+    /**
      * The Directory which contains the object represented by this
      * DirectoryObjectResource.
      */
@@ -71,6 +78,9 @@ public abstract class DirectoryObjectResource<InternalType extends Identifiable,
      * Creates a new DirectoryObjectResource which exposes the operations
      * available for the given object.
      *
+     * @param userContext
+     *     The UserContext associated with the given Directory.
+     *
      * @param directory
      *     The Directory which contains the given object.
      *
@@ -81,8 +91,10 @@ public abstract class DirectoryObjectResource<InternalType extends Identifiable,
      *     A DirectoryObjectTranslator implementation which handles the type of
      *     object given.
      */
-    public DirectoryObjectResource(Directory<InternalType> directory, InternalType object,
+    public DirectoryObjectResource(UserContext userContext,
+            Directory<InternalType> directory, InternalType object,
             DirectoryObjectTranslator<InternalType, ExternalType> translator) {
+        this.userContext = userContext;
         this.directory = directory;
         this.object = object;
         this.translator = translator;
@@ -120,6 +132,9 @@ public abstract class DirectoryObjectResource<InternalType extends Identifiable,
         // Validate that data was provided
         if (modifiedObject == null)
             throw new GuacamoleClientException("Data must be submitted when updating objects.");
+
+        // Filter/sanitize object contents
+        translator.filterExternalObject(userContext, modifiedObject);
 
         // Perform update
         translator.applyExternalChanges(object, modifiedObject);

@@ -47,6 +47,14 @@
             <result column="sharing_profile_id"/>
         </collection>
 
+        <!-- Arbitrary attributes -->
+        <collection property="arbitraryAttributes" resultSet="arbitraryAttributes"
+                    ofType="org.apache.guacamole.auth.jdbc.base.ArbitraryAttributeModel"
+                    column="connection_id" foreignColumn="connection_id">
+            <result property="name"     column="attribute_name"  jdbcType="VARCHAR"/>
+            <result property="value"    column="attribute_value" jdbcType="VARCHAR"/>
+        </collection>
+
     </resultMap>
 
     <!-- Select all connection identifiers -->
@@ -87,7 +95,7 @@
 
     <!-- Select multiple connections by identifier -->
     <select id="select" resultMap="ConnectionResultMap"
-            resultSets="connections,sharingProfiles">
+            resultSets="connections,sharingProfiles,arbitraryAttributes">
 
         SELECT
             [guacamole_connection].connection_id,
@@ -121,11 +129,22 @@
                 #{identifier,jdbcType=INTEGER}
             </foreach>;
 
+        SELECT
+            connection_id,
+            attribute_name,
+            attribute_value
+        FROM [guacamole_connection_attribute]
+        WHERE connection_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=INTEGER}
+            </foreach>;
+
     </select>
 
     <!-- Select multiple connections by identifier only if readable -->
     <select id="selectReadable" resultMap="ConnectionResultMap"
-            resultSets="connections,sharingProfiles">
+            resultSets="connections,sharingProfiles,arbitraryAttributes">
 
         SELECT
             [guacamole_connection].connection_id,
@@ -158,6 +177,20 @@
         FROM [guacamole_sharing_profile]
         JOIN [guacamole_sharing_profile_permission] ON [guacamole_sharing_profile_permission].sharing_profile_id = [guacamole_sharing_profile].sharing_profile_id
         WHERE primary_connection_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=INTEGER}
+            </foreach>
+            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND permission = 'READ';
+
+        SELECT
+            [guacamole_connection_attribute].connection_id,
+            attribute_name,
+            attribute_value
+        FROM [guacamole_connection_attribute]
+        JOIN [guacamole_connection_permission] ON [guacamole_connection_permission].connection_id = [guacamole_connection_attribute].connection_id
+        WHERE [guacamole_connection_attribute].connection_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}
@@ -247,5 +280,26 @@
             failover_only            = #{object.failoverOnly,jdbcType=INTEGER}
         WHERE connection_id = #{object.objectID,jdbcType=INTEGER}
     </update>
+
+    <!-- Delete attributes associated with connection -->
+    <delete id="deleteAttributes">
+        DELETE FROM [guacamole_connection_attribute]
+        WHERE connection_id = #{object.objectID,jdbcType=INTEGER}
+    </delete>
+
+    <!-- Insert attributes for connection -->
+    <insert id="insertAttributes" parameterType="org.apache.guacamole.auth.jdbc.base.ArbitraryAttributeModel">
+        INSERT INTO [guacamole_connection_attribute] (
+            connection_id,
+            attribute_name,
+            attribute_value
+        )
+        VALUES
+            <foreach collection="object.arbitraryAttributes" item="attribute" separator=",">
+                (#{object.objectID,jdbcType=INTEGER},
+                 #{attribute.name,jdbcType=VARCHAR},
+                 #{attribute.value,jdbcType=VARCHAR})
+            </foreach>
+    </insert>
 
 </mapper>

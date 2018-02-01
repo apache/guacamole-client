@@ -21,6 +21,7 @@ package org.apache.guacamole.rest.sharingprofile;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.SharingProfile;
+import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 
 /**
@@ -28,7 +29,7 @@ import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
  * APISharingProfile objects.
  */
 public class SharingProfileObjectTranslator
-        implements DirectoryObjectTranslator<SharingProfile, APISharingProfile> {
+        extends DirectoryObjectTranslator<SharingProfile, APISharingProfile> {
 
     @Override
     public APISharingProfile toExternalObject(SharingProfile object)
@@ -50,6 +51,17 @@ public class SharingProfileObjectTranslator
         existingObject.setName(object.getName());
         existingObject.setParameters(object.getParameters());
         existingObject.setAttributes(object.getAttributes());
+
+    }
+
+    @Override
+    public void filterExternalObject(UserContext userContext,
+            APISharingProfile object) throws GuacamoleException {
+
+        // Filter object attributes by defined schema
+        object.setAttributes(filterAttributes(
+                userContext.getSharingProfileAttributes(),
+                object.getAttributes()));
 
     }
 

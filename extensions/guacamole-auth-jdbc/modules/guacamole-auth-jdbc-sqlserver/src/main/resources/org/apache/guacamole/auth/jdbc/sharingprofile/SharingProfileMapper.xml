@@ -25,9 +25,20 @@
 
     <!-- Result mapper for sharing profile objects -->
     <resultMap id="SharingProfileResultMap" type="org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileModel">
+
+        <!-- Sharing profile properties -->
         <id     column="sharing_profile_id"    property="objectID"         jdbcType="INTEGER"/>
         <result column="sharing_profile_name"  property="name"             jdbcType="VARCHAR"/>
         <result column="primary_connection_id" property="parentIdentifier" jdbcType="INTEGER"/>
+
+        <!-- Arbitrary attributes -->
+        <collection property="arbitraryAttributes" resultSet="arbitraryAttributes"
+                    ofType="org.apache.guacamole.auth.jdbc.base.ArbitraryAttributeModel"
+                    column="sharing_profile_id" foreignColumn="sharing_profile_id">
+            <result property="name"     column="attribute_name"  jdbcType="VARCHAR"/>
+            <result property="value"    column="attribute_value" jdbcType="VARCHAR"/>
+        </collection>
+
     </resultMap>
 
     <!-- Select all sharing profile identifiers -->
@@ -46,7 +57,8 @@
     </select>
 
     <!-- Select multiple sharing profiles by identifier -->
-    <select id="select" resultMap="SharingProfileResultMap">
+    <select id="select" resultMap="SharingProfileResultMap"
+            resultSets="sharingProfiles,arbitraryAttributes">
 
         SELECT
             sharing_profile_id,
@@ -57,12 +69,24 @@
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}
-            </foreach>
+            </foreach>;
+
+        SELECT
+            sharing_profile_id,
+            attribute_name,
+            attribute_value
+        FROM [guacamole_sharing_profile_attribute]
+        WHERE sharing_profile_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=INTEGER}
+            </foreach>;
 
     </select>
 
     <!-- Select multiple sharing profiles by identifier only if readable -->
-    <select id="selectReadable" resultMap="SharingProfileResultMap">
+    <select id="selectReadable" resultMap="SharingProfileResultMap"
+            resultSets="sharingProfiles,arbitraryAttributes">
 
         SELECT
             [guacamole_sharing_profile].sharing_profile_id,
@@ -76,7 +100,21 @@
                 #{identifier,jdbcType=INTEGER}
             </foreach>
             AND user_id = #{user.objectID,jdbcType=INTEGER}
-            AND permission = 'READ'
+            AND permission = 'READ';
+
+        SELECT
+            [guacamole_sharing_profile_attribute].sharing_profile_id,
+            attribute_name,
+            attribute_value
+        FROM [guacamole_sharing_profile_attribute]
+        JOIN [guacamole_sharing_profile_permission] ON [guacamole_sharing_profile_permission].sharing_profile_id = [guacamole_sharing_profile_attribute].sharing_profile_id
+        WHERE [guacamole_sharing_profile_attribute].sharing_profile_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=INTEGER}
+            </foreach>
+            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND permission = 'READ';
 
     </select>
 
@@ -122,5 +160,26 @@
             primary_connection_id = #{object.parentIdentifier,jdbcType=INTEGER}
         WHERE sharing_profile_id = #{object.objectID,jdbcType=INTEGER}
     </update>
+
+    <!-- Delete attributes associated with sharing profile -->
+    <delete id="deleteAttributes">
+        DELETE FROM [guacamole_sharing_profile_attribute]
+        WHERE sharing_profile_id = #{object.objectID,jdbcType=INTEGER}
+    </delete>
+
+    <!-- Insert attributes for sharing profile -->
+    <insert id="insertAttributes" parameterType="org.apache.guacamole.auth.jdbc.base.ArbitraryAttributeModel">
+        INSERT INTO [guacamole_sharing_profile_attribute] (
+            sharing_profile_id,
+            attribute_name,
+            attribute_value
+        )
+        VALUES
+            <foreach collection="object.arbitraryAttributes" item="attribute" separator=",">
+                (#{object.objectID,jdbcType=INTEGER},
+                 #{attribute.name,jdbcType=VARCHAR},
+                 #{attribute.value,jdbcType=VARCHAR})
+            </foreach>
+    </insert>
 
 </mapper>

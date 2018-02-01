@@ -19,6 +19,11 @@
 
 package org.apache.guacamole.auth.jdbc.base;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import org.apache.guacamole.net.auth.Attributes;
 import org.apache.guacamole.net.auth.Identifiable;
 
 /**
@@ -31,7 +36,7 @@ import org.apache.guacamole.net.auth.Identifiable;
  *     The type of model object that corresponds to this object.
  */
 public abstract class ModeledDirectoryObject<ModelType extends ObjectModel>
-    extends ModeledObject<ModelType> implements Identifiable {
+    extends ModeledObject<ModelType> implements Identifiable, Attributes {
 
     @Override
     public String getIdentifier() {
@@ -41,6 +46,53 @@ public abstract class ModeledDirectoryObject<ModelType extends ObjectModel>
     @Override
     public void setIdentifier(String identifier) {
         getModel().setIdentifier(identifier);
+    }
+
+    /**
+     * Returns the names of all attributes explicitly supported by this object.
+     * Attributes named here have associated mappings within the backing model
+     * object, and thus should not be included in the arbitrary attribute
+     * storage. Any attributes set which do not match these names, such as those
+     * set via other extensions, will be added to arbitrary attribute storage.
+     *
+     * @return
+     *     A read-only Set of the names of all attributes explicitly supported
+     *     (mapped to a property of the backing model) by this object.
+     */
+    public Set<String> getSupportedAttributeNames() {
+        return Collections.<String>emptySet();
+    }
+
+    @Override
+    public Map<String, String> getAttributes() {
+        return new HashMap<String, String>(getModel().getArbitraryAttributeMap());
+    }
+
+    @Override
+    public void setAttributes(Map<String, String> attributes) {
+
+        ArbitraryAttributeMap arbitraryAttributes = getModel().getArbitraryAttributeMap();
+
+        // Get set of all supported attribute names
+        Set<String> supportedAttributes = getSupportedAttributeNames();
+
+        // Store remaining attributes only if not directly mapped to model
+        for (Map.Entry<String, String> attribute : attributes.entrySet()) {
+
+            String name = attribute.getKey();
+            String value = attribute.getValue();
+
+            // Handle null attributes as explicit removal of that attribute,
+            // as the underlying model cannot store null attribute values
+            if (!supportedAttributes.contains(name)) {
+                if (value == null)
+                    arbitraryAttributes.remove(name);
+                else
+                    arbitraryAttributes.put(name, value);
+            }
+
+        }
+
     }
 
 }

@@ -100,7 +100,7 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
             @Assisted Directory<Connection> directory,
             @Assisted Connection connection,
             DirectoryObjectTranslator<Connection, APIConnection> translator) {
-        super(directory, connection, translator);
+        super(userContext, directory, connection, translator);
         this.userContext = userContext;
         this.connection = connection;
     }

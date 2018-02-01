@@ -252,6 +252,102 @@ CREATE INDEX guacamole_sharing_profile_parameter_sharing_profile_id
     ON guacamole_sharing_profile_parameter(sharing_profile_id);
 
 --
+-- Table of arbitrary user attributes. Each attribute is simply a name/value
+-- pair associated with a user. Arbitrary attributes are defined by other
+-- extensions. Attributes defined by this extension will be mapped to
+-- properly-typed columns of a specific table.
+--
+
+CREATE TABLE guacamole_user_attribute (
+
+  user_id         integer       NOT NULL,
+  attribute_name  varchar(128)  NOT NULL,
+  attribute_value varchar(4096) NOT NULL,
+
+  PRIMARY KEY (user_id, attribute_name),
+
+  CONSTRAINT guacamole_user_attribute_ibfk_1
+    FOREIGN KEY (user_id)
+    REFERENCES guacamole_user (user_id) ON DELETE CASCADE
+
+);
+
+CREATE INDEX guacamole_user_attribute_user_id
+    ON guacamole_user_attribute(user_id);
+
+--
+-- Table of arbitrary connection attributes. Each attribute is simply a
+-- name/value pair associated with a connection. Arbitrary attributes are
+-- defined by other extensions. Attributes defined by this extension will be
+-- mapped to properly-typed columns of a specific table.
+--
+
+CREATE TABLE guacamole_connection_attribute (
+
+  connection_id   integer       NOT NULL,
+  attribute_name  varchar(128)  NOT NULL,
+  attribute_value varchar(4096) NOT NULL,
+
+  PRIMARY KEY (connection_id, attribute_name),
+
+  CONSTRAINT guacamole_connection_attribute_ibfk_1
+    FOREIGN KEY (connection_id)
+    REFERENCES guacamole_connection (connection_id) ON DELETE CASCADE
+
+);
+
+CREATE INDEX guacamole_connection_attribute_connection_id
+    ON guacamole_connection_attribute(connection_id);
+
+--
+-- Table of arbitrary connection group attributes. Each attribute is simply a
+-- name/value pair associated with a connection group. Arbitrary attributes are
+-- defined by other extensions. Attributes defined by this extension will be
+-- mapped to properly-typed columns of a specific table.
+--
+
+CREATE TABLE guacamole_connection_group_attribute (
+
+  connection_group_id integer       NOT NULL,
+  attribute_name      varchar(128)  NOT NULL,
+  attribute_value     varchar(4096) NOT NULL,
+
+  PRIMARY KEY (connection_group_id, attribute_name),
+
+  CONSTRAINT guacamole_connection_group_attribute_ibfk_1
+    FOREIGN KEY (connection_group_id)
+    REFERENCES guacamole_connection_group (connection_group_id) ON DELETE CASCADE
+
+);
+
+CREATE INDEX guacamole_connection_group_attribute_connection_group_id
+    ON guacamole_connection_group_attribute(connection_group_id);
+
+--
+-- Table of arbitrary sharing profile attributes. Each attribute is simply a
+-- name/value pair associated with a sharing profile. Arbitrary attributes are
+-- defined by other extensions. Attributes defined by this extension will be
+-- mapped to properly-typed columns of a specific table.
+--
+
+CREATE TABLE guacamole_sharing_profile_attribute (
+
+  sharing_profile_id integer       NOT NULL,
+  attribute_name     varchar(128)  NOT NULL,
+  attribute_value    varchar(4096) NOT NULL,
+
+  PRIMARY KEY (sharing_profile_id, attribute_name),
+
+  CONSTRAINT guacamole_sharing_profile_attribute_ibfk_1
+    FOREIGN KEY (sharing_profile_id)
+    REFERENCES guacamole_sharing_profile (sharing_profile_id) ON DELETE CASCADE
+
+);
+
+CREATE INDEX guacamole_sharing_profile_attribute_sharing_profile_id
+    ON guacamole_sharing_profile_attribute(sharing_profile_id);
+
+--
 -- Table of connection permissions. Each connection permission grants a user
 -- specific access to a connection.
 --

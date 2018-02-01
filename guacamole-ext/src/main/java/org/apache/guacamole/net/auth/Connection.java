@@ -21,7 +21,6 @@ package org.apache.guacamole.net.auth;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
@@ -32,7 +31,7 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
  * backing GuacamoleConfiguration may be intentionally obfuscated or tokenized
  * to protect sensitive configuration information.
  */
-public interface Connection extends Identifiable, Connectable {
+public interface Connection extends Identifiable, Connectable, Attributes {
 
     /**
      * Returns the name assigned to this Connection.
@@ -81,27 +80,6 @@ public interface Connection extends Identifiable, Connectable {
      *               Connection.
      */
     public void setConfiguration(GuacamoleConfiguration config);
-
-    /**
-     * Returns all attributes associated with this connection. The returned map
-     * may not be modifiable.
-     *
-     * @return
-     *     A map of all attribute identifiers to their corresponding values,
-     *     for all attributes associated with this connection, which may not be
-     *     modifiable.
-     */
-    Map<String, String> getAttributes();
-
-    /**
-     * Sets the given attributes. If an attribute within the map is not
-     * supported, it will simply be dropped. Any attributes not within the
-     * given map will be left untouched.
-     *
-     * @param attributes
-     *     A map of all attribute identifiers to their corresponding values.
-     */
-    void setAttributes(Map<String, String> attributes);
 
     /**
      * Returns the date and time that this connection was last used. If the

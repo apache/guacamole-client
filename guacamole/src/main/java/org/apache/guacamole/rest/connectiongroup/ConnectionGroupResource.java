@@ -79,7 +79,7 @@ public class ConnectionGroupResource
             @Assisted Directory<ConnectionGroup> directory,
             @Assisted ConnectionGroup connectionGroup,
             DirectoryObjectTranslator<ConnectionGroup, APIConnectionGroup> translator) {
-        super(directory, connectionGroup, translator);
+        super(userContext, directory, connectionGroup, translator);
         this.userContext = userContext;
         this.connectionGroup = connectionGroup;
     }

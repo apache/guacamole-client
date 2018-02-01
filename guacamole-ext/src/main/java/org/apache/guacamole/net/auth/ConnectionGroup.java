@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.net.auth;
 
-import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 
@@ -27,7 +26,7 @@ import org.apache.guacamole.GuacamoleException;
  * Represents a connection group, which can contain both other connection groups
  * as well as connections.
  */
-public interface ConnectionGroup extends Identifiable, Connectable {
+public interface ConnectionGroup extends Identifiable, Connectable, Attributes {
   
     /**
      * All legal types of connection group.
@@ -123,26 +122,5 @@ public interface ConnectionGroup extends Identifiable, Connectable {
 
     public Set<String> getConnectionGroupIdentifiers()
             throws GuacamoleException;
-
-    /**
-     * Returns all attributes associated with this connection group. The
-     * returned map may not be modifiable.
-     *
-     * @return
-     *     A map of all attribute identifiers to their corresponding values,
-     *     for all attributes associated with this connection group, which may
-     *     not be modifiable.
-     */
-    Map<String, String> getAttributes();
-
-    /**
-     * Sets the given attributes. If an attribute within the map is not
-     * supported, it will simply be dropped. Any attributes not within the
-     * given map will be left untouched.
-     *
-     * @param attributes
-     *     A map of all attribute identifiers to their corresponding values.
-     */
-    void setAttributes(Map<String, String> attributes);
 
 }

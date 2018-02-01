@@ -21,13 +21,14 @@ package org.apache.guacamole.rest.user;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 
 /**
  * Translator which converts between User objects and APIUser objects.
  */
 public class UserObjectTranslator
-        implements DirectoryObjectTranslator<User, APIUser> {
+        extends DirectoryObjectTranslator<User, APIUser> {
 
     @Override
     public APIUser toExternalObject(User object)
@@ -51,6 +52,16 @@ public class UserObjectTranslator
 
         // Update user attributes
         existingObject.setAttributes(object.getAttributes());
+
+    }
+
+    @Override
+    public void filterExternalObject(UserContext userContext, APIUser object)
+            throws GuacamoleException {
+
+        // Filter object attributes by defined schema
+        object.setAttributes(filterAttributes(userContext.getUserAttributes(),
+                object.getAttributes()));
 
     }
 

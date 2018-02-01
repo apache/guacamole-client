@@ -32,6 +32,7 @@ import org.apache.guacamole.auth.jdbc.user.UserModel;
 import org.apache.guacamole.net.auth.Identifiable;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
+import org.mybatis.guice.transactional.Transactional;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -446,6 +447,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
     }
 
     @Override
+    @Transactional
     public InternalType createObject(ModeledAuthenticatedUser user, ExternalType object)
         throws GuacamoleException {
 
@@ -460,6 +462,10 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
         // Add implicit permissions
         getPermissionMapper().insert(getImplicitPermissions(user, model));
+
+        // Add any arbitrary attributes
+        if (model.hasArbitraryAttributes())
+            getObjectMapper().insertAttributes(model);
 
         return getObjectInstance(user, model);
 
@@ -477,6 +483,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
     }
 
     @Override
+    @Transactional
     public void updateObject(ModeledAuthenticatedUser user, InternalType object)
         throws GuacamoleException {
 
@@ -485,6 +492,11 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
         
         // Update object
         getObjectMapper().update(model);
+
+        // Replace any existing arbitrary attributes
+        getObjectMapper().deleteAttributes(model);
+        if (model.hasArbitraryAttributes())
+            getObjectMapper().insertAttributes(model);
 
     }
 

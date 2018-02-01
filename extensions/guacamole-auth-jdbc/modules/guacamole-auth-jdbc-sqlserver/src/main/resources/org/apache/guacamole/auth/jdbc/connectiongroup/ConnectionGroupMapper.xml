@@ -48,6 +48,14 @@
             <result column="connection_id"/>
         </collection>
 
+        <!-- Arbitrary attributes -->
+        <collection property="arbitraryAttributes" resultSet="arbitraryAttributes"
+                    ofType="org.apache.guacamole.auth.jdbc.base.ArbitraryAttributeModel"
+                    column="connection_group_id" foreignColumn="connection_group_id">
+            <result property="name"     column="attribute_name"  jdbcType="VARCHAR"/>
+            <result property="value"    column="attribute_value" jdbcType="VARCHAR"/>
+        </collection>
+
     </resultMap>
 
     <!-- Select all connection group identifiers -->
@@ -88,7 +96,7 @@
 
     <!-- Select multiple connection groups by identifier -->
     <select id="select" resultMap="ConnectionGroupResultMap"
-            resultSets="connectionGroups,childConnectionGroups,childConnections">
+            resultSets="connectionGroups,childConnectionGroups,childConnections,arbitraryAttributes">
 
         SELECT
             connection_group_id,
@@ -121,11 +129,22 @@
                 #{identifier,jdbcType=INTEGER}
             </foreach>;
 
+        SELECT
+            connection_group_id,
+            attribute_name,
+            attribute_value
+        FROM [guacamole_connection_group_attribute]
+        WHERE connection_group_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=INTEGER}
+            </foreach>;
+
     </select>
 
     <!-- Select multiple connection groups by identifier only if readable -->
     <select id="selectReadable" resultMap="ConnectionGroupResultMap"
-            resultSets="connectionGroups,childConnectionGroups,childConnections">
+            resultSets="connectionGroups,childConnectionGroups,childConnections,arbitraryAttributes">
 
         SELECT
             [guacamole_connection_group].connection_group_id,
@@ -160,6 +179,20 @@
         FROM [guacamole_connection]
         JOIN [guacamole_connection_permission] ON [guacamole_connection_permission].connection_id = [guacamole_connection].connection_id
         WHERE parent_id IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=INTEGER}
+            </foreach>
+            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND permission = 'READ';
+
+        SELECT
+            [guacamole_connection_group_attribute].connection_group_id,
+            attribute_name,
+            attribute_value
+        FROM [guacamole_connection_group_attribute]
+        JOIN [guacamole_connection_group_permission] ON [guacamole_connection_group_permission].connection_group_id = [guacamole_connection_group_attribute].connection_group_id
+        WHERE [guacamole_connection_group_attribute].connection_group_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}
@@ -228,5 +261,26 @@
             enable_session_affinity  = #{object.sessionAffinityEnabled,jdbcType=INTEGER}
         WHERE connection_group_id = #{object.objectID,jdbcType=INTEGER}
     </update>
+
+    <!-- Delete attributes associated with connection group -->
+    <delete id="deleteAttributes">
+        DELETE FROM [guacamole_connection_group_attribute]
+        WHERE connection_group_id = #{object.objectID,jdbcType=INTEGER}
+    </delete>
+
+    <!-- Insert attributes for connection group -->
+    <insert id="insertAttributes" parameterType="org.apache.guacamole.auth.jdbc.base.ArbitraryAttributeModel">
+        INSERT INTO [guacamole_connection_group_attribute] (
+            connection_group_id,
+            attribute_name,
+            attribute_value
+        )
+        VALUES
+            <foreach collection="object.arbitraryAttributes" item="attribute" separator=",">
+                (#{object.objectID,jdbcType=INTEGER},
+                 #{attribute.name,jdbcType=VARCHAR},
+                 #{attribute.value,jdbcType=VARCHAR})
+            </foreach>
+    </insert>
 
 </mapper>

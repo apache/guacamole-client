@@ -95,14 +95,4 @@ public class ModeledSharingProfile
         this.parameters = parameters;
     }
 
-    @Override
-    public Map<String, String> getAttributes() {
-        return Collections.<String, String>emptyMap();
-    }
-
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        // Do nothing - no attributes
-    }
-
 }
