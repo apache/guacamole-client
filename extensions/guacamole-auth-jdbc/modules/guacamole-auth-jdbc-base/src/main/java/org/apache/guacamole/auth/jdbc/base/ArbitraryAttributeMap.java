@@ -23,6 +23,7 @@ import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Map of arbitrary attribute name/value pairs which can alternatively be
@@ -129,7 +130,7 @@ public class ArbitraryAttributeMap extends HashMap<String, String> {
             public Iterator<ArbitraryAttributeModel> iterator() {
 
                 // Get iterator over all string name/value entries
-                final Iterator<Entry<String, String>> iterator = entrySet().iterator();
+                final Iterator<Map.Entry<String, String>> iterator = entrySet().iterator();
 
                 // Dynamically translate each string name/value entry into a
                 // corresponding attribute model object as iteration continues
@@ -142,7 +143,7 @@ public class ArbitraryAttributeMap extends HashMap<String, String> {
 
                     @Override
                     public ArbitraryAttributeModel next() {
-                        Entry<String, String> entry = iterator.next();
+                        Map.Entry<String, String> entry = iterator.next();
                         return new ArbitraryAttributeModel(entry.getKey(),
                                 entry.getValue());
                     }
