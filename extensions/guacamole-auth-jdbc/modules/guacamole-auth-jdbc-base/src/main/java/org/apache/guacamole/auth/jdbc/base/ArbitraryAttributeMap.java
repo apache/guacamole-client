@@ -148,6 +148,11 @@ public class ArbitraryAttributeMap extends HashMap<String, String> {
                                 entry.getValue());
                     }
 
+                    @Override
+                    public void remove() {
+                        iterator.remove();
+                    }
+
                 };
 
             }
