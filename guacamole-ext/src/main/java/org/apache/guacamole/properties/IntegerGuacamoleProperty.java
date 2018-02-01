@@ -35,8 +35,7 @@ public abstract class IntegerGuacamoleProperty implements GuacamoleProperty<Inte
             return null;
 
         try {
-            Integer integer = new Integer(value);
-            return integer;
+            return Integer.valueOf(value);
         }
         catch (NumberFormatException e) {
             throw new GuacamoleServerException("Property \"" + getName() + "\" must be an integer.", e);

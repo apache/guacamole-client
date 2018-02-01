@@ -35,8 +35,7 @@ public abstract class LongGuacamoleProperty implements GuacamoleProperty<Long> {
             return null;
 
         try {
-            Long longValue = new Long(value);
-            return longValue;
+            return Long.valueOf(value);
         }
         catch (NumberFormatException e) {
             throw new GuacamoleServerException("Property \"" + getName() + "\" must be an long.", e);

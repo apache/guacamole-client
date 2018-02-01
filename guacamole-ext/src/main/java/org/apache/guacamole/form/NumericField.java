@@ -76,7 +76,7 @@ public class NumericField extends Field {
             return null;
 
         // Parse as integer
-        return new Integer(str);
+        return Integer.valueOf(str);
 
     }
 
