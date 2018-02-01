@@ -83,10 +83,22 @@ public class ArbitraryAttributeMap extends HashMap<String, String> {
                 if (!(o instanceof ArbitraryAttributeModel))
                     return false;
 
-                // The attribute should be removed only if the value matches
+                // Remove only if key is actually present
                 ArbitraryAttributeModel model = (ArbitraryAttributeModel) o;
-                return ArbitraryAttributeMap.this.remove(model.getName(),
-                        model.getValue());
+                if (!ArbitraryAttributeMap.this.containsKey(model.getName()))
+                    return false;
+
+                // The attribute should be removed only if the value matches
+                String currentValue = ArbitraryAttributeMap.this.get(model.getName());
+                if (currentValue == null) {
+                    if (model.getValue() != null)
+                        return false;
+                }
+                else if (!currentValue.equals(model.getValue()))
+                    return false;
+
+                ArbitraryAttributeMap.this.remove(model.getName());
+                return true;
 
             }
 
