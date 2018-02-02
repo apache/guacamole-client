@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.radius;
 
 import com.google.inject.Inject;
+import java.io.File;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 
@@ -176,9 +177,10 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public String getRadiusCAFile() throws GuacamoleException {
+    public File getRadiusCAFile() throws GuacamoleException {
         return environment.getProperty(
-            RadiusGuacamoleProperties.RADIUS_CA_FILE
+            RadiusGuacamoleProperties.RADIUS_CA_FILE,
+            new File(environment.getGuacamoleHome(), "ca.crt")
         );
     }
 
@@ -195,10 +197,10 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public String getRadiusKeyFile() throws GuacamoleException {
+    public File getRadiusKeyFile() throws GuacamoleException {
         return environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_KEY_FILE,
-            "radius.pem"
+            new File(environment.getGuacamoleHome(), "radius.key")
         );
     }
 

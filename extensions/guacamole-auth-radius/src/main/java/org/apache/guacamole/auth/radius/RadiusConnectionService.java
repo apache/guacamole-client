@@ -27,7 +27,6 @@ import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
-import org.apache.guacamole.environment.LocalEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.jradius.client.RadiusClient;
@@ -136,15 +135,13 @@ public class RadiusConnectionService {
             radAuth instanceof EAPTTLSAuthenticator) {
 
             // Pull TLS configuration parameters from guacamole.properties
-            LocalEnvironment guacEnv = new LocalEnvironment();
-            File guacHome = guacEnv.getGuacamoleHome();
-            String caFile = confService.getRadiusCAFile();
+            File caFile = confService.getRadiusCAFile();
             String caPassword = confService.getRadiusCAPassword();
-            String keyFile = confService.getRadiusKeyFile();
+            File keyFile = confService.getRadiusKeyFile();
             String keyPassword = confService.getRadiusKeyPassword();
 
             if (caFile != null) {
-                ((EAPTLSAuthenticator)radAuth).setCaFile((new File(guacHome, caFile)).toString());
+                ((EAPTLSAuthenticator)radAuth).setCaFile(caFile.toString());
                 ((EAPTLSAuthenticator)radAuth).setCaFileType(confService.getRadiusCAType());
                 if (caPassword != null)
                     ((EAPTLSAuthenticator)radAuth).setCaPassword(caPassword);
@@ -153,7 +150,7 @@ public class RadiusConnectionService {
             if (keyPassword != null)
                 ((EAPTLSAuthenticator)radAuth).setKeyPassword(keyPassword);
 
-            ((EAPTLSAuthenticator)radAuth).setKeyFile((new File(guacHome, keyFile)).toString());
+            ((EAPTLSAuthenticator)radAuth).setKeyFile(keyFile.toString());
             ((EAPTLSAuthenticator)radAuth).setKeyFileType(confService.getRadiusKeyType());
             ((EAPTLSAuthenticator)radAuth).setTrustAll(confService.getRadiusTrustAll());
         }

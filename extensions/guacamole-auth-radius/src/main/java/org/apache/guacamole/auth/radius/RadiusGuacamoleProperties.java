@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.radius;
 
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.FileGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
@@ -110,7 +111,7 @@ public class RadiusGuacamoleProperties {
     /**
      * The CA file to use to validate RADIUS server certificates.
      */
-    public static final StringGuacamoleProperty RADIUS_CA_FILE = new StringGuacamoleProperty() {
+    public static final FileGuacamoleProperty RADIUS_CA_FILE = new FileGuacamoleProperty() {
 
         @Override
         public String getName() { return "radius-ca-file"; }
@@ -140,7 +141,7 @@ public class RadiusGuacamoleProperties {
     /**
      * The file that stores the key/certificate pair to use for the RADIUS client connection.
      */
-    public static final StringGuacamoleProperty RADIUS_KEY_FILE = new StringGuacamoleProperty() {
+    public static final FileGuacamoleProperty RADIUS_KEY_FILE = new FileGuacamoleProperty() {
 
         @Override
         public String getName() { return "radius-key-file"; }
