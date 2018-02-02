@@ -106,32 +106,6 @@ public class PostgreSQLGuacamoleProperties {
     };
 
     /**
-     * Whether or not multiple users accessing the same connection at the same
-     * time should be disallowed.
-     */
-    public static final BooleanGuacamoleProperty
-            POSTGRESQL_DISALLOW_SIMULTANEOUS_CONNECTIONS =
-            new BooleanGuacamoleProperty() {
-
-        @Override
-        public String getName() { return "postgresql-disallow-simultaneous-connections"; }
-
-    };
-
-    /**
-     * Whether or not the same user accessing the same connection or connection
-     * group at the same time should be disallowed.
-     */
-    public static final BooleanGuacamoleProperty
-            POSTGRESQL_DISALLOW_DUPLICATE_CONNECTIONS =
-            new BooleanGuacamoleProperty() {
-
-        @Override
-        public String getName() { return "postgresql-disallow-duplicate-connections"; }
-
-    };
-
-    /**
      * The maximum number of concurrent connections to allow overall. Zero
      * denotes unlimited.
      */

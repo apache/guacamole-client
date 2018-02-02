@@ -60,41 +60,27 @@ public class MySQLEnvironment extends JDBCEnvironment {
 
     /**
      * The default value for the default maximum number of connections to be
-     * allowed per user to any one connection. Note that, as long as the
-     * legacy "disallow duplicate" and "disallow simultaneous" properties are
-     * still supported, these cannot be constants, as the legacy properties
-     * dictate the values that should be used in the absence of the correct
-     * properties.
+     * allowed per user to any one connection.
      */
-    private int DEFAULT_MAX_CONNECTIONS_PER_USER = 1;
+    private final int DEFAULT_MAX_CONNECTIONS_PER_USER = 1;
 
     /**
      * The default value for the default maximum number of connections to be
-     * allowed per user to any one connection group. Note that, as long as the
-     * legacy "disallow duplicate" and "disallow simultaneous" properties are
-     * still supported, these cannot be constants, as the legacy properties
-     * dictate the values that should be used in the absence of the correct
-     * properties.
+     * allowed per user to any one connection group.
      */
-    private int DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER = 1;
+    private final int DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER = 1;
 
     /**
      * The default value for the default maximum number of connections to be
-     * allowed to any one connection. Note that, as long as the legacy
-     * "disallow duplicate" and "disallow simultaneous" properties are still
-     * supported, these cannot be constants, as the legacy properties dictate
-     * the values that should be used in the absence of the correct properties.
+     * allowed to any one connection.
      */
-    private int DEFAULT_MAX_CONNECTIONS = 0;
+    private final int DEFAULT_MAX_CONNECTIONS = 0;
 
     /**
      * The default value for the default maximum number of connections to be
-     * allowed to any one connection group. Note that, as long as the legacy
-     * "disallow duplicate" and "disallow simultaneous" properties are still
-     * supported, these cannot be constants, as the legacy properties dictate
-     * the values that should be used in the absence of the correct properties.
+     * allowed to any one connection group.
      */
-    private int DEFAULT_MAX_GROUP_CONNECTIONS = 0;
+    private final int DEFAULT_MAX_GROUP_CONNECTIONS = 0;
 
     /**
      * Constructs a new MySQLEnvironment, providing access to MySQL-specific
@@ -108,66 +94,6 @@ public class MySQLEnvironment extends JDBCEnvironment {
 
         // Init underlying JDBC environment
         super();
-
-        // Read legacy concurrency-related property
-        Boolean disallowSimultaneous = getProperty(MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS);
-        Boolean disallowDuplicate    = getProperty(MySQLGuacamoleProperties.MYSQL_DISALLOW_DUPLICATE_CONNECTIONS);
-
-        // Legacy "simultaneous" property dictates only the maximum number of
-        // connections per connection
-        if (disallowSimultaneous != null) {
-
-            // Translate legacy property
-            if (disallowSimultaneous) {
-                DEFAULT_MAX_CONNECTIONS       = 1;
-                DEFAULT_MAX_GROUP_CONNECTIONS = 0;
-            }
-            else {
-                DEFAULT_MAX_CONNECTIONS       = 0;
-                DEFAULT_MAX_GROUP_CONNECTIONS = 0;
-            }
-
-            // Warn of deprecation
-            logger.warn("The \"{}\" property is deprecated. Use \"{}\" and \"{}\" instead.",
-                    MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS.getName(),
-                    MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_CONNECTIONS.getName(),
-                    MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS.getName());
-
-            // Inform of new equivalent
-            logger.info("To achieve the same result of setting \"{}\" to \"{}\", set \"{}\" to \"{}\" and \"{}\" to \"{}\".",
-                    MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS.getName(), disallowSimultaneous,
-                    MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_CONNECTIONS.getName(),           DEFAULT_MAX_CONNECTIONS,
-                    MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS.getName(),     DEFAULT_MAX_GROUP_CONNECTIONS);
-
-        }
-
-        // Legacy "duplicate" property dictates whether connections and groups
-        // may be used concurrently only by different users
-        if (disallowDuplicate != null) {
-
-            // Translate legacy property
-            if (disallowDuplicate) {
-                DEFAULT_MAX_CONNECTIONS_PER_USER       = 1;
-                DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER = 1;
-            }
-            else {
-                DEFAULT_MAX_CONNECTIONS_PER_USER       = 0;
-                DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER = 0;
-            }
-
-            // Warn of deprecation
-            logger.warn("The \"{}\" property is deprecated. Use \"{}\" and \"{}\" instead.",
-                    MySQLGuacamoleProperties.MYSQL_DISALLOW_DUPLICATE_CONNECTIONS.getName(),
-                    MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_CONNECTIONS_PER_USER.getName(),
-                    MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS.getName());
-
-            // Inform of new equivalent
-            logger.info("To achieve the same result of setting \"{}\" to \"{}\", set \"{}\" to \"{}\" and \"{}\" to \"{}\".",
-                    MySQLGuacamoleProperties.MYSQL_DISALLOW_DUPLICATE_CONNECTIONS.getName(),         disallowDuplicate,
-                    MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_CONNECTIONS_PER_USER.getName(),       DEFAULT_MAX_CONNECTIONS_PER_USER,
-                    MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER.getName(), DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER);
-
-        }
 
     }
 
