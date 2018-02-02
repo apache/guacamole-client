@@ -351,31 +351,6 @@ Guacamole.Client = function(tunnel) {
     };
 
     /**
-     * Sets the clipboard of the remote client to the given text data.
-     *
-     * @deprecated Use createClipboardStream() instead. 
-     * @param {String} data The data to send as the clipboard contents.
-     */
-    this.setClipboard = function(data) {
-
-        // Do not send requests if not connected
-        if (!isConnected())
-            return;
-
-        // Open stream
-        var stream = guac_client.createClipboardStream("text/plain");
-        var writer = new Guacamole.StringWriter(stream);
-
-        // Send text chunks
-        for (var i=0; i<data.length; i += 4096)
-            writer.sendText(data.substring(i, i+4096));
-
-        // Close stream
-        writer.sendEnd();
-
-    };
-
-    /**
      * Allocates an available stream index and creates a new
      * Guacamole.OutputStream using that index, associating the resulting
      * stream with this Guacamole.Client. Note that this stream will not yet
