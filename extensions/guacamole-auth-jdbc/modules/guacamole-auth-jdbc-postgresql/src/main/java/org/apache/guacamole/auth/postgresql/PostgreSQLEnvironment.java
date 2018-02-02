@@ -66,7 +66,7 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
      * dictate the values that should be used in the absence of the correct
      * properties.
      */
-    private int DEFAULT_MAX_CONNECTIONS_PER_USER = 1;
+    private final int DEFAULT_MAX_CONNECTIONS_PER_USER = 1;
 
     /**
      * The default value for the default maximum number of connections to be
@@ -76,7 +76,7 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
      * dictate the values that should be used in the absence of the correct
      * properties.
      */
-    private int DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER = 1;
+    private final int DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER = 1;
 
     /**
      * The default value for the default maximum number of connections to be
@@ -85,7 +85,7 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
      * supported, these cannot be constants, as the legacy properties dictate
      * the values that should be used in the absence of the correct properties.
      */
-    private int DEFAULT_MAX_CONNECTIONS = 0;
+    private final int DEFAULT_MAX_CONNECTIONS = 0;
 
     /**
      * The default value for the default maximum number of connections to be
@@ -94,7 +94,7 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
      * supported, these cannot be constants, as the legacy properties dictate
      * the values that should be used in the absence of the correct properties.
      */
-    private int DEFAULT_MAX_GROUP_CONNECTIONS = 0;
+    private final int DEFAULT_MAX_GROUP_CONNECTIONS = 0;
 
     /**
      * Constructs a new PostgreSQLEnvironment, providing access to PostgreSQL-specific
@@ -108,66 +108,6 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
 
         // Init underlying JDBC environment
         super();
-
-        // Read legacy concurrency-related property
-        Boolean disallowSimultaneous = getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_DISALLOW_SIMULTANEOUS_CONNECTIONS);
-        Boolean disallowDuplicate    = getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_DISALLOW_DUPLICATE_CONNECTIONS);
-
-        // Legacy "simultaneous" property dictates only the maximum number of
-        // connections per connection
-        if (disallowSimultaneous != null) {
-
-            // Translate legacy property
-            if (disallowSimultaneous) {
-                DEFAULT_MAX_CONNECTIONS       = 1;
-                DEFAULT_MAX_GROUP_CONNECTIONS = 0;
-            }
-            else {
-                DEFAULT_MAX_CONNECTIONS       = 0;
-                DEFAULT_MAX_GROUP_CONNECTIONS = 0;
-            }
-
-            // Warn of deprecation
-            logger.warn("The \"{}\" property is deprecated. Use \"{}\" and \"{}\" instead.",
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DISALLOW_SIMULTANEOUS_CONNECTIONS.getName(),
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_CONNECTIONS.getName(),
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS.getName());
-
-            // Inform of new equivalent
-            logger.info("To achieve the same result of setting \"{}\" to \"{}\", set \"{}\" to \"{}\" and \"{}\" to \"{}\".",
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DISALLOW_SIMULTANEOUS_CONNECTIONS.getName(), disallowSimultaneous,
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_CONNECTIONS.getName(),           DEFAULT_MAX_CONNECTIONS,
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS.getName(),     DEFAULT_MAX_GROUP_CONNECTIONS);
-
-        }
-
-        // Legacy "duplicate" property dictates whether connections and groups
-        // may be used concurrently only by different users
-        if (disallowDuplicate != null) {
-
-            // Translate legacy property
-            if (disallowDuplicate) {
-                DEFAULT_MAX_CONNECTIONS_PER_USER       = 1;
-                DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER = 1;
-            }
-            else {
-                DEFAULT_MAX_CONNECTIONS_PER_USER       = 0;
-                DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER = 0;
-            }
-
-            // Warn of deprecation
-            logger.warn("The \"{}\" property is deprecated. Use \"{}\" and \"{}\" instead.",
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DISALLOW_DUPLICATE_CONNECTIONS.getName(),
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_CONNECTIONS_PER_USER.getName(),
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS.getName());
-
-            // Inform of new equivalent
-            logger.info("To achieve the same result of setting \"{}\" to \"{}\", set \"{}\" to \"{}\" and \"{}\" to \"{}\".",
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DISALLOW_DUPLICATE_CONNECTIONS.getName(),         disallowDuplicate,
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_CONNECTIONS_PER_USER.getName(),       DEFAULT_MAX_CONNECTIONS_PER_USER,
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER.getName(), DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER);
-
-        }
 
     }
 
