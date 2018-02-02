@@ -84,6 +84,10 @@ public class DocumentHandler extends DefaultHandler {
     public void startElement(String uri, String localName, String qName,
         Attributes attributes) throws SAXException {
 
+        // If the SAX implementation does not provide the local name, the
+        // qualified name should be used instead
+        String name = localName.isEmpty() ? qName : localName;
+
         // Get current state
         DocumentHandlerState current = getCurrentState();
 
@@ -94,7 +98,7 @@ public class DocumentHandler extends DefaultHandler {
         if (current == null) {
 
             // Validate element name
-            if (!localName.equals(rootElementName))
+            if (!name.equals(rootElementName))
                 throw new SAXException("Root element must be '" + rootElementName + "'");
 
             handler = root;
@@ -103,12 +107,12 @@ public class DocumentHandler extends DefaultHandler {
         // Otherwise, get handler from parent
         else {
             TagHandler parent_handler = current.getTagHandler();
-            handler = parent_handler.childElement(localName);
+            handler = parent_handler.childElement(name);
         }
 
         // If no handler returned, the element was not expected
         if (handler == null)
-            throw new SAXException("Unexpected element: '" + localName + "'");
+            throw new SAXException("Unexpected element: '" + name + "'");
 
         // Initialize handler
         handler.init(attributes);

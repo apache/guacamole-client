@@ -19,12 +19,12 @@
 
 package org.apache.guacamole.auth.file;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
@@ -34,10 +34,7 @@ import org.apache.guacamole.xml.DocumentHandler;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * Authenticates users against a static list of username/password pairs.
@@ -115,6 +112,22 @@ public class FileAuthenticationProvider extends SimpleAuthenticationProvider {
 
             logger.debug("Reading user mapping file: \"{}\"", userMappingFile);
 
+            // Set up XML parser
+            SAXParser parser;
+            try {
+                parser = SAXParserFactory.newInstance().newSAXParser();
+            }
+            catch (ParserConfigurationException e) {
+                logger.error("Unable to create XML parser for reading \"{}\": {}", USER_MAPPING_FILENAME, e.getMessage());
+                logger.debug("An instance of SAXParser could not be created.", e);
+                return null;
+            }
+            catch (SAXException e) {
+                logger.error("Unable to create XML parser for reading \"{}\": {}", USER_MAPPING_FILENAME, e.getMessage());
+                logger.debug("An instance of SAXParser could not be created.", e);
+                return null;
+            }
+
             // Parse document
             try {
 
@@ -126,14 +139,8 @@ public class FileAuthenticationProvider extends SimpleAuthenticationProvider {
                 DocumentHandler contentHandler = new DocumentHandler(
                         "user-mapping", userMappingHandler);
 
-                // Set up XML parser
-                XMLReader parser = XMLReaderFactory.createXMLReader();
-                parser.setContentHandler(contentHandler);
-
                 // Read and parse file
-                InputStream input = new BufferedInputStream(new FileInputStream(userMappingFile));
-                parser.parse(new InputSource(input));
-                input.close();
+                parser.parse(userMappingFile, contentHandler);
 
                 // Store mod time and user mapping
                 lastModified = userMappingFile.lastModified();
