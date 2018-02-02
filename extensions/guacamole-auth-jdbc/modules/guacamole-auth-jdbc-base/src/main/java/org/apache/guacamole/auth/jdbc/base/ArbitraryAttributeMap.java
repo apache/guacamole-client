@@ -23,6 +23,7 @@ import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Map of arbitrary attribute name/value pairs which can alternatively be
@@ -82,10 +83,22 @@ public class ArbitraryAttributeMap extends HashMap<String, String> {
                 if (!(o instanceof ArbitraryAttributeModel))
                     return false;
 
-                // The attribute should be removed only if the value matches
+                // Remove only if key is actually present
                 ArbitraryAttributeModel model = (ArbitraryAttributeModel) o;
-                return ArbitraryAttributeMap.this.remove(model.getName(),
-                        model.getValue());
+                if (!ArbitraryAttributeMap.this.containsKey(model.getName()))
+                    return false;
+
+                // The attribute should be removed only if the value matches
+                String currentValue = ArbitraryAttributeMap.this.get(model.getName());
+                if (currentValue == null) {
+                    if (model.getValue() != null)
+                        return false;
+                }
+                else if (!currentValue.equals(model.getValue()))
+                    return false;
+
+                ArbitraryAttributeMap.this.remove(model.getName());
+                return true;
 
             }
 
@@ -129,7 +142,7 @@ public class ArbitraryAttributeMap extends HashMap<String, String> {
             public Iterator<ArbitraryAttributeModel> iterator() {
 
                 // Get iterator over all string name/value entries
-                final Iterator<Entry<String, String>> iterator = entrySet().iterator();
+                final Iterator<Map.Entry<String, String>> iterator = entrySet().iterator();
 
                 // Dynamically translate each string name/value entry into a
                 // corresponding attribute model object as iteration continues
@@ -142,9 +155,14 @@ public class ArbitraryAttributeMap extends HashMap<String, String> {
 
                     @Override
                     public ArbitraryAttributeModel next() {
-                        Entry<String, String> entry = iterator.next();
+                        Map.Entry<String, String> entry = iterator.next();
                         return new ArbitraryAttributeModel(entry.getKey(),
                                 entry.getValue());
+                    }
+
+                    @Override
+                    public void remove() {
+                        iterator.remove();
                     }
 
                 };
