@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.radius;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.radius.user.AuthenticatedUser;
@@ -97,7 +98,7 @@ public class AuthenticationProviderService {
 
         // We have the required attributes - convert to strings and then generate the additional login box/field
         String replyMsg = replyAttr.toString();
-        String radiusState = new String(stateAttr.getValue().getBytes());
+        String radiusState = new String(stateAttr.getValue().getBytes(), Charset.forName("UTF-8"));
         Field radiusResponseField = new RadiusChallengeResponseField(replyMsg);
         Field radiusStateField = new RadiusStateField(radiusState);
 
