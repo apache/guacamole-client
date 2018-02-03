@@ -21,8 +21,10 @@ package org.apache.guacamole.auth.radius;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.auth.radius.user.AuthenticatedUser;
 import org.apache.guacamole.auth.radius.form.RadiusChallengeResponseField;
 import org.apache.guacamole.auth.radius.form.RadiusStateField;
@@ -97,7 +99,7 @@ public class AuthenticationProviderService {
 
         // We have the required attributes - convert to strings and then generate the additional login box/field
         String replyMsg = replyAttr.toString();
-        String radiusState = new String(stateAttr.getValue().getBytes());
+        String radiusState = javax.xml.bind.DatatypeConverter.printHexBinary(stateAttr.getValue().getBytes());
         Field radiusResponseField = new RadiusChallengeResponseField(replyMsg);
         Field radiusStateField = new RadiusStateField(radiusState);
 
@@ -155,9 +157,10 @@ public class AuthenticationProviderService {
         // This is a response to a previous challenge, authenticate with that.
         else {
             try {
+                byte[] stateBytes = javax.xml.bind.DatatypeConverter.parseHexBinary(request.getParameter(RadiusStateField.PARAMETER_NAME));
                 radPack = radiusService.sendChallengeResponse(credentials.getUsername(),
                                                      challengeResponse,
-                                                     request.getParameter(RadiusStateField.PARAMETER_NAME));
+                                                     stateBytes);
             }
             catch (GuacamoleException e) {
                 logger.error("Cannot configure RADIUS server: {}", e.getMessage());
