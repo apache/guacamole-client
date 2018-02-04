@@ -160,8 +160,7 @@ public class AuthenticationProviderService {
             try {
                 String stateString = request.getParameter(RadiusStateField.PARAMETER_NAME);
                 if (stateString == null) {
-                    logger.error("Could not retrieve RADIUS state.");
-                    logger.debug("Received null value while retrieving RADIUS state parameter.");
+                    logger.warn("Expected state parameter was not present in challenge/response.");
                     throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
                 }
 
@@ -171,8 +170,8 @@ public class AuthenticationProviderService {
                                                               stateBytes);
             }
             catch (IllegalArgumentException e) {
-                logger.error("Illegal argument while parsing RADIUS state string.", e.getMessage());
-                logger.debug("Illegal argument found while parsing the RADIUS state string.", e);
+                logger.warn("Illegal hexadecimal value while parsing RADIUS state string.", e.getMessage());
+                logger.debug("Encountered exception while attepmting to perse the hexidecimanl state value.", e);
                 throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
             }
             catch (GuacamoleException e) {
