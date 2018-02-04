@@ -290,7 +290,7 @@ public class RadiusConnectionService {
             return null;
         }
 
-        if (state == null || state.length < 1) {
+        if (state == null || state.length == 0) {
             logger.error("Challenge/response to RADIUS requires a prior state.");
             return null;
         }
