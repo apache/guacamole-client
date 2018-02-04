@@ -170,8 +170,8 @@ public class AuthenticationProviderService {
                                                               stateBytes);
             }
             catch (IllegalArgumentException e) {
-                logger.warn("Illegal hexadecimal value while parsing RADIUS state string.", e.getMessage());
-                logger.debug("Encountered exception while attepmting to perse the hexidecimanl state value.", e);
+                logger.warn("Illegal hexadecimal value while parsing RADIUS state string: {}", e.getMessage());
+                logger.debug("Encountered exception while attempting to parse the hexidecimal state value.", e);
                 throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
             }
             catch (GuacamoleException e) {
