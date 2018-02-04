@@ -99,7 +99,7 @@ public class AuthenticationProviderService {
 
         // We have the required attributes - convert to strings and then generate the additional login box/field
         String replyMsg = replyAttr.toString();
-        String radiusState = javax.xml.bind.DatatypeConverter.printHexBinary(stateAttr.getValue().getBytes());
+        String radiusState = DatatypeConverter.printHexBinary(stateAttr.getValue().getBytes());
         Field radiusResponseField = new RadiusChallengeResponseField(replyMsg);
         Field radiusStateField = new RadiusStateField(radiusState);
 
@@ -157,7 +157,7 @@ public class AuthenticationProviderService {
         // This is a response to a previous challenge, authenticate with that.
         else {
             try {
-                byte[] stateBytes = javax.xml.bind.DatatypeConverter.parseHexBinary(request.getParameter(RadiusStateField.PARAMETER_NAME));
+                byte[] stateBytes = DatatypeConverter.parseHexBinary(request.getParameter(RadiusStateField.PARAMETER_NAME));
                 radPack = radiusService.sendChallengeResponse(credentials.getUsername(),
                                                      challengeResponse,
                                                      stateBytes);
