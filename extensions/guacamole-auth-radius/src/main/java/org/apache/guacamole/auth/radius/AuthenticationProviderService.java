@@ -157,10 +157,17 @@ public class AuthenticationProviderService {
         // This is a response to a previous challenge, authenticate with that.
         else {
             try {
-                byte[] stateBytes = DatatypeConverter.parseHexBinary(request.getParameter(RadiusStateField.PARAMETER_NAME));
+                String stateString = request.getParameter(RadiusStateField.PARAMETER_NAME);
+                if (stateString == null) {
+                    logger.error("Could not retrieve RADIUS state.");
+                    logger.debug("Received null value while retrieving RADIUS state parameter.");
+                    throws new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
+                }
+
+                byte[] stateBytes = DatatypeConverter.parseHexBinary(stateString);
                 radPack = radiusService.sendChallengeResponse(credentials.getUsername(),
-                                                     challengeResponse,
-                                                     stateBytes);
+                                                              challengeResponse,
+                                                              stateBytes);
             }
             catch (GuacamoleException e) {
                 logger.error("Cannot configure RADIUS server: {}", e.getMessage());
