@@ -107,7 +107,7 @@ public class ConnectionService {
 
             // Get the search filter for finding connections accessible by the
             // current user
-            String connectionSearchFilter = getConnectionSearchFilter(userDN, ldapConnection);
+            String connectionSearchFilter = getConnectionSearchFilter(userDN, user, ldapConnection);
 
             // Find all Guacamole connections for the given user by
             // looking for direct membership in the guacConfigGroup
@@ -237,7 +237,7 @@ public class ConnectionService {
      * @throws GuacamoleException
      *     If an error occurs retrieving the group base DN.
      */
-    private String getConnectionSearchFilter(String userDN,
+    private String getConnectionSearchFilter(String userDN, AuthenticatedUser user,
             LDAPConnection ldapConnection)
             throws LDAPException, GuacamoleException {
 
@@ -257,7 +257,7 @@ public class ConnectionService {
             LDAPSearchResults userRoleGroupResults = ldapConnection.search(
                 groupBaseDN,
                 LDAPConnection.SCOPE_SUB,
-                "(&(!(objectClass=guacConfigGroup))(member=" + escapingService.escapeLDAPSearchFilter(userDN) + "))",
+                "(&(!(objectClass=guacConfigGroup))(|(member=" + escapingService.escapeLDAPSearchFilter(userDN) + ")(memberUid=" + user.getCredentials().getUsername() + ")))",
                 null,
                 false,
                 confService.getLDAPSearchConstraints()
