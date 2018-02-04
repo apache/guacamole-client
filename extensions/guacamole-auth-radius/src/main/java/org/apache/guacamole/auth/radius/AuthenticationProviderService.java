@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.radius;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.lang.IllegalArgumentException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
@@ -161,13 +162,18 @@ public class AuthenticationProviderService {
                 if (stateString == null) {
                     logger.error("Could not retrieve RADIUS state.");
                     logger.debug("Received null value while retrieving RADIUS state parameter.");
-                    throws new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
+                    throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
                 }
 
                 byte[] stateBytes = DatatypeConverter.parseHexBinary(stateString);
                 radPack = radiusService.sendChallengeResponse(credentials.getUsername(),
                                                               challengeResponse,
                                                               stateBytes);
+            }
+            catch (IllegalArgumentException e) {
+                logger.error("Illegal argument while parsing RADIUS state string.", e.getMessage());
+                logger.debug("Illegal argument found while parsing the RADIUS state string.", e);
+                throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
             }
             catch (GuacamoleException e) {
                 logger.error("Cannot configure RADIUS server: {}", e.getMessage());
