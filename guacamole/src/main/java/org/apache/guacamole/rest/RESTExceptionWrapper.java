@@ -171,17 +171,11 @@ public class RESTExceptionWrapper implements MethodInterceptor {
         }
 
         // Translate GuacamoleException subclasses to HTTP error codes
-        catch (GuacamoleSecurityException e) {
-            throw new APIException(Response.Status.FORBIDDEN, e);
-        }
-        catch (GuacamoleResourceNotFoundException e) {
-            throw new APIException(Response.Status.NOT_FOUND, e);
-        }
-        catch (GuacamoleClientException e) {
-            throw new APIException(Response.Status.BAD_REQUEST, e);
-        }
         catch (GuacamoleException e) {
-            throw new APIException(Response.Status.INTERNAL_SERVER_ERROR, e);
+            throw new APIException(
+                Response.Status.fromStatusCode(e.getStatus().getHttpStatusCode()),
+                e
+            );
         }
 
         // Rethrow unchecked exceptions such that they are properly wrapped
