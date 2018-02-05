@@ -89,6 +89,21 @@
                     "type"  : "TEXT"
                 },
                 {
+                    "name"  : "recording-exclude-output",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-exclude-mouse",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-include-keys",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"  : "create-recording-path",
                     "type"  : "BOOLEAN",
                     "options" : [ "true" ]
