@@ -21,8 +21,11 @@ package org.apache.guacamole.auth.radius;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.lang.IllegalArgumentException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.auth.radius.user.AuthenticatedUser;
 import org.apache.guacamole.auth.radius.form.RadiusChallengeResponseField;
 import org.apache.guacamole.auth.radius.form.RadiusStateField;
@@ -97,7 +100,7 @@ public class AuthenticationProviderService {
 
         // We have the required attributes - convert to strings and then generate the additional login box/field
         String replyMsg = replyAttr.toString();
-        String radiusState = new String(stateAttr.getValue().getBytes());
+        String radiusState = DatatypeConverter.printHexBinary(stateAttr.getValue().getBytes());
         Field radiusResponseField = new RadiusChallengeResponseField(replyMsg);
         Field radiusStateField = new RadiusStateField(radiusState);
 
@@ -155,9 +158,21 @@ public class AuthenticationProviderService {
         // This is a response to a previous challenge, authenticate with that.
         else {
             try {
+                String stateString = request.getParameter(RadiusStateField.PARAMETER_NAME);
+                if (stateString == null) {
+                    logger.warn("Expected state parameter was not present in challenge/response.");
+                    throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
+                }
+
+                byte[] stateBytes = DatatypeConverter.parseHexBinary(stateString);
                 radPack = radiusService.sendChallengeResponse(credentials.getUsername(),
-                                                     challengeResponse,
-                                                     request.getParameter(RadiusStateField.PARAMETER_NAME));
+                                                              challengeResponse,
+                                                              stateBytes);
+            }
+            catch (IllegalArgumentException e) {
+                logger.warn("Illegal hexadecimal value while parsing RADIUS state string: {}", e.getMessage());
+                logger.debug("Encountered exception while attempting to parse the hexidecimal state value.", e);
+                throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
             }
             catch (GuacamoleException e) {
                 logger.error("Cannot configure RADIUS server: {}", e.getMessage());

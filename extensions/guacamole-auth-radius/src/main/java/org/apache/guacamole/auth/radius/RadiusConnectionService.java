@@ -187,7 +187,7 @@ public class RadiusConnectionService {
      * @throws GuacamoleException
      *     If an error occurs while talking to the server.
      */
-    public RadiusPacket authenticate(String username, String secret, String state)
+    public RadiusPacket authenticate(String username, String secret, byte[] state)
             throws GuacamoleException {
 
         // If a username wasn't passed, we quit
@@ -219,7 +219,7 @@ public class RadiusConnectionService {
         try {
             AttributeList radAttrs = new AttributeList();
             radAttrs.add(new Attr_UserName(username));
-            if (state != null && !state.isEmpty())
+            if (state != null && state.length > 0)
                 radAttrs.add(new Attr_State(state));
             radAttrs.add(new Attr_UserPassword(secret));
             radAttrs.add(new Attr_CleartextPassword(secret));
@@ -282,7 +282,7 @@ public class RadiusConnectionService {
      * @throws GuacamoleException
      *     If an error is encountered trying to talk to the RADIUS server.
      */
-    public RadiusPacket sendChallengeResponse(String username, String response, String state)
+    public RadiusPacket sendChallengeResponse(String username, String response, byte[] state)
             throws GuacamoleException {
 
         if (username == null || username.isEmpty()) {
@@ -290,7 +290,7 @@ public class RadiusConnectionService {
             return null;
         }
 
-        if (state == null || state.isEmpty()) {
+        if (state == null || state.length == 0) {
             logger.error("Challenge/response to RADIUS requires a prior state.");
             return null;
         }
