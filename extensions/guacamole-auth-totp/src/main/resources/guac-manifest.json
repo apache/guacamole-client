@@ -1,0 +1,28 @@
+{
+
+    "guacamoleVersion" : "0.9.14",
+
+    "name"      : "TOTP TFA Authentication Backend",
+    "namespace" : "totp",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.totp.TOTPAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/en.json"
+    ],
+
+    "js" : [
+        "totp.min.js"
+    ],
+
+    "css" : [
+        "totp.min.css"
+    ],
+
+    "resources" : {
+        "templates/authenticationCodeField.html" : "text/html"
+    }
+
+}

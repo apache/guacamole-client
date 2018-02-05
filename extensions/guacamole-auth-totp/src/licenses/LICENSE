@@ -211,48 +211,40 @@ notices and license terms. Your use of these subcomponents is subject to the
 terms and conditions of the following licenses.
 
 
-Carlito (http://code.google.com/p/chromium/issues/detail?id=280557)
--------------------------------------------------------------------
+AOP Alliance (http://aopalliance.sourceforge.net/)
+--------------------------------------------------
 
-    Version: N/A
-    From: 'tyPoland Lukasz Dziedzic' (http://www.lukaszdziedzic.eu/)
+    Version: 1.0
+    From: 'AOP Alliance' (http://aopalliance.sourceforge.net/members.html)
     License(s):
-        SIL Open Font (guacamole/src/licenses/bundled/carlito/LICENSE)
+        Public Domain (bundled/aopalliance-1.0/LICENSE)
 
 
-DuoWeb Java SDK (https://github.com/duosecurity/duo_java)
----------------------------------------------------------
+Google Guice (https://github.com/google/guice)
+----------------------------------------------
 
-    Verson: commit 56570d18a1f98642500e6c1158a3f41e448963ff
-    From: `Duo Security, Inc.' (https://duo.com/)
+    Version: 3.0
+    From: 'Google Inc.' (http://www.google.com/)
     License(s):
-        BSD 3-clause (extensions/guacamole-auth-duo/src/licenses/bundled/duo-java-56570d1/LICENSE)
+        Apache v2.0 (bundled/guice-3.0/COPYING)
 
-Copyright (c) 2011, Duo Security, Inc.
-All rights reserved.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions
-are met:
+Guava: Google Core Libraries for Java (https://github.com/google/guava)
+-----------------------------------------------------------------------
 
-1. Redistributions of source code must retain the above copyright
-   notice, this list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright
-   notice, this list of conditions and the following disclaimer in the
-   documentation and/or other materials provided with the distribution.
-3. The name of the author may not be used to endorse or promote products
-   derived from this software without specific prior written permission.
+    Version: 18.0
+    From: 'Google Inc.' (http://www.google.com/)
+    License(s):
+        Apache v2.0 (bundled/guava-18.0/COPYING)
 
-THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
-IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
+----------------------------------------------------------------------------
+
+    Version: 1
+    From: 'JSR-330 Expert Group' (https://jcp.org/en/jsr/detail?id=330)
+    License(s):
+        Apache v2.0 (bundled/javax.inject-1/LICENSE-2.0.txt)
 
 
 TOTP Reference Implementation (https://tools.ietf.org/id/draft-mraihi-totp-timebased-07.html#Section-Reference-Impl)
@@ -261,7 +253,7 @@ TOTP Reference Implementation (https://tools.ietf.org/id/draft-mraihi-totp-timeb
     Verson: 07
     From: 'IETF Trust' (http://trustee.ietf.org/license-info)
     License(s):
-        BSD 3-clause (extensions/guacamole-auth-duo/src/licenses/bundled/totp-reference-impl-07/license.txt)
+        BSD 3-clause (bundled/totp-reference-impl-07/license.txt)
 
 Copyright (c) 2011 IETF Trust and the persons identified as authors
 of the code. All rights reserved.
@@ -290,4 +282,13 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+ZXing Barcode Scanning Library (https://github.com/zxing/zxing/)
+----------------------------------------------------------------
+
+    Version: 3.3.1
+    From: 'ZXing authors' (https://github.com/zxing/zxing/blob/zxing-3.3.1/AUTHORS)
+    License(s):
+        Apache v2.0 (bundled/zxing-3.3.1/LICENSE)
 

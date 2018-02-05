@@ -55,6 +55,7 @@
         <module>extensions/guacamole-auth-jdbc</module>
         <module>extensions/guacamole-auth-ldap</module>
         <module>extensions/guacamole-auth-openid</module>
+        <module>extensions/guacamole-auth-totp</module>
 
         <!-- Example web applications using the Guacamole APIs -->
         <module>doc/guacamole-example</module>
