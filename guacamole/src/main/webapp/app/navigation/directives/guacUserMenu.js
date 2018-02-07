@@ -100,15 +100,18 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
 
                 // Store retrieved user object
                 $scope.user = user;
+                if (user.attributes) {
 
-                // Pull basic profile information
-                $scope.fullName = user.attributes[User.Attributes.FULL_NAME];
-                $scope.organization = user.attributes[User.Attributes.ORGANIZATION];
-                $scope.role = user.attributes[User.Attributes.ORGANIZATIONAL_ROLE];
+                    // Pull basic profile information
+                    $scope.fullName = user.attributes[User.Attributes.FULL_NAME];
+                    $scope.organization = user.attributes[User.Attributes.ORGANIZATION];
+                    $scope.role = user.attributes[User.Attributes.ORGANIZATIONAL_ROLE];
 
-                // Link to email address if available
-                var email = user.attributes[User.Attributes.EMAIL_ADDRESS];
-                $scope.userURL = email ? 'mailto:' + email : null;
+                    // Link to email address if available
+                    var email = user.attributes[User.Attributes.EMAIL_ADDRESS];
+                    $scope.userURL = email ? 'mailto:' + email : null;
+
+                }
 
             });
 
