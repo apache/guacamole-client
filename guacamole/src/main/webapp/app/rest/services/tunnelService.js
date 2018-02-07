@@ -230,7 +230,9 @@ angular.module('rest').factory('tunnelService', ['$injector',
         // ends, in the browser does NOT fire the "load" event for downloads
         stream.onend = function downloadComplete() {
             $window.setTimeout(function cleanupIframe() {
-                document.body.removeChild(iframe);
+                if (iframe.parentElement) {
+                    document.body.removeChild(iframe);
+                }
             }, DOWNLOAD_CLEANUP_WAIT);
         };
 
