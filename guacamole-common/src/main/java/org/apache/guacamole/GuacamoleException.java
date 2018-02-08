@@ -68,5 +68,15 @@ public class GuacamoleException extends Exception {
     public GuacamoleStatus getStatus() {
         return GuacamoleStatus.SERVER_ERROR;
     }
+
+    /**
+     * Returns the numeric HTTP status code associated with this exception.
+     *
+     * @return
+     *     The numeric HTTP status code associated with this exception.
+     */
+    public Integer getHttpStatusCode() {
+        return getStatus().getHttpStatusCode();
+    }
     
 }
