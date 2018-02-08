@@ -173,7 +173,7 @@ public class RESTExceptionWrapper implements MethodInterceptor {
         // Translate GuacamoleException subclasses to HTTP error codes
         catch (GuacamoleException e) {
             throw new APIException(
-                Response.Status.fromStatusCode(e.getStatus().getHttpStatusCode()),
+                Response.Status.fromStatusCode(e.getHttpStatusCode()),
                 e
             );
         }

@@ -80,5 +80,17 @@ public class GuacamoleException extends Exception {
     public int getHttpStatusCode() {
         return getStatus().getHttpStatusCode();
     }
+
+    /**
+     * Returns the most applicable WebSocket status code that can be
+     * associated with this exception.
+     *
+     * @return
+     *     An integer representing the most applicable WebSocket status
+     *     code associated with this exception.
+     */
+    public int getWebSocketCode() {
+        return getStatus().getWebSocketCode();
+    }
     
 }
