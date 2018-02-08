@@ -149,26 +149,23 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
      * @param response
      *     The HTTP response to use to send the error.
      *
-     * @param guacStatus
-     *     The status to send
-     *
-     * @param message
-     *     A human-readable message that can be presented to the user.
+     * @param guacamoleException
+     *     The exception that caused this error.
      *
      * @throws ServletException
      *     If an error prevents sending of the error code.
      */
     protected void sendError(HttpServletResponse response,
-            GuacamoleStatus guacStatus, String message)
+            GuacamoleException guacamoleException)
             throws ServletException {
 
         try {
 
             // If response not committed, send error code and message
             if (!response.isCommitted()) {
-                response.addHeader("Guacamole-Status-Code", Integer.toString(guacStatus.getGuacamoleStatusCode()));
-                response.addHeader("Guacamole-Error-Message", message);
-                response.sendError(guacStatus.getHttpStatusCode());
+                response.addHeader("Guacamole-Status-Code", Integer.toString(guacamoleException.getStatus().getGuacamoleStatusCode()));
+                response.addHeader("Guacamole-Error-Message", guacamoleException.getMessage());
+                response.sendError(guacamoleException.getHttpStatusCode());
             }
 
         }
@@ -258,12 +255,12 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
         // HTTP response, logging each error appropriately.
         catch (GuacamoleClientException e) {
             logger.warn("HTTP tunnel request rejected: {}", e.getMessage());
-            sendError(response, e.getStatus(), e.getMessage());
+            sendError(response, e);
         }
         catch (GuacamoleException e) {
             logger.error("HTTP tunnel request failed: {}", e.getMessage());
             logger.debug("Internal error in HTTP tunnel.", e);
-            sendError(response, e.getStatus(), "Internal server error.");
+            sendError(response, e);
         }
 
     }
