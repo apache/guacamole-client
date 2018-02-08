@@ -70,12 +70,14 @@ public class GuacamoleException extends Exception {
     }
 
     /**
-     * Returns the numeric HTTP status code associated with this exception.
+     * Returns the most applicable HTTP status code that can be associated
+     * with this exception.
      *
      * @return
-     *     The numeric HTTP status code associated with this exception.
+     *     An integer representing the most applicable HTTP status code
+     *     associated with this exception.
      */
-    public Integer getHttpStatusCode() {
+    public int getHttpStatusCode() {
         return getStatus().getHttpStatusCode();
     }
     
