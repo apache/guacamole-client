@@ -149,23 +149,30 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
      * @param response
      *     The HTTP response to use to send the error.
      *
-     * @param guacamoleException
-     *     The exception that caused this error.
+     * @param guacamoleStatusCode
+     *     The GuacamoleStatus code to send.
+     *
+     * @param guacamoleHttpCode
+     *     The numeric HTTP code to send.
+     *
+     * @param message
+     *     The human-readable error message to send.
      *
      * @throws ServletException
      *     If an error prevents sending of the error code.
      */
-    protected void sendError(HttpServletResponse response,
-            GuacamoleException guacamoleException)
+    protected void sendError(HttpServletResponse response, int guacamoleStatusCode,
+            int guacamoleHttpCode, String message)
             throws ServletException {
+
 
         try {
 
             // If response not committed, send error code and message
             if (!response.isCommitted()) {
-                response.addHeader("Guacamole-Status-Code", Integer.toString(guacamoleException.getStatus().getGuacamoleStatusCode()));
-                response.addHeader("Guacamole-Error-Message", guacamoleException.getMessage());
-                response.sendError(guacamoleException.getHttpStatusCode());
+                response.addHeader("Guacamole-Status-Code", Integer.toString(guacamoleStatusCode));
+                response.addHeader("Guacamole-Error-Message", message);
+                response.sendError(guacamoleHttpCode);
             }
 
         }
@@ -253,14 +260,18 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
         // Catch any thrown guacamole exception and attempt to pass within the
         // HTTP response, logging each error appropriately.
-        catch (GuacamoleClientException e) {
-            logger.warn("HTTP tunnel request rejected: {}", e.getMessage());
-            sendError(response, e);
-        }
         catch (GuacamoleException e) {
-            logger.error("HTTP tunnel request failed: {}", e.getMessage());
-            logger.debug("Internal error in HTTP tunnel.", e);
-            sendError(response, e);
+            if (e instanceof GuacamoleClientException) {
+                logger.warn("HTTP tunnel request rejected: {}", e.getMessage());
+                sendError(response, e.getStatus().getGuacamoleStatusCode(),
+                        e.getStatus().getHttpStatusCode(), e.getMessage());
+            }
+            else {
+                logger.error("HTTP tunnel request failed: {}", e.getMessage());
+                logger.debug("Internal error in HTTP tunnel.", e);
+                sendError(response, e.getStatus().getGuacamoleStatusCode(),
+                        e.getStatus().getHttpStatusCode(), "Internal server error.");
+            }
         }
 
     }
