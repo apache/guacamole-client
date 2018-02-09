@@ -165,7 +165,6 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
             int guacamoleHttpCode, String message)
             throws ServletException {
 
-
         try {
 
             // If response not committed, send error code and message
@@ -241,14 +240,14 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
             // If read operation, call doRead() with tunnel UUID, ignoring any
             // characters following the tunnel UUID.
-            else if(query.startsWith(READ_PREFIX))
+            else if (query.startsWith(READ_PREFIX))
                 doRead(request, response, query.substring(
                         READ_PREFIX_LENGTH,
                         READ_PREFIX_LENGTH + UUID_LENGTH));
 
             // If write operation, call doWrite() with tunnel UUID, ignoring any
             // characters following the tunnel UUID.
-            else if(query.startsWith(WRITE_PREFIX))
+            else if (query.startsWith(WRITE_PREFIX))
                 doWrite(request, response, query.substring(
                         WRITE_PREFIX_LENGTH,
                         WRITE_PREFIX_LENGTH + UUID_LENGTH));

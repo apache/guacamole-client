@@ -69,7 +69,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
             Integer webSocketCode) {
 
         try {
-            if(webSocketCode == null)
+            if (webSocketCode == null)
                 webSocketCode = guac_status.getWebSocketCode();
             byte[] message = Integer.toString(guac_status.getGuacamoleStatusCode()).getBytes("UTF-8");
             outbound.close(webSocketCode, ByteBuffer.wrap(message));
