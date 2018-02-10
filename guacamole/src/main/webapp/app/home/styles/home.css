@@ -50,3 +50,7 @@ div.recent-connections div.connection {
     max-width: 75%;
     overflow: hidden;
 }
+
+a.home-connection {
+    display: block;
+}
