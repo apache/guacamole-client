@@ -58,12 +58,18 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
     private final Logger logger = LoggerFactory.getLogger(GuacamoleWebSocketTunnelServlet.class);
 
     /**
-     * Sends the given status on the given WebSocket connection and closes the
+     * Sends the given Guacamole and WebSocket numeric status
+     * on the given WebSocket connection and closes the
      * connection.
      *
-     * @param outbound The outbound WebSocket connection to close.
-     * @param guac_status The status to send.
-     * @param webSocketCode The numeric WebSocket status code to send.
+     * @param outbound
+     *     The outbound WebSocket connection to close.
+     *
+     * @param guacamoleStatusCode
+     *     The status to send.
+     *
+     * @param webSocketCode
+     *     The numeric WebSocket status code to send.
      */
     private void closeConnection(WsOutbound outbound, int guacamoleStatusCode,
             int webSocketCode) {
@@ -75,6 +81,24 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
         catch (IOException e) {
             logger.debug("Unable to close WebSocket tunnel.", e);
         }
+
+    }
+
+    /**
+     * Sends the given status on the given WebSocket connection
+     * and closes the connection.
+     *
+     * @param outbound
+     *     The outbound WebSocket connection to close.
+     *
+     * @param guac_status
+     *     The status to send.
+     */
+    private void closeConnection(WsOutbound outbound,
+            GuacamoleStatus guac_status) {
+
+        closeConnection(outbound, guac_status.getGuacamoleStatusCode(),
+                guac_status.getWebSocketCode());
 
     }
 
@@ -151,8 +175,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
 
                 // Do not start connection if tunnel does not exist
                 if (tunnel == null) {
-                    closeConnection(outbound, GuacamoleStatus.RESOURCE_NOT_FOUND.getGuacamoleStatusCode(),
-                            GuacamoleStatus.RESOURCE_NOT_FOUND.getWebSocketCode());
+                    closeConnection(outbound, GuacamoleStatus.RESOURCE_NOT_FOUND);
                     return;
                 }
 
@@ -190,8 +213,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                                 }
 
                                 // No more data
-                                closeConnection(outbound, GuacamoleStatus.SUCCESS.getGuacamoleStatusCode(),
-                                        GuacamoleStatus.SUCCESS.getWebSocketCode());
+                                closeConnection(outbound, GuacamoleStatus.SUCCESS);
 
                             }
 
@@ -206,8 +228,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                             }
                             catch (GuacamoleConnectionClosedException e) {
                                 logger.debug("Connection to guacd closed.", e);
-                                closeConnection(outbound, GuacamoleStatus.SUCCESS.getGuacamoleStatusCode(),
-                                        GuacamoleStatus.SUCCESS.getWebSocketCode());
+                                closeConnection(outbound, GuacamoleStatus.SUCCESS);
                             }
                             catch (GuacamoleException e) {
                                 logger.error("Connection to guacd terminated abnormally: {}", e.getMessage());
@@ -219,8 +240,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                         }
                         catch (IOException e) {
                             logger.debug("I/O error prevents further reads.", e);
-                            closeConnection(outbound, GuacamoleStatus.SERVER_ERROR.getGuacamoleStatusCode(),
-                                    GuacamoleStatus.SERVER_ERROR.getWebSocketCode());
+                            closeConnection(outbound, GuacamoleStatus.SERVER_ERROR);
                         }
 
                     }

@@ -53,18 +53,42 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
     private static final int BUFFER_SIZE = 8192;
 
     /**
-     * Sends the given status on the given WebSocket connection and closes the
+     * Sends the given numeric Guacamole and WebSocket status
+     * on the given WebSocket connection and closes the
      * connection.
      *
-     * @param connection The WebSocket connection to close.
-     * @param guac_status The status to send.
-     * @param webSocketCode The numeric WebSocket status code to send.
+     * @param connection
+     *     The WebSocket connection to close.
+     *
+     * @param guacamoleStatusCode
+     *     The numeric Guacamole Status code to send.
+     *
+     * @param webSocketCode
+     *     The numeric WebSocket status code to send.
      */
     private static void closeConnection(Connection connection,
             int guacamoleStatusCode, int webSocketCode) {
 
         connection.close(webSocketCode,
                 Integer.toString(guacamoleStatusCode));
+
+    }
+
+    /**
+     * Sends the given status on the given WebSocket connection
+     * and closes the connection.
+     *
+     * @param connection
+     *     The WebSocket connection to close.
+     *
+     * @param guac_status
+     *     The status to send.
+     */
+    private static void closeConnection(Connection connection,
+            GuacamoleStatus guac_status) {
+
+        closeConnection(connection, guac_status.getGuacamoleStatusCode(),
+                guac_status.getWebSocketCode());
 
     }
 
@@ -122,9 +146,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
 
                 // Do not start connection if tunnel does not exist
                 if (tunnel == null) {
-                    closeConnection(connection,
-                            GuacamoleStatus.RESOURCE_NOT_FOUND.getGuacamoleStatusCode(),
-                            GuacamoleStatus.RESOURCE_NOT_FOUND.getWebSocketCode());
+                    closeConnection(connection, GuacamoleStatus.RESOURCE_NOT_FOUND);
                     return;
                 }
 
@@ -162,9 +184,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                                 }
 
                                 // No more data
-                                closeConnection(connection,
-                                        GuacamoleStatus.SUCCESS.getGuacamoleStatusCode(),
-                                        GuacamoleStatus.SUCCESS.getWebSocketCode());
+                                closeConnection(connection, GuacamoleStatus.SUCCESS);
                                 
                             }
 
@@ -179,9 +199,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                             }
                             catch (GuacamoleConnectionClosedException e) {
                                 logger.debug("Connection to guacd closed.", e);
-                                closeConnection(connection,
-                                        GuacamoleStatus.SUCCESS.getGuacamoleStatusCode(),
-                                        GuacamoleStatus.SUCCESS.getWebSocketCode());
+                                closeConnection(connection, GuacamoleStatus.SUCCESS);
                             }
                             catch (GuacamoleException e) {
                                 logger.error("Connection to guacd terminated abnormally: {}", e.getMessage());
@@ -193,9 +211,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                         }
                         catch (IOException e) {
                             logger.debug("WebSocket tunnel read failed due to I/O error.", e);
-                            closeConnection(connection,
-                                    GuacamoleStatus.SERVER_ERROR.getGuacamoleStatusCode(),
-                                    GuacamoleStatus.SERVER_ERROR.getWebSocketCode());
+                            closeConnection(connection, GuacamoleStatus.SERVER_ERROR);
                         }
 
                     }

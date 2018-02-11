@@ -66,12 +66,17 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
     private GuacamoleTunnel tunnel;
     
     /**
-     * Sends the given status on the given WebSocket connection and closes the
-     * connection.
+     * Sends the numeric Guacaomle Status Code and Web Socket
+     * code and closes the connection.
      *
-     * @param session The outbound WebSocket connection to close.
-     * @param guac_status The status to send.
-     * @param webSocketCode The numeric WebSocket status to send.
+     * @param session
+     *     The outbound WebSocket connection to close.
+     *
+     * @param guacamoleStatusCode
+     *     The numeric Guacamole status to send.
+     *
+     * @param webSocketCode
+     *     The numeric WebSocket status to send.
      */
     private void closeConnection(Session session, int guacamoleStatusCode,
             int webSocketCode) {
@@ -85,6 +90,21 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
             logger.debug("Unable to close WebSocket connection.", e);
         }
 
+    }
+
+    /**
+     * Sends the given Guacaomle Status and closes the given
+     * connection.
+     *
+     * @param session
+     *     The outbound WebSocket connection to close.
+     *
+     * @param guac_status
+     *     The status to use for the connection.
+     */
+    private void closeConnection(Session session, GuacamoleStatus guac_status) {
+        closeConnection(session, guac_status.getGuacamoleStatusCode(),
+                guac_status.getWebSocketCode());
     }
 
     /**
@@ -111,8 +131,7 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
             // Get tunnel
             tunnel = createTunnel(session, config);
             if (tunnel == null) {
-                closeConnection(session, GuacamoleStatus.RESOURCE_NOT_FOUND.getGuacamoleStatusCode(),
-                        GuacamoleStatus.RESOURCE_NOT_FOUND.getWebSocketCode());
+                closeConnection(session, GuacamoleStatus.RESOURCE_NOT_FOUND);
                 return;
             }
 
@@ -120,7 +139,8 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
         catch (GuacamoleException e) {
             logger.error("Creation of WebSocket tunnel to guacd failed: {}", e.getMessage());
             logger.debug("Error connecting WebSocket tunnel.", e);
-            closeConnection(session, e.getStatus().getGuacamoleStatusCode(), e.getWebSocketCode());
+            closeConnection(session, e.getStatus().getGuacamoleStatusCode(),
+                    e.getWebSocketCode());
             return;
         }
 
@@ -174,8 +194,7 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
                         }
 
                         // No more data
-                        closeConnection(session, GuacamoleStatus.SUCCESS.getGuacamoleStatusCode(),
-                                GuacamoleStatus.SUCCESS.getWebSocketCode());
+                        closeConnection(session, GuacamoleStatus.SUCCESS);
 
                     }
 
@@ -185,24 +204,24 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
                     catch (GuacamoleClientException e) {
                         logger.info("WebSocket connection terminated: {}", e.getMessage());
                         logger.debug("WebSocket connection terminated due to client error.", e);
-                        closeConnection(session, e.getStatus().getGuacamoleStatusCode(), e.getWebSocketCode());
+                        closeConnection(session, e.getStatus().getGuacamoleStatusCode(),
+                                e.getWebSocketCode());
                     }
                     catch (GuacamoleConnectionClosedException e) {
                         logger.debug("Connection to guacd closed.", e);
-                        closeConnection(session, GuacamoleStatus.SUCCESS.getGuacamoleStatusCode(),
-                                GuacamoleStatus.SUCCESS.getWebSocketCode());
+                        closeConnection(session, GuacamoleStatus.SUCCESS);
                     }
                     catch (GuacamoleException e) {
                         logger.error("Connection to guacd terminated abnormally: {}", e.getMessage());
                         logger.debug("Internal error during connection to guacd.", e);
-                        closeConnection(session, e.getStatus().getGuacamoleStatusCode(), e.getWebSocketCode());
+                        closeConnection(session, e.getStatus().getGuacamoleStatusCode(),
+                                e.getWebSocketCode());
                     }
 
                 }
                 catch (IOException e) {
                     logger.debug("I/O error prevents further reads.", e);
-                    closeConnection(session, GuacamoleStatus.SERVER_ERROR.getGuacamoleStatusCode(),
-                            GuacamoleStatus.SERVER_ERROR.getWebSocketCode());
+                    closeConnection(session, GuacamoleStatus.SERVER_ERROR);
                 }
 
             }

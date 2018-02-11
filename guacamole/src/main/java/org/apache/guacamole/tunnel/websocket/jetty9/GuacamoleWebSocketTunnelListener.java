@@ -57,12 +57,18 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
     private GuacamoleTunnel tunnel;
  
     /**
-     * Sends the given status on the given WebSocket connection and closes the
+     * Sends the given numeric Guacamole and WebSocket status
+     * codes on the given WebSocket connection and closes the
      * connection.
      *
-     * @param session The outbound WebSocket connection to close.
-     * @param guac_status The status to send.
-     * @param webSocketCode The numeric WebSocket status code to send.
+     * @param session
+     *     The outbound WebSocket connection to close.
+     *
+     * @param guacamoleStatusCode
+     *     The numeric Guacamole status code to send.
+     *
+     * @param webSocketCode
+     *     The numeric WebSocket status code to send.
      */
     private void closeConnection(Session session, int guacamoleStatusCode,
             int webSocketCode) {
@@ -74,6 +80,24 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
         catch (IOException e) {
             logger.debug("Unable to close WebSocket connection.", e);
         }
+
+    }
+
+    /**
+     * Sends the given status on the given WebSocket connection
+     * and closes the connection.
+     *
+     * @param session
+     *     The outbound WebSocket connection to close.
+     *
+     * @param guac_status
+     *     The status to send.
+     */
+    private void closeConnection(Session session,
+            GuacamoleStatus guac_status) {
+
+        closeConnection(session, guac_status.getGuacamoleStatusCode(),
+                guac_status.getWebSocketCode());
 
     }
 
@@ -98,8 +122,7 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
             // Get tunnel
             tunnel = createTunnel(session);
             if (tunnel == null) {
-                closeConnection(session, GuacamoleStatus.RESOURCE_NOT_FOUND.getGuacamoleStatusCode(),
-                        GuacamoleStatus.RESOURCE_NOT_FOUND.getWebSocketCode());
+                closeConnection(session, GuacamoleStatus.RESOURCE_NOT_FOUND);
                 return;
             }
 
@@ -151,8 +174,7 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
                         }
 
                         // No more data
-                        closeConnection(session, GuacamoleStatus.SUCCESS.getGuacamoleStatusCode(),
-                                GuacamoleStatus.SUCCESS.getWebSocketCode());
+                        closeConnection(session, GuacamoleStatus.SUCCESS);
 
                     }
 
@@ -167,8 +189,7 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
                     }
                     catch (GuacamoleConnectionClosedException e) {
                         logger.debug("Connection to guacd closed.", e);
-                        closeConnection(session, GuacamoleStatus.SUCCESS.getGuacamoleStatusCode(),
-                                GuacamoleStatus.SUCCESS.getWebSocketCode());
+                        closeConnection(session, GuacamoleStatus.SUCCESS);
                     }
                     catch (GuacamoleException e) {
                         logger.error("Connection to guacd terminated abnormally: {}", e.getMessage());
@@ -180,8 +201,7 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
                 }
                 catch (IOException e) {
                     logger.debug("I/O error prevents further reads.", e);
-                    closeConnection(session, GuacamoleStatus.SERVER_ERROR.getGuacamoleStatusCode(),
-                            GuacamoleStatus.SERVER_ERROR.getWebSocketCode());
+                    closeConnection(session, GuacamoleStatus.SERVER_ERROR);
                 }
 
             }
