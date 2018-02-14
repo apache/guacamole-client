@@ -1,0 +1,12 @@
+{
+
+    "DATA_SOURCE_SAML" : {
+        "NAME" : "SAML SSO Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_SAML"     : "",
+        "INFO_SAML_REDIRECT_PENDING" : "Please wait, redirecting for SAML authentication..."
+    }
+
+}
