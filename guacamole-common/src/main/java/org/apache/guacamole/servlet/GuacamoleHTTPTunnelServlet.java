@@ -149,26 +149,29 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
      * @param response
      *     The HTTP response to use to send the error.
      *
-     * @param guacStatus
-     *     The status to send
+     * @param guacamoleStatusCode
+     *     The GuacamoleStatus code to send.
+     *
+     * @param guacamoleHttpCode
+     *     The numeric HTTP code to send.
      *
      * @param message
-     *     A human-readable message that can be presented to the user.
+     *     The human-readable error message to send.
      *
      * @throws ServletException
      *     If an error prevents sending of the error code.
      */
-    protected void sendError(HttpServletResponse response,
-            GuacamoleStatus guacStatus, String message)
+    protected void sendError(HttpServletResponse response, int guacamoleStatusCode,
+            int guacamoleHttpCode, String message)
             throws ServletException {
 
         try {
 
             // If response not committed, send error code and message
             if (!response.isCommitted()) {
-                response.addHeader("Guacamole-Status-Code", Integer.toString(guacStatus.getGuacamoleStatusCode()));
+                response.addHeader("Guacamole-Status-Code", Integer.toString(guacamoleStatusCode));
                 response.addHeader("Guacamole-Error-Message", message);
-                response.sendError(guacStatus.getHttpStatusCode());
+                response.sendError(guacamoleHttpCode);
             }
 
         }
@@ -237,14 +240,14 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
             // If read operation, call doRead() with tunnel UUID, ignoring any
             // characters following the tunnel UUID.
-            else if(query.startsWith(READ_PREFIX))
+            else if (query.startsWith(READ_PREFIX))
                 doRead(request, response, query.substring(
                         READ_PREFIX_LENGTH,
                         READ_PREFIX_LENGTH + UUID_LENGTH));
 
             // If write operation, call doWrite() with tunnel UUID, ignoring any
             // characters following the tunnel UUID.
-            else if(query.startsWith(WRITE_PREFIX))
+            else if (query.startsWith(WRITE_PREFIX))
                 doWrite(request, response, query.substring(
                         WRITE_PREFIX_LENGTH,
                         WRITE_PREFIX_LENGTH + UUID_LENGTH));
@@ -258,12 +261,14 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
         // HTTP response, logging each error appropriately.
         catch (GuacamoleClientException e) {
             logger.warn("HTTP tunnel request rejected: {}", e.getMessage());
-            sendError(response, e.getStatus(), e.getMessage());
+            sendError(response, e.getStatus().getGuacamoleStatusCode(),
+                    e.getStatus().getHttpStatusCode(), e.getMessage());
         }
         catch (GuacamoleException e) {
             logger.error("HTTP tunnel request failed: {}", e.getMessage());
             logger.debug("Internal error in HTTP tunnel.", e);
-            sendError(response, e.getStatus(), "Internal server error.");
+            sendError(response, e.getStatus().getGuacamoleStatusCode(),
+                    e.getStatus().getHttpStatusCode(), "Internal server error.");
         }
 
     }
