@@ -91,14 +91,14 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
      * @param outbound
      *     The outbound WebSocket connection to close.
      *
-     * @param guac_status
+     * @param guacStatus
      *     The status to send.
      */
     private void closeConnection(WsOutbound outbound,
-            GuacamoleStatus guac_status) {
+            GuacamoleStatus guacStatus) {
 
-        closeConnection(outbound, guac_status.getGuacamoleStatusCode(),
-                guac_status.getWebSocketCode());
+        closeConnection(outbound, guacStatus.getGuacamoleStatusCode(),
+                guacStatus.getWebSocketCode());
 
     }
 

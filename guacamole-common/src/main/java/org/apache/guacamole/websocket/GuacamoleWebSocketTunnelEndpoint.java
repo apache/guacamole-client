@@ -99,12 +99,12 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
      * @param session
      *     The outbound WebSocket connection to close.
      *
-     * @param guac_status
+     * @param guacStatus
      *     The status to use for the connection.
      */
-    private void closeConnection(Session session, GuacamoleStatus guac_status) {
-        closeConnection(session, guac_status.getGuacamoleStatusCode(),
-                guac_status.getWebSocketCode());
+    private void closeConnection(Session session, GuacamoleStatus guacStatus) {
+        closeConnection(session, guacStatus.getGuacamoleStatusCode(),
+                guacStatus.getWebSocketCode());
     }
 
     /**

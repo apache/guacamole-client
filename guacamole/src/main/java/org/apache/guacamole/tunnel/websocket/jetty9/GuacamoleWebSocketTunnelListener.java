@@ -90,14 +90,14 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
      * @param session
      *     The outbound WebSocket connection to close.
      *
-     * @param guac_status
+     * @param guacStatus
      *     The status to send.
      */
     private void closeConnection(Session session,
-            GuacamoleStatus guac_status) {
+            GuacamoleStatus guacStatus) {
 
-        closeConnection(session, guac_status.getGuacamoleStatusCode(),
-                guac_status.getWebSocketCode());
+        closeConnection(session, guacStatus.getGuacamoleStatusCode(),
+                guacStatus.getWebSocketCode());
 
     }
 
