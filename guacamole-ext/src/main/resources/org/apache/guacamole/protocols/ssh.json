@@ -73,6 +73,11 @@
                 {
                     "name"  : "server-alive-interval",
                     "type"  : "NUMERIC"
+                },
+                {
+                    "name"    : "backspace",
+                    "type"    : "ENUM",
+                    "options" : [ "", "127", "8" ]
                 }
             ]
         },
