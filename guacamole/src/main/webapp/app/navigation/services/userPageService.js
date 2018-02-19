@@ -60,9 +60,13 @@ angular.module('navigation').factory('userPageService', ['$injector',
      * @returns {PageDefinition}
      *     The user's home page.
      */
-    var generateHomePage = function generateHomePage(rootGroups) {
+    var generateHomePage = function generateHomePage(rootGroups,permissions) {
 
         var homePage = null;
+        var settingsPages = generateSettingsPages(permissions);
+
+        if (settingsPages.length > 1)
+            return SYSTEM_HOME_PAGE;
 
         // Determine whether a connection or balancing group should serve as
         // the home page
@@ -140,13 +144,20 @@ angular.module('navigation').factory('userPageService', ['$injector',
         var deferred = $q.defer();
 
         // Resolve promise using home page derived from root connection groups
-        dataSourceService.apply(
+        var getRootGroups = dataSourceService.apply(
             connectionGroupService.getConnectionGroupTree,
             authenticationService.getAvailableDataSources(),
             ConnectionGroup.ROOT_IDENTIFIER
-        )
-        .then(function rootConnectionGroupsRetrieved(rootGroups) {
-            deferred.resolve(generateHomePage(rootGroups));
+        );
+        var getPermissionSets = dataSourceService.apply(
+            permissionService.getPermissions,
+            authenticationService.getAvailableDataSources(),
+            authenticationService.getCurrentUsername()
+        );
+
+        $q.all([getRootGroups,getPermissionSets])
+        .then(function rootConnectionGroupsPermissionsRetrieved(data) {
+            deferred.resolve(generateHomePage(data[0],data[1]));
         });
 
         return deferred.promise;
@@ -342,7 +353,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         var pages = [];
 
         // Get home page and settings pages
-        var homePage = generateHomePage(rootGroups);
+        var homePage = generateHomePage(rootGroups, permissions);
         var settingsPages = generateSettingsPages(permissions);
 
         // Only include the home page in the list of main pages if the user
