@@ -68,9 +68,11 @@ public class QuickConnection extends AbstractConnection {
      *
      * @param name
      *     The name of the connection.
+     *
      * @param identifier
      *     The unique identifier of this connection within this
      *     authentication module.
+     *
      * @param config
      *     The GuacamoleConfiguration object to store in this
      *     QuickConnection.

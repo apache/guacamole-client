@@ -80,12 +80,11 @@ public class QuickConnectREST {
      * @param uri
      *     The URI to parse into a connection.
      *
-     * @returns
+     * @return
      *     The ID of the connection in the directory.
      *
-     * @throws
-     *     Throws a GuacamoleException if an error is encountered
-     *     parsing the URI.
+     * @throws GuacamoleException
+     *     If an error is encountered parsing the URI.
      */
     @POST
     @Path("create")

@@ -48,6 +48,7 @@ class QuickConnectConnectionGroup extends AbstractConnectionGroup {
      *
      * @param name
      *     The name of the QuickConnectConnectionGroup.
+     *
      * @param identifier
      *     The identifier of the QuickConnectConnectionGroup.
      */
@@ -67,6 +68,7 @@ class QuickConnectConnectionGroup extends AbstractConnectionGroup {
      *
      * @param identifier
      *     The identifier of the connection to add to the group.
+     *
      * @return
      *     The String identifier of the connection if the add
      *     operation was successful; otherwise null.

@@ -66,7 +66,7 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
     /**
      * Returns the current counter and then increments it.
      *
-     * @returns
+     * @return
      *     An Integer representing the next available connection
      *     ID to get used when adding connections.
      */
@@ -89,7 +89,7 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
      * @param object
      *     The QuickConnection object to add to the tree.
      *
-     * @returns
+     * @return
      *     The connectionId of the object added to the directory.
      *
      * @throws GuacamoleException
@@ -123,7 +123,7 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
      *     The GuacamoleConfiguration to use to create the
      *     QuickConnection object.
      *
-     * @returns
+     * @return
      *     The connectionId of the object creation in the directory.
      *
      * @throws GuacamoleException

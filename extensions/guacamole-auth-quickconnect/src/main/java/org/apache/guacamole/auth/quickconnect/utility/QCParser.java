@@ -51,7 +51,7 @@ public class QCParser {
      * @param uri
      *     The string form of the URI to be parsed.
      *
-     * @returns
+     * @return
      *     A GuacamoleConfiguration using a combination of the parsed
      *     URI values and default values when not specified in the
      *     URI.

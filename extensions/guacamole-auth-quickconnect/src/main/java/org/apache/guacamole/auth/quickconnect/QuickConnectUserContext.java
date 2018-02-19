@@ -94,6 +94,7 @@ public class QuickConnectUserContext implements UserContext {
      * @param authProvider
      *     The authentication provider module instantiating this
      *     this class.
+     *
      * @param username
      *     The name of the user logging in and using this class.
      */

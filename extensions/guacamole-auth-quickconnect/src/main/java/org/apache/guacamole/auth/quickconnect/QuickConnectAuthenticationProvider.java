@@ -55,7 +55,7 @@ public class QuickConnectAuthenticationProvider extends SimpleAuthenticationProv
      * @param credentials
      *     Credentials object passed in from Guacamole login.
      *
-     * @returns
+     * @return
      *     Returns null, which causes the client to move on to the next
      *     module.
      */
