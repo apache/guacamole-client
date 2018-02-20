@@ -229,6 +229,11 @@
                     "name"    : "disable-offscreen-caching",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-glyph-caching",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
                 }
             ]
         },
