@@ -175,6 +175,10 @@
                     "options" : [ "true" ]
                 },
                 {
+                    "name"    : "drive-name",
+                    "type"    : "TEXT"
+                },
+                {
                     "name"  : "drive-path",
                     "type"  : "TEXT"
                 },
