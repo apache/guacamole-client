@@ -476,6 +476,7 @@
         "NAME" : "SSH",
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentication",
+        "SECTION_HEADER_BEHAVIOR"       : "Terminal behavior",
         "SECTION_HEADER_DISPLAY"        : "Display",
         "SECTION_HEADER_NETWORK"        : "Network",
         "SECTION_HEADER_RECORDING"      : "Screen Recording",
@@ -507,8 +508,8 @@
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
 
-        "FIELD_OPTION_BACKSPACE_0X08"  : "Backspace (Ctrl-H)",
-        "FIELD_OPTION_BACKSPACE_0X7F"  : "Delete (Ctrl-?)",
+        "FIELD_OPTION_BACKSPACE_127"  : "Backspace (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_8"  : "Delete (Ctrl-?)",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Black on white",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -535,9 +536,9 @@
         "NAME" : "Telnet",
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentication",
+        "SECTION_HEADER_BEHAVIOR"       : "Terminal behavior",
         "SECTION_HEADER_DISPLAY"        : "Display",
         "SECTION_HEADER_RECORDING"      : "Screen Recording",
-        "SECTION_HEADER_SESSION"        : "Session / Environment",
         "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)",
         "SECTION_HEADER_NETWORK"        : "Network"
 

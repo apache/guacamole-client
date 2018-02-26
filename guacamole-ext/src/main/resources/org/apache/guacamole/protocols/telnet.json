@@ -60,7 +60,7 @@
         },
 
         {
-            "name" : "session",
+            "name" : "behavior",
             "fields" : [
                 {
                     "name"    : "backspace",

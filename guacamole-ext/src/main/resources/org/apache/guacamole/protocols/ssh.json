@@ -73,7 +73,12 @@
                 {
                     "name"  : "server-alive-interval",
                     "type"  : "NUMERIC"
-                },
+                }
+            ]
+        },
+        {
+            "name" : "behavior",
+            "fields" : [
                 {
                     "name"    : "backspace",
                     "type"    : "ENUM",
