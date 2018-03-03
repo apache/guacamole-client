@@ -61,8 +61,6 @@ angular.module('navigation').factory('userPageService', ['$injector',
      *     A map of all permissions granted to the current user, where each
      *     key is the identifier of the corresponding data source.
      *
-     * @param {Object.<String,
-     *
      * @returns {PageDefinition}
      *     The user's home page.
      */
@@ -71,8 +69,10 @@ angular.module('navigation').factory('userPageService', ['$injector',
         var homePage = null;
         var settingsPages = generateSettingsPages(permissions);
 
-        // If we have more than one setting page, return the main home page
-        // and don't worry about checking for a single connection.
+        // If user has access to settings pages, return home page and skip
+        // evaluation for automatic connections.  The Preferences page is
+        // a Settings page and is always visible, so we look for more than
+        // one to indicate access to administrative pages.
         if (settingsPages.length > 1)
             return SYSTEM_HOME_PAGE;
 
