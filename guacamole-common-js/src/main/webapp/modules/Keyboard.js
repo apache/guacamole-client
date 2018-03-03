@@ -594,6 +594,7 @@ Guacamole.Keyboard = function Keyboard(element) {
         0xFFE2: true, // Right shift
         0xFFE3: true, // Left ctrl 
         0xFFE4: true, // Right ctrl 
+        0xFFE5: true, // Caps Lock
         0xFFE7: true, // Left meta 
         0xFFE8: true, // Right meta 
         0xFFE9: true, // Left alt
