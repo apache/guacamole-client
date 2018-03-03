@@ -163,9 +163,12 @@ angular.module('navigation').factory('userPageService', ['$injector',
             authenticationService.getCurrentUsername()
         );
 
-        $q.all([getRootGroups,getPermissionSets])
+        $q.all({
+            rootGroups : getRootGroups,
+            permissionsSets : getPermissionSets
+        })
         .then(function rootConnectionGroupsPermissionsRetrieved(data) {
-            deferred.resolve(generateHomePage(data[0],data[1]));
+            deferred.resolve(generateHomePage(data.rootGroups,data.permissionsSets));
         });
 
         return deferred.promise;
