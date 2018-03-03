@@ -57,14 +57,22 @@ angular.module('navigation').factory('userPageService', ['$injector',
      *     A map of all root connection groups visible to the current user,
      *     where each key is the identifier of the corresponding data source.
      *
+     * @param {Object.<String, PermissionSet>} permissions
+     *     A map of all permissions granted to the current user, where each
+     *     key is the identifier of the corresponding data source.
+     *
+     * @param {Object.<String,
+     *
      * @returns {PageDefinition}
      *     The user's home page.
      */
-    var generateHomePage = function generateHomePage(rootGroups,permissions) {
+    var generateHomePage = function generateHomePage(rootGroups, permissions) {
 
         var homePage = null;
         var settingsPages = generateSettingsPages(permissions);
 
+        // If we have more than one setting page, return the main home page
+        // and don't worry about checking for a single connection.
         if (settingsPages.length > 1)
             return SYSTEM_HOME_PAGE;
 
