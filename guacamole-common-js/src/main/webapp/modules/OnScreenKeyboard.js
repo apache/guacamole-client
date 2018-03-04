@@ -456,6 +456,17 @@ Guacamole.OnScreenKeyboard = function(layout) {
     };
 
     /**
+     * Resets the state of this keyboard, releasing all keys, and firing keyup
+     * events for each released key.
+     */
+    this.reset = function() {
+        for (var keysym in pressed) {
+            var key = getActiveKey(keysym);
+            osk.onkeyup(key.keysym);
+        }
+    }
+
+    /**
      * Given the name of a key and its corresponding definition, which may be
      * an array of keys objects, a number (keysym), a string (key title), or a
      * single key object, returns an array of key objects, deriving any missing
