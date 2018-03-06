@@ -561,7 +561,7 @@ Guacamole.Keyboard = function Keyboard(element) {
         "Pause": [0xFF13],
         "Play": [0xFD16],
         "PreviousCandidate": [0xFF3E],
-        "PrintScreen": [0xFD1D],
+        "PrintScreen": [0xFF61],
         "Redo": [0xFF66],
         "Right": [0xFF53],
         "RomanCharacters": null,
