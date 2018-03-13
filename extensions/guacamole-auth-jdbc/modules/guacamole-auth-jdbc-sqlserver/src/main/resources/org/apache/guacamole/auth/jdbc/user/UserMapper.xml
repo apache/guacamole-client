@@ -176,8 +176,8 @@
             resultSets="users,arbitraryAttributes">
 
         SELECT
-            [guacamole_user].user_id,
-            [guacamole_user].username,
+            user_id,
+            username,
             password_hash,
             password_salt,
             password_date,
@@ -198,7 +198,6 @@
                 WHERE [guacamole_user_history].user_id = [guacamole_user].user_id
             ) AS last_active
         FROM [guacamole_user]
-        LEFT JOIN [guacamole_user_history] ON [guacamole_user_history].user_id = [guacamole_user].user_id
         WHERE
             [guacamole_user].username = #{username,jdbcType=VARCHAR};
 
