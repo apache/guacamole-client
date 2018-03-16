@@ -89,7 +89,7 @@
     <!-- Search for specific user records -->
     <select id="search" resultMap="UserRecordResultMap">
 
-        SELECT
+        SELECT TOP (#{limit,jdbcType=INTEGER})
             [guacamole_user_history].remote_host,
             [guacamole_user_history].user_id,
             [guacamole_user_history].username,
@@ -128,14 +128,12 @@
             <if test="sortPredicate.descending">DESC</if>
         </foreach>
 
-        LIMIT #{limit,jdbcType=INTEGER}
-
     </select>
 
     <!-- Search for specific user records -->
     <select id="searchReadable" resultMap="UserRecordResultMap">
 
-        SELECT
+        SELECT TOP (#{limit,jdbcType=INTEGER})
             [guacamole_user_history].remote_host,
             [guacamole_user_history].user_id,
             [guacamole_user_history].username,
@@ -179,8 +177,6 @@
             </choose>
             <if test="sortPredicate.descending">DESC</if>
         </foreach>
-
-        LIMIT #{limit,jdbcType=INTEGER}
 
     </select>
 
