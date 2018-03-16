@@ -86,7 +86,7 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
      * QuickConnection connection, after setting the identifier
      * and parent object.
      *
-     * @param object
+     * @param connection
      *     The QuickConnection object to add to the tree.
      *
      * @return
@@ -96,17 +96,17 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
      *     If an error is encountered adding the object to the
      *     directory.
      */
-    public String put(QuickConnection object) throws GuacamoleException {
+    public String put(QuickConnection connection) throws GuacamoleException {
 
         // Get the next connection ID.
         String connectionId = getNextConnectionID().toString();
 
         // Set up identifier and parent on object.
-        object.setIdentifier(connectionId);
-        object.setParentIdentifier(ROOT_IDENTIFIER);
+        connection.setIdentifier(connectionId);
+        connection.setParentIdentifier(ROOT_IDENTIFIER);
 
         // Add connection to the directory
-        putConnection(object);
+        putConnection(connection);
 
         // Add connection to the tree
         this.rootGroup.addConnectionIdentifier(connectionId);
