@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.quickconnect;
 
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.quickconnect.utility.QCParser;
 import org.apache.guacamole.net.auth.ConnectionGroup;
@@ -46,7 +47,7 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
     /**
      * The internal counter for connection IDs.
      */
-    private int CONNECTION_ID = 0;
+    private AtomicInteger connectionId;
 
     /**
      * Creates a new QuickConnectDirectory which provides access to the
@@ -61,6 +62,7 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
     public QuickConnectDirectory(Collection<Connection> connections, ConnectionGroup rootGroup) {
         super(connections);
         this.rootGroup = (QuickConnectConnectionGroup)rootGroup;
+        this.connectionId = new AtomicInteger();
     }
 
     /**
@@ -70,8 +72,8 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
      *     An Integer representing the next available connection
      *     ID to get used when adding connections.
      */
-    private Integer getNextConnectionID() {
-        return CONNECTION_ID++;
+    private int getNextConnectionID() {
+        return connectionId.getAndIncrement();
     }
 
     @Override
@@ -99,7 +101,7 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
     public String put(QuickConnection connection) throws GuacamoleException {
 
         // Get the next connection ID.
-        String connectionId = getNextConnectionID().toString();
+        String connectionId = Integer.toString(getNextConnectionID());
 
         // Set up identifier and parent on object.
         connection.setIdentifier(connectionId);
@@ -132,7 +134,7 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
     public String create(GuacamoleConfiguration config) throws GuacamoleException {
 
         // Get the next connection ID
-        String connectionId = getNextConnectionID().toString();
+        String connectionId = Integer.toString(getNextConnectionID());
 
         // Generate a name for the configuration
         String name = QCParser.getName(config);
