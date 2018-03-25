@@ -45,11 +45,6 @@ public class QCParser {
     public static final String DEFAULT_URI_HOST = "localhost";
 
     /**
-     * The default port to use if one is not defined.
-     */
-    public static final Integer DEFAULT_URI_PORT = 22;
-
-    /**
      * Parse out a URI string and get a connection from that string,
      * or an exception if the parsing fails.
      *
@@ -89,9 +84,6 @@ public class QCParser {
         if (host == null || host.equals(""))
             host = DEFAULT_URI_HOST;
 
-        if (port == -1 || port < 1)
-            port = DEFAULT_URI_PORT;
-
         if (query != null && !query.equals(""))
             paramList = Arrays.asList(query.split("&"));
 
@@ -106,7 +98,9 @@ public class QCParser {
         GuacamoleConfiguration qcConfig = new GuacamoleConfiguration();
         qcConfig.setProtocol(protocol);
         qcConfig.setParameter("hostname",host);
-        qcConfig.setParameter("port", Integer.toString(port));
+
+        if (port > 0)
+            qcConfig.setParameter("port", Integer.toString(port));
 
         if (username != null)
             qcConfig.setParameter("username", username);
