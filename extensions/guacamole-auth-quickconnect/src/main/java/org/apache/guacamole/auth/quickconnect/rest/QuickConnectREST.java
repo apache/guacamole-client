@@ -91,9 +91,6 @@ public class QuickConnectREST {
     public String create(@FormParam("uri") String uri) 
             throws GuacamoleException {
 
-        if (directory == null)
-            throw new GuacamoleServerException("No connection directory available.");
-
         return directory.create(QCParser.getConfiguration(uri));
  
     }
