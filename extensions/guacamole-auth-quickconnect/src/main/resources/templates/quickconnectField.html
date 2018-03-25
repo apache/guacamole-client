@@ -2,7 +2,7 @@
 <div class="header" ng-controller="quickconnectController">
     <div class="quickconnect-container">
         <form ng-submit="quickConnect()">
-            <input type=text class="quickconnect-field" placeholder="Enter Connection URI" ng-model="uri" />
+            <input type=text class="quickconnect-field" placeholder="{{'QUICKCONNECT.FIELD_PLACEHOLDER_URI' |translate}}" ng-model="uri" />
         </form>
     </div>
     <button class="quickconnect-button" ng-click="quickConnect()">Connect</button>

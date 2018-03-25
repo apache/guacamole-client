@@ -2,6 +2,10 @@
 
     "DATA_SOURCE_QUICKCONNECT" : {
         "NAME" : "QuickConnect"
+    },
+
+    "QUICKCONNECT" : {
+        "FIELD_PLACEHOLDER_URI" : "Enter Connection URI"
     }
 
 }
