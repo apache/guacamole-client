@@ -23,10 +23,10 @@ import java.util.Collections;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
-import org.apache.guacamole.net.auth.simple.SimpleAuthenticationProvider;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
@@ -35,7 +35,7 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
  * process so that the QuickConnect functionality can be initialized and be used
  * throughout the web client.
  */
-public class QuickConnectAuthenticationProvider extends SimpleAuthenticationProvider {
+public class QuickConnectAuthenticationProvider implements AuthenticationProvider {
 
     /**
      * userContext for this authentication provider.
@@ -45,6 +45,11 @@ public class QuickConnectAuthenticationProvider extends SimpleAuthenticationProv
     @Override
     public String getIdentifier() {
         return "quickconnect";
+    }
+
+    @Override
+    public Object getResource() throws GuacamoleException {
+        return null;
     }
 
     /**
@@ -68,20 +73,52 @@ public class QuickConnectAuthenticationProvider extends SimpleAuthenticationProv
     }
 
     @Override
-    public Map<String, GuacamoleConfiguration>
-        getAuthorizedConfigurations(Credentials credentials)
-        throws GuacamoleException {
-
-        return Collections.<String, GuacamoleConfiguration>emptyMap();
-
-    }
-
-    @Override
     public UserContext getUserContext(AuthenticatedUser authenticatedUser)
             throws GuacamoleException {
 
         return new QuickConnectUserContext(this, authenticatedUser.getIdentifier());
 
+    }
+
+    @Override
+    public AuthenticatedUser updateAuthenticatedUser(AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException {
+
+        // Simply return the given user, updating nothing
+        return authenticatedUser;
+
+    }
+
+    @Override
+    public UserContext updateUserContext(UserContext context,
+        AuthenticatedUser authorizedUser, Credentials credentials)
+            throws GuacamoleException {
+
+        // Simply return the given context, updating nothing
+        return context;
+
+    }
+
+    @Override
+    public UserContext decorate(UserContext context,
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
+
+        // Simply return the given context, decorating nothing
+        return context;
+
+    }
+
+    @Override
+    public UserContext redecorate(UserContext decorated, UserContext context,
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
+        return decorate(context, authenticatedUser, credentials);
+    }
+
+    @Override
+    public void shutdown() {
+        // Nothing to do, here.
     }
 
 }
