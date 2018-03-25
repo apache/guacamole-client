@@ -49,7 +49,7 @@ public class QCParser {
     /**
      * The regex to use to split username and password.
      */
-    private static final Pattern userinfoPattern = Pattern.compile("(^[^:]+):(.*)");
+    private static final Pattern userinfoPattern = Pattern.compile("(^[^:]+):?(.*)");
 
     /**
      * The regex group of the username.
@@ -107,8 +107,10 @@ public class QCParser {
         if (userInfo != null && !userInfo.equals("")) {
 
             Matcher userinfoMatcher = userinfoPattern.matcher(userInfo);
-            username = userinfoMatcher.group(USERNAME_GROUP);
-            password = userinfoMatcher.group(PASSWORD_GROUP);
+            if (userinfoMatcher.matches()) {
+                username = userinfoMatcher.group(USERNAME_GROUP);
+                password = userinfoMatcher.group(PASSWORD_GROUP);
+            }
 
         }
 
