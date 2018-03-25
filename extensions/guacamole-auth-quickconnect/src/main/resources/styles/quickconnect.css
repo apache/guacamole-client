@@ -38,10 +38,6 @@
     box-sizing: border-box;
 }
 
-.quickconnect-field input[type="submit"] {
-    display: none !important;
-}
-
 .quickconnect-button {
     clear: both;
     float: right;
