@@ -23,6 +23,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
@@ -43,6 +45,21 @@ public class QCParser {
      * The default host to use if one is not defined.
      */
     public static final String DEFAULT_URI_HOST = "localhost";
+
+    /**
+     * The regex to use to split username and password.
+     */
+    private static final Pattern userinfoPattern = Pattern.compile("(^[^:]+):(.*)");
+
+    /**
+     * The regex group of the username.
+     */
+    private static final int USERNAME_GROUP = 1;
+
+    /**
+     * THe regex group of the password.
+     */
+    private static final int PASSWORD_GROUP = 2;
 
     /**
      * Parse out a URI string and get a connection from that string,
@@ -88,11 +105,11 @@ public class QCParser {
             paramList = Arrays.asList(query.split("&"));
 
         if (userInfo != null && !userInfo.equals("")) {
-            String[] authenticators = userInfo.split(":");
-            if (authenticators.length > 0 && authenticators[0] != null)
-                username = authenticators[0];
-            if (authenticators.length > 1 && authenticators[1] != null)
-                password = authenticators[1];
+
+            Matcher userinfoMatcher = userinfoPattern.matcher(userInfo);
+            username = userinfoMatcher.group(USERNAME_GROUP);
+            password = userinfoMatcher.group(PASSWORD_GROUP);
+
         }
 
         GuacamoleConfiguration qcConfig = new GuacamoleConfiguration();
@@ -102,10 +119,10 @@ public class QCParser {
         if (port > 0)
             qcConfig.setParameter("port", Integer.toString(port));
 
-        if (username != null)
+        if (username != null && username.length() > 0)
             qcConfig.setParameter("username", username);
 
-        if (password != null)
+        if (password != null && password.length() > 0)
             qcConfig.setParameter("password", password);
 
         if (paramList != null) {
