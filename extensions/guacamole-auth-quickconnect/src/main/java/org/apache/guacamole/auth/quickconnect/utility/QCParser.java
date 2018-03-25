@@ -27,10 +27,15 @@ import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
+/**
+ * A utility class to parse out a URI into the settings necessary
+ * to create and establish a Guacamole connection.
+ */
 public class QCParser {
 
     /**
-     * The default protocol to parse to if one is undefined.
+     * The default protocol to parse to if one is provided in
+     * the incoming URI..
      */
     public static final String DEFAULT_URI_PROTOCOL = "ssh";
 
@@ -71,7 +76,7 @@ public class QCParser {
         }
         String protocol = qcUri.getScheme();
         String host = qcUri.getHost();
-        Integer port = qcUri.getPort();
+        int port = qcUri.getPort();
         String userInfo = qcUri.getUserInfo();
         String query = qcUri.getQuery();
         String username = null;
@@ -101,7 +106,7 @@ public class QCParser {
         GuacamoleConfiguration qcConfig = new GuacamoleConfiguration();
         qcConfig.setProtocol(protocol);
         qcConfig.setParameter("hostname",host);
-        qcConfig.setParameter("port", port.toString());
+        qcConfig.setParameter("port", Integer.toString(port));
 
         if (username != null)
             qcConfig.setParameter("username", username);

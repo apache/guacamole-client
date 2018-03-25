@@ -63,10 +63,6 @@ public class QuickConnectAuthenticationProvider extends SimpleAuthenticationProv
     public AuthenticatedUser authenticateUser(Credentials credentials)
         throws GuacamoleException {
 
-        String username = credentials.getUsername();
-        if (username == null || username.isEmpty())
-            throw new GuacamoleInvalidCredentialsException("You must login.", CredentialsInfo.USERNAME_PASSWORD);
-
         return null;
 
     }
