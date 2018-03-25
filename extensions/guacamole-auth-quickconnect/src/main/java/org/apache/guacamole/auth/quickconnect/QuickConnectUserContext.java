@@ -80,7 +80,7 @@ public class QuickConnectUserContext implements UserContext {
      * The Directory with access to all connections within the root group
      * associated with this UserContext.
      */
-    private final Directory<Connection> connectionDirectory;
+    private final QuickConnectDirectory connectionDirectory;
 
     /**
      * The root connection group.
@@ -157,7 +157,7 @@ public class QuickConnectUserContext implements UserContext {
     }
 
     @Override
-    public Directory<Connection> getConnectionDirectory()
+    public QuickConnectDirectory getConnectionDirectory()
             throws GuacamoleException {
         return connectionDirectory;
     }

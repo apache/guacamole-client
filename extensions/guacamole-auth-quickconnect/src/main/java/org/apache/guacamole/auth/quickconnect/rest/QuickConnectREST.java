@@ -69,7 +69,7 @@ public class QuickConnectREST {
     public QuickConnectREST(QuickConnectUserContext userContext)
             throws GuacamoleException {
         this.userContext = userContext;
-        this.directory = (QuickConnectDirectory)this.userContext.getConnectionDirectory();
+        this.directory = this.userContext.getConnectionDirectory();
     }
 
     /**
