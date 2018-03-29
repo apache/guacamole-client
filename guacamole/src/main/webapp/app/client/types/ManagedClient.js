@@ -226,7 +226,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             + "&GUAC_WIDTH="       + Math.floor(optimal_width)
             + "&GUAC_HEIGHT="      + Math.floor(optimal_height)
             + "&GUAC_DPI="         + Math.floor(optimal_dpi)
-            + (connectionParameters ? '&' + encodeURIComponent(connectionParameters) : '');
+            + (connectionParameters ? '&' + connectionParameters : '');
 
         // Add audio mimetypes to connect string
         guacAudio.supported.forEach(function(mimetype) {
@@ -539,7 +539,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                         var inst = param[idx];
                         if (userData != '')
                             userData += '&';
-                        userData += key + '[' + idx + ']=' + inst;
+                        userData += key + '[' + idx + ']=' + encodeURIComponent(inst);
                     }
                 }
                 connectionParameters = (connectionParameters ? connectionParameters + '&' + userData : userData);
