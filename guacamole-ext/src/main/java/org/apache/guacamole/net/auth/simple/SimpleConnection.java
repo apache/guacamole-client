@@ -100,8 +100,9 @@ public class SimpleConnection extends AbstractConnection {
             throws GuacamoleException {
 
         // Filter in connection-time information
+        GuacamoleConfiguration filteredConfig = new GuacamoleConfiguration(config);
         TokenFilter tokenFilter = new TokenFilter();
-        tokenFilter.filterPrompts(config.getParameters(),info.getParameters());
+        tokenFilter.filterPrompts(filteredConfig.getParameters(),info.getParameters());
 
         // Retrieve proxy configuration from environment
         Environment environment = new LocalEnvironment();
@@ -120,7 +121,7 @@ public class SimpleConnection extends AbstractConnection {
             case SSL:
                 socket = new ConfiguredGuacamoleSocket(
                     new SSLGuacamoleSocket(hostname, port),
-                    config, info
+                    filteredConfig, info
                 );
                 break;
 
@@ -128,7 +129,7 @@ public class SimpleConnection extends AbstractConnection {
             case NONE:
                 socket = new ConfiguredGuacamoleSocket(
                     new InetGuacamoleSocket(hostname, port),
-                    config, info
+                    filteredConfig, info
                 );
                 break;
 
