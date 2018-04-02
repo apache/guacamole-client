@@ -60,6 +60,17 @@
         },
 
         {
+            "name" : "behavior",
+            "fields" : [
+                {
+                    "name"    : "backspace",
+                    "type"    : "ENUM",
+                    "options" : [ "", "127", "8" ]
+                }
+            ]
+        },
+
+        {
             "name" : "typescript",
             "fields" : [
                 {

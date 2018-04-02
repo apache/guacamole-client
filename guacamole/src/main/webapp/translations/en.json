@@ -423,8 +423,9 @@
 
     "PROTOCOL_SSH" : {
 
+        "FIELD_HEADER_BACKSPACE"    : "Backspace key sends:",
         "FIELD_HEADER_COLOR_SCHEME" : "Color scheme:",
-        "FIELD_HEADER_COMMAND"     : "Execute command:",
+        "FIELD_HEADER_COMMAND"      : "Execute command:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
         "FIELD_HEADER_FONT_NAME"   : "Font name:",
@@ -446,6 +447,10 @@
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "File browser root directory:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Black on white",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -472,6 +477,7 @@
         "NAME" : "SSH",
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentication",
+        "SECTION_HEADER_BEHAVIOR"       : "Terminal behavior",
         "SECTION_HEADER_DISPLAY"        : "Display",
         "SECTION_HEADER_NETWORK"        : "Network",
         "SECTION_HEADER_RECORDING"      : "Screen Recording",
@@ -483,6 +489,7 @@
 
     "PROTOCOL_TELNET" : {
 
+        "FIELD_HEADER_BACKSPACE"      : "Backspace key sends:",
         "FIELD_HEADER_COLOR_SCHEME"   : "Color scheme:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
@@ -501,6 +508,10 @@
         "FIELD_HEADER_RECORDING_PATH" : "Recording path:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Black on white",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -527,6 +538,7 @@
         "NAME" : "Telnet",
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentication",
+        "SECTION_HEADER_BEHAVIOR"       : "Terminal behavior",
         "SECTION_HEADER_DISPLAY"        : "Display",
         "SECTION_HEADER_RECORDING"      : "Screen Recording",
         "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)",
