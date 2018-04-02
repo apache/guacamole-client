@@ -85,15 +85,21 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
     public ModeledUserContext getUserContext(AuthenticationProvider authenticationProvider,
             AuthenticatedUser authenticatedUser) throws GuacamoleException {
 
+        // Always allow but provide no data for users authenticated via our own
+        // connection sharing links
+        if (authenticatedUser instanceof SharedAuthenticatedUser)
+            return null;
+
+        // Set semantic flags based on context
+        boolean databaseCredentialsUsed = (authenticatedUser instanceof ModeledAuthenticatedUser);
+        boolean databaseRestrictionsApplicable = (databaseCredentialsUsed || environment.isUserRequired());
+
         // Retrieve user account for already-authenticated user
         ModeledUser user = userService.retrieveUser(authenticationProvider, authenticatedUser);
         if (user != null && !user.isDisabled()) {
 
-            // Account restrictions specific to this extension apply if this
-            // extension authenticated the user OR if an account from this
-            // extension is explicitly required
-            if (authenticatedUser instanceof ModeledAuthenticatedUser
-                    || environment.isUserRequired()) {
+            // Enforce applicable account restrictions
+            if (databaseRestrictionsApplicable) {
 
                 // Verify user account is still valid as of today
                 if (!user.isAccountValid())
@@ -103,32 +109,33 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
                 if (!user.isAccountAccessible())
                     throw new GuacamoleClientException("LOGIN.ERROR_NOT_ACCESSIBLE");
 
-                // Update password if password is expired
-                if (user.isExpired() || passwordPolicyService.isPasswordExpired(user))
-                    userService.resetExpiredPassword(user, authenticatedUser.getCredentials());
-
             }
 
-            // Link to user context
+            // Update password if password is expired AND the password was
+            // actually involved in the authentication process
+            if (databaseCredentialsUsed) {
+                if (user.isExpired() || passwordPolicyService.isPasswordExpired(user))
+                    userService.resetExpiredPassword(user, authenticatedUser.getCredentials());
+            }
+
+            // Return all data associated with the authenticated user
             ModeledUserContext context = userContextProvider.get();
             context.init(user.getCurrentUser());
             return context;
 
         }
 
-        // Do not invalidate the authentication result of users who were
-        // authenticated via our own connection sharing links
-        if (authenticatedUser instanceof SharedAuthenticatedUser)
-            return null;
+        // Veto authentication result only if database-specific account
+        // restrictions apply in this situation
+        if (databaseRestrictionsApplicable)
+            throw new GuacamoleInvalidCredentialsException("Invalid login",
+                    CredentialsInfo.USERNAME_PASSWORD);
 
-        // Simply return no data if a database user account is not required
-        if (!environment.isUserRequired())
-            return null;
-
-        // Otherwise, invalidate the authentication result, as database user
-        // accounts are absolutely required
-        throw new GuacamoleInvalidCredentialsException("Invalid login",
-                CredentialsInfo.USERNAME_PASSWORD);
+        // There is no data to be returned for the user, either because they do
+        // not exist or because restrictions prevent their data from being
+        // retrieved, but no restrictions apply which should prevent the user
+        // from authenticating entirely
+        return null;
 
     }
 
