@@ -38,7 +38,6 @@ import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
 import org.apache.guacamole.auth.jdbc.base.ModeledActivityRecord;
-import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.apache.guacamole.auth.jdbc.permission.UserPermissionMapper;
@@ -49,7 +48,6 @@ import org.apache.guacamole.form.PasswordField;
 import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
-import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
@@ -294,8 +292,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         for (ObjectPermission.Type permissionType : IMPLICIT_USER_PERMISSIONS) {
             
             ObjectPermissionModel permissionModel = new ObjectPermissionModel();
-            permissionModel.setUserID(model.getObjectID());
-            permissionModel.setUsername(model.getIdentifier());
+            permissionModel.setEntityID(model.getEntityID());
             permissionModel.setType(permissionType);
             permissionModel.setObjectIdentifier(model.getIdentifier());
 

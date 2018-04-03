@@ -66,8 +66,7 @@ public class SystemPermissionService
         SystemPermissionModel model = new SystemPermissionModel();
 
         // Populate model object with data from user and permission
-        model.setUserID(targetUser.getModel().getObjectID());
-        model.setUsername(targetUser.getModel().getIdentifier());
+        model.setEntityID(targetUser.getModel().getEntityID());
         model.setType(permission.getType());
 
         return model;

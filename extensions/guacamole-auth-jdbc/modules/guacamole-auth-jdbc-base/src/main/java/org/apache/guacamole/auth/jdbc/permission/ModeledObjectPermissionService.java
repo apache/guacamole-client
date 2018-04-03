@@ -53,8 +53,7 @@ public abstract class ModeledObjectPermissionService
         ObjectPermissionModel model = new ObjectPermissionModel();
 
         // Populate model object with data from user and permission
-        model.setUserID(targetUser.getModel().getObjectID());
-        model.setUsername(targetUser.getModel().getIdentifier());
+        model.setEntityID(targetUser.getModel().getEntityID());
         model.setType(permission.getType());
         model.setObjectIdentifier(permission.getObjectIdentifier());
 

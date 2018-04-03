@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
-import org.apache.guacamole.auth.jdbc.user.UserModel;
+import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.ibatis.annotations.Param;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 
@@ -30,19 +30,19 @@ public interface SystemPermissionMapper extends PermissionMapper<SystemPermissio
 
     /**
      * Retrieve the permission of the given type associated with the given
-     * user, if it exists. If no such permission exists, null is returned.
+     * entity, if it exists. If no such permission exists, null is returned.
      *
-     * @param user
-     *     The user to retrieve permissions for.
+     * @param entity
+     *     The entity to retrieve permissions for.
      * 
      * @param type
      *     The type of permission to return.
      *
      * @return
      *     The requested permission, or null if no such permission is granted
-     *     to the given user.
+     *     to the given entity.
      */
-    SystemPermissionModel selectOne(@Param("user") UserModel user,
+    SystemPermissionModel selectOne(@Param("entity") EntityModel entity,
             @Param("type") SystemPermission.Type type);
 
 }

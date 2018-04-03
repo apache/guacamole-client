@@ -432,8 +432,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
             // Create model which grants this permission to the current user
             ObjectPermissionModel permissionModel = new ObjectPermissionModel();
-            permissionModel.setUserID(userModel.getObjectID());
-            permissionModel.setUsername(userModel.getIdentifier());
+            permissionModel.setEntityID(userModel.getEntityID());
             permissionModel.setType(permission);
             permissionModel.setObjectIdentifier(model.getIdentifier());
 
