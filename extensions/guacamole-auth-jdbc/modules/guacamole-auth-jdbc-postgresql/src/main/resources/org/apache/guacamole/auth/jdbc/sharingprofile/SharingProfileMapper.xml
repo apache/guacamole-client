@@ -52,7 +52,7 @@
         SELECT sharing_profile_id
         FROM guacamole_sharing_profile_permission
         WHERE
-            user_id = #{user.objectID,jdbcType=INTEGER}
+            entity_id = #{user.entityID,jdbcType=INTEGER}
             AND permission = 'READ'
     </select>
 
@@ -99,7 +99,7 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}::integer
             </foreach>
-            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND entity_id = #{user.entityID,jdbcType=INTEGER}
             AND permission = 'READ';
 
         SELECT
@@ -113,7 +113,7 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}::integer
             </foreach>
-            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND entity_id = #{user.entityID,jdbcType=INTEGER}
             AND permission = 'READ';
 
     </select>

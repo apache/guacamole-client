@@ -79,7 +79,10 @@
             #{record.sharingProfileIdentifier,jdbcType=INTEGER}::integer,
             #{record.sharingProfileName,jdbcType=VARCHAR},
             (SELECT user_id FROM guacamole_user
-             WHERE username = #{record.username,jdbcType=VARCHAR}),
+             JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+             WHERE
+                   guacamole_entity.name = #{record.username,jdbcType=VARCHAR}
+               AND guacamole_entity.type = 'USER'::guacamole_entity_type),
             #{record.username,jdbcType=VARCHAR},
             #{record.startDate,jdbcType=TIMESTAMP},
             #{record.endDate,jdbcType=TIMESTAMP}
@@ -180,7 +183,10 @@
                 guacamole_connection_history.user_id IN (
                     SELECT user_id
                     FROM guacamole_user
-                    WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN username) > 0
+                    JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+                    WHERE
+                            POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
+                        AND guacamole_entity.type = 'USER'::guacamole_entity_type
                 )
 
                 OR guacamole_connection_history.connection_id IN (

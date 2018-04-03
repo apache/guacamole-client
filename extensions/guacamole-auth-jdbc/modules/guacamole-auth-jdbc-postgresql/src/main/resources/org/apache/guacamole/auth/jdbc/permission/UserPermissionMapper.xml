@@ -25,25 +25,25 @@
 
     <!-- Result mapper for user permissions -->
     <resultMap id="UserPermissionResultMap" type="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
-        <result column="user_id"           property="userID"           jdbcType="INTEGER"/>
-        <result column="username"          property="username"         jdbcType="VARCHAR"/>
+        <result column="entity_id"         property="entityID"         jdbcType="INTEGER"/>
         <result column="permission"        property="type"             jdbcType="VARCHAR"
                 javaType="org.apache.guacamole.net.auth.permission.ObjectPermission$Type"/>
-        <result column="affected_username" property="objectIdentifier" jdbcType="INTEGER"/>
+        <result column="affected_name"     property="objectIdentifier" jdbcType="INTEGER"/>
     </resultMap>
 
-    <!-- Select all permissions for a given user -->
+    <!-- Select all permissions for a given entity -->
     <select id="select" resultMap="UserPermissionResultMap">
 
         SELECT
-            guacamole_user_permission.user_id,
-            guacamole_user.username,
+            guacamole_user_permission.entity_id,
             permission,
-            affected.username AS affected_username
+            affected_entity.name AS affected_name
         FROM guacamole_user_permission
-        JOIN guacamole_user          ON guacamole_user_permission.user_id          = guacamole_user.user_id
-        JOIN guacamole_user affected ON guacamole_user_permission.affected_user_id = affected.user_id
-        WHERE guacamole_user_permission.user_id = #{user.objectID,jdbcType=INTEGER}
+        JOIN guacamole_user affected_user ON guacamole_user_permission.affected_user_id = affected_user.user_id
+        JOIN guacamole_entity affected_entity ON affected_user.entity_id = affected_entity.entity_id
+        WHERE
+            guacamole_user_permission.entity_id = #{entity.entityID,jdbcType=INTEGER}
+            AND affected_entity.type = 'USER'::guacamole_entity_type
 
     </select>
 
@@ -51,38 +51,40 @@
     <select id="selectOne" resultMap="UserPermissionResultMap">
 
         SELECT
-            guacamole_user_permission.user_id,
-            guacamole_user.username,
+            guacamole_user_permission.entity_id,
             permission,
-            affected.username AS affected_username
+            affected_entity.name AS affected_name
         FROM guacamole_user_permission
-        JOIN guacamole_user          ON guacamole_user_permission.user_id          = guacamole_user.user_id
-        JOIN guacamole_user affected ON guacamole_user_permission.affected_user_id = affected.user_id
+        JOIN guacamole_user affected_user ON guacamole_user_permission.affected_user_id = affected_user.user_id
+        JOIN guacamole_entity affected_entity ON affected_user.entity_id = affected_entity.entity_id
         WHERE
-            guacamole_user_permission.user_id = #{user.objectID,jdbcType=INTEGER}
+            guacamole_user_permission.entity_id = #{entity.entityID,jdbcType=INTEGER}
             AND permission = #{type,jdbcType=VARCHAR}::guacamole_object_permission_type
-            AND affected.username = #{identifier,jdbcType=INTEGER}
+            AND affected_entity.name = #{identifier,jdbcType=VARCHAR}
+            AND affected_entity.type = 'USER'::guacamole_entity_type
 
     </select>
 
-    <!-- Select identifiers accessible by the given user for the given permissions -->
+    <!-- Select identifiers accessible by the given entity for the given permissions -->
     <select id="selectAccessibleIdentifiers" resultType="string">
 
-        SELECT DISTINCT username
+        SELECT DISTINCT affected_entity.name
         FROM guacamole_user_permission
-        JOIN guacamole_user ON guacamole_user_permission.affected_user_id = guacamole_user.user_id
+        JOIN guacamole_user affected_user ON guacamole_user_permission.affected_user_id = affected_user.user_id
+        JOIN guacamole_entity affected_entity ON affected_user.entity_id = affected_entity.entity_id
         WHERE
-            guacamole_user_permission.user_id = #{user.objectID,jdbcType=INTEGER}
-            AND username IN
+            guacamole_user_permission.entity_id = #{entity.entityID,jdbcType=INTEGER}
+            AND affected_entity.name IN
                 <foreach collection="identifiers" item="identifier"
                          open="(" separator="," close=")">
-                    #{identifier,jdbcType=INTEGER}
+                    #{identifier,jdbcType=VARCHAR}
                 </foreach>
             AND permission IN
                 <foreach collection="permissions" item="permission"
                          open="(" separator="," close=")">
                     #{permission,jdbcType=VARCHAR}::guacamole_object_permission_type
                 </foreach>
+            AND affected_entity.type = 'USER'::guacamole_entity_type
 
     </select>
 
@@ -90,16 +92,18 @@
     <delete id="delete" parameterType="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
 
         DELETE FROM guacamole_user_permission
-        USING guacamole_user affected
+        USING guacamole_user affected_user, guacamole_entity affected_entity
         WHERE
-            guacamole_user_permission.affected_user_id = affected.user_id
-            AND (guacamole_user_permission.user_id, permission, affected.username) IN
+            guacamole_user_permission.affected_user_id = affected_user.user_id
+            AND affected_user.entity_id = affected_entity.entity_id
+            AND (guacamole_user_permission.entity_id, permission, affected_entity.name) IN
                 <foreach collection="permissions" item="permission"
                          open="(" separator="," close=")">
-                    (#{permission.userID,jdbcType=INTEGER},
+                    (#{permission.entityID,jdbcType=INTEGER},
                      #{permission.type,jdbcType=VARCHAR}::guacamole_object_permission_type,
                      #{permission.objectIdentifier,jdbcType=INTEGER})
                 </foreach>
+            AND affected_entity.type = 'USER'::guacamole_entity_type
 
     </delete>
 
@@ -107,26 +111,29 @@
     <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
 
         INSERT INTO guacamole_user_permission (
-            user_id,
+            entity_id,
             permission,
             affected_user_id
         )
         SELECT DISTINCT
-            permissions.user_id,
+            permissions.entity_id,
             permissions.permission,
-            guacamole_user.user_id
+            affected_user.user_id
         FROM
             <foreach collection="permissions" item="permission"
                      open="(" separator="UNION ALL" close=")">
-                SELECT #{permission.userID,jdbcType=INTEGER}                                 AS user_id,
+                SELECT #{permission.entityID,jdbcType=INTEGER}                               AS entity_id,
                        #{permission.type,jdbcType=VARCHAR}::guacamole_object_permission_type AS permission,
-                       #{permission.objectIdentifier,jdbcType=INTEGER}                       AS username
+                       #{permission.objectIdentifier,jdbcType=VARCHAR}::text                 AS affected_name
             </foreach>
         AS permissions
-        JOIN guacamole_user ON guacamole_user.username = permissions.username
-        WHERE (permissions.user_id, permissions.permission, guacamole_user.user_id) NOT IN (
+        JOIN guacamole_entity affected_entity ON
+                affected_entity.name = permissions.affected_name
+            AND affected_entity.type = 'USER'::guacamole_entity_type
+        JOIN guacamole_user affected_user ON affected_user.entity_id = affected_entity.entity_id
+        WHERE (permissions.entity_id, permissions.permission, affected_user.user_id) NOT IN (
             SELECT
-                guacamole_user_permission.user_id,
+                guacamole_user_permission.entity_id,
                 guacamole_user_permission.permission,
                 guacamole_user_permission.affected_user_id
             FROM guacamole_user_permission

@@ -69,7 +69,7 @@
         SELECT connection_group_id
         FROM guacamole_connection_group_permission
         WHERE
-            user_id = #{user.objectID,jdbcType=INTEGER}
+            entity_id = #{user.entityID,jdbcType=INTEGER}
             AND permission = 'READ'
     </select>
 
@@ -90,7 +90,7 @@
         WHERE
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}::integer</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
-            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND entity_id = #{user.entityID,jdbcType=INTEGER}
             AND permission = 'READ'
     </select>
 
@@ -161,7 +161,7 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}::integer
             </foreach>
-            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND entity_id = #{user.entityID,jdbcType=INTEGER}
             AND permission = 'READ';
 
         SELECT parent_id, guacamole_connection_group.connection_group_id
@@ -172,7 +172,7 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}::integer
             </foreach>
-            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND entity_id = #{user.entityID,jdbcType=INTEGER}
             AND permission = 'READ';
 
         SELECT parent_id, guacamole_connection.connection_id
@@ -183,7 +183,7 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}::integer
             </foreach>
-            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND entity_id = #{user.entityID,jdbcType=INTEGER}
             AND permission = 'READ';
 
         SELECT
@@ -197,7 +197,7 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}::integer
             </foreach>
-            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND entity_id = #{user.entityID,jdbcType=INTEGER}
             AND permission = 'READ';
 
     </select>

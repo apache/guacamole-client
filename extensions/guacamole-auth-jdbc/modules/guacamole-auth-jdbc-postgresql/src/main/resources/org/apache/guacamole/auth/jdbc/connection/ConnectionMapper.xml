@@ -68,7 +68,7 @@
         SELECT connection_id
         FROM guacamole_connection_permission
         WHERE
-            user_id = #{user.objectID,jdbcType=INTEGER}
+            entity_id = #{user.entityID,jdbcType=INTEGER}
             AND permission = 'READ'
     </select>
 
@@ -89,7 +89,7 @@
         WHERE
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}::integer</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
-            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND entity_id = #{user.entityID,jdbcType=INTEGER}
             AND permission = 'READ'
     </select>
 
@@ -165,7 +165,7 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}::integer
             </foreach>
-            AND guacamole_connection_permission.user_id = #{user.objectID,jdbcType=INTEGER}
+            AND guacamole_connection_permission.entity_id = #{user.entityID,jdbcType=INTEGER}
             AND permission = 'READ'
         GROUP BY guacamole_connection.connection_id;
 
@@ -177,7 +177,7 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}::integer
             </foreach>
-            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND entity_id = #{user.entityID,jdbcType=INTEGER}
             AND permission = 'READ';
 
         SELECT
@@ -191,7 +191,7 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}::integer
             </foreach>
-            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND entity_id = #{user.entityID,jdbcType=INTEGER}
             AND permission = 'READ';
 
     </select>

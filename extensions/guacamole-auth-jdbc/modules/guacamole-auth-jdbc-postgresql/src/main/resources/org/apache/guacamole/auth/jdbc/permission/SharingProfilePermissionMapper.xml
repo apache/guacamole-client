@@ -25,24 +25,21 @@
 
     <!-- Result mapper for sharing profile permissions -->
     <resultMap id="SharingProfilePermissionResultMap" type="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
-        <result column="user_id"            property="userID"           jdbcType="INTEGER"/>
-        <result column="username"           property="username"         jdbcType="VARCHAR"/>
+        <result column="entity_id"          property="entityID"         jdbcType="INTEGER"/>
         <result column="permission"         property="type"             jdbcType="VARCHAR"
                 javaType="org.apache.guacamole.net.auth.permission.ObjectPermission$Type"/>
         <result column="sharing_profile_id" property="objectIdentifier" jdbcType="INTEGER"/>
     </resultMap>
 
-    <!-- Select all permissions for a given user -->
+    <!-- Select all permissions for a given entity -->
     <select id="select" resultMap="SharingProfilePermissionResultMap">
 
         SELECT
-            guacamole_sharing_profile_permission.user_id,
-            username,
+            entity_id,
             permission,
             sharing_profile_id
         FROM guacamole_sharing_profile_permission
-        JOIN guacamole_user ON guacamole_sharing_profile_permission.user_id = guacamole_user.user_id
-        WHERE guacamole_sharing_profile_permission.user_id = #{user.objectID,jdbcType=INTEGER}
+        WHERE entity_id = #{entity.entityID,jdbcType=INTEGER}
 
     </select>
 
@@ -50,26 +47,24 @@
     <select id="selectOne" resultMap="SharingProfilePermissionResultMap">
 
         SELECT
-            guacamole_sharing_profile_permission.user_id,
-            username,
+            entity_id,
             permission,
             sharing_profile_id
         FROM guacamole_sharing_profile_permission
-        JOIN guacamole_user ON guacamole_sharing_profile_permission.user_id = guacamole_user.user_id
         WHERE
-            guacamole_sharing_profile_permission.user_id = #{user.objectID,jdbcType=INTEGER}
+            entity_id = #{entity.entityID,jdbcType=INTEGER}
             AND permission = #{type,jdbcType=VARCHAR}::guacamole_object_permission_type
             AND sharing_profile_id = #{identifier,jdbcType=INTEGER}::integer
 
     </select>
 
-    <!-- Select identifiers accessible by the given user for the given permissions -->
+    <!-- Select identifiers accessible by the given entity for the given permissions -->
     <select id="selectAccessibleIdentifiers" resultType="string">
 
         SELECT DISTINCT sharing_profile_id
         FROM guacamole_sharing_profile_permission
         WHERE
-            user_id = #{user.objectID,jdbcType=INTEGER}
+            entity_id = #{entity.entityID,jdbcType=INTEGER}
             AND sharing_profile_id IN
                 <foreach collection="identifiers" item="identifier"
                          open="(" separator="," close=")">
@@ -87,10 +82,10 @@
     <delete id="delete" parameterType="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
 
         DELETE FROM guacamole_sharing_profile_permission
-        WHERE (user_id, permission, sharing_profile_id) IN
+        WHERE (entity_id, permission, sharing_profile_id) IN
             <foreach collection="permissions" item="permission"
                      open="(" separator="," close=")">
-                (#{permission.userID,jdbcType=INTEGER},
+                (#{permission.entityID,jdbcType=INTEGER},
                  #{permission.type,jdbcType=VARCHAR}::guacamole_object_permission_type,
                  #{permission.objectIdentifier,jdbcType=INTEGER}::integer)
             </foreach>
@@ -101,25 +96,25 @@
     <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
 
         INSERT INTO guacamole_sharing_profile_permission (
-            user_id,
+            entity_id,
             permission,
             sharing_profile_id
         )
         SELECT DISTINCT
-            permissions.user_id,
+            permissions.entity_id,
             permissions.permission,
             permissions.sharing_profile_id
         FROM
             <foreach collection="permissions" item="permission"
                      open="(" separator="UNION ALL" close=")">
-                SELECT #{permission.userID,jdbcType=INTEGER}                                 AS user_id,
+                SELECT #{permission.entityID,jdbcType=INTEGER}                               AS entity_id,
                        #{permission.type,jdbcType=VARCHAR}::guacamole_object_permission_type AS permission,
                        #{permission.objectIdentifier,jdbcType=INTEGER}::integer              AS sharing_profile_id
             </foreach>
         AS permissions
-        WHERE (user_id, permission, sharing_profile_id) NOT IN (
+        WHERE (entity_id, permission, sharing_profile_id) NOT IN (
             SELECT
-                guacamole_sharing_profile_permission.user_id,
+                guacamole_sharing_profile_permission.entity_id,
                 guacamole_sharing_profile_permission.permission,
                 guacamole_sharing_profile_permission.sharing_profile_id
             FROM guacamole_sharing_profile_permission

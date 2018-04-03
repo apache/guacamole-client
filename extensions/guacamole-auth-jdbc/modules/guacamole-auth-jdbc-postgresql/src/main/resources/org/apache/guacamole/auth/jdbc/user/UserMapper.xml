@@ -28,7 +28,8 @@
 
         <!-- User properties -->
         <id     column="user_id"             property="objectID"           jdbcType="INTEGER"/>
-        <result column="username"            property="identifier"         jdbcType="VARCHAR"/>
+        <result column="entity_id"           property="entityID"           jdbcType="INTEGER"/>
+        <result column="name"                property="identifier"         jdbcType="VARCHAR"/>
         <result column="password_hash"       property="passwordHash"       jdbcType="BINARY"/>
         <result column="password_salt"       property="passwordSalt"       jdbcType="BINARY"/>
         <result column="password_date"       property="passwordDate"       jdbcType="TIMESTAMP"/>
@@ -57,17 +58,20 @@
 
     <!-- Select all usernames -->
     <select id="selectIdentifiers" resultType="string">
-        SELECT username
-        FROM guacamole_user
+        SELECT name
+        FROM guacamole_entity
+        WHERE guacamole_entity.type = 'USER'::guacamole_entity_type
     </select>
 
     <!-- Select usernames of all readable users -->
     <select id="selectReadableIdentifiers" resultType="string">
-        SELECT username
+        SELECT guacamole_entity.name
         FROM guacamole_user
+        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
         JOIN guacamole_user_permission ON affected_user_id = guacamole_user.user_id
         WHERE
-            guacamole_user_permission.user_id = #{user.objectID,jdbcType=INTEGER}
+            guacamole_user_permission.entity_id = #{user.entityID,jdbcType=INTEGER}
+            AND guacamole_entity.type = 'USER'::guacamole_entity_type
             AND permission = 'READ'
     </select>
 
@@ -77,7 +81,8 @@
 
         SELECT
             guacamole_user.user_id,
-            guacamole_user.username,
+            guacamole_entity.entity_id,
+            guacamole_entity.name,
             password_hash,
             password_salt,
             password_date,
@@ -94,13 +99,15 @@
             organizational_role,
             MAX(start_date) AS last_active
         FROM guacamole_user
+        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
         LEFT JOIN guacamole_user_history ON guacamole_user_history.user_id = guacamole_user.user_id
-        WHERE guacamole_user.username IN
+        WHERE guacamole_entity.name IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
             </foreach>
-        GROUP BY guacamole_user.user_id;
+            AND guacamole_entity.type = 'USER'::guacamole_entity_type
+        GROUP BY guacamole_user.user_id, guacamole_entity.entity_id;
 
         SELECT
             guacamole_user_attribute.user_id,
@@ -108,11 +115,13 @@
             guacamole_user_attribute.attribute_value
         FROM guacamole_user_attribute
         JOIN guacamole_user ON guacamole_user.user_id = guacamole_user_attribute.user_id
-        WHERE username IN
+        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+        WHERE guacamole_entity.name IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
-            </foreach>;
+            </foreach>
+            AND guacamole_entity.type = 'USER'::guacamole_entity_type;
 
     </select>
 
@@ -122,7 +131,8 @@
 
         SELECT
             guacamole_user.user_id,
-            guacamole_user.username,
+            guacamole_entity.entity_id,
+            guacamole_entity.name,
             password_hash,
             password_salt,
             password_date,
@@ -139,16 +149,18 @@
             organizational_role,
             MAX(start_date) AS last_active
         FROM guacamole_user
+        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
         JOIN guacamole_user_permission ON affected_user_id = guacamole_user.user_id
         LEFT JOIN guacamole_user_history ON guacamole_user_history.user_id = guacamole_user.user_id
-        WHERE guacamole_user.username IN
+        WHERE guacamole_entity.name IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
             </foreach>
-            AND guacamole_user_permission.user_id = #{user.objectID,jdbcType=INTEGER}
+            AND guacamole_entity.type = 'USER'::guacamole_entity_type
+            AND guacamole_user_permission.entity_id = #{user.entityID,jdbcType=INTEGER}
             AND permission = 'READ'
-        GROUP BY guacamole_user.user_id;
+        GROUP BY guacamole_user.user_id, guacamole_entity.entity_id;
 
         SELECT
             guacamole_user_attribute.user_id,
@@ -156,13 +168,15 @@
             guacamole_user_attribute.attribute_value
         FROM guacamole_user_attribute
         JOIN guacamole_user ON guacamole_user.user_id = guacamole_user_attribute.user_id
+        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
         JOIN guacamole_user_permission ON affected_user_id = guacamole_user.user_id
-        WHERE username IN
+        WHERE guacamole_entity.name IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
             </foreach>
-            AND guacamole_user_permission.user_id = #{user.objectID,jdbcType=INTEGER}
+            AND guacamole_entity.type = 'USER'::guacamole_entity_type
+            AND guacamole_user_permission.entity_id = #{user.entityID,jdbcType=INTEGER}
             AND permission = 'READ';
 
     </select>
@@ -173,7 +187,8 @@
 
         SELECT
             guacamole_user.user_id,
-            guacamole_user.username,
+            guacamole_entity.entity_id,
+            guacamole_entity.name,
             password_hash,
             password_salt,
             password_date,
@@ -190,10 +205,12 @@
             organizational_role,
             MAX(start_date) AS last_active
         FROM guacamole_user
+        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
         LEFT JOIN guacamole_user_history ON guacamole_user_history.user_id = guacamole_user.user_id
         WHERE
-            guacamole_user.username = #{username,jdbcType=VARCHAR}
-        GROUP BY guacamole_user.user_id;
+            guacamole_entity.name = #{username,jdbcType=VARCHAR}
+            AND guacamole_entity.type = 'USER'::guacamole_entity_type
+        GROUP BY guacamole_user.user_id, guacamole_entity.entity_id;
 
         SELECT
             guacamole_user_attribute.user_id,
@@ -201,14 +218,19 @@
             guacamole_user_attribute.attribute_value
         FROM guacamole_user_attribute
         JOIN guacamole_user ON guacamole_user.user_id = guacamole_user_attribute.user_id
-        WHERE username = #{username,jdbcType=VARCHAR};
+        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+        WHERE
+            guacamole_entity.name = #{username,jdbcType=VARCHAR}
+            AND guacamole_entity.type = 'USER'::guacamole_entity_type
 
     </select>
 
     <!-- Delete single user by username -->
     <delete id="delete">
-        DELETE FROM guacamole_user
-        WHERE username = #{identifier,jdbcType=VARCHAR}
+        DELETE FROM guacamole_entity
+        WHERE
+            name = #{identifier,jdbcType=VARCHAR}
+            AND type = 'USER'::guacamole_entity_type
     </delete>
 
     <!-- Insert single user -->
@@ -216,7 +238,7 @@
             parameterType="org.apache.guacamole.auth.jdbc.user.UserModel">
 
         INSERT INTO guacamole_user (
-            username,
+            entity_id,
             password_hash,
             password_salt,
             password_date,
@@ -233,7 +255,7 @@
             organizational_role
         )
         VALUES (
-            #{object.identifier,jdbcType=VARCHAR},
+            #{object.entityID,jdbcType=VARCHAR},
             #{object.passwordHash,jdbcType=BINARY},
             #{object.passwordSalt,jdbcType=BINARY},
             #{object.passwordDate,jdbcType=TIMESTAMP},

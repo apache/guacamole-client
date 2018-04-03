@@ -25,22 +25,19 @@
 
     <!-- Result mapper for system permissions -->
     <resultMap id="SystemPermissionResultMap" type="org.apache.guacamole.auth.jdbc.permission.SystemPermissionModel">
-        <result column="user_id"    property="userID"   jdbcType="INTEGER"/>
-        <result column="username"   property="username" jdbcType="VARCHAR"/>
+        <result column="entity_id"  property="entityID" jdbcType="INTEGER"/>
         <result column="permission" property="type"     jdbcType="VARCHAR"
                 javaType="org.apache.guacamole.net.auth.permission.SystemPermission$Type"/>
     </resultMap>
 
-    <!-- Select all permissions for a given user -->
+    <!-- Select all permissions for a given entity -->
     <select id="select" resultMap="SystemPermissionResultMap">
 
         SELECT
-            guacamole_system_permission.user_id,
-            username,
+            entity_id,
             permission
         FROM guacamole_system_permission
-        JOIN guacamole_user ON guacamole_system_permission.user_id = guacamole_user.user_id
-        WHERE guacamole_system_permission.user_id = #{user.objectID,jdbcType=INTEGER}
+        WHERE entity_id = #{entity.entityID,jdbcType=INTEGER}
 
     </select>
 
@@ -48,13 +45,11 @@
     <select id="selectOne" resultMap="SystemPermissionResultMap">
 
         SELECT
-            guacamole_system_permission.user_id,
-            username,
+            entity_id,
             permission
         FROM guacamole_system_permission
-        JOIN guacamole_user ON guacamole_system_permission.user_id = guacamole_user.user_id
         WHERE
-            guacamole_system_permission.user_id = #{user.objectID,jdbcType=INTEGER}
+            entity_id = #{entity.entityID,jdbcType=INTEGER}
             AND permission = #{type,jdbcType=VARCHAR}::guacamole_system_permission_type
 
     </select>
@@ -63,10 +58,10 @@
     <delete id="delete" parameterType="org.apache.guacamole.auth.jdbc.permission.SystemPermissionModel">
 
         DELETE FROM guacamole_system_permission
-        WHERE (user_id, permission) IN
+        WHERE (entity_id, permission) IN
             <foreach collection="permissions" item="permission"
                      open="(" separator="," close=")">
-                (#{permission.userID,jdbcType=INTEGER},
+                (#{permission.entityID,jdbcType=INTEGER},
                  #{permission.type,jdbcType=VARCHAR}::guacamole_system_permission_type)
             </foreach>
 
@@ -76,22 +71,22 @@
     <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.permission.SystemPermissionModel">
 
         INSERT INTO guacamole_system_permission (
-            user_id,
+            entity_id,
             permission
         )
         SELECT DISTINCT
-            permissions.user_id,
+            permissions.entity_id,
             permissions.permission
         FROM
             <foreach collection="permissions" item="permission"
                      open="(" separator="UNION ALL" close=")">
-                SELECT #{permission.userID,jdbcType=INTEGER}                                 AS user_id,
+                SELECT #{permission.entityID,jdbcType=INTEGER}                               AS entity_id,
                        #{permission.type,jdbcType=VARCHAR}::guacamole_system_permission_type AS permission
             </foreach>
         AS permissions
-        WHERE (user_id, permission) NOT IN (
+        WHERE (entity_id, permission) NOT IN (
             SELECT
-                guacamole_system_permission.user_id,
+                guacamole_system_permission.entity_id,
                 guacamole_system_permission.permission
             FROM guacamole_system_permission
         );
