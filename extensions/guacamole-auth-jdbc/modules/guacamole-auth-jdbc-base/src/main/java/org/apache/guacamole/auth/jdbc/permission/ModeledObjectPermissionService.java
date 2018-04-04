@@ -105,7 +105,7 @@ public abstract class ModeledObjectPermissionService
             affectedIdentifiers.add(permission.getObjectIdentifier());
 
         // Determine subset of affected identifiers that we have admin access to
-        ObjectPermissionSet affectedPermissionSet = getPermissionSet(user, user.getUser());
+        ObjectPermissionSet affectedPermissionSet = getPermissionSet(user, user.getUser(), true);
         Collection<String> allowedSubset = affectedPermissionSet.getAccessibleObjects(
             Collections.singleton(ObjectPermission.Type.ADMINISTER),
             affectedIdentifiers
@@ -154,21 +154,13 @@ public abstract class ModeledObjectPermissionService
     }
 
     @Override
-    public ObjectPermission retrievePermission(ModeledAuthenticatedUser user,
+    public boolean hasPermission(ModeledAuthenticatedUser user,
             ModeledUser targetUser, ObjectPermission.Type type,
-            String identifier) throws GuacamoleException {
+            String identifier, boolean inherit) throws GuacamoleException {
 
         // Retrieve permissions only if allowed
-        if (canReadPermissions(user, targetUser)) {
-
-            // Read permission from database, return null if not found
-            ObjectPermissionModel model = getPermissionMapper().selectOne(targetUser.getModel(), type, identifier);
-            if (model == null)
-                return null;
-
-            return getPermissionInstance(model);
-
-        }
+        if (canReadPermissions(user, targetUser))
+            return getPermissionMapper().selectOne(targetUser.getModel(), type, identifier, inherit) != null;
 
         // User cannot read this user's permissions
         throw new GuacamoleSecurityException("Permission denied.");
@@ -178,7 +170,8 @@ public abstract class ModeledObjectPermissionService
     @Override
     public Collection<String> retrieveAccessibleIdentifiers(ModeledAuthenticatedUser user,
             ModeledUser targetUser, Collection<ObjectPermission.Type> permissions,
-            Collection<String> identifiers) throws GuacamoleException {
+            Collection<String> identifiers, boolean inherit)
+            throws GuacamoleException {
 
         // Nothing is always accessible
         if (identifiers.isEmpty())
@@ -192,7 +185,7 @@ public abstract class ModeledObjectPermissionService
                 return identifiers;
 
             // Otherwise, return explicitly-retrievable identifiers
-            return getPermissionMapper().selectAccessibleIdentifiers(targetUser.getModel(), permissions, identifiers);
+            return getPermissionMapper().selectAccessibleIdentifiers(targetUser.getModel(), permissions, identifiers, inherit);
             
         }
 

@@ -43,6 +43,12 @@ public abstract class ObjectPermissionSet extends RestrictedObject
     private ModeledUser user;
 
     /**
+     * Whether permissions inherited through user groups should be taken into
+     * account. If false, only permissions granted directly will be included.
+     */
+    boolean inherit;
+
+    /**
      * Creates a new ObjectPermissionSet. The resulting permission set
      * must still be initialized by a call to init(), or the information
      * necessary to read and modify this set will be missing.
@@ -60,10 +66,17 @@ public abstract class ObjectPermissionSet extends RestrictedObject
      *
      * @param user
      *     The user to whom the permissions in this set are granted.
+     *
+     * @param inherit
+     *     Whether permissions inherited through user groups should be taken
+     *     into account. If false, only permissions granted directly will be
+     *     included.
      */
-    public void init(ModeledAuthenticatedUser currentUser, ModeledUser user) {
+    public void init(ModeledAuthenticatedUser currentUser, ModeledUser user,
+            boolean inherit) {
         super.init(currentUser);
         this.user = user;
+        this.inherit = inherit;
     }
 
     /**
@@ -75,16 +88,16 @@ public abstract class ObjectPermissionSet extends RestrictedObject
      *     permissions contained within this permission set.
      */
     protected abstract ObjectPermissionService getObjectPermissionService();
- 
+
     @Override
     public Set<ObjectPermission> getPermissions() throws GuacamoleException {
-        return getObjectPermissionService().retrievePermissions(getCurrentUser(), user);
+        return getObjectPermissionService().retrievePermissions(getCurrentUser(), user, inherit);
     }
 
     @Override
     public boolean hasPermission(ObjectPermission.Type permission,
             String identifier) throws GuacamoleException {
-        return getObjectPermissionService().retrievePermission(getCurrentUser(), user, permission, identifier) != null;
+        return getObjectPermissionService().hasPermission(getCurrentUser(), user, permission, identifier, inherit);
     }
 
     @Override
@@ -102,7 +115,7 @@ public abstract class ObjectPermissionSet extends RestrictedObject
     @Override
     public Collection<String> getAccessibleObjects(Collection<ObjectPermission.Type> permissions,
             Collection<String> identifiers) throws GuacamoleException {
-        return getObjectPermissionService().retrieveAccessibleIdentifiers(getCurrentUser(), user, permissions, identifiers);
+        return getObjectPermissionService().retrieveAccessibleIdentifiers(getCurrentUser(), user, permissions, identifiers, inherit);
     }
 
     @Override

@@ -51,11 +51,11 @@ public class ConnectionPermissionService extends ModeledObjectPermissionService 
 
     @Override
     public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledUser targetUser) throws GuacamoleException {
+            ModeledUser targetUser, boolean inherit) throws GuacamoleException {
 
         // Create permission set for requested user
         ObjectPermissionSet permissionSet = connectionPermissionSetProvider.get();
-        permissionSet.init(user, targetUser);
+        permissionSet.init(user, targetUser, inherit);
 
         return permissionSet;
         

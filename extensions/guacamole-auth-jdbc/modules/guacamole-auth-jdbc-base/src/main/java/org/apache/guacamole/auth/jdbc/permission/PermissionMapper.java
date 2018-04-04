@@ -38,10 +38,16 @@ public interface PermissionMapper<PermissionType> {
      * @param entity
      *     The entity to retrieve permissions for.
      *
+     * @param inherit
+     *     Whether permissions inherited through user groups should be taken
+     *     into account. If false, only permissions granted directly will be
+     *     included.
+     *
      * @return
      *     All permissions associated with the given entity.
      */
-    Collection<PermissionType> select(@Param("entity") EntityModel entity);
+    Collection<PermissionType> select(@Param("entity") EntityModel entity,
+            @Param("inherit") boolean inherit);
 
     /**
      * Inserts the given permissions into the database. If any permissions

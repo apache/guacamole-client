@@ -51,11 +51,11 @@ public class SharingProfilePermissionService extends ModeledObjectPermissionServ
 
     @Override
     public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledUser targetUser) throws GuacamoleException {
+            ModeledUser targetUser, boolean inherit) throws GuacamoleException {
 
         // Create permission set for requested user
         ObjectPermissionSet permissionSet = sharingProfilePermissionSetProvider.get();
-        permissionSet.init(user, targetUser);
+        permissionSet.init(user, targetUser, inherit);
 
         return permissionSet;
         

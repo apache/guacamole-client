@@ -19,16 +19,11 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleSecurityException;
-import org.apache.guacamole.net.auth.permission.ObjectPermission;
-import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.Permission;
 import org.apache.guacamole.net.auth.permission.PermissionSet;
 
@@ -59,6 +54,11 @@ public interface PermissionService<PermissionSetType extends PermissionSet<Permi
      *     The user to whom the permissions in the returned permission set are
      *     granted.
      *
+     * @param inherit
+     *     Whether permissions inherited through user groups should be taken
+     *     into account. If false, only permissions granted directly will be
+     *     included.
+     *
      * @return
      *     A permission set that contains all permissions associated with the
      *     given user, and can be used to manipulate that user's permissions.
@@ -69,7 +69,7 @@ public interface PermissionService<PermissionSetType extends PermissionSet<Permi
      *     user is denied.
      */
     PermissionSetType getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledUser targetUser) throws GuacamoleException;
+            ModeledUser targetUser, boolean inherit) throws GuacamoleException;
 
     /**
      * Retrieves all permissions associated with the given user.
@@ -80,6 +80,11 @@ public interface PermissionService<PermissionSetType extends PermissionSet<Permi
      * @param targetUser
      *     The user associated with the permissions to be retrieved.
      *
+     * @param inherit
+     *     Whether permissions inherited through user groups should be taken
+     *     into account. If false, only permissions granted directly will be
+     *     included.
+     *
      * @return
      *     The permissions associated with the given user.
      *
@@ -87,7 +92,7 @@ public interface PermissionService<PermissionSetType extends PermissionSet<Permi
      *     If an error occurs while retrieving the requested permissions.
      */
     Set<PermissionType> retrievePermissions(ModeledAuthenticatedUser user,
-            ModeledUser targetUser) throws GuacamoleException;
+            ModeledUser targetUser, boolean inherit) throws GuacamoleException;
 
     /**
      * Creates the given permissions within the database. If any permissions

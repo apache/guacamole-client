@@ -34,15 +34,21 @@ public interface SystemPermissionMapper extends PermissionMapper<SystemPermissio
      *
      * @param entity
      *     The entity to retrieve permissions for.
-     * 
+     *
      * @param type
      *     The type of permission to return.
+     *
+     * @param inherit
+     *     Whether permissions inherited through user groups should be taken
+     *     into account. If false, only permissions granted directly will be
+     *     included.
      *
      * @return
      *     The requested permission, or null if no such permission is granted
      *     to the given entity.
      */
     SystemPermissionModel selectOne(@Param("entity") EntityModel entity,
-            @Param("type") SystemPermission.Type type);
+            @Param("type") SystemPermission.Type type,
+            @Param("inherit") boolean inherit);
 
 }

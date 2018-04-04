@@ -92,7 +92,7 @@ public abstract class ModeledPermissionService<PermissionSetType extends Permiss
             permissions.add(getPermissionInstance(model));
 
         return permissions;
-        
+
     }
 
     /**
@@ -111,7 +111,7 @@ public abstract class ModeledPermissionService<PermissionSetType extends Permiss
      */
     protected abstract ModelType getModelInstance(ModeledUser targetUser,
             PermissionType permission);
-    
+
     /**
      * Returns a collection of model objects which are based on the given
      * permissions and target user.
@@ -129,7 +129,7 @@ public abstract class ModeledPermissionService<PermissionSetType extends Permiss
     protected Collection<ModelType> getModelInstances(ModeledUser targetUser,
             Collection<PermissionType> permissions) {
 
-        // Create new collection of models by manually converting each permission 
+        // Create new collection of models by manually converting each permission
         Collection<ModelType> models = new ArrayList<ModelType>(permissions.size());
         for (PermissionType permission : permissions)
             models.add(getModelInstance(targetUser, permission));
@@ -140,15 +140,15 @@ public abstract class ModeledPermissionService<PermissionSetType extends Permiss
 
     @Override
     public Set<PermissionType> retrievePermissions(ModeledAuthenticatedUser user,
-            ModeledUser targetUser) throws GuacamoleException {
+            ModeledUser targetUser, boolean inherit) throws GuacamoleException {
 
         // Retrieve permissions only if allowed
         if (canReadPermissions(user, targetUser))
-            return getPermissionInstances(getPermissionMapper().select(targetUser.getModel()));
+            return getPermissionInstances(getPermissionMapper().select(targetUser.getModel(), inherit));
 
         // User cannot read this user's permissions
         throw new GuacamoleSecurityException("Permission denied.");
-        
+
     }
 
 }

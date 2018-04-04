@@ -23,7 +23,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
@@ -58,26 +57,23 @@ public class ActiveConnectionPermissionService
     private Provider<ActiveConnectionPermissionSet> activeConnectionPermissionSetProvider;
 
     @Override
-    public ObjectPermission retrievePermission(ModeledAuthenticatedUser user,
+    public boolean hasPermission(ModeledAuthenticatedUser user,
             ModeledUser targetUser, ObjectPermission.Type type,
-            String identifier) throws GuacamoleException {
+            String identifier, boolean inherit) throws GuacamoleException {
 
         // Retrieve permissions
-        Set<ObjectPermission> permissions = retrievePermissions(user, targetUser);
+        Set<ObjectPermission> permissions = retrievePermissions(user, targetUser, inherit);
 
-        // If retrieved permissions contains the requested permission, return it
+        // Permission is granted if retrieved permissions contains the
+        // requested permission
         ObjectPermission permission = new ObjectPermission(type, identifier); 
-        if (permissions.contains(permission))
-            return permission;
-
-        // Otherwise, no such permission
-        return null;
+        return permissions.contains(permission);
 
     }
 
     @Override
     public Set<ObjectPermission> retrievePermissions(ModeledAuthenticatedUser user,
-            ModeledUser targetUser) throws GuacamoleException {
+            ModeledUser targetUser, boolean inherit) throws GuacamoleException {
 
         // Retrieve permissions only if allowed
         if (canReadPermissions(user, targetUser)) {
@@ -113,9 +109,9 @@ public class ActiveConnectionPermissionService
     @Override
     public Collection<String> retrieveAccessibleIdentifiers(ModeledAuthenticatedUser user,
             ModeledUser targetUser, Collection<ObjectPermission.Type> permissionTypes,
-            Collection<String> identifiers) throws GuacamoleException {
+            Collection<String> identifiers, boolean inherit) throws GuacamoleException {
 
-        Set<ObjectPermission> permissions = retrievePermissions(user, targetUser);
+        Set<ObjectPermission> permissions = retrievePermissions(user, targetUser, inherit);
         Collection<String> accessibleObjects = new ArrayList<String>(permissions.size());
 
         // For each identifier/permission combination
@@ -138,11 +134,11 @@ public class ActiveConnectionPermissionService
 
     @Override
     public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledUser targetUser) throws GuacamoleException {
+            ModeledUser targetUser, boolean inherit) throws GuacamoleException {
     
         // Create permission set for requested user
         ActiveConnectionPermissionSet permissionSet = activeConnectionPermissionSetProvider.get();
-        permissionSet.init(user, targetUser);
+        permissionSet.init(user, targetUser, inherit);
 
         return permissionSet;
  

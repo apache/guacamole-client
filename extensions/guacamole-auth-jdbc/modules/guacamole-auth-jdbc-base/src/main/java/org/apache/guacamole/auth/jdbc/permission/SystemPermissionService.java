@@ -75,11 +75,11 @@ public class SystemPermissionService
 
     @Override
     public SystemPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledUser targetUser) throws GuacamoleException {
+            ModeledUser targetUser, boolean inherit) throws GuacamoleException {
 
         // Create permission set for requested user
         SystemPermissionSet permissionSet = systemPermissionSetProvider.get();
-        permissionSet.init(user, targetUser);
+        permissionSet.init(user, targetUser, inherit);
 
         return permissionSet;
         
@@ -123,8 +123,9 @@ public class SystemPermissionService
     }
 
     /**
-     * Retrieves the permission of the given type associated with the given
-     * user, if it exists. If no such permission exists, null is returned.
+     * Retrieves whether the permission of the given type has been granted to
+     * the given user. Permission inheritance through group membership is taken
+     * into account.
      *
      * @param user
      *     The user retrieving the permission.
@@ -135,27 +136,25 @@ public class SystemPermissionService
      * @param type
      *     The type of permission to retrieve.
      *
+     * @param inherit
+     *     Whether permissions inherited through user groups should be taken
+     *     into account. If false, only permissions granted directly will be
+     *     included.
+     *
      * @return
-     *     The permission of the given type associated with the given user, or
-     *     null if no such permission exists.
+     *     true if permission of the given type has been granted to the given
+     *     user, false otherwise.
      *
      * @throws GuacamoleException
      *     If an error occurs while retrieving the requested permission.
      */
-    public SystemPermission retrievePermission(ModeledAuthenticatedUser user,
-            ModeledUser targetUser, SystemPermission.Type type) throws GuacamoleException {
+    public boolean hasPermission(ModeledAuthenticatedUser user,
+            ModeledUser targetUser, SystemPermission.Type type,
+            boolean inherit) throws GuacamoleException {
 
         // Retrieve permissions only if allowed
-        if (canReadPermissions(user, targetUser)) {
-
-            // Read permission from database, return null if not found
-            SystemPermissionModel model = getPermissionMapper().selectOne(targetUser.getModel(), type);
-            if (model == null)
-                return null;
-
-            return getPermissionInstance(model);
-
-        }
+        if (canReadPermissions(user, targetUser))
+            return getPermissionMapper().selectOne(targetUser.getModel(), type, inherit) != null;
 
         // User cannot read this user's permissions
         throw new GuacamoleSecurityException("Permission denied.");

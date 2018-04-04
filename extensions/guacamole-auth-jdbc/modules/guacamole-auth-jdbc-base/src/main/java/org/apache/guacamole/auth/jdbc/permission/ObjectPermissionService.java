@@ -35,31 +35,36 @@ public interface ObjectPermissionService
     extends PermissionService<ObjectPermissionSet, ObjectPermission> {
 
     /**
-     * Retrieves the permission of the given type associated with the given
-     * user and object, if it exists. If no such permission exists, null is
+     * Returns whether the permission of the given type and associated with the
+     * given object has been granted to the given user.
      *
      * @param user
      *     The user retrieving the permission.
      *
      * @param targetUser
      *     The user associated with the permission to be retrieved.
-     * 
+     *
      * @param type
      *     The type of permission to retrieve.
      *
      * @param identifier
      *     The identifier of the object affected by the permission to return.
      *
+     * @param inherit
+     *     Whether permissions inherited through user groups should be taken
+     *     into account. If false, only permissions granted directly will be
+     *     included.
+     *
      * @return
-     *     The permission of the given type associated with the given user and
-     *     object, or null if no such permission exists.
+     *     true if permission of the given type and associated with the given
+     *     object has been granted to the given user, false otherwise.
      *
      * @throws GuacamoleException
      *     If an error occurs while retrieving the requested permission.
      */
-    ObjectPermission retrievePermission(ModeledAuthenticatedUser user,
+    boolean hasPermission(ModeledAuthenticatedUser user,
             ModeledUser targetUser, ObjectPermission.Type type,
-            String identifier) throws GuacamoleException;
+            String identifier, boolean inherit) throws GuacamoleException;
 
     /**
      * Retrieves the subset of the given identifiers for which the given user
@@ -80,6 +85,11 @@ public interface ObjectPermissionService
      *     The identifiers of the objects affected by the permissions being
      *     checked.
      *
+     * @param inherit
+     *     Whether permissions inherited through user groups should be taken
+     *     into account. If false, only permissions granted directly will be
+     *     included.
+     *
      * @return
      *     A collection containing the subset of identifiers for which at least
      *     one of the specified permissions is granted.
@@ -89,6 +99,7 @@ public interface ObjectPermissionService
      */
     Collection<String> retrieveAccessibleIdentifiers(ModeledAuthenticatedUser user,
             ModeledUser targetUser, Collection<ObjectPermission.Type> permissions,
-            Collection<String> identifiers) throws GuacamoleException;
+            Collection<String> identifiers, boolean inherit)
+            throws GuacamoleException;
 
 }

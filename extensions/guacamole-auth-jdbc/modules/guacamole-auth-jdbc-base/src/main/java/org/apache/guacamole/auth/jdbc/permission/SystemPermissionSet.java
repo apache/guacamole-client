@@ -43,6 +43,12 @@ public class SystemPermissionSet extends RestrictedObject
     private ModeledUser user;
 
     /**
+     * Whether permissions inherited through user groups should be taken into
+     * account. If false, only permissions granted directly will be included.
+     */
+    private boolean inherit;
+
+    /**
      * Service for reading and manipulating system permissions.
      */
     @Inject
@@ -66,21 +72,28 @@ public class SystemPermissionSet extends RestrictedObject
      *
      * @param user
      *     The user to whom the permissions in this set are granted.
+     *
+     * @param inherit
+     *     Whether permissions inherited through user groups should be taken
+     *     into account. If false, only permissions granted directly will be
+     *     included.
      */
-    public void init(ModeledAuthenticatedUser currentUser, ModeledUser user) {
+    public void init(ModeledAuthenticatedUser currentUser, ModeledUser user,
+            boolean inherit) {
         super.init(currentUser);
         this.user = user;
+        this.inherit = inherit;
     }
 
     @Override
     public Set<SystemPermission> getPermissions() throws GuacamoleException {
-        return systemPermissionService.retrievePermissions(getCurrentUser(), user);
+        return systemPermissionService.retrievePermissions(getCurrentUser(), user, inherit);
     }
 
     @Override
     public boolean hasPermission(SystemPermission.Type permission)
             throws GuacamoleException {
-        return systemPermissionService.retrievePermission(getCurrentUser(), user, permission) != null;
+        return systemPermissionService.hasPermission(getCurrentUser(), user, permission, inherit);
     }
 
     @Override

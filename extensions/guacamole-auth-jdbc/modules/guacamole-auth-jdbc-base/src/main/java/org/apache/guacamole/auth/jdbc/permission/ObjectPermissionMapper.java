@@ -36,12 +36,17 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
      *
      * @param entity
      *     The entity to retrieve permissions for.
-     * 
+     *
      * @param type
      *     The type of permission to return.
-     * 
+     *
      * @param identifier
      *     The identifier of the object affected by the permission to return.
+     *
+     * @param inherit
+     *     Whether permissions inherited through user groups should be taken
+     *     into account. If false, only permissions granted directly will be
+     *     included.
      *
      * @return
      *     The requested permission, or null if no such permission is granted
@@ -49,7 +54,8 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
      */
     ObjectPermissionModel selectOne(@Param("entity") EntityModel entity,
             @Param("type") ObjectPermission.Type type,
-            @Param("identifier") String identifier);
+            @Param("identifier") String identifier,
+            @Param("inherit") boolean inherit);
 
     /**
      * Retrieves the subset of the given identifiers for which the given entity
@@ -67,12 +73,18 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
      *     The identifiers of the objects affected by the permissions being
      *     checked.
      *
+     * @param inherit
+     *     Whether permissions inherited through user groups should be taken
+     *     into account. If false, only permissions granted directly will be
+     *     included.
+     *
      * @return
      *     A collection containing the subset of identifiers for which at least
      *     one of the specified permissions is granted.
      */
     Collection<String> selectAccessibleIdentifiers(@Param("entity") EntityModel entity,
             @Param("permissions") Collection<ObjectPermission.Type> permissions,
-            @Param("identifiers") Collection<String> identifiers);
+            @Param("identifiers") Collection<String> identifiers,
+            @Param("inherit") boolean inherit);
 
 }
