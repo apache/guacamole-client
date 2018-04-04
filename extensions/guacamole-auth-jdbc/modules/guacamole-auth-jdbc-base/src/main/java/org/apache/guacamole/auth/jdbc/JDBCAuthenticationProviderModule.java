@@ -59,6 +59,7 @@ import org.apache.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermissio
 import org.apache.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermissionSet;
 import org.apache.guacamole.auth.jdbc.activeconnection.ActiveConnectionService;
 import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
+import org.apache.guacamole.auth.jdbc.base.EntityMapper;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionParameterMapper;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionService;
@@ -120,6 +121,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         addMapperClass(ConnectionPermissionMapper.class);
         addMapperClass(ConnectionRecordMapper.class);
         addMapperClass(ConnectionParameterMapper.class);
+        addMapperClass(EntityMapper.class);
         addMapperClass(PasswordRecordMapper.class);
         addMapperClass(SystemPermissionMapper.class);
         addMapperClass(SharingProfileMapper.class);

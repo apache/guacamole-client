@@ -37,6 +37,7 @@ import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
+import org.apache.guacamole.auth.jdbc.base.EntityMapper;
 import org.apache.guacamole.auth.jdbc.base.ModeledActivityRecord;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
@@ -112,6 +113,12 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         NEW_PASSWORD,
         CONFIRM_NEW_PASSWORD
     ));
+
+    /**
+     * Mapper for creating/deleting entities.
+     */
+    @Inject
+    private EntityMapper entityMapper;
 
     /**
      * Mapper for accessing users.
@@ -241,6 +248,9 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         // Verify new password does not violate defined policies (if specified)
         if (object.getPassword() != null)
             passwordPolicyService.verifyPassword(object.getIdentifier(), object.getPassword());
+
+        // Create base entity object, implicitly populating underlying entity ID
+        entityMapper.insert(model);
 
     }
 
