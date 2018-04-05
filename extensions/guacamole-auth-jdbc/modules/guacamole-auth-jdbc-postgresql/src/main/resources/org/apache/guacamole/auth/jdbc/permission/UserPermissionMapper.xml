@@ -35,14 +35,19 @@
     <select id="select" resultMap="UserPermissionResultMap">
 
         SELECT
-            guacamole_user_permission.entity_id,
+            #{entity.entityID,jdbcType=INTEGER} AS entity_id,
             permission,
             affected_entity.name AS affected_name
         FROM guacamole_user_permission
         JOIN guacamole_user affected_user ON guacamole_user_permission.affected_user_id = affected_user.user_id
         JOIN guacamole_entity affected_entity ON affected_user.entity_id = affected_entity.entity_id
         WHERE
-            guacamole_user_permission.entity_id = #{entity.entityID,jdbcType=INTEGER}
+            guacamole_user_permission.entity_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
+                    <property name="inheritFlag" value="inherit"/>
+                    <property name="entityID"    value="#{entity.entityID,jdbcType=INTEGER}"/>
+                </include>
+            )
             AND affected_entity.type = 'USER'::guacamole_entity_type
 
     </select>
@@ -51,14 +56,19 @@
     <select id="selectOne" resultMap="UserPermissionResultMap">
 
         SELECT
-            guacamole_user_permission.entity_id,
+            #{entity.entityID,jdbcType=INTEGER} AS entity_id,
             permission,
             affected_entity.name AS affected_name
         FROM guacamole_user_permission
         JOIN guacamole_user affected_user ON guacamole_user_permission.affected_user_id = affected_user.user_id
         JOIN guacamole_entity affected_entity ON affected_user.entity_id = affected_entity.entity_id
         WHERE
-            guacamole_user_permission.entity_id = #{entity.entityID,jdbcType=INTEGER}
+            guacamole_user_permission.entity_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
+                    <property name="inheritFlag" value="inherit"/>
+                    <property name="entityID"    value="#{entity.entityID,jdbcType=INTEGER}"/>
+                </include>
+            )
             AND permission = #{type,jdbcType=VARCHAR}::guacamole_object_permission_type
             AND affected_entity.name = #{identifier,jdbcType=VARCHAR}
             AND affected_entity.type = 'USER'::guacamole_entity_type
@@ -73,7 +83,12 @@
         JOIN guacamole_user affected_user ON guacamole_user_permission.affected_user_id = affected_user.user_id
         JOIN guacamole_entity affected_entity ON affected_user.entity_id = affected_entity.entity_id
         WHERE
-            guacamole_user_permission.entity_id = #{entity.entityID,jdbcType=INTEGER}
+            guacamole_user_permission.entity_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
+                    <property name="inheritFlag" value="inherit"/>
+                    <property name="entityID"    value="#{entity.entityID,jdbcType=INTEGER}"/>
+                </include>
+            )
             AND affected_entity.name IN
                 <foreach collection="identifiers" item="identifier"
                          open="(" separator="," close=")">

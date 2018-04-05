@@ -35,11 +35,18 @@
     <select id="select" resultMap="SharingProfilePermissionResultMap">
 
         SELECT
-            entity_id,
+            #{entity.entityID,jdbcType=INTEGER} AS entity_id,
             permission,
             sharing_profile_id
         FROM guacamole_sharing_profile_permission
-        WHERE entity_id = #{entity.entityID,jdbcType=INTEGER}
+        WHERE
+            entity_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
+                    <property name="inheritFlag" value="inherit"/>
+                    <property name="entityID"    value="#{entity.entityID,jdbcType=INTEGER}"/>
+                </include>
+            )
+
 
     </select>
 
@@ -47,12 +54,17 @@
     <select id="selectOne" resultMap="SharingProfilePermissionResultMap">
 
         SELECT
-            entity_id,
+            #{entity.entityID,jdbcType=INTEGER} AS entity_id,
             permission,
             sharing_profile_id
         FROM guacamole_sharing_profile_permission
         WHERE
-            entity_id = #{entity.entityID,jdbcType=INTEGER}
+            entity_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
+                    <property name="inheritFlag" value="inherit"/>
+                    <property name="entityID"    value="#{entity.entityID,jdbcType=INTEGER}"/>
+                </include>
+            )
             AND permission = #{type,jdbcType=VARCHAR}::guacamole_object_permission_type
             AND sharing_profile_id = #{identifier,jdbcType=INTEGER}::integer
 
@@ -64,7 +76,12 @@
         SELECT DISTINCT sharing_profile_id
         FROM guacamole_sharing_profile_permission
         WHERE
-            entity_id = #{entity.entityID,jdbcType=INTEGER}
+            entity_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
+                    <property name="inheritFlag" value="inherit"/>
+                    <property name="entityID"    value="#{entity.entityID,jdbcType=INTEGER}"/>
+                </include>
+            )
             AND sharing_profile_id IN
                 <foreach collection="identifiers" item="identifier"
                          open="(" separator="," close=")">

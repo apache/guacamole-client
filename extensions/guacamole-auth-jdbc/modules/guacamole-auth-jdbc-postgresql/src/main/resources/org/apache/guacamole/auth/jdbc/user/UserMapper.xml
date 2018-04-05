@@ -70,7 +70,12 @@
         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
         JOIN guacamole_user_permission ON affected_user_id = guacamole_user.user_id
         WHERE
-            guacamole_user_permission.entity_id = #{user.entityID,jdbcType=INTEGER}
+            guacamole_user_permission.entity_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
+                    <property name="inheritFlag" value="true"/>
+                    <property name="entityID"    value="#{user.entityID,jdbcType=INTEGER}"/>
+                </include>
+            )
             AND guacamole_entity.type = 'USER'::guacamole_entity_type
             AND permission = 'READ'
     </select>
@@ -158,7 +163,12 @@
                 #{identifier,jdbcType=VARCHAR}
             </foreach>
             AND guacamole_entity.type = 'USER'::guacamole_entity_type
-            AND guacamole_user_permission.entity_id = #{user.entityID,jdbcType=INTEGER}
+            AND guacamole_user_permission.entity_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
+                    <property name="inheritFlag" value="true"/>
+                    <property name="entityID"    value="#{user.entityID,jdbcType=INTEGER}"/>
+                </include>
+            )
             AND permission = 'READ'
         GROUP BY guacamole_user.user_id, guacamole_entity.entity_id;
 
@@ -176,7 +186,12 @@
                 #{identifier,jdbcType=VARCHAR}
             </foreach>
             AND guacamole_entity.type = 'USER'::guacamole_entity_type
-            AND guacamole_user_permission.entity_id = #{user.entityID,jdbcType=INTEGER}
+            AND guacamole_user_permission.entity_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
+                    <property name="inheritFlag" value="true"/>
+                    <property name="entityID"    value="#{user.entityID,jdbcType=INTEGER}"/>
+                </include>
+            )
             AND permission = 'READ';
 
     </select>

@@ -23,6 +23,23 @@
 
 <mapper namespace="org.apache.guacamole.auth.jdbc.base.EntityMapper" >
 
+    <!-- Retrieves the ID of the given entity. If inheritance is enabled, the
+    IDs of the entities for all applicable user groups are retrieved, as well. -->
+    <sql id="relatedEntities">
+        <if test="!${inheritFlag}">${entityID}</if>
+        <if test="${inheritFlag}">
+            WITH RECURSIVE related_entity(entity_id) AS (
+                    VALUES (${entityID})
+                UNION
+                    SELECT guacamole_user_group.entity_id
+                    FROM related_entity
+                    JOIN guacamole_user_group_member ON related_entity.entity_id = guacamole_user_group_member.member_entity_id
+                    JOIN guacamole_user_group ON guacamole_user_group.user_group_id = guacamole_user_group_member.user_group_id
+            )
+            SELECT entity_id FROM related_entity
+        </if>
+    </sql>
+
     <!-- Insert single entity -->
     <insert id="insert" useGeneratedKeys="true" keyProperty="entity.entityID"
             parameterType="org.apache.guacamole.auth.jdbc.base.EntityModel">

@@ -68,7 +68,12 @@
         SELECT connection_id
         FROM guacamole_connection_permission
         WHERE
-            entity_id = #{user.entityID,jdbcType=INTEGER}
+            entity_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
+                    <property name="inheritFlag" value="true"/>
+                    <property name="entityID"    value="#{user.entityID,jdbcType=INTEGER}"/>
+                </include>
+            )
             AND permission = 'READ'
     </select>
 
@@ -89,7 +94,12 @@
         WHERE
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}::integer</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
-            AND entity_id = #{user.entityID,jdbcType=INTEGER}
+            AND entity_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
+                    <property name="inheritFlag" value="true"/>
+                    <property name="entityID"    value="#{user.entityID,jdbcType=INTEGER}"/>
+                </include>
+            )
             AND permission = 'READ'
     </select>
 
@@ -165,7 +175,12 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}::integer
             </foreach>
-            AND guacamole_connection_permission.entity_id = #{user.entityID,jdbcType=INTEGER}
+            AND guacamole_connection_permission.entity_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
+                    <property name="inheritFlag" value="true"/>
+                    <property name="entityID"    value="#{user.entityID,jdbcType=INTEGER}"/>
+                </include>
+            )
             AND permission = 'READ'
         GROUP BY guacamole_connection.connection_id;
 
@@ -177,7 +192,12 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}::integer
             </foreach>
-            AND entity_id = #{user.entityID,jdbcType=INTEGER}
+            AND entity_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
+                    <property name="inheritFlag" value="true"/>
+                    <property name="entityID"    value="#{user.entityID,jdbcType=INTEGER}"/>
+                </include>
+            )
             AND permission = 'READ';
 
         SELECT
@@ -191,7 +211,12 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}::integer
             </foreach>
-            AND entity_id = #{user.entityID,jdbcType=INTEGER}
+            AND entity_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
+                    <property name="inheritFlag" value="true"/>
+                    <property name="entityID"    value="#{user.entityID,jdbcType=INTEGER}"/>
+                </include>
+            )
             AND permission = 'READ';
 
     </select>

@@ -33,23 +33,34 @@
     <!-- Select all permissions for a given entity -->
     <select id="select" resultMap="SystemPermissionResultMap">
 
-        SELECT
-            entity_id,
+        SELECT DISTINCT
+            #{entity.entityID} AS entity_id,
             permission
         FROM guacamole_system_permission
-        WHERE entity_id = #{entity.entityID,jdbcType=INTEGER}
+        WHERE
+            entity_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
+                    <property name="inheritFlag" value="inherit"/>
+                    <property name="entityID"    value="#{entity.entityID,jdbcType=INTEGER}"/>
+                </include>
+            )
 
     </select>
 
     <!-- Select the single permission matching the given criteria -->
     <select id="selectOne" resultMap="SystemPermissionResultMap">
 
-        SELECT
-            entity_id,
+        SELECT DISTINCT
+            #{entity.entityID} AS entity_id,
             permission
         FROM guacamole_system_permission
         WHERE
-            entity_id = #{entity.entityID,jdbcType=INTEGER}
+            entity_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
+                    <property name="inheritFlag" value="inherit"/>
+                    <property name="entityID"    value="#{entity.entityID,jdbcType=INTEGER}"/>
+                </include>
+            )
             AND permission = #{type,jdbcType=VARCHAR}::guacamole_system_permission_type
 
     </select>
