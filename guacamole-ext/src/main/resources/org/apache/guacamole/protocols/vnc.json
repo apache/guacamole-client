@@ -124,6 +124,10 @@
                     "type"  : "TEXT"
                 },
                 {
+                    "name"  : "sftp-host-key",
+                    "type"  : "MULTILINE"
+                },
+                {
                     "name"  : "sftp-port",
                     "type"  : "NUMERIC"
                 },

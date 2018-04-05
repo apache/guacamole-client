@@ -12,6 +12,10 @@
                 {
                     "name"  : "port",
                     "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "host-key",
+                    "type"  : "MULTILINE"
                 }
             ]
         },
