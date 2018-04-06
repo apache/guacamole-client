@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
+import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.GuacamoleException;
@@ -50,10 +51,11 @@ public interface ObjectPermissionService
      * @param identifier
      *     The identifier of the object affected by the permission to return.
      *
-     * @param inherit
-     *     Whether permissions inherited through user groups should be taken
-     *     into account. If false, only permissions granted directly will be
-     *     included.
+     * @param effectiveGroups
+     *     The identifiers of all groups that should be taken into account
+     *     when determining the permissions effectively granted to the user. If
+     *     no groups are given, only permissions directly granted to the user
+     *     will be used.
      *
      * @return
      *     true if permission of the given type and associated with the given
@@ -64,7 +66,7 @@ public interface ObjectPermissionService
      */
     boolean hasPermission(ModeledAuthenticatedUser user,
             ModeledUser targetUser, ObjectPermission.Type type,
-            String identifier, boolean inherit) throws GuacamoleException;
+            String identifier, Set<String> effectiveGroups) throws GuacamoleException;
 
     /**
      * Retrieves the subset of the given identifiers for which the given user
@@ -85,10 +87,11 @@ public interface ObjectPermissionService
      *     The identifiers of the objects affected by the permissions being
      *     checked.
      *
-     * @param inherit
-     *     Whether permissions inherited through user groups should be taken
-     *     into account. If false, only permissions granted directly will be
-     *     included.
+     * @param effectiveGroups
+     *     The identifiers of all groups that should be taken into account
+     *     when determining the permissions effectively granted to the user. If
+     *     no groups are given, only permissions directly granted to the user
+     *     will be used.
      *
      * @return
      *     A collection containing the subset of identifiers for which at least
@@ -99,7 +102,7 @@ public interface ObjectPermissionService
      */
     Collection<String> retrieveAccessibleIdentifiers(ModeledAuthenticatedUser user,
             ModeledUser targetUser, Collection<ObjectPermission.Type> permissions,
-            Collection<String> identifiers, boolean inherit)
+            Collection<String> identifiers, Set<String> effectiveGroups)
             throws GuacamoleException;
 
 }

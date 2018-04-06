@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.jdbc.permission;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Collection;
+import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.GuacamoleException;
@@ -75,11 +76,11 @@ public class SystemPermissionService
 
     @Override
     public SystemPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledUser targetUser, boolean inherit) throws GuacamoleException {
+            ModeledUser targetUser, Set<String> effectiveGroups) throws GuacamoleException {
 
         // Create permission set for requested user
         SystemPermissionSet permissionSet = systemPermissionSetProvider.get();
-        permissionSet.init(user, targetUser, inherit);
+        permissionSet.init(user, targetUser, effectiveGroups);
 
         return permissionSet;
         
@@ -136,10 +137,11 @@ public class SystemPermissionService
      * @param type
      *     The type of permission to retrieve.
      *
-     * @param inherit
-     *     Whether permissions inherited through user groups should be taken
-     *     into account. If false, only permissions granted directly will be
-     *     included.
+     * @param effectiveGroups
+     *     The identifiers of all groups that should be taken into account
+     *     when determining the permissions effectively granted to the user. If
+     *     no groups are given, only permissions directly granted to the user
+     *     will be used.
      *
      * @return
      *     true if permission of the given type has been granted to the given
@@ -150,11 +152,11 @@ public class SystemPermissionService
      */
     public boolean hasPermission(ModeledAuthenticatedUser user,
             ModeledUser targetUser, SystemPermission.Type type,
-            boolean inherit) throws GuacamoleException {
+            Set<String> effectiveGroups) throws GuacamoleException {
 
         // Retrieve permissions only if allowed
         if (canReadPermissions(user, targetUser))
-            return getPermissionMapper().selectOne(targetUser.getModel(), type, inherit) != null;
+            return getPermissionMapper().selectOne(targetUser.getModel(), type, effectiveGroups) != null;
 
         // User cannot read this user's permissions
         throw new GuacamoleSecurityException("Permission denied.");

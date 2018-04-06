@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
@@ -591,11 +592,37 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         // Otherwise only return explicitly readable history records
         else
             searchResults = userRecordMapper.searchReadable(user.getUser().getModel(),
-                    requiredContents, sortPredicates, limit);
+                    requiredContents, sortPredicates, limit, user.getEffectiveUserGroups());
 
         return getObjectInstances(searchResults);
 
     }
 
+    /**
+     * Returns the set of all group identifiers of which the given user is a
+     * member, taking into account the given collection of known group
+     * memberships which are not necessarily defined within the database.
+     * 
+     * Note that group visibility with respect to the queried user is NOT taken
+     * into account. If the user is a member of a group, the identifier of that
+     * group will be included in the returned set even if the current user lacks
+     * "READ" permission for that group.
+     *
+     * @param user
+     *     The user whose effective groups should be returned.
+     *
+     * @param effectiveGroups
+     *     The identifiers of any known effective groups that should be taken
+     *     into account, such as those defined externally to the database.
+     *
+     * @return
+     *     The set of identifiers of all groups that the given user is a
+     *     member of, including those where membership is inherited through
+     *     membership in other groups.
+     */
+    public Set<String> retrieveEffectiveGroups(ModeledUser user,
+            Collection<String> effectiveGroups) {
+        return userMapper.selectEffectiveGroupIdentifiers(user.getModel(), effectiveGroups);
+    }
 
 }

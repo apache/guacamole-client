@@ -223,7 +223,9 @@ public class ConnectionGroupService extends ModeledChildDirectoryObjectService<M
 
         // Otherwise only return explicitly readable identifiers
         else
-            return connectionGroupMapper.selectReadableIdentifiersWithin(user.getUser().getModel(), identifier);
+            return connectionGroupMapper.selectReadableIdentifiersWithin(
+                    user.getUser().getModel(), identifier,
+                    user.getEffectiveUserGroups());
 
     }
 

@@ -628,7 +628,9 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             identifiers.add(record.getConnection().getIdentifier());
 
         // Produce collection of readable connection identifiers
-        Collection<ConnectionModel> connections = connectionMapper.selectReadable(user.getUser().getModel(), identifiers);
+        Collection<ConnectionModel> connections =
+                connectionMapper.selectReadable(user.getUser().getModel(),
+                        identifiers, user.getEffectiveUserGroups());
 
         // Ensure set contains only identifiers of readable connections
         identifiers.clear();

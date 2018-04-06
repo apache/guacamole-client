@@ -42,11 +42,7 @@ public class SystemPermissionSet extends RestrictedObject
      */
     private ModeledUser user;
 
-    /**
-     * Whether permissions inherited through user groups should be taken into
-     * account. If false, only permissions granted directly will be included.
-     */
-    private boolean inherit;
+    private Set<String> effectiveGroups;
 
     /**
      * Service for reading and manipulating system permissions.
@@ -73,27 +69,28 @@ public class SystemPermissionSet extends RestrictedObject
      * @param user
      *     The user to whom the permissions in this set are granted.
      *
-     * @param inherit
-     *     Whether permissions inherited through user groups should be taken
-     *     into account. If false, only permissions granted directly will be
-     *     included.
+     * @param effectiveGroups
+     *     The identifiers of all groups that should be taken into account
+     *     when determining the permissions effectively granted to the user. If
+     *     no groups are given, only permissions directly granted to the user
+     *     will be used.
      */
     public void init(ModeledAuthenticatedUser currentUser, ModeledUser user,
-            boolean inherit) {
+            Set<String> effectiveGroups) {
         super.init(currentUser);
         this.user = user;
-        this.inherit = inherit;
+        this.effectiveGroups = effectiveGroups;
     }
 
     @Override
     public Set<SystemPermission> getPermissions() throws GuacamoleException {
-        return systemPermissionService.retrievePermissions(getCurrentUser(), user, inherit);
+        return systemPermissionService.retrievePermissions(getCurrentUser(), user, effectiveGroups);
     }
 
     @Override
     public boolean hasPermission(SystemPermission.Type permission)
             throws GuacamoleException {
-        return systemPermissionService.hasPermission(getCurrentUser(), user, permission, inherit);
+        return systemPermissionService.hasPermission(getCurrentUser(), user, permission, effectiveGroups);
     }
 
     @Override

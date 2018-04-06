@@ -40,12 +40,11 @@
             connection_id
         FROM guacamole_connection_permission
         WHERE
-            entity_id IN (
-                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
-                    <property name="inheritFlag" value="inherit"/>
-                    <property name="entityID"    value="#{entity.entityID,jdbcType=INTEGER}"/>
-                </include>
-            )
+            <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"   value="entity_id"/>
+                <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"   value="effectiveGroups"/>
+            </include>
 
     </select>
 
@@ -58,12 +57,11 @@
             connection_id
         FROM guacamole_connection_permission
         WHERE
-            entity_id IN (
-                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
-                    <property name="inheritFlag" value="inherit"/>
-                    <property name="entityID"    value="#{entity.entityID,jdbcType=INTEGER}"/>
-                </include>
-            )
+            <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"   value="entity_id"/>
+                <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"   value="effectiveGroups"/>
+            </include>
             AND permission = #{type,jdbcType=VARCHAR}::guacamole_object_permission_type
             AND connection_id = #{identifier,jdbcType=INTEGER}::integer
 
@@ -75,12 +73,11 @@
         SELECT DISTINCT connection_id 
         FROM guacamole_connection_permission
         WHERE
-            entity_id IN (
-                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
-                    <property name="inheritFlag" value="inherit"/>
-                    <property name="entityID"    value="#{entity.entityID,jdbcType=INTEGER}"/>
-                </include>
-            )
+            <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"   value="entity_id"/>
+                <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"   value="effectiveGroups"/>
+            </include>
             AND connection_id IN
                 <foreach collection="identifiers" item="identifier"
                          open="(" separator="," close=")">

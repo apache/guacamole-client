@@ -57,10 +57,15 @@ public interface ModeledDirectoryObjectMapper<ModelType> {
      *    The user whose permissions should determine whether an identifier
      *    is returned.
      *
+     * @param effectiveGroups
+     *     The identifiers of any known effective groups that should be taken
+     *     into account, such as those defined externally to the database.
+     *
      * @return
      *     A Set containing all identifiers of all readable objects.
      */
-    Set<String> selectReadableIdentifiers(@Param("user") UserModel user);
+    Set<String> selectReadableIdentifiers(@Param("user") UserModel user,
+            @Param("effectiveGroups") Collection<String> effectiveGroups);
     
     /**
      * Selects all objects which have the given identifiers. If an identifier
@@ -91,11 +96,16 @@ public interface ModeledDirectoryObjectMapper<ModelType> {
      * @param identifiers
      *     The identifiers of the objects to return.
      *
+     * @param effectiveGroups
+     *     The identifiers of any known effective groups that should be taken
+     *     into account, such as those defined externally to the database.
+     *
      * @return 
      *     A Collection of all objects having the given identifiers.
      */
     Collection<ModelType> selectReadable(@Param("user") UserModel user,
-            @Param("identifiers") Collection<String> identifiers);
+            @Param("identifiers") Collection<String> identifiers,
+            @Param("effectiveGroups") Collection<String> effectiveGroups);
 
     /**
      * Inserts the given object into the database. If the object already

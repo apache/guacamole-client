@@ -401,7 +401,8 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
         // Otherwise only return explicitly readable identifiers
         else
-            objects = getObjectMapper().selectReadable(user.getUser().getModel(), identifiers);
+            objects = getObjectMapper().selectReadable(user.getUser().getModel(),
+                    identifiers, user.getEffectiveUserGroups());
         
         // Return collection of requested objects
         return getObjectInstances(user, objects);
@@ -512,7 +513,8 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
         // Otherwise only return explicitly readable identifiers
         else
-            return getObjectMapper().selectReadableIdentifiers(user.getUser().getModel());
+            return getObjectMapper().selectReadableIdentifiers(user.getUser().getModel(),
+                    user.getEffectiveUserGroups());
 
     }
 

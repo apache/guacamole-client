@@ -59,10 +59,11 @@ public class ActiveConnectionPermissionService
     @Override
     public boolean hasPermission(ModeledAuthenticatedUser user,
             ModeledUser targetUser, ObjectPermission.Type type,
-            String identifier, boolean inherit) throws GuacamoleException {
+            String identifier, Set<String> effectiveGroups) throws GuacamoleException {
 
         // Retrieve permissions
-        Set<ObjectPermission> permissions = retrievePermissions(user, targetUser, inherit);
+        Set<ObjectPermission> permissions = retrievePermissions(user,
+                targetUser, effectiveGroups);
 
         // Permission is granted if retrieved permissions contains the
         // requested permission
@@ -73,7 +74,8 @@ public class ActiveConnectionPermissionService
 
     @Override
     public Set<ObjectPermission> retrievePermissions(ModeledAuthenticatedUser user,
-            ModeledUser targetUser, boolean inherit) throws GuacamoleException {
+            ModeledUser targetUser, Set<String> effectiveGroups)
+            throws GuacamoleException {
 
         // Retrieve permissions only if allowed
         if (canReadPermissions(user, targetUser)) {
@@ -109,9 +111,10 @@ public class ActiveConnectionPermissionService
     @Override
     public Collection<String> retrieveAccessibleIdentifiers(ModeledAuthenticatedUser user,
             ModeledUser targetUser, Collection<ObjectPermission.Type> permissionTypes,
-            Collection<String> identifiers, boolean inherit) throws GuacamoleException {
+            Collection<String> identifiers, Set<String> effectiveGroups)
+            throws GuacamoleException {
 
-        Set<ObjectPermission> permissions = retrievePermissions(user, targetUser, inherit);
+        Set<ObjectPermission> permissions = retrievePermissions(user, targetUser, effectiveGroups);
         Collection<String> accessibleObjects = new ArrayList<String>(permissions.size());
 
         // For each identifier/permission combination
@@ -134,11 +137,12 @@ public class ActiveConnectionPermissionService
 
     @Override
     public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledUser targetUser, boolean inherit) throws GuacamoleException {
+            ModeledUser targetUser, Set<String> effectiveGroups)
+            throws GuacamoleException {
     
         // Create permission set for requested user
         ActiveConnectionPermissionSet permissionSet = activeConnectionPermissionSetProvider.get();
-        permissionSet.init(user, targetUser, inherit);
+        permissionSet.init(user, targetUser, effectiveGroups);
 
         return permissionSet;
  

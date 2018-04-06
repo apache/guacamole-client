@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.jdbc.permission;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.GuacamoleException;
@@ -106,7 +107,7 @@ public abstract class ModeledObjectPermissionService
             affectedIdentifiers.add(permission.getObjectIdentifier());
 
         // Determine subset of affected identifiers that we have admin access to
-        ObjectPermissionSet affectedPermissionSet = getPermissionSet(user, user.getUser(), true);
+        ObjectPermissionSet affectedPermissionSet = getPermissionSet(user, user.getUser(), user.getEffectiveUserGroups());
         Collection<String> allowedSubset = affectedPermissionSet.getAccessibleObjects(
             Collections.singleton(ObjectPermission.Type.ADMINISTER),
             affectedIdentifiers
@@ -157,11 +158,13 @@ public abstract class ModeledObjectPermissionService
     @Override
     public boolean hasPermission(ModeledAuthenticatedUser user,
             ModeledUser targetUser, ObjectPermission.Type type,
-            String identifier, boolean inherit) throws GuacamoleException {
+            String identifier, Set<String> effectiveGroups)
+            throws GuacamoleException {
 
         // Retrieve permissions only if allowed
         if (canReadPermissions(user, targetUser))
-            return getPermissionMapper().selectOne(targetUser.getModel(), type, identifier, inherit) != null;
+            return getPermissionMapper().selectOne(targetUser.getModel(), type,
+                    identifier, effectiveGroups) != null;
 
         // User cannot read this user's permissions
         throw new GuacamoleSecurityException("Permission denied.");
@@ -171,7 +174,7 @@ public abstract class ModeledObjectPermissionService
     @Override
     public Collection<String> retrieveAccessibleIdentifiers(ModeledAuthenticatedUser user,
             ModeledUser targetUser, Collection<ObjectPermission.Type> permissions,
-            Collection<String> identifiers, boolean inherit)
+            Collection<String> identifiers, Set<String> effectiveGroups)
             throws GuacamoleException {
 
         // Nothing is always accessible
@@ -186,7 +189,9 @@ public abstract class ModeledObjectPermissionService
                 return identifiers;
 
             // Otherwise, return explicitly-retrievable identifiers
-            return getPermissionMapper().selectAccessibleIdentifiers(targetUser.getModel(), permissions, identifiers, inherit);
+            return getPermissionMapper().selectAccessibleIdentifiers(
+                    targetUser.getModel(), permissions, identifiers,
+                    effectiveGroups);
             
         }
 

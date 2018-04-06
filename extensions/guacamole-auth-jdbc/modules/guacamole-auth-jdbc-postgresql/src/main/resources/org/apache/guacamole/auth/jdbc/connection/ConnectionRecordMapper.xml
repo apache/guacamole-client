@@ -166,23 +166,21 @@
         <!-- Restrict to readable connections -->
         JOIN guacamole_connection_permission ON
                 guacamole_connection_history.connection_id = guacamole_connection_permission.connection_id
-            AND guacamole_connection_permission.entity_id IN (
-                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
-                    <property name="inheritFlag" value="true"/>
-                    <property name="entityID"    value="#{user.entityID,jdbcType=INTEGER}"/>
-                </include>
-            )
+            AND <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"   value="guacamole_connection_permission.entity_id"/>
+                <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"   value="effectiveGroups"/>
+            </include>
             AND guacamole_connection_permission.permission = 'READ'
 
         <!-- Restrict to readable users -->
         JOIN guacamole_user_permission ON
                 guacamole_connection_history.user_id = guacamole_user_permission.affected_user_id
-            AND guacamole_user_permission.entity_id IN (
-                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
-                    <property name="inheritFlag" value="true"/>
-                    <property name="entityID"    value="#{user.entityID,jdbcType=INTEGER}"/>
-                </include>
-            )
+            AND <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"   value="guacamole_user_permission.entity_id"/>
+                <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"   value="effectiveGroups"/>
+            </include>
             AND guacamole_user_permission.permission = 'READ'
 
         <!-- Search terms -->

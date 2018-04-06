@@ -351,37 +351,43 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     @Override
     public SystemPermissionSet getSystemPermissions()
             throws GuacamoleException {
-        return systemPermissionService.getPermissionSet(getCurrentUser(), this, false);
+        return systemPermissionService.getPermissionSet(getCurrentUser(), this,
+                Collections.<String>emptySet());
     }
 
     @Override
     public ObjectPermissionSet getConnectionPermissions()
             throws GuacamoleException {
-        return connectionPermissionService.getPermissionSet(getCurrentUser(), this, false);
+        return connectionPermissionService.getPermissionSet(getCurrentUser(),
+                this, Collections.<String>emptySet());
     }
 
     @Override
     public ObjectPermissionSet getConnectionGroupPermissions()
             throws GuacamoleException {
-        return connectionGroupPermissionService.getPermissionSet(getCurrentUser(), this, false);
+        return connectionGroupPermissionService.getPermissionSet(
+                getCurrentUser(), this, Collections.<String>emptySet());
     }
 
     @Override
     public ObjectPermissionSet getSharingProfilePermissions()
             throws GuacamoleException {
-        return sharingProfilePermissionService.getPermissionSet(getCurrentUser(), this, false);
+        return sharingProfilePermissionService.getPermissionSet(
+                getCurrentUser(), this, Collections.<String>emptySet());
     }
 
     @Override
     public ObjectPermissionSet getActiveConnectionPermissions()
             throws GuacamoleException {
-        return activeConnectionPermissionService.getPermissionSet(getCurrentUser(), this, false);
+        return activeConnectionPermissionService.getPermissionSet(
+                getCurrentUser(), this, Collections.<String>emptySet());
     }
 
     @Override
     public ObjectPermissionSet getUserPermissions()
             throws GuacamoleException {
-        return userPermissionService.getPermissionSet(getCurrentUser(), this, false);
+        return userPermissionService.getPermissionSet(getCurrentUser(), this,
+                Collections.<String>emptySet());
     }
 
     @Override
@@ -864,50 +870,64 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
      *     apply to this user.
      */
     public Set<String> getEffectiveUserGroups() {
-
-        // FIXME: STUB
-        return /*retrieveEffectiveIdentifiers(this, */Collections.<String>emptySet()/*)*/;
-
+        return userService.retrieveEffectiveGroups(this,
+                Collections.<String>emptySet());
     }
 
     @Override
     public Permissions getEffectivePermissions() throws GuacamoleException {
+
+        final ModeledAuthenticatedUser authenticatedUser = getCurrentUser();
+        final Set<String> effectiveGroups;
+
+        // If this user is the currently-authenticated user, include any
+        // additional effective groups declared by the authentication system
+        if (authenticatedUser.getIdentifier().equals(getIdentifier()))
+            effectiveGroups = userService.retrieveEffectiveGroups(this,
+                    authenticatedUser.getEffectiveUserGroups());
+
+        // Otherwise, just include effective groups from the database
+        else
+            effectiveGroups = getEffectiveUserGroups();
+
+        // Return a permissions object which describes all effective
+        // permissions, including any permissions inherited via user groups
         return new Permissions() {
 
             @Override
             public ObjectPermissionSet getActiveConnectionPermissions()
                     throws GuacamoleException {
-                return activeConnectionPermissionService.getPermissionSet(getCurrentUser(), ModeledUser.this, true);
+                return activeConnectionPermissionService.getPermissionSet(authenticatedUser, ModeledUser.this, effectiveGroups);
             }
 
             @Override
             public ObjectPermissionSet getConnectionGroupPermissions()
                     throws GuacamoleException {
-                return connectionGroupPermissionService.getPermissionSet(getCurrentUser(), ModeledUser.this, true);
+                return connectionGroupPermissionService.getPermissionSet(authenticatedUser, ModeledUser.this, effectiveGroups);
             }
 
             @Override
             public ObjectPermissionSet getConnectionPermissions()
                     throws GuacamoleException {
-                return connectionPermissionService.getPermissionSet(getCurrentUser(), ModeledUser.this, true);
+                return connectionPermissionService.getPermissionSet(authenticatedUser, ModeledUser.this, effectiveGroups);
             }
 
             @Override
             public ObjectPermissionSet getSharingProfilePermissions()
                     throws GuacamoleException {
-                return sharingProfilePermissionService.getPermissionSet(getCurrentUser(), ModeledUser.this, true);
+                return sharingProfilePermissionService.getPermissionSet(authenticatedUser, ModeledUser.this, effectiveGroups);
             }
 
             @Override
             public SystemPermissionSet getSystemPermissions()
                     throws GuacamoleException {
-                return systemPermissionService.getPermissionSet(getCurrentUser(), ModeledUser.this, true);
+                return systemPermissionService.getPermissionSet(authenticatedUser, ModeledUser.this, effectiveGroups);
             }
 
             @Override
             public ObjectPermissionSet getUserPermissions()
                     throws GuacamoleException {
-                return userPermissionService.getPermissionSet(getCurrentUser(), ModeledUser.this, true);
+                return userPermissionService.getPermissionSet(authenticatedUser, ModeledUser.this, effectiveGroups);
             }
 
             @Override

@@ -140,11 +140,12 @@ public abstract class ModeledPermissionService<PermissionSetType extends Permiss
 
     @Override
     public Set<PermissionType> retrievePermissions(ModeledAuthenticatedUser user,
-            ModeledUser targetUser, boolean inherit) throws GuacamoleException {
+            ModeledUser targetUser, Set<String> effectiveGroups)
+            throws GuacamoleException {
 
         // Retrieve permissions only if allowed
         if (canReadPermissions(user, targetUser))
-            return getPermissionInstances(getPermissionMapper().select(targetUser.getModel(), inherit));
+            return getPermissionInstances(getPermissionMapper().select(targetUser.getModel(), effectiveGroups));
 
         // User cannot read this user's permissions
         throw new GuacamoleSecurityException("Permission denied.");

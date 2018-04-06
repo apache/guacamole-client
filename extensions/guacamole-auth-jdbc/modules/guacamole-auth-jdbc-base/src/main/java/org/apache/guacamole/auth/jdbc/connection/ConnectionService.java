@@ -303,7 +303,9 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
 
         // Otherwise only return explicitly readable identifiers
         else
-            return connectionMapper.selectReadableIdentifiersWithin(user.getUser().getModel(), identifier);
+            return connectionMapper.selectReadableIdentifiersWithin(
+                    user.getUser().getModel(), identifier,
+                    user.getEffectiveUserGroups());
 
     }
 
@@ -475,8 +477,9 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
 
         // Otherwise only return explicitly readable history records
         else
-            searchResults = connectionRecordMapper.searchReadable(user.getUser().getModel(),
-                    requiredContents, sortPredicates, limit);
+            searchResults = connectionRecordMapper.searchReadable(
+                    user.getUser().getModel(), requiredContents, sortPredicates,
+                    limit, user.getEffectiveUserGroups());
 
         return getObjectInstances(searchResults);
 

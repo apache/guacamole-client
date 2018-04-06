@@ -40,13 +40,11 @@
             sharing_profile_id
         FROM guacamole_sharing_profile_permission
         WHERE
-            entity_id IN (
-                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
-                    <property name="inheritFlag" value="inherit"/>
-                    <property name="entityID"    value="#{entity.entityID,jdbcType=INTEGER}"/>
-                </include>
-            )
-
+            <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"   value="entity_id"/>
+                <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"   value="effectiveGroups"/>
+            </include>
 
     </select>
 
@@ -59,12 +57,11 @@
             sharing_profile_id
         FROM guacamole_sharing_profile_permission
         WHERE
-            entity_id IN (
-                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
-                    <property name="inheritFlag" value="inherit"/>
-                    <property name="entityID"    value="#{entity.entityID,jdbcType=INTEGER}"/>
-                </include>
-            )
+            <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"   value="entity_id"/>
+                <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"   value="effectiveGroups"/>
+            </include>
             AND permission = #{type,jdbcType=VARCHAR}::guacamole_object_permission_type
             AND sharing_profile_id = #{identifier,jdbcType=INTEGER}::integer
 
@@ -76,12 +73,11 @@
         SELECT DISTINCT sharing_profile_id
         FROM guacamole_sharing_profile_permission
         WHERE
-            entity_id IN (
-                <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.relatedEntities">
-                    <property name="inheritFlag" value="inherit"/>
-                    <property name="entityID"    value="#{entity.entityID,jdbcType=INTEGER}"/>
-                </include>
-            )
+            <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"   value="entity_id"/>
+                <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"   value="effectiveGroups"/>
+            </include>
             AND sharing_profile_id IN
                 <foreach collection="identifiers" item="identifier"
                          open="(" separator="," close=")">

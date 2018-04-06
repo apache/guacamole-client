@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
+import java.util.Collection;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.ibatis.annotations.Param;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
@@ -38,10 +39,11 @@ public interface SystemPermissionMapper extends PermissionMapper<SystemPermissio
      * @param type
      *     The type of permission to return.
      *
-     * @param inherit
-     *     Whether permissions inherited through user groups should be taken
-     *     into account. If false, only permissions granted directly will be
-     *     included.
+     * @param effectiveGroups
+     *     The identifiers of all groups that should be taken into account
+     *     when determining the permissions effectively granted to the user. If
+     *     no groups are given, only permissions directly granted to the user
+     *     will be used.
      *
      * @return
      *     The requested permission, or null if no such permission is granted
@@ -49,6 +51,6 @@ public interface SystemPermissionMapper extends PermissionMapper<SystemPermissio
      */
     SystemPermissionModel selectOne(@Param("entity") EntityModel entity,
             @Param("type") SystemPermission.Type type,
-            @Param("inherit") boolean inherit);
+            @Param("effectiveGroups") Collection<String> effectiveGroups);
 
 }
