@@ -854,6 +854,22 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
         return new SimpleRelatedObjectSet();
     }
 
+    /**
+     * Returns the identifiers of all user groups defined within the database
+     * which apply to this user, including any groups inherited through
+     * membership in yet more groups.
+     *
+     * @return
+     *     The identifiers of all user groups defined within the database which
+     *     apply to this user.
+     */
+    public Set<String> getEffectiveUserGroups() {
+
+        // FIXME: STUB
+        return /*retrieveEffectiveIdentifiers(this, */Collections.<String>emptySet()/*)*/;
+
+    }
+
     @Override
     public Permissions getEffectivePermissions() throws GuacamoleException {
         return new Permissions() {
