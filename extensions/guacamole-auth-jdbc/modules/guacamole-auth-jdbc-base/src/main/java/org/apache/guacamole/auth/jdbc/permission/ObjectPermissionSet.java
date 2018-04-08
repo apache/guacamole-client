@@ -19,29 +19,34 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
-import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.base.EntityModel;
+import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 
 /**
  * A database implementation of ObjectPermissionSet which uses an injected
  * service to query and manipulate the object-level permissions associated with
- * a particular user.
+ * a particular entity.
  */
 public abstract class ObjectPermissionSet extends RestrictedObject
     implements org.apache.guacamole.net.auth.permission.ObjectPermissionSet {
 
     /**
-     * The user associated with this permission set. Each of the permissions in
-     * this permission set is granted to this user.
+     * The entity associated with this permission set. Each of the permissions
+     * in this permission set is granted to this entity.
      */
-    private ModeledUser user;
+    private ModeledPermissions<? extends EntityModel> entity;
 
+    /**
+     * The identifiers of all groups that should be taken into account
+     * when determining the permissions effectively granted to the entity.
+     */
     private Set<String> effectiveGroups;
 
     /**
@@ -53,26 +58,27 @@ public abstract class ObjectPermissionSet extends RestrictedObject
     }
 
     /**
-     * Initializes this permission set with the current user and the user
+     * Initializes this permission set with the current user and the entity
      * to whom the permissions in this set are granted.
      *
      * @param currentUser
      *     The user who queried this permission set, and whose permissions
      *     dictate the access level of all operations performed on this set.
      *
-     * @param user
-     *     The user to whom the permissions in this set are granted.
+     * @param entity
+     *     The entity to whom the permissions in this set are granted.
      *
      * @param effectiveGroups
      *     The identifiers of all groups that should be taken into account
-     *     when determining the permissions effectively granted to the user. If
-     *     no groups are given, only permissions directly granted to the user
-     *     will be used.
+     *     when determining the permissions effectively granted to the entity.
+     *     If no groups are given, only permissions directly granted to the
+     *     entity will be used.
      */
-    public void init(ModeledAuthenticatedUser currentUser, ModeledUser user,
+    public void init(ModeledAuthenticatedUser currentUser,
+            ModeledPermissions<? extends EntityModel> entity,
             Set<String> effectiveGroups) {
         super.init(currentUser);
-        this.user = user;
+        this.entity = entity;
         this.effectiveGroups = effectiveGroups;
     }
 
@@ -88,13 +94,13 @@ public abstract class ObjectPermissionSet extends RestrictedObject
 
     @Override
     public Set<ObjectPermission> getPermissions() throws GuacamoleException {
-        return getObjectPermissionService().retrievePermissions(getCurrentUser(), user, effectiveGroups);
+        return getObjectPermissionService().retrievePermissions(getCurrentUser(), entity, effectiveGroups);
     }
 
     @Override
     public boolean hasPermission(ObjectPermission.Type permission,
             String identifier) throws GuacamoleException {
-        return getObjectPermissionService().hasPermission(getCurrentUser(), user, permission, identifier, effectiveGroups);
+        return getObjectPermissionService().hasPermission(getCurrentUser(), entity, permission, identifier, effectiveGroups);
     }
 
     @Override
@@ -112,19 +118,19 @@ public abstract class ObjectPermissionSet extends RestrictedObject
     @Override
     public Collection<String> getAccessibleObjects(Collection<ObjectPermission.Type> permissions,
             Collection<String> identifiers) throws GuacamoleException {
-        return getObjectPermissionService().retrieveAccessibleIdentifiers(getCurrentUser(), user, permissions, identifiers, effectiveGroups);
+        return getObjectPermissionService().retrieveAccessibleIdentifiers(getCurrentUser(), entity, permissions, identifiers, effectiveGroups);
     }
 
     @Override
     public void addPermissions(Set<ObjectPermission> permissions)
             throws GuacamoleException {
-        getObjectPermissionService().createPermissions(getCurrentUser(), user, permissions);
+        getObjectPermissionService().createPermissions(getCurrentUser(), entity, permissions);
     }
 
     @Override
     public void removePermissions(Set<ObjectPermission> permissions)
             throws GuacamoleException {
-        getObjectPermissionService().deletePermissions(getCurrentUser(), user, permissions);
+        getObjectPermissionService().deletePermissions(getCurrentUser(), entity, permissions);
     }
 
 }

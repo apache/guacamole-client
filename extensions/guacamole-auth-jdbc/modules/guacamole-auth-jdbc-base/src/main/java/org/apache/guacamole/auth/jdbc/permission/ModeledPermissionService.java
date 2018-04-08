@@ -24,9 +24,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.auth.jdbc.base.EntityModel;
+import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 import org.apache.guacamole.net.auth.permission.Permission;
 import org.apache.guacamole.net.auth.permission.PermissionSet;
 
@@ -97,42 +98,44 @@ public abstract class ModeledPermissionService<PermissionSetType extends Permiss
 
     /**
      * Returns an instance of a model object which is based on the given
-     * permission and target user.
+     * permission and target entity.
      *
-     * @param targetUser
-     *     The user to whom this permission is granted.
+     * @param targetEntity
+     *     The entity to whom this permission is granted.
      *
      * @param permission
      *     The permission to use to produce the returned model object.
      *
      * @return
      *     A model object which is based on the given permission and target
-     *     user.
+     *     entity.
      */
-    protected abstract ModelType getModelInstance(ModeledUser targetUser,
+    protected abstract ModelType getModelInstance(
+            ModeledPermissions<? extends EntityModel> targetEntity,
             PermissionType permission);
 
     /**
      * Returns a collection of model objects which are based on the given
-     * permissions and target user.
+     * permissions and target entity.
      *
-     * @param targetUser
-     *     The user to whom this permission is granted.
+     * @param targetEntity
+     *     The entity to whom this permission is granted.
      *
      * @param permissions
      *     The permissions to use to produce the returned model objects.
      *
      * @return
      *     A collection of model objects which are based on the given
-     *     permissions and target user.
+     *     permissions and target entity.
      */
-    protected Collection<ModelType> getModelInstances(ModeledUser targetUser,
+    protected Collection<ModelType> getModelInstances(
+            ModeledPermissions<? extends EntityModel> targetEntity,
             Collection<PermissionType> permissions) {
 
         // Create new collection of models by manually converting each permission
         Collection<ModelType> models = new ArrayList<ModelType>(permissions.size());
         for (PermissionType permission : permissions)
-            models.add(getModelInstance(targetUser, permission));
+            models.add(getModelInstance(targetEntity, permission));
 
         return models;
 
@@ -140,14 +143,14 @@ public abstract class ModeledPermissionService<PermissionSetType extends Permiss
 
     @Override
     public Set<PermissionType> retrievePermissions(ModeledAuthenticatedUser user,
-            ModeledUser targetUser, Set<String> effectiveGroups)
-            throws GuacamoleException {
+            ModeledPermissions<? extends EntityModel> targetEntity,
+            Set<String> effectiveGroups) throws GuacamoleException {
 
         // Retrieve permissions only if allowed
-        if (canReadPermissions(user, targetUser))
-            return getPermissionInstances(getPermissionMapper().select(targetUser.getModel(), effectiveGroups));
+        if (canReadPermissions(user, targetEntity))
+            return getPermissionInstances(getPermissionMapper().select(targetEntity.getModel(), effectiveGroups));
 
-        // User cannot read this user's permissions
+        // User cannot read this entity's permissions
         throw new GuacamoleSecurityException("Permission denied.");
 
     }

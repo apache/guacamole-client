@@ -19,8 +19,6 @@
 
 package org.apache.guacamole.auth.jdbc.user;
 
-import java.util.Collection;
-import java.util.Set;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -40,25 +38,5 @@ public interface UserMapper extends ModeledDirectoryObjectMapper<UserModel> {
      *     The user having the given username, or null if no such user exists.
      */
     UserModel selectOne(@Param("username") String username);
-
-    /**
-     * Returns the set of all group identifiers of which the given user is a
-     * member, taking into account the given collection of known group
-     * memberships which are not necessarily defined within the database.
-     *
-     * @param user
-     *     The user whose effective groups should be returned.
-     *
-     * @param effectiveGroups
-     *     The identifiers of any known effective groups that should be taken
-     *     into account, such as those defined externally to the database.
-     *
-     * @return
-     *     The set of identifiers of all groups that the given user is a
-     *     member of, including those where membership is inherited through
-     *     membership in other groups.
-     */
-    Set<String> selectEffectiveGroupIdentifiers(@Param("user") UserModel user,
-            @Param("effectiveGroups") Collection<String> effectiveGroups);
 
 }

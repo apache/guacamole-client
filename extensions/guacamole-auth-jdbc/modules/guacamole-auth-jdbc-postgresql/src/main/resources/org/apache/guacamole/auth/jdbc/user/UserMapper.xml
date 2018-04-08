@@ -79,44 +79,6 @@
             AND permission = 'READ'
     </select>
 
-    <!-- Select names of all effective (including inherited) groups -->
-    <select id="selectEffectiveGroupIdentifiers" resultType="string">
-
-        WITH RECURSIVE related_entity(entity_id) AS (
-                SELECT
-                    guacamole_user_group.entity_id
-                FROM guacamole_user_group
-                JOIN guacamole_user_group_member ON guacamole_user_group.user_group_id = guacamole_user_group_member.user_group_id
-                WHERE
-                    guacamole_user_group_member.member_entity_id = #{user.entityID}
-            <if test="!effectiveGroups.isEmpty()">
-                UNION
-                    SELECT
-                        guacamole_entity.entity_id
-                    FROM guacamole_entity
-                    WHERE
-                        type = 'USER_GROUP'::guacamole_entity_type
-                        AND name IN
-                            <foreach collection="effectiveGroups" item="effectiveGroup"
-                                     open="(" separator="," close=")">
-                                #{effectiveGroup,jdbcType=VARCHAR}
-                            </foreach>
-            </if>
-            UNION
-                SELECT
-                    guacamole_user_group.entity_id
-                FROM related_entity
-                JOIN guacamole_user_group_member ON related_entity.entity_id = guacamole_user_group_member.member_entity_id
-                JOIN guacamole_user_group ON guacamole_user_group.user_group_id = guacamole_user_group_member.user_group_id
-        )
-        SELECT name
-        FROM related_entity
-        JOIN guacamole_entity ON related_entity.entity_id = guacamole_entity.entity_id
-        WHERE
-            guacamole_entity.type = 'USER_GROUP'::guacamole_entity_type;
-
-    </select>
-
     <!-- Select multiple users by username -->
     <select id="select" resultMap="UserResultMap"
             resultSets="users,arbitraryAttributes">

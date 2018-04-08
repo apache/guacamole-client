@@ -19,29 +19,34 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
-import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.base.EntityModel;
+import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 
 /**
  * A database implementation of SystemPermissionSet which uses an injected
  * service to query and manipulate the system permissions associated with a
- * particular user.
+ * particular entity.
  */
 public class SystemPermissionSet extends RestrictedObject
     implements org.apache.guacamole.net.auth.permission.SystemPermissionSet {
 
     /**
-     * The user associated with this permission set. Each of the permissions in
-     * this permission set is granted to this user.
+     * The entity associated with this permission set. Each of the permissions
+     * in this permission set is granted to this entity.
      */
-    private ModeledUser user;
+    private ModeledPermissions<? extends EntityModel> entity;
 
+    /**
+     * The identifiers of all groups that should be taken into account when
+     * determining the permissions effectively granted to the entity.
+     */
     private Set<String> effectiveGroups;
 
     /**
@@ -59,38 +64,39 @@ public class SystemPermissionSet extends RestrictedObject
     }
 
     /**
-     * Initializes this permission set with the current user and the user
+     * Initializes this permission set with the current user and the entity
      * to whom the permissions in this set are granted.
      *
      * @param currentUser
      *     The user who queried this permission set, and whose permissions
      *     dictate the access level of all operations performed on this set.
      *
-     * @param user
-     *     The user to whom the permissions in this set are granted.
+     * @param entity
+     *     The entity to whom the permissions in this set are granted.
      *
      * @param effectiveGroups
      *     The identifiers of all groups that should be taken into account
-     *     when determining the permissions effectively granted to the user. If
-     *     no groups are given, only permissions directly granted to the user
-     *     will be used.
+     *     when determining the permissions effectively granted to the entity.
+     *     If no groups are given, only permissions directly granted to the
+     *     entity will be used.
      */
-    public void init(ModeledAuthenticatedUser currentUser, ModeledUser user,
+    public void init(ModeledAuthenticatedUser currentUser,
+            ModeledPermissions<? extends EntityModel> entity,
             Set<String> effectiveGroups) {
         super.init(currentUser);
-        this.user = user;
+        this.entity = entity;
         this.effectiveGroups = effectiveGroups;
     }
 
     @Override
     public Set<SystemPermission> getPermissions() throws GuacamoleException {
-        return systemPermissionService.retrievePermissions(getCurrentUser(), user, effectiveGroups);
+        return systemPermissionService.retrievePermissions(getCurrentUser(), entity, effectiveGroups);
     }
 
     @Override
     public boolean hasPermission(SystemPermission.Type permission)
             throws GuacamoleException {
-        return systemPermissionService.hasPermission(getCurrentUser(), user, permission, effectiveGroups);
+        return systemPermissionService.hasPermission(getCurrentUser(), entity, permission, effectiveGroups);
     }
 
     @Override
@@ -108,13 +114,13 @@ public class SystemPermissionSet extends RestrictedObject
     @Override
     public void addPermissions(Set<SystemPermission> permissions)
             throws GuacamoleException {
-        systemPermissionService.createPermissions(getCurrentUser(), user, permissions);
+        systemPermissionService.createPermissions(getCurrentUser(), entity, permissions);
     }
 
     @Override
     public void removePermissions(Set<SystemPermission> permissions)
             throws GuacamoleException {
-        systemPermissionService.deletePermissions(getCurrentUser(), user, permissions);
+        systemPermissionService.deletePermissions(getCurrentUser(), entity, permissions);
     }
 
 }

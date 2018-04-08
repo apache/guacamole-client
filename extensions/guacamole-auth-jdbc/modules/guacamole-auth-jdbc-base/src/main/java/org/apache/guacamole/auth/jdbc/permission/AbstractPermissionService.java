@@ -20,8 +20,10 @@
 package org.apache.guacamole.auth.jdbc.permission;
 
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.base.EntityModel;
+import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
+import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.Permission;
@@ -42,16 +44,50 @@ public abstract class AbstractPermissionService<PermissionSetType extends Permis
     implements PermissionService<PermissionSetType, PermissionType> {
 
     /**
+     * Returns the ObjectPermissionSet related to the type of the given entity.
+     * If the given entity represents a user, then the ObjectPermissionSet
+     * containing user permissions is returned. If the given entity represents
+     * a user group, then the ObjectPermissionSet containing user group
+     * permissions is returned.
+     *
+     * @param user
+     *     The user to retrieve the ObjectPermissionSet from.
+     *
+     * @param targetEntity
+     *     The entity whose type dictates the ObjectPermissionSet returned.
+     *
+     * @return
+     *     The ObjectPermissionSet related to the type of the given entity.
+     *
+     * @throws GuacamoleException
+     *     If the relevant ObjectPermissionSet cannot be retrieved.
+     */
+    protected ObjectPermissionSet getRelevantPermissionSet(ModeledUser user,
+            ModeledPermissions<? extends EntityModel> targetEntity)
+            throws GuacamoleException {
+
+        if (targetEntity.isUser())
+            return user.getUserPermissions();
+
+        if (targetEntity.isUserGroup())
+            return user.getUserGroupPermissions();
+
+        // Entities should be only users or groups
+        throw new UnsupportedOperationException("Unexpected entity type.");
+        
+    }
+
+    /**
      * Determines whether the given user can read the permissions currently
-     * granted to the given target user. If the reading user and the target
-     * user are not the same, then explicit READ or SYSTEM_ADMINISTER access is
-     * required. Permission inheritance via user groups is taken into account.
+     * granted to the given target entity. If the reading user and the target
+     * entity are not the same, then explicit READ or SYSTEM_ADMINISTER access
+     * is required. Permission inheritance via user groups is taken into account.
      *
      * @param user
      *     The user attempting to read permissions.
      *
-     * @param targetUser
-     *     The user whose permissions are being read.
+     * @param targetEntity
+     *     The entity whose permissions are being read.
      *
      * @return
      *     true if permission is granted, false otherwise.
@@ -61,19 +97,20 @@ public abstract class AbstractPermissionService<PermissionSetType extends Permis
      *     permission is denied to read the current user's permissions.
      */
     protected boolean canReadPermissions(ModeledAuthenticatedUser user,
-            ModeledUser targetUser) throws GuacamoleException {
+            ModeledPermissions<? extends EntityModel> targetEntity)
+            throws GuacamoleException {
 
         // A user can always read their own permissions
-        if (user.getUser().getIdentifier().equals(targetUser.getIdentifier()))
+        if (targetEntity.isUser() && user.getUser().getIdentifier().equals(targetEntity.getIdentifier()))
             return true;
         
         // A system adminstrator can do anything
         if (user.getUser().isAdministrator())
             return true;
 
-        // Can read permissions on target user if explicit READ is granted
-        ObjectPermissionSet userPermissionSet = user.getUser().getEffectivePermissions().getUserPermissions();
-        return userPermissionSet.hasPermission(ObjectPermission.Type.READ, targetUser.getIdentifier());
+        // Can read permissions on target entity if explicit READ is granted
+        ObjectPermissionSet permissionSet = getRelevantPermissionSet(user.getUser(), targetEntity);
+        return permissionSet.hasPermission(ObjectPermission.Type.READ, targetEntity.getIdentifier());
 
     }
 

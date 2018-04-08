@@ -19,33 +19,31 @@
 
 package org.apache.guacamole.auth.jdbc.base;
 
+import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Set;
-import org.apache.ibatis.annotations.Param;
 
 /**
- * Mapper for entities. An entity is the base concept behind a user or user
- * group, and serves as a common point for granting permissions and defining
- * group membership.
+ * Service which provides convenience methods for creating, retrieving, and
+ * manipulating entities.
  */
-public interface EntityMapper {
+public class EntityService {
 
     /**
-     * Inserts the given entity into the database. If the entity already
-     * exists, this will result in an error.
-     *
-     * @param entity
-     *     The entity to insert.
-     *
-     * @return
-     *     The number of rows inserted.
+     * Mapper for Entity model objects.
      */
-    int insert(@Param("entity") EntityModel entity);
+    @Inject
+    private EntityMapper entityMapper;
 
     /**
      * Returns the set of all group identifiers of which the given entity is a
      * member, taking into account the given collection of known group
      * memberships which are not necessarily defined within the database.
+     * 
+     * Note that group visibility with respect to the queried entity is NOT
+     * taken into account. If the entity is a member of a group, the identifier
+     * of that group will be included in the returned set even if the current
+     * user lacks "READ" permission for that group.
      *
      * @param entity
      *     The entity whose effective groups should be returned.
@@ -59,7 +57,9 @@ public interface EntityMapper {
      *     member of, including those where membership is inherited through
      *     membership in other groups.
      */
-    Set<String> selectEffectiveGroupIdentifiers(@Param("entity") EntityModel entity,
-            @Param("effectiveGroups") Collection<String> effectiveGroups);
+    public Set<String> retrieveEffectiveGroups(ModeledPermissions<? extends EntityModel> entity,
+            Collection<String> effectiveGroups) {
+        return entityMapper.selectEffectiveGroupIdentifiers(entity.getModel(), effectiveGroups);
+    }
 
 }

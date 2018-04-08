@@ -24,7 +24,8 @@ import com.google.inject.Provider;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.user.ModeledUser;
+import org.apache.guacamole.auth.jdbc.base.EntityModel;
+import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -52,12 +53,12 @@ public class ConnectionGroupPermissionService extends ModeledObjectPermissionSer
 
     @Override
     public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledUser targetUser, Set<String> effectiveGroups)
-            throws GuacamoleException {
+            ModeledPermissions<? extends EntityModel> targetEntity,
+            Set<String> effectiveGroups) throws GuacamoleException {
 
-        // Create permission set for requested user
+        // Create permission set for requested entity
         ObjectPermissionSet permissionSet = connectionGroupPermissionSetProvider.get();
-        permissionSet.init(user, targetUser, effectiveGroups);
+        permissionSet.init(user, targetEntity, effectiveGroups);
 
         return permissionSet;
         
