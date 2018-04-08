@@ -27,6 +27,7 @@
       * SQL fragment which tests whether the value of the given column matches
       * the given entity ID. If group identifiers are provided, the IDs of the
       * entities for all groups having those identifiers are tested, as well.
+      * Disabled groups are ignored.
       *
       * @param column
       *     The name of the column to test. This column MUST contain an entity
@@ -45,8 +46,9 @@
             ${column} = ${entityID}
             <if test="!${groups}.isEmpty()">
                 OR ${column} IN (
-                    SELECT entity_id
+                    SELECT guacamole_entity.entity_id
                     FROM guacamole_entity
+                    JOIN guacamole_user_group ON guacamole_user_group.entity_id = guacamole_entity.entity_id
                     WHERE
                         type = 'USER_GROUP'::guacamole_entity_type
                         AND name IN
@@ -54,6 +56,7 @@
                                      open="(" separator="," close=")">
                                 #{effectiveGroup,jdbcType=VARCHAR}
                             </foreach>
+                        AND disabled = false
                 )
             </if>
         )
@@ -69,11 +72,13 @@
                 JOIN guacamole_user_group_member ON guacamole_user_group.user_group_id = guacamole_user_group_member.user_group_id
                 WHERE
                     guacamole_user_group_member.member_entity_id = #{entity.entityID}
+                    AND guacamole_user_group.disabled = false
             <if test="!effectiveGroups.isEmpty()">
                 UNION
                     SELECT
                         guacamole_entity.entity_id
                     FROM guacamole_entity
+                    JOIN guacamole_user_group ON guacamole_user_group.entity_id = guacamole_entity.entity_id
                     WHERE
                         type = 'USER_GROUP'::guacamole_entity_type
                         AND name IN
@@ -81,6 +86,7 @@
                                      open="(" separator="," close=")">
                                 #{effectiveGroup,jdbcType=VARCHAR}
                             </foreach>
+                        AND guacamole_user_group.disabled = false
             </if>
             UNION
                 SELECT
@@ -88,6 +94,8 @@
                 FROM related_entity
                 JOIN guacamole_user_group_member ON related_entity.entity_id = guacamole_user_group_member.member_entity_id
                 JOIN guacamole_user_group ON guacamole_user_group.user_group_id = guacamole_user_group_member.user_group_id
+                WHERE
+                    guacamole_user_group.disabled = false
         )
         SELECT name
         FROM related_entity
