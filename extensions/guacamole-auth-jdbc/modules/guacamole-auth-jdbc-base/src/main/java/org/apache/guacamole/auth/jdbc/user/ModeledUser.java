@@ -333,7 +333,8 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
 
     /**
      * Returns whether this user is a system administrator, and thus is not
-     * restricted by permissions.
+     * restricted by permissions, taking into account permission inheritance
+     * via user groups.
      *
      * @return
      *    true if this user is a system administrator, false otherwise.
@@ -343,7 +344,7 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
      *    status.
      */
     public boolean isAdministrator() throws GuacamoleException {
-        SystemPermissionSet systemPermissionSet = getSystemPermissions();
+        SystemPermissionSet systemPermissionSet = getEffectivePermissions().getSystemPermissions();
         return systemPermissionSet.hasPermission(SystemPermission.Type.ADMINISTER);
     }
     

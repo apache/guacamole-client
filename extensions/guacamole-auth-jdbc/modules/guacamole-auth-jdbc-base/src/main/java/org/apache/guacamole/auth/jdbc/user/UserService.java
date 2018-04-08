@@ -216,17 +216,17 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
             throws GuacamoleException {
 
         // Return whether user has explicit user creation permission
-        SystemPermissionSet permissionSet = user.getUser().getSystemPermissions();
+        SystemPermissionSet permissionSet = user.getUser().getEffectivePermissions().getSystemPermissions();
         return permissionSet.hasPermission(SystemPermission.Type.CREATE_USER);
 
     }
 
     @Override
-    protected ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user)
+    protected ObjectPermissionSet getEffectivePermissionSet(ModeledAuthenticatedUser user)
             throws GuacamoleException {
 
         // Return permissions related to users
-        return user.getUser().getUserPermissions();
+        return user.getUser().getEffectivePermissions().getUserPermissions();
 
     }
 

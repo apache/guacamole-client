@@ -112,26 +112,26 @@ public class ConnectionGroupService extends ModeledChildDirectoryObjectService<M
             throws GuacamoleException {
 
         // Return whether user has explicit connection group creation permission
-        SystemPermissionSet permissionSet = user.getUser().getSystemPermissions();
+        SystemPermissionSet permissionSet = user.getUser().getEffectivePermissions().getSystemPermissions();
         return permissionSet.hasPermission(SystemPermission.Type.CREATE_CONNECTION_GROUP);
 
     }
 
     @Override
-    protected ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user)
+    protected ObjectPermissionSet getEffectivePermissionSet(ModeledAuthenticatedUser user)
             throws GuacamoleException {
 
         // Return permissions related to connection groups 
-        return user.getUser().getConnectionGroupPermissions();
+        return user.getUser().getEffectivePermissions().getConnectionGroupPermissions();
 
     }
 
     @Override
-    protected ObjectPermissionSet getParentPermissionSet(ModeledAuthenticatedUser user)
+    protected ObjectPermissionSet getParentEffectivePermissionSet(ModeledAuthenticatedUser user)
             throws GuacamoleException {
 
         // Connection groups are contained by other connection groups
-        return user.getUser().getConnectionGroupPermissions();
+        return user.getUser().getEffectivePermissions().getConnectionGroupPermissions();
 
     }
 

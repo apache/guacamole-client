@@ -67,6 +67,7 @@ public abstract class ModeledObjectPermissionService
      * depends on whether the current user is a system administrator, whether
      * they have explicit UPDATE permission on the target user, and whether
      * they have explicit ADMINISTER permission on all affected objects.
+     * Permission inheritance via user groups is taken into account.
      *
      * @param user
      *     The user who is changing permissions.
@@ -95,7 +96,7 @@ public abstract class ModeledObjectPermissionService
             return true;
         
         // Verify user has update permission on the target user
-        ObjectPermissionSet userPermissionSet = user.getUser().getUserPermissions();
+        ObjectPermissionSet userPermissionSet = user.getUser().getEffectivePermissions().getUserPermissions();
         if (!userPermissionSet.hasPermission(ObjectPermission.Type.UPDATE, targetUser.getIdentifier()))
             return false;
 

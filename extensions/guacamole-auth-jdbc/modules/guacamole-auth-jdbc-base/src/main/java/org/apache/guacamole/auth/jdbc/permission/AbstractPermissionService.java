@@ -45,7 +45,7 @@ public abstract class AbstractPermissionService<PermissionSetType extends Permis
      * Determines whether the given user can read the permissions currently
      * granted to the given target user. If the reading user and the target
      * user are not the same, then explicit READ or SYSTEM_ADMINISTER access is
-     * required.
+     * required. Permission inheritance via user groups is taken into account.
      *
      * @param user
      *     The user attempting to read permissions.
@@ -72,7 +72,7 @@ public abstract class AbstractPermissionService<PermissionSetType extends Permis
             return true;
 
         // Can read permissions on target user if explicit READ is granted
-        ObjectPermissionSet userPermissionSet = user.getUser().getUserPermissions();
+        ObjectPermissionSet userPermissionSet = user.getUser().getEffectivePermissions().getUserPermissions();
         return userPermissionSet.hasPermission(ObjectPermission.Type.READ, targetUser.getIdentifier());
 
     }
