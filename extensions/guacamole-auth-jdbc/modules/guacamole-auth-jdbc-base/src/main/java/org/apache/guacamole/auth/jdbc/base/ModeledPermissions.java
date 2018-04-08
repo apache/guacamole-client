@@ -28,13 +28,13 @@ import org.apache.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermissio
 import org.apache.guacamole.auth.jdbc.permission.ConnectionGroupPermissionService;
 import org.apache.guacamole.auth.jdbc.permission.ConnectionPermissionService;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionService;
+import org.apache.guacamole.auth.jdbc.permission.UserGroupPermissionService;
 import org.apache.guacamole.auth.jdbc.permission.UserPermissionService;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
-import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
 
 /**
  * An implementation of the base Permissions interface which is common to both
@@ -87,6 +87,12 @@ public abstract class ModeledPermissions<ModelType extends EntityModel>
      */
     @Inject
     private UserPermissionService userPermissionService;
+
+    /**
+     * Service for retrieving user group permissions.
+     */
+    @Inject
+    private UserGroupPermissionService userGroupPermissionService;
 
     /**
      * Returns whether the underlying entity is a user. Entities may be either
@@ -171,8 +177,8 @@ public abstract class ModeledPermissions<ModelType extends EntityModel>
 
     @Override
     public ObjectPermissionSet getUserGroupPermissions() throws GuacamoleException {
-        // FIXME: STUB
-        return new SimpleObjectPermissionSet();
+        return userGroupPermissionService.getPermissionSet(getCurrentUser(),
+                this, Collections.<String>emptySet());
     }
 
     /**
@@ -256,8 +262,7 @@ public abstract class ModeledPermissions<ModelType extends EntityModel>
             @Override
             public ObjectPermissionSet getUserGroupPermissions()
                     throws GuacamoleException {
-                // FIXME: STUB
-                return new SimpleObjectPermissionSet();
+                return userGroupPermissionService.getPermissionSet(getCurrentUser(), ModeledPermissions.this, effectiveGroups);
             }
 
         };

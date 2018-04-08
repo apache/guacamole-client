@@ -65,6 +65,9 @@ import org.apache.guacamole.auth.jdbc.connection.ConnectionParameterMapper;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionService;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionSet;
+import org.apache.guacamole.auth.jdbc.permission.UserGroupPermissionMapper;
+import org.apache.guacamole.auth.jdbc.permission.UserGroupPermissionService;
+import org.apache.guacamole.auth.jdbc.permission.UserGroupPermissionSet;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicyService;
 import org.apache.guacamole.auth.jdbc.sharing.ConnectionSharingService;
 import org.apache.guacamole.auth.jdbc.sharing.HashSharedConnectionMap;
@@ -79,6 +82,10 @@ import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileService;
 import org.apache.guacamole.auth.jdbc.tunnel.RestrictedGuacamoleTunnelService;
 import org.apache.guacamole.auth.jdbc.user.PasswordRecordMapper;
 import org.apache.guacamole.auth.jdbc.user.UserRecordMapper;
+import org.apache.guacamole.auth.jdbc.usergroup.ModeledUserGroup;
+import org.apache.guacamole.auth.jdbc.usergroup.UserGroupDirectory;
+import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMapper;
+import org.apache.guacamole.auth.jdbc.usergroup.UserGroupService;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
 
@@ -128,6 +135,8 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         addMapperClass(SharingProfileMapper.class);
         addMapperClass(SharingProfileParameterMapper.class);
         addMapperClass(SharingProfilePermissionMapper.class);
+        addMapperClass(UserGroupMapper.class);
+        addMapperClass(UserGroupPermissionMapper.class);
         addMapperClass(UserMapper.class);
         addMapperClass(UserPermissionMapper.class);
         addMapperClass(UserRecordMapper.class);
@@ -146,12 +155,15 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(ModeledSharingProfile.class);
         bind(ModeledUser.class);
         bind(ModeledUserContext.class);
+        bind(ModeledUserGroup.class);
         bind(RootConnectionGroup.class);
         bind(SharingProfileDirectory.class);
         bind(SharingProfilePermissionSet.class);
         bind(SystemPermissionSet.class);
         bind(TrackedActiveConnection.class);
         bind(UserDirectory.class);
+        bind(UserGroupDirectory.class);
+        bind(UserGroupPermissionSet.class);
         bind(UserPermissionSet.class);
         
         // Bind services
@@ -172,6 +184,8 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(SharingProfilePermissionService.class);
         bind(SharingProfileService.class);
         bind(SystemPermissionService.class);
+        bind(UserGroupService.class);
+        bind(UserGroupPermissionService.class);
         bind(UserPermissionService.class);
         bind(UserService.class);
         
