@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.jdbc.usergroup;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -74,10 +75,11 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
             )));
 
     /**
-     * Service for managing user groups.
+     * Provider for RelatedObjectSets containing the users that are members of
+     * this user group.
      */
     @Inject
-    private UserGroupService userGroupService;
+    private Provider<UserGroupMemberUserSet> memberUserSetProvider;
 
     /**
      * Whether attributes which control access restrictions should be exposed
@@ -180,7 +182,9 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
 
     @Override
     public RelatedObjectSet getMemberUsers() throws GuacamoleException {
-        return new SimpleRelatedObjectSet();
+        UserGroupMemberUserSet memberUserSet = memberUserSetProvider.get();
+        memberUserSet.init(getCurrentUser(), this);
+        return memberUserSet;
     }
 
     @Override
