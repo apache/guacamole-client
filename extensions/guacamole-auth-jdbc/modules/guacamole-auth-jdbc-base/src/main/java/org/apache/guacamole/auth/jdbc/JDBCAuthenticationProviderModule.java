@@ -87,6 +87,7 @@ import org.apache.guacamole.auth.jdbc.usergroup.UserGroupDirectory;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMapper;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMemberUserGroupMapper;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMemberUserMapper;
+import org.apache.guacamole.auth.jdbc.usergroup.UserGroupParentUserGroupMapper;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupService;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
@@ -140,6 +141,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         addMapperClass(UserGroupMapper.class);
         addMapperClass(UserGroupMemberUserGroupMapper.class);
         addMapperClass(UserGroupMemberUserMapper.class);
+        addMapperClass(UserGroupParentUserGroupMapper.class);
         addMapperClass(UserGroupPermissionMapper.class);
         addMapperClass(UserMapper.class);
         addMapperClass(UserPermissionMapper.class);

@@ -35,7 +35,6 @@ import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.UserGroup;
-import org.apache.guacamole.net.auth.simple.SimpleRelatedObjectSet;
 
 /**
  * An implementation of the UserGroup object which is backed by a database model.
@@ -73,6 +72,13 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
             Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
                 DISABLED_ATTRIBUTE_NAME
             )));
+
+    /**
+     * Provider for RelatedObjectSets containing the user groups of which this
+     * user group is a member.
+     */
+    @Inject
+    private Provider<UserGroupParentUserGroupSet> parentUserGroupSetProvider;
 
     /**
      * Provider for RelatedObjectSets containing the users that are members of
@@ -184,7 +190,9 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
 
     @Override
     public RelatedObjectSet getUserGroups() throws GuacamoleException {
-        return new SimpleRelatedObjectSet();
+        UserGroupParentUserGroupSet parentUserGroupSet = parentUserGroupSetProvider.get();
+        parentUserGroupSet.init(getCurrentUser(), this);
+        return parentUserGroupSet;
     }
 
     @Override
