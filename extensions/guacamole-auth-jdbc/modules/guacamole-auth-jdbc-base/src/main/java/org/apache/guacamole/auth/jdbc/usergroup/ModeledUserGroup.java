@@ -82,6 +82,13 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
     private Provider<UserGroupMemberUserSet> memberUserSetProvider;
 
     /**
+     * Provider for RelatedObjectSets containing the user groups that are
+     * members of this user group.
+     */
+    @Inject
+    private Provider<UserGroupMemberUserGroupSet> memberUserGroupSetProvider;
+
+    /**
      * Whether attributes which control access restrictions should be exposed
      * via getAttributes() or allowed to be set via setAttributes().
      */
@@ -189,7 +196,9 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
 
     @Override
     public RelatedObjectSet getMemberUserGroups() throws GuacamoleException {
-        return new SimpleRelatedObjectSet();
+        UserGroupMemberUserGroupSet memberUserGroupSet = memberUserGroupSetProvider.get();
+        memberUserGroupSet.init(getCurrentUser(), this);
+        return memberUserGroupSet;
     }
 
 }
