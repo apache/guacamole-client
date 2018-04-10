@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.jdbc.user;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -49,7 +50,6 @@ import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.User;
-import org.apache.guacamole.net.auth.simple.SimpleRelatedObjectSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,6 +175,13 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
      */
     @Inject
     private SaltService saltService;
+
+    /**
+     * Provider for RelatedObjectSets containing the user groups of which this
+     * user is a member.
+     */
+    @Inject
+    private Provider<UserParentUserGroupSet> parentUserGroupSetProvider;
 
     /**
      * Whether attributes which control access restrictions should be exposed
@@ -747,7 +754,9 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
 
     @Override
     public RelatedObjectSet getUserGroups() throws GuacamoleException {
-        return new SimpleRelatedObjectSet();
+        UserParentUserGroupSet parentUserGroupSet = parentUserGroupSetProvider.get();
+        parentUserGroupSet.init(getCurrentUser(), this);
+        return parentUserGroupSet;
     }
 
     @Override

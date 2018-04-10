@@ -91,6 +91,7 @@ import org.apache.guacamole.auth.jdbc.usergroup.UserGroupParentUserGroupMapper;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupService;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
+import org.apache.guacamole.auth.jdbc.user.UserParentUserGroupMapper;
 
 /**
  * Guice module which configures the injections used by the JDBC authentication
@@ -144,6 +145,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         addMapperClass(UserGroupParentUserGroupMapper.class);
         addMapperClass(UserGroupPermissionMapper.class);
         addMapperClass(UserMapper.class);
+        addMapperClass(UserParentUserGroupMapper.class);
         addMapperClass(UserPermissionMapper.class);
         addMapperClass(UserRecordMapper.class);
         
