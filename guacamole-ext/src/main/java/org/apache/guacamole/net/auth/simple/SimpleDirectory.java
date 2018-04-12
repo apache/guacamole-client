@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.net.auth.Directory;
@@ -57,7 +57,7 @@ public class SimpleDirectory<ObjectType extends Identifiable>
     /**
      * Creates a new SimpleDirectory which provides access to the objects
      * contained within the given Map. The given Map will be used to back all
-     * operations on the SimpleDirectory, and must be threadsafe.
+     * operations on the SimpleDirectory.
      *
      * @param objects
      *     The Map of objects to provide access to.
@@ -66,10 +66,25 @@ public class SimpleDirectory<ObjectType extends Identifiable>
         this.objects = objects;
     }
 
+    /**
+     * Creates a new SimpleDirectory which provides access to the given object.
+     *
+     * @param object
+     *     The object to provide access to.
+     */
     public SimpleDirectory(ObjectType object) {
         this(Collections.singletonMap(object.getIdentifier(), object));
     }
 
+    /**
+     * Creates a new SimpleDirectory which provides access to the given
+     * objects. Note that a new Map will be created to store the given objects.
+     * If the objects are already available in Map form, it is more efficient
+     * to use the {@link #SimpleDirectory(java.util.Map)} constructor.
+     *
+     * @param objects
+     *     The objects that should be present in this directory.
+     */
     public SimpleDirectory(ObjectType... objects) {
         this(Arrays.asList(objects));
     }
@@ -85,7 +100,7 @@ public class SimpleDirectory<ObjectType extends Identifiable>
      *     A Collection of all objects that should be present in this directory.
      */
     public SimpleDirectory(Collection<ObjectType> objects) {
-        this.objects = new ConcurrentHashMap<String, ObjectType>(objects.size());
+        this.objects = new HashMap<String, ObjectType>(objects.size());
         for (ObjectType object : objects)
             this.objects.put(object.getIdentifier(), object);
     }

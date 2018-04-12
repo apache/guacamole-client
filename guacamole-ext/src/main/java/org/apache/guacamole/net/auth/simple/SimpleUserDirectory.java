@@ -25,7 +25,10 @@ import org.apache.guacamole.net.auth.User;
 /**
  * An extremely simple read-only implementation of a Directory of Users which
  * provides access to a single pre-defined User.
+ *
+ * @deprecated Use {@link SimpleDirectory} instead.
  */
+@Deprecated
 public class SimpleUserDirectory extends SimpleDirectory<User> {
 
     /**
