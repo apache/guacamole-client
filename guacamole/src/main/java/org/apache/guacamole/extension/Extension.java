@@ -21,12 +21,6 @@ package org.apache.guacamole.extension;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -387,34 +381,8 @@ public class Extension {
                 extension.close();
             }
 
-            try {
-
-                // Create isolated classloader for this extension
-                classLoader = AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
-
-                    @Override
-                    public ClassLoader run() throws GuacamoleException {
-
-                        try {
-
-                            // Classloader must contain only the extension itself
-                            return new URLClassLoader(new URL[]{file.toURI().toURL()}, parent);
-
-                        }
-                        catch (MalformedURLException e) {
-                            throw new GuacamoleException(e);
-                        }
-
-                    }
-
-                });
-
-            }
-
-            // Rethrow any GuacamoleException
-            catch (PrivilegedActionException e) {
-                throw (GuacamoleException) e.getException();
-            }
+            // Create isolated classloader for this extension
+            classLoader = ExtensionClassLoader.getInstance(file, parent);
 
         }
 
