@@ -19,24 +19,16 @@
 
 package org.apache.guacamole.net.auth.simple;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.form.Form;
-import org.apache.guacamole.net.auth.ActiveConnection;
-import org.apache.guacamole.net.auth.ActivityRecord;
-import org.apache.guacamole.net.auth.ActivityRecordSet;
+import org.apache.guacamole.net.auth.AbstractUserContext;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Connection;
-import org.apache.guacamole.net.auth.ConnectionGroup;
-import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.Directory;
-import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
-import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -44,12 +36,7 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
  * a defined and restricted set of GuacamoleConfigurations. Access to
  * querying or modifying either users or permissions is denied.
  */
-public class SimpleUserContext implements UserContext {
-
-    /**
-     * The unique identifier of the root connection group.
-     */
-    private static final String ROOT_IDENTIFIER = "ROOT";
+public class SimpleUserContext extends AbstractUserContext {
 
     /**
      * The AuthenticationProvider that created this UserContext.
@@ -57,22 +44,10 @@ public class SimpleUserContext implements UserContext {
     private final AuthenticationProvider authProvider;
 
     /**
-     * Reference to the user whose permissions dictate the configurations
-     * accessible within this UserContext.
+     * The unique identifier (username) of the user whose permissions dictate
+     * the configurations accessible within this UserContext.
      */
-    private final User self;
-
-    /**
-     * The Directory with access only to the User associated with this
-     * UserContext.
-     */
-    private final Directory<User> userDirectory;
-
-    /**
-     * The Directory with access only to the root group associated with this
-     * UserContext.
-     */
-    private final Directory<ConnectionGroup> connectionGroupDirectory;
+    private final String username;
 
     /**
      * The Directory with access to all connections within the root group
@@ -81,14 +56,10 @@ public class SimpleUserContext implements UserContext {
     private final Directory<Connection> connectionDirectory;
 
     /**
-     * The root connection group.
-     */
-    private final ConnectionGroup rootGroup;
-
-    /**
      * Creates a new SimpleUserContext which provides access to only those
-     * configurations within the given Map. The username is assigned
-     * arbitrarily.
+     * configurations within the given Map. The username is set to the
+     * ANONYMOUS_IDENTIFIER defined by AuthenticatedUser, effectively declaring
+     * the current user as anonymous.
      *
      * @param authProvider
      *     The AuthenticationProvider creating this UserContext.
@@ -99,7 +70,7 @@ public class SimpleUserContext implements UserContext {
      */
     public SimpleUserContext(AuthenticationProvider authProvider,
             Map<String, GuacamoleConfiguration> configs) {
-        this(authProvider, UUID.randomUUID().toString(), configs);
+        this(authProvider, AuthenticatedUser.ANONYMOUS_IDENTIFIER, configs);
     }
 
     /**
@@ -119,11 +90,8 @@ public class SimpleUserContext implements UserContext {
     public SimpleUserContext(AuthenticationProvider authProvider,
             String username, Map<String, GuacamoleConfiguration> configs) {
 
-        Collection<String> connectionIdentifiers = new ArrayList<String>(configs.size());
-        Collection<String> connectionGroupIdentifiers = Collections.singleton(ROOT_IDENTIFIER);
-        
-        // Produce collection of connections from given configs
-        Collection<Connection> connections = new ArrayList<Connection>(configs.size());
+        // Produce map of connections from given configs
+        Map<String, Connection> connections = new ConcurrentHashMap<String, Connection>(configs.size());
         for (Map.Entry<String, GuacamoleConfiguration> configEntry : configs.entrySet()) {
 
             // Get connection identifier and configuration
@@ -132,37 +100,33 @@ public class SimpleUserContext implements UserContext {
 
             // Add as simple connection
             Connection connection = new SimpleConnection(identifier, identifier, config);
-            connection.setParentIdentifier(ROOT_IDENTIFIER);
-            connections.add(connection);
+            connection.setParentIdentifier(DEFAULT_ROOT_CONNECTION_GROUP);
+            connections.put(identifier, connection);
 
-            // Add identifier to overall set of identifiers
-            connectionIdentifiers.add(identifier);
-            
         }
-        
-        // Add root group that contains only the given configurations
-        this.rootGroup = new SimpleConnectionGroup(
-            ROOT_IDENTIFIER, ROOT_IDENTIFIER,
-            connectionIdentifiers, Collections.<String>emptyList()
-        );
 
-        // Build new user from credentials
-        this.self = new SimpleUser(username, connectionIdentifiers,
-                connectionGroupIdentifiers);
-
-        // Create directories for new user
-        this.userDirectory = new SimpleUserDirectory(self);
-        this.connectionDirectory = new SimpleConnectionDirectory(connections);
-        this.connectionGroupDirectory = new SimpleConnectionGroupDirectory(Collections.singleton(this.rootGroup));
-
-        // Associate provided AuthenticationProvider
+        this.username = username;
         this.authProvider = authProvider;
+        this.connectionDirectory = new SimpleDirectory<Connection>(connections);
 
     }
 
     @Override
     public User self() {
-        return self;
+
+        try {
+            return new SimpleUser(username,
+                    getConnectionDirectory().getIdentifiers(),
+                    getConnectionGroupDirectory().getIdentifiers()
+            );
+        }
+
+        catch (GuacamoleException e) {
+            return new SimpleUser(username,
+                    Collections.<String>emptySet(),
+                    Collections.<String>emptySet());
+        }
+
     }
 
     @Override
@@ -176,75 +140,9 @@ public class SimpleUserContext implements UserContext {
     }
 
     @Override
-    public Directory<User> getUserDirectory()
-            throws GuacamoleException {
-        return userDirectory;
-    }
-
-    @Override
     public Directory<Connection> getConnectionDirectory()
             throws GuacamoleException {
         return connectionDirectory;
-    }
-
-    @Override
-    public Directory<ConnectionGroup> getConnectionGroupDirectory()
-            throws GuacamoleException {
-        return connectionGroupDirectory;
-    }
-
-    @Override
-    public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
-        return rootGroup;
-    }
-
-    @Override
-    public Directory<SharingProfile> getSharingProfileDirectory()
-            throws GuacamoleException {
-        return new SimpleDirectory<SharingProfile>();
-    }
-
-    @Override
-    public Directory<ActiveConnection> getActiveConnectionDirectory()
-            throws GuacamoleException {
-        return new SimpleDirectory<ActiveConnection>();
-    }
-
-    @Override
-    public ActivityRecordSet<ConnectionRecord> getConnectionHistory()
-            throws GuacamoleException {
-        return new SimpleActivityRecordSet<ConnectionRecord>();
-    }
-
-    @Override
-    public ActivityRecordSet<ActivityRecord> getUserHistory()
-            throws GuacamoleException {
-        return new SimpleActivityRecordSet<ActivityRecord>();
-    }
-
-    @Override
-    public Collection<Form> getUserAttributes() {
-        return Collections.<Form>emptyList();
-    }
-
-    @Override
-    public Collection<Form> getConnectionAttributes() {
-        return Collections.<Form>emptyList();
-    }
-
-    @Override
-    public Collection<Form> getConnectionGroupAttributes() {
-        return Collections.<Form>emptyList();
-    }
-
-    @Override
-    public Collection<Form> getSharingProfileAttributes() {
-        return Collections.<Form>emptyList();
-    }
-
-    @Override
-    public void invalidate() {
-        // Nothing to invalidate
     }
 
 }

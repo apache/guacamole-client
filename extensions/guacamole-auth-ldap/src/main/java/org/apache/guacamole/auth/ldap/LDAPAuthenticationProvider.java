@@ -23,8 +23,8 @@ package org.apache.guacamole.auth.ldap;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
 
@@ -33,7 +33,7 @@ import org.apache.guacamole.net.auth.UserContext;
  * any number of authorized configurations. Authorized configurations may be
  * shared.
  */
-public class LDAPAuthenticationProvider implements AuthenticationProvider {
+public class LDAPAuthenticationProvider extends AbstractAuthenticationProvider {
 
     /**
      * The identifier reserved for the root connection group.
@@ -69,22 +69,11 @@ public class LDAPAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public String getResource() {
-        return null;
-    }
-
-    @Override
     public AuthenticatedUser authenticateUser(Credentials credentials) throws GuacamoleException {
 
         AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
         return authProviderService.authenticateUser(credentials);
 
-    }
-
-    @Override
-    public AuthenticatedUser updateAuthenticatedUser(AuthenticatedUser authenticatedUser,
-            Credentials credentials) throws GuacamoleException {
-        return authenticatedUser;
     }
 
     @Override
@@ -96,31 +85,4 @@ public class LDAPAuthenticationProvider implements AuthenticationProvider {
 
     }
 
-    @Override
-    public UserContext updateUserContext(UserContext context,
-            AuthenticatedUser authenticatedUser,
-            Credentials credentials) throws GuacamoleException {
-        return context;
-    }
-
-    @Override
-    public UserContext decorate(UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
-            throws GuacamoleException {
-        return context;
-    }
-
-    @Override
-    public UserContext redecorate(UserContext decorated, UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
-            throws GuacamoleException {
-        return context;
-    }
-
-    @Override
-    public void shutdown() {
-        // Do nothing
-    }
-
 }
-

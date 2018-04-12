@@ -21,7 +21,7 @@ package org.apache.guacamole.auth.jdbc;
 
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.net.auth.AuthenticationProvider;
+import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
@@ -34,7 +34,7 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
  * AuthenticationProvider, even though it is the AuthenticationProvider that
  * serves as the entry point.
  */
-public abstract class InjectedAuthenticationProvider implements AuthenticationProvider {
+public abstract class InjectedAuthenticationProvider extends AbstractAuthenticationProvider {
 
     /**
      * The AuthenticationProviderService to which all AuthenticationProvider
@@ -71,23 +71,9 @@ public abstract class InjectedAuthenticationProvider implements AuthenticationPr
     }
 
     @Override
-    public Object getResource() throws GuacamoleException {
-        return null;
-    }
-
-    @Override
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
         return authProviderService.authenticateUser(this, credentials);
-    }
-
-    @Override
-    public AuthenticatedUser updateAuthenticatedUser(AuthenticatedUser authenticatedUser,
-            Credentials credentials) throws GuacamoleException {
-
-        // No need to update authenticated users
-        return authenticatedUser;
-
     }
 
     @Override
@@ -102,25 +88,6 @@ public abstract class InjectedAuthenticationProvider implements AuthenticationPr
             throws GuacamoleException {
         return authProviderService.updateUserContext(this, context,
                 authenticatedUser, credentials);
-    }
-
-    @Override
-    public UserContext decorate(UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
-            throws GuacamoleException {
-        return context;
-    }
-
-    @Override
-    public UserContext redecorate(UserContext decorated, UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
-            throws GuacamoleException {
-        return context;
-    }
-
-    @Override
-    public void shutdown() {
-        // Do nothing
     }
 
 }

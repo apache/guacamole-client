@@ -20,10 +20,12 @@
 package org.apache.guacamole.net.auth.simple;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.net.auth.Directory;
@@ -54,13 +56,38 @@ public class SimpleDirectory<ObjectType extends Identifiable>
 
     /**
      * Creates a new SimpleDirectory which provides access to the objects
-     * contained within the given Map.
+     * contained within the given Map. The given Map will be used to back all
+     * operations on the SimpleDirectory, and must be threadsafe.
      *
      * @param objects
      *     The Map of objects to provide access to.
      */
     public SimpleDirectory(Map<String, ObjectType> objects) {
         this.objects = objects;
+    }
+
+    public SimpleDirectory(ObjectType object) {
+        this(Collections.singletonMap(object.getIdentifier(), object));
+    }
+
+    public SimpleDirectory(ObjectType... objects) {
+        this(Arrays.asList(objects));
+    }
+
+    /**
+     * Creates a new SimpleDirectory which provides access to the
+     * objects contained within the Collection. Note that a new Map will be
+     * created to store the given objects. If the objects are already available
+     * in Map form, it is more efficient to use the
+     * {@link #SimpleDirectory(java.util.Map)} constructor.
+     *
+     * @param objects
+     *     A Collection of all objects that should be present in this directory.
+     */
+    public SimpleDirectory(Collection<ObjectType> objects) {
+        this.objects = new ConcurrentHashMap<String, ObjectType>(objects.size());
+        for (ObjectType object : objects)
+            this.objects.put(object.getIdentifier(), object);
     }
 
     /**
