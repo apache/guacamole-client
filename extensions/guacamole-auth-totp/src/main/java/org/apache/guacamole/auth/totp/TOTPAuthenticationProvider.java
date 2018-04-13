@@ -25,8 +25,8 @@ import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.totp.user.CodeUsageTrackingService;
 import org.apache.guacamole.auth.totp.user.TOTPUserContext;
+import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
 
@@ -35,7 +35,7 @@ import org.apache.guacamole.net.auth.UserContext;
  * authentication factor for users which have already been authenticated by
  * some other AuthenticationProvider.
  */
-public class TOTPAuthenticationProvider implements AuthenticationProvider {
+public class TOTPAuthenticationProvider extends AbstractAuthenticationProvider {
 
     /**
      * Injector which will manage the object graph of this authentication
@@ -62,36 +62,6 @@ public class TOTPAuthenticationProvider implements AuthenticationProvider {
     @Override
     public String getIdentifier() {
         return "totp";
-    }
-
-    @Override
-    public Object getResource() {
-        return null;
-    }
-
-    @Override
-    public AuthenticatedUser authenticateUser(Credentials credentials)
-            throws GuacamoleException {
-        return null;
-    }
-
-    @Override
-    public AuthenticatedUser updateAuthenticatedUser(AuthenticatedUser authenticatedUser,
-            Credentials credentials) throws GuacamoleException {
-        return authenticatedUser;
-    }
-
-    @Override
-    public UserContext getUserContext(AuthenticatedUser authenticatedUser)
-            throws GuacamoleException {
-        return null;
-    }
-
-    @Override
-    public UserContext updateUserContext(UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
-                throws GuacamoleException {
-        return context;
     }
 
     @Override

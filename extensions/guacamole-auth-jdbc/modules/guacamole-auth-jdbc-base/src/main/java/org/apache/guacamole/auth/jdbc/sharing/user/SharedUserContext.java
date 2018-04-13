@@ -20,27 +20,16 @@
 package org.apache.guacamole.auth.jdbc.sharing.user;
 
 import com.google.inject.Inject;
-import java.util.Collection;
-import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.sharing.connection.SharedConnectionDirectory;
 import org.apache.guacamole.auth.jdbc.sharing.connectiongroup.SharedRootConnectionGroup;
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
-import org.apache.guacamole.form.Form;
-import org.apache.guacamole.net.auth.ActiveConnection;
-import org.apache.guacamole.net.auth.ActivityRecord;
-import org.apache.guacamole.net.auth.ActivityRecordSet;
+import org.apache.guacamole.net.auth.AbstractUserContext;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
-import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.Directory;
-import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
-import org.apache.guacamole.net.auth.UserContext;
-import org.apache.guacamole.net.auth.simple.SimpleActivityRecordSet;
-import org.apache.guacamole.net.auth.simple.SimpleConnectionGroupDirectory;
-import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 
 /**
  * The user context of a SharedUser, providing access ONLY to the user
@@ -48,7 +37,7 @@ import org.apache.guacamole.net.auth.simple.SimpleDirectory;
  * keys, and an internal root connection group containing only those
  * connections.
  */
-public class SharedUserContext implements UserContext {
+public class SharedUserContext extends AbstractUserContext {
 
     /**
      * The AuthenticationProvider that created this SharedUserContext.
@@ -66,18 +55,6 @@ public class SharedUserContext implements UserContext {
      */
     @Inject
     private SharedConnectionDirectory connectionDirectory;
-
-    /**
-     * A directory of all connection groups visible to the user for whom this
-     * user context was created.
-     */
-    private Directory<ConnectionGroup> connectionGroupDirectory;
-
-    /**
-     * A directory of all users visible to the user for whom this user context
-     * was created.
-     */
-    private Directory<User> userDirectory;
 
     /**
      * The root connection group of the hierarchy containing all connections
@@ -110,14 +87,9 @@ public class SharedUserContext implements UserContext {
 
         // The connection group directory contains only the root group
         this.rootGroup = new SharedRootConnectionGroup(this);
-        this.connectionGroupDirectory = new SimpleConnectionGroupDirectory(
-                Collections.singletonList(this.rootGroup));
 
         // Create internal pseudo-account representing the authenticated user
         this.self = new SharedUser(user, this);
-
-        // Do not provide access to any user accounts via the directory
-        this.userDirectory = new SimpleDirectory<User>();
 
     }
 
@@ -139,18 +111,8 @@ public class SharedUserContext implements UserContext {
     }
 
     @Override
-    public Object getResource() throws GuacamoleException {
-        return null;
-    }
-
-    @Override
     public AuthenticationProvider getAuthenticationProvider() {
         return authProvider;
-    }
-
-    @Override
-    public Directory<User> getUserDirectory() {
-        return userDirectory;
     }
 
     @Override
@@ -160,61 +122,8 @@ public class SharedUserContext implements UserContext {
     }
 
     @Override
-    public Directory<ConnectionGroup> getConnectionGroupDirectory() {
-        return connectionGroupDirectory;
-    }
-
-    @Override
-    public Directory<ActiveConnection> getActiveConnectionDirectory()
-            throws GuacamoleException {
-        return new SimpleDirectory<ActiveConnection>();
-    }
-
-    @Override
-    public Directory<SharingProfile> getSharingProfileDirectory()
-            throws GuacamoleException {
-        return new SimpleDirectory<SharingProfile>();
-    }
-
-    @Override
-    public ActivityRecordSet<ConnectionRecord> getConnectionHistory() {
-        return new SimpleActivityRecordSet<ConnectionRecord>();
-    }
-
-    @Override
-    public ActivityRecordSet<ActivityRecord> getUserHistory()
-            throws GuacamoleException {
-        return new SimpleActivityRecordSet<ActivityRecord>();
-    }
-
-    @Override
     public ConnectionGroup getRootConnectionGroup() {
         return rootGroup;
-    }
-
-    @Override
-    public Collection<Form> getUserAttributes() {
-        return Collections.<Form>emptyList();
-    }
-
-    @Override
-    public Collection<Form> getConnectionAttributes() {
-        return Collections.<Form>emptyList();
-    }
-
-    @Override
-    public Collection<Form> getConnectionGroupAttributes() {
-        return Collections.<Form>emptyList();
-    }
-
-    @Override
-    public Collection<Form> getSharingProfileAttributes() {
-        return Collections.<Form>emptyList();
-    }
-
-    @Override
-    public void invalidate() {
-        // Nothing to invalidate
     }
 
 }

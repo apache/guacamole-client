@@ -23,17 +23,16 @@ package org.apache.guacamole.auth.radius;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
-import org.apache.guacamole.net.auth.UserContext;
 
 /**
  * Allows users to be authenticated against an RADIUS server. Each user may have
  * any number of authorized configurations. Authorized configurations may be
  * shared.
  */
-public class RadiusAuthenticationProvider implements AuthenticationProvider {
+public class RadiusAuthenticationProvider extends AbstractAuthenticationProvider {
 
     /**
      * Injector which will manage the object graph of this authentication
@@ -64,30 +63,6 @@ public class RadiusAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public Object getResource() throws GuacamoleException {
-        return null;
-    }
-
-    @Override
-    public UserContext decorate(UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
-            throws GuacamoleException {
-        return context;
-    }
-
-    @Override
-    public UserContext redecorate(UserContext decorated, UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
-            throws GuacamoleException {
-        return context;
-    }
-
-    @Override
-    public void shutdown() {
-        // Do nothing
-    }
-
-    @Override
     public AuthenticatedUser authenticateUser(Credentials credentials) throws GuacamoleException {
 
         AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
@@ -95,26 +70,4 @@ public class RadiusAuthenticationProvider implements AuthenticationProvider {
 
     }
 
-    @Override
-    public AuthenticatedUser updateAuthenticatedUser(AuthenticatedUser authenticatedUser,
-            Credentials credentials) throws GuacamoleException {
-        return authenticatedUser;
-    }
-
-    @Override
-    public UserContext getUserContext(AuthenticatedUser authenticatedUser)
-            throws GuacamoleException {
-
-        return null;
-
-    }
-
-    @Override
-    public UserContext updateUserContext(UserContext context,
-            AuthenticatedUser authenticatedUser,
-            Credentials credentials) throws GuacamoleException {
-        return context;
-    }
-
 }
-
