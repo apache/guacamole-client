@@ -24,6 +24,7 @@ import java.util.Collections;
 import org.apache.guacamole.auth.quickconnect.rest.QuickConnectREST;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.Form;
+import org.apache.guacamole.net.auth.AbstractUserContext;
 import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.ActivityRecordSet;
@@ -36,22 +37,15 @@ import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.simple.SimpleActivityRecordSet;
-import org.apache.guacamole.net.auth.simple.SimpleConnectionGroupDirectory;
 import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 import org.apache.guacamole.net.auth.simple.SimpleUser;
-import org.apache.guacamole.net.auth.simple.SimpleUserDirectory;
 
 /**
  * A simple implementation of UserContext to support the QuickConnect
  * extension, primarily used for storing connections the user has
  * created using the QuickConnect bar in the webapp.
  */
-public class QuickConnectUserContext implements UserContext {
-
-    /**
-     * The unique identifier of the root connection group.
-     */
-    public static final String ROOT_IDENTIFIER = "ROOT";
+public class QuickConnectUserContext extends AbstractUserContext {
 
     /**
      * The AuthenticationProvider that created this UserContext.
@@ -104,24 +98,30 @@ public class QuickConnectUserContext implements UserContext {
         // Initialize the rootGroup to a basic connection group with a
         // single root identifier.
         this.rootGroup = new QuickConnectConnectionGroup(
-            ROOT_IDENTIFIER, ROOT_IDENTIFIER
+            DEFAULT_ROOT_CONNECTION_GROUP,
+            DEFAULT_ROOT_CONNECTION_GROUP
         );
 
         // Initialize the user to a SimpleUser with the username, no
         // preexisting connections, and the single root group.
         this.self = new SimpleUser(username,
             Collections.<String>emptyList(),
-            Collections.singleton(ROOT_IDENTIFIER)
+            Collections.singleton(DEFAULT_ROOT_CONNECTION_GROUP)
         );
 
         // Initialize each of the directories associated with the userContext.
-        this.userDirectory = new SimpleUserDirectory(self);
-        this.connectionDirectory = new QuickConnectDirectory(Collections.<Connection>emptyList(), this.rootGroup);
-        this.connectionGroupDirectory = new SimpleConnectionGroupDirectory(Collections.singleton(this.rootGroup));
+        this.userDirectory = new SimpleDirectory<User>(self);
+        this.connectionDirectory = new QuickConnectDirectory(this.rootGroup);
+        this.connectionGroupDirectory = new SimpleDirectory<ConnectionGroup>(Collections.singleton(this.rootGroup));
 
         // Set the authProvider to the calling authProvider object.
         this.authProvider = authProvider;
 
+    }
+
+    @Override
+    public QuickConnectDirectory getConnectionDirectory() {
+        return connectionDirectory;
     }
 
     @Override
@@ -132,11 +132,6 @@ public class QuickConnectUserContext implements UserContext {
     @Override
     public Object getResource() throws GuacamoleException {
         return new QuickConnectREST(this);
-    }
-
-    @Override
-    public void invalidate() {
-        // Do nothing.
     }
 
     @Override
@@ -151,18 +146,6 @@ public class QuickConnectUserContext implements UserContext {
     }
 
     @Override
-    public ActivityRecordSet<ActivityRecord> getUserHistory()
-            throws GuacamoleException {
-        return new SimpleActivityRecordSet<ActivityRecord>();
-    }
-
-    @Override
-    public QuickConnectDirectory getConnectionDirectory()
-            throws GuacamoleException {
-        return connectionDirectory;
-    }
-
-    @Override
     public Directory<ConnectionGroup> getConnectionGroupDirectory()
             throws GuacamoleException {
         return connectionGroupDirectory;
@@ -171,44 +154,6 @@ public class QuickConnectUserContext implements UserContext {
     @Override
     public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
         return rootGroup;
-    }
-
-    @Override
-    public Directory<SharingProfile> getSharingProfileDirectory()
-            throws GuacamoleException {
-        return new SimpleDirectory<SharingProfile>();
-    }
-
-    @Override
-    public Directory<ActiveConnection> getActiveConnectionDirectory()
-            throws GuacamoleException {
-        return new SimpleDirectory<ActiveConnection>();
-    }
-
-    @Override
-    public ActivityRecordSet<ConnectionRecord> getConnectionHistory()
-            throws GuacamoleException {
-        return new SimpleActivityRecordSet<ConnectionRecord>();
-    }
-
-    @Override
-    public Collection<Form> getUserAttributes() {
-        return Collections.<Form>emptyList();
-    }
-
-    @Override
-    public Collection<Form> getConnectionAttributes() {
-        return Collections.<Form>emptyList();
-    }
-
-    @Override
-    public Collection<Form> getConnectionGroupAttributes() {
-        return Collections.<Form>emptyList();
-    }
-
-    @Override
-    public Collection<Form> getSharingProfileAttributes() {
-        return Collections.<Form>emptyList();
     }
 
 }

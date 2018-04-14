@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.net.auth.AuthenticationProvider;
+import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
@@ -35,7 +35,7 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
  * process so that the QuickConnect functionality can be initialized and be used
  * throughout the web client.
  */
-public class QuickConnectAuthenticationProvider implements AuthenticationProvider {
+public class QuickConnectAuthenticationProvider extends AbstractAuthenticationProvider {
 
     /**
      * userContext for this authentication provider.
@@ -48,77 +48,11 @@ public class QuickConnectAuthenticationProvider implements AuthenticationProvide
     }
 
     @Override
-    public Object getResource() throws GuacamoleException {
-        return null;
-    }
-
-    /**
-     * For QuickConnect, authenticateUser simply returns null because this
-     * extension is designed to provide only a connection directory to users
-     * that are already authenticated and not any actual authentication.
-     *
-     * @param credentials
-     *     Credentials object passed in from Guacamole login.
-     *
-     * @return
-     *     Returns null, which causes the client to move on to the next
-     *     module.
-     */
-    @Override
-    public AuthenticatedUser authenticateUser(Credentials credentials)
-        throws GuacamoleException {
-
-        return null;
-
-    }
-
-    @Override
     public UserContext getUserContext(AuthenticatedUser authenticatedUser)
             throws GuacamoleException {
 
         return new QuickConnectUserContext(this, authenticatedUser.getIdentifier());
 
-    }
-
-    @Override
-    public AuthenticatedUser updateAuthenticatedUser(AuthenticatedUser authenticatedUser,
-            Credentials credentials) throws GuacamoleException {
-
-        // Simply return the given user, updating nothing
-        return authenticatedUser;
-
-    }
-
-    @Override
-    public UserContext updateUserContext(UserContext context,
-        AuthenticatedUser authorizedUser, Credentials credentials)
-            throws GuacamoleException {
-
-        // Simply return the given context, updating nothing
-        return context;
-
-    }
-
-    @Override
-    public UserContext decorate(UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
-            throws GuacamoleException {
-
-        // Simply return the given context, decorating nothing
-        return context;
-
-    }
-
-    @Override
-    public UserContext redecorate(UserContext decorated, UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
-            throws GuacamoleException {
-        return decorate(context, authenticatedUser, credentials);
-    }
-
-    @Override
-    public void shutdown() {
-        // Nothing to do, here.
     }
 
 }

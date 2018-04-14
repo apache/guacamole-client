@@ -19,12 +19,13 @@
 
 package org.apache.guacamole.auth.quickconnect;
 
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.quickconnect.utility.QCParser;
 import org.apache.guacamole.net.auth.ConnectionGroup;
-import org.apache.guacamole.net.auth.simple.SimpleConnectionDirectory;
+import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
@@ -32,12 +33,18 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
  * Implementation of the Connection Directory, stored
  * completely in-memory.
  */
-public class QuickConnectDirectory extends SimpleConnectionDirectory {
+public class QuickConnectDirectory extends SimpleDirectory<Connection> {
 
     /**
      * The unique identifier of the root connection group.
      */
     private static final String ROOT_IDENTIFIER = "ROOT";
+
+    /**
+     * The connections to store.
+     */
+    private final Map<String, Connection> connections =
+            new HashMap<String, Connection>();
 
     /**
      * The root connection group for this directory.
@@ -54,15 +61,15 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
      * connections contained within the given Map.
      *
      * @param connections
-     *     A Collection of all connections that should be present in this
+     *     A Map of all connections that should be present in this
      *     connection directory.
      * @param rootGroup
      *     A group that should be at the base of this directory.
      */
-    public QuickConnectDirectory(Collection<Connection> connections, ConnectionGroup rootGroup) {
-        super(connections);
+    public QuickConnectDirectory(ConnectionGroup rootGroup) {
         this.rootGroup = (QuickConnectConnectionGroup)rootGroup;
         this.connectionId = new AtomicInteger();
+        super.setObjects(this.connections);
     }
 
     /**
@@ -77,56 +84,21 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
     }
 
     @Override
-    public void add(Connection object) throws GuacamoleException {
-
-        put(new QuickConnection(object));
-
-    }
-
-    /**
-     * Create a connection object on the tree using an existing
-     * QuickConnection connection, after setting the identifier
-     * and parent object.
-     *
-     * @param connection
-     *     The QuickConnection object to add to the tree.
-     *
-     * @return
-     *     The connectionId of the object added to the directory.
-     *
-     * @throws GuacamoleException
-     *     If an error is encountered adding the object to the
-     *     directory.
-     */
-    public String put(QuickConnection connection) throws GuacamoleException {
-
-        // Get the next connection ID.
-        String connectionId = Integer.toString(getNextConnectionID());
-
-        // Set up identifier and parent on object.
-        connection.setIdentifier(connectionId);
-        connection.setParentIdentifier(ROOT_IDENTIFIER);
-
-        // Add connection to the directory
-        putConnection(connection);
-
-        // Add connection to the tree
-        this.rootGroup.addConnectionIdentifier(connectionId);
-
-        return connectionId;
-
+    public void add(Connection connection) throws GuacamoleException {
+        connections.put(connection.getIdentifier(), connection);
     }
 
     /**
      * Create a QuickConnection object from a GuacamoleConfiguration
-     * and get an ID and place it on the tree.
+     * and get an ID and place it on the tree, returning the new
+     * connection identifier value.
      *
      * @param config
      *     The GuacamoleConfiguration to use to create the
      *     QuickConnection object.
      *
      * @return
-     *     The connectionId of the object creation in the directory.
+     *     The identifier of the connection created in the directory.
      *
      * @throws GuacamoleException
      *     If an error occurs adding the object to the tree.
@@ -144,17 +116,12 @@ public class QuickConnectDirectory extends SimpleConnectionDirectory {
         connection.setParentIdentifier(ROOT_IDENTIFIER);
 
         // Place the object in directory
-        putConnection(connection);
+        add(connection);
 
         // Add connection to the tree.
         this.rootGroup.addConnectionIdentifier(connectionId);
 
         return connectionId;
-    }
-
-    @Override
-    public void update(Connection object) throws GuacamoleException {
-        putConnection(object);
     }
 
 }
