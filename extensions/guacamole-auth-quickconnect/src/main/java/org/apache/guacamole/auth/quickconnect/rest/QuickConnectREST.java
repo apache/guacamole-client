@@ -19,24 +19,15 @@
 
 package org.apache.guacamole.auth.quickconnect.rest;
 
-import com.google.inject.Inject;
-import java.util.List;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleServerException;
-import org.apache.guacamole.protocol.GuacamoleConfiguration;
-import org.apache.guacamole.auth.quickconnect.QuickConnection;
 import org.apache.guacamole.auth.quickconnect.QuickConnectDirectory;
 import org.apache.guacamole.auth.quickconnect.QuickConnectUserContext;
 import org.apache.guacamole.auth.quickconnect.utility.QCParser;
-import org.apache.guacamole.net.auth.Connection;
-import org.apache.guacamole.net.auth.Directory;
 
 /**
  * A class to create and manage REST endpoints for the

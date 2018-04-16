@@ -19,26 +19,9 @@
 
 package org.apache.guacamole.auth.quickconnect;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleServerException;
-import org.apache.guacamole.environment.Environment;
-import org.apache.guacamole.environment.LocalEnvironment;
-import org.apache.guacamole.net.GuacamoleSocket;
-import org.apache.guacamole.net.GuacamoleTunnel;
-import org.apache.guacamole.net.InetGuacamoleSocket;
-import org.apache.guacamole.net.SSLGuacamoleSocket;
-import org.apache.guacamole.net.SimpleGuacamoleTunnel;
-import org.apache.guacamole.net.auth.AbstractConnection;
 import org.apache.guacamole.net.auth.Connection;
-import org.apache.guacamole.net.auth.ConnectionRecord;
-import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
 import org.apache.guacamole.net.auth.simple.SimpleConnection;
-import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
-import org.apache.guacamole.protocol.GuacamoleClientInformation;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**

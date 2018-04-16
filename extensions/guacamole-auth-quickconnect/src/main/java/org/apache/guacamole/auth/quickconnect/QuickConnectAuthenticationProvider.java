@@ -19,16 +19,10 @@
 
 package org.apache.guacamole.auth.quickconnect;
 
-import java.util.Collections;
-import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
-import org.apache.guacamole.net.auth.Credentials;
-import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.apache.guacamole.net.auth.UserContext;
-import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * Class providing the necessary hooks into the Guacamole Client authentication
