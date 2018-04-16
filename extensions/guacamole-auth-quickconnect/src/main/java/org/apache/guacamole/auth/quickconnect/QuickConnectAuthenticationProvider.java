@@ -45,7 +45,11 @@ public class QuickConnectAuthenticationProvider extends AbstractAuthenticationPr
     public UserContext getUserContext(AuthenticatedUser authenticatedUser)
             throws GuacamoleException {
 
-        return new QuickConnectUserContext(this, authenticatedUser.getIdentifier());
+        if (userContext == null)
+            userContext = new QuickConnectUserContext(this,
+                    authenticatedUser.getIdentifier());
+
+        return userContext;
 
     }
 
