@@ -70,14 +70,16 @@ public class QuickConnection extends SimpleConnection {
      * object, copying over the relevant data and initializing
      * the rest.
      *
-     * @param object
-     *     The generic Connection object to be copied.
+     * @param connection
+     *     The generic Connection to be copied.
      */
-    public QuickConnection(Connection object) {
+    public QuickConnection(Connection connection) {
 
-        super(object.getName(),object.getIdentifier(),object.getConfiguration());
+        super(connection.getName(),connection.getIdentifier(),
+                connection.getConfiguration());
 
-        setParentIdentifier(object.getParentIdentifier());
+        setParentIdentifier(connection.getParentIdentifier());
+
         this.activeConnections = 0;
 
     }
