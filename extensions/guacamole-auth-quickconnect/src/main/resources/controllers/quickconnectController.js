@@ -43,6 +43,10 @@ angular.module('guacQuickConnect').controller('quickconnectController', ['$scope
         }
     };
 
+    /**
+     * The URI that will be passed in to the extension to create
+     * the connection.
+     */
     $scope.uri = null;
 
     /**

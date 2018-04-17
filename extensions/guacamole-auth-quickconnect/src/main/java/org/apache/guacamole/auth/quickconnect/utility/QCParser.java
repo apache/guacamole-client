@@ -148,8 +148,7 @@ public class QCParser {
      *     the name.
      *
      * @return
-     *     The String value of the name that is generated, or
-     *     null if no config is provided.
+     *     The String value of the name that is generated.
      *
      * @throws GuacamoleException
      *     If an error occurs getting items in the configuration.
