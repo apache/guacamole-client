@@ -31,11 +31,6 @@ import org.apache.guacamole.net.auth.UserContext;
  */
 public class QuickConnectAuthenticationProvider extends AbstractAuthenticationProvider {
 
-    /**
-     * userContext for this authentication provider.
-     */
-    private UserContext userContext;
-
     @Override
     public String getIdentifier() {
         return "quickconnect";
@@ -45,11 +40,8 @@ public class QuickConnectAuthenticationProvider extends AbstractAuthenticationPr
     public UserContext getUserContext(AuthenticatedUser authenticatedUser)
             throws GuacamoleException {
 
-        if (userContext == null)
-            userContext = new QuickConnectUserContext(this,
-                    authenticatedUser.getIdentifier());
-
-        return userContext;
+        return new QuickConnectUserContext(this,
+                authenticatedUser.getIdentifier());
 
     }
 
