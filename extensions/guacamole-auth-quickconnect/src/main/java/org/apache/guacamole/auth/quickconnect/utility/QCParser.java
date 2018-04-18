@@ -95,16 +95,16 @@ public class QCParser {
         String password = null;
         List<String> paramList = null;
 
-        if (protocol == null || protocol.equals(""))
+        if (protocol == null || protocol.isEmpty())
             protocol = DEFAULT_URI_PROTOCOL;
 
-        if (host == null || host.equals(""))
+        if (host == null || host.isEmpty())
             host = DEFAULT_URI_HOST;
 
-        if (query != null && !query.equals(""))
+        if (query != null && !query.isEmpty())
             paramList = Arrays.asList(query.split("&"));
 
-        if (userInfo != null && !userInfo.equals("")) {
+        if (userInfo != null && !userInfo.isEmpty()) {
 
             Matcher userinfoMatcher = userinfoPattern.matcher(userInfo);
             if (userinfoMatcher.matches()) {
@@ -121,15 +121,15 @@ public class QCParser {
         if (port > 0)
             qcConfig.setParameter("port", Integer.toString(port));
 
-        if (username != null && username.length() > 0)
+        if (username != null && !username.isEmpty())
             qcConfig.setParameter("username", username);
 
-        if (password != null && password.length() > 0)
+        if (password != null && !password.isEmpty())
             qcConfig.setParameter("password", password);
 
         if (paramList != null) {
             for (String parameter : paramList) {
-                String[] paramArray = parameter.split("=");
+                String[] paramArray = parameter.split("=", 2);
                 qcConfig.setParameter(paramArray[0],paramArray[1]);
             }
         }
@@ -166,16 +166,16 @@ public class QCParser {
 
         String name = "";
 
-        if (protocol != null && !protocol.equals(""))
+        if (protocol != null && !protocol.isEmpty())
             name += protocol + "://";
 
-        if (user != null && !user.equals(""))
+        if (user != null && !user.isEmpty())
             name += user + "@";
 
-        if (host != null && !host.equals(""))
+        if (host != null && !host.isEmpty())
             name += host;
 
-        if (port != null && !port.equals(""))
+        if (port != null && !port.isEmpty())
             name += ":" + port;
 
         name += "/";
