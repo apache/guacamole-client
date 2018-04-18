@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.quickconnect.utility.QCParser;
 import org.apache.guacamole.net.auth.ConnectionGroup;
+import org.apache.guacamole.net.auth.simple.SimpleConnection;
 import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
@@ -49,7 +50,7 @@ public class QuickConnectDirectory extends SimpleDirectory<Connection> {
     /**
      * The root connection group for this directory.
      */
-    private final QuickConnectConnectionGroup rootGroup;
+    private final QuickConnectionGroup rootGroup;
 
     /**
      * The internal counter for connection IDs.
@@ -67,7 +68,7 @@ public class QuickConnectDirectory extends SimpleDirectory<Connection> {
      *     A group that should be at the base of this directory.
      */
     public QuickConnectDirectory(ConnectionGroup rootGroup) {
-        this.rootGroup = (QuickConnectConnectionGroup)rootGroup;
+        this.rootGroup = (QuickConnectionGroup)rootGroup;
         this.connectionId = new AtomicInteger();
         super.setObjects(this.connections);
     }
@@ -89,13 +90,13 @@ public class QuickConnectDirectory extends SimpleDirectory<Connection> {
     }
 
     /**
-     * Create a QuickConnection object from a GuacamoleConfiguration
+     * Create a SimpleConnection object from a GuacamoleConfiguration
      * and get an ID and place it on the tree, returning the new
      * connection identifier value.
      *
      * @param config
      *     The GuacamoleConfiguration to use to create the
-     *     QuickConnection object.
+     *     SimpleConnection object.
      *
      * @return
      *     The identifier of the connection created in the directory.
@@ -112,7 +113,7 @@ public class QuickConnectDirectory extends SimpleDirectory<Connection> {
         String name = QCParser.getName(config);
 
         // Create a new connection and set parent identifier.
-        Connection connection = new QuickConnection(name, connectionId, config);
+        Connection connection = new SimpleConnection(name, connectionId, config);
         connection.setParentIdentifier(ROOT_IDENTIFIER);
 
         // Place the object in directory

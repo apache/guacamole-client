@@ -35,7 +35,7 @@ import org.apache.guacamole.protocol.GuacamoleClientInformation;
  * for temporarily storing the QuickConnections created by
  * users.
  */
-public class QuickConnectConnectionGroup extends AbstractConnectionGroup {
+public class QuickConnectionGroup extends AbstractConnectionGroup {
 
     /**
      * The connection identifiers for this group.
@@ -43,16 +43,16 @@ public class QuickConnectConnectionGroup extends AbstractConnectionGroup {
     private Set<String> connectionIdentifiers;
 
     /**
-     * Set up a QuickConnectConnectionGroup with a name and identifier, and
+     * Set up a QuickConnectionGroup with a name and identifier, and
      * an empty set of child connections.
      *
      * @param name
-     *     The name of the QuickConnectConnectionGroup.
+     *     The name of the QuickConnectionGroup.
      *
      * @param identifier
-     *     The identifier of the QuickConnectConnectionGroup.
+     *     The identifier of the QuickConnectionGroup.
      */
-    public QuickConnectConnectionGroup(String name, String identifier) {
+    public QuickConnectionGroup(String name, String identifier) {
 
         setName(name);
         setIdentifier(identifier);

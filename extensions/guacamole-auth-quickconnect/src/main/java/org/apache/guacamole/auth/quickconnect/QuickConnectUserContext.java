@@ -55,12 +55,6 @@ public class QuickConnectUserContext extends AbstractUserContext {
     private final Directory<User> userDirectory;
 
     /**
-     * The Directory with access only to the root group associated with this
-     * UserContext.
-     */
-    private final Directory<ConnectionGroup> connectionGroupDirectory;
-
-    /**
      * The Directory with access to all connections within the root group
      * associated with this UserContext.
      */
@@ -87,7 +81,7 @@ public class QuickConnectUserContext extends AbstractUserContext {
 
         // Initialize the rootGroup to a basic connection group with a
         // single root identifier.
-        this.rootGroup = new QuickConnectConnectionGroup(
+        this.rootGroup = new QuickConnectionGroup(
             DEFAULT_ROOT_CONNECTION_GROUP,
             DEFAULT_ROOT_CONNECTION_GROUP
         );
@@ -102,7 +96,6 @@ public class QuickConnectUserContext extends AbstractUserContext {
         // Initialize each of the directories associated with the userContext.
         this.userDirectory = new SimpleDirectory<User>(self);
         this.connectionDirectory = new QuickConnectDirectory(this.rootGroup);
-        this.connectionGroupDirectory = new SimpleDirectory<ConnectionGroup>(Collections.singleton(this.rootGroup));
 
         // Set the authProvider to the calling authProvider object.
         this.authProvider = authProvider;
@@ -133,12 +126,6 @@ public class QuickConnectUserContext extends AbstractUserContext {
     public Directory<User> getUserDirectory()
             throws GuacamoleException {
         return userDirectory;
-    }
-
-    @Override
-    public Directory<ConnectionGroup> getConnectionGroupDirectory()
-            throws GuacamoleException {
-        return connectionGroupDirectory;
     }
 
     @Override
