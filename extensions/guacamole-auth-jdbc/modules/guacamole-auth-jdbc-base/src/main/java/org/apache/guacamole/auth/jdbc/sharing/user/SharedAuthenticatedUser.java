@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.jdbc.sharing.user;
 
+import java.util.Collections;
+import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -98,6 +100,11 @@ public class SharedAuthenticatedUser extends RemoteAuthenticatedUser {
     @Override
     public void setIdentifier(String identifier) {
         throw new UnsupportedOperationException("Users authenticated via share keys are immutable.");
+    }
+
+    @Override
+    public Set<String> getEffectiveUserGroups() {
+        return Collections.<String>emptySet();
     }
 
 }

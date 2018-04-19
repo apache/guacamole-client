@@ -22,14 +22,11 @@ package org.apache.guacamole.net.auth;
 import java.util.Date;
 import java.util.List;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
-import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
-
 
 /**
  * A user of the Guacamole web application.
  */
-public interface User extends Identifiable, Attributes {
+public interface User extends Identifiable, Attributes, Permissions {
 
     /**
      * All standard attribute names with semantics defined by the Guacamole web
@@ -109,85 +106,33 @@ public interface User extends Identifiable, Attributes {
     List<? extends ActivityRecord> getHistory() throws GuacamoleException;
 
     /**
-     * Returns all system-level permissions given to this user.
+     * Returns a set of all readable user groups of which this user is a member.
+     * If permission is granted for the current user to modify the membership of
+     * this user, then the returned set will be mutable, and any such
+     * modifications should be made through changes to the returned set.
      *
      * @return
-     *     A SystemPermissionSet of all system-level permissions granted to
-     *     this user.
+     *     The set of all readable user groups of which this user is a member.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving permissions, or if reading all
-     *     permissions is not allowed.
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the user groups.
      */
-    SystemPermissionSet getSystemPermissions() throws GuacamoleException;
+    RelatedObjectSet getUserGroups() throws GuacamoleException;
 
     /**
-     * Returns all connection permissions given to this user.
+     * Returns a read-only view of all permissions granted to this user. The
+     * exact semantics of what permissions are granted are up to the
+     * implementation, and the permissions within this view may implied,
+     * derived dynamically, inherited through multiple levels of group
+     * membership, etc.
      *
      * @return
-     *     An ObjectPermissionSet of all connection permissions granted to this
-     *     user.
-     *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving permissions, or if reading all
-     *     permissions is not allowed.
-     */
-    ObjectPermissionSet getConnectionPermissions()
-            throws GuacamoleException;
-
-    /**
-     * Returns all connection group permissions given to this user.
-     *
-     * @return
-     *     An ObjectPermissionSet of all connection group permissions granted
-     *     to this user.
+     *     A read-only view of the permissions which are granted to this user.
      *
      * @throws GuacamoleException
      *     If an error occurs while retrieving permissions, or if reading all
      *     permissions is not allowed.
      */
-    ObjectPermissionSet getConnectionGroupPermissions()
-            throws GuacamoleException;
-
-    /**
-     * Returns all sharing profile permissions given to this user.
-     *
-     * @return
-     *     An ObjectPermissionSet of all sharing profile permissions granted to
-     *     this user.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving permissions, or if reading all
-     *     permissions is not allowed.
-     */
-    ObjectPermissionSet getSharingProfilePermissions()
-            throws GuacamoleException;
-
-    /**
-     * Returns all permissions given to this user regarding currently-active
-     * connections.
-     *
-     * @return
-     *     An ObjectPermissionSet of all active connection permissions granted
-     *     to this user.
-     *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving permissions, or if reading all
-     *     permissions is not allowed.
-     */
-    ObjectPermissionSet getActiveConnectionPermissions()
-            throws GuacamoleException;
-
-    /**
-     * Returns all user permissions given to this user.
-     *
-     * @return
-     *     An ObjectPermissionSet of all user permissions granted to this user.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving permissions, or if reading all
-     *     permissions is not allowed.
-     */
-    ObjectPermissionSet getUserPermissions() throws GuacamoleException;
+    Permissions getEffectivePermissions() throws GuacamoleException;
 
 }

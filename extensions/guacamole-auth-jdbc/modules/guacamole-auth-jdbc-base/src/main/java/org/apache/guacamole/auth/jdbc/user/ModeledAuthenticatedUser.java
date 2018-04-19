@@ -169,4 +169,9 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
         user.setIdentifier(identifier);
     }
 
+    @Override
+    public Set<String> getEffectiveUserGroups() {
+        return Collections.<String>emptySet();
+    }
+
 }

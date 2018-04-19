@@ -85,6 +85,20 @@ public interface UserContext {
     Directory<User> getUserDirectory() throws GuacamoleException;
 
     /**
+     * Retrieves a Directory which can be used to view and manipulate user
+     * groups, but only as allowed by the permissions given to the user of this
+     * UserContext.
+     *
+     * @return
+     *     A Directory whose operations are bound by the restrictions
+     *     of this UserContext.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while creating the Directory.
+     */
+    Directory<UserGroup> getUserGroupDirectory() throws GuacamoleException;
+
+    /**
      * Retrieves a Directory which can be used to view and manipulate
      * connections and their configurations, but only as allowed by the
      * permissions given to the user.
@@ -196,6 +210,17 @@ public interface UserContext {
      *     A collection of all attributes applicable to users.
      */
     Collection<Form> getUserAttributes();
+
+    /**
+     * Retrieves a collection of all attributes applicable to user groups. This
+     * collection will contain only those attributes which the current user has
+     * general permission to view or modify. If there are no such attributes,
+     * this collection will be empty.
+     *
+     * @return
+     *     A collection of all attributes applicable to user groups.
+     */
+    Collection<Form> getUserGroupAttributes();
 
     /**
      * Retrieves a collection of all attributes applicable to connections. This

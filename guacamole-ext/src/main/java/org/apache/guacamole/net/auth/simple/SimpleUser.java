@@ -29,6 +29,8 @@ import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AbstractUser;
 import org.apache.guacamole.net.auth.ActivityRecord;
+import org.apache.guacamole.net.auth.Permissions;
+import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
@@ -201,6 +203,12 @@ public class SimpleUser extends AbstractUser {
     }
 
     @Override
+    public ObjectPermissionSet getUserGroupPermissions()
+            throws GuacamoleException {
+        return new SimpleObjectPermissionSet();
+    }
+
+    @Override
     public ObjectPermissionSet getActiveConnectionPermissions()
             throws GuacamoleException {
         return new SimpleObjectPermissionSet();
@@ -209,6 +217,16 @@ public class SimpleUser extends AbstractUser {
     @Override
     public ObjectPermissionSet getSharingProfilePermissions() {
         return new SimpleObjectPermissionSet();
+    }
+
+    @Override
+    public RelatedObjectSet getUserGroups() throws GuacamoleException {
+        return new SimpleRelatedObjectSet();
+    }
+
+    @Override
+    public Permissions getEffectivePermissions() throws GuacamoleException {
+        return this;
     }
 
 }

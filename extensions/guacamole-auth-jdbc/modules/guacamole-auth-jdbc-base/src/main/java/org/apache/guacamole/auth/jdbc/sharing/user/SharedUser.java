@@ -30,10 +30,13 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.Permissions;
+import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
+import org.apache.guacamole.net.auth.simple.SimpleRelatedObjectSet;
 import org.apache.guacamole.net.auth.simple.SimpleSystemPermissionSet;
 
 /**
@@ -141,6 +144,11 @@ public class SharedUser implements User {
     }
 
     @Override
+    public ObjectPermissionSet getUserGroupPermissions() throws GuacamoleException {
+        return new SimpleObjectPermissionSet();
+    }
+
+    @Override
     public ObjectPermissionSet getSharingProfilePermissions() throws GuacamoleException {
         return new SimpleObjectPermissionSet();
     }
@@ -148,6 +156,16 @@ public class SharedUser implements User {
     @Override
     public ObjectPermissionSet getActiveConnectionPermissions() throws GuacamoleException {
         return new SimpleObjectPermissionSet();
+    }
+
+    @Override
+    public RelatedObjectSet getUserGroups() throws GuacamoleException {
+        return new SimpleRelatedObjectSet();
+    }
+
+    @Override
+    public Permissions getEffectivePermissions() throws GuacamoleException {
+        return this;
     }
 
 }
