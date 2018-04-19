@@ -82,6 +82,15 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
         this.userPermissions = template.userPermissions || {};
 
         /**
+         * Map of user group identifiers to the corresponding array of granted
+         * permissions. Each permission is represented by a string listed
+         * within PermissionSet.ObjectPermissionType.
+         *
+         * @type Object.<String, String[]>
+         */
+        this.userGroupPermissions = template.userGroupPermissions || {};
+
+        /**
          * Array of granted system permissions. Each permission is represented
          * by a string listed within PermissionSet.SystemPermissionType.
          *
@@ -306,7 +315,7 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
     };
 
     /**
-     * Returns whether the given permission is granted for the user having the 
+     * Returns whether the given permission is granted for the user having the
      * given ID.
      *
      * @param {PermissionSet|Object} permSet
@@ -315,7 +324,7 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
      * @param {String} type
      *     The permission to search for, as defined by
      *     PermissionSet.ObjectPermissionType.
-     *     
+     *
      * @param {String} identifier
      *     The identifier of the user to which the permission applies.
      *
@@ -324,6 +333,27 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
      */
     PermissionSet.hasUserPermission = function hasUserPermission(permSet, type, identifier) {
         return hasPermission(permSet.userPermissions, type, identifier);
+    };
+
+    /**
+     * Returns whether the given permission is granted for the user group having
+     * the given identifier.
+     *
+     * @param {PermissionSet|Object} permSet
+     *     The permission set to check.
+     *
+     * @param {String} type
+     *     The permission to search for, as defined by
+     *     PermissionSet.ObjectPermissionType.
+     *
+     * @param {String} identifier
+     *     The identifier of the user group to which the permission applies.
+     *
+     * @returns {Boolean}
+     *     true if the permission is present (granted), false otherwise.
+     */
+    PermissionSet.hasUserGroupPermission = function hasUserGroupPermission(permSet, type, identifier) {
+        return hasPermission(permSet.userGroupPermissions, type, identifier);
     };
 
     /**
@@ -731,6 +761,54 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
     PermissionSet.removeUserPermission = function removeUserPermission(permSet, type, identifier) {
         permSet.userPermissions = permSet.userPermissions || {};
         return removeObjectPermission(permSet.userPermissions, type, identifier);
+    };
+
+    /**
+     * Adds the given user group permission applying to the user group with the
+     * given identifier to the given permission set, if not already present. If
+     * the permission is already present, this function has no effect.
+     *
+     * @param {PermissionSet} permSet
+     *     The permission set to modify.
+     *
+     * @param {String} type
+     *     The permission to add, as defined by
+     *     PermissionSet.ObjectPermissionType.
+     *
+     * @param {String} identifier
+     *     The identifier of the user group to which the permission applies.
+     *
+     * @returns {Boolean}
+     *     true if the permission was added, false if the permission was
+     *     already present in the given permission set.
+     */
+    PermissionSet.addUserGroupPermission = function addUserGroupPermission(permSet, type, identifier) {
+        permSet.userGroupPermissions = permSet.userGroupPermissions || {};
+        return addObjectPermission(permSet.userGroupPermissions, type, identifier);
+    };
+
+    /**
+     * Removes the given user group permission applying to the user group with
+     * the given identifier from the given permission set, if present. If the
+     * permission is not present, this function has no effect.
+     *
+     * @param {PermissionSet} permSet
+     *     The permission set to modify.
+     *
+     * @param {String} type
+     *     The permission to remove, as defined by
+     *     PermissionSet.ObjectPermissionType.
+     *
+     * @param {String} identifier
+     *     The identifier of the user group to whom the permission applies.
+     *
+     * @returns {Boolean}
+     *     true if the permission was removed, false if the permission was not
+     *     present in the given permission set.
+     */
+    PermissionSet.removeUserGroupPermission = function removeUserGroupPermission(permSet, type, identifier) {
+        permSet.userGroupPermissions = permSet.userGroupPermissions || {};
+        return removeObjectPermission(permSet.userGroupPermissions, type, identifier);
     };
 
     return PermissionSet;
