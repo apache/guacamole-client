@@ -37,6 +37,7 @@ import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Identifiable;
+import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
@@ -143,13 +144,14 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
         // An admin user has access to all objects
         User self = userContext.self();
-        SystemPermissionSet systemPermissions = self.getSystemPermissions();
+        Permissions effective = self.getEffectivePermissions();
+        SystemPermissionSet systemPermissions = effective.getSystemPermissions();
         boolean isAdmin = systemPermissions.hasPermission(SystemPermission.Type.ADMINISTER);
 
         // Filter objects, if requested
         Collection<String> identifiers = directory.getIdentifiers();
         if (!isAdmin && permissions != null && !permissions.isEmpty()) {
-            ObjectPermissionSet objectPermissions = self.getUserPermissions();
+            ObjectPermissionSet objectPermissions = effective.getUserPermissions();
             identifiers = objectPermissions.getAccessibleObjects(permissions, identifiers);
         }
 

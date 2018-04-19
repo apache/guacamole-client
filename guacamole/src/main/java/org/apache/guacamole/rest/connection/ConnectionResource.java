@@ -35,6 +35,7 @@ import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.rest.directory.DirectoryView;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
@@ -119,11 +120,13 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
     public Map<String, String> getConnectionParameters()
             throws GuacamoleException {
 
+        // Pull effective permissions
         User self = userContext.self();
+        Permissions effective = self.getEffectivePermissions();
 
         // Retrieve permission sets
-        SystemPermissionSet systemPermissions = self.getSystemPermissions();
-        ObjectPermissionSet connectionPermissions = self.getConnectionPermissions();
+        SystemPermissionSet systemPermissions = effective.getSystemPermissions();
+        ObjectPermissionSet connectionPermissions = effective.getConnectionPermissions();
 
         // Deny access if adminstrative or update permission is missing
         String identifier = connection.getIdentifier();

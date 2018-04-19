@@ -329,7 +329,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         // Retrieve current permissions
         dataSourceService.apply(
-            permissionService.getPermissions,
+            permissionService.getEffectivePermissions,
             authenticationService.getAvailableDataSources(),
             authenticationService.getCurrentUsername() 
         )
@@ -422,7 +422,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         // Retrieve current permissions
         dataSourceService.apply(
-            permissionService.getPermissions,
+            permissionService.getEffectivePermissions,
             authenticationService.getAvailableDataSources(),
             authenticationService.getCurrentUsername()
         )

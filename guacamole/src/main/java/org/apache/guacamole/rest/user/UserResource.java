@@ -43,6 +43,7 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleCredentialsException;
 import org.apache.guacamole.rest.directory.DirectoryObjectResource;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.history.APIActivityRecord;
+import org.apache.guacamole.rest.permission.APIPermissionSet;
 import org.apache.guacamole.rest.permission.PermissionSetResource;
 
 /**
@@ -181,7 +182,8 @@ public class UserResource
 
     /**
      * Returns a resource which abstracts operations available on the overall
-     * permissions granted to the User represented by this UserResource.
+     * permissions granted directly to the User represented by this
+     * UserResource.
      *
      * @return
      *     A resource which representing the permissions granted to the User
@@ -190,6 +192,23 @@ public class UserResource
     @Path("permissions")
     public PermissionSetResource getPermissions() {
         return new PermissionSetResource(user);
+    }
+
+    /**
+     * Returns a read-only view of the permissions effectively granted to this
+     * user, including permissions which may be inherited or implied.
+     *
+     * @return
+     *     A read-only view of the permissions effectively granted to this
+     *     user.
+     *
+     * @throws GuacamoleException
+     *     If the effective permissions for this user cannot be retrieved.
+     */
+    @GET
+    @Path("effectivePermissions")
+    public APIPermissionSet getEffectivePermissions() throws GuacamoleException {
+        return new APIPermissionSet(user.getEffectivePermissions());
     }
 
 }

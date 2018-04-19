@@ -680,7 +680,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     
     // Query the user's permissions for the current user
     dataSourceService.apply(
-        permissionService.getPermissions,
+        permissionService.getEffectivePermissions,
         dataSources,
         currentUsername
     )

@@ -29,8 +29,8 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.SharingProfile;
-import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -356,9 +356,9 @@ public class ConnectionGroupTree {
         retrievedGroups.put(root.getIdentifier(), this.rootAPIGroup);
 
         // Store user's current permissions
-        User self = userContext.self();
-        this.connectionPermissions = self.getConnectionPermissions();
-        this.sharingProfilePermissions = self.getSharingProfilePermissions();
+        Permissions effective = userContext.self().getEffectivePermissions();
+        this.connectionPermissions = effective.getConnectionPermissions();
+        this.sharingProfilePermissions = effective.getSharingProfilePermissions();
 
         // Store required directories
         this.connectionDirectory = userContext.getConnectionDirectory();

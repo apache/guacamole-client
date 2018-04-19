@@ -175,7 +175,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
     });
 
     // Query the user's permissions for the current sharing profile
-    permissionService.getPermissions($scope.selectedDataSource, authenticationService.getCurrentUsername())
+    permissionService.getEffectivePermissions($scope.selectedDataSource, authenticationService.getCurrentUsername())
     .success(function permissionsReceived(permissions) {
 
         $scope.permissions = permissions;
