@@ -329,12 +329,6 @@
         </dependency>
         <dependency>
             <groupId>org.webjars.bower</groupId>
-            <artifactId>angular-cookies</artifactId>
-            <version>1.3.16</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars.bower</groupId>
             <artifactId>angular-route</artifactId>
             <version>1.3.16</version>
             <scope>runtime</scope>

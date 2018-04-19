@@ -46,10 +46,10 @@ angular.module('auth').factory('authenticationService', ['$injector',
     var Error                = $injector.get('Error');
 
     // Required services
-    var $cookieStore = $injector.get('$cookieStore');
-    var $http        = $injector.get('$http');
-    var $q           = $injector.get('$q');
-    var $rootScope   = $injector.get('$rootScope');
+    var $http               = $injector.get('$http');
+    var $q                  = $injector.get('$q');
+    var $rootScope          = $injector.get('$rootScope');
+    var localStorageService = $injector.get('localStorageService');
 
     var service = {};
 
@@ -62,12 +62,12 @@ angular.module('auth').factory('authenticationService', ['$injector',
     var cachedResult = null;
 
     /**
-     * The unique identifier of the local cookie which stores the result of the
-     * last authentication attempt.
+     * The unique identifier of the local storage key which stores the result
+     * of the last authentication attempt.
      *
      * @type String
      */
-    var AUTH_COOKIE_ID = "GUAC_AUTH";
+    var AUTH_STORAGE_KEY = 'GUAC_AUTH';
 
     /**
      * Retrieves the last successful authentication result. If the user has not
@@ -85,7 +85,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
             return cachedResult;
 
         // Return explicit null if no auth data is currently stored
-        var data = $cookieStore.get(AUTH_COOKIE_ID);
+        var data = localStorageService.getItem(AUTH_STORAGE_KEY);
         if (!data)
             return null;
 
@@ -107,7 +107,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
         // Clear the currently-stored result if the last attempt failed
         if (!data) {
             cachedResult = null;
-            $cookieStore.remove(AUTH_COOKIE_ID);
+            localStorageService.removeItem(AUTH_STORAGE_KEY);
         }
 
         // Otherwise store the authentication attempt directly
@@ -116,9 +116,9 @@ angular.module('auth').factory('authenticationService', ['$injector',
             // Always store in cache
             cachedResult = data;
 
-            // Store cookie ONLY if not anonymous
+            // Persist result past tab/window closure ONLY if not anonymous
             if (data.username !== AuthenticationResult.ANONYMOUS_USERNAME)
-                $cookieStore.put(AUTH_COOKIE_ID, data);
+                localStorageService.setItem(AUTH_STORAGE_KEY, data);
 
         }
 

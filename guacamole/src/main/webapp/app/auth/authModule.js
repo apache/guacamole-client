@@ -20,4 +20,6 @@
 /**
  * The module for authentication and management of tokens.
  */
-angular.module('auth', ['ngCookies']);
+angular.module('auth', [
+    'storage'
+]);
