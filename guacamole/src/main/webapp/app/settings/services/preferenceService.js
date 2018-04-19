@@ -21,7 +21,11 @@
  * A service for setting and retrieving browser-local preferences. Preferences
  * may be any JSON-serializable type.
  */
-angular.module('settings').provider('preferenceService', function preferenceServiceProvider() {
+angular.module('settings').provider('preferenceService', ['$injector',
+    function preferenceServiceProvider($injector) {
+
+    // Required providers
+    var localStorageServiceProvider = $injector.get('localStorageServiceProvider');
 
     /**
      * Reference to the provider itself.
@@ -128,24 +132,18 @@ angular.module('settings').provider('preferenceService', function preferenceServ
 
     };
 
-    // Get stored preferences, ignore inability to use localStorage
-    try {
-
-        if (localStorage) {
-            var preferencesJSON = localStorage.getItem(GUAC_PREFERENCES_STORAGE_KEY);
-            if (preferencesJSON)
-                angular.extend(provider.preferences, JSON.parse(preferencesJSON));
-        }
-
-    }
-    catch (ignore) {}
+    // Get stored preferences from localStorage
+    var storedPreferences = localStorageServiceProvider.getItem(GUAC_PREFERENCES_STORAGE_KEY);
+    if (storedPreferences)
+        angular.extend(provider.preferences, storedPreferences);
 
     // Factory method required by provider
     this.$get = ['$injector', function preferenceServiceFactory($injector) {
 
         // Required services
-        var $rootScope = $injector.get('$rootScope');
-        var $window    = $injector.get('$window');
+        var $rootScope          = $injector.get('$rootScope');
+        var $window             = $injector.get('$window');
+        var localStorageService = $injector.get('localStorageService');
 
         var service = {};
 
@@ -168,14 +166,7 @@ angular.module('settings').provider('preferenceService', function preferenceServ
          * Persists the current values of all preferences, if possible.
          */
         service.save = function save() {
-
-            // Save updated preferences, ignore inability to use localStorage
-            try {
-                if (localStorage)
-                    localStorage.setItem(GUAC_PREFERENCES_STORAGE_KEY, JSON.stringify(service.preferences));
-            }
-            catch (ignore) {}
-
+            localStorageService.setItem(GUAC_PREFERENCES_STORAGE_KEY, service.preferences);
         };
 
         // Persist settings when window is unloaded
@@ -195,4 +186,4 @@ angular.module('settings').provider('preferenceService', function preferenceServ
 
     }];
 
-});
+}]);
