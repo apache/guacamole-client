@@ -26,7 +26,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.quickconnect.QuickConnectDirectory;
-import org.apache.guacamole.auth.quickconnect.QuickConnectUserContext;
 import org.apache.guacamole.auth.quickconnect.utility.QCParser;
 
 /**
@@ -42,25 +41,19 @@ public class QuickConnectREST {
     private QuickConnectDirectory directory;
 
     /**
-     * The UserContext object for this REST endpoint.
-     */
-    private QuickConnectUserContext userContext;
-
-    /**
      * Construct a new QuickConnectREST class, taking in the UserContext
      * object that calls this constructor.
      *
-     * @param userContext
-     *     The UserContext object associated with this REST endpoint
+     * @param directory
+     *     The ConnectionDirectory object associated with this REST endpoint
      *
      * @throws GuacamoleException
      *     If the UserContext is unavailable or the directory object
      *     cannot be retrieved.
      */
-    public QuickConnectREST(QuickConnectUserContext userContext)
+    public QuickConnectREST(QuickConnectDirectory directory)
             throws GuacamoleException {
-        this.userContext = userContext;
-        this.directory = this.userContext.getConnectionDirectory();
+        this.directory = directory;
     }
 
     /**

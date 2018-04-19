@@ -114,7 +114,7 @@ public class QuickConnectUserContext extends AbstractUserContext {
 
     @Override
     public Object getResource() throws GuacamoleException {
-        return new QuickConnectREST(this);
+        return new QuickConnectREST(connectionDirectory);
     }
 
     @Override
