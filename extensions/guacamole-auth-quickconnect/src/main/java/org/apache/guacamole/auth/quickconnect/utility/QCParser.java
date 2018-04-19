@@ -25,7 +25,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleClientException;
@@ -104,7 +106,7 @@ public class QCParser {
         String query = qcUri.getQuery();
         String username = null;
         String password = null;
-        List<String> paramList = null;
+        Map<String, String> queryParams = null;
 
         if (protocol == null || protocol.isEmpty())
             protocol = DEFAULT_URI_PROTOCOL;
@@ -112,8 +114,14 @@ public class QCParser {
         if (host == null || host.isEmpty())
             host = DEFAULT_URI_HOST;
 
-        if (query != null && !query.isEmpty())
-            paramList = Arrays.asList(query.split("&"));
+        if (query != null && !query.isEmpty()) {
+            try {
+                queryParams = parseQueryString(query);
+            }
+            catch (UnsupportedEncodingException e) {
+                throw new GuacamoleServerException("Unexpected lack of UTF-8 encoding support.", e);
+            }
+        }
 
         if (userInfo != null && !userInfo.isEmpty()) {
 
@@ -138,22 +146,42 @@ public class QCParser {
         if (password != null && !password.isEmpty())
             qcConfig.setParameter("password", password);
 
-        if (paramList != null) {
-            for (String parameter : paramList) {
-                String[] paramArray = parameter.split("=", 2);
-                try {
-                    qcConfig.setParameter(URLDecoder.decode(paramArray[0], "UTF-8"),
-                                          URLDecoder.decode(paramArray[1], "UTF-8"));
-                }
-                catch (UnsupportedEncodingException e) {
-                    logger.error("Unexpected lack of UTF-8 encoding support.");
-                    throw new GuacamoleServerException("Unexpected lack of UTF-8 encoding support.", e);
-                }
-            }
-        }
+        if (queryParams != null)
+            for (Map.Entry<String, String> entry : queryParams.entrySet())
+                qcConfig.setParameter(entry.getKey(), entry.getValue());
 
         return qcConfig;
         
+    }
+
+    /**
+     * Parse the given string for parameter key/value pairs and return
+     * a map with the parameters.
+     *
+     * @param queryStr
+     *     The query string to parse for the values.
+     *
+     * @return
+     *     A map with the key/value pairs.
+     *
+     * @throws UnsupportedEncodingException
+     *     If Java lacks UTF-8 support.
+     */
+    private static Map<String, String> parseQueryString(String queryStr)
+            throws UnsupportedEncodingException {
+
+        // Split the query string into the pairs
+        List<String> paramList = Arrays.asList(queryStr.split("&"));
+        Map<String, String> parameters = new HashMap<String,String>();
+
+        // Split into key/value pairs and decode
+        for (String param : paramList) {
+            String[] paramArray = param.split("=", 2);
+            parameters.put(URLDecoder.decode(paramArray[0], "UTF-8"),
+                           URLDecoder.decode(paramArray[1], "UTF-8"));
+        }
+
+        return parameters;
     }
 
     /**
@@ -182,7 +210,7 @@ public class QCParser {
         String port = config.getParameter("port");
         String user = config.getParameter("username");
 
-        StringBuilder name = new StringBuilder("");
+        StringBuilder name = new StringBuilder();
 
         if (protocol != null && !protocol.isEmpty())
             name.append(protocol).append("://");
