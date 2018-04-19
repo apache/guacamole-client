@@ -167,7 +167,7 @@ public class QCParser {
      * @throws UnsupportedEncodingException
      *     If Java lacks UTF-8 support.
      */
-    private static Map<String, String> parseQueryString(String queryStr)
+    public static Map<String, String> parseQueryString(String queryStr)
             throws UnsupportedEncodingException {
 
         // Split the query string into the pairs
