@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.quickconnect.utility;
 
+import java.lang.StringBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -164,23 +165,23 @@ public class QCParser {
         String port = config.getParameter("port");
         String user = config.getParameter("username");
 
-        String name = "";
+        StringBuilder name = new StringBuilder("");
 
         if (protocol != null && !protocol.isEmpty())
-            name += protocol + "://";
+            name.append(protocol).append("://");
 
         if (user != null && !user.isEmpty())
-            name += user + "@";
+            name.append(user).append("@");
 
         if (host != null && !host.isEmpty())
-            name += host;
+            name.append(host);
 
         if (port != null && !port.isEmpty())
-            name += ":" + port;
+            name.append(":").append(port);
 
-        name += "/";
+        name.append("/");
 
-        return name;
+        return name.toString();
     }
 
 }
