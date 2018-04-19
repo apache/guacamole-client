@@ -60,7 +60,8 @@ angular.module('rest').factory('cacheService', ['$injector',
     service.schema = $cacheFactory('API-SCHEMA');
 
     /**
-     * Shared cache used by both userService and permissionService.
+     * Shared cache used by userService, userGroupService, permissionService,
+     * and membershipService.
      *
      * @type $cacheFactory.Cache
      */
