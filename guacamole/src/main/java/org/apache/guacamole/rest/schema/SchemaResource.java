@@ -78,6 +78,25 @@ public class SchemaResource {
     }
 
     /**
+     * Retrieves the possible attributes of a user group object.
+     *
+     * @return
+     *     A collection of forms which describe the possible attributes of a
+     *     user group object.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the possible attributes.
+     */
+    @GET
+    @Path("userGroupAttributes")
+    public Collection<Form> getUserGroupAttributes() throws GuacamoleException {
+
+        // Retrieve all possible user group attributes
+        return userContext.getUserGroupAttributes();
+
+    }
+
+    /**
      * Retrieves the possible attributes of a connection object.
      *
      * @return

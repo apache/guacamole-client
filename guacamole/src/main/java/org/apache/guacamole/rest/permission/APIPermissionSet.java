@@ -72,6 +72,12 @@ public class APIPermissionSet {
             new HashMap<String, Set<ObjectPermission.Type>>();
 
     /**
+     * Map of user group ID to the set of granted permissions.
+     */
+    private Map<String, Set<ObjectPermission.Type>> userGroupPermissions =
+            new HashMap<String, Set<ObjectPermission.Type>>();
+
+    /**
      * Set of all granted system-level permissions.
      */
     private Set<SystemPermission.Type> systemPermissions =
@@ -163,6 +169,7 @@ public class APIPermissionSet {
         addObjectPermissions(sharingProfilePermissions,   permissions.getSharingProfilePermissions());
         addObjectPermissions(activeConnectionPermissions, permissions.getActiveConnectionPermissions());
         addObjectPermissions(userPermissions,             permissions.getUserPermissions());
+        addObjectPermissions(userGroupPermissions,        permissions.getUserGroupPermissions());
         
     }
 
@@ -240,6 +247,20 @@ public class APIPermissionSet {
     }
 
     /**
+     * Returns a map of user group IDs to the set of permissions granted for
+     * that user group. If no permissions are granted for a particular user
+     * group, its ID will not be present as a key in the map. This map is
+     * mutable, and changes to to this map will affect the permission set
+     * directly.
+     *
+     * @return
+     *     A map of user IDs to the set of permissions granted for that user.
+     */
+    public Map<String, Set<ObjectPermission.Type>> getUserGroupPermissions() {
+        return userGroupPermissions;
+    }
+
+    /**
      * Returns the set of granted system-level permissions. If no permissions
      * are granted at the system level, this will be an empty set. This set is
      * mutable, and changes to this set will affect the permission set
@@ -314,6 +335,19 @@ public class APIPermissionSet {
      */
     public void setUserPermissions(Map<String, Set<ObjectPermission.Type>> userPermissions) {
         this.userPermissions = userPermissions;
+    }
+
+    /**
+     * Replaces the current map of user group permissions with the given map,
+     * which must map user group ID to its corresponding set of granted
+     * permissions. If a user group has no permissions, its ID must not be
+     * present as a key in the map.
+     *
+     * @param userGroupPermissions
+     *     The map which must replace the currently-stored map of permissions.
+     */
+    public void setUserGroupPermissions(Map<String, Set<ObjectPermission.Type>> userGroupPermissions) {
+        this.userGroupPermissions = userGroupPermissions;
     }
 
     /**

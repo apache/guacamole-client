@@ -26,7 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.Permission;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
@@ -35,78 +35,88 @@ import org.apache.guacamole.rest.PATCH;
 
 /**
  * A REST resource which abstracts the operations available on the permissions
- * granted to an existing User.
+ * granted to an existing User or UserGroup.
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class PermissionSetResource {
 
     /**
-     * The prefix of any path within an operation of a JSON patch which
-     * modifies the permissions of a user regarding a specific connection.
+     * The prefix of any path within an operation of a JSON patch which modifies
+     * the permissions of a user or user group regarding a specific connection.
      */
     private static final String CONNECTION_PERMISSION_PATCH_PATH_PREFIX = "/connectionPermissions/";
 
     /**
-     * The prefix of any path within an operation of a JSON patch which
-     * modifies the permissions of a user regarding a specific connection group.
+     * The prefix of any path within an operation of a JSON patch which modifies
+     * the permissions of a user or user group regarding a specific connection
+     * group.
      */
     private static final String CONNECTION_GROUP_PERMISSION_PATCH_PATH_PREFIX = "/connectionGroupPermissions/";
 
     /**
-     * The prefix of any path within an operation of a JSON patch which
-     * modifies the permissions of a user regarding a specific sharing profile.
+     * The prefix of any path within an operation of a JSON patch which modifies
+     * the permissions of a user or user group regarding a specific sharing
+     * profile.
      */
     private static final String SHARING_PROFILE_PERMISSION_PATCH_PATH_PREFIX = "/sharingProfilePermissions/";
 
     /**
-     * The prefix of any path within an operation of a JSON patch which
-     * modifies the permissions of a user regarding a specific active connection.
+     * The prefix of any path within an operation of a JSON patch which modifies
+     * the permissions of a user or user group regarding a specific active
+     * connection.
      */
     private static final String ACTIVE_CONNECTION_PERMISSION_PATCH_PATH_PREFIX = "/activeConnectionPermissions/";
 
     /**
-     * The prefix of any path within an operation of a JSON patch which
-     * modifies the permissions of a user regarding another, specific user.
+     * The prefix of any path within an operation of a JSON patch which modifies
+     * the permissions of a user or user group regarding a specific user.
      */
     private static final String USER_PERMISSION_PATCH_PATH_PREFIX = "/userPermissions/";
 
     /**
+     * The prefix of any path within an operation of a JSON patch which modifies
+     * the permissions of a user or user group regarding a specific user group.
+     */
+    private static final String USER_GROUP_PERMISSION_PATCH_PATH_PREFIX = "/userGroupPermissions/";
+
+    /**
      * The path of any operation within a JSON patch which modifies the
-     * permissions of a user regarding the entire system.
+     * permissions of a user or user group regarding the entire system.
      */
     private static final String SYSTEM_PERMISSION_PATCH_PATH = "/systemPermissions";
 
     /**
-     * The User object whose permissions are represented by this
-     * PermissionSetResource.
+     * The permissions represented by this PermissionSetResource.
      */
-    private final User user;
+    private final Permissions permissions;
 
     /**
      * Creates a new PermissionSetResource which exposes the operations and
-     * subresources available for permissions of the given User.
+     * subresources available for the given Permissions object.
      *
-     * @param user
-     *     The User whose permissions should be represented by this
+     * @param permissions
+     *     The permissions that should be represented by this
      *     PermissionSetResource.
      */
-    public PermissionSetResource(User user) {
-        this.user = user;
+    public PermissionSetResource(Permissions permissions) {
+        this.permissions = permissions;
     }
 
     /**
-     * Gets a list of permissions for the user with the given username.
+     * Gets a list of all permissions granted to the user or user group
+     * associated with this PermissionSetResource.
      *
      * @return
-     *     A list of all permissions granted to the specified user.
+     *     A list of all permissions granted to the user or user group
+     *     associated with this PermissionSetResource.
      *
      * @throws GuacamoleException
      *     If an error occurs while retrieving permissions.
      */
     @GET
     public APIPermissionSet getPermissions() throws GuacamoleException {
-        return new APIPermissionSet(user);
+        return new APIPermissionSet(permissions);
     }
 
     /**
@@ -177,6 +187,7 @@ public class PermissionSetResource {
         PermissionSetPatch<ObjectPermission> sharingProfilePermissionPatch   = new PermissionSetPatch<ObjectPermission>();
         PermissionSetPatch<ObjectPermission> activeConnectionPermissionPatch = new PermissionSetPatch<ObjectPermission>();
         PermissionSetPatch<ObjectPermission> userPermissionPatch             = new PermissionSetPatch<ObjectPermission>();
+        PermissionSetPatch<ObjectPermission> userGroupPermissionPatch        = new PermissionSetPatch<ObjectPermission>();
         PermissionSetPatch<SystemPermission> systemPermissionPatch           = new PermissionSetPatch<SystemPermission>();
 
         // Apply all patch operations individually
@@ -249,6 +260,19 @@ public class PermissionSetResource {
 
             }
 
+            // Create user group permission if path has user group prefix
+            else if (path.startsWith(USER_GROUP_PERMISSION_PATCH_PATH_PREFIX)) {
+
+                // Get identifier and type from patch operation
+                String identifier = path.substring(USER_GROUP_PERMISSION_PATCH_PATH_PREFIX.length());
+                ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
+
+                // Create and update corresponding permission
+                ObjectPermission permission = new ObjectPermission(type, identifier);
+                updatePermissionSet(patch.getOp(), userGroupPermissionPatch, permission);
+
+            }
+
             // Create system permission if path is system path
             else if (path.equals(SYSTEM_PERMISSION_PATCH_PATH)) {
 
@@ -268,12 +292,13 @@ public class PermissionSetResource {
         } // end for each patch operation
 
         // Save the permission changes
-        connectionPermissionPatch.apply(user.getConnectionPermissions());
-        connectionGroupPermissionPatch.apply(user.getConnectionGroupPermissions());
-        sharingProfilePermissionPatch.apply(user.getSharingProfilePermissions());
-        activeConnectionPermissionPatch.apply(user.getActiveConnectionPermissions());
-        userPermissionPatch.apply(user.getUserPermissions());
-        systemPermissionPatch.apply(user.getSystemPermissions());
+        connectionPermissionPatch.apply(permissions.getConnectionPermissions());
+        connectionGroupPermissionPatch.apply(permissions.getConnectionGroupPermissions());
+        sharingProfilePermissionPatch.apply(permissions.getSharingProfilePermissions());
+        activeConnectionPermissionPatch.apply(permissions.getActiveConnectionPermissions());
+        userPermissionPatch.apply(permissions.getUserPermissions());
+        userGroupPermissionPatch.apply(permissions.getUserGroupPermissions());
+        systemPermissionPatch.apply(permissions.getSystemPermissions());
 
     }
 

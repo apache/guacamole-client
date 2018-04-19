@@ -35,6 +35,7 @@ import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.rest.activeconnection.APIActiveConnection;
 import org.apache.guacamole.rest.connection.APIConnection;
 import org.apache.guacamole.rest.connectiongroup.APIConnectionGroup;
@@ -44,6 +45,7 @@ import org.apache.guacamole.rest.history.HistoryResource;
 import org.apache.guacamole.rest.schema.SchemaResource;
 import org.apache.guacamole.rest.sharingprofile.APISharingProfile;
 import org.apache.guacamole.rest.user.APIUser;
+import org.apache.guacamole.rest.usergroup.APIUserGroup;
 
 /**
  * A REST resource which exposes the contents of a particular UserContext.
@@ -101,6 +103,13 @@ public class UserContextResource {
      */
     @Inject
     private DirectoryResourceFactory<User, APIUser> userDirectoryResourceFactory;
+
+    /**
+     * Factory for creating DirectoryResources which expose a given
+     * UserGroup Directory.
+     */
+    @Inject
+    private DirectoryResourceFactory<UserGroup, APIUserGroup> userGroupDirectoryResourceFactory;
 
     /**
      * Creates a new UserContextResource which exposes the data within the
@@ -223,6 +232,24 @@ public class UserContextResource {
             throws GuacamoleException {
         return userDirectoryResourceFactory.create(userContext,
                 userContext.getUserDirectory());
+    }
+
+    /**
+     * Returns a new resource which represents the UserGroup Directory contained
+     * within the UserContext exposed by this UserContextResource.
+     *
+     * @return
+     *     A new resource which represents the UserGroup Directory contained
+     *     within the UserContext exposed by this UserContextResource.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the UserGroup Directory.
+     */
+    @Path("userGroups")
+    public DirectoryResource<UserGroup, APIUserGroup> getUserGroupDirectoryResource()
+            throws GuacamoleException {
+        return userGroupDirectoryResourceFactory.create(userContext,
+                userContext.getUserGroupDirectory());
     }
 
     /**
