@@ -19,22 +19,32 @@
 
 package org.apache.guacamole.auth.quickconnect.utility;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.StringBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleClientException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A utility class to parse out a URI into the settings necessary
  * to create and establish a Guacamole connection.
  */
 public class QCParser {
+
+    /**
+     * Logger for this class.
+     */
+    private final static Logger logger = LoggerFactory.getLogger(QCParser.class);
 
     /**
      * The default protocol to parse to if one is provided in
@@ -131,7 +141,14 @@ public class QCParser {
         if (paramList != null) {
             for (String parameter : paramList) {
                 String[] paramArray = parameter.split("=", 2);
-                qcConfig.setParameter(paramArray[0],paramArray[1]);
+                try {
+                    qcConfig.setParameter(URLDecoder.decode(paramArray[0], "UTF-8"),
+                                          URLDecoder.decode(paramArray[1], "UTF-8"));
+                }
+                catch (UnsupportedEncodingException e) {
+                    logger.error("Unexpected lack of UTF-8 encoding support.");
+                    throw new GuacamoleServerException("Unexpected lack of UTF-8 encoding support.", e);
+                }
             }
         }
 
