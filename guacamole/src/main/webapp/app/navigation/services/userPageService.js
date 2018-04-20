@@ -192,6 +192,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         var pages = [];
         
         var canManageUsers = [];
+        var canManageUserGroups = [];
         var canManageConnections = [];
         var canViewConnectionRecords = [];
         var canManageSessions = [];
@@ -233,6 +234,24 @@ angular.module('navigation').factory('userPageService', ['$injector',
                     || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER)
             ) {
                 canManageUsers.push(dataSource);
+            }
+
+            // Determine whether the current user needs access to the group management UI
+            if (
+                    // System permissions
+                       PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+                    || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_USER_GROUP)
+
+                    // Permission to update user groups
+                    || PermissionSet.hasUserGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
+
+                    // Permission to delete user groups
+                    || PermissionSet.hasUserGroupPermission(permissions, PermissionSet.ObjectPermissionType.DELETE)
+
+                    // Permission to administer user groups
+                    || PermissionSet.hasUserGroupPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER)
+            ) {
+                canManageUserGroups.push(dataSource);
             }
 
             // Determine whether the current user needs access to the connection management UI
@@ -292,6 +311,14 @@ angular.module('navigation').factory('userPageService', ['$injector',
             pages.push(new PageDefinition({
                 name : 'USER_MENU.ACTION_MANAGE_USERS',
                 url  : '/settings/users'
+            }));
+        }
+
+        // If user can manage user groups, add link to group management page
+        if (canManageUserGroups.length) {
+            pages.push(new PageDefinition({
+                name : 'USER_MENU.ACTION_MANAGE_USER_GROUPS',
+                url  : '/settings/userGroups'
             }));
         }
 

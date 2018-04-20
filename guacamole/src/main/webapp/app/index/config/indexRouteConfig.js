@@ -171,6 +171,15 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
             resolve       : { updateCurrentToken: updateCurrentToken }
         })
 
+        // User group editor
+        .when('/manage/:dataSource/userGroups/:id?', {
+            title         : 'APP.NAME',
+            bodyClassName : 'manage',
+            templateUrl   : 'app/manage/templates/manageUserGroup.html',
+            controller    : 'manageUserGroupController',
+            resolve       : { updateCurrentToken: updateCurrentToken }
+        })
+
         // Client view
         .when('/client/:id/:params?', {
             bodyClassName : 'client',
