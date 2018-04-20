@@ -66,6 +66,40 @@ angular.module('rest').factory('schemaService', ['$injector',
 
     /**
      * Makes a request to the REST API to get the list of available attributes
+     * for user group objects, returning a promise that provides an array of
+     * @link{Form} objects if successful. Each element of the array describes
+     * a logical grouping of possible attributes.
+     *
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the user groups
+     *     whose available attributes are to be retrieved. This identifier
+     *     corresponds to an AuthenticationProvider within the Guacamole web
+     *     application.
+     *
+     * @returns {Promise.<Form[]>}
+     *     A promise which will resolve with an array of @link{Form}
+     *     objects, where each @link{Form} describes a logical grouping of
+     *     possible attributes.
+     */
+    service.getUserGroupAttributes = function getUserGroupAttributes(dataSource) {
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Retrieve available user group attributes
+        return requestService({
+            cache   : cacheService.schema,
+            method  : 'GET',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/userGroupAttributes',
+            params  : httpParameters
+        });
+
+    };
+
+    /**
+     * Makes a request to the REST API to get the list of available attributes
      * for connection objects, returning a promise that provides an array of
      * @link{Form} objects if successful. Each element of the array describes
      * a logical grouping of possible attributes.
