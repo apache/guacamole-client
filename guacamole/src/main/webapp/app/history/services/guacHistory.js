@@ -20,7 +20,14 @@
 /**
  * A service for reading and manipulating the Guacamole connection history.
  */
-angular.module('history').factory('guacHistory', ['HistoryEntry', function guacHistory(HistoryEntry) {
+angular.module('history').factory('guacHistory', ['$injector',
+        function guacHistory($injector) {
+
+    // Required types
+    var HistoryEntry = $injector.get('HistoryEntry');
+
+    // Required services
+    var localStorageService = $injector.get('localStorageService');
 
     var service = {};
 
@@ -73,27 +80,15 @@ angular.module('history').factory('guacHistory', ['HistoryEntry', function guacH
         if (service.recentConnections.length > IDEAL_LENGTH)
             service.recentConnections.length = IDEAL_LENGTH;
 
-        // Save updated history, ignore inability to use localStorage
-        try {
-            if (localStorage)
-                localStorage.setItem(GUAC_HISTORY_STORAGE_KEY, JSON.stringify(service.recentConnections));
-        }
-        catch (ignore) {}
+        // Save updated history
+        localStorageService.setItem(GUAC_HISTORY_STORAGE_KEY, service.recentConnections);
 
     };
 
-    // Get stored connection history, ignore inability to use localStorage
-    try {
-
-        if (localStorage) {
-            var storedHistory = JSON.parse(localStorage.getItem(GUAC_HISTORY_STORAGE_KEY) || "[]");
-            if (storedHistory instanceof Array)
-                service.recentConnections = storedHistory;
-
-        }
-
-    }
-    catch (ignore) {}
+    // Init stored connection history from localStorage
+    var storedHistory = localStorageService.getItem(GUAC_HISTORY_STORAGE_KEY) || [];
+    if (storedHistory instanceof Array)
+        service.recentConnections = storedHistory;
 
     return service;
 

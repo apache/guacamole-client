@@ -20,4 +20,6 @@
 /**
  * The module for code relating to connection history.
  */
-angular.module('history', []);
+angular.module('history', [
+    'storage'
+]);
