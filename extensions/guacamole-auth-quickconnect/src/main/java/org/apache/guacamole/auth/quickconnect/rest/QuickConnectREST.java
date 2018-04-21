@@ -29,8 +29,8 @@ import org.apache.guacamole.auth.quickconnect.QuickConnectDirectory;
 import org.apache.guacamole.auth.quickconnect.utility.QCParser;
 
 /**
- * A class to create and manage REST endpoints for the
- * QuickConnect extension.
+ * A class that implements REST endpoints for the QuickConnect
+ * extension.
  */
 @Produces(MediaType.APPLICATION_JSON)
 public class QuickConnectREST {
@@ -41,31 +41,27 @@ public class QuickConnectREST {
     private QuickConnectDirectory directory;
 
     /**
-     * Construct a new QuickConnectREST class, taking in the UserContext
-     * object that calls this constructor.
+     * Construct a new QuickConnectREST class, taking in a
+     * QuickConnectDirectory for use with this class. 
      *
      * @param directory
-     *     The ConnectionDirectory object associated with this REST endpoint
-     *
-     * @throws GuacamoleException
-     *     If the UserContext is unavailable or the directory object
-     *     cannot be retrieved.
+     *     The QuickConnectDirectory object to associate with this
+     *     REST endpoint class.
      */
-    public QuickConnectREST(QuickConnectDirectory directory)
-            throws GuacamoleException {
+    public QuickConnectREST(QuickConnectDirectory directory) {
         this.directory = directory;
     }
 
     /**
      * Parse the URI read from the POST input, add the connection
-     * to the directory, and return the ID of the newly-created
+     * to the directory, and return the identifier of the newly-created
      * connection.
      *
      * @param uri
      *     The URI to parse into a connection.
      *
      * @return
-     *     The ID of the connection in the directory.
+     *     The identifier of the connection in the directory.
      *
      * @throws GuacamoleException
      *     If an error is encountered parsing the URI.
@@ -78,6 +74,5 @@ public class QuickConnectREST {
         return directory.create(QCParser.getConfiguration(uri));
  
     }
-    
 
 }

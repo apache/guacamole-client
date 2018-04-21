@@ -25,8 +25,8 @@ import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
- * Class providing the necessary hooks into the Guacamole Client authentication
- * process so that the QuickConnect functionality can be initialized and be used
+ * This class provides the necessary hooks into the Guacamole Client authentication
+ * process so that the QuickConnect functionality can be initialized and used
  * throughout the web client.
  */
 public class QuickConnectAuthenticationProvider extends AbstractAuthenticationProvider {

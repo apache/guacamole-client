@@ -32,8 +32,8 @@ import org.apache.guacamole.net.auth.simple.SimpleUser;
 
 /**
  * A simple implementation of UserContext to support the QuickConnect
- * extension, primarily used for storing connections the user has
- * created using the QuickConnect bar in the webapp.
+ * extension, used for storing connections the user has created
+ * with the QuickConnect bar in the webapp.
  */
 public class QuickConnectUserContext extends AbstractUserContext {
 
@@ -47,12 +47,6 @@ public class QuickConnectUserContext extends AbstractUserContext {
      * accessible within this UserContext.
      */
     private final User self;
-
-    /**
-     * The Directory with access only to the User associated with this
-     * UserContext.
-     */
-    private final Directory<User> userDirectory;
 
     /**
      * The Directory with access to all connections within the root group
@@ -86,15 +80,14 @@ public class QuickConnectUserContext extends AbstractUserContext {
             DEFAULT_ROOT_CONNECTION_GROUP
         );
 
-        // Initialize the user to a SimpleUser with the username, no
-        // preexisting connections, and the single root group.
+        // Initialize the user to a SimpleUser with the provided username,
+        // no connections, and the single root group.
         this.self = new SimpleUser(username,
             Collections.<String>emptyList(),
             Collections.singleton(DEFAULT_ROOT_CONNECTION_GROUP)
         );
 
-        // Initialize each of the directories associated with the userContext.
-        this.userDirectory = new SimpleDirectory<User>(self);
+        // Initialize the connection directory
         this.connectionDirectory = new QuickConnectDirectory(this.rootGroup);
 
         // Set the authProvider to the calling authProvider object.
@@ -120,12 +113,6 @@ public class QuickConnectUserContext extends AbstractUserContext {
     @Override
     public AuthenticationProvider getAuthenticationProvider() {
         return authProvider;
-    }
-
-    @Override
-    public Directory<User> getUserDirectory()
-            throws GuacamoleException {
-        return userDirectory;
     }
 
     @Override

@@ -31,20 +31,20 @@ import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 
 /**
- * Provides a very simple, single-level connection group used
- * for temporarily storing the QuickConnections created by
- * users.
+ * Provides a simple, single-level connection group used for
+ * temporarily storing the Connection objects created by users.
  */
 public class QuickConnectionGroup extends AbstractConnectionGroup {
 
     /**
-     * The connection identifiers for this group.
+     * A set that will store the Connection identifiers for this group.
      */
-    private Set<String> connectionIdentifiers;
+    private Set<String> connectionIdentifiers =
+            new HashSet<String>(Collections.<String>emptyList());
 
     /**
-     * Set up a QuickConnectionGroup with a name and identifier, and
-     * an empty set of child connections.
+     * Set up a QuickConnectionGroup with the provided name and
+     * identifier.
      *
      * @param name
      *     The name of the QuickConnectionGroup.
@@ -58,13 +58,12 @@ public class QuickConnectionGroup extends AbstractConnectionGroup {
         setIdentifier(identifier);
         setType(ConnectionGroup.Type.ORGANIZATIONAL);
 
-        this.connectionIdentifiers = new HashSet<String>(Collections.<String>emptyList());
-
     }
 
     /**
      * Add a connection identifier to this connection group, and
-     * return the identifier if the add succeeds, else return null.
+     * return the identifier if the add succeeds, otheriwse
+     * return null.
      *
      * @param identifier
      *     The identifier of the connection to add to the group.

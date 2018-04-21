@@ -34,23 +34,16 @@ import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A utility class to parse out a URI into the settings necessary
- * to create and establish a Guacamole connection.
+ * to generate a GuacamoleConfiguration object.
  */
 public class QCParser {
 
     /**
-     * Logger for this class.
-     */
-    private final static Logger logger = LoggerFactory.getLogger(QCParser.class);
-
-    /**
-     * The default protocol to parse to if one is provided in
-     * the incoming URI..
+     * The default protocol to use if one is not provided in
+     * the incoming URI.
      */
     public static final String DEFAULT_URI_PROTOCOL = "ssh";
 
@@ -75,8 +68,8 @@ public class QCParser {
     private static final int PASSWORD_GROUP = 2;
 
     /**
-     * Parse out a URI string and get a connection from that string,
-     * or an exception if the parsing fails.
+     * Parse out a URI string and get a GuacamoleConfiguration
+     * from that string, or an exception if the parsing fails.
      *
      * @param uri
      *     The string form of the URI to be parsed.
@@ -99,21 +92,27 @@ public class QCParser {
         catch (URISyntaxException e) {
             throw new GuacamoleClientException("Invalid URI Syntax", e);
         }
+
+        // Break out individual components of the URI.
         String protocol = qcUri.getScheme();
         String host = qcUri.getHost();
         int port = qcUri.getPort();
         String userInfo = qcUri.getUserInfo();
         String query = qcUri.getQuery();
+
         String username = null;
         String password = null;
         Map<String, String> queryParams = null;
 
+        // Assign default protocol if one is not found in the URI.
         if (protocol == null || protocol.isEmpty())
             protocol = DEFAULT_URI_PROTOCOL;
 
+        // Assign default host if one is not found in the URI.
         if (host == null || host.isEmpty())
             host = DEFAULT_URI_HOST;
 
+        // Look for extra query parameters and parse them out.
         if (query != null && !query.isEmpty()) {
             try {
                 queryParams = parseQueryString(query);
@@ -123,6 +122,7 @@ public class QCParser {
             }
         }
 
+        // Look for the username and password and parse them out.
         if (userInfo != null && !userInfo.isEmpty()) {
 
             Matcher userinfoMatcher = userinfoPattern.matcher(userInfo);
@@ -133,6 +133,7 @@ public class QCParser {
 
         }
 
+        // Generate a new GuacamoleConfiguration and set parameters.
         GuacamoleConfiguration qcConfig = new GuacamoleConfiguration();
         qcConfig.setProtocol(protocol);
         qcConfig.setParameter("hostname",host);
@@ -159,7 +160,7 @@ public class QCParser {
      * a map with the parameters.
      *
      * @param queryStr
-     *     The query string to parse for the values.
+     *     The query string to parse for key/value pairs.
      *
      * @return
      *     A map with the key/value pairs.
@@ -174,7 +175,7 @@ public class QCParser {
         List<String> paramList = Arrays.asList(queryStr.split("&"));
         Map<String, String> parameters = new HashMap<String,String>();
 
-        // Split into key/value pairs and decode
+        // Loop through key/value pairs and put them in the Map.
         for (String param : paramList) {
             String[] paramArray = param.split("=", 2);
             parameters.put(URLDecoder.decode(paramArray[0], "UTF-8"),

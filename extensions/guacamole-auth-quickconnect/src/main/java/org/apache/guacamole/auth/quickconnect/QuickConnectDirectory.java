@@ -31,7 +31,7 @@ import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**
- * Implementation of the Connection Directory, stored
+ * Implementation of a directory to stored Connection objects
  * completely in-memory.
  */
 public class QuickConnectDirectory extends SimpleDirectory<Connection> {
@@ -58,14 +58,12 @@ public class QuickConnectDirectory extends SimpleDirectory<Connection> {
     private AtomicInteger connectionId;
 
     /**
-     * Creates a new QuickConnectDirectory which provides access to the
-     * connections contained within the given Map.
+     * Creates a new QuickConnectDirectory with the default
+     * empty Map for Connection objects, and the specified
+     * ConnectionGroup at the root of the directory.
      *
-     * @param connections
-     *     A Map of all connections that should be present in this
-     *     connection directory.
      * @param rootGroup
-     *     A group that should be at the base of this directory.
+     *     A group that should be at the root of this directory.
      */
     public QuickConnectDirectory(ConnectionGroup rootGroup) {
         this.rootGroup = (QuickConnectionGroup)rootGroup;
@@ -74,11 +72,12 @@ public class QuickConnectDirectory extends SimpleDirectory<Connection> {
     }
 
     /**
-     * Returns the current counter and then increments it.
+     * Returns the current connection identifier counter and
+     * then increments it.
      *
      * @return
-     *     An Integer representing the next available connection
-     *     ID to get used when adding connections.
+     *     An int representing the next available connection
+     *     identifier to be used when adding connections.
      */
     private int getNextConnectionID() {
         return connectionId.getAndIncrement();
@@ -90,9 +89,9 @@ public class QuickConnectDirectory extends SimpleDirectory<Connection> {
     }
 
     /**
-     * Create a SimpleConnection object from a GuacamoleConfiguration
-     * and get an ID and place it on the tree, returning the new
-     * connection identifier value.
+     * Create a SimpleConnection object from a GuacamoleConfiguration,
+     * obtain an identifier, and place it on the tree, returning the
+     * identifier value of the new connection.
      *
      * @param config
      *     The GuacamoleConfiguration to use to create the
@@ -106,17 +105,17 @@ public class QuickConnectDirectory extends SimpleDirectory<Connection> {
      */
     public String create(GuacamoleConfiguration config) throws GuacamoleException {
 
-        // Get the next connection ID
+        // Get the next connection identifier.
         String connectionId = Integer.toString(getNextConnectionID());
 
-        // Generate a name for the configuration
+        // Generate a name for the configuration.
         String name = QCParser.getName(config);
 
-        // Create a new connection and set parent identifier.
+        // Create a new connection and set the parent identifier.
         Connection connection = new SimpleConnection(name, connectionId, config);
         connection.setParentIdentifier(ROOT_IDENTIFIER);
 
-        // Place the object in directory
+        // Place the object in this directory.
         add(connection);
 
         // Add connection to the tree.
