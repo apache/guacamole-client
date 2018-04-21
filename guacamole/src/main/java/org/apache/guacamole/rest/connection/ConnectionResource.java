@@ -38,7 +38,6 @@ import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.rest.directory.DirectoryView;
 import org.apache.guacamole.net.auth.SharingProfile;
-import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -121,8 +120,7 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
             throws GuacamoleException {
 
         // Pull effective permissions
-        User self = userContext.self();
-        Permissions effective = self.getEffectivePermissions();
+        Permissions effective = userContext.self().getEffectivePermissions();
 
         // Retrieve permission sets
         SystemPermissionSet systemPermissions = effective.getSystemPermissions();

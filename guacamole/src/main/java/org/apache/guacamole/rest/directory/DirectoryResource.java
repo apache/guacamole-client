@@ -38,7 +38,6 @@ import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Identifiable;
 import org.apache.guacamole.net.auth.Permissions;
-import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -143,8 +142,7 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
             throws GuacamoleException {
 
         // An admin user has access to all objects
-        User self = userContext.self();
-        Permissions effective = self.getEffectivePermissions();
+        Permissions effective = userContext.self().getEffectivePermissions();
         SystemPermissionSet systemPermissions = effective.getSystemPermissions();
         boolean isAdmin = systemPermissions.hasPermission(SystemPermission.Type.ADMINISTER);
 
