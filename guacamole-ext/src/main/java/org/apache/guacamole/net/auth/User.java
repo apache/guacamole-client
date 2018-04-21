@@ -122,7 +122,7 @@ public interface User extends Identifiable, Attributes, Permissions {
     /**
      * Returns a read-only view of all permissions granted to this user. The
      * exact semantics of what permissions are granted are up to the
-     * implementation, and the permissions within this view may implied,
+     * implementation, and the permissions within this view may be implied,
      * derived dynamically, inherited through multiple levels of group
      * membership, etc.
      *
