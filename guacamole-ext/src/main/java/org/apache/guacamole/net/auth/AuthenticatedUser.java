@@ -60,7 +60,7 @@ public interface AuthenticatedUser extends Identifiable {
      * Note that, as with user identifiers, user group identifiers form the
      * basis of identity which applies across authentication providers. It is
      * expected that any two user groups having the same identifier represent
-     * the same group, even if defined by different authentication providers
+     * the same group, even if defined by different authentication providers.
      *
      * @return
      *     A read-only set of the identifiers of all user groups which apply
