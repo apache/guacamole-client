@@ -29,14 +29,15 @@ import org.apache.guacamole.GuacamoleException;
 public interface UserGroup extends Identifiable, Attributes, Permissions {
 
     /**
-     * Returns a set of all readable user groups that are members of this user
-     * group. If permission is granted for the current user to modify the
-     * members of this group, then the returned set will be mutable, and any
-     * such modifications should be made through changes to the returned set.
+     * Returns a set of all readable user groups of which this user group is a
+     * member. If permission is granted for the current user to modify the
+     * membership of this user group, then the returned set will be mutable,
+     * and any such modifications should be made through changes to the
+     * returned set.
      *
      * @return
-     *     The set of all readable user groups that are members of this user
-     *     group, which may be mutable.
+     *     The set of all readable user groups of which this user group is a
+     *     member.
      *
      * @throws GuacamoleException
      *     If an error occurs while retrieving the user groups.
