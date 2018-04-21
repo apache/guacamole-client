@@ -22,7 +22,6 @@ package org.apache.guacamole.net.auth;
 import java.util.Collections;
 import java.util.Set;
 
-
 /**
  * Basic implementation of an AuthenticatedUser which uses the username to
  * determine equality. Username comparison is case-sensitive.
