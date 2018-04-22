@@ -36,8 +36,11 @@ angular.module('rest').factory('permissionService', ['$injector',
 
     /**
      * Returns the URL for the REST resource most appropriate for accessing
-     * the permissions of the user having the given username.
-     * 
+     * the effective permissions of the user having the given username.
+     * Effective permissions differ from the permissions returned via
+     * getPermissions() in that permissions which are not directly granted to
+     * the user are included.
+     *
      * It is important to note that a particular data source can authenticate
      * and provide permissions for a user, even if that user does not exist
      * within that data source (and thus cannot be found beneath
@@ -56,7 +59,7 @@ angular.module('rest').factory('permissionService', ['$injector',
      *     The URL for the REST resource representing the user having the given
      *     username.
      */
-    var getPermissionsResourceURL = function getPermissionsResourceURL(dataSource, username) {
+    var getEffectivePermissionsResourceURL = function getEffectivePermissionsResourceURL(dataSource, username) {
 
         // Create base URL for data source
         var base = 'api/session/data/' + encodeURIComponent(dataSource);
@@ -65,19 +68,21 @@ angular.module('rest').factory('permissionService', ['$injector',
         // user actually existing (they may not). Access their permissions via
         // "self" rather than the collection of defined users.
         if (username === authenticationService.getCurrentUsername())
-            return base + '/self/permissions';
+            return base + '/self/effectivePermissions';
 
         // Otherwise, the user must exist for their permissions to be
         // accessible. Use the collection of defined users.
-        return base + '/users/' + encodeURIComponent(username) + '/permissions';
+        return base + '/users/' + encodeURIComponent(username) + '/effectivePermissions';
 
     };
 
     /**
-     * Makes a request to the REST API to get the list of permissions for a
-     * given user, returning a promise that provides an array of
-     * @link{Permission} objects if successful.
-     * 
+     * Makes a request to the REST API to get the list of effective permissions
+     * for a given user, returning a promise that provides an array of
+     * @link{Permission} objects if successful. Effective permissions differ
+     * from the permissions returned via getPermissions() in that permissions
+     * which are not directly granted to the user are included.
+     *
      * @param {String} dataSource
      *     The unique identifier of the data source containing the user whose
      *     permissions should be retrieved. This identifier corresponds to an
@@ -85,12 +90,12 @@ angular.module('rest').factory('permissionService', ['$injector',
      *
      * @param {String} userID
      *     The ID of the user to retrieve the permissions for.
-     *                          
+     *
      * @returns {Promise.<PermissionSet>}
      *     A promise which will resolve with a @link{PermissionSet} upon
      *     success.
      */
-    service.getPermissions = function getPermissions(dataSource, userID) {
+    service.getEffectivePermissions = function getEffectivePermissions(dataSource, userID) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -101,58 +106,89 @@ angular.module('rest').factory('permissionService', ['$injector',
         return $http({
             cache   : cacheService.users,
             method  : 'GET',
-            url     : getPermissionsResourceURL(dataSource, userID),
+            url     : getEffectivePermissionsResourceURL(dataSource, userID),
             params  : httpParameters
         });
 
     };
 
     /**
-     * Makes a request to the REST API to add permissions for a given user,
-     * returning a promise that can be used for processing the results of the
-     * call.
+     * Returns the URL for the REST resource most appropriate for accessing
+     * the permissions of the user having the given identifier. The permissions
+     * retrieved differ from effective permissions (those returned by
+     * getEffectivePermissions()) in that only permissions which are directly
+     * granted to the user are included.
      * 
+     * It is important to note that a particular data source can authenticate
+     * and provide permissions for a user, even if that user does not exist
+     * within that data source (and thus cannot be found beneath
+     * "api/session/data/{dataSource}/users")
+     *
      * @param {String} dataSource
      *     The unique identifier of the data source containing the user whose
-     *     permissions should be modified. This identifier corresponds to an
+     *     permissions should be retrieved. This identifier corresponds to an
      *     AuthenticationProvider within the Guacamole web application.
      *
-     * @param {String} userID
-     *     The ID of the user to modify the permissions of.
-     *                          
-     * @param {PermissionSet} permissions
-     *     The set of permissions to add.
-     *                          
-     * @returns {Promise}
-     *     A promise for the HTTP call which will succeed if and only if the
-     *     add operation is successful.
+     * @param {String} identifier
+     *     The identifier of the user for which the URL of the proper REST
+     *     resource should be derived.
+     *
+     * @returns {String}
+     *     The URL for the REST resource representing the user having the given
+     *     identifier.
      */
-    service.addPermissions = function addPermissions(dataSource, userID, permissions) {
-        return service.patchPermissions(dataSource, userID, permissions, null);
+    var getPermissionsResourceURL = function getPermissionsResourceURL(dataSource, identifier) {
+
+        // Create base URL for data source
+        var base = 'api/session/data/' + encodeURIComponent(dataSource);
+
+        // If the username is that of the current user, do not rely on the
+        // user actually existing (they may not). Access their permissions via
+        // "self" rather than the collection of defined users.
+        if (identifier === authenticationService.getCurrentUsername())
+            return base + '/self/permissions';
+
+        // Otherwise, the user must exist for their permissions to be
+        // accessible. Use the collection of defined users.
+        return base + '/users/' + encodeURIComponent(identifier) + '/permissions';
+
     };
-    
+
     /**
-     * Makes a request to the REST API to remove permissions for a given user,
-     * returning a promise that can be used for processing the results of the
-     * call.
+     * Makes a request to the REST API to get the list of permissions for a
+     * given user, returning a promise that provides an array of
+     * @link{Permission} objects if successful. The permissions retrieved
+     * differ from effective permissions (those returned by
+     * getEffectivePermissions()) in that only permissions which are directly
+     * granted to the user included.
      * 
      * @param {String} dataSource
      *     The unique identifier of the data source containing the user whose
-     *     permissions should be modified. This identifier corresponds to an
+     *     permissions should be retrieved. This identifier corresponds to an
      *     AuthenticationProvider within the Guacamole web application.
      *
-     * @param {String} userID
-     *     The ID of the user to modify the permissions of.
-     *                          
-     * @param {PermissionSet} permissions
-     *     The set of permissions to remove.
-     *                          
-     * @returns {Promise}
-     *     A promise for the HTTP call which will succeed if and only if the
-     *     remove operation is successful.
+     * @param {String} identifier
+     *     The identifier of the user to retrieve the permissions for.
+     *
+     * @returns {Promise.<PermissionSet>}
+     *     A promise which will resolve with a @link{PermissionSet} upon
+     *     success.
      */
-    service.removePermissions = function removePermissions(dataSource, userID, permissions) {
-        return service.patchPermissions(dataSource, userID, null, permissions);
+    service.getPermissions = function getPermissions(dataSource, identifier) {
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Retrieve user permissions
+        return $http({
+            cache   : cacheService.users,
+            method  : 'GET',
+            url     : getPermissionsResourceURL(dataSource, identifier),
+            params  : httpParameters
+        });
+
     };
 
     /**
@@ -240,27 +276,30 @@ angular.module('rest').factory('permissionService', ['$injector',
     /**
      * Makes a request to the REST API to modify the permissions for a given
      * user, returning a promise that can be used for processing the results of
-     * the call.
+     * the call. This request affects only the permissions directly granted to
+     * the user, and may not affect permissions inherited through other means
+     * (effective permissions).
      * 
      * @param {String} dataSource
      *     The unique identifier of the data source containing the user whose
      *     permissions should be modified. This identifier corresponds to an
      *     AuthenticationProvider within the Guacamole web application.
      *
-     * @param {String} userID
-     *     The ID of the user to modify the permissions of.
+     * @param {String} identifier
+     *     The identifier of the user to modify the permissions of.
      *                          
      * @param {PermissionSet} [permissionsToAdd]
      *     The set of permissions to add, if any.
      *
      * @param {PermissionSet} [permissionsToRemove]
      *     The set of permissions to remove, if any.
-     *                          
+     *
      * @returns {Promise}
      *     A promise for the HTTP call which will succeed if and only if the
      *     patch operation is successful.
      */
-    service.patchPermissions = function patchPermissions(dataSource, userID, permissionsToAdd, permissionsToRemove) {
+    service.patchPermissions = function patchPermissions(dataSource, identifier,
+            permissionsToAdd, permissionsToRemove) {
 
         var permissionPatch = [];
         
@@ -278,7 +317,7 @@ angular.module('rest').factory('permissionService', ['$injector',
         // Patch user permissions
         return $http({
             method  : 'PATCH', 
-            url     : getPermissionsResourceURL(dataSource, userID),
+            url     : getPermissionsResourceURL(dataSource, identifier),
             params  : httpParameters,
             data    : permissionPatch
         })

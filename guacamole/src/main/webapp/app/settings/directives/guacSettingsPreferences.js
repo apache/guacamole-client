@@ -185,7 +185,7 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
             });
 
             // Retrieve current permissions
-            permissionService.getPermissions(dataSource, username)
+            permissionService.getEffectivePermissions(dataSource, username)
             .success(function permissionsRetrieved(permissions) {
 
                 // Add action for changing password if permission is granted

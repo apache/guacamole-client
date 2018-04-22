@@ -26,6 +26,8 @@ import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.net.auth.ActivityRecord;
+import org.apache.guacamole.net.auth.Permissions;
+import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
@@ -111,9 +113,25 @@ public class APIUserWrapper implements User {
     }
 
     @Override
+    public ObjectPermissionSet getUserGroupPermissions()
+            throws GuacamoleException {
+        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
+    }
+
+    @Override
     public ObjectPermissionSet getActiveConnectionPermissions()
             throws GuacamoleException {
         throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
+    }
+
+    @Override
+    public Permissions getEffectivePermissions() throws GuacamoleException {
+        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
+    }
+
+    @Override
+    public RelatedObjectSet getUserGroups() throws GuacamoleException {
+        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide group access.");
     }
 
     @Override

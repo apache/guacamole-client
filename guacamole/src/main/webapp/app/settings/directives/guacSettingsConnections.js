@@ -404,7 +404,7 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
             };
 
             // Retrieve current permissions
-            permissionService.getPermissions($scope.dataSource, currentUsername)
+            permissionService.getEffectivePermissions($scope.dataSource, currentUsername)
             .success(function permissionsRetrieved(permissions) {
 
                 // Store retrieved permissions

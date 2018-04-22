@@ -24,20 +24,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
- * The set of permissions which are granted to a specific user, organized by
- * object type and, if applicable, identifier. This object can be constructed
- * with arbitrary permissions present, or manipulated after creation through
- * the manipulation or replacement of its collections of permissions, but is
- * otherwise not intended for internal use as a data structure for permissions.
- * Its primary purpose is as a hierarchical format for exchanging granted
- * permissions with REST clients.
+ * The set of permissions which are granted to a specific user or user group,
+ * organized by object type and, if applicable, identifier. This object can be
+ * constructed with arbitrary permissions present, or manipulated after creation
+ * through the manipulation or replacement of its collections of permissions,
+ * but is otherwise not intended for internal use as a data structure for
+ * permissions. Its primary purpose is as a hierarchical format for exchanging
+ * granted permissions with REST clients.
  */
 public class APIPermissionSet {
 
@@ -146,24 +146,23 @@ public class APIPermissionSet {
     
     /**
      * Creates a new permission set containing all permissions currently
-     * granted to the given user.
+     * granted within the given Permissions object.
      *
-     * @param user
-     *     The user whose permissions should be stored within this permission
-     *     set.
+     * @param permissions
+     *     The permissions that should be stored within this permission set.
      *
      * @throws GuacamoleException
-     *     If an error occurs while retrieving the user's permissions.
+     *     If an error occurs while retrieving the permissions.
      */
-    public APIPermissionSet(User user) throws GuacamoleException {
+    public APIPermissionSet(Permissions permissions) throws GuacamoleException {
 
         // Add all permissions from the provided user
-        addSystemPermissions(systemPermissions,           user.getSystemPermissions());
-        addObjectPermissions(connectionPermissions,       user.getConnectionPermissions());
-        addObjectPermissions(connectionGroupPermissions,  user.getConnectionGroupPermissions());
-        addObjectPermissions(sharingProfilePermissions,   user.getSharingProfilePermissions());
-        addObjectPermissions(activeConnectionPermissions, user.getActiveConnectionPermissions());
-        addObjectPermissions(userPermissions,             user.getUserPermissions());
+        addSystemPermissions(systemPermissions,           permissions.getSystemPermissions());
+        addObjectPermissions(connectionPermissions,       permissions.getConnectionPermissions());
+        addObjectPermissions(connectionGroupPermissions,  permissions.getConnectionGroupPermissions());
+        addObjectPermissions(sharingProfilePermissions,   permissions.getSharingProfilePermissions());
+        addObjectPermissions(activeConnectionPermissions, permissions.getActiveConnectionPermissions());
+        addObjectPermissions(userPermissions,             permissions.getUserPermissions());
         
     }
 
@@ -229,7 +228,7 @@ public class APIPermissionSet {
 
     /**
      * Returns a map of user IDs to the set of permissions granted for that
-     * user. If no permissions are granted to a particular user, its ID will
+     * user. If no permissions are granted for a particular user, its ID will
      * not be present as a key in the map. This map is mutable, and changes to
      * to this map will affect the permission set directly.
      *

@@ -30,8 +30,8 @@ import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.SharingProfile;
-import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -103,11 +103,12 @@ public class SharingProfileResource
     public Map<String, String> getParameters()
             throws GuacamoleException {
 
-        User self = userContext.self();
+        // Pull effective permissions
+        Permissions effective = userContext.self().getEffectivePermissions();
 
         // Retrieve permission sets
-        SystemPermissionSet systemPermissions = self.getSystemPermissions();
-        ObjectPermissionSet sharingProfilePermissions = self.getSharingProfilePermissions();
+        SystemPermissionSet systemPermissions = effective.getSystemPermissions();
+        ObjectPermissionSet sharingProfilePermissions = effective.getSharingProfilePermissions();
 
         // Deny access if adminstrative or update permission is missing
         String identifier = sharingProfile.getIdentifier();

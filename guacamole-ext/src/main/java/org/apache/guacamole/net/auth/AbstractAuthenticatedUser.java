@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Basic implementation of an AuthenticatedUser which uses the username to
@@ -28,6 +30,11 @@ public abstract class AbstractAuthenticatedUser extends AbstractIdentifiable
         implements AuthenticatedUser {
 
     // Prior functionality now resides within AbstractIdentifiable
+
+    @Override
+    public Set<String> getEffectiveUserGroups() {
+        return Collections.<String>emptySet();
+    }
 
     @Override
     public void invalidate() {

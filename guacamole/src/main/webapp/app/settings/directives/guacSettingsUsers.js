@@ -232,7 +232,7 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
 
             // Retrieve current permissions
             dataSourceService.apply(
-                permissionService.getPermissions,
+                permissionService.getEffectivePermissions,
                 dataSources,
                 currentUsername
             )

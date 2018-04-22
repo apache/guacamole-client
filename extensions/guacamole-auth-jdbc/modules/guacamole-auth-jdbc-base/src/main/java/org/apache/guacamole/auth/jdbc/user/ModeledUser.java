@@ -52,10 +52,14 @@ import org.apache.guacamole.form.TextField;
 import org.apache.guacamole.form.TimeField;
 import org.apache.guacamole.form.TimeZoneField;
 import org.apache.guacamole.net.auth.ActivityRecord;
+import org.apache.guacamole.net.auth.Permissions;
+import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
+import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
+import org.apache.guacamole.net.auth.simple.SimpleRelatedObjectSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -377,6 +381,11 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     public ObjectPermissionSet getUserPermissions()
             throws GuacamoleException {
         return userPermissionService.getPermissionSet(getCurrentUser(), this);
+    }
+
+    @Override
+    public ObjectPermissionSet getUserGroupPermissions() throws GuacamoleException {
+        return new SimpleObjectPermissionSet();
     }
 
     /**
@@ -837,6 +846,16 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     @Override
     public List<ActivityRecord> getHistory() throws GuacamoleException {
         return userService.retrieveHistory(getCurrentUser(), this);
+    }
+
+    @Override
+    public RelatedObjectSet getUserGroups() throws GuacamoleException {
+        return new SimpleRelatedObjectSet();
+    }
+
+    @Override
+    public Permissions getEffectivePermissions() throws GuacamoleException {
+        return this;
     }
 
 }

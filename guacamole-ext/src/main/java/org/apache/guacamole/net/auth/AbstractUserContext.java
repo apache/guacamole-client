@@ -71,6 +71,19 @@ public abstract class AbstractUserContext implements UserContext {
      * {@inheritDoc}
      *
      * <p>This implementation simply returns an empty {@link Directory}.
+     * Implementations that wish to expose user groups should override this
+     * function.
+     */
+    @Override
+    public Directory<UserGroup> getUserGroupDirectory()
+            throws GuacamoleException {
+        return new SimpleDirectory<UserGroup>();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>This implementation simply returns an empty {@link Directory}.
      * Implementations that wish to expose connections should override this
      * function.
      */
@@ -178,6 +191,18 @@ public abstract class AbstractUserContext implements UserContext {
      */
     @Override
     public Collection<Form> getUserAttributes() {
+        return Collections.<Form>emptyList();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>This implementation simply returns an empty {@link Collection}.
+     * Implementations that wish to expose custom user group attributes as
+     * fields within user group edit screens should override this function.
+     */
+    @Override
+    public Collection<Form> getUserGroupAttributes() {
         return Collections.<Form>emptyList();
     }
 

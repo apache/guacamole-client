@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.Set;
 
 /**
  * A user of the Guacamole web application who has been authenticated by an
@@ -48,6 +49,24 @@ public interface AuthenticatedUser extends Identifiable {
      *     The credentials provided by the user when they authenticated.
      */
     Credentials getCredentials();
+
+    /**
+     * Returns a read-only set of the identifiers of all user groups which
+     * apply to this authenticated user. The exact semantics of what user
+     * groups apply are up to the implementation, and the user groups within
+     * this set may be implied, derived dynamically, inherited through multiple
+     * levels of group membership, etc.
+     *
+     * Note that, as with user identifiers, user group identifiers form the
+     * basis of identity which applies across authentication providers. It is
+     * expected that any two user groups having the same identifier represent
+     * the same group, even if defined by different authentication providers.
+     *
+     * @return
+     *     A read-only set of the identifiers of all user groups which apply
+     *     to this authenticated user.
+     */
+    Set<String> getEffectiveUserGroups();
 
     /**
      * Invalidates this authenticated user and their associated token such that

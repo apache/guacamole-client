@@ -19,7 +19,9 @@
 
 package org.apache.guacamole.net.auth.simple;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
@@ -129,6 +131,11 @@ public abstract class SimpleAuthenticationProvider
         @Override
         public Credentials getCredentials() {
             return credentials;
+        }
+
+        @Override
+        public Set<String> getEffectiveUserGroups() {
+            return Collections.<String>emptySet();
         }
 
     }
