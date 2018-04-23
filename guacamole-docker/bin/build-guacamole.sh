@@ -78,7 +78,7 @@ tar -xzf extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-dist/target/
 #
 
 echo "Downloading MySQL Connector/J ..."
-curl -L "http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.35.tar.gz" | \
+curl -L "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.46.tar.gz" | \
 tar -xz                        \
     -C "$DESTINATION/mysql/"   \
     --wildcards                \
