@@ -447,7 +447,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Sync local clipboard as long as the menu is not open
         if (!$scope.menu.shown)
-            clipboardService.setLocalClipboard(data);
+            clipboardService.setLocalClipboard(data)['catch'](angular.noop);
 
         // Associate new clipboard data with any currently-pressed key
         for (var keysym in keysCurrentlyPressed)
@@ -576,7 +576,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // key was pressed (if any) as long as the menu is not open
         var clipboardData = clipboardDataFromKey[keysym];
         if (clipboardData && !$scope.menu.shown)
-            clipboardService.setLocalClipboard(clipboardData);
+            clipboardService.setLocalClipboard(clipboardData)['catch'](angular.noop);
 
         // Deal with substitute key presses
         if (substituteKeysPressed[keysym]) {
@@ -714,7 +714,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             // Sync with local clipboard
             clipboardService.getLocalClipboard().then(function clipboardRead(data) {
                 $scope.$broadcast('guacClipboard', data);
-            });
+            })['catch'](angular.noop);
 
             // Hide status notification
             guacNotification.showStatus(false);
