@@ -25,7 +25,6 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
 
     // Required services
     var requestService        = $injector.get('requestService');
-    var $q                    = $injector.get('$q');
     var authenticationService = $injector.get('authenticationService');
 
     var service = {};
@@ -63,68 +62,6 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/activeConnections',
             params  : httpParameters
         });
-
-    };
-
-    /**
-     * Returns a promise which resolves with all active connections accessible
-     * by the current user, as a map of @link{ActiveConnection} maps, as would
-     * be returned by getActiveConnections(), grouped by the identifier of
-     * their corresponding data source. All given data sources are queried. If
-     * an error occurs while retrieving any ActiveConnection map, the promise
-     * will be rejected.
-     *
-     * @param {String[]} dataSources
-     *     The unique identifier of the data sources containing the active
-     *     connections to be retrieved. These identifiers correspond to
-     *     AuthenticationProviders within the Guacamole web application.
-     *
-     * @param {String[]} [permissionTypes]
-     *     The set of permissions to filter with. A user must have one or more
-     *     of these permissions for an active connection to appear in the
-     *     result.  If null, no filtering will be performed. Valid values are
-     *     listed within PermissionSet.ObjectType.
-     *
-     * @returns {Promise.<Object.<String, Object.<String, ActiveConnection>>>}
-     *     A promise which resolves with all active connections available to
-     *     the current user, as a map of ActiveConnection maps, as would be
-     *     returned by getActiveConnections(), grouped by the identifier of
-     *     their corresponding data source.
-     */
-    service.getAllActiveConnections = function getAllActiveConnections(dataSources, permissionTypes) {
-
-        var deferred = $q.defer();
-
-        var activeConnectionRequests = [];
-        var activeConnectionMaps = {};
-
-        // Retrieve all active connections from all data sources
-        angular.forEach(dataSources, function retrieveActiveConnections(dataSource) {
-            activeConnectionRequests.push(
-                service.getActiveConnections(dataSource, permissionTypes)
-                .then(function activeConnectionsRetrieved(activeConnections) {
-                    activeConnectionMaps[dataSource] = activeConnections;
-                })
-            );
-        });
-
-        // Resolve when all requests are completed
-        $q.all(activeConnectionRequests)
-        .then(
-
-            // All requests completed successfully
-            function allActiveConnectionsRetrieved() {
-                deferred.resolve(userArrays);
-            },
-
-            // At least one request failed
-            function activeConnectionRetrievalFailed(e) {
-                deferred.reject(e);
-            }
-
-        );
-
-        return deferred.promise;
 
     };
 
