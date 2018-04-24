@@ -46,10 +46,9 @@ angular.module('auth').factory('authenticationService', ['$injector',
     var Error                = $injector.get('Error');
 
     // Required services
-    var $http               = $injector.get('$http');
-    var $q                  = $injector.get('$q');
     var $rootScope          = $injector.get('$rootScope');
     var localStorageService = $injector.get('localStorageService');
+    var requestService      = $injector.get('requestService');
 
     var service = {};
 
@@ -155,27 +154,8 @@ angular.module('auth').factory('authenticationService', ['$injector',
      */
     service.authenticate = function authenticate(parameters) {
 
-        var authenticationProcess = $q.defer();
-
-        /**
-         * Stores the given authentication data within the browser and marks
-         * the authentication process as completed.
-         *
-         * @param {Object} data
-         *     The authentication data returned by the token REST endpoint.
-         */
-        var completeAuthentication = function completeAuthentication(data) {
-
-            // Store auth data
-            setAuthenticationResult(new AuthenticationResult(data));
-
-            // Process is complete
-            authenticationProcess.resolve();
-
-        };
-
         // Attempt authentication
-        $http({
+        return requestService({
             method: 'POST',
             url: 'api/tokens',
             headers: {
@@ -185,44 +165,32 @@ angular.module('auth').factory('authenticationService', ['$injector',
         })
 
         // If authentication succeeds, handle received auth data
-        .then(function authenticationSuccessful(response) {
-            var data = response.data;
+        .then(function authenticationSuccessful(data) {
 
             var currentToken = service.getCurrentToken();
+            setAuthenticationResult(new AuthenticationResult(data));
 
             // If a new token was received, ensure the old token is invalidated,
             // if any, and notify listeners of the new token
             if (data.authToken !== currentToken) {
 
-                // If an old token existed, explicitly logout first
+                // If an old token existed, request that the token be revoked
                 if (currentToken) {
-                    service.logout()
-                    ['finally'](function logoutComplete() {
-                        completeAuthentication(data);
-                        $rootScope.$broadcast('guacLogin', data.authToken);
-                    });
+                    service.logout().catch(angular.noop)
                 }
 
-                // Otherwise, simply complete authentication and notify of login
-                else {
-                    completeAuthentication(data);
-                    $rootScope.$broadcast('guacLogin', data.authToken);
-                }
+                // Notify of login and new token
+                $rootScope.$broadcast('guacLogin', data.authToken);
 
             }
 
-            // Otherwise, just finish the auth process
-            else
-                completeAuthentication(data);
+            // Authentication was successful
+            return data;
 
         })
 
         // If authentication fails, propogate failure to returned promise
-        ['catch'](function authenticationFailed(response) {
-
-            // Ensure error object exists, even if the error response is not
-            // coming from the authentication REST endpoint
-            var error = new Error(response.data);
+        ['catch'](function authenticationFailed(error) {
 
             // Request credentials if provided credentials were invalid
             if (error.type === Error.Type.INVALID_CREDENTIALS)
@@ -232,10 +200,10 @@ angular.module('auth').factory('authenticationService', ['$injector',
             else if (error.type === Error.Type.INSUFFICIENT_CREDENTIALS)
                 $rootScope.$broadcast('guacInsufficientCredentials', parameters, error);
 
-            authenticationProcess.reject(error);
-        });
+            // Authentication failed
+            throw error;
 
-        return authenticationProcess.promise;
+        });
 
     };
 
@@ -317,7 +285,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
         $rootScope.$broadcast('guacLogout', token);
 
         // Delete old token
-        return $http({
+        return requestService({
             method: 'DELETE',
             url: 'api/tokens/' + token
         });

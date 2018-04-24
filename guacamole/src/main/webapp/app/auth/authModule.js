@@ -21,5 +21,6 @@
  * The module for authentication and management of tokens.
  */
 angular.module('auth', [
+    'rest',
     'storage'
 ]);
