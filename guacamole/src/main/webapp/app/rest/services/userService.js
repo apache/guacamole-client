@@ -25,7 +25,6 @@ angular.module('rest').factory('userService', ['$injector',
 
     // Required services
     var requestService        = $injector.get('requestService');
-    var $q                    = $injector.get('$q');
     var authenticationService = $injector.get('authenticationService');
     var cacheService          = $injector.get('cacheService');
 
