@@ -158,7 +158,7 @@ public class UserResource
         credentials.setUsername(user.getIdentifier());
         credentials.setPassword(userPasswordUpdate.getOldPassword());
         credentials.setRequest(request);
-        credentials.setSession(request.getSession(true));
+        credentials.setSession(request.getSession(false));
         credentials.setRemoteAddress(request.getRemoteAddr());
         credentials.setRemoteHostname(request.getRemoteHost());
 
