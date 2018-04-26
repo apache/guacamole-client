@@ -32,7 +32,7 @@
             <tr>
                 <th>{{'MANAGE_CONNECTION.FIELD_HEADER_PROTOCOL' | translate}}</th>
                 <td>
-                    <select ng-model="connection.protocol" ng-options="name as getProtocolName(protocol.name) | translate for (name, protocol) in protocols | orderBy: name"></select>
+                    <select ng-model="connection.protocol" ng-options="protocol.name as getProtocolName(protocol.name) | translate for protocol in protocols | toArray | orderBy: name"></select>
                 </td>
             </tr>
         </table>

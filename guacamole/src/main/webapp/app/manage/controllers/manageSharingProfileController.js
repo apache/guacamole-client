@@ -170,13 +170,13 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
 
     // Pull sharing profile attribute schema
     schemaService.getSharingProfileAttributes($scope.selectedDataSource)
-    .success(function attributesReceived(attributes) {
+    .then(function attributesReceived(attributes) {
         $scope.attributes = attributes;
     });
 
     // Query the user's permissions for the current sharing profile
     permissionService.getEffectivePermissions($scope.selectedDataSource, authenticationService.getCurrentUsername())
-    .success(function permissionsReceived(permissions) {
+    .then(function permissionsReceived(permissions) {
 
         $scope.permissions = permissions;
 
@@ -212,7 +212,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
 
     // Get protocol metadata
     schemaService.getProtocols($scope.selectedDataSource)
-    .success(function protocolsReceived(protocols) {
+    .then(function protocolsReceived(protocols) {
         $scope.protocols = protocols;
     });
 
@@ -221,13 +221,13 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
 
         // Pull data from existing sharing profile
         sharingProfileService.getSharingProfile($scope.selectedDataSource, identifier)
-        .success(function sharingProfileRetrieved(sharingProfile) {
+        .then(function sharingProfileRetrieved(sharingProfile) {
             $scope.sharingProfile = sharingProfile;
         });
 
         // Pull sharing profile parameters
         sharingProfileService.getSharingProfileParameters($scope.selectedDataSource, identifier)
-        .success(function parametersReceived(parameters) {
+        .then(function parametersReceived(parameters) {
             $scope.parameters = parameters;
         });
 
@@ -238,7 +238,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
 
         // Pull data from cloned sharing profile
         sharingProfileService.getSharingProfile($scope.selectedDataSource, cloneSourceIdentifier)
-        .success(function sharingProfileRetrieved(sharingProfile) {
+        .then(function sharingProfileRetrieved(sharingProfile) {
 
             // Store data of sharing profile being cloned
             $scope.sharingProfile = sharingProfile;
@@ -250,7 +250,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
 
         // Pull sharing profile parameters from cloned sharing profile
         sharingProfileService.getSharingProfileParameters($scope.selectedDataSource, cloneSourceIdentifier)
-        .success(function parametersReceived(parameters) {
+        .then(function parametersReceived(parameters) {
             $scope.parameters = parameters;
         });
 
@@ -274,7 +274,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
 
         // Pull data from existing sharing profile
         connectionService.getConnection($scope.selectedDataSource, identifier)
-        .success(function connectionRetrieved(connection) {
+        .then(function connectionRetrieved(connection) {
             $scope.primaryConnection = connection;
         });
 
@@ -351,12 +351,12 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
 
         // Save the sharing profile
         sharingProfileService.saveSharingProfile($scope.selectedDataSource, $scope.sharingProfile)
-        .success(function savedSharingProfile() {
+        .then(function savedSharingProfile() {
             $location.url('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
         })
 
         // Notify of any errors
-        .error(function sharingProfileSaveFailed(error) {
+        ['catch'](function sharingProfileSaveFailed(error) {
             guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_SHARING_PROFILE.DIALOG_HEADER_ERROR',
@@ -389,12 +389,12 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
 
         // Delete the sharing profile
         sharingProfileService.deleteSharingProfile($scope.selectedDataSource, $scope.sharingProfile)
-        .success(function deletedSharingProfile() {
+        .then(function deletedSharingProfile() {
             $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
         })
 
         // Notify of any errors
-        .error(function sharingProfileDeletionFailed(error) {
+        ['catch'](function sharingProfileDeletionFailed(error) {
             guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_SHARING_PROFILE.DIALOG_HEADER_ERROR',

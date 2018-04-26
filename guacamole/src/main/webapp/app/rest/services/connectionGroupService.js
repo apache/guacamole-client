@@ -24,7 +24,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
         function connectionGroupService($injector) {
 
     // Required services
-    var $http                 = $injector.get('$http');
+    var requestService        = $injector.get('requestService');
     var $q                    = $injector.get('$q');
     var authenticationService = $injector.get('authenticationService');
     var cacheService          = $injector.get('cacheService');
@@ -70,7 +70,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
             httpParameters.permission = permissionTypes;
 
         // Retrieve connection group 
-        return $http({
+        return requestService({
             cache   : cacheService.connections,
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroupID) + '/tree',
@@ -103,7 +103,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
         };
 
         // Retrieve connection group
-        return $http({
+        return requestService({
             cache   : cacheService.connections,
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroupID),
@@ -134,7 +134,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
 
         // If connection group is new, add it and set the identifier automatically
         if (!connectionGroup.identifier) {
-            return $http({
+            return requestService({
                 method  : 'POST',
                 url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups',
                 params  : httpParameters,
@@ -142,7 +142,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
             })
 
             // Set the identifier on the new connection group and clear the cache
-            .success(function connectionGroupCreated(newConnectionGroup){
+            .then(function connectionGroupCreated(newConnectionGroup){
                 connectionGroup.identifier = newConnectionGroup.identifier;
                 cacheService.connections.removeAll();
 
@@ -154,7 +154,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
 
         // Otherwise, update the existing connection group
         else {
-            return $http({
+            return requestService({
                 method  : 'PUT',
                 url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
                 params  : httpParameters,
@@ -162,7 +162,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
             })
 
             // Clear the cache
-            .success(function connectionGroupUpdated(){
+            .then(function connectionGroupUpdated(){
                 cacheService.connections.removeAll();
 
                 // Clear users cache to force reload of permissions for this
@@ -191,14 +191,14 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
         };
 
         // Delete connection group
-        return $http({
+        return requestService({
             method  : 'DELETE',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
             params  : httpParameters
         })
 
         // Clear the cache
-        .success(function connectionGroupDeleted(){
+        .then(function connectionGroupDeleted(){
             cacheService.connections.removeAll();
         });
 

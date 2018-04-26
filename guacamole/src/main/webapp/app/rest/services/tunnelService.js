@@ -28,10 +28,10 @@ angular.module('rest').factory('tunnelService', ['$injector',
     var Error = $injector.get('Error');
 
     // Required services
-    var $http                 = $injector.get('$http');
     var $q                    = $injector.get('$q');
     var $window               = $injector.get('$window');
     var authenticationService = $injector.get('authenticationService');
+    var requestService        = $injector.get('requestService');
 
     var service = {};
 
@@ -71,7 +71,7 @@ angular.module('rest').factory('tunnelService', ['$injector',
         };
 
         // Retrieve tunnels
-        return $http({
+        return requestService({
             method  : 'GET',
             url     : 'api/session/tunnels',
             params  : httpParameters
@@ -100,7 +100,7 @@ angular.module('rest').factory('tunnelService', ['$injector',
         };
 
         // Retrieve all associated sharing profiles
-        return $http({
+        return requestService({
             method  : 'GET',
             url     : 'api/session/tunnels/' + encodeURIComponent(tunnel)
                         + '/activeConnection/connection/sharingProfiles',
@@ -136,7 +136,7 @@ angular.module('rest').factory('tunnelService', ['$injector',
         };
 
         // Generate sharing credentials
-        return $http({
+        return requestService({
             method  : 'GET',
             url     : 'api/session/tunnels/' + encodeURIComponent(tunnel)
                         + '/activeConnection/sharingCredentials/'

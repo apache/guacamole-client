@@ -24,7 +24,7 @@ angular.module('rest').factory('permissionService', ['$injector',
         function permissionService($injector) {
 
     // Required services
-    var $http                 = $injector.get('$http');
+    var requestService        = $injector.get('requestService');
     var $q                    = $injector.get('$q');
     var authenticationService = $injector.get('authenticationService');
     var cacheService          = $injector.get('cacheService');
@@ -103,7 +103,7 @@ angular.module('rest').factory('permissionService', ['$injector',
         };
 
         // Retrieve user permissions
-        return $http({
+        return requestService({
             cache   : cacheService.users,
             method  : 'GET',
             url     : getEffectivePermissionsResourceURL(dataSource, userID),
@@ -182,7 +182,7 @@ angular.module('rest').factory('permissionService', ['$injector',
         };
 
         // Retrieve user permissions
-        return $http({
+        return requestService({
             cache   : cacheService.users,
             method  : 'GET',
             url     : getPermissionsResourceURL(dataSource, identifier),
@@ -315,7 +315,7 @@ angular.module('rest').factory('permissionService', ['$injector',
         addPatchOperations(permissionPatch, PermissionPatch.Operation.REMOVE, permissionsToRemove);
 
         // Patch user permissions
-        return $http({
+        return requestService({
             method  : 'PATCH', 
             url     : getPermissionsResourceURL(dataSource, identifier),
             params  : httpParameters,
@@ -323,7 +323,7 @@ angular.module('rest').factory('permissionService', ['$injector',
         })
         
         // Clear the cache
-        .success(function permissionsPatched(){
+        .then(function permissionsPatched(){
             cacheService.users.removeAll();
         });
     };

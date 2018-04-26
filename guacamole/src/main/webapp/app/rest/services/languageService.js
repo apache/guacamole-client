@@ -24,7 +24,7 @@ angular.module('rest').factory('languageService', ['$injector',
         function languageService($injector) {
 
     // Required services
-    var $http                 = $injector.get('$http');
+    var requestService        = $injector.get('requestService');
     var authenticationService = $injector.get('authenticationService');
     var cacheService          = $injector.get('cacheService');
 
@@ -47,7 +47,7 @@ angular.module('rest').factory('languageService', ['$injector',
         };
 
         // Retrieve available languages
-        return $http({
+        return requestService({
             cache   : cacheService.languages,
             method  : 'GET',
             url     : 'api/languages',

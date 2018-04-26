@@ -150,7 +150,7 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                 
                 // Save the user with the new password
                 userService.updateUserPassword(dataSource, username, $scope.oldPassword, $scope.newPassword)
-                .success(function passwordUpdated() {
+                .then(function passwordUpdated() {
                 
                     // Clear the password fields
                     $scope.oldPassword      = null;
@@ -167,7 +167,7 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                 })
                 
                 // Notify of any errors
-                .error(function passwordUpdateFailed(error) {
+                ['catch'](function passwordUpdateFailed(error) {
                     guacNotification.showStatus({
                         className  : 'error',
                         title      : 'SETTINGS_PREFERENCES.DIALOG_HEADER_ERROR',
@@ -180,20 +180,25 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
 
             // Retrieve defined languages
             languageService.getLanguages()
-            .success(function languagesRetrieved(languages) {
-                $scope.languages = languages;
+            .then(function languagesRetrieved(languages) {
+                $scope.languages = Object.keys(languages).map(function(key) {
+                    return {
+                        key: key,
+                        value: languages[key]
+                    };
+                })
             });
 
             // Retrieve current permissions
             permissionService.getEffectivePermissions(dataSource, username)
-            .success(function permissionsRetrieved(permissions) {
+            .then(function permissionsRetrieved(permissions) {
 
                 // Add action for changing password if permission is granted
                 $scope.canChangePassword = PermissionSet.hasUserPermission(permissions,
                         PermissionSet.ObjectPermissionType.UPDATE, username);
                         
             })
-            .error(function permissionsFailed(error) {
+            ['catch'](function permissionsFailed(error) {
                 $scope.canChangePassword = false;
             });
 

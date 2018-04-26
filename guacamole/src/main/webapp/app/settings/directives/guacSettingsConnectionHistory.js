@@ -169,7 +169,7 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
                         return predicate === 'startDate' || predicate === '-startDate';
                     })
                 )
-                .success(function historyRetrieved(historyEntries) {
+                .then(function historyRetrieved(historyEntries) {
 
                     // Wrap all history entries for sake of display
                     $scope.historyEntryWrappers = [];

@@ -185,7 +185,8 @@ angular.module('auth').factory('authenticationService', ['$injector',
         })
 
         // If authentication succeeds, handle received auth data
-        .success(function authenticationSuccessful(data) {
+        .then(function authenticationSuccessful(response) {
+            var data = response.data;
 
             var currentToken = service.getCurrentToken();
 
@@ -217,11 +218,11 @@ angular.module('auth').factory('authenticationService', ['$injector',
         })
 
         // If authentication fails, propogate failure to returned promise
-        .error(function authenticationFailed(error) {
+        ['catch'](function authenticationFailed(response) {
 
             // Ensure error object exists, even if the error response is not
             // coming from the authentication REST endpoint
-            error = new Error(error);
+            var error = new Error(response.data);
 
             // Request credentials if provided credentials were invalid
             if (error.type === Error.Type.INVALID_CREDENTIALS)

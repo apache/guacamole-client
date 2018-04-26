@@ -9,7 +9,7 @@
             <table class="fields">
                 <tr>
                     <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_LANGUAGE' | translate}}</th>
-                    <td><select ng-model="preferences.language" ng-change="changeLanguage()" ng-options="key as name for (key, name) in languages | orderBy: name"></select></td>
+                    <td><select ng-model="preferences.language" ng-change="changeLanguage()" ng-options="language.key as language.value for language in languages | orderBy: key"></select></td>
                 </tr>
             </table>
         </div>

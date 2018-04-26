@@ -96,7 +96,7 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
 
             // Pull user data
             userService.getUser(authenticationService.getDataSource(), $scope.username)
-                    .success(function userRetrieved(user) {
+                    .then(function userRetrieved(user) {
 
                 // Store retrieved user object
                 $scope.user = user;

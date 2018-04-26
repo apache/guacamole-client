@@ -214,14 +214,14 @@ terms and conditions of the following licenses.
 AngularJS (https://angularjs.org/)
 ----------------------------------
 
-    Version: 1.3.16
+    Version: 1.6.9
     From: 'Google Inc.' (http://www.google.com/)
     License(s):
-        MIT (bundled/angular-1.3.16/LICENSE)
+        MIT (bundled/angular-1.6.9/LICENSE)
 
 The MIT License
 
-Copyright (c) 2010-2016 Google, Inc. http://angularjs.org
+Copyright (c) 2010-2018 Google, Inc. http://angularjs.org
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -276,14 +276,14 @@ SOFTWARE.
 angular-translate (https://angular-translate.github.io/)
 --------------------------------------------------------
 
-    Version: 2.8.0
+    Version: 2.16.0
     From: 'Pascal Precht' (https://github.com/PascalPrecht)
     License(s):
-        MIT (bundled/angular-translate-2.8.0/LICENSE)
+        MIT (bundled/angular-translate-2.16.0/LICENSE)
 
 The MIT License (MIT)
 
-Copyright (c) <2014> <pascal.precht@gmail.com>
+Copyright (c) 2013-2017 The angular-translate team and Pascal Precht
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

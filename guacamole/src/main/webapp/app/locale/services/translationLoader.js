@@ -74,7 +74,7 @@ angular.module('locale').factory('translationLoader', ['$injector', function tra
         languageService.getLanguages()
 
         // Attempt to retrieve translation if language is supported
-        .success(function retrievedLanguages(languages) {
+        .then(function retrievedLanguages(languages) {
 
             // Skip retrieval if language is not supported
             if (!(currentKey in languages)) {
@@ -90,18 +90,17 @@ angular.module('locale').factory('translationLoader', ['$injector', function tra
             })
 
             // Resolve promise if translation retrieved successfully
-            .success(function translationFileRetrieved(translation) {
-                deferred.resolve(translation);
-            })
+            .then(function translationFileRetrieved(request) {
+                deferred.resolve(request.data);
+            },
 
             // Retry with remaining languages if translation file could not be
             // retrieved
-            .error(tryNextTranslation);
-
-        })
+            tryNextTranslation);
+        },
 
         // Retry with remaining languages if translation does not exist
-        .error(tryNextTranslation);
+        tryNextTranslation);
 
     };
 

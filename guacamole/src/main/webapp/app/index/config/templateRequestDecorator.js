@@ -337,7 +337,7 @@ angular.module('index').config(['$provide', function($provide) {
             $delegate.apply(this, arguments).then(function patchTemplate(data) {
 
                 // Retrieve and apply all patches
-                patchService.getPatches().success(function applyRetrievedPatches(patches) {
+                patchService.getPatches().then(function applyRetrievedPatches(patches) {
 
                     // Parse HTML into DOM tree
                     var root = $('<div></div>').html(data);

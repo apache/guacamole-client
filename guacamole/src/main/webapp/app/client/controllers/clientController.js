@@ -464,7 +464,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Pull sharing profiles for the current connection
         tunnelService.getSharingProfiles(uuid)
-        .success(function sharingProfilesRetrieved(sharingProfiles) {
+        .then(function sharingProfilesRetrieved(sharingProfiles) {
             $scope.sharingProfiles = sharingProfiles;
         });
 

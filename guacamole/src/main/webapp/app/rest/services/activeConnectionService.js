@@ -24,7 +24,7 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
         function activeConnectionService($injector) {
 
     // Required services
-    var $http                 = $injector.get('$http');
+    var requestService        = $injector.get('requestService');
     var $q                    = $injector.get('$q');
     var authenticationService = $injector.get('authenticationService');
 
@@ -58,7 +58,7 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
             httpParameters.permission = permissionTypes;
 
         // Retrieve tunnels
-        return $http({
+        return requestService({
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/activeConnections',
             params  : httpParameters
@@ -102,7 +102,7 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
         angular.forEach(dataSources, function retrieveActiveConnections(dataSource) {
             activeConnectionRequests.push(
                 service.getActiveConnections(dataSource, permissionTypes)
-                .success(function activeConnectionsRetrieved(activeConnections) {
+                .then(function activeConnectionsRetrieved(activeConnections) {
                     activeConnectionMaps[dataSource] = activeConnections;
                 })
             );
@@ -157,7 +157,7 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
         });
 
         // Perform active connection deletion via PATCH
-        return $http({
+        return requestService({
             method  : 'PATCH',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/activeConnections',
             params  : httpParameters,
@@ -191,7 +191,7 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
         };
 
         // Generate sharing credentials
-        return $http({
+        return requestService({
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource)
                         + '/activeConnections/' + encodeURIComponent(id)

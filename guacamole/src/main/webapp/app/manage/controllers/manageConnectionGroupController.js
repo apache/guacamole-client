@@ -129,13 +129,13 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     
     // Pull connection group attribute schema
     schemaService.getConnectionGroupAttributes($scope.selectedDataSource)
-    .success(function attributesReceived(attributes) {
+    .then(function attributesReceived(attributes) {
         $scope.attributes = attributes;
     });
 
     // Query the user's permissions for the current connection group
     permissionService.getEffectivePermissions($scope.selectedDataSource, authenticationService.getCurrentUsername())
-    .success(function permissionsReceived(permissions) {
+    .then(function permissionsReceived(permissions) {
                 
         $scope.permissions = permissions;
                         
@@ -161,14 +161,14 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
         ConnectionGroup.ROOT_IDENTIFIER,
         [PermissionSet.ObjectPermissionType.ADMINISTER]
     )
-    .success(function connectionGroupReceived(rootGroup) {
+    .then(function connectionGroupReceived(rootGroup) {
         $scope.rootGroup = rootGroup;
     });
 
     // If we are editing an existing connection group, pull its data
     if (identifier) {
         connectionGroupService.getConnectionGroup($scope.selectedDataSource, identifier)
-        .success(function connectionGroupReceived(connectionGroup) {
+        .then(function connectionGroupReceived(connectionGroup) {
             $scope.connectionGroup = connectionGroup;
         });
     }
@@ -230,12 +230,12 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
 
         // Save the connection
         connectionGroupService.saveConnectionGroup($scope.selectedDataSource, $scope.connectionGroup)
-        .success(function savedConnectionGroup() {
+        .then(function savedConnectionGroup() {
             $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
         })
 
         // Notify of any errors
-        .error(function connectionGroupSaveFailed(error) {
+        ['catch'](function connectionGroupSaveFailed(error) {
             guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_CONNECTION_GROUP.DIALOG_HEADER_ERROR',
@@ -280,12 +280,12 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
 
         // Delete the connection group
         connectionGroupService.deleteConnectionGroup($scope.selectedDataSource, $scope.connectionGroup)
-        .success(function deletedConnectionGroup() {
+        .then(function deletedConnectionGroup() {
             $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
         })
 
         // Notify of any errors
-        .error(function connectionGroupDeletionFailed(error) {
+        ['catch'](function connectionGroupDeletionFailed(error) {
             guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_CONNECTION_GROUP.DIALOG_HEADER_ERROR',

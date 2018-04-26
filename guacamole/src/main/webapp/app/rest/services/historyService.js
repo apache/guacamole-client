@@ -24,7 +24,7 @@ angular.module('rest').factory('historyService', ['$injector',
         function historyService($injector) {
 
     // Required services
-    var $http                 = $injector.get('$http');
+    var requestService        = $injector.get('requestService');
     var authenticationService = $injector.get('authenticationService');
 
     var service = {};
@@ -74,7 +74,7 @@ angular.module('rest').factory('historyService', ['$injector',
             httpParameters.order = sortPredicates;
 
         // Retrieve connection history
-        return $http({
+        return requestService({
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/history/connections',
             params  : httpParameters

@@ -88,7 +88,9 @@ angular.module('osk').directive('guacOsk', [function guacOsk() {
                     })
 
                     // Build OSK with retrieved layout
-                    .success(function layoutRetrieved(layout) {
+                    .then(function layoutRetrieved(request) {
+
+                        var layout = request.data;
 
                         // Abort if the layout changed while we were waiting for a response
                         if ($scope.layout !== url)
