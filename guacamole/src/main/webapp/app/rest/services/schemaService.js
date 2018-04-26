@@ -24,7 +24,7 @@ angular.module('rest').factory('schemaService', ['$injector',
         function schemaService($injector) {
 
     // Required services
-    var $http                 = $injector.get('$http');
+    var requestService        = $injector.get('requestService');
     var authenticationService = $injector.get('authenticationService');
     var cacheService          = $injector.get('cacheService');
 
@@ -55,7 +55,7 @@ angular.module('rest').factory('schemaService', ['$injector',
         };
 
         // Retrieve available user attributes
-        return $http({
+        return requestService({
             cache   : cacheService.schema,
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/userAttributes',
@@ -89,7 +89,7 @@ angular.module('rest').factory('schemaService', ['$injector',
         };
 
         // Retrieve available connection attributes
-        return $http({
+        return requestService({
             cache   : cacheService.schema,
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/connectionAttributes',
@@ -123,7 +123,7 @@ angular.module('rest').factory('schemaService', ['$injector',
         };
 
         // Retrieve available sharing profile attributes
-        return $http({
+        return requestService({
             cache   : cacheService.schema,
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/sharingProfileAttributes',
@@ -157,7 +157,7 @@ angular.module('rest').factory('schemaService', ['$injector',
         };
 
         // Retrieve available connection group attributes
-        return $http({
+        return requestService({
             cache   : cacheService.schema,
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/connectionGroupAttributes',
@@ -188,7 +188,7 @@ angular.module('rest').factory('schemaService', ['$injector',
         };
 
         // Retrieve available protocols
-        return $http({
+        return requestService({
             cache   : cacheService.schema,
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/protocols',

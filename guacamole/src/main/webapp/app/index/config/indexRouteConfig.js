@@ -26,6 +26,9 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
     // Disable HTML5 mode (use # for routing)
     $locationProvider.html5Mode(false);
 
+    // Clear hash prefix to keep /#/thing/bat URL style
+    $locationProvider.hashPrefix('');
+
     /**
      * Attempts to re-authenticate with the Guacamole server, sending any
      * query parameters in the URL, along with the current auth token, and

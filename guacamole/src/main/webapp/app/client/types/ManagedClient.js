@@ -512,7 +512,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         // If using a connection, pull connection name
         if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION) {
             connectionService.getConnection(clientIdentifier.dataSource, clientIdentifier.id)
-            .success(function connectionRetrieved(connection) {
+            .then(function connectionRetrieved(connection) {
                 managedClient.name = managedClient.title = connection.name;
             });
         }
@@ -520,7 +520,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         // If using a connection group, pull connection name
         else if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION_GROUP) {
             connectionGroupService.getConnectionGroup(clientIdentifier.dataSource, clientIdentifier.id)
-            .success(function connectionGroupRetrieved(group) {
+            .then(function connectionGroupRetrieved(group) {
                 managedClient.name = managedClient.title = group.name;
             });
         }
@@ -631,7 +631,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                 client.tunnel.uuid, sharingProfile.identifier);
 
         // Add a new share link once the credentials are ready
-        credentialRequest.success(function sharingCredentialsReceived(sharingCredentials) {
+        credentialRequest.then(function sharingCredentialsReceived(sharingCredentials) {
             client.shareLinks[sharingProfile.identifier] =
                 ManagedShareLink.getInstance(sharingProfile, sharingCredentials);
         });

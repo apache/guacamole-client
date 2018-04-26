@@ -24,7 +24,7 @@ angular.module('rest').factory('connectionService', ['$injector',
         function connectionService($injector) {
 
     // Required services
-    var $http                 = $injector.get('$http');
+    var requestService        = $injector.get('requestService');
     var authenticationService = $injector.get('authenticationService');
     var cacheService          = $injector.get('cacheService');
     
@@ -41,7 +41,7 @@ angular.module('rest').factory('connectionService', ['$injector',
      * 
      * @example
      * 
-     * connectionService.getConnection('myConnection').success(function(connection) {
+     * connectionService.getConnection('myConnection').then(function(connection) {
      *     // Do something with the connection
      * });
      */
@@ -53,7 +53,7 @@ angular.module('rest').factory('connectionService', ['$injector',
         };
 
         // Retrieve connection
-        return $http({
+        return requestService({
             cache   : cacheService.connections,
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id),
@@ -82,7 +82,7 @@ angular.module('rest').factory('connectionService', ['$injector',
         };
 
         // Retrieve connection history
-        return $http({
+        return requestService({
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id) + '/history',
             params  : httpParameters
@@ -110,7 +110,7 @@ angular.module('rest').factory('connectionService', ['$injector',
         };
 
         // Retrieve connection parameters
-        return $http({
+        return requestService({
             cache   : cacheService.connections,
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id) + '/parameters',
@@ -141,7 +141,7 @@ angular.module('rest').factory('connectionService', ['$injector',
 
         // If connection is new, add it and set the identifier automatically
         if (!connection.identifier) {
-            return $http({
+            return requestService({
                 method  : 'POST',
                 url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections',
                 params  : httpParameters,
@@ -149,7 +149,7 @@ angular.module('rest').factory('connectionService', ['$injector',
             })
 
             // Set the identifier on the new connection and clear the cache
-            .success(function connectionCreated(newConnection){
+            .then(function connectionCreated(newConnection){
                 connection.identifier = newConnection.identifier;
                 cacheService.connections.removeAll();
 
@@ -161,7 +161,7 @@ angular.module('rest').factory('connectionService', ['$injector',
 
         // Otherwise, update the existing connection
         else {
-            return $http({
+            return requestService({
                 method  : 'PUT',
                 url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(connection.identifier),
                 params  : httpParameters,
@@ -169,7 +169,7 @@ angular.module('rest').factory('connectionService', ['$injector',
             })
             
             // Clear the cache
-            .success(function connectionUpdated(){
+            .then(function connectionUpdated(){
                 cacheService.connections.removeAll();
 
                 // Clear users cache to force reload of permissions for this
@@ -198,14 +198,14 @@ angular.module('rest').factory('connectionService', ['$injector',
         };
 
         // Delete connection
-        return $http({
+        return requestService({
             method  : 'DELETE',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(connection.identifier),
             params  : httpParameters
         })
 
         // Clear the cache
-        .success(function connectionDeleted(){
+        .then(function connectionDeleted(){
             cacheService.connections.removeAll();
         });
 

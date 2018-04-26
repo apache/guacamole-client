@@ -529,7 +529,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     });
 
     // Pull user attribute schema
-    schemaService.getUserAttributes(selectedDataSource).success(function attributesReceived(attributes) {
+    schemaService.getUserAttributes(selectedDataSource).then(function attributesReceived(attributes) {
         $scope.attributes = attributes;
     });
 
@@ -557,12 +557,12 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         $scope.selfUsername = username;
 
         // Pull user permissions
-        permissionService.getPermissions(selectedDataSource, username).success(function gotPermissions(permissions) {
+        permissionService.getPermissions(selectedDataSource, username).then(function gotPermissions(permissions) {
             $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
         })
 
         // If permissions cannot be retrieved, use empty permissions
-        .error(function permissionRetrievalFailed() {
+        ['catch'](function permissionRetrievalFailed() {
             $scope.permissionFlags = new PermissionFlagSet();
         });
     }
@@ -585,13 +585,13 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
         // Pull user permissions
         permissionService.getPermissions(selectedDataSource, cloneSourceUsername)
-        .success(function gotPermissions(permissions) {
+        .then(function gotPermissions(permissions) {
             $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
             permissionsAdded = permissions;
         })
 
         // If permissions cannot be retrieved, use empty permissions
-        .error(function permissionRetrievalFailed() {
+        ['catch'](function permissionRetrievalFailed() {
             $scope.permissionFlags = new PermissionFlagSet();
         });
     }
@@ -1117,7 +1117,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         else
             saveUserPromise = userService.createUser(selectedDataSource, $scope.user);
 
-        saveUserPromise.success(function savedUser() {
+        saveUserPromise.then(function savedUser() {
 
             // Move permission flags if username differs from marker
             if ($scope.selfUsername !== $scope.user.username) {
@@ -1138,12 +1138,12 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
             // Upon success, save any changed permissions
             permissionService.patchPermissions(selectedDataSource, $scope.user.username, permissionsAdded, permissionsRemoved)
-            .success(function patchedUserPermissions() {
+            .then(function patchedUserPermissions() {
                 $location.url('/settings/users');
             })
 
             // Notify of any errors
-            .error(function userPermissionsPatchFailed(error) {
+            ['catch'](function userPermissionsPatchFailed(error) {
                 guacNotification.showStatus({
                     'className'  : 'error',
                     'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
@@ -1201,12 +1201,12 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
         // Delete the user 
         userService.deleteUser(selectedDataSource, $scope.user)
-        .success(function deletedUser() {
+        .then(function deletedUser() {
             $location.path('/settings/users');
         })
 
         // Notify of any errors
-        .error(function userDeletionFailed(error) {
+        ['catch'](function userDeletionFailed(error) {
             guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',

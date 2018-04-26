@@ -24,7 +24,7 @@ angular.module('rest').factory('patchService', ['$injector',
         function patchService($injector) {
 
     // Required services
-    var $http                 = $injector.get('$http');
+    var requestService        = $injector.get('requestService');
     var authenticationService = $injector.get('authenticationService');
     var cacheService          = $injector.get('cacheService');
 
@@ -48,7 +48,7 @@ angular.module('rest').factory('patchService', ['$injector',
         };
 
         // Retrieve all applicable HTML patches
-        return $http({
+        return requestService({
             cache   : cacheService.patches,
             method  : 'GET',
             url     : 'api/patches',
