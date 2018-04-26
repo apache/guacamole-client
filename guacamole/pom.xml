@@ -287,7 +287,7 @@
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>webjars-servlet-2.x</artifactId>
-            <version>1.1</version>
+            <version>1.5</version>
         </dependency>
 
         <!-- Polyfills for the Blob and FileSaver APIs -->
