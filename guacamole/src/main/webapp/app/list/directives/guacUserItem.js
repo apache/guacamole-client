@@ -77,7 +77,7 @@ angular.module('list').directive('guacUserItem', [function guacUserItem() {
                     $translate('LIST.TEXT_ANONYMOUS_USER')
                     .then(function retrieveAnonymousDisplayName(anonymousDisplayName) {
                         $scope.displayName = anonymousDisplayName;
-                    });
+                    }, angular.noop);
                 }
 
                 // For all other users, use the username verbatim

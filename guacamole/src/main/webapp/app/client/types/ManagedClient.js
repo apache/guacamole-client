@@ -42,6 +42,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
     var connectionService      = $injector.get('connectionService');
+    var requestService         = $injector.get('requestService');
     var tunnelService          = $injector.get('tunnelService');
     var guacAudio              = $injector.get('guacAudio');
     var guacHistory            = $injector.get('guacHistory');
@@ -514,7 +515,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             connectionService.getConnection(clientIdentifier.dataSource, clientIdentifier.id)
             .then(function connectionRetrieved(connection) {
                 managedClient.name = managedClient.title = connection.name;
-            });
+            }, requestService.WARN);
         }
         
         // If using a connection group, pull connection name
@@ -522,7 +523,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             connectionGroupService.getConnectionGroup(clientIdentifier.dataSource, clientIdentifier.id)
             .then(function connectionGroupRetrieved(group) {
                 managedClient.name = managedClient.title = group.name;
-            });
+            }, requestService.WARN);
         }
 
         return managedClient;
@@ -634,7 +635,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         credentialRequest.then(function sharingCredentialsReceived(sharingCredentials) {
             client.shareLinks[sharingProfile.identifier] =
                 ManagedShareLink.getInstance(sharingProfile, sharingCredentials);
-        });
+        }, requestService.WARN);
 
         return credentialRequest;
 

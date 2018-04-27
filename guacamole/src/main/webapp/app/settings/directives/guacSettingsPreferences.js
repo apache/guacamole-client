@@ -42,6 +42,7 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
             var languageService       = $injector.get('languageService');
             var permissionService     = $injector.get('permissionService');
             var preferenceService     = $injector.get('preferenceService');
+            var requestService        = $injector.get('requestService');
             var userService           = $injector.get('userService');
 
             /**
@@ -164,17 +165,7 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                         },
                         actions : [ ACKNOWLEDGE_ACTION ]
                     });
-                })
-                
-                // Notify of any errors
-                ['catch'](function passwordUpdateFailed(error) {
-                    guacNotification.showStatus({
-                        className  : 'error',
-                        title      : 'SETTINGS_PREFERENCES.DIALOG_HEADER_ERROR',
-                        text       : error.translatableMessage,
-                        actions    : [ ACKNOWLEDGE_ACTION ]
-                    });
-                });
+                }, requestService.SHOW_NOTIFICATION);
                 
             };
 
@@ -186,8 +177,8 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                         key: key,
                         value: languages[key]
                     };
-                })
-            });
+                });
+            }, requestService.WARN);
 
             // Retrieve current permissions
             permissionService.getEffectivePermissions(dataSource, username)
@@ -198,9 +189,9 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                         PermissionSet.ObjectPermissionType.UPDATE, username);
                         
             })
-            ['catch'](function permissionsFailed(error) {
+            ['catch'](requestService.createErrorCallback(function permissionsFailed(error) {
                 $scope.canChangePassword = false;
-            });
+            }));
 
             /**
              * Returns whether critical data has completed being loaded.

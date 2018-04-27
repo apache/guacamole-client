@@ -94,6 +94,7 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
             // Required services
             var activeConnectionService = $injector.get('activeConnectionService');
             var dataSourceService       = $injector.get('dataSourceService');
+            var requestService          = $injector.get('requestService');
 
             // Required types
             var GroupListItem = $injector.get('GroupListItem');
@@ -221,7 +222,7 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
                             });
                         });
 
-                    });
+                    }, requestService.WARN);
 
                 }
 

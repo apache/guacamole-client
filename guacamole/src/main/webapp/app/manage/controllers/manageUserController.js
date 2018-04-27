@@ -39,6 +39,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var dataSourceService        = $injector.get('dataSourceService');
     var guacNotification         = $injector.get('guacNotification');
     var permissionService        = $injector.get('permissionService');
+    var requestService           = $injector.get('requestService');
     var schemaService            = $injector.get('schemaService');
     var translationStringService = $injector.get('translationStringService');
     var userService              = $injector.get('userService');
@@ -531,7 +532,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     // Pull user attribute schema
     schemaService.getUserAttributes(selectedDataSource).then(function attributesReceived(attributes) {
         $scope.attributes = attributes;
-    });
+    }, requestService.WARN);
 
     // Pull user data and permissions if we are editing an existing user
     if (username) {
@@ -550,7 +551,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
                     'username' : username
                 });
 
-        });
+        }, requestService.WARN);
 
         // The current user will be associated with username of the existing
         // user in the retrieved permission set
@@ -562,9 +563,9 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         })
 
         // If permissions cannot be retrieved, use empty permissions
-        ['catch'](function permissionRetrievalFailed() {
+        ['catch'](requestService.createErrorCallback(function permissionRetrievalFailed() {
             $scope.permissionFlags = new PermissionFlagSet();
-        });
+        }));
     }
 
     // If we are cloning an existing user, pull his/her data instead
@@ -577,7 +578,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             $scope.users = {};
             $scope.user  = users[selectedDataSource];
 
-        });
+        }, requestService.WARN);
 
         // The current user will be associated with cloneSourceUsername in the
         // retrieved permission set
@@ -591,9 +592,9 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         })
 
         // If permissions cannot be retrieved, use empty permissions
-        ['catch'](function permissionRetrievalFailed() {
+        ['catch'](requestService.createErrorCallback(function permissionRetrievalFailed() {
             $scope.permissionFlags = new PermissionFlagSet();
-        });
+        }));
     }
 
     // Use skeleton data if we are creating a new user
@@ -676,7 +677,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             $scope.rootGroups[dataSource] = GroupListItem.fromConnectionGroup(dataSource, rootGroup);
         });
 
-    });
+    }, requestService.WARN);
     
     // Query the user's permissions for the current user
     dataSourceService.apply(
@@ -686,7 +687,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     )
     .then(function permissionsReceived(permissions) {
         $scope.permissions = permissions;
-    });
+    }, requestService.WARN);
 
     // Update default expanded state whenever connection groups and associated
     // permissions change
@@ -1140,30 +1141,9 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             permissionService.patchPermissions(selectedDataSource, $scope.user.username, permissionsAdded, permissionsRemoved)
             .then(function patchedUserPermissions() {
                 $location.url('/settings/users');
-            })
+            }, requestService.SHOW_NOTIFICATION);
 
-            // Notify of any errors
-            ['catch'](function userPermissionsPatchFailed(error) {
-                guacNotification.showStatus({
-                    'className'  : 'error',
-                    'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
-                    'text'       : error.translatableMessage,
-                    'values'     : error.translationValues,
-                    'actions'    : [ ACKNOWLEDGE_ACTION ]
-                });
-            });
-
-        })
-
-        // Notify of any errors
-        .error(function userSaveFailed(error) {
-            guacNotification.showStatus({
-                'className'  : 'error',
-                'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
-                'text'       : error.translatableMessage,
-                'actions'    : [ ACKNOWLEDGE_ACTION ]
-            });
-        });
+        }, requestService.SHOW_NOTIFICATION);
 
     };
     
@@ -1203,17 +1183,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         userService.deleteUser(selectedDataSource, $scope.user)
         .then(function deletedUser() {
             $location.path('/settings/users');
-        })
-
-        // Notify of any errors
-        ['catch'](function userDeletionFailed(error) {
-            guacNotification.showStatus({
-                'className'  : 'error',
-                'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
-                'text'       : error.translatableMessage,
-                'actions'    : [ ACKNOWLEDGE_ACTION ]
-            });
-        });
+        }, requestService.SHOW_NOTIFICATION);
 
     };
 

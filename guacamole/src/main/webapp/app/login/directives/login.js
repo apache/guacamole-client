@@ -68,6 +68,7 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         // Required services
         var $route                = $injector.get('$route');
         var authenticationService = $injector.get('authenticationService');
+        var requestService        = $injector.get('requestService');
 
         /**
          * A description of the error that occurred during login, if any.
@@ -153,7 +154,7 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
             })
 
             // Reset upon failure
-            ['catch'](function loginFailed(error) {
+            ['catch'](requestService.createErrorCallback(function loginFailed(error) {
 
                 // Clear out passwords if the credentials were rejected for any reason
                 if (error.type !== Error.Type.INSUFFICIENT_CREDENTIALS) {
@@ -178,7 +179,7 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
                     });
                 }
 
-            });
+            }));
 
         };
 

@@ -190,7 +190,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
         })
 
         // If authentication fails, propogate failure to returned promise
-        ['catch'](function authenticationFailed(error) {
+        ['catch'](requestService.createErrorCallback(function authenticationFailed(error) {
 
             // Request credentials if provided credentials were invalid
             if (error.type === Error.Type.INVALID_CREDENTIALS)
@@ -203,7 +203,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
             // Authentication failed
             throw error;
 
-        });
+        }));
 
     };
 

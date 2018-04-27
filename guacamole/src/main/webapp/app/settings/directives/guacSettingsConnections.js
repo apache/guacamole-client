@@ -46,6 +46,7 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
             var dataSourceService      = $injector.get('dataSourceService');
             var guacNotification       = $injector.get('guacNotification');
             var permissionService      = $injector.get('permissionService');
+            var requestService         = $injector.get('requestService');
 
             /**
              * The identifier of the current user.
@@ -53,18 +54,6 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
              * @type String
              */
             var currentUsername = authenticationService.getCurrentUsername();
-
-            /**
-             * An action to be provided along with the object sent to
-             * showStatus which closes the currently-shown status dialog.
-             */
-            var ACKNOWLEDGE_ACTION = {
-                name        : "SETTINGS_CONNECTIONS.ACTION_ACKNOWLEDGE",
-                // Handle action
-                callback    : function acknowledgeCallback() {
-                    guacNotification.showStatus(false);
-                }
-            };
 
             /**
              * The identifier of the currently-selected data source.
@@ -426,9 +415,9 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
                 )
                 .then(function connectionGroupsReceived(rootGroups) {
                     $scope.rootGroups = rootGroups;
-                });
+                }, requestService.WARN);
 
-            }); // end retrieve permissions
+            }, requestService.WARN); // end retrieve permissions
 
         }]
     };
