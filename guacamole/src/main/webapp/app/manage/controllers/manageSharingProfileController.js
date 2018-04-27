@@ -261,11 +261,12 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
     $scope.$watch('sharingProfile.primaryConnectionIdentifier',
         function retrievePrimaryConnection(identifier) {
 
-        // Pull data from existing sharing profile
-        connectionService.getConnection($scope.selectedDataSource, identifier)
-        .then(function connectionRetrieved(connection) {
-            $scope.primaryConnection = connection;
-        }, requestService.WARN);
+        if (identifier) {
+            connectionService.getConnection($scope.selectedDataSource, identifier)
+            .then(function connectionRetrieved(connection) {
+                $scope.primaryConnection = connection;
+            }, requestService.WARN);
+        }
 
     });
 
