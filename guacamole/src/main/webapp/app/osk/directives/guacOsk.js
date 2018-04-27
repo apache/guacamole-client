@@ -113,7 +113,7 @@ angular.module('osk').directive('guacOsk', [function guacOsk() {
                             $rootScope.$broadcast('guacSyntheticKeyup', keysym);
                         };
 
-                    });
+                    }, angular.noop);
 
                 }
 
