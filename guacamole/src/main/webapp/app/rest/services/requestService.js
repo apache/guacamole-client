@@ -91,6 +91,30 @@ angular.module('rest').factory('requestService', ['$injector',
         });
     };
 
-   return service;
+    /**
+     * Promise error callback which ignores all rejections due to REST errors,
+     * but logs all other rejections, such as those due to JavaScript errors.
+     * This callback should be used in favor of angular.noop in cases where
+     * a REST response is being handled but REST errors should be ignored.
+     *
+     * @constant
+     * @type Function
+     */
+    service.IGNORE = service.createErrorCallback(angular.noop);
+
+    /**
+     * Promise error callback which logs all rejections due to REST errors as
+     * warnings to the browser console, and logs all other rejections as
+     * errors. This callback should be used in favor of angular.noop or
+     * @link{IGNORE} if REST errors are simply not expected.
+     *
+     * @constant
+     * @type Function
+     */
+    service.WARN = service.createErrorCallback(function warnRequestFailed(error) {
+        $log.warn(error.type, error.message || error.translatableMessage);
+    });
+
+    return service;
 
 }]);
