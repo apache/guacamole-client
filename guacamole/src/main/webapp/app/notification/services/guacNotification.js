@@ -25,6 +25,7 @@ angular.module('notification').factory('guacNotification', ['$injector',
 
     // Required services
     var $rootScope            = $injector.get('$rootScope');
+    var requestService        = $injector.get('requestService');
     var sessionStorageFactory = $injector.get('sessionStorageFactory');
 
     var service = {};
@@ -93,26 +94,24 @@ angular.module('notification').factory('guacNotification', ['$injector',
     };
 
     /**
-     * Shows the given REST error response as a modal status. If a status
-     * notification is already currently shown, this function will have no
-     * effect.
+     * Promise error callback which displays a modal notification for all
+     * rejections due to REST errors. The message displayed to the user within
+     * the notification is provided by the contents of the @link{Error} object
+     * within the REST response. All other rejections, such as those due to
+     * JavaScript errors, are logged to the browser console without displaying
+     * any notification.
      *
-     * @param {Error} error
-     *     The error object returned from the failed REST request.
-     *
-     * @example
-     *
-     * someService.updateObject(object)
-     * ['catch'](guacNotification.showRequestError);
+     * @constant
+     * @type Function
      */
-    service.showRequestError = function showRequestError(error) {
+    service.SHOW_REQUEST_ERROR = requestService.createErrorCallback(function showRequestError(error) {
         service.showStatus({
             className  : 'error',
             title      : 'APP.DIALOG_HEADER_ERROR',
             text       : error.translatableMessage,
             actions    : [ service.ACKNOWLEDGE_ACTION ]
         });
-    };
+    });
 
     // Hide status upon navigation
     $rootScope.$on('$routeChangeSuccess', function() {

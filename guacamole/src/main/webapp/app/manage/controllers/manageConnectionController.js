@@ -379,7 +379,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         connectionService.saveConnection($scope.selectedDataSource, $scope.connection)
         .then(function savedConnection() {
             $location.url('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        }, requestService.SHOW_NOTIFICATION);
+        }, guacNotification.SHOW_REQUEST_ERROR);
 
     };
     
@@ -419,7 +419,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         connectionService.deleteConnection($scope.selectedDataSource, $scope.connection)
         .then(function deletedConnection() {
             $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        }, requestService.SHOW_NOTIFICATION);
+        }, guacNotification.SHOW_REQUEST_ERROR);
 
     };
 

@@ -342,7 +342,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
         sharingProfileService.saveSharingProfile($scope.selectedDataSource, $scope.sharingProfile)
         .then(function savedSharingProfile() {
             $location.url('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        }, requestService.SHOW_NOTIFICATION);
+        }, guacNotification.SHOW_REQUEST_ERROR);
 
     };
 
@@ -370,7 +370,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
         sharingProfileService.deleteSharingProfile($scope.selectedDataSource, $scope.sharingProfile)
         .then(function deletedSharingProfile() {
             $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        }, requestService.SHOW_NOTIFICATION);
+        }, guacNotification.SHOW_REQUEST_ERROR);
 
     };
 

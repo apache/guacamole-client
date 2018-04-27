@@ -316,7 +316,7 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
                     // Clear selection
                     allSelectedWrappers = {};
 
-                }, requestService.SHOW_NOTIFICATION);
+                }, guacNotification.SHOW_REQUEST_ERROR);
 
             }; 
             

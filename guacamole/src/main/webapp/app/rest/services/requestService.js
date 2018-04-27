@@ -25,9 +25,8 @@ angular.module('rest').factory('requestService', ['$injector',
         function requestService($injector) {
 
     // Required services
-    var $http            = $injector.get('$http');
-    var $log             = $injector.get('$log');
-    var guacNotification = $injector.get('guacNotification');
+    var $http = $injector.get('$http');
+    var $log  = $injector.get('$log');
 
     // Required types
     var Error = $injector.get('Error');
@@ -115,19 +114,6 @@ angular.module('rest').factory('requestService', ['$injector',
     service.WARN = service.createErrorCallback(function warnRequestFailed(error) {
         $log.warn(error.type, error.message || error.translatableMessage);
     });
-
-    /**
-     * Promise error callback which displays a modal notification for all
-     * rejections due to REST errors. The message displayed to the user within
-     * the notification is provided by the contents of the @link{Error} object
-     * within the REST response. All other rejections, such as those due to
-     * JavaScript errors, are logged to the browser console without displaying
-     * any notification.
-     *
-     * @constant
-     * @type Function
-     */
-    service.SHOW_NOTIFICATION = service.createErrorCallback(guacNotification.showRequestError);
 
     return service;
 

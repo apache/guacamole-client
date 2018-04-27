@@ -221,7 +221,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
         connectionGroupService.saveConnectionGroup($scope.selectedDataSource, $scope.connectionGroup)
         .then(function savedConnectionGroup() {
             $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        }, requestService.SHOW_NOTIFICATION);
+        }, guacNotification.SHOW_REQUEST_ERROR);
 
     };
     
@@ -261,7 +261,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
         connectionGroupService.deleteConnectionGroup($scope.selectedDataSource, $scope.connectionGroup)
         .then(function deletedConnectionGroup() {
             $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        }, requestService.SHOW_NOTIFICATION);
+        }, guacNotification.SHOW_REQUEST_ERROR);
 
     };
 

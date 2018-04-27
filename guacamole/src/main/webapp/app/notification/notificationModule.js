@@ -21,5 +21,6 @@
  * The module for code used to display arbitrary notifications.
  */
 angular.module('notification', [
+    'rest',
     'storage'
 ]);

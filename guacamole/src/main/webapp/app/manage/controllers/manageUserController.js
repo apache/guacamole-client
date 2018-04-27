@@ -1141,9 +1141,9 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             permissionService.patchPermissions(selectedDataSource, $scope.user.username, permissionsAdded, permissionsRemoved)
             .then(function patchedUserPermissions() {
                 $location.url('/settings/users');
-            }, requestService.SHOW_NOTIFICATION);
+            }, guacNotification.SHOW_REQUEST_ERROR);
 
-        }, requestService.SHOW_NOTIFICATION);
+        }, guacNotification.SHOW_REQUEST_ERROR);
 
     };
     
@@ -1183,7 +1183,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         userService.deleteUser(selectedDataSource, $scope.user)
         .then(function deletedUser() {
             $location.path('/settings/users');
-        }, requestService.SHOW_NOTIFICATION);
+        }, guacNotification.SHOW_REQUEST_ERROR);
 
     };
 

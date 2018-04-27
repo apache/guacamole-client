@@ -165,7 +165,7 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                         },
                         actions : [ ACKNOWLEDGE_ACTION ]
                     });
-                }, requestService.SHOW_NOTIFICATION);
+                }, guacNotification.SHOW_REQUEST_ERROR);
                 
             };
 
