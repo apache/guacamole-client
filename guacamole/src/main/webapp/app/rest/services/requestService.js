@@ -41,7 +41,7 @@ angular.module('rest').factory('requestService', ['$q', '$http', 'Error',
             function success(request) { return request.data; },
             function failure(request) { throw new Error(request.data); }
         );
-    }
+    };
 
     return wrappedHttpCall;
 }]);
