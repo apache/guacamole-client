@@ -21,27 +21,47 @@
  * Service for converting $http promises that pass the entire response into
  * promises that pass only the data from that response.
  */
-angular.module('rest').factory('requestService', ['$q', '$http', 'Error',
-        function requestService($q, $http, Error) {
+angular.module('rest').factory('requestService', ['$injector',
+        function requestService($injector) {
+
+    // Required services
+    var $http = $injector.get('$http');
+
+    // Required types
+    var Error = $injector.get('Error');
 
     /**
      * Given a configuration object formatted for the $http service, returns
-     * a promise that will resolve or reject with only the data from the $http
-     * response.
+     * a promise that will resolve or reject with the data from the HTTP
+     * response. If the promise is rejected due to the HTTP response indicating
+     * failure, the promise will be rejected strictly with an instance of an
+     * @link{Error} object.
      *
      * @param {Object} object
      *   Configuration object for $http service call.
      *
-     * @returns {Promise}
-     *   A promise that will resolve or reject with the data from the response
-     *   to the $http call.
+     * @returns {Promise.<Object>}
+     *   A promise that will resolve with the data from the HTTP response for
+     *   the underlying $http call if successful, or reject with an @link{Error}
+     *   describing the failure.
      */
-    var wrappedHttpCall = function wrappedHttpCall(object) {
+    var service = function wrapHttpServiceCall(object) {
         return $http(object).then(
-            function success(request) { return request.data; },
-            function failure(request) { throw new Error(request.data); }
+            function success(response) { return response.data; },
+            function failure(response) {
+
+                // Wrap true error responses from $http within REST Error objects
+                if (response.data)
+                    throw new Error(response.data);
+
+                // The value provided is not actually a response object from
+                // the $http service
+                throw response;
+
+            }
         );
     };
 
-    return wrappedHttpCall;
+    return service;
+
 }]);
