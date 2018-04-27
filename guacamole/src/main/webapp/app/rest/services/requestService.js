@@ -26,6 +26,7 @@ angular.module('rest').factory('requestService', ['$injector',
 
     // Required services
     var $http = $injector.get('$http');
+    var $log  = $injector.get('$log');
 
     // Required types
     var Error = $injector.get('Error');
@@ -62,6 +63,34 @@ angular.module('rest').factory('requestService', ['$injector',
         );
     };
 
-    return service;
+    /**
+     * Creates a promise error callback which invokes the given callback only
+     * if the promise was rejected with a REST @link{Error} object. If the
+     * promise is rejected without an @link{Error} object, such as when a
+     * JavaScript error occurs within a callback earlier in the promise chain,
+     * the rejection is logged without invoking the given callback.
+     *
+     * @param {Function} callback
+     *     The callback to invoke if the promise is rejected with an
+     *     @link{Error} object.
+     *
+     * @returns {Function}
+     *     A function which can be provided as the error callback for a
+     *     promise.
+     */
+    service.createErrorCallback = function createErrorCallback(callback) {
+        return (function generatedErrorCallback(error) {
+
+            // Invoke given callback ONLY if due to a legitimate REST error
+            if (error instanceof Error)
+                return callback(error);
+
+            // Log all other errors
+            $log.error(error);
+
+        });
+    };
+
+   return service;
 
 }]);
