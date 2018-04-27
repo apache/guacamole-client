@@ -38,6 +38,19 @@ angular.module('notification').factory('guacNotification', ['$injector',
     var storedStatus = sessionStorageFactory.create(false);
 
     /**
+     * An action to be provided along with the object sent to showStatus which
+     * closes the currently-shown status dialog.
+     *
+     * @type NotificationAction
+     */
+    service.ACKNOWLEDGE_ACTION = {
+        name        : 'APP.ACTION_ACKNOWLEDGE',
+        callback    : function acknowledgeCallback() {
+            service.showStatus(false);
+        }
+    };
+
+    /**
      * Retrieves the current status notification, which may simply be false if
      * no status is currently shown.
      * 
@@ -77,6 +90,28 @@ angular.module('notification').factory('guacNotification', ['$injector',
     service.showStatus = function showStatus(status) {
         if (!storedStatus() || !status)
             storedStatus(status);
+    };
+
+    /**
+     * Shows the given REST error response as a modal status. If a status
+     * notification is already currently shown, this function will have no
+     * effect.
+     *
+     * @param {Error} error
+     *     The error object returned from the failed REST request.
+     *
+     * @example
+     *
+     * someService.updateObject(object)
+     * ['catch'](guacNotification.showRequestError);
+     */
+    service.showRequestError = function showRequestError(error) {
+        service.showStatus({
+            className  : 'error',
+            title      : 'APP.DIALOG_HEADER_ERROR',
+            text       : error.translatableMessage,
+            actions    : [ service.ACKNOWLEDGE_ACTION ]
+        });
     };
 
     // Hide status upon navigation
