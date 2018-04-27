@@ -264,7 +264,7 @@ angular.module('rest').factory('userService', ['$injector',
         })
 
         // Clear the cache
-        .success(function passwordChanged(){
+        .then(function passwordChanged(){
             cacheService.users.removeAll();
         });
 
