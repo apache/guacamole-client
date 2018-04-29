@@ -24,8 +24,6 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         function manageUserController($scope, $injector) {
             
     // Required types
-    var ConnectionGroup   = $injector.get('ConnectionGroup');
-    var GroupListItem     = $injector.get('GroupListItem');
     var PageDefinition    = $injector.get('PageDefinition');
     var PermissionFlagSet = $injector.get('PermissionFlagSet');
     var PermissionSet     = $injector.get('PermissionSet');
@@ -35,7 +33,6 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var $location                = $injector.get('$location');
     var $routeParams             = $injector.get('$routeParams');
     var authenticationService    = $injector.get('authenticationService');
-    var connectionGroupService   = $injector.get('connectionGroupService');
     var dataSourceService        = $injector.get('dataSourceService');
     var guacNotification         = $injector.get('guacNotification');
     var permissionService        = $injector.get('permissionService');
@@ -72,14 +69,6 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var currentUsername = authenticationService.getCurrentUsername();
 
     /**
-     * The unique identifier of the data source containing the user being
-     * edited.
-     *
-     * @type String
-     */
-    var selectedDataSource = $routeParams.dataSource;
-
-    /**
      * The username of the original user from which this user is
      * being cloned. Only valid if this is a new user.
      *
@@ -94,6 +83,14 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * @type String
      */
     var username = $routeParams.id;
+
+    /**
+     * The unique identifier of the data source containing the user being
+     * edited.
+     *
+     * @type String
+     */
+    $scope.dataSource = $routeParams.dataSource;
 
     /**
      * The string value representing the user currently being edited within the
@@ -129,34 +126,6 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * @type PermissionFlagSet
      */
     $scope.permissionFlags = null;
-
-    /**
-     * A map of data source identifiers to the root connection groups within
-     * thost data sources. As only one data source is applicable to any one
-     * user being edited/created, this will only contain a single key.
-     *
-     * @type Object.<String, GroupListItem>
-     */
-    $scope.rootGroups = null;
-
-    /**
-     * Array of all connection properties that are filterable.
-     *
-     * @type String[]
-     */
-    $scope.filteredConnectionProperties = [
-        'name',
-        'protocol'
-    ];
-
-    /**
-     * Array of all connection group properties that are filterable.
-     *
-     * @type String[]
-     */
-    $scope.filteredConnectionGroupProperties = [
-        'name'
-    ];
 
     /**
      * A map of data source identifiers to the set of all permissions
@@ -219,7 +188,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             return false;
 
         // Use currently-selected data source if unspecified
-        dataSource = dataSource || selectedDataSource;
+        dataSource = dataSource || $scope.dataSource;
 
         // Account exists only if it was successfully retrieved
         return (dataSource in $scope.users);
@@ -245,7 +214,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             return false;
 
         // Use currently-selected data source if unspecified
-        dataSource = dataSource || selectedDataSource;
+        dataSource = dataSource || $scope.dataSource;
 
         // Attributes can always be set if we are creating the user
         if (!$scope.userExists(dataSource))
@@ -275,7 +244,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $scope.canChangeAllAttributes = function canChangeAllAttributes() {
 
         // All attributes can be set if we are creating the user
-        return !$scope.userExists(selectedDataSource);
+        return !$scope.userExists($scope.dataSource);
 
     };
 
@@ -299,7 +268,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             return false;
 
         // Use currently-selected data source if unspecified
-        dataSource = dataSource || selectedDataSource;
+        dataSource = dataSource || $scope.dataSource;
 
         // Permissions can always be set if we are creating the user
         if (!$scope.userExists(dataSource))
@@ -314,33 +283,6 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         // ADMINISTER permission
         return PermissionSet.hasUserPermission($scope.permissions[dataSource],
             PermissionSet.ObjectPermissionType.ADMINISTER, username);
-
-    };
-
-    /**
-     * Returns whether the current user can change the system permissions
-     * granted to the user being edited within the given data source.
-     *
-     * @param {String} [dataSource]
-     *     The identifier of the data source to check. If omitted, this will
-     *     default to the currently-selected data source.
-     *
-     * @returns {Boolean}
-     *     true if the current user can grant or revoke system permissions to
-     *     the user being edited, false otherwise.
-     */
-    $scope.canChangeSystemPermissions = function canChangeSystemPermissions(dataSource) {
-
-        // Do not check if permissions are not yet loaded
-        if (!$scope.permissions)
-            return false;
-
-        // Use currently-selected data source if unspecified
-        dataSource = dataSource || selectedDataSource;
-
-        // Only the administrator can modify system permissions
-        return PermissionSet.hasSystemPermission($scope.permissions[dataSource],
-            PermissionSet.SystemPermissionType.ADMINISTER);
 
     };
 
@@ -380,7 +322,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             return false;
 
         // Use currently-selected data source if unspecified
-        dataSource = dataSource || selectedDataSource;
+        dataSource = dataSource || $scope.dataSource;
 
         // The administrator can always save users
         if (PermissionSet.hasSystemPermission($scope.permissions[dataSource],
@@ -417,10 +359,10 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             return false;
 
         // Use currently-selected data source if unspecified
-        dataSource = dataSource || selectedDataSource;
+        dataSource = dataSource || $scope.dataSource;
 
         // If we are not editing an existing user, we cannot clone
-        if (!$scope.userExists(selectedDataSource))
+        if (!$scope.userExists($scope.dataSource))
             return false;
 
         // The administrator can always clone users
@@ -453,7 +395,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             return false;
 
         // Use currently-selected data source if unspecified
-        dataSource = dataSource || selectedDataSource;
+        dataSource = dataSource || $scope.dataSource;
 
         // Can't delete what doesn't exist
         if (!$scope.userExists(dataSource))
@@ -485,7 +427,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $scope.isReadOnly = function isReadOnly(dataSource) {
 
         // Use currently-selected data source if unspecified
-        dataSource = dataSource || selectedDataSource;
+        dataSource = dataSource || $scope.dataSource;
 
         // User is read-only if they cannot be saved
         return !$scope.canSaveUser(dataSource);
@@ -509,7 +451,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
                 return;
 
             // Only the selected data source is relevant when cloning
-            if (cloneSourceUsername && dataSource !== selectedDataSource)
+            if (cloneSourceUsername && dataSource !== $scope.dataSource)
                 return;
 
             // Determine class name based on read-only / linked status
@@ -530,7 +472,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     });
 
     // Pull user attribute schema
-    schemaService.getUserAttributes(selectedDataSource).then(function attributesReceived(attributes) {
+    schemaService.getUserAttributes($scope.dataSource).then(function attributesReceived(attributes) {
         $scope.attributes = attributes;
     }, requestService.WARN);
 
@@ -543,7 +485,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
             // Get user for currently-selected data source
             $scope.users = users;
-            $scope.user  = users[selectedDataSource];
+            $scope.user  = users[$scope.dataSource];
 
             // Create skeleton user if user does not exist
             if (!$scope.user)
@@ -558,7 +500,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         $scope.selfUsername = username;
 
         // Pull user permissions
-        permissionService.getPermissions(selectedDataSource, username).then(function gotPermissions(permissions) {
+        permissionService.getPermissions($scope.dataSource, username).then(function gotPermissions(permissions) {
             $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
         })
 
@@ -576,7 +518,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
             // Get user for currently-selected data source
             $scope.users = {};
-            $scope.user  = users[selectedDataSource];
+            $scope.user  = users[$scope.dataSource];
 
         }, requestService.WARN);
 
@@ -585,10 +527,10 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         $scope.selfUsername = cloneSourceUsername;
 
         // Pull user permissions
-        permissionService.getPermissions(selectedDataSource, cloneSourceUsername)
+        permissionService.getPermissions($scope.dataSource, cloneSourceUsername)
         .then(function gotPermissions(permissions) {
             $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
-            permissionsAdded = permissions;
+            $scope.permissionsAdded = permissions;
         })
 
         // If permissions cannot be retrieved, use empty permissions
@@ -607,78 +549,13 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         $scope.user = new User();
         $scope.permissionFlags = new PermissionFlagSet();
 
+        // As no permissions are yet associated with the user, it is safe to
+        // use any non-empty username as a placeholder for self-referential
+        // permissions
+        $scope.selfUsername = 'SELF';
+
     }
 
-    /**
-     * Expands all items within the tree descending from the given
-     * GroupListItem which have at least one descendant for which explicit READ
-     * permission is granted. The expanded state of all other items is left
-     * untouched.
-     *
-     * @param {GroupListItem} item
-     *     The GroupListItem which should be conditionally expanded depending
-     *     on whether READ permission is granted for any of its descendants.
-     *
-     * @param {PemissionFlagSet} flags
-     *     The set of permissions which should be used to determine whether the
-     *     given item and its descendants are expanded.
-     */
-    var expandReadable = function expandReadable(item, flags) {
-
-        // If the current item is expandable and has defined children,
-        // determine whether it should be expanded
-        if (item.expandable && item.children) {
-            angular.forEach(item.children, function expandReadableChild(child) {
-
-                // Determine whether the user has READ permission for the
-                // current child object
-                var readable = false;
-                switch (child.type) {
-
-                    case GroupListItem.Type.CONNECTION:
-                        readable = flags.connectionPermissions.READ[child.identifier];
-                        break;
-
-                    case GroupListItem.Type.CONNECTION_GROUP:
-                        readable = flags.connectionGroupPermissions.READ[child.identifier];
-                        break;
-
-                    case GroupListItem.Type.SHARING_PROFILE:
-                        readable = flags.sharingProfilePermissions.READ[child.identifier];
-                        break;
-
-                }
-
-                // The parent should be expanded by default if the child is
-                // expanded by default OR the user has READ permission on the
-                // child
-                item.expanded |= expandReadable(child, flags) || readable;
-
-            });
-        }
-
-        return item.expanded;
-
-    };
-
-
-    // Retrieve all connections for which we have ADMINISTER permission
-    dataSourceService.apply(
-        connectionGroupService.getConnectionGroupTree,
-        [selectedDataSource],
-        ConnectionGroup.ROOT_IDENTIFIER,
-        [PermissionSet.ObjectPermissionType.ADMINISTER]
-    )
-    .then(function connectionGroupReceived(rootGroups) {
-
-        // Convert all received ConnectionGroup objects into GroupListItems
-        $scope.rootGroups = {};
-        angular.forEach(rootGroups, function addGroupListItem(rootGroup, dataSource) {
-            $scope.rootGroups[dataSource] = GroupListItem.fromConnectionGroup(dataSource, rootGroup);
-        });
-
-    }, requestService.WARN);
-    
     // Query the user's permissions for the current user
     dataSourceService.apply(
         permissionService.getEffectivePermissions,
@@ -689,48 +566,6 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         $scope.permissions = permissions;
     }, requestService.WARN);
 
-    // Update default expanded state whenever connection groups and associated
-    // permissions change
-    $scope.$watchGroup(['rootGroups', 'permissionFlags'], function updateDefaultExpandedStates() {
-        angular.forEach($scope.rootGroups, function updateExpandedStates(rootGroup) {
-
-            // Automatically expand all objects with any descendants for which
-            // the user has READ permission
-            if ($scope.permissionFlags)
-                expandReadable(rootGroup, $scope.permissionFlags);
-
-        });
-    });
-
-    /**
-     * Available system permission types, as translation string / internal
-     * value pairs.
-     * 
-     * @type Object[]
-     */
-    $scope.systemPermissionTypes = [
-        {
-            label: "MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
-            value: PermissionSet.SystemPermissionType.ADMINISTER
-        },
-        {
-            label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
-            value: PermissionSet.SystemPermissionType.CREATE_USER
-        },
-        {
-            label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
-            value: PermissionSet.SystemPermissionType.CREATE_CONNECTION
-        },
-        {
-            label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
-            value: PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP
-        },
-        {
-            label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
-            value: PermissionSet.SystemPermissionType.CREATE_SHARING_PROFILE
-        }
-    ];
-
     /**
      * The set of permissions that will be added to the user when the user is
      * saved. Permissions will only be present in this set if they are
@@ -738,7 +573,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      *
      * @type PermissionSet
      */
-    var permissionsAdded = new PermissionSet();
+    $scope.permissionsAdded = new PermissionSet();
 
     /**
      * The set of permissions that will be removed from the user when the user 
@@ -747,336 +582,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      *
      * @type PermissionSet
      */
-    var permissionsRemoved = new PermissionSet();
-
-    /**
-     * Updates the permissionsAdded and permissionsRemoved permission sets to
-     * reflect the addition of the given system permission.
-     * 
-     * @param {String} type
-     *     The system permission to add, as defined by
-     *     PermissionSet.SystemPermissionType.
-     */
-    var addSystemPermission = function addSystemPermission(type) {
-
-        // If permission was previously removed, simply un-remove it
-        if (PermissionSet.hasSystemPermission(permissionsRemoved, type))
-            PermissionSet.removeSystemPermission(permissionsRemoved, type);
-
-        // Otherwise, explicitly add the permission
-        else
-            PermissionSet.addSystemPermission(permissionsAdded, type);
-
-    };
-
-    /**
-     * Updates the permissionsAdded and permissionsRemoved permission sets to
-     * reflect the removal of the given system permission.
-     *
-     * @param {String} type
-     *     The system permission to remove, as defined by
-     *     PermissionSet.SystemPermissionType.
-     */
-    var removeSystemPermission = function removeSystemPermission(type) {
-
-        // If permission was previously added, simply un-add it
-        if (PermissionSet.hasSystemPermission(permissionsAdded, type))
-            PermissionSet.removeSystemPermission(permissionsAdded, type);
-
-        // Otherwise, explicitly remove the permission
-        else
-            PermissionSet.addSystemPermission(permissionsRemoved, type);
-
-    };
-
-    /**
-     * Notifies the controller that a change has been made to the given
-     * system permission for the user being edited.
-     *
-     * @param {String} type
-     *     The system permission that was changed, as defined by
-     *     PermissionSet.SystemPermissionType.
-     */
-    $scope.systemPermissionChanged = function systemPermissionChanged(type) {
-
-        // Determine current permission setting
-        var granted = $scope.permissionFlags.systemPermissions[type];
-
-        // Add/remove permission depending on flag state
-        if (granted)
-            addSystemPermission(type);
-        else
-            removeSystemPermission(type);
-
-    };
-
-    /**
-     * Updates the permissionsAdded and permissionsRemoved permission sets to
-     * reflect the addition of the given user permission.
-     * 
-     * @param {String} type
-     *     The user permission to add, as defined by
-     *     PermissionSet.ObjectPermissionType.
-     *
-     * @param {String} identifier
-     *     The identifier of the user affected by the permission being added.
-     */
-    var addUserPermission = function addUserPermission(type, identifier) {
-
-        // If permission was previously removed, simply un-remove it
-        if (PermissionSet.hasUserPermission(permissionsRemoved, type, identifier))
-            PermissionSet.removeUserPermission(permissionsRemoved, type, identifier);
-
-        // Otherwise, explicitly add the permission
-        else
-            PermissionSet.addUserPermission(permissionsAdded, type, identifier);
-
-    };
-
-    /**
-     * Updates the permissionsAdded and permissionsRemoved permission sets to
-     * reflect the removal of the given user permission.
-     *
-     * @param {String} type
-     *     The user permission to remove, as defined by
-     *     PermissionSet.ObjectPermissionType.
-     *
-     * @param {String} identifier
-     *     The identifier of the user affected by the permission being removed.
-     */
-    var removeUserPermission = function removeUserPermission(type, identifier) {
-
-        // If permission was previously added, simply un-add it
-        if (PermissionSet.hasUserPermission(permissionsAdded, type, identifier))
-            PermissionSet.removeUserPermission(permissionsAdded, type, identifier);
-
-        // Otherwise, explicitly remove the permission
-        else
-            PermissionSet.addUserPermission(permissionsRemoved, type, identifier);
-
-    };
-
-    /**
-     * Notifies the controller that a change has been made to the given user
-     * permission for the user being edited.
-     *
-     * @param {String} type
-     *     The user permission that was changed, as defined by
-     *     PermissionSet.ObjectPermissionType.
-     *
-     * @param {String} identifier
-     *     The identifier of the user affected by the changed permission.
-     */
-    $scope.userPermissionChanged = function userPermissionChanged(type, identifier) {
-
-        // Determine current permission setting
-        var granted = $scope.permissionFlags.userPermissions[type][identifier];
-
-        // Add/remove permission depending on flag state
-        if (granted)
-            addUserPermission(type, identifier);
-        else
-            removeUserPermission(type, identifier);
-
-    };
-
-    /**
-     * Updates the permissionsAdded and permissionsRemoved permission sets to
-     * reflect the addition of the given connection permission.
-     * 
-     * @param {String} identifier
-     *     The identifier of the connection to add READ permission for.
-     */
-    var addConnectionPermission = function addConnectionPermission(identifier) {
-
-        // If permission was previously removed, simply un-remove it
-        if (PermissionSet.hasConnectionPermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier))
-            PermissionSet.removeConnectionPermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
-
-        // Otherwise, explicitly add the permission
-        else
-            PermissionSet.addConnectionPermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
-
-    };
-
-    /**
-     * Updates the permissionsAdded and permissionsRemoved permission sets to
-     * reflect the removal of the given connection permission.
-     *
-     * @param {String} identifier
-     *     The identifier of the connection to remove READ permission for.
-     */
-    var removeConnectionPermission = function removeConnectionPermission(identifier) {
-
-        // If permission was previously added, simply un-add it
-        if (PermissionSet.hasConnectionPermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier))
-            PermissionSet.removeConnectionPermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
-
-        // Otherwise, explicitly remove the permission
-        else
-            PermissionSet.addConnectionPermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
-
-    };
-
-    /**
-     * Updates the permissionsAdded and permissionsRemoved permission sets to
-     * reflect the addition of the given connection group permission.
-     * 
-     * @param {String} identifier
-     *     The identifier of the connection group to add READ permission for.
-     */
-    var addConnectionGroupPermission = function addConnectionGroupPermission(identifier) {
-
-        // If permission was previously removed, simply un-remove it
-        if (PermissionSet.hasConnectionGroupPermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier))
-            PermissionSet.removeConnectionGroupPermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
-
-        // Otherwise, explicitly add the permission
-        else
-            PermissionSet.addConnectionGroupPermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
-
-    };
-
-    /**
-     * Updates the permissionsAdded and permissionsRemoved permission sets to
-     * reflect the removal of the given connection permission.
-     *
-     * @param {String} identifier
-     *     The identifier of the connection to remove READ permission for.
-     */
-    var removeConnectionGroupPermission = function removeConnectionGroupPermission(identifier) {
-
-        // If permission was previously added, simply un-add it
-        if (PermissionSet.hasConnectionGroupPermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier))
-            PermissionSet.removeConnectionGroupPermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
-
-        // Otherwise, explicitly remove the permission
-        else
-            PermissionSet.addConnectionGroupPermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
-
-    };
-
-    /**
-     * Updates the permissionsAdded and permissionsRemoved permission sets to
-     * reflect the addition of the given sharing profile permission.
-     *
-     * @param {String} identifier
-     *     The identifier of the sharing profile to add READ permission for.
-     */
-    var addSharingProfilePermission = function addSharingProfilePermission(identifier) {
-
-        // If permission was previously removed, simply un-remove it
-        if (PermissionSet.hasSharingProfilePermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier))
-            PermissionSet.removeSharingProfilePermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
-
-        // Otherwise, explicitly add the permission
-        else
-            PermissionSet.addSharingProfilePermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
-
-    };
-
-    /**
-     * Updates the permissionsAdded and permissionsRemoved permission sets to
-     * reflect the removal of the given sharing profile permission.
-     *
-     * @param {String} identifier
-     *     The identifier of the sharing profile to remove READ permission for.
-     */
-    var removeSharingProfilePermission = function removeSharingProfilePermission(identifier) {
-
-        // If permission was previously added, simply un-add it
-        if (PermissionSet.hasSharingProfilePermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier))
-            PermissionSet.removeSharingProfilePermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
-
-        // Otherwise, explicitly remove the permission
-        else
-            PermissionSet.addSharingProfilePermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
-
-    };
-
-
-    // Expose permission query and modification functions to group list template
-    $scope.groupListContext = {
-
-        /**
-         * Returns the PermissionFlagSet that contains the current state of
-         * granted permissions.
-         *
-         * @returns {PermissionFlagSet}
-         *     The PermissionFlagSet describing the current state of granted
-         *     permissions for the user being edited.
-         */
-        getPermissionFlags : function getPermissionFlags() {
-            return $scope.permissionFlags;
-        },
-
-        /**
-         * Notifies the controller that a change has been made to the given
-         * connection permission for the user being edited. This only applies
-         * to READ permissions.
-         *
-         * @param {String} identifier
-         *     The identifier of the connection affected by the changed
-         *     permission.
-         */
-        connectionPermissionChanged : function connectionPermissionChanged(identifier) {
-
-            // Determine current permission setting
-            var granted = $scope.permissionFlags.connectionPermissions.READ[identifier];
-
-            // Add/remove permission depending on flag state
-            if (granted)
-                addConnectionPermission(identifier);
-            else
-                removeConnectionPermission(identifier);
-
-        },
-
-        /**
-         * Notifies the controller that a change has been made to the given
-         * connection group permission for the user being edited. This only
-         * applies to READ permissions.
-         *
-         * @param {String} identifier
-         *     The identifier of the connection group affected by the changed
-         *     permission.
-         */
-        connectionGroupPermissionChanged : function connectionGroupPermissionChanged(identifier) {
-
-            // Determine current permission setting
-            var granted = $scope.permissionFlags.connectionGroupPermissions.READ[identifier];
-
-            // Add/remove permission depending on flag state
-            if (granted)
-                addConnectionGroupPermission(identifier);
-            else
-                removeConnectionGroupPermission(identifier);
-
-        },
-
-        /**
-         * Notifies the controller that a change has been made to the given
-         * sharing profile permission for the user being edited. This only
-         * applies to READ permissions.
-         *
-         * @param {String} identifier
-         *     The identifier of the sharing profile affected by the changed
-         *     permission.
-         */
-        sharingProfilePermissionChanged : function sharingProfilePermissionChanged(identifier) {
-
-            // Determine current permission setting
-            var granted = $scope.permissionFlags.sharingProfilePermissions.READ[identifier];
-
-            // Add/remove permission depending on flag state
-            if (granted)
-                addSharingProfilePermission(identifier);
-            else
-                removeSharingProfilePermission(identifier);
-
-        }
-
-    };
+    $scope.permissionsRemoved = new PermissionSet();
 
     /**
      * Cancels all pending edits, returning to the management page.
@@ -1090,7 +596,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * which is prepopulated with the data from the user currently being edited.
      */
     $scope.cloneUser = function cloneUser() {
-        $location.path('/manage/' + encodeURIComponent(selectedDataSource) + '/users').search('clone', username);
+        $location.path('/manage/' + encodeURIComponent($scope.dataSource) + '/users').search('clone', username);
     };
             
     /**
@@ -1113,10 +619,10 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
         // Save or create the user, depending on whether the user exists
         var saveUserPromise;
-        if ($scope.userExists(selectedDataSource))
-            saveUserPromise = userService.saveUser(selectedDataSource, $scope.user);
+        if ($scope.userExists($scope.dataSource))
+            saveUserPromise = userService.saveUser($scope.dataSource, $scope.user);
         else
-            saveUserPromise = userService.createUser(selectedDataSource, $scope.user);
+            saveUserPromise = userService.createUser($scope.dataSource, $scope.user);
 
         saveUserPromise.then(function savedUser() {
 
@@ -1124,21 +630,21 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             if ($scope.selfUsername !== $scope.user.username) {
 
                 // Rename added permission
-                if (permissionsAdded.userPermissions[$scope.selfUsername]) {
-                    permissionsAdded.userPermissions[$scope.user.username] = permissionsAdded.userPermissions[$scope.selfUsername];
-                    delete permissionsAdded.userPermissions[$scope.selfUsername];
+                if ($scope.permissionsAdded.userPermissions[$scope.selfUsername]) {
+                    $scope.permissionsAdded.userPermissions[$scope.user.username] = $scope.permissionsAdded.userPermissions[$scope.selfUsername];
+                    delete $scope.permissionsAdded.userPermissions[$scope.selfUsername];
                 }
 
                 // Rename removed permission
-                if (permissionsRemoved.userPermissions[$scope.selfUsername]) {
-                    permissionsRemoved.userPermissions[$scope.user.username] = permissionsRemoved.userPermissions[$scope.selfUsername];
-                    delete permissionsRemoved.userPermissions[$scope.selfUsername];
+                if ($scope.permissionsRemoved.userPermissions[$scope.selfUsername]) {
+                    $scope.permissionsRemoved.userPermissions[$scope.user.username] = $scope.permissionsRemoved.userPermissions[$scope.selfUsername];
+                    delete $scope.permissionsRemoved.userPermissions[$scope.selfUsername];
                 }
                 
             }
 
             // Upon success, save any changed permissions
-            permissionService.patchPermissions(selectedDataSource, $scope.user.username, permissionsAdded, permissionsRemoved)
+            permissionService.patchPermissions($scope.dataSource, $scope.user.username, $scope.permissionsAdded, $scope.permissionsRemoved)
             .then(function patchedUserPermissions() {
                 $location.url('/settings/users');
             }, guacNotification.SHOW_REQUEST_ERROR);
@@ -1180,7 +686,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var deleteUserImmediately = function deleteUserImmediately() {
 
         // Delete the user 
-        userService.deleteUser(selectedDataSource, $scope.user)
+        userService.deleteUser($scope.dataSource, $scope.user)
         .then(function deletedUser() {
             $location.path('/settings/users');
         }, guacNotification.SHOW_REQUEST_ERROR);

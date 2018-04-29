@@ -46,47 +46,21 @@
         </div>
 
         <!-- System permissions section -->
-        <div class="system-permissions" ng-show="canChangePermissions()">
-            <h2 class="header">{{'MANAGE_USER.SECTION_HEADER_PERMISSIONS' | translate}}</h2>
-            <div class="section">
-                <table class="properties">
-                    <tr ng-repeat="systemPermissionType in systemPermissionTypes"
-                        ng-show="canChangeSystemPermissions()">
-                        <th>{{systemPermissionType.label | translate}}</th>
-                        <td><input type="checkbox" ng-model="permissionFlags.systemPermissions[systemPermissionType.value]"
-                                                   ng-change="systemPermissionChanged(systemPermissionType.value)"/></td>
-                    </tr>
-                    <tr>
-                        <th>{{'MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD' | translate}}</th>
-                        <td><input type="checkbox" ng-model="permissionFlags.userPermissions.UPDATE[selfUsername]"
-                                                   ng-change="userPermissionChanged('UPDATE', selfUsername)"/></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+        <system-permission-editor ng-show="canChangePermissions()"
+              username="selfUsername"
+              data-data-source="dataSource"
+              permission-flags="permissionFlags"
+              permissions-added="permissionsAdded"
+              permissions-removed="permissionsRemoved">
+        </system-permission-editor>
 
         <!-- Connection permissions section -->
-        <div class="connection-permissions" ng-show="canChangePermissions()">
-            <div class="header">
-                <h2>{{'MANAGE_USER.SECTION_HEADER_CONNECTIONS' | translate}}</h2>
-                <guac-group-list-filter connection-groups="rootGroups"
-                    filtered-connection-groups="filteredRootGroups"
-                    placeholder="'MANAGE_USER.FIELD_PLACEHOLDER_FILTER' | translate"
-                    connection-properties="filteredConnectionProperties"
-                    connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>
-            </div>
-            <div class="section">
-                <guac-group-list
-                    context="groupListContext"
-                    connection-groups="filteredRootGroups"
-                    templates="{
-                        'connection'       : 'app/manage/templates/connectionPermission.html',
-                        'sharing-profile'  : 'app/manage/templates/sharingProfilePermission.html',
-                        'connection-group' : 'app/manage/templates/connectionGroupPermission.html'
-                    }"
-                    page-size="20"/>
-            </div>
-        </div>
+        <connection-permission-editor ng-show="canChangePermissions()"
+              data-data-source="dataSource"
+              permission-flags="permissionFlags"
+              permissions-added="permissionsAdded"
+              permissions-removed="permissionsRemoved">
+        </connection-permission-editor>
 
         <!-- Form action buttons -->
         <div class="action-buttons">
