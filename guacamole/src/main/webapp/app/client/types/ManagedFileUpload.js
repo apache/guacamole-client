@@ -28,7 +28,8 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
     var ManagedFileTransferState = $injector.get('ManagedFileTransferState');
 
     // Required services
-    var tunnelService = $injector.get('tunnelService');
+    var requestService = $injector.get('requestService');
+    var tunnelService  = $injector.get('tunnelService');
 
     /**
      * Object which serves as a surrogate interface, encapsulating a Guacamole
@@ -171,7 +172,7 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
             },
 
             // Notify if upload fails
-            function uploadFailed(error) {
+            requestService.createErrorCallback(function uploadFailed(error) {
 
                 // Use provide status code if the error is coming from the stream
                 if (error.type === Error.Type.STREAM_ERROR)
@@ -185,7 +186,7 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
                         ManagedFileTransferState.StreamState.ERROR,
                         Guacamole.Status.Code.INTERNAL_ERROR);
 
-            });
+            }));
 
             // Ignore all further acks
             stream.onack = null;

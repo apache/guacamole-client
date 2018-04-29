@@ -47,6 +47,7 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
             var connectionGroupService  = $injector.get('connectionGroupService');
             var dataSourceService       = $injector.get('dataSourceService');
             var guacNotification        = $injector.get('guacNotification');
+            var requestService          = $injector.get('requestService');
 
             /**
              * The identifiers of all data sources accessible by the current
@@ -219,7 +220,7 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
                 // Attempt to produce wrapped list of active connections
                 wrapAllActiveConnections();
 
-            });
+            }, requestService.WARN);
             
             // Query active sessions
             dataSourceService.apply(
@@ -234,7 +235,7 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
                 // Attempt to produce wrapped list of active connections
                 wrapAllActiveConnections();
 
-            });
+            }, requestService.WARN);
 
             // Get session date format
             $translate('SETTINGS_SESSIONS.FORMAT_STARTDATE').then(function sessionDateFormatReceived(retrievedSessionDateFormat) {
@@ -245,7 +246,7 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
                 // Attempt to produce wrapped list of active connections
                 wrapAllActiveConnections();
 
-            });
+            }, angular.noop);
 
             /**
              * Returns whether critical data has completed being loaded.
@@ -256,18 +257,6 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
              */
             $scope.isLoaded = function isLoaded() {
                 return $scope.wrappers !== null;
-            };
-
-            /**
-             * An action to be provided along with the object sent to
-             * showStatus which closes the currently-shown status dialog.
-             */
-            var ACKNOWLEDGE_ACTION = {
-                name        : "SETTINGS_SESSIONS.ACTION_ACKNOWLEDGE",
-                // Handle action
-                callback    : function acknowledgeCallback() {
-                    guacNotification.showStatus(false);
-                }
             };
 
             /**
@@ -327,17 +316,7 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
                     // Clear selection
                     allSelectedWrappers = {};
 
-                },
-
-                // Notify of any errors
-                function activeConnectionDeletionFailed(error) {
-                    guacNotification.showStatus({
-                        'className'  : 'error',
-                        'title'      : 'SETTINGS_SESSIONS.DIALOG_HEADER_ERROR',
-                        'text'       : error.translatableMessage,
-                        'actions'    : [ ACKNOWLEDGE_ACTION ]
-                    });
-                });
+                }, guacNotification.SHOW_REQUEST_ERROR);
 
             }; 
             

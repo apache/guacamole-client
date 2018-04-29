@@ -34,21 +34,10 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
     var connectionService        = $injector.get('connectionService');
     var guacNotification         = $injector.get('guacNotification');
     var permissionService        = $injector.get('permissionService');
+    var requestService           = $injector.get('requestService');
     var schemaService            = $injector.get('schemaService');
     var sharingProfileService    = $injector.get('sharingProfileService');
     var translationStringService = $injector.get('translationStringService');
-
-    /**
-     * An action which can be provided along with the object sent to showStatus
-     * to allow the user to acknowledge (and close) the currently-shown status
-     * dialog.
-     */
-    var ACKNOWLEDGE_ACTION = {
-        name        : "MANAGE_SHARING_PROFILE.ACTION_ACKNOWLEDGE",
-        callback    : function acknowledgeCallback() {
-            guacNotification.showStatus(false);
-        }
-    };
 
     /**
      * An action to be provided along with the object sent to showStatus which
@@ -172,7 +161,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
     schemaService.getSharingProfileAttributes($scope.selectedDataSource)
     .then(function attributesReceived(attributes) {
         $scope.attributes = attributes;
-    });
+    }, requestService.WARN);
 
     // Query the user's permissions for the current sharing profile
     permissionService.getEffectivePermissions($scope.selectedDataSource, authenticationService.getCurrentUsername())
@@ -208,13 +197,13 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
                )
             );
 
-    });
+    }, requestService.WARN);
 
     // Get protocol metadata
     schemaService.getProtocols($scope.selectedDataSource)
     .then(function protocolsReceived(protocols) {
         $scope.protocols = protocols;
-    });
+    }, requestService.WARN);
 
     // If we are editing an existing sharing profile, pull its data
     if (identifier) {
@@ -223,13 +212,13 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
         sharingProfileService.getSharingProfile($scope.selectedDataSource, identifier)
         .then(function sharingProfileRetrieved(sharingProfile) {
             $scope.sharingProfile = sharingProfile;
-        });
+        }, requestService.WARN);
 
         // Pull sharing profile parameters
         sharingProfileService.getSharingProfileParameters($scope.selectedDataSource, identifier)
         .then(function parametersReceived(parameters) {
             $scope.parameters = parameters;
-        });
+        }, requestService.WARN);
 
     }
 
@@ -246,13 +235,13 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
             // Clear the identifier field because this sharing profile is new
             delete $scope.sharingProfile.identifier;
 
-        });
+        }, requestService.WARN);
 
         // Pull sharing profile parameters from cloned sharing profile
         sharingProfileService.getSharingProfileParameters($scope.selectedDataSource, cloneSourceIdentifier)
         .then(function parametersReceived(parameters) {
             $scope.parameters = parameters;
-        });
+        }, requestService.WARN);
 
     }
 
@@ -272,11 +261,12 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
     $scope.$watch('sharingProfile.primaryConnectionIdentifier',
         function retrievePrimaryConnection(identifier) {
 
-        // Pull data from existing sharing profile
-        connectionService.getConnection($scope.selectedDataSource, identifier)
-        .then(function connectionRetrieved(connection) {
-            $scope.primaryConnection = connection;
-        });
+        if (identifier) {
+            connectionService.getConnection($scope.selectedDataSource, identifier)
+            .then(function connectionRetrieved(connection) {
+                $scope.primaryConnection = connection;
+            }, requestService.WARN);
+        }
 
     });
 
@@ -353,17 +343,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
         sharingProfileService.saveSharingProfile($scope.selectedDataSource, $scope.sharingProfile)
         .then(function savedSharingProfile() {
             $location.url('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        })
-
-        // Notify of any errors
-        ['catch'](function sharingProfileSaveFailed(error) {
-            guacNotification.showStatus({
-                'className'  : 'error',
-                'title'      : 'MANAGE_SHARING_PROFILE.DIALOG_HEADER_ERROR',
-                'text'       : error.translatableMessage,
-                'actions'    : [ ACKNOWLEDGE_ACTION ]
-            });
-        });
+        }, guacNotification.SHOW_REQUEST_ERROR);
 
     };
 
@@ -391,17 +371,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
         sharingProfileService.deleteSharingProfile($scope.selectedDataSource, $scope.sharingProfile)
         .then(function deletedSharingProfile() {
             $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        })
-
-        // Notify of any errors
-        ['catch'](function sharingProfileDeletionFailed(error) {
-            guacNotification.showStatus({
-                'className'  : 'error',
-                'title'      : 'MANAGE_SHARING_PROFILE.DIALOG_HEADER_ERROR',
-                'text'       : error.translatableMessage,
-                'actions'    : [ ACKNOWLEDGE_ACTION ]
-            });
-        });
+        }, guacNotification.SHOW_REQUEST_ERROR);
 
     };
 

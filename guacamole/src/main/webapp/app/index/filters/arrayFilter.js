@@ -25,9 +25,6 @@ angular.module('index').filter('toArray', [function toArrayFactory() {
 
     return function toArrayFiter(input) {
 
-
-        console.log(input)
-
         // If no object is available, just return an empty array
         if (!input) {
             return [];

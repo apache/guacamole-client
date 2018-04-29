@@ -102,6 +102,10 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
                 route.resolve();
             });
 
+        })
+
+        ['catch'](function tokenUpdateFailed() {
+            route.reject();
         });
 
         // Return promise that will resolve only if the requested page is the

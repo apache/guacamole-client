@@ -272,7 +272,7 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
 
                 });
 
-            }); // end retrieve file template
+            }, angular.noop); // end retrieve file template
 
             // Refresh file browser when any upload completes
             $scope.$on('guacUploadComplete', function uploadComplete(event, filename) {

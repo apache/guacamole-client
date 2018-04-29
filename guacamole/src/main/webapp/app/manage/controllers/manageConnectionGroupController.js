@@ -34,20 +34,9 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     var connectionGroupService = $injector.get('connectionGroupService');
     var guacNotification       = $injector.get('guacNotification');
     var permissionService      = $injector.get('permissionService');
+    var requestService         = $injector.get('requestService');
     var schemaService          = $injector.get('schemaService');
     
-    /**
-     * An action to be provided along with the object sent to showStatus which
-     * closes the currently-shown status dialog.
-     */
-    var ACKNOWLEDGE_ACTION = {
-        name        : "MANAGE_CONNECTION_GROUP.ACTION_ACKNOWLEDGE",
-        // Handle action
-        callback    : function acknowledgeCallback() {
-            guacNotification.showStatus(false);
-        }
-    };
-
     /**
      * The unique identifier of the data source containing the connection group
      * being edited.
@@ -131,7 +120,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     schemaService.getConnectionGroupAttributes($scope.selectedDataSource)
     .then(function attributesReceived(attributes) {
         $scope.attributes = attributes;
-    });
+    }, requestService.WARN);
 
     // Query the user's permissions for the current connection group
     permissionService.getEffectivePermissions($scope.selectedDataSource, authenticationService.getCurrentUsername())
@@ -152,7 +141,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
               ||  PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.DELETE, identifier)
            );
     
-    });
+    }, requestService.WARN);
 
 
     // Pull connection group hierarchy
@@ -163,14 +152,14 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     )
     .then(function connectionGroupReceived(rootGroup) {
         $scope.rootGroup = rootGroup;
-    });
+    }, requestService.WARN);
 
     // If we are editing an existing connection group, pull its data
     if (identifier) {
         connectionGroupService.getConnectionGroup($scope.selectedDataSource, identifier)
         .then(function connectionGroupReceived(connectionGroup) {
             $scope.connectionGroup = connectionGroup;
-        });
+        }, requestService.WARN);
     }
 
     // If we are creating a new connection group, populate skeleton connection group data
@@ -232,17 +221,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
         connectionGroupService.saveConnectionGroup($scope.selectedDataSource, $scope.connectionGroup)
         .then(function savedConnectionGroup() {
             $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        })
-
-        // Notify of any errors
-        ['catch'](function connectionGroupSaveFailed(error) {
-            guacNotification.showStatus({
-                'className'  : 'error',
-                'title'      : 'MANAGE_CONNECTION_GROUP.DIALOG_HEADER_ERROR',
-                'text'       : error.translatableMessage,
-                'actions'    : [ ACKNOWLEDGE_ACTION ]
-            });
-        });
+        }, guacNotification.SHOW_REQUEST_ERROR);
 
     };
     
@@ -282,17 +261,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
         connectionGroupService.deleteConnectionGroup($scope.selectedDataSource, $scope.connectionGroup)
         .then(function deletedConnectionGroup() {
             $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        })
-
-        // Notify of any errors
-        ['catch'](function connectionGroupDeletionFailed(error) {
-            guacNotification.showStatus({
-                'className'  : 'error',
-                'title'      : 'MANAGE_CONNECTION_GROUP.DIALOG_HEADER_ERROR',
-                'text'       : error.translatableMessage,
-                'actions'    : [ ACKNOWLEDGE_ACTION ]
-            });
-        });
+        }, guacNotification.SHOW_REQUEST_ERROR);
 
     };
 

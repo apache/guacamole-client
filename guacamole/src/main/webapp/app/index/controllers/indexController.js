@@ -137,7 +137,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     var checkClipboard = function checkClipboard() {
         clipboardService.getLocalClipboard().then(function clipboardRead(data) {
             $scope.$broadcast('guacClipboard', data);
-        });
+        }, angular.noop);
     };
 
     // Attempt to read the clipboard if it may have changed

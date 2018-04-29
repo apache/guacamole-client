@@ -35,6 +35,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
     var connectionGroupService   = $injector.get('connectionGroupService');
     var dataSourceService        = $injector.get('dataSourceService');
     var permissionService        = $injector.get('permissionService');
+    var requestService           = $injector.get('requestService');
     var translationStringService = $injector.get('translationStringService');
     
     var service = {};
@@ -142,7 +143,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
     /**
      * Returns a promise which resolves with an appropriate home page for the
-     * current user.
+     * current user. The promise will not be rejected.
      *
      * @returns {Promise.<Page>}
      *     A promise which resolves with the user's default home page.
@@ -169,7 +170,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         })
         .then(function rootConnectionGroupsPermissionsRetrieved(data) {
             deferred.resolve(generateHomePage(data.rootGroups,data.permissionsSets));
-        });
+        }, requestService.WARN);
 
         return deferred.promise;
 
@@ -317,7 +318,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
     /**
      * Returns a promise which resolves to an array of all settings pages that
      * the current user can visit. This can include any of the various manage
-     * pages.
+     * pages. The promise will not be rejected.
      *
      * @returns {Promise.<Page[]>} 
      *     A promise which resolves to an array of all settings pages that the
@@ -337,7 +338,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         // Resolve promise using settings pages derived from permissions
         .then(function permissionsRetrieved(permissions) {
             deferred.resolve(generateSettingsPages(permissions));
-        });
+        }, requestService.WARN);
         
         return deferred.promise;
 
@@ -387,7 +388,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
      * Returns a promise which resolves to an array of all main pages that the
      * current user can visit. This can include the home page, manage pages,
      * etc. In the case that there are no applicable pages of this sort, it may
-     * return a client page.
+     * return a client page. The promise will not be rejected.
      *
      * @returns {Promise.<Page[]>} 
      *     A promise which resolves to an array of all main pages that the
@@ -418,7 +419,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         .then(function rootConnectionGroupsRetrieved(retrievedRootGroups) {
             rootGroups = retrievedRootGroups;
             resolveMainPages();
-        });
+        }, requestService.WARN);
 
         // Retrieve current permissions
         dataSourceService.apply(
@@ -431,7 +432,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         .then(function permissionsRetrieved(retrievedPermissions) {
             permissions = retrievedPermissions;
             resolveMainPages();
-        });
+        }, requestService.WARN);
         
         return deferred.promise;
 

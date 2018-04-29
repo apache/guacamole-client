@@ -25,6 +25,7 @@ angular.module('notification').factory('guacNotification', ['$injector',
 
     // Required services
     var $rootScope            = $injector.get('$rootScope');
+    var requestService        = $injector.get('requestService');
     var sessionStorageFactory = $injector.get('sessionStorageFactory');
 
     var service = {};
@@ -36,6 +37,19 @@ angular.module('notification').factory('guacNotification', ['$injector',
      * @type Function
      */
     var storedStatus = sessionStorageFactory.create(false);
+
+    /**
+     * An action to be provided along with the object sent to showStatus which
+     * closes the currently-shown status dialog.
+     *
+     * @type NotificationAction
+     */
+    service.ACKNOWLEDGE_ACTION = {
+        name        : 'APP.ACTION_ACKNOWLEDGE',
+        callback    : function acknowledgeCallback() {
+            service.showStatus(false);
+        }
+    };
 
     /**
      * Retrieves the current status notification, which may simply be false if
@@ -78,6 +92,26 @@ angular.module('notification').factory('guacNotification', ['$injector',
         if (!storedStatus() || !status)
             storedStatus(status);
     };
+
+    /**
+     * Promise error callback which displays a modal notification for all
+     * rejections due to REST errors. The message displayed to the user within
+     * the notification is provided by the contents of the @link{Error} object
+     * within the REST response. All other rejections, such as those due to
+     * JavaScript errors, are logged to the browser console without displaying
+     * any notification.
+     *
+     * @constant
+     * @type Function
+     */
+    service.SHOW_REQUEST_ERROR = requestService.createErrorCallback(function showRequestError(error) {
+        service.showStatus({
+            className  : 'error',
+            title      : 'APP.DIALOG_HEADER_ERROR',
+            text       : error.translatableMessage,
+            actions    : [ service.ACKNOWLEDGE_ACTION ]
+        });
+    });
 
     // Hide status upon navigation
     $rootScope.$on('$routeChangeSuccess', function() {

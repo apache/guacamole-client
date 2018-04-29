@@ -37,6 +37,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var guacNotification      = $injector.get('guacNotification');
     var iconService           = $injector.get('iconService');
     var preferenceService     = $injector.get('preferenceService');
+    var requestService        = $injector.get('requestService');
     var tunnelService         = $injector.get('tunnelService');
     var userPageService       = $injector.get('userPageService');
 
@@ -161,7 +162,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         name      : "CLIENT.ACTION_LOGOUT",
         className : "logout button",
         callback  : function logoutCallback() {
-            authenticationService.logout()['finally'](function logoutComplete() {
+            authenticationService.logout()
+            ['catch'](requestService.IGNORE)
+            ['finally'](function logoutComplete() {
                 $location.url('/');
             });
         }
@@ -188,7 +191,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             };
         }
 
-    });
+    }, requestService.WARN);
 
     /**
      * Action which replaces the current client with a newly-connected client.
@@ -447,7 +450,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Sync local clipboard as long as the menu is not open
         if (!$scope.menu.shown)
-            clipboardService.setLocalClipboard(data);
+            clipboardService.setLocalClipboard(data)['catch'](angular.noop);
 
         // Associate new clipboard data with any currently-pressed key
         for (var keysym in keysCurrentlyPressed)
@@ -466,7 +469,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         tunnelService.getSharingProfiles(uuid)
         .then(function sharingProfilesRetrieved(sharingProfiles) {
             $scope.sharingProfiles = sharingProfiles;
-        });
+        }, requestService.WARN);
 
     });
 
@@ -576,7 +579,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // key was pressed (if any) as long as the menu is not open
         var clipboardData = clipboardDataFromKey[keysym];
         if (clipboardData && !$scope.menu.shown)
-            clipboardService.setLocalClipboard(clipboardData);
+            clipboardService.setLocalClipboard(clipboardData)['catch'](angular.noop);
 
         // Deal with substitute key presses
         if (substituteKeysPressed[keysym]) {
@@ -614,6 +617,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Re-authenticate to verify auth status at end of connection
         authenticationService.updateCurrentToken($location.search())
+        ['catch'](requestService.IGNORE)
 
         // Show the requested status once the authentication check has finished
         ['finally'](function authenticationCheckComplete() {
@@ -714,7 +718,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             // Sync with local clipboard
             clipboardService.getLocalClipboard().then(function clipboardRead(data) {
                 $scope.$broadcast('guacClipboard', data);
-            });
+            }, angular.noop);
 
             // Hide status notification
             guacNotification.showStatus(false);

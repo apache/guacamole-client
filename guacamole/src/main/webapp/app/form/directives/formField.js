@@ -60,6 +60,7 @@ angular.module('form').directive('guacFormField', [function formField() {
         controller: ['$scope', '$injector', '$element', function formFieldController($scope, $injector, $element) {
 
             // Required services
+            var $log                     = $injector.get('$log');
             var formService              = $injector.get('formService');
             var translationStringService = $injector.get('translationStringService');
 
@@ -116,7 +117,9 @@ angular.module('form').directive('guacFormField', [function formField() {
                 // Append field content
                 if (field) {
                     formService.insertFieldElement(fieldContent[0],
-                        field.type, $scope);
+                        field.type, $scope)['catch'](function fieldCreationFailed() {
+                            $log.warn('Failed to retrieve field with type "' + field.type + '"');
+                    });
                 }
 
             });

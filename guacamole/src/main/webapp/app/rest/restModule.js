@@ -21,4 +21,6 @@
  * The module for code relating to communication with the REST API of the
  * Guacamole web application.
  */
-angular.module('rest', ['auth']);
+angular.module('rest', [
+    'auth'
+]);

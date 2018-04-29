@@ -38,20 +38,9 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     var connectionService        = $injector.get('connectionService');
     var connectionGroupService   = $injector.get('connectionGroupService');
     var permissionService        = $injector.get('permissionService');
+    var requestService           = $injector.get('requestService');
     var schemaService            = $injector.get('schemaService');
     var translationStringService = $injector.get('translationStringService');
-
-    /**
-     * An action to be provided along with the object sent to showStatus which
-     * closes the currently-shown status dialog.
-     */
-    var ACKNOWLEDGE_ACTION = {
-        name        : "MANAGE_CONNECTION.ACTION_ACKNOWLEDGE",
-        // Handle action
-        callback    : function acknowledgeCallback() {
-            guacNotification.showStatus(false);
-        }
-    };
 
     /**
      * The unique identifier of the data source containing the connection being
@@ -186,7 +175,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     schemaService.getConnectionAttributes($scope.selectedDataSource)
     .then(function attributesReceived(attributes) {
         $scope.attributes = attributes;
-    });
+    }, requestService.WARN);
 
     // Pull connection group hierarchy
     connectionGroupService.getConnectionGroupTree(
@@ -196,7 +185,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     )
     .then(function connectionGroupReceived(rootGroup) {
         $scope.rootGroup = rootGroup;
-    });
+    }, requestService.WARN);
     
     // Query the user's permissions for the current connection
     permissionService.getEffectivePermissions($scope.selectedDataSource, authenticationService.getCurrentUsername())
@@ -226,18 +215,18 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
                )
             );
     
-    });
+    }, requestService.WARN);
    
     // Get protocol metadata
     schemaService.getProtocols($scope.selectedDataSource)
     .then(function protocolsReceived(protocols) {
         $scope.protocols = protocols;
-    });
+    }, requestService.WARN);
 
     // Get history date format
     $translate('MANAGE_CONNECTION.FORMAT_HISTORY_START').then(function historyDateFormatReceived(historyDateFormat) {
         $scope.historyDateFormat = historyDateFormat;
-    });
+    }, angular.noop);
 
     // If we are editing an existing connection, pull its data
     if (identifier) {
@@ -246,7 +235,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         connectionService.getConnection($scope.selectedDataSource, identifier)
         .then(function connectionRetrieved(connection) {
             $scope.connection = connection;
-        });
+        }, requestService.WARN);
 
         // Pull connection history
         connectionService.getConnectionHistory($scope.selectedDataSource, identifier)
@@ -258,13 +247,13 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
                $scope.historyEntryWrappers.push(new HistoryEntryWrapper(historyEntry)); 
             });
 
-        });
+        }, requestService.WARN);
 
         // Pull connection parameters
         connectionService.getConnectionParameters($scope.selectedDataSource, identifier)
         .then(function parametersReceived(parameters) {
             $scope.parameters = parameters;
-        });
+        }, requestService.WARN);
     }
     
     // If we are cloning an existing connection, pull its data instead
@@ -277,7 +266,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
             
             // Clear the identifier field because this connection is new
             delete $scope.connection.identifier;
-        });
+        }, requestService.WARN);
 
         // Do not pull connection history
         $scope.historyEntryWrappers = [];
@@ -286,7 +275,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         connectionService.getConnectionParameters($scope.selectedDataSource, cloneSourceIdentifier)
         .then(function parametersReceived(parameters) {
             $scope.parameters = parameters;
-        });
+        }, requestService.WARN);
     }
 
     // If we are creating a new connection, populate skeleton connection data
@@ -390,17 +379,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         connectionService.saveConnection($scope.selectedDataSource, $scope.connection)
         .then(function savedConnection() {
             $location.url('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        })
-
-        // Notify of any errors
-        .error(function connectionSaveFailed(error) {
-            guacNotification.showStatus({
-                'className'  : 'error',
-                'title'      : 'MANAGE_CONNECTION.DIALOG_HEADER_ERROR',
-                'text'       : error.translatableMessage,
-                'actions'    : [ ACKNOWLEDGE_ACTION ]
-            });
-        });
+        }, guacNotification.SHOW_REQUEST_ERROR);
 
     };
     
@@ -440,17 +419,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         connectionService.deleteConnection($scope.selectedDataSource, $scope.connection)
         .then(function deletedConnection() {
             $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        })
-
-        // Notify of any errors
-        .error(function connectionDeletionFailed(error) {
-            guacNotification.showStatus({
-                'className'  : 'error',
-                'title'      : 'MANAGE_CONNECTION.DIALOG_HEADER_ERROR',
-                'text'       : error.translatableMessage,
-                'actions'    : [ ACKNOWLEDGE_ACTION ]
-            });
-        });
+        }, guacNotification.SHOW_REQUEST_ERROR);
 
     };
 

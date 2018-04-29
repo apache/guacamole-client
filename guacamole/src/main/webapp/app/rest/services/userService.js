@@ -25,7 +25,6 @@ angular.module('rest').factory('userService', ['$injector',
 
     // Required services
     var requestService        = $injector.get('requestService');
-    var $q                    = $injector.get('$q');
     var authenticationService = $injector.get('authenticationService');
     var cacheService          = $injector.get('cacheService');
 
@@ -265,7 +264,7 @@ angular.module('rest').factory('userService', ['$injector',
         })
 
         // Clear the cache
-        .success(function passwordChanged(){
+        .then(function passwordChanged(){
             cacheService.users.removeAll();
         });
 

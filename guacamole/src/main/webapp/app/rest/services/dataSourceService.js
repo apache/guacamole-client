@@ -27,7 +27,8 @@ angular.module('rest').factory('dataSourceService', ['$injector',
     var Error = $injector.get('Error');
 
     // Required services
-    var $q = $injector.get('$q');
+    var $q             = $injector.get('$q');
+    var requestService = $injector.get('requestService');
 
     // Service containing all caches
     var service = {};
@@ -92,7 +93,7 @@ angular.module('rest').factory('dataSourceService', ['$injector',
             },
 
             // Fail on any errors (except "NOT FOUND")
-            function immediateRequestFailed(error) {
+            requestService.createErrorCallback(function immediateRequestFailed(error) {
 
                 if (error.type === Error.Type.NOT_FOUND)
                     deferredRequest.resolve();
@@ -101,7 +102,7 @@ angular.module('rest').factory('dataSourceService', ['$injector',
                 else
                     deferredRequest.reject(error);
 
-            });
+            }));
 
         });
 
@@ -111,9 +112,9 @@ angular.module('rest').factory('dataSourceService', ['$injector',
         },
 
         // Reject if at least one request fails
-        function requestFailed(response) {
-            deferred.reject(response);
-        });
+        requestService.createErrorCallback(function requestFailed(error) {
+            deferred.reject(error);
+        }));
 
         return deferred.promise;
 
