@@ -134,6 +134,16 @@
     padding-top: 1em;
 }
 
+.menu-section .zoom-ctrl {
+    width: 4em;
+}
+
+.menu-section .zoom-ctrl::-webkit-inner-spin-button,
+.menu-section .zoom-ctrl::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 .menu,
 .menu.closed {
     left: -480px;
