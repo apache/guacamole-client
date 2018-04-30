@@ -64,9 +64,9 @@
                            translate="CLIENT.HELP_SHARE_LINK"
                            translate-values="{LINKS : getShareLinkCount()}"></p>
                         <table>
-                            <tr ng-repeat="link in client.shareLinks | orderBy: name">
-                                <th>{{link.name}}</th>
-                                <td><a href="{{link.href}}" target="_blank">{{link.href}}</a></td>
+                            <tr ng-repeat="link in client.shareLinks | toArray | orderBy: value.name">
+                                <th>{{link.value.name}}</th>
+                                <td><a href="{{link.value.href}}" target="_blank">{{link.value.href}}</a></td>
                             </tr>
                         </table>
                     </div>
