@@ -9,6 +9,6 @@
     <select class="time-zone"
             ng-disabled="!region"
             ng-model="model"
-            ng-options="name for (name, value) in timeZones[region] | orderBy: name"></select>
+            ng-options="timeZone.value as timeZone.key for timeZone in timeZones[region] | toArray | orderBy: key"></select>
 
 </div>
