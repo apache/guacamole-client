@@ -168,7 +168,6 @@ angular.module('auth').factory('authenticationService', ['$injector',
         .then(function authenticationSuccessful(data) {
 
             var currentToken = service.getCurrentToken();
-            setAuthenticationResult(new AuthenticationResult(data));
 
             // If a new token was received, ensure the old token is invalidated,
             // if any, and notify listeners of the new token
@@ -180,9 +179,15 @@ angular.module('auth').factory('authenticationService', ['$injector',
                 }
 
                 // Notify of login and new token
+                setAuthenticationResult(new AuthenticationResult(data));
                 $rootScope.$broadcast('guacLogin', data.authToken);
 
             }
+
+            // Update cached authentication result, even if the token remains
+            // the same
+            else
+                setAuthenticationResult(new AuthenticationResult(data));
 
             // Authentication was successful
             return data;
