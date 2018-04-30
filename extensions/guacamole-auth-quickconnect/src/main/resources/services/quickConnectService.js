@@ -24,9 +24,9 @@ angular.module('guacQuickConnect').factory('quickConnectService', ['$injector',
         function quickConnectService($injector) {
 
     // Required services
-    var $http                 = $injector.get('$http');
     var authenticationService = $injector.get('authenticationService');
     var cacheService          = $injector.get('cacheService');
+    var requestService        = $injector.get('requestService');
     
     var service = {};
     
@@ -47,17 +47,20 @@ angular.module('guacQuickConnect').factory('quickConnectService', ['$injector',
             token : authenticationService.getCurrentToken()
         };
 
-        return $http({
+        return requestService({
             method  : 'POST',
             url     : 'api/session/ext/quickconnect/create',
             params  : httpParameters,
-            data    : $.param({uri: uri }),
+            data    : $.param({uri: uri}),
             headers : {'Content-Type': 'application/x-www-form-urlencoded'}
         })
-        .success(function connectionCreated() {
+        .then(function connectionCreated(connectionId) {
             // Clear connections and users from cache.
             cacheService.connections.removeAll();
             cacheService.users.removeAll();
+
+            // Pass on the connection identifier
+            return connectionId;
         });
 
     };

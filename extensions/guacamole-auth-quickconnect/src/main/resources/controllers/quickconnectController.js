@@ -20,28 +20,16 @@
 /**
  * The controller for making ad-hoc (quick) connections
  */
-angular.module('guacQuickConnect').controller('quickconnectController', ['$scope', '$injector', '$log',
-        function manageConnectionController($scope, $injector, $log) {
+angular.module('guacQuickConnect').controller('quickconnectController', ['$scope', '$injector',
+        function manageConnectionController($scope, $injector) {
 
     // Required types
     var ClientIdentifier    = $injector.get('ClientIdentifier');
 
     // Required services
-    var $location                = $injector.get('$location');
-    var guacNotification         = $injector.get('guacNotification');
-    var quickConnectService      = $injector.get('quickConnectService');
-
-    /**
-     * An action to be provided along with the object sent to showStatus which
-     * closes the currently-shown status dialog.
-     */
-    var ACKNOWLEDGE_ACTION = {
-        name        : "MANAGE_CONNECTION.ACTION_ACKNOWLEDGE",
-        // Handle action
-        callback    : function acknowledgeCallback() {
-            guacNotification.showStatus(false);
-        }
-    };
+    var $location            = $injector.get('$location');
+    var guacNotification     = $injector.get('guacNotification');
+    var quickConnectService  = $injector.get('quickConnectService');
 
     /**
      * The URI that will be passed in to the extension to create
@@ -56,21 +44,13 @@ angular.module('guacQuickConnect').controller('quickconnectController', ['$scope
     $scope.quickConnect = function quickConnect() {
 
         quickConnectService.createConnection($scope.uri)
-        .success(function createdConnection(connectionId) {
+        .then(function createdConnection(connectionId) {
             $location.url('/client/' + ClientIdentifier.toString({
                 dataSource : 'quickconnect',
                 type       : ClientIdentifier.Types.CONNECTION,
                 id         : connectionId
             }));
-        })
-        .error(function createFailed(error) {
-            guacNotification.showStatus({
-                'className'  : 'error',
-                'title'      : 'MANAGE_CONNECTION.DIALOG_HEADER_ERROR',
-                'text'       : error.translatableMessage,
-                'actions'    : [ ACKNOWLEDGE_ACTION ]
-            });
-        });
+        }, guacNotification.SHOW_REQUEST_ERROR);
 
         return;
 
