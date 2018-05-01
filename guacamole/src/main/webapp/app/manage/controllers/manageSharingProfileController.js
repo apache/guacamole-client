@@ -24,32 +24,21 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
         function manageSharingProfileController($scope, $injector) {
 
     // Required types
-    var SharingProfile = $injector.get('SharingProfile');
-    var PermissionSet  = $injector.get('PermissionSet');
+    var ManagementPermissions = $injector.get('ManagementPermissions');
+    var SharingProfile        = $injector.get('SharingProfile');
+    var PermissionSet         = $injector.get('PermissionSet');
 
     // Required services
     var $location                = $injector.get('$location');
+    var $q                       = $injector.get('$q');
     var $routeParams             = $injector.get('$routeParams');
     var authenticationService    = $injector.get('authenticationService');
     var connectionService        = $injector.get('connectionService');
-    var guacNotification         = $injector.get('guacNotification');
     var permissionService        = $injector.get('permissionService');
     var requestService           = $injector.get('requestService');
     var schemaService            = $injector.get('schemaService');
     var sharingProfileService    = $injector.get('sharingProfileService');
     var translationStringService = $injector.get('translationStringService');
-
-    /**
-     * An action to be provided along with the object sent to showStatus which
-     * closes the currently-shown status dialog, effectively canceling the
-     * operation which was pending user confirmation.
-     */
-    var CANCEL_ACTION = {
-        name        : "MANAGE_SHARING_PROFILE.ACTION_CANCEL",
-        callback    : function cancelCallback() {
-            guacNotification.showStatus(false);
-        }
-    };
 
     /**
      * The unique identifier of the data source containing the sharing profile
@@ -98,34 +87,13 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
     $scope.parameters = null;
 
     /**
-     * Whether the user can save the sharing profile being edited. This could be
-     * updating an existing sharing profile, or creating a new sharing profile.
+     * The managment-related actions that the current user may perform on the
+     * sharing profile currently being created/modified, or null if the current
+     * user's permissions have not yet been loaded.
      *
-     * @type Boolean
+     * @type ManagementPermissions
      */
-    $scope.canSaveSharingProfile = null;
-
-    /**
-     * Whether the user can delete the sharing profile being edited.
-     *
-     * @type Boolean
-     */
-    $scope.canDeleteSharingProfile = null;
-
-    /**
-     * Whether the user can clone the sharing profile being edited.
-     *
-     * @type Boolean
-     */
-    $scope.canCloneSharingProfile = null;
-
-    /**
-     * All permissions associated with the current user, or null if the user's
-     * permissions have not yet been loaded.
-     *
-     * @type PermissionSet
-     */
-    $scope.permissions = null;
+    $scope.managementPermissions = null;
 
     /**
      * All available sharing profile attributes. This is only the set of
@@ -149,145 +117,156 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
             && $scope.sharingProfile          !== null
             && $scope.primaryConnection       !== null
             && $scope.parameters              !== null
-            && $scope.permissions             !== null
-            && $scope.attributes              !== null
-            && $scope.canSaveSharingProfile   !== null
-            && $scope.canDeleteSharingProfile !== null
-            && $scope.canCloneSharingProfile  !== null;
+            && $scope.managementPermissions   !== null
+            && $scope.attributes              !== null;
 
     };
 
-    // Pull sharing profile attribute schema
-    schemaService.getSharingProfileAttributes($scope.selectedDataSource)
-    .then(function attributesReceived(attributes) {
-        $scope.attributes = attributes;
-    }, requestService.WARN);
+    /**
+     * Loads the data associated with the sharing profile having the given
+     * identifier, preparing the interface for making modifications to that
+     * existing sharing profile.
+     *
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the sharing
+     *     profile to load.
+     *
+     * @param {String} identifier
+     *     The identifier of the sharing profile to load.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved when the interface has been prepared for
+     *     editing the given sharing profile.
+     */
+    var loadExistingSharingProfile = function loadExistingSharingProfile(dataSource, identifier) {
+        return $q.all({
+            sharingProfile : sharingProfileService.getSharingProfile(dataSource, identifier),
+            parameters     : sharingProfileService.getSharingProfileParameters(dataSource, identifier)
+        })
+        .then(function sharingProfileDataRetrieved(values) {
 
-    // Query the user's permissions for the current sharing profile
-    permissionService.getEffectivePermissions($scope.selectedDataSource, authenticationService.getCurrentUsername())
-    .then(function permissionsReceived(permissions) {
+            $scope.sharingProfile = values.sharingProfile;
+            $scope.parameters = values.parameters;
 
-        $scope.permissions = permissions;
+            // Load connection object for associated primary connection
+            return connectionService.getConnection(
+                dataSource,
+                values.sharingProfile.primaryConnectionIdentifier
+            )
+            .then(function connectionRetrieved(connection) {
+                $scope.primaryConnection = connection;
+            });
 
-        // The sharing profile can be saved if it is new or if the user has
-        // UPDATE permission for that sharing profile (either explicitly or by
-        // virtue of being an administrator)
-        $scope.canSaveSharingProfile =
-               !identifier
-            || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-            || PermissionSet.hasSharingProfilePermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, identifier);
+        });
+    };
 
-        // The sharing profile can be saved only if it exists and the user has
-        // DELETE permission (either explicitly or by virtue of being an
-        // administrator)
-        $scope.canDeleteSharingProfile =
-            !!identifier && (
-                   PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-               ||  PermissionSet.hasSharingProfilePermission(permissions, PermissionSet.ObjectPermissionType.DELETE, identifier)
-            );
+    /**
+     * Loads the data associated with the sharing profile having the given
+     * identifier, preparing the interface for cloning that existing
+     * sharing profile.
+     *
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the sharing
+     *     profile to be cloned.
+     *
+     * @param {String} identifier
+     *     The identifier of the sharing profile being cloned.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved when the interface has been prepared for
+     *     cloning the given sharing profile.
+     */
+    var loadClonedSharingProfile = function loadClonedSharingProfile(dataSource, identifier) {
+        return $q.all({
+            sharingProfile : sharingProfileService.getSharingProfile(dataSource, identifier),
+            parameters     : sharingProfileService.getSharingProfileParameters(dataSource, identifier)
+        })
+        .then(function sharingProfileDataRetrieved(values) {
 
-        // The sharing profile can be cloned only if it exists, the user has
-        // UPDATE permission on the sharing profile being cloned (is able to
-        // read parameters), and the user can create new sharing profiles
-        $scope.canCloneSharingProfile =
-            !!identifier && (
-               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER) || (
-                       PermissionSet.hasSharingProfilePermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, identifier)
-                   &&  PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_SHARING_PROFILE)
-               )
-            );
-
-    }, requestService.WARN);
-
-    // Get protocol metadata
-    schemaService.getProtocols($scope.selectedDataSource)
-    .then(function protocolsReceived(protocols) {
-        $scope.protocols = protocols;
-    }, requestService.WARN);
-
-    // If we are editing an existing sharing profile, pull its data
-    if (identifier) {
-
-        // Pull data from existing sharing profile
-        sharingProfileService.getSharingProfile($scope.selectedDataSource, identifier)
-        .then(function sharingProfileRetrieved(sharingProfile) {
-            $scope.sharingProfile = sharingProfile;
-        }, requestService.WARN);
-
-        // Pull sharing profile parameters
-        sharingProfileService.getSharingProfileParameters($scope.selectedDataSource, identifier)
-        .then(function parametersReceived(parameters) {
-            $scope.parameters = parameters;
-        }, requestService.WARN);
-
-    }
-
-    // If we are cloning an existing sharing profile, pull its data instead
-    else if (cloneSourceIdentifier) {
-
-        // Pull data from cloned sharing profile
-        sharingProfileService.getSharingProfile($scope.selectedDataSource, cloneSourceIdentifier)
-        .then(function sharingProfileRetrieved(sharingProfile) {
-
-            // Store data of sharing profile being cloned
-            $scope.sharingProfile = sharingProfile;
+            $scope.sharingProfile = values.sharingProfile;
+            $scope.parameters = values.parameters;
 
             // Clear the identifier field because this sharing profile is new
             delete $scope.sharingProfile.identifier;
 
-        }, requestService.WARN);
+            // Load connection object for associated primary connection
+            return connectionService.getConnection(
+                dataSource,
+                values.sharingProfile.primaryConnectionIdentifier
+            )
+            .then(function connectionRetrieved(connection) {
+                $scope.primaryConnection = connection;
+            });
 
-        // Pull sharing profile parameters from cloned sharing profile
-        sharingProfileService.getSharingProfileParameters($scope.selectedDataSource, cloneSourceIdentifier)
-        .then(function parametersReceived(parameters) {
-            $scope.parameters = parameters;
-        }, requestService.WARN);
+        });
+    };
 
-    }
+    /**
+     * Loads skeleton sharing profile data, preparing the interface for
+     * creating a new sharing profile.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved when the interface has been prepared for
+     *     creating a new sharing profile.
+     */
+    var loadSkeletonSharingProfile = function loadSkeletonSharingProfile() {
 
-    // If we are creating a new sharing profile, populate skeleton sharing
-    // profile data
-    else {
-
+        // Use skeleton sharing profile object with no associated parameters
         $scope.sharingProfile = new SharingProfile({
             primaryConnectionIdentifier : $location.search().parent
         });
-
         $scope.parameters = {};
 
-    }
-
-    // Populate primary connection once its identifier is known
-    $scope.$watch('sharingProfile.primaryConnectionIdentifier',
-        function retrievePrimaryConnection(identifier) {
-
-        if (identifier) {
-            connectionService.getConnection($scope.selectedDataSource, identifier)
-            .then(function connectionRetrieved(connection) {
-                $scope.primaryConnection = connection;
-            }, requestService.WARN);
-        }
-
-    });
-
-    /**
-     * Returns whether the current user can change/set all sharing profile
-     * attributes for the sharing profile being edited, regardless of whether
-     * those attributes are already explicitly associated with that sharing
-     * profile.
-     *
-     * @returns {Boolean}
-     *     true if the current user can change all attributes for the sharing
-     *     profile being edited, regardless of whether those attributes are
-     *     already explicitly associated with that sharing profile, false
-     *     otherwise.
-     */
-    $scope.canChangeAllAttributes = function canChangeAllAttributes() {
-
-        // All attributes can be set if we are creating the sharing profile
-        return !identifier;
+        return $q.resolve();
 
     };
+
+    /**
+     * Loads the data requred for performing the management task requested
+     * through the route parameters given at load time, automatically preparing
+     * the interface for editing an existing sharing profile, cloning an
+     * existing sharing profile, or creating an entirely new sharing profile.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved when the interface has been prepared
+     *     for performing the requested management task.
+     */
+    var loadRequestedSharingProfile = function loadRequestedSharingProfile() {
+
+        // If we are editing an existing sharing profile, pull its data
+        if (identifier)
+            return loadExistingSharingProfile($scope.selectedDataSource, identifier);
+
+        // If we are cloning an existing sharing profile, pull its data instead
+        if (cloneSourceIdentifier)
+            return loadClonedSharingProfile($scope.selectedDataSource, cloneSourceIdentifier);
+
+        // If we are creating a new sharing profile, populate skeleton sharing
+        // profile data
+        return loadSkeletonSharingProfile();
+
+    };
+
+
+    // Query the user's permissions for the current sharing profile
+    $q.all({
+        sharingProfileData : loadRequestedSharingProfile(),
+        attributes  : schemaService.getSharingProfileAttributes($scope.selectedDataSource),
+        protocols   : schemaService.getProtocols($scope.selectedDataSource),
+        permissions : permissionService.getEffectivePermissions($scope.selectedDataSource, authenticationService.getCurrentUsername())
+    })
+    .then(function sharingProfileDataRetrieved(values) {
+
+        $scope.attributes = values.attributes;
+        $scope.protocols = values.protocols;
+
+        $scope.managementPermissions = ManagementPermissions.fromPermissionSet(
+                    values.permissions,
+                    PermissionSet.SystemPermissionType.CREATE_CONNECTION,
+                    PermissionSet.hasConnectionPermission,
+                    identifier);
+
+    }, requestService.WARN);
 
     /**
      * Returns the translation string namespace for the protocol having the
@@ -316,9 +295,10 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
     };
 
     /**
-     * Cancels all pending edits, returning to the management page.
+     * Cancels all pending edits, returning to the main list of connections
+     * within the selected data source.
      */
-    $scope.cancel = function cancel() {
+    $scope.returnToConnectionList = function returnToConnectionList() {
         $location.url('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
     };
 
@@ -332,64 +312,35 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
     };
 
     /**
-     * Saves the sharing profile, creating a new sharing profile or updating
-     * the existing sharing profile.
+     * Saves the current sharing profile, creating a new sharing profile or
+     * updating the existing sharing profile, returning a promise which is
+     * resolved if the save operation succeeds and rejected if the save
+     * operation fails.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved if the save operation succeeds and is
+     *     rejected with an {@link Error} if the save operation fails.
      */
     $scope.saveSharingProfile = function saveSharingProfile() {
 
         $scope.sharingProfile.parameters = $scope.parameters;
 
         // Save the sharing profile
-        sharingProfileService.saveSharingProfile($scope.selectedDataSource, $scope.sharingProfile)
-        .then(function savedSharingProfile() {
-            $location.url('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        }, guacNotification.SHOW_REQUEST_ERROR);
+        return sharingProfileService.saveSharingProfile($scope.selectedDataSource, $scope.sharingProfile);
 
     };
 
     /**
-     * An action to be provided along with the object sent to showStatus which
-     * immediately deletes the current sharing profile.
-     */
-    var DELETE_ACTION = {
-        name        : "MANAGE_SHARING_PROFILE.ACTION_DELETE",
-        className   : "danger",
-        // Handle action
-        callback    : function deleteCallback() {
-            deleteSharingProfileImmediately();
-            guacNotification.showStatus(false);
-        }
-    };
-
-    /**
-     * Immediately deletes the current sharing profile, without prompting the
-     * user for confirmation.
-     */
-    var deleteSharingProfileImmediately = function deleteSharingProfileImmediately() {
-
-        // Delete the sharing profile
-        sharingProfileService.deleteSharingProfile($scope.selectedDataSource, $scope.sharingProfile)
-        .then(function deletedSharingProfile() {
-            $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        }, guacNotification.SHOW_REQUEST_ERROR);
-
-    };
-
-    /**
-     * Deletes the sharing profile, prompting the user first to confirm that
-     * deletion is desired.
+     * Deletes the current sharing profile, returning a promise which is
+     * resolved if the delete operation succeeds and rejected if the delete
+     * operation fails.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved if the delete operation succeeds and is
+     *     rejected with an {@link Error} if the delete operation fails.
      */
     $scope.deleteSharingProfile = function deleteSharingProfile() {
-
-        // Confirm deletion request
-        guacNotification.showStatus({
-            'title'      : 'MANAGE_SHARING_PROFILE.DIALOG_HEADER_CONFIRM_DELETE',
-            'text'       : {
-                'key' : 'MANAGE_SHARING_PROFILE.TEXT_CONFIRM_DELETE'
-            },
-            'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
-        });
-
+        return sharingProfileService.deleteSharingProfile($scope.selectedDataSource, $scope.sharingProfile);
     };
 
 }]);
