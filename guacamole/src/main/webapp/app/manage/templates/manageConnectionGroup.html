@@ -41,14 +41,16 @@
     <!-- Connection group attributes section -->
     <div class="attributes">
         <guac-form namespace="'CONNECTION_GROUP_ATTRIBUTES'" content="attributes"
-                   model="connectionGroup.attributes" model-only="!canChangeAllAttributes()"></guac-form>
+                   model="connectionGroup.attributes" model-only="!managementPermissions.canChangeAllAttributes"></guac-form>
     </div>
 
     <!-- Form action buttons -->
-    <div class="action-buttons">
-        <button ng-show="canSaveConnectionGroup" ng-click="saveConnectionGroup()">{{'MANAGE_CONNECTION_GROUP.ACTION_SAVE' | translate}}</button>
-        <button ng-click="cancel()">{{'MANAGE_CONNECTION_GROUP.ACTION_CANCEL' | translate}}</button>
-        <button ng-show="canDeleteConnectionGroup" ng-click="deleteConnectionGroup()" class="danger">{{'MANAGE_CONNECTION_GROUP.ACTION_DELETE' | translate}}</button>
-    </div>
+    <management-buttons namespace="'MANAGE_CONNECTION_GROUP'"
+          permissions="managementPermissions"
+          save="saveConnectionGroup()"
+          delete="deleteConnectionGroup()"
+          clone="cloneConnectionGroup()"
+          return="returnToConnectionList()">
+    </management-buttons>
 
 </div>

@@ -24,15 +24,16 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
         function manageConnectionGroupController($scope, $injector) {
             
     // Required types
-    var ConnectionGroup = $injector.get('ConnectionGroup');
-    var PermissionSet   = $injector.get('PermissionSet');
+    var ConnectionGroup       = $injector.get('ConnectionGroup');
+    var ManagementPermissions = $injector.get('ManagementPermissions');
+    var PermissionSet         = $injector.get('PermissionSet');
 
     // Required services
     var $location              = $injector.get('$location');
+    var $q                     = $injector.get('$q');
     var $routeParams           = $injector.get('$routeParams');
     var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
-    var guacNotification       = $injector.get('guacNotification');
     var permissionService      = $injector.get('permissionService');
     var requestService         = $injector.get('requestService');
     var schemaService          = $injector.get('schemaService');
@@ -46,12 +47,38 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     $scope.selectedDataSource = $routeParams.dataSource;
 
     /**
+     * The identifier of the original connection group from which this
+     * connection group is being cloned. Only valid if this is a new
+     * connection group.
+     *
+     * @type String
+     */
+    var cloneSourceIdentifier = $location.search().clone;
+
+    /**
      * The identifier of the connection group being edited. If a new connection
      * group is being created, this will not be defined.
      *
      * @type String
      */
     var identifier = $routeParams.id;
+
+    /**
+     * Available connection group types, as translation string / internal value
+     * pairs.
+     *
+     * @type Object[]
+     */
+    $scope.types = [
+        {
+            label: "MANAGE_CONNECTION_GROUP.NAME_TYPE_ORGANIZATIONAL",
+            value: ConnectionGroup.Type.ORGANIZATIONAL
+        },
+        {
+            label: "MANAGE_CONNECTION_GROUP.NAME_TYPE_BALANCING",
+            value : ConnectionGroup.Type.BALANCING
+        }
+    ];
 
     /**
      * The root connection group of the connection group hierarchy.
@@ -68,26 +95,13 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     $scope.connectionGroup = null;
     
     /**
-     * Whether the user has UPDATE permission for the current connection group.
-     * 
-     * @type Boolean
-     */
-    $scope.hasUpdatePermission = null;
-    
-    /**
-     * Whether the user has DELETE permission for the current connection group.
-     * 
-     * @type Boolean
-     */
-    $scope.hasDeletePermission = null;
-
-    /**
-     * All permissions associated with the current user, or null if the user's
-     * permissions have not yet been loaded.
+     * The managment-related actions that the current user may perform on the
+     * connection group currently being created/modified, or null if the current
+     * user's permissions have not yet been loaded.
      *
-     * @type PermissionSet
+     * @type ManagementPermissions
      */
-    $scope.permissions = null;
+    $scope.managementPermissions = null;
 
     /**
      * All available connection group attributes. This is only the set of
@@ -109,177 +123,172 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
 
         return $scope.rootGroup                !== null
             && $scope.connectionGroup          !== null
-            && $scope.permissions              !== null
-            && $scope.attributes               !== null
-            && $scope.canSaveConnectionGroup   !== null
-            && $scope.canDeleteConnectionGroup !== null;
+            && $scope.managementPermissions    !== null
+            && $scope.attributes               !== null;
 
     };
-    
-    // Pull connection group attribute schema
-    schemaService.getConnectionGroupAttributes($scope.selectedDataSource)
-    .then(function attributesReceived(attributes) {
-        $scope.attributes = attributes;
-    }, requestService.WARN);
 
-    // Query the user's permissions for the current connection group
-    permissionService.getEffectivePermissions($scope.selectedDataSource, authenticationService.getCurrentUsername())
-    .then(function permissionsReceived(permissions) {
-                
-        $scope.permissions = permissions;
-                        
-        // Check if the connection group is new or if the user has UPDATE permission
-        $scope.canSaveConnectionGroup =
-              !identifier
-           || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-           || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, identifier);
-
-        // Check if connection group is not new and the user has DELETE permission
-        $scope.canDeleteConnectionGroup =
-           !!identifier && (
-                  PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-              ||  PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.DELETE, identifier)
-           );
-    
-    }, requestService.WARN);
-
-
-    // Pull connection group hierarchy
-    connectionGroupService.getConnectionGroupTree(
-        $scope.selectedDataSource,
-        ConnectionGroup.ROOT_IDENTIFIER,
-        [PermissionSet.ObjectPermissionType.ADMINISTER]
-    )
-    .then(function connectionGroupReceived(rootGroup) {
-        $scope.rootGroup = rootGroup;
-    }, requestService.WARN);
-
-    // If we are editing an existing connection group, pull its data
-    if (identifier) {
-        connectionGroupService.getConnectionGroup($scope.selectedDataSource, identifier)
+    /**
+     * Loads the data associated with the connection group having the given
+     * identifier, preparing the interface for making modifications to that
+     * existing connection group.
+     *
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the connection
+     *     group to load.
+     *
+     * @param {String} identifier
+     *     The identifier of the connection group to load.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved when the interface has been prepared for
+     *     editing the given connection group.
+     */
+    var loadExistingConnectionGroup = function loadExistingConnectionGroup(dataSource, identifier) {
+        return connectionGroupService.getConnectionGroup(
+            dataSource,
+            identifier
+        )
         .then(function connectionGroupReceived(connectionGroup) {
             $scope.connectionGroup = connectionGroup;
-        }, requestService.WARN);
-    }
+        });
+    };
 
-    // If we are creating a new connection group, populate skeleton connection group data
-    else
+    /**
+     * Loads the data associated with the connection group having the given
+     * identifier, preparing the interface for cloning that existing
+     * connection group.
+     *
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the connection
+     *     group to be cloned.
+     *
+     * @param {String} identifier
+     *     The identifier of the connection group being cloned.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved when the interface has been prepared for
+     *     cloning the given connection group.
+     */
+    var loadClonedConnectionGroup = function loadClonedConnectionGroup(dataSource, identifier) {
+        return connectionGroupService.getConnectionGroup(
+            dataSource,
+            identifier
+        )
+        .then(function connectionGroupReceived(connectionGroup) {
+            $scope.connectionGroup = connectionGroup;
+            delete $scope.connectionGroup.identifier;
+        });
+    };
+
+    /**
+     * Loads skeleton connection group data, preparing the interface for
+     * creating a new connection group.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved when the interface has been prepared for
+     *     creating a new connection group.
+     */
+    var loadSkeletonConnectionGroup = function loadSkeletonConnectionGroup() {
+
+        // Use skeleton connection group object with specified parent
         $scope.connectionGroup = new ConnectionGroup({
             parentIdentifier : $location.search().parent
         });
 
-    /**
-     * Available connection group types, as translation string / internal value
-     * pairs.
-     * 
-     * @type Object[]
-     */
-    $scope.types = [
-        {
-            label: "MANAGE_CONNECTION_GROUP.NAME_TYPE_ORGANIZATIONAL",
-            value: ConnectionGroup.Type.ORGANIZATIONAL
-        },
-        {
-            label: "MANAGE_CONNECTION_GROUP.NAME_TYPE_BALANCING",
-            value : ConnectionGroup.Type.BALANCING
-        }
-    ];
-
-    /**
-     * Returns whether the current user can change/set all connection group
-     * attributes for the connection group being edited, regardless of whether
-     * those attributes are already explicitly associated with that connection
-     * group.
-     *
-     * @returns {Boolean}
-     *     true if the current user can change all attributes for the
-     *     connection group being edited, regardless of whether those
-     *     attributes are already explicitly associated with that connection
-     *     group, false otherwise.
-     */
-    $scope.canChangeAllAttributes = function canChangeAllAttributes() {
-
-        // All attributes can be set if we are creating the connection group
-        return !identifier;
+        return $q.resolve();
 
     };
 
     /**
-     * Cancels all pending edits, returning to the management page.
+     * Loads the data requred for performing the management task requested
+     * through the route parameters given at load time, automatically preparing
+     * the interface for editing an existing connection group, cloning an
+     * existing connection group, or creating an entirely new connection group.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved when the interface has been prepared
+     *     for performing the requested management task.
      */
-    $scope.cancel = function cancel() {
+    var loadRequestedConnectionGroup = function loadRequestedConnectionGroup() {
+
+        // If we are editing an existing connection group, pull its data
+        if (identifier)
+            return loadExistingConnectionGroup($scope.selectedDataSource, identifier);
+
+        // If we are cloning an existing connection group, pull its data
+        // instead
+        if (cloneSourceIdentifier)
+            return loadClonedConnectionGroup($scope.selectedDataSource, cloneSourceIdentifier);
+
+        // If we are creating a new connection group, populate skeleton
+        // connection group data
+        return loadSkeletonConnectionGroup();
+
+    };
+
+    // Query the user's permissions for the current connection group
+    $q.all({
+        connectionGroupData : loadRequestedConnectionGroup(),
+        attributes  : schemaService.getConnectionGroupAttributes($scope.selectedDataSource),
+        permissions : permissionService.getEffectivePermissions($scope.selectedDataSource, authenticationService.getCurrentUsername()),
+        rootGroup   : connectionGroupService.getConnectionGroupTree($scope.selectedDataSource, ConnectionGroup.ROOT_IDENTIFIER, [PermissionSet.ObjectPermissionType.ADMINISTER])
+    })
+    .then(function connectionGroupDataRetrieved(values) {
+                
+        $scope.attributes = values.attributes;
+        $scope.rootGroup = values.rootGroup;
+
+        $scope.managementPermissions = ManagementPermissions.fromPermissionSet(
+                    values.permissions,
+                    PermissionSet.SystemPermissionType.CREATE_CONNECTION,
+                    PermissionSet.hasConnectionPermission,
+                    identifier);
+
+    }, requestService.WARN);
+
+    /**
+     * Cancels all pending edits, returning to the main list of connections
+     * within the selected data source.
+     */
+    $scope.returnToConnectionList = function returnToConnectionList() {
         $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
     };
-   
+
     /**
-     * Saves the connection group, creating a new connection group or updating
-     * the existing connection group.
+     * Cancels all pending edits, opening an edit page for a new connection
+     * group which is prepopulated with the data from the connection group
+     * currently being edited.
+     */
+    $scope.cloneConnectionGroup = function cloneConnectionGRoup() {
+        $location.path('/manage/' + encodeURIComponent($scope.selectedDataSource) + '/connectionGroups').search('clone', identifier);
+    };
+
+    /**
+     * Saves the current connection group, creating a new connection group or
+     * updating the existing connection group, returning a promise which is
+     * resolved if the save operation succeeds and rejected if the save
+     * operation fails.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved if the save operation succeeds and is
+     *     rejected with an {@link Error} if the save operation fails.
      */
     $scope.saveConnectionGroup = function saveConnectionGroup() {
-
-        // Save the connection
-        connectionGroupService.saveConnectionGroup($scope.selectedDataSource, $scope.connectionGroup)
-        .then(function savedConnectionGroup() {
-            $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        }, guacNotification.SHOW_REQUEST_ERROR);
-
+        return connectionGroupService.saveConnectionGroup($scope.selectedDataSource, $scope.connectionGroup);
     };
     
     /**
-     * An action to be provided along with the object sent to showStatus which
-     * immediately deletes the current connection group.
-     */
-    var DELETE_ACTION = {
-        name        : "MANAGE_CONNECTION_GROUP.ACTION_DELETE",
-        className   : "danger",
-        // Handle action
-        callback    : function deleteCallback() {
-            deleteConnectionGroupImmediately();
-            guacNotification.showStatus(false);
-        }
-    };
-
-    /**
-     * An action to be provided along with the object sent to showStatus which
-     * closes the currently-shown status dialog.
-     */
-    var CANCEL_ACTION = {
-        name        : "MANAGE_CONNECTION_GROUP.ACTION_CANCEL",
-        // Handle action
-        callback    : function cancelCallback() {
-            guacNotification.showStatus(false);
-        }
-    };
-
-    /**
-     * Immediately deletes the current connection group, without prompting the
-     * user for confirmation.
-     */
-    var deleteConnectionGroupImmediately = function deleteConnectionGroupImmediately() {
-
-        // Delete the connection group
-        connectionGroupService.deleteConnectionGroup($scope.selectedDataSource, $scope.connectionGroup)
-        .then(function deletedConnectionGroup() {
-            $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        }, guacNotification.SHOW_REQUEST_ERROR);
-
-    };
-
-    /**
-     * Deletes the connection group, prompting the user first to confirm that
-     * deletion is desired.
+     * Deletes the current connection group, returning a promise which is
+     * resolved if the delete operation succeeds and rejected if the delete
+     * operation fails.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved if the delete operation succeeds and is
+     *     rejected with an {@link Error} if the delete operation fails.
      */
     $scope.deleteConnectionGroup = function deleteConnectionGroup() {
-
-        // Confirm deletion request
-        guacNotification.showStatus({
-            'title'      : 'MANAGE_CONNECTION_GROUP.DIALOG_HEADER_CONFIRM_DELETE',
-            'text'       : {
-                key : 'MANAGE_CONNECTION_GROUP.TEXT_CONFIRM_DELETE'
-            },
-            'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
-        });
-
+        return connectionGroupService.deleteConnectionGroup($scope.selectedDataSource, $scope.connectionGroup);
     };
 
 }]);
