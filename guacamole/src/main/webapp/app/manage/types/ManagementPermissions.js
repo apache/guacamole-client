@@ -38,6 +38,14 @@ angular.module('manage').factory('ManagementPermissions', ['$injector',
     var ManagementPermissions = function ManagementPermissions(template) {
 
         /**
+         * The identifier of the associated object, or null if the object does
+         * not yet exist.
+         *
+         * @type String
+         */
+        this.identifier = template.identifier || null;
+
+        /**
          * Whether the user can save the associated object. This could be
          * updating an existing object, or creating a new object.
          *
@@ -128,6 +136,8 @@ angular.module('manage').factory('ManagementPermissions', ['$injector',
         var exists = !!identifier;
 
         return new ManagementPermissions({
+
+            identifier : identifier,
 
             // A user can save (create or update) an object if they are a
             // system-level administrator, OR the object does not yet exist and
