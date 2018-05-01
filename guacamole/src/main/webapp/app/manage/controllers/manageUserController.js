@@ -24,6 +24,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         function manageUserController($scope, $injector) {
             
     // Required types
+    var Error                 = $injector.get('Error');
     var ManagementPermissions = $injector.get('ManagementPermissions');
     var PageDefinition        = $injector.get('PageDefinition');
     var PermissionFlagSet     = $injector.get('PermissionFlagSet');
@@ -36,24 +37,11 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var $q                       = $injector.get('$q');
     var authenticationService    = $injector.get('authenticationService');
     var dataSourceService        = $injector.get('dataSourceService');
-    var guacNotification         = $injector.get('guacNotification');
     var permissionService        = $injector.get('permissionService');
     var requestService           = $injector.get('requestService');
     var schemaService            = $injector.get('schemaService');
     var translationStringService = $injector.get('translationStringService');
     var userService              = $injector.get('userService');
-
-    /**
-     * An action to be provided along with the object sent to showStatus which
-     * closes the currently-shown status dialog.
-     */
-    var ACKNOWLEDGE_ACTION = {
-        name        : "MANAGE_USER.ACTION_ACKNOWLEDGE",
-        // Handle action
-        callback    : function acknowledgeCallback() {
-            guacNotification.showStatus(false);
-        }
-    };
 
     /**
      * The identifiers of all data sources currently available to the
@@ -409,9 +397,9 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     }, requestService.WARN);
 
     /**
-     * Cancels all pending edits, returning to the management page.
+     * Cancels all pending edits, returning to the main list of users.
      */
-    $scope.cancel = function cancel() {
+    $scope.returnToUserList = function returnToUserList() {
         $location.url('/settings/users');
     };
 
@@ -424,21 +412,23 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
             
     /**
-     * Saves the user, updating the existing user only.
+     * Saves the current user, creating a new user or updating the existing
+     * user depending on context, returning a promise which is resolved if the
+     * save operation succeeds and rejected if the save operation fails.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved if the save operation succeeds and is
+     *     rejected with an {@link Error} if the save operation fails.
      */
     $scope.saveUser = function saveUser() {
 
         // Verify passwords match
         if ($scope.passwordMatch !== $scope.user.password) {
-            guacNotification.showStatus({
-                'className'  : 'error',
-                'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
-                'text'       : {
+            return $q.reject(new Error({
+                translatableMessage : {
                     key : 'MANAGE_USER.ERROR_PASSWORD_MISMATCH'
-                },
-                'actions'    : [ ACKNOWLEDGE_ACTION ]
-            });
-            return;
+                }
+            }));
         }
 
         // Save or create the user, depending on whether the user exists
@@ -448,7 +438,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         else
             saveUserPromise = userService.createUser($scope.dataSource, $scope.user);
 
-        saveUserPromise.then(function savedUser() {
+        return saveUserPromise.then(function savedUser() {
 
             // Move permission flags if username differs from marker
             if ($scope.selfUsername !== $scope.user.username) {
@@ -468,70 +458,25 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             }
 
             // Upon success, save any changed permissions
-            permissionService.patchPermissions($scope.dataSource, $scope.user.username, $scope.permissionsAdded, $scope.permissionsRemoved)
+            return permissionService.patchPermissions($scope.dataSource, $scope.user.username, $scope.permissionsAdded, $scope.permissionsRemoved)
             .then(function patchedUserPermissions() {
                 $location.url('/settings/users');
-            }, guacNotification.SHOW_REQUEST_ERROR);
+            });
 
-        }, guacNotification.SHOW_REQUEST_ERROR);
+        });
 
     };
     
     /**
-     * An action to be provided along with the object sent to showStatus which
-     * immediately deletes the current user.
-     */
-    var DELETE_ACTION = {
-        name        : "MANAGE_USER.ACTION_DELETE",
-        className   : "danger",
-        // Handle action
-        callback    : function deleteCallback() {
-            deleteUserImmediately();
-            guacNotification.showStatus(false);
-        }
-    };
-
-    /**
-     * An action to be provided along with the object sent to showStatus which
-     * closes the currently-shown status dialog.
-     */
-    var CANCEL_ACTION = {
-        name        : "MANAGE_USER.ACTION_CANCEL",
-        // Handle action
-        callback    : function cancelCallback() {
-            guacNotification.showStatus(false);
-        }
-    };
-
-    /**
-     * Immediately deletes the current user, without prompting the user for
-     * confirmation.
-     */
-    var deleteUserImmediately = function deleteUserImmediately() {
-
-        // Delete the user 
-        userService.deleteUser($scope.dataSource, $scope.user)
-        .then(function deletedUser() {
-            $location.path('/settings/users');
-        }, guacNotification.SHOW_REQUEST_ERROR);
-
-    };
-
-    /**
-     * Deletes the user, prompting the user first to confirm that deletion is
-     * desired.
+     * Deletes the current user, returning a promise which is resolved if the
+     * delete operation succeeds and rejected if the delete operation fails.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved if the delete operation succeeds and is
+     *     rejected with an {@link Error} if the delete operation fails.
      */
     $scope.deleteUser = function deleteUser() {
-
-        // Confirm deletion request
-        guacNotification.showStatus({
-            'title'      : 'MANAGE_USER.DIALOG_HEADER_CONFIRM_DELETE',
-            'text'       : {
-                key : 'MANAGE_USER.TEXT_CONFIRM_DELETE'
-            },
-            'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
-        });
-
+        return userService.deleteUser($scope.dataSource, $scope.user);
     };
 
 }]);

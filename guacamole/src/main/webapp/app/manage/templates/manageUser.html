@@ -63,12 +63,13 @@
         </connection-permission-editor>
 
         <!-- Form action buttons -->
-        <div class="action-buttons">
-            <button ng-show="managementPermissions.canSaveObject" ng-click="saveUser()">{{'MANAGE_USER.ACTION_SAVE' | translate}}</button>
-            <button ng-show="managementPermissions.canCloneObject" ng-click="cloneUser()">{{'MANAGE_USER.ACTION_CLONE' | translate}}</button>
-            <button ng-click="cancel()">{{'MANAGE_USER.ACTION_CANCEL' | translate}}</button>
-            <button ng-show="managementPermissions.canDeleteObject" ng-click="deleteUser()" class="danger">{{'MANAGE_USER.ACTION_DELETE' | translate}}</button>
-        </div>
+        <management-buttons namespace="'MANAGE_USER'"
+              permissions="managementPermissions"
+              save="saveUser()"
+              delete="deleteUser()"
+              clone="cloneUser()"
+              return="returnToUserList()">
+        </management-buttons>
 
     </div>
 
