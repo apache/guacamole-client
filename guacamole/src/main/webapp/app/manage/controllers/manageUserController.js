@@ -24,14 +24,16 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         function manageUserController($scope, $injector) {
             
     // Required types
-    var PageDefinition    = $injector.get('PageDefinition');
-    var PermissionFlagSet = $injector.get('PermissionFlagSet');
-    var PermissionSet     = $injector.get('PermissionSet');
-    var User              = $injector.get('User');
+    var ManagementPermissions = $injector.get('ManagementPermissions');
+    var PageDefinition        = $injector.get('PageDefinition');
+    var PermissionFlagSet     = $injector.get('PermissionFlagSet');
+    var PermissionSet         = $injector.get('PermissionSet');
+    var User                  = $injector.get('User');
 
     // Required services
     var $location                = $injector.get('$location');
     var $routeParams             = $injector.get('$routeParams');
+    var $q                       = $injector.get('$q');
     var authenticationService    = $injector.get('authenticationService');
     var dataSourceService        = $injector.get('dataSourceService');
     var guacNotification         = $injector.get('guacNotification');
@@ -128,13 +130,31 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $scope.permissionFlags = null;
 
     /**
-     * A map of data source identifiers to the set of all permissions
-     * associated with the current user under that data source, or null if the
-     * user's permissions have not yet been loaded.
+     * The set of permissions that will be added to the user when the user is
+     * saved. Permissions will only be present in this set if they are
+     * manually added, and not later manually removed before saving.
      *
-     * @type Object.<String, PermissionSet>
+     * @type PermissionSet
      */
-    $scope.permissions = null;
+    $scope.permissionsAdded = new PermissionSet();
+
+    /**
+     * The set of permissions that will be removed from the user when the user
+     * is saved. Permissions will only be present in this set if they are
+     * manually removed, and not later manually added before saving.
+     *
+     * @type PermissionSet
+     */
+    $scope.permissionsRemoved = new PermissionSet();
+
+    /**
+     * The managment-related actions that the current user may perform on the
+     * user currently being created/modified, or null if the current user's
+     * permissions have not yet been loaded.
+     *
+     * @type ManagementPermissions
+     */
+    $scope.managementPermissions = null;
 
     /**
      * All available user attributes. This is only the set of attribute
@@ -162,11 +182,10 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      */
     $scope.isLoaded = function isLoaded() {
 
-        return $scope.users               !== null
-            && $scope.permissionFlags     !== null
-            && $scope.rootGroups          !== null
-            && $scope.permissions         !== null
-            && $scope.attributes          !== null;
+        return $scope.users                 !== null
+            && $scope.permissionFlags       !== null
+            && $scope.managementPermissions !== null
+            && $scope.attributes            !== null;
 
     };
 
@@ -196,97 +215,6 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
 
     /**
-     * Returns whether the current user can change attributes explicitly
-     * associated with the user being edited within the given data source.
-     *
-     * @param {String} [dataSource]
-     *     The identifier of the data source to check. If omitted, this will
-     *     default to the currently-selected data source.
-     *
-     * @returns {Boolean}
-     *     true if the current user can change attributes associated with the
-     *     user being edited, false otherwise.
-     */
-    $scope.canChangeAttributes = function canChangeAttributes(dataSource) {
-
-        // Do not check if permissions are not yet loaded
-        if (!$scope.permissions)
-            return false;
-
-        // Use currently-selected data source if unspecified
-        dataSource = dataSource || $scope.dataSource;
-
-        // Attributes can always be set if we are creating the user
-        if (!$scope.userExists(dataSource))
-            return true;
-
-        // The administrator can always change attributes
-        if (PermissionSet.hasSystemPermission($scope.permissions[dataSource],
-                PermissionSet.SystemPermissionType.ADMINISTER))
-            return true;
-
-        // Otherwise, can change attributes if we have permission to update this user
-        return PermissionSet.hasUserPermission($scope.permissions[dataSource],
-            PermissionSet.ObjectPermissionType.UPDATE, username);
-
-    };
-
-    /**
-     * Returns whether the current user can change/set all user attributes for
-     * the user being edited, regardless of whether those attributes are
-     * already explicitly associated with that user.
-     *
-     * @returns {Boolean}
-     *     true if the current user can change all attributes for the user
-     *     being edited, regardless of whether those attributes are already
-     *     explicitly associated with that user, false otherwise.
-     */
-    $scope.canChangeAllAttributes = function canChangeAllAttributes() {
-
-        // All attributes can be set if we are creating the user
-        return !$scope.userExists($scope.dataSource);
-
-    };
-
-    /**
-     * Returns whether the current user can change permissions of any kind
-     * which are associated with the user being edited within the given data
-     * source.
-     *
-     * @param {String} [dataSource]
-     *     The identifier of the data source to check. If omitted, this will
-     *     default to the currently-selected data source.
-     *
-     * @returns {Boolean}
-     *     true if the current user can grant or revoke permissions of any kind
-     *     which are associated with the user being edited, false otherwise.
-     */
-    $scope.canChangePermissions = function canChangePermissions(dataSource) {
-
-        // Do not check if permissions are not yet loaded
-        if (!$scope.permissions)
-            return false;
-
-        // Use currently-selected data source if unspecified
-        dataSource = dataSource || $scope.dataSource;
-
-        // Permissions can always be set if we are creating the user
-        if (!$scope.userExists(dataSource))
-            return true;
-
-        // The administrator can always modify permissions
-        if (PermissionSet.hasSystemPermission($scope.permissions[dataSource],
-                PermissionSet.SystemPermissionType.ADMINISTER))
-            return true;
-
-        // Otherwise, can only modify permissions if we have explicit
-        // ADMINISTER permission
-        return PermissionSet.hasUserPermission($scope.permissions[dataSource],
-            PermissionSet.ObjectPermissionType.ADMINISTER, username);
-
-    };
-
-    /**
      * Returns whether the current user can edit the username of the user being
      * edited within the given data source.
      *
@@ -303,189 +231,29 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
 
     /**
-     * Returns whether the current user can save the user being edited within
-     * the given data source. Saving will create or update that user depending
-     * on whether the user already exists.
+     * Loads the data associated with the user having the given username,
+     * preparing the interface for making modifications to that existing user.
      *
-     * @param {String} [dataSource]
-     *     The identifier of the data source to check. If omitted, this will
-     *     default to the currently-selected data source.
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the user to
+     *     load.
      *
-     * @returns {Boolean}
-     *     true if the current user can save changes to the user being edited,
-     *     false otherwise.
+     * @param {String} username
+     *     The username of the user to load.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved when the interface has been prepared for
+     *     editing the given user.
      */
-    $scope.canSaveUser = function canSaveUser(dataSource) {
+    var loadExistingUser = function loadExistingUser(dataSource, username) {
+        return $q.all({
+            users : dataSourceService.apply(userService.getUser, dataSources, username),
+            permissions : permissionService.getPermissions(dataSource, username)
+        })
+        .then(function userDataRetrieved(values) {
 
-        // Do not check if permissions are not yet loaded
-        if (!$scope.permissions)
-            return false;
-
-        // Use currently-selected data source if unspecified
-        dataSource = dataSource || $scope.dataSource;
-
-        // The administrator can always save users
-        if (PermissionSet.hasSystemPermission($scope.permissions[dataSource],
-                PermissionSet.SystemPermissionType.ADMINISTER))
-            return true;
-
-        // If user does not exist, can only save if we have permission to create users
-        if (!$scope.userExists(dataSource))
-           return PermissionSet.hasSystemPermission($scope.permissions[dataSource],
-               PermissionSet.SystemPermissionType.CREATE_USER);
-
-        // Otherwise, can only save if we have permission to update this user
-        return PermissionSet.hasUserPermission($scope.permissions[dataSource],
-            PermissionSet.ObjectPermissionType.UPDATE, username);
-
-    };
-
-    /**
-     * Returns whether the current user can clone the user being edited within
-     * the given data source.
-     *
-     * @param {String} [dataSource]
-     *     The identifier of the data source to check. If omitted, this will
-     *     default to the currently-selected data source.
-     *
-     * @returns {Boolean}
-     *     true if the current user can clone the user being edited, false
-     *     otherwise.
-     */
-    $scope.canCloneUser = function canCloneUser(dataSource) {
-
-        // Do not check if permissions are not yet loaded
-        if (!$scope.permissions)
-            return false;
-
-        // Use currently-selected data source if unspecified
-        dataSource = dataSource || $scope.dataSource;
-
-        // If we are not editing an existing user, we cannot clone
-        if (!$scope.userExists($scope.dataSource))
-            return false;
-
-        // The administrator can always clone users
-        if (PermissionSet.hasSystemPermission($scope.permissions[dataSource],
-                PermissionSet.SystemPermissionType.ADMINISTER))
-            return true;
-
-        // Otherwise we need explicit CREATE_USER permission
-        return PermissionSet.hasSystemPermission($scope.permissions[dataSource],
-            PermissionSet.SystemPermissionType.CREATE_USER);
-
-    };
-
-    /**
-     * Returns whether the current user can delete the user being edited from
-     * the given data source.
-     *
-     * @param {String} [dataSource]
-     *     The identifier of the data source to check. If omitted, this will
-     *     default to the currently-selected data source.
-     *
-     * @returns {Boolean}
-     *     true if the current user can delete the user being edited, false
-     *     otherwise.
-     */
-    $scope.canDeleteUser = function canDeleteUser(dataSource) {
-
-        // Do not check if permissions are not yet loaded
-        if (!$scope.permissions)
-            return false;
-
-        // Use currently-selected data source if unspecified
-        dataSource = dataSource || $scope.dataSource;
-
-        // Can't delete what doesn't exist
-        if (!$scope.userExists(dataSource))
-            return false;
-
-        // The administrator can always delete users
-        if (PermissionSet.hasSystemPermission($scope.permissions[dataSource],
-                PermissionSet.SystemPermissionType.ADMINISTER))
-            return true;
-
-        // Otherwise, require explicit DELETE permission on the user
-        return PermissionSet.hasUserPermission($scope.permissions[dataSource],
-            PermissionSet.ObjectPermissionType.DELETE, username);
-
-    };
-
-    /**
-     * Returns whether the user being edited within the given data source is
-     * read-only, and thus cannot be modified by the current user.
-     *
-     * @param {String} [dataSource]
-     *     The identifier of the data source to check. If omitted, this will
-     *     default to the currently-selected data source.
-     *
-     * @returns {Boolean}
-     *     true if the user being edited is actually read-only and cannot be
-     *     edited at all, false otherwise.
-     */
-    $scope.isReadOnly = function isReadOnly(dataSource) {
-
-        // Use currently-selected data source if unspecified
-        dataSource = dataSource || $scope.dataSource;
-
-        // User is read-only if they cannot be saved
-        return !$scope.canSaveUser(dataSource);
-
-    };
-
-    // Update visible account pages whenever available users/permissions changes
-    $scope.$watchGroup(['users', 'permissions'], function updateAccountPages() {
-
-        // Generate pages for each applicable data source
-        $scope.accountPages = [];
-        angular.forEach(dataSources, function addAccountPage(dataSource) {
-
-            // Determine whether data source contains this user
-            var linked   = $scope.userExists(dataSource);
-            var readOnly = $scope.isReadOnly(dataSource);
-
-            // Account is not relevant if it does not exist and cannot be
-            // created
-            if (!linked && readOnly)
-                return;
-
-            // Only the selected data source is relevant when cloning
-            if (cloneSourceUsername && dataSource !== $scope.dataSource)
-                return;
-
-            // Determine class name based on read-only / linked status
-            var className;
-            if (readOnly)    className = 'read-only';
-            else if (linked) className = 'linked';
-            else             className = 'unlinked';
-
-            // Add page entry
-            $scope.accountPages.push(new PageDefinition({
-                name      : translationStringService.canonicalize('DATA_SOURCE_' + dataSource) + '.NAME',
-                url       : '/manage/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username || ''),
-                className : className
-            }));
-
-        });
-
-    });
-
-    // Pull user attribute schema
-    schemaService.getUserAttributes($scope.dataSource).then(function attributesReceived(attributes) {
-        $scope.attributes = attributes;
-    }, requestService.WARN);
-
-    // Pull user data and permissions if we are editing an existing user
-    if (username) {
-
-        // Pull user data
-        dataSourceService.apply(userService.getUser, dataSources, username)
-        .then(function usersReceived(users) {
-
-            // Get user for currently-selected data source
-            $scope.users = users;
-            $scope.user  = users[$scope.dataSource];
+            $scope.users = values.users;
+            $scope.user  = values.users[dataSource];
 
             // Create skeleton user if user does not exist
             if (!$scope.user)
@@ -493,54 +261,57 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
                     'username' : username
                 });
 
-        }, requestService.WARN);
+            // The current user will be associated with username of the existing
+            // user in the retrieved permission set
+            $scope.selfUsername = username;
+            $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(values.permissions);
 
-        // The current user will be associated with username of the existing
-        // user in the retrieved permission set
-        $scope.selfUsername = username;
+        });
+    };
 
-        // Pull user permissions
-        permissionService.getPermissions($scope.dataSource, username).then(function gotPermissions(permissions) {
-            $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
+    /**
+     * Loads the data associated with the user having the given username,
+     * preparing the interface for cloning that existing user.
+     *
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the user to
+     *     be cloned.
+     *
+     * @param {String} username
+     *     The username of the user being cloned.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved when the interface has been prepared for
+     *     cloning the given user.
+     */
+    var loadClonedUser = function loadClonedUser(dataSource, username) {
+        return $q.all({
+            users : dataSourceService.apply(userService.getUser, [dataSource], username),
+            permissions : permissionService.getPermissions(dataSource, username)
         })
+        .then(function userDataRetrieved(values) {
 
-        // If permissions cannot be retrieved, use empty permissions
-        ['catch'](requestService.createErrorCallback(function permissionRetrievalFailed() {
-            $scope.permissionFlags = new PermissionFlagSet();
-        }));
-    }
-
-    // If we are cloning an existing user, pull his/her data instead
-    else if (cloneSourceUsername) {
-
-        dataSourceService.apply(userService.getUser, dataSources, cloneSourceUsername)
-        .then(function usersReceived(users) {
-
-            // Get user for currently-selected data source
             $scope.users = {};
-            $scope.user  = users[$scope.dataSource];
+            $scope.user  = values.users[dataSource];
 
-        }, requestService.WARN);
+            // The current user will be associated with cloneSourceUsername in the
+            // retrieved permission set
+            $scope.selfUsername = username;
+            $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(values.permissions);
+            $scope.permissionsAdded = values.permissions;
 
-        // The current user will be associated with cloneSourceUsername in the
-        // retrieved permission set
-        $scope.selfUsername = cloneSourceUsername;
+        });
+    };
 
-        // Pull user permissions
-        permissionService.getPermissions($scope.dataSource, cloneSourceUsername)
-        .then(function gotPermissions(permissions) {
-            $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
-            $scope.permissionsAdded = permissions;
-        })
-
-        // If permissions cannot be retrieved, use empty permissions
-        ['catch'](requestService.createErrorCallback(function permissionRetrievalFailed() {
-            $scope.permissionFlags = new PermissionFlagSet();
-        }));
-    }
-
-    // Use skeleton data if we are creating a new user
-    else {
+    /**
+     * Loads skeleton user data, preparing the interface for creating a new
+     * user.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved when the interface has been prepared for
+     *     creating a new user.
+     */
+    var loadSkeletonUser = function loadSkeletonUser() {
 
         // No users exist regardless of data source if there is no username
         $scope.users = {};
@@ -554,35 +325,88 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         // permissions
         $scope.selfUsername = 'SELF';
 
-    }
+        return $q.resolve();
 
-    // Query the user's permissions for the current user
-    dataSourceService.apply(
-        permissionService.getEffectivePermissions,
-        dataSources,
-        currentUsername
-    )
-    .then(function permissionsReceived(permissions) {
-        $scope.permissions = permissions;
+    };
+
+    /**
+     * Loads the data requred for performing the management task requested
+     * through the route parameters given at load time, automatically preparing
+     * the interface for editing an existing user, cloning an existing user, or
+     * creating an entirely new user.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved when the interface has been prepared
+     *     for performing the requested management task.
+     */
+    var loadRequestedUser = function loadRequestedUser() {
+
+        // Pull user data and permissions if we are editing an existing user
+        if (username)
+            return loadExistingUser($scope.dataSource, username);
+
+        // If we are cloning an existing user, pull his/her data instead
+        if (cloneSourceUsername)
+            return loadClonedUser($scope.dataSource, cloneSourceUsername);
+
+        return loadSkeletonUser();
+
+    };
+
+    // Populate interface with requested data
+    $q.all({
+        userData    : loadRequestedUser(),
+        permissions : dataSourceService.apply(permissionService.getEffectivePermissions, dataSources, currentUsername),
+        attributes  : schemaService.getUserAttributes($scope.dataSource)
+    })
+    .then(function dataReceived(values) {
+
+        var managementPermissions = {};
+
+        $scope.attributes = values.attributes;
+
+        // Generate pages for each applicable data source
+        $scope.accountPages = [];
+        angular.forEach(dataSources, function addAccountPage(dataSource) {
+
+            // Determine whether data source contains this user
+            var exists = (dataSource in $scope.users);
+
+            // Calculate management actions available for this specific account
+            managementPermissions[dataSource] = ManagementPermissions.fromPermissionSet(
+                    values.permissions[dataSource],
+                    PermissionSet.SystemPermissionType.CREATE_USER,
+                    PermissionSet.hasUserPermission,
+                    exists ? username : null);
+
+            // Account is not relevant if it does not exist and cannot be
+            // created
+            var readOnly = !managementPermissions[dataSource].canSaveObject;
+            if (!exists && readOnly)
+                return;
+
+            // Only the selected data source is relevant when cloning
+            if (cloneSourceUsername && dataSource !== $scope.dataSource)
+                return;
+
+            // Determine class name based on read-only / linked status
+            var className;
+            if (readOnly)    className = 'read-only';
+            else if (exists) className = 'linked';
+            else             className = 'unlinked';
+
+            // Add page entry
+            $scope.accountPages.push(new PageDefinition({
+                name      : translationStringService.canonicalize('DATA_SOURCE_' + dataSource) + '.NAME',
+                url       : '/manage/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username || ''),
+                className : className
+            }));
+
+        });
+
+        $scope.managementPermissions = managementPermissions[$scope.dataSource];
+
     }, requestService.WARN);
-
-    /**
-     * The set of permissions that will be added to the user when the user is
-     * saved. Permissions will only be present in this set if they are
-     * manually added, and not later manually removed before saving.
-     *
-     * @type PermissionSet
-     */
-    $scope.permissionsAdded = new PermissionSet();
-
-    /**
-     * The set of permissions that will be removed from the user when the user 
-     * is saved. Permissions will only be present in this set if they are
-     * manually removed, and not later manually added before saving.
-     *
-     * @type PermissionSet
-     */
-    $scope.permissionsRemoved = new PermissionSet();
 
     /**
      * Cancels all pending edits, returning to the management page.
