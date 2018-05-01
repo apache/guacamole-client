@@ -136,7 +136,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $scope.permissionsRemoved = new PermissionSet();
 
     /**
-     * The managment-related actions that the current user may perform on the
+     * The management-related actions that the current user may perform on the
      * user currently being created/modified, or null if the current user's
      * permissions have not yet been loaded.
      *

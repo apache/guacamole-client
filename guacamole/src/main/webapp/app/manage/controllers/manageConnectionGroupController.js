@@ -95,7 +95,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     $scope.connectionGroup = null;
     
     /**
-     * The managment-related actions that the current user may perform on the
+     * The management-related actions that the current user may perform on the
      * connection group currently being created/modified, or null if the current
      * user's permissions have not yet been loaded.
      *

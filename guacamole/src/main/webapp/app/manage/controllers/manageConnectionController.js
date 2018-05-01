@@ -111,7 +111,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     $scope.historyEntryWrappers = null;
 
     /**
-     * The managment-related actions that the current user may perform on the
+     * The management-related actions that the current user may perform on the
      * connection currently being created/modified, or null if the current
      * user's permissions have not yet been loaded.
      *
