@@ -27,6 +27,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
     var ManagementPermissions = $injector.get('ManagementPermissions');
     var SharingProfile        = $injector.get('SharingProfile');
     var PermissionSet         = $injector.get('PermissionSet');
+    var Protocol              = $injector.get('Protocol');
 
     // Required services
     var $location                = $injector.get('$location');
@@ -38,7 +39,6 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
     var requestService           = $injector.get('requestService');
     var schemaService            = $injector.get('schemaService');
     var sharingProfileService    = $injector.get('sharingProfileService');
-    var translationStringService = $injector.get('translationStringService');
 
     /**
      * The unique identifier of the data source containing the sharing profile
@@ -269,30 +269,9 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
     }, requestService.WARN);
 
     /**
-     * Returns the translation string namespace for the protocol having the
-     * given name. The namespace will be of the form:
-     *
-     * <code>PROTOCOL_NAME</code>
-     *
-     * where <code>NAME</code> is the protocol name transformed via
-     * translationStringService.canonicalize().
-     *
-     * @param {String} protocolName
-     *     The name of the protocol.
-     *
-     * @returns {String}
-     *     The translation namespace for the protocol specified, or null if no
-     *     namespace could be generated.
+     * @borrows Protocol.getNamespace
      */
-    $scope.getNamespace = function getNamespace(protocolName) {
-
-        // Do not generate a namespace if no protocol is selected
-        if (!protocolName)
-            return null;
-
-        return 'PROTOCOL_' + translationStringService.canonicalize(protocolName);
-
-    };
+    $scope.getNamespace = Protocol.getNamespace;
 
     /**
      * Cancels all pending edits, returning to the main list of connections
