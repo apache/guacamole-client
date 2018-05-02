@@ -171,31 +171,6 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
 
     /**
-     * Returns whether the user being edited already exists within the data
-     * source specified.
-     *
-     * @param {String} [dataSource]
-     *     The identifier of the data source to check. If omitted, this will
-     *     default to the currently-selected data source.
-     *
-     * @returns {Boolean}
-     *     true if the user being edited already exists, false otherwise.
-     */
-    $scope.userExists = function userExists(dataSource) {
-
-        // Do not check if users are not yet loaded
-        if (!$scope.users)
-            return false;
-
-        // Use currently-selected data source if unspecified
-        dataSource = dataSource || $scope.dataSource;
-
-        // Account exists only if it was successfully retrieved
-        return (dataSource in $scope.users);
-
-    };
-
-    /**
      * Returns whether the current user can edit the username of the user being
      * edited within the given data source.
      *
@@ -415,7 +390,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
         // Save or create the user, depending on whether the user exists
         var saveUserPromise;
-        if ($scope.userExists($scope.dataSource))
+        if ($scope.dataSource in $scope.users)
             saveUserPromise = userService.saveUser($scope.dataSource, $scope.user);
         else
             saveUserPromise = userService.createUser($scope.dataSource, $scope.user);
