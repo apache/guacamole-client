@@ -6,17 +6,18 @@
         <h2>{{'MANAGE_USER.SECTION_HEADER_EDIT_USER' | translate}}</h2>
         <guac-user-menu></guac-user-menu>
     </div>
-    <div class="page-tabs">
-        <guac-page-list pages="accountPages"></guac-page-list>
-    </div>
+    <data-data-source-tabs ng-hide="cloneSourceUsername"
+        permissions="managementPermissions"
+        url="getUserURL(dataSource)">
+    </data-data-source-tabs>
 
     <!-- Warn if user is read-only -->
-    <div class="section" ng-hide="managementPermissions.canSaveObject">
+    <div class="section" ng-hide="managementPermissions[dataSource].canSaveObject">
         <p class="notice read-only">{{'MANAGE_USER.INFO_READ_ONLY' | translate}}</p>
     </div>
 
     <!-- Sections applicable to non-read-only users -->
-    <div ng-show="managementPermissions.canSaveObject">
+    <div ng-show="managementPermissions[dataSource].canSaveObject">
 
         <!-- User password section -->
         <div class="section">
@@ -40,13 +41,14 @@
         </div>
 
         <!-- User attributes section -->
-        <div class="attributes" ng-show="managementPermissions.canChangeAttributes">
+        <div class="attributes" ng-show="managementPermissions[dataSource].canChangeAttributes">
             <guac-form namespace="'USER_ATTRIBUTES'" content="attributes"
-                       model="user.attributes" model-only="!managementPermissions.canChangeAllAttributes"></guac-form>
+                       model="user.attributes"
+                       model-only="!managementPermissions[dataSource].canChangeAllAttributes"></guac-form>
         </div>
 
         <!-- System permissions section -->
-        <system-permission-editor ng-show="managementPermissions.canChangePermissions"
+        <system-permission-editor ng-show="managementPermissions[dataSource].canChangePermissions"
               username="selfUsername"
               data-data-source="dataSource"
               permission-flags="permissionFlags"
@@ -55,7 +57,7 @@
         </system-permission-editor>
 
         <!-- Connection permissions section -->
-        <connection-permission-editor ng-show="managementPermissions.canChangePermissions"
+        <connection-permission-editor ng-show="managementPermissions[dataSource].canChangePermissions"
               data-data-source="dataSource"
               permission-flags="permissionFlags"
               permissions-added="permissionsAdded"
@@ -64,7 +66,7 @@
 
         <!-- Form action buttons -->
         <management-buttons namespace="'MANAGE_USER'"
-              permissions="managementPermissions"
+              permissions="managementPermissions[dataSource]"
               save="saveUser()"
               delete="deleteUser()"
               clone="cloneUser()"

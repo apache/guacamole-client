@@ -26,7 +26,6 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     // Required types
     var Error                 = $injector.get('Error');
     var ManagementPermissions = $injector.get('ManagementPermissions');
-    var PageDefinition        = $injector.get('PageDefinition');
     var PermissionFlagSet     = $injector.get('PermissionFlagSet');
     var PermissionSet         = $injector.get('PermissionSet');
     var User                  = $injector.get('User');
@@ -40,7 +39,6 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var permissionService        = $injector.get('permissionService');
     var requestService           = $injector.get('requestService');
     var schemaService            = $injector.get('schemaService');
-    var translationStringService = $injector.get('translationStringService');
     var userService              = $injector.get('userService');
 
     /**
@@ -136,11 +134,14 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $scope.permissionsRemoved = new PermissionSet();
 
     /**
-     * The management-related actions that the current user may perform on the
-     * user currently being created/modified, or null if the current user's
-     * permissions have not yet been loaded.
+     * For each applicable data source, the management-related actions that the
+     * current user may perform on the user account currently being created
+     * or modified, as a map of data source identifier to the
+     * {@link ManagementPermissions} object describing the actions available
+     * within that data source, or null if the current user's permissions have
+     * not yet been loaded.
      *
-     * @type ManagementPermissions
+     * @type Object.<String, ManagementPermissions>
      */
     $scope.managementPermissions = null;
 
@@ -152,14 +153,6 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * @type Form[]
      */
     $scope.attributes = null;
-
-    /**
-     * The pages associated with each user account having the given username.
-     * Each user account will be associated with a particular data source.
-     *
-     * @type PageDefinition[]
-     */
-    $scope.accountPages = [];
 
     /**
      * Returns whether critical data has completed being loaded.
@@ -349,52 +342,41 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     })
     .then(function dataReceived(values) {
 
-        var managementPermissions = {};
-
         $scope.attributes = values.attributes;
 
-        // Generate pages for each applicable data source
-        $scope.accountPages = [];
+        $scope.managementPermissions = {};
         angular.forEach(dataSources, function addAccountPage(dataSource) {
 
             // Determine whether data source contains this user
             var exists = (dataSource in $scope.users);
 
             // Calculate management actions available for this specific account
-            managementPermissions[dataSource] = ManagementPermissions.fromPermissionSet(
+            $scope.managementPermissions[dataSource] = ManagementPermissions.fromPermissionSet(
                     values.permissions[dataSource],
                     PermissionSet.SystemPermissionType.CREATE_USER,
                     PermissionSet.hasUserPermission,
                     exists ? username : null);
 
-            // Account is not relevant if it does not exist and cannot be
-            // created
-            var readOnly = !managementPermissions[dataSource].canSaveObject;
-            if (!exists && readOnly)
-                return;
-
-            // Only the selected data source is relevant when cloning
-            if (cloneSourceUsername && dataSource !== $scope.dataSource)
-                return;
-
-            // Determine class name based on read-only / linked status
-            var className;
-            if (readOnly)    className = 'read-only';
-            else if (exists) className = 'linked';
-            else             className = 'unlinked';
-
-            // Add page entry
-            $scope.accountPages.push(new PageDefinition({
-                name      : translationStringService.canonicalize('DATA_SOURCE_' + dataSource) + '.NAME',
-                url       : '/manage/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username || ''),
-                className : className
-            }));
-
         });
 
-        $scope.managementPermissions = managementPermissions[$scope.dataSource];
-
     }, requestService.WARN);
+
+    /**
+     * Returns the URL for the page which manages the user account currently
+     * being edited under the given data source. The given data source need not
+     * be the same as the data source currently selected.
+     *
+     * @param {String} dataSource
+     *     The unique identifier of the data source that the URL is being
+     *     generated for.
+     *
+     * @returns {String}
+     *     The URL for the page which manages the user account currently being
+     *     edited under the given data source.
+     */
+    $scope.getUserURL = function getUserURL(dataSource) {
+        return '/manage/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username || '');
+    };
 
     /**
      * Cancels all pending edits, returning to the main list of users.
