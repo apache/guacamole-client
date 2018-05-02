@@ -201,7 +201,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     };
 
     /**
-     * Loads the data requred for performing the management task requested
+     * Loads the data required for performing the management task requested
      * through the route parameters given at load time, automatically preparing
      * the interface for editing an existing connection group, cloning an
      * existing connection group, or creating an entirely new connection group.

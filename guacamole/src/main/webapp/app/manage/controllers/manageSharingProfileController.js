@@ -222,7 +222,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
     };
 
     /**
-     * Loads the data requred for performing the management task requested
+     * Loads the data required for performing the management task requested
      * through the route parameters given at load time, automatically preparing
      * the interface for editing an existing sharing profile, cloning an
      * existing sharing profile, or creating an entirely new sharing profile.

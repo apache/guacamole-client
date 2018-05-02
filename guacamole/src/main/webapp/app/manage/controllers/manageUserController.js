@@ -286,7 +286,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
 
     /**
-     * Loads the data requred for performing the management task requested
+     * Loads the data required for performing the management task requested
      * through the route parameters given at load time, automatically preparing
      * the interface for editing an existing user, cloning an existing user, or
      * creating an entirely new user.

@@ -243,7 +243,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     };
 
     /**
-     * Loads the data requred for performing the management task requested
+     * Loads the data required for performing the management task requested
      * through the route parameters given at load time, automatically preparing
      * the interface for editing an existing connection, cloning an existing
      * connection, or creating an entirely new connection.
