@@ -179,6 +179,23 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
 
         var deferred = $q.defer();
 
+        try {
+
+            // Attempt to read the clipboard using the Asynchronous Clipboard
+            // API, if it's available
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                if (data.type === 'text/plain') {
+                    navigator.clipboard.writeText(data.data).then(deferred.resolve, deferred.reject);
+                    return deferred.promise;
+                }
+            }
+
+        }
+
+        // Ignore any hard failures to use Asynchronous Clipboard API, falling
+        // back to traditional document.execCommand()
+        catch (ignore) {}
+
         // Track the originally-focused element prior to changing focus
         var originalElement = document.activeElement;
         pushSelection();
@@ -414,6 +431,29 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
             return pendingRead;
 
         var deferred = $q.defer();
+
+        try {
+
+            // Attempt to read the clipboard using the Asynchronous Clipboard
+            // API, if it's available
+            if (navigator.clipboard && navigator.clipboard.readText) {
+
+                navigator.clipboard.readText().then(function textRead(text) {
+                    deferred.resolve(new ClipboardData({
+                        type : 'text/plain',
+                        data : text
+                    }));
+                }, deferred.reject);
+
+                return deferred.promise;
+
+            }
+
+        }
+
+        // Ignore any hard failures to use Asynchronous Clipboard API, falling
+        // back to traditional document.execCommand()
+        catch (ignore) {}
 
         // Track the originally-focused element prior to changing focus
         var originalElement = document.activeElement;
