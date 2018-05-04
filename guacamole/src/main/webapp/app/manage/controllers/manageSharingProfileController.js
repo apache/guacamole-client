@@ -205,11 +205,15 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
      * Loads skeleton sharing profile data, preparing the interface for
      * creating a new sharing profile.
      *
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the sharing
+     *     profile to be created.
+     *
      * @returns {Promise}
      *     A promise which is resolved when the interface has been prepared for
      *     creating a new sharing profile.
      */
-    var loadSkeletonSharingProfile = function loadSkeletonSharingProfile() {
+    var loadSkeletonSharingProfile = function loadSkeletonSharingProfile(dataSource) {
 
         // Use skeleton sharing profile object with no associated parameters
         $scope.sharingProfile = new SharingProfile({
@@ -217,7 +221,14 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
         });
         $scope.parameters = {};
 
-        return $q.resolve();
+        // Load connection object for associated primary connection
+        return connectionService.getConnection(
+            dataSource,
+            $scope.sharingProfile.primaryConnectionIdentifier
+        )
+        .then(function connectionRetrieved(connection) {
+            $scope.primaryConnection = connection;
+        });
 
     };
 
@@ -243,7 +254,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
 
         // If we are creating a new sharing profile, populate skeleton sharing
         // profile data
-        return loadSkeletonSharingProfile();
+        return loadSkeletonSharingProfile($scope.selectedDataSource);
 
     };
 
