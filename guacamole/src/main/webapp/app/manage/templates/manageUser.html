@@ -6,17 +6,18 @@
         <h2>{{'MANAGE_USER.SECTION_HEADER_EDIT_USER' | translate}}</h2>
         <guac-user-menu></guac-user-menu>
     </div>
-    <div class="page-tabs">
-        <guac-page-list pages="accountPages"></guac-page-list>
-    </div>
+    <data-data-source-tabs ng-hide="cloneSourceUsername"
+        permissions="managementPermissions"
+        url="getUserURL(dataSource)">
+    </data-data-source-tabs>
 
     <!-- Warn if user is read-only -->
-    <div class="section" ng-show="isReadOnly()">
+    <div class="section" ng-hide="managementPermissions[dataSource].canSaveObject">
         <p class="notice read-only">{{'MANAGE_USER.INFO_READ_ONLY' | translate}}</p>
     </div>
 
     <!-- Sections applicable to non-read-only users -->
-    <div ng-show="!isReadOnly()">
+    <div ng-show="managementPermissions[dataSource].canSaveObject">
 
         <!-- User password section -->
         <div class="section">
@@ -40,61 +41,37 @@
         </div>
 
         <!-- User attributes section -->
-        <div class="attributes" ng-show="canChangeAttributes()">
+        <div class="attributes" ng-show="managementPermissions[dataSource].canChangeAttributes">
             <guac-form namespace="'USER_ATTRIBUTES'" content="attributes"
-                       model="user.attributes" model-only="!canChangeAllAttributes()"></guac-form>
+                       model="user.attributes"
+                       model-only="!managementPermissions[dataSource].canChangeAllAttributes"></guac-form>
         </div>
 
         <!-- System permissions section -->
-        <div class="system-permissions" ng-show="canChangePermissions()">
-            <h2 class="header">{{'MANAGE_USER.SECTION_HEADER_PERMISSIONS' | translate}}</h2>
-            <div class="section">
-                <table class="properties">
-                    <tr ng-repeat="systemPermissionType in systemPermissionTypes"
-                        ng-show="canChangeSystemPermissions()">
-                        <th>{{systemPermissionType.label | translate}}</th>
-                        <td><input type="checkbox" ng-model="permissionFlags.systemPermissions[systemPermissionType.value]"
-                                                   ng-change="systemPermissionChanged(systemPermissionType.value)"/></td>
-                    </tr>
-                    <tr>
-                        <th>{{'MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD' | translate}}</th>
-                        <td><input type="checkbox" ng-model="permissionFlags.userPermissions.UPDATE[selfUsername]"
-                                                   ng-change="userPermissionChanged('UPDATE', selfUsername)"/></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+        <system-permission-editor ng-show="managementPermissions[dataSource].canChangePermissions"
+              username="selfUsername"
+              data-data-source="dataSource"
+              permission-flags="permissionFlags"
+              permissions-added="permissionsAdded"
+              permissions-removed="permissionsRemoved">
+        </system-permission-editor>
 
         <!-- Connection permissions section -->
-        <div class="connection-permissions" ng-show="canChangePermissions()">
-            <div class="header">
-                <h2>{{'MANAGE_USER.SECTION_HEADER_CONNECTIONS' | translate}}</h2>
-                <guac-group-list-filter connection-groups="rootGroups"
-                    filtered-connection-groups="filteredRootGroups"
-                    placeholder="'MANAGE_USER.FIELD_PLACEHOLDER_FILTER' | translate"
-                    connection-properties="filteredConnectionProperties"
-                    connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>
-            </div>
-            <div class="section">
-                <guac-group-list
-                    context="groupListContext"
-                    connection-groups="filteredRootGroups"
-                    templates="{
-                        'connection'       : 'app/manage/templates/connectionPermission.html',
-                        'sharing-profile'  : 'app/manage/templates/sharingProfilePermission.html',
-                        'connection-group' : 'app/manage/templates/connectionGroupPermission.html'
-                    }"
-                    page-size="20"/>
-            </div>
-        </div>
+        <connection-permission-editor ng-show="managementPermissions[dataSource].canChangePermissions"
+              data-data-source="dataSource"
+              permission-flags="permissionFlags"
+              permissions-added="permissionsAdded"
+              permissions-removed="permissionsRemoved">
+        </connection-permission-editor>
 
         <!-- Form action buttons -->
-        <div class="action-buttons">
-            <button ng-show="canSaveUser()" ng-click="saveUser()">{{'MANAGE_USER.ACTION_SAVE' | translate}}</button>
-            <button ng-show="canCloneUser()" ng-click="cloneUser()">{{'MANAGE_USER.ACTION_CLONE' | translate}}</button>
-            <button ng-click="cancel()">{{'MANAGE_USER.ACTION_CANCEL' | translate}}</button>
-            <button ng-show="canDeleteUser()" ng-click="deleteUser()" class="danger">{{'MANAGE_USER.ACTION_DELETE' | translate}}</button>
-        </div>
+        <management-buttons namespace="MANAGE_USER"
+              permissions="managementPermissions[dataSource]"
+              save="saveUser()"
+              delete="deleteUser()"
+              clone="cloneUser()"
+              return="returnToUserList()">
+        </management-buttons>
 
     </div>
 

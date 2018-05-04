@@ -24,23 +24,24 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         function manageConnectionController($scope, $injector) {
 
     // Required types
-    var Connection          = $injector.get('Connection');
-    var ConnectionGroup     = $injector.get('ConnectionGroup');
-    var HistoryEntryWrapper = $injector.get('HistoryEntryWrapper');
-    var PermissionSet       = $injector.get('PermissionSet');
+    var Connection            = $injector.get('Connection');
+    var ConnectionGroup       = $injector.get('ConnectionGroup');
+    var HistoryEntryWrapper   = $injector.get('HistoryEntryWrapper');
+    var ManagementPermissions = $injector.get('ManagementPermissions');
+    var PermissionSet         = $injector.get('PermissionSet');
+    var Protocol              = $injector.get('Protocol');
 
     // Required services
     var $location                = $injector.get('$location');
+    var $q                       = $injector.get('$q');
     var $routeParams             = $injector.get('$routeParams');
     var $translate               = $injector.get('$translate');
     var authenticationService    = $injector.get('authenticationService');
-    var guacNotification         = $injector.get('guacNotification');
     var connectionService        = $injector.get('connectionService');
     var connectionGroupService   = $injector.get('connectionGroupService');
     var permissionService        = $injector.get('permissionService');
     var requestService           = $injector.get('requestService');
     var schemaService            = $injector.get('schemaService');
-    var translationStringService = $injector.get('translationStringService');
 
     /**
      * The unique identifier of the data source containing the connection being
@@ -108,36 +109,15 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      * @type HistoryEntryWrapper[]
      */
     $scope.historyEntryWrappers = null;
-    
-    /**
-     * Whether the user can save the connection being edited. This could be
-     * updating an existing connection, or creating a new connection.
-     * 
-     * @type Boolean
-     */
-    $scope.canSaveConnection = null;
-    
-    /**
-     * Whether the user can delete the connection being edited.
-     * 
-     * @type Boolean
-     */
-    $scope.canDeleteConnection = null;
-    
-    /**
-     * Whether the user can clone the connection being edited.
-     * 
-     * @type Boolean
-     */
-    $scope.canCloneConnection = null;
 
     /**
-     * All permissions associated with the current user, or null if the user's
-     * permissions have not yet been loaded.
+     * The management-related actions that the current user may perform on the
+     * connection currently being created/modified, or null if the current
+     * user's permissions have not yet been loaded.
      *
-     * @type PermissionSet
+     * @type ManagementPermissions
      */
-    $scope.permissions = null;
+    $scope.managementPermissions = null;
 
     /**
      * All available connection attributes. This is only the set of attribute
@@ -157,205 +137,178 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      */
     $scope.isLoaded = function isLoaded() {
 
-        return $scope.protocols            !== null
-            && $scope.rootGroup            !== null
-            && $scope.connection           !== null
-            && $scope.parameters           !== null
-            && $scope.historyDateFormat    !== null
-            && $scope.historyEntryWrappers !== null
-            && $scope.permissions          !== null
-            && $scope.attributes           !== null
-            && $scope.canSaveConnection    !== null
-            && $scope.canDeleteConnection  !== null
-            && $scope.canCloneConnection   !== null;
+        return $scope.protocols             !== null
+            && $scope.rootGroup             !== null
+            && $scope.connection            !== null
+            && $scope.parameters            !== null
+            && $scope.historyDateFormat     !== null
+            && $scope.historyEntryWrappers  !== null
+            && $scope.managementPermissions !== null
+            && $scope.attributes            !== null;
 
     };
 
-    // Pull connection attribute schema
-    schemaService.getConnectionAttributes($scope.selectedDataSource)
-    .then(function attributesReceived(attributes) {
-        $scope.attributes = attributes;
-    }, requestService.WARN);
+    /**
+     * Loads the data associated with the connection having the given
+     * identifier, preparing the interface for making modifications to that
+     * existing connection.
+     *
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the connection to
+     *     load.
+     *
+     * @param {String} identifier
+     *     The identifier of the connection to load.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved when the interface has been prepared for
+     *     editing the given connection.
+     */
+    var loadExistingConnection = function loadExistingConnection(dataSource, identifier) {
+        return $q.all({
+            connection     : connectionService.getConnection(dataSource, identifier),
+            historyEntries : connectionService.getConnectionHistory(dataSource, identifier),
+            parameters     : connectionService.getConnectionParameters(dataSource, identifier)
+        })
+        .then(function connectionDataRetrieved(values) {
 
-    // Pull connection group hierarchy
-    connectionGroupService.getConnectionGroupTree(
-        $scope.selectedDataSource,
-        ConnectionGroup.ROOT_IDENTIFIER,
-        [PermissionSet.ObjectPermissionType.ADMINISTER]
-    )
-    .then(function connectionGroupReceived(rootGroup) {
-        $scope.rootGroup = rootGroup;
-    }, requestService.WARN);
-    
-    // Query the user's permissions for the current connection
-    permissionService.getEffectivePermissions($scope.selectedDataSource, authenticationService.getCurrentUsername())
-    .then(function permissionsReceived(permissions) {
-                
-        $scope.permissions = permissions;
-                        
-        // Check if the connection is new or if the user has UPDATE permission
-        $scope.canSaveConnection =
-               !identifier
-            || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-            || PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, identifier);
-            
-        // Check if connection is not new and the user has DELETE permission
-        $scope.canDeleteConnection =
-            !!identifier && (
-                   PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-               ||  PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.DELETE, identifier)
-            );
-                
-        // Check if the connection is not new and the user has UPDATE and CREATE_CONNECTION permissions
-        $scope.canCloneConnection =
-            !!identifier && (
-               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER) || (
-                       PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, identifier)
-                   &&  PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION)
-               )
-            );
-    
-    }, requestService.WARN);
-   
-    // Get protocol metadata
-    schemaService.getProtocols($scope.selectedDataSource)
-    .then(function protocolsReceived(protocols) {
-        $scope.protocols = protocols;
-    }, requestService.WARN);
-
-    // Get history date format
-    $translate('MANAGE_CONNECTION.FORMAT_HISTORY_START').then(function historyDateFormatReceived(historyDateFormat) {
-        $scope.historyDateFormat = historyDateFormat;
-    }, angular.noop);
-
-    // If we are editing an existing connection, pull its data
-    if (identifier) {
-
-        // Pull data from existing connection
-        connectionService.getConnection($scope.selectedDataSource, identifier)
-        .then(function connectionRetrieved(connection) {
-            $scope.connection = connection;
-        }, requestService.WARN);
-
-        // Pull connection history
-        connectionService.getConnectionHistory($scope.selectedDataSource, identifier)
-        .then(function historyReceived(historyEntries) {
+            $scope.connection = values.connection;
+            $scope.parameters = values.parameters;
 
             // Wrap all history entries for sake of display
             $scope.historyEntryWrappers = [];
-            historyEntries.forEach(function wrapHistoryEntry(historyEntry) {
-               $scope.historyEntryWrappers.push(new HistoryEntryWrapper(historyEntry)); 
+            angular.forEach(values.historyEntries, function wrapHistoryEntry(historyEntry) {
+               $scope.historyEntryWrappers.push(new HistoryEntryWrapper(historyEntry));
             });
 
-        }, requestService.WARN);
+        });
+    };
 
-        // Pull connection parameters
-        connectionService.getConnectionParameters($scope.selectedDataSource, identifier)
-        .then(function parametersReceived(parameters) {
-            $scope.parameters = parameters;
-        }, requestService.WARN);
-    }
-    
-    // If we are cloning an existing connection, pull its data instead
-    else if (cloneSourceIdentifier) {
+    /**
+     * Loads the data associated with the connection having the given
+     * identifier, preparing the interface for cloning that existing
+     * connection.
+     *
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the connection
+     *     to be cloned.
+     *
+     * @param {String} identifier
+     *     The identifier of the connection being cloned.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved when the interface has been prepared for
+     *     cloning the given connection.
+     */
+    var loadClonedConnection = function loadClonedConnection(dataSource, identifier) {
+        return $q.all({
+            connection : connectionService.getConnection(dataSource, identifier),
+            parameters : connectionService.getConnectionParameters(dataSource, identifier)
+        })
+        .then(function connectionDataRetrieved(values) {
 
-        // Pull data from cloned connection
-        connectionService.getConnection($scope.selectedDataSource, cloneSourceIdentifier)
-        .then(function connectionRetrieved(connection) {
-            $scope.connection = connection;
-            
+            $scope.connection = values.connection;
+            $scope.parameters = values.parameters;
+
             // Clear the identifier field because this connection is new
             delete $scope.connection.identifier;
-        }, requestService.WARN);
 
-        // Do not pull connection history
-        $scope.historyEntryWrappers = [];
-        
-        // Pull connection parameters from cloned connection
-        connectionService.getConnectionParameters($scope.selectedDataSource, cloneSourceIdentifier)
-        .then(function parametersReceived(parameters) {
-            $scope.parameters = parameters;
-        }, requestService.WARN);
-    }
+            // Cloned connections have no history
+            $scope.historyEntryWrappers = [];
 
-    // If we are creating a new connection, populate skeleton connection data
-    else {
+        });
+    };
+
+    /**
+     * Loads skeleton connection data, preparing the interface for creating a
+     * new connection.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved when the interface has been prepared for
+     *     creating a new connection.
+     */
+    var loadSkeletonConnection = function loadSkeletonConnection() {
+
+        // Use skeleton connection object with no associated permissions,
+        // history, or parameters
         $scope.connection = new Connection({
             protocol         : 'vnc',
             parentIdentifier : $location.search().parent
         });
         $scope.historyEntryWrappers = [];
         $scope.parameters = {};
-    }
 
-    /**
-     * Returns whether the current user can change/set all connection
-     * attributes for the connection being edited, regardless of whether those
-     * attributes are already explicitly associated with that connection.
-     *
-     * @returns {Boolean}
-     *     true if the current user can change all attributes for the
-     *     connection being edited, regardless of whether those attributes are
-     *     already explicitly associated with that connection, false otherwise.
-     */
-    $scope.canChangeAllAttributes = function canChangeAllAttributes() {
-
-        // All attributes can be set if we are creating the connection
-        return !identifier;
+        return $q.resolve();
 
     };
 
     /**
-     * Returns the translation string namespace for the protocol having the
-     * given name. The namespace will be of the form:
+     * Loads the data required for performing the management task requested
+     * through the route parameters given at load time, automatically preparing
+     * the interface for editing an existing connection, cloning an existing
+     * connection, or creating an entirely new connection.
      *
-     * <code>PROTOCOL_NAME</code>
-     *
-     * where <code>NAME</code> is the protocol name transformed via
-     * translationStringService.canonicalize().
-     *
-     * @param {String} protocolName
-     *     The name of the protocol.
-     *
-     * @returns {String}
-     *     The translation namespace for the protocol specified, or null if no
-     *     namespace could be generated.
+     * @returns {Promise}
+     *     A promise which is resolved when the interface has been prepared
+     *     for performing the requested management task.
      */
-    $scope.getNamespace = function getNamespace(protocolName) {
+    var loadRequestedConnection = function loadRequestedConnection() {
 
-        // Do not generate a namespace if no protocol is selected
-        if (!protocolName)
-            return null;
+        // If we are editing an existing connection, pull its data
+        if (identifier)
+            return loadExistingConnection($scope.selectedDataSource, identifier);
 
-        return 'PROTOCOL_' + translationStringService.canonicalize(protocolName);
+        // If we are cloning an existing connection, pull its data instead
+        if (cloneSourceIdentifier)
+            return loadClonedConnection($scope.selectedDataSource, cloneSourceIdentifier);
+
+        // If we are creating a new connection, populate skeleton connection data
+        return loadSkeletonConnection();
 
     };
 
-    /**
-     * Given the internal name of a protocol, produces the translation string
-     * for the localized version of that protocol's name. The translation
-     * string will be of the form:
-     *
-     * <code>NAMESPACE.NAME<code>
-     *
-     * where <code>NAMESPACE</code> is the namespace generated from
-     * $scope.getNamespace().
-     *
-     * @param {String} protocolName
-     *     The name of the protocol.
-     * 
-     * @returns {String}
-     *     The translation string which produces the localized name of the
-     *     protocol specified.
-     */
-    $scope.getProtocolName = function getProtocolName(protocolName) {
-        return $scope.getNamespace(protocolName) + '.NAME';
-    };
+    // Populate interface with requested data
+    $q.all({
+        connectionData : loadRequestedConnection(),
+        attributes  : schemaService.getConnectionAttributes($scope.selectedDataSource),
+        permissions : permissionService.getEffectivePermissions($scope.selectedDataSource, authenticationService.getCurrentUsername()),
+        protocols   : schemaService.getProtocols($scope.selectedDataSource),
+        rootGroup   : connectionGroupService.getConnectionGroupTree($scope.selectedDataSource, ConnectionGroup.ROOT_IDENTIFIER, [PermissionSet.ObjectPermissionType.ADMINISTER])
+    })
+    .then(function dataRetrieved(values) {
+
+        $scope.attributes = values.attributes;
+        $scope.protocols = values.protocols;
+        $scope.rootGroup = values.rootGroup;
+
+        $scope.managementPermissions = ManagementPermissions.fromPermissionSet(
+                    values.permissions,
+                    PermissionSet.SystemPermissionType.CREATE_CONNECTION,
+                    PermissionSet.hasConnectionPermission,
+                    identifier);
+
+    }, requestService.WARN);
+    
+    // Get history date format
+    $translate('MANAGE_CONNECTION.FORMAT_HISTORY_START').then(function historyDateFormatReceived(historyDateFormat) {
+        $scope.historyDateFormat = historyDateFormat;
+    }, angular.noop);
 
     /**
-     * Cancels all pending edits, returning to the management page.
+     * @borrows Protocol.getNamespace
      */
-    $scope.cancel = function cancel() {
+    $scope.getNamespace = Protocol.getNamespace;
+
+    /**
+     * @borrows Protocol.getName
+     */
+    $scope.getProtocolName = Protocol.getName;
+
+    /**
+     * Cancels all pending edits, returning to the main list of connections
+     * within the selected data source.
+     */
+    $scope.returnToConnectionList = function returnToConnectionList() {
         $location.url('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
     };
     
@@ -368,76 +321,33 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     };
             
     /**
-     * Saves the connection, creating a new connection or updating the existing
-     * connection.
+     * Saves the current connection, creating a new connection or updating the
+     * existing connection, returning a promise which is resolved if the save
+     * operation succeeds and rejected if the save operation fails.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved if the save operation succeeds and is
+     *     rejected with an {@link Error} if the save operation fails.
      */
     $scope.saveConnection = function saveConnection() {
 
         $scope.connection.parameters = $scope.parameters;
 
         // Save the connection
-        connectionService.saveConnection($scope.selectedDataSource, $scope.connection)
-        .then(function savedConnection() {
-            $location.url('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        }, guacNotification.SHOW_REQUEST_ERROR);
-
-    };
-    
-    /**
-     * An action to be provided along with the object sent to showStatus which
-     * immediately deletes the current connection.
-     */
-    var DELETE_ACTION = {
-        name        : "MANAGE_CONNECTION.ACTION_DELETE",
-        className   : "danger",
-        // Handle action
-        callback    : function deleteCallback() {
-            deleteConnectionImmediately();
-            guacNotification.showStatus(false);
-        }
-    };
-
-    /**
-     * An action to be provided along with the object sent to showStatus which
-     * closes the currently-shown status dialog.
-     */
-    var CANCEL_ACTION = {
-        name        : "MANAGE_CONNECTION.ACTION_CANCEL",
-        // Handle action
-        callback    : function cancelCallback() {
-            guacNotification.showStatus(false);
-        }
-    };
-
-    /**
-     * Immediately deletes the current connection, without prompting the user
-     * for confirmation.
-     */
-    var deleteConnectionImmediately = function deleteConnectionImmediately() {
-
-        // Delete the connection
-        connectionService.deleteConnection($scope.selectedDataSource, $scope.connection)
-        .then(function deletedConnection() {
-            $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
-        }, guacNotification.SHOW_REQUEST_ERROR);
+        return connectionService.saveConnection($scope.selectedDataSource, $scope.connection);
 
     };
 
     /**
-     * Deletes the connection, prompting the user first to confirm that
-     * deletion is desired.
+     * Deletes the current connection, returning a promise which is resolved if
+     * the delete operation succeeds and rejected if the delete operation fails.
+     *
+     * @returns {Promise}
+     *     A promise which is resolved if the delete operation succeeds and is
+     *     rejected with an {@link Error} if the delete operation fails.
      */
     $scope.deleteConnection = function deleteConnection() {
-
-        // Confirm deletion request
-        guacNotification.showStatus({
-            'title'      : 'MANAGE_CONNECTION.DIALOG_HEADER_CONFIRM_DELETE',
-            'text'       : {
-                key : 'MANAGE_CONNECTION.TEXT_CONFIRM_DELETE'
-            },
-            'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
-        });
-
+        return connectionService.deleteConnection($scope.selectedDataSource, $scope.connection);
     };
 
 }]);

@@ -41,7 +41,7 @@
     <!-- Connection attributes section -->
     <div class="attributes">
         <guac-form namespace="'CONNECTION_ATTRIBUTES'" content="attributes"
-                   model="connection.attributes" model-only="!canChangeAllAttributes()"></guac-form>
+                   model="connection.attributes" model-only="!managementPermissions.canChangeAllAttributes"></guac-form>
     </div>
 
     <!-- Connection parameters -->
@@ -53,12 +53,13 @@
     </div>
 
     <!-- Form action buttons -->
-    <div class="action-buttons">
-        <button ng-show="canSaveConnection" ng-click="saveConnection()">{{'MANAGE_CONNECTION.ACTION_SAVE' | translate}}</button>
-        <button ng-show="canCloneConnection" ng-click="cloneConnection()">{{'MANAGE_CONNECTION.ACTION_CLONE' | translate}}</button>
-        <button ng-click="cancel()">{{'MANAGE_CONNECTION.ACTION_CANCEL' | translate}}</button>
-        <button ng-show="canDeleteConnection" ng-click="deleteConnection()" class="danger">{{'MANAGE_CONNECTION.ACTION_DELETE' | translate}}</button>
-    </div>
+    <management-buttons namespace="MANAGE_CONNECTION"
+          permissions="managementPermissions"
+          save="saveConnection()"
+          delete="deleteConnection()"
+          clone="cloneConnection()"
+          return="returnToConnectionList()">
+    </management-buttons>
 
     <!-- Connection history -->
     <h2 class="header">{{'MANAGE_CONNECTION.SECTION_HEADER_HISTORY' | translate}}</h2>

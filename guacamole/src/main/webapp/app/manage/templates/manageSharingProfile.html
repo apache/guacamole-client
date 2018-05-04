@@ -22,7 +22,7 @@
     <!-- Sharing profile attributes section -->
     <div class="attributes">
         <guac-form namespace="'SHARING_PROFILE_ATTRIBUTES'" content="attributes"
-                   model="sharingProfile.attributes" model-only="!canChangeAllAttributes()"></guac-form>
+                   model="sharingProfile.attributes" model-only="!managementPermissions.canChangeAllAttributes"></guac-form>
     </div>
 
     <!-- Sharing profile parameters -->
@@ -34,11 +34,12 @@
     </div>
 
     <!-- Form action buttons -->
-    <div class="action-buttons">
-        <button ng-show="canSaveSharingProfile" ng-click="saveSharingProfile()">{{'MANAGE_SHARING_PROFILE.ACTION_SAVE' | translate}}</button>
-        <button ng-show="canCloneSharingProfile" ng-click="cloneSharingProfile()">{{'MANAGE_SHARING_PROFILE.ACTION_CLONE' | translate}}</button>
-        <button ng-click="cancel()">{{'MANAGE_SHARING_PROFILE.ACTION_CANCEL' | translate}}</button>
-        <button ng-show="canDeleteSharingProfile" ng-click="deleteSharingProfile()" class="danger">{{'MANAGE_SHARING_PROFILE.ACTION_DELETE' | translate}}</button>
-    </div>
+    <management-buttons namespace="MANAGE_SHARING_PROFILE"
+          permissions="managementPermissions"
+          save="saveSharingProfile()"
+          delete="deleteSharingProfile()"
+          clone="cloneSharingProfile()"
+          return="returnToConnectionList()">
+    </management-buttons>
 
 </div>
