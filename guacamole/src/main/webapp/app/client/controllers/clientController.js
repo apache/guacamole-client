@@ -731,10 +731,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
-    $scope.formattedScale = function formattedScale() {
-        return Math.round($scope.client.clientProperties.scale * 100);
-    };
-    
     $scope.zoomIn = function zoomIn() {
         $scope.menu.autoFit = false;
         $scope.client.clientProperties.autoFit = false;
