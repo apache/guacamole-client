@@ -167,7 +167,7 @@ angular.module('manage').directive('managementButtons', ['$injector',
         };
 
         /**
-         * Invokes the provided save function to saves the current object. If
+         * Invokes the provided save function to save the current object. If
          * saving is successful, the user is navigated back to the page they
          * started from. If saving fails, an error notification is displayed.
          */
