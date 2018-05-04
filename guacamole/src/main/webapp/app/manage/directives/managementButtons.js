@@ -50,7 +50,7 @@ angular.module('manage').directive('managementButtons', ['$injector',
              *
              * @type String
              */
-            namespace : '=',
+            namespace : '@',
 
             /**
              * The permissions which dictate the management actions available
