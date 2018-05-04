@@ -305,6 +305,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         if (cloneSourceUsername)
             return loadClonedUser($scope.dataSource, cloneSourceUsername);
 
+        // If we are creating a new user, populate skeleton user data
         return loadSkeletonUser();
 
     };
