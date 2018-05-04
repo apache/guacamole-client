@@ -69,7 +69,7 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
             permissionsAdded : '=',
 
             /**
-             * The set of permissions that have been added, relative to the
+             * The set of permissions that have been removed, relative to the
              * initial state of the permissions being manipulated.
              *
              * @type PermissionSet
