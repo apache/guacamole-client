@@ -260,10 +260,11 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
 
         /**
          * Updates the permissionsAdded and permissionsRemoved permission sets
-         * to reflect the removal of the given connection permission.
+         * to reflect the removal of the given connection group permission.
          *
          * @param {String} identifier
-         *     The identifier of the connection to remove READ permission for.
+         *     The identifier of the connection group to remove READ permission
+         *     for.
          */
         var removeConnectionGroupPermission = function removeConnectionGroupPermission(identifier) {
 
