@@ -43,6 +43,7 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleCredentialsException;
 import org.apache.guacamole.rest.directory.DirectoryObjectResource;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.history.APIActivityRecord;
+import org.apache.guacamole.rest.identifier.RelatedObjectSetResource;
 import org.apache.guacamole.rest.permission.APIPermissionSet;
 import org.apache.guacamole.rest.permission.PermissionSetResource;
 
@@ -209,6 +210,23 @@ public class UserResource
     @Path("effectivePermissions")
     public APIPermissionSet getEffectivePermissions() throws GuacamoleException {
         return new APIPermissionSet(user.getEffectivePermissions());
+    }
+
+    /**
+     * Returns a resource which abstracts operations available on the set of
+     * user groups of which the User represented by this UserResource is a
+     * member.
+     *
+     * @return
+     *     A resource which represents the set of user groups of which the
+     *     User represented by this UserResource is a member.
+     *
+     * @throws GuacamoleException
+     *     If the group membership for this user cannot be retrieved.
+     */
+    @Path("userGroups")
+    public RelatedObjectSetResource getUserGroups() throws GuacamoleException {
+        return new RelatedObjectSetResource(user.getUserGroups());
     }
 
 }
