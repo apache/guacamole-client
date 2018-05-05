@@ -416,10 +416,8 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             }
 
             // Upon success, save any changed permissions
-            return permissionService.patchPermissions($scope.dataSource, $scope.user.username, $scope.permissionsAdded, $scope.permissionsRemoved)
-            .then(function patchedUserPermissions() {
-                $location.url('/settings/users');
-            });
+            return permissionService.patchPermissions($scope.dataSource, $scope.user.username,
+                $scope.permissionsAdded, $scope.permissionsRemoved);
 
         });
 
