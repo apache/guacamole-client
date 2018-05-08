@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.auth.quickconnect;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.guacamole.GuacamoleException;
@@ -45,7 +45,7 @@ public class QuickConnectDirectory extends SimpleDirectory<Connection> {
      * The connections to store.
      */
     private final Map<String, Connection> connections =
-            new HashMap<String, Connection>();
+            new ConcurrentHashMap<String, Connection>();
 
     /**
      * The root connection group for this directory.
