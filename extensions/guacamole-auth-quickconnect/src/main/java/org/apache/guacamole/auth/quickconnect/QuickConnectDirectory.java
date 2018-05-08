@@ -37,11 +37,6 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
 public class QuickConnectDirectory extends SimpleDirectory<Connection> {
 
     /**
-     * The unique identifier of the root connection group.
-     */
-    private static final String ROOT_IDENTIFIER = "ROOT";
-
-    /**
      * The connections to store.
      */
     private final Map<String, Connection> connections =
@@ -113,7 +108,7 @@ public class QuickConnectDirectory extends SimpleDirectory<Connection> {
 
         // Create a new connection and set the parent identifier.
         Connection connection = new SimpleConnection(name, connectionId, config);
-        connection.setParentIdentifier(ROOT_IDENTIFIER);
+        connection.setParentIdentifier(QuickConnectUserContext.ROOT_IDENTIFIER);
 
         // Place the object in this directory.
         add(connection);

@@ -38,6 +38,11 @@ import org.apache.guacamole.net.auth.simple.SimpleUser;
 public class QuickConnectUserContext extends AbstractUserContext {
 
     /**
+     * The unique identifier of the root connection group.
+     */
+    public static final String ROOT_IDENTIFIER = DEFAULT_ROOT_CONNECTION_GROUP;
+
+    /**
      * The AuthenticationProvider that created this UserContext.
      */
     private final AuthenticationProvider authProvider;
@@ -71,24 +76,24 @@ public class QuickConnectUserContext extends AbstractUserContext {
      *     The name of the user logging in and using this class.
      */
     public QuickConnectUserContext(AuthenticationProvider authProvider,
-            String username) {
+            String username) throws GuacamoleException {
 
         // Initialize the rootGroup to a basic connection group with a
         // single root identifier.
         this.rootGroup = new QuickConnectionGroup(
-            DEFAULT_ROOT_CONNECTION_GROUP,
-            DEFAULT_ROOT_CONNECTION_GROUP
-        );
-
-        // Initialize the user to a SimpleUser with the provided username,
-        // no connections, and the single root group.
-        this.self = new SimpleUser(username,
-            Collections.<String>emptyList(),
-            Collections.singleton(DEFAULT_ROOT_CONNECTION_GROUP)
+            ROOT_IDENTIFIER,
+            ROOT_IDENTIFIER
         );
 
         // Initialize the connection directory
         this.connectionDirectory = new QuickConnectDirectory(this.rootGroup);
+
+        // Initialize the user to a SimpleUser with the provided username,
+        // no connections, and the single root group.
+        this.self = new SimpleUser(username,
+            connectionDirectory.getIdentifiers(),
+            Collections.singleton(ROOT_IDENTIFIER)
+        );
 
         // Set the authProvider to the calling authProvider object.
         this.authProvider = authProvider;
