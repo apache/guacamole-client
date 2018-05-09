@@ -5,6 +5,7 @@
     },
 
     "QUICKCONNECT" : {
+        "ACTION_CONNECT"        : "Connect",
         "FIELD_PLACEHOLDER_URI" : "Enter Connection URI"
     }
 

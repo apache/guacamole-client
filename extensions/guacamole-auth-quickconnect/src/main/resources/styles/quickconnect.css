@@ -19,26 +19,27 @@
 
 
 .quickconnect-container {
-    margin: 0.5em 0;
+    margin: 0.75em 0;
     width: 100%;
+    margin-left: 0.75em;
 }
 
 .quickconnect-container .quickconnect-field {
     background-image: url('images/protocol-icons/guac-text.png');
     background-repeat: no-repeat;
-    background-size: 1.75em;
+    background-size: 1.50em;
     background-position: 0.25em center;
     background-color: transparent;
-    padding: 0.5em;
-    padding-left: 2.25em;
+    padding: 0.25em;
+    padding-left: 2.50em;
     width: 100%;
     max-width: none;
     border: 0;
-    border-left: 1px solid rgba(0,0,0,0.125);
     box-sizing: border-box;
 }
 
 .quickconnect-button {
     clear: both;
     float: right;
+    margin-right: 0.75em;
 }

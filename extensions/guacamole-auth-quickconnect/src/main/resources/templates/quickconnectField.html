@@ -5,5 +5,7 @@
             <input type=text class="quickconnect-field" placeholder="{{'QUICKCONNECT.FIELD_PLACEHOLDER_URI' |translate}}" ng-model="uri" />
         </form>
     </div>
-    <button class="quickconnect-button" ng-click="quickConnect()">Connect</button>
+    <div class="action-buttons">
+        <button class="quickconnect-button" ng-click="quickConnect()">{{'QUICKCONNECT.ACTION_CONNECT' | translate}}</button>
+    </div>
 </div>
