@@ -85,6 +85,7 @@ public class QCParser {
     public static GuacamoleConfiguration getConfiguration(String uri)
             throws GuacamoleException {
 
+        // Parse the URI object from provided string.
         URI qcUri;
         try {
             qcUri = new URI(uri);
@@ -100,22 +101,32 @@ public class QCParser {
         String userInfo = qcUri.getUserInfo();
         String query = qcUri.getQuery();
 
-        String username = null;
-        String password = null;
-        Map<String, String> queryParams = null;
+        // Generate a new GuacamoleConfiguration
+        GuacamoleConfiguration qcConfig = new GuacamoleConfiguration();
 
-        // Assign default protocol if one is not found in the URI.
-        if (protocol == null || protocol.isEmpty())
-            protocol = DEFAULT_URI_PROTOCOL;
+        // Check for provided protocol or use default
+        if (protocol != null && !protocol.isEmpty())
+            qcConfig.setProtocol(protocol);
+        else
+            qcConfig.setProtocol(DEFAULT_URI_PROTOCOL);
 
-        // Assign default host if one is not found in the URI.
-        if (host == null || host.isEmpty())
-            host = DEFAULT_URI_HOST;
+        // Check for provided port number
+        if (port > 0)
+            qcConfig.setParameter("port", Integer.toString(port));
+
+        // Check for provided host or use default
+        if (host != null && !host.isEmpty())
+            qcConfig.setParameter("hostname", host);
+        else
+            qcConfig.setParameter("hostname", DEFAULT_URI_HOST);
 
         // Look for extra query parameters and parse them out.
         if (query != null && !query.isEmpty()) {
             try {
-                queryParams = parseQueryString(query);
+                Map<String, String> queryParams = parseQueryString(query);
+                if (queryParams != null)
+                    for (Map.Entry<String, String> entry: queryParams.entrySet())
+                        qcConfig.setParameter(entry.getKey(), entry.getValue());
             }
             catch (UnsupportedEncodingException e) {
                 throw new GuacamoleServerException("Unexpected lack of UTF-8 encoding support.", e);
@@ -127,29 +138,17 @@ public class QCParser {
 
             Matcher userinfoMatcher = userinfoPattern.matcher(userInfo);
             if (userinfoMatcher.matches()) {
-                username = userinfoMatcher.group(USERNAME_GROUP);
-                password = userinfoMatcher.group(PASSWORD_GROUP);
+                String username = userinfoMatcher.group(USERNAME_GROUP);
+                String password = userinfoMatcher.group(PASSWORD_GROUP);
+
+                if (username != null && !username.isEmpty())
+                    qcConfig.setParameter("username", username);
+
+                if (password != null && !password.isEmpty())
+                    qcConfig.setParameter("password", password);
             }
 
         }
-
-        // Generate a new GuacamoleConfiguration and set parameters.
-        GuacamoleConfiguration qcConfig = new GuacamoleConfiguration();
-        qcConfig.setProtocol(protocol);
-        qcConfig.setParameter("hostname",host);
-
-        if (port > 0)
-            qcConfig.setParameter("port", Integer.toString(port));
-
-        if (username != null && !username.isEmpty())
-            qcConfig.setParameter("username", username);
-
-        if (password != null && !password.isEmpty())
-            qcConfig.setParameter("password", password);
-
-        if (queryParams != null)
-            for (Map.Entry<String, String> entry : queryParams.entrySet())
-                qcConfig.setParameter(entry.getKey(), entry.getValue());
 
         return qcConfig;
         
