@@ -19,9 +19,9 @@
 
 
 .quickconnect-container {
-    margin: 0.75em 0;
+    margin: 0.25em 0;
     width: 100%;
-    margin-left: 0.75em;
+    margin-left: 0.50em;
 }
 
 .quickconnect-container .quickconnect-field {
@@ -42,4 +42,12 @@
     clear: both;
     float: right;
     margin-right: 0.75em;
+    font-size: 0.75em;
+    padding: 0.25em;
+}
+
+.quickconnect-list-item {
+    vertical-align: middle;
+    align-content: center;
+    display: flex
 }
