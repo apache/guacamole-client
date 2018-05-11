@@ -151,9 +151,11 @@
                     <div class="content">
                         <div id="zoom-settings">
                             <div ng-click="zoomOut()" id="zoom-out"><img src="images/settings/zoom-out.png" alt="-"/></div>
-                            <input type="number" class="zoom-ctrl" guac-zoom-ctrl
-                                    ng-model="client.clientProperties.scale"
-                                    ng-model-options="{ updateOn: 'blur submit' }" />%
+                            <div class="zoom-ctrl">
+                                <input type="number" class="zoom-ctrl" guac-zoom-ctrl
+                                        ng-model="client.clientProperties.scale"
+                                        ng-model-options="{ updateOn: 'blur submit' }" />%
+                            </div>
                             <div ng-click="zoomIn()" id="zoom-in"><img src="images/settings/zoom-in.png" alt="+"/></div>
                         </div>
                         <div><label><input ng-model="menu.autoFit" ng-change="changeAutoFit()" ng-disabled="autoFitDisabled()" type="checkbox" id="auto-fit"/> {{'CLIENT.TEXT_ZOOM_AUTO_FIT' | translate}}</label></div>
