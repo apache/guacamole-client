@@ -26,7 +26,13 @@ angular.module('client').directive('guacZoomCtrl', function guacZoomCtrl() {
         restrict: 'A',
         require: 'ngModel',
         priority: 101,
-        link: function(scope, element, attr, ngModel) {
+        link: function(scope, element, attrs, ngModel) {
+
+            // Evaluate the ngChange attribute when the model
+            // changes.
+            ngModel.$viewChangeListeners.push(function() {
+                scope.$eval(attrs.ngChange);
+            });
 
             // When pushing to the menu, mutiply by 100.
             ngModel.$formatters.push(function(value) {

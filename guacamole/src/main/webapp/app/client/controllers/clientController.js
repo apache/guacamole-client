@@ -741,6 +741,16 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         $scope.client.clientProperties.autoFit = false;
         $scope.client.clientProperties.scale -= 0.1;
     };
+
+    /**
+     * When zoom is manually set by entering a value
+     * into the controller, this method turns off autoFit,
+     * both in the menu and the clientProperties.
+     */
+    $scope.zoomSet = function zoomSet() {
+        $scope.menu.autoFit = false;
+        $scope.client.clientProperties.autoFit = false;
+    };
     
     $scope.changeAutoFit = function changeAutoFit() {
         if ($scope.menu.autoFit && $scope.client.clientProperties.minScale) {
