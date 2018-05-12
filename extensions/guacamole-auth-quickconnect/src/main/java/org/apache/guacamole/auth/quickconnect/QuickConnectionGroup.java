@@ -54,9 +54,10 @@ public class QuickConnectionGroup extends AbstractConnectionGroup {
      */
     public QuickConnectionGroup(String name, String identifier) {
 
-        setName(name);
-        setIdentifier(identifier);
-        setType(ConnectionGroup.Type.ORGANIZATIONAL);
+        super();
+        super.setName(name);
+        super.setIdentifier(identifier);
+        super.setType(ConnectionGroup.Type.ORGANIZATIONAL);
 
     }
 
