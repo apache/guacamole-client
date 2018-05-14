@@ -50,7 +50,7 @@ public class QuickConnectDirectory extends SimpleDirectory<Connection> {
     /**
      * The internal counter for connection IDs.
      */
-    private AtomicInteger connectionId;
+    private final AtomicInteger connectionId;
 
     /**
      * Creates a new QuickConnectDirectory with the default

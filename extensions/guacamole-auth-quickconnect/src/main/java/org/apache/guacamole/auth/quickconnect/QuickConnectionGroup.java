@@ -39,7 +39,7 @@ public class QuickConnectionGroup extends AbstractConnectionGroup {
     /**
      * A set that will store the Connection identifiers for this group.
      */
-    private Set<String> connectionIdentifiers =
+    private final Set<String> connectionIdentifiers =
             new HashSet<String>(Collections.<String>emptyList());
 
     /**

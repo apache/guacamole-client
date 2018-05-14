@@ -38,7 +38,7 @@ public class QuickConnectREST {
     /**
      * The connection directory for this REST endpoint.
      */
-    private QuickConnectDirectory directory;
+    private final QuickConnectDirectory directory;
 
     /**
      * Construct a new QuickConnectREST class, taking in a

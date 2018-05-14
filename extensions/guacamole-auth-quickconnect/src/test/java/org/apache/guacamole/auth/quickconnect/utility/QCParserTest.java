@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.quickconnect.utility;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
@@ -35,6 +34,9 @@ public class QCParserTest {
 
     /**
      * Verify that the parseQueryString() method functions as designed.
+     * 
+     * @throws UnsupportedEncodingException
+     *     If Java lacks UTF-8 support.
      */
     @Test
     public void testParseQueryString() throws UnsupportedEncodingException {
@@ -51,6 +53,9 @@ public class QCParserTest {
 
     /**
      * Verify that the parseUserInfo() method functions as designed.
+     * 
+     * @throws UnsupportedEncodingException
+     *     If Java lacks UTF-8 support.
      */
     @Test
     public void testParseUserInfo() throws UnsupportedEncodingException {
@@ -79,6 +84,9 @@ public class QCParserTest {
     /**
      * Verify that the getConfiguration() method returns the expected
      * GuacamoleConfiguration object.
+     * 
+     * @throws GuacamoleException
+     *     If the configuration cannot be parsed from the given URI.
      */
     @Test
     public void testGetConfiguration() throws GuacamoleException {
