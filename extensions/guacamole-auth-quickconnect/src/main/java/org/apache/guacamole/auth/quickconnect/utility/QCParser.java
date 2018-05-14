@@ -136,18 +136,18 @@ public class QCParser {
         // Look for the username and password and parse them out.
         if (userInfo != null && !userInfo.isEmpty()) {
 
-            Matcher userinfoMatcher = userinfoPattern.matcher(userInfo);
-            if (userinfoMatcher.matches()) {
-                String username = userinfoMatcher.group(USERNAME_GROUP);
-                String password = userinfoMatcher.group(PASSWORD_GROUP);
+            try {
+                Map<String, String> userInfoParams = parseUserInfo(userInfo);
 
-                if (username != null && !username.isEmpty())
-                    qcConfig.setParameter("username", username);
+                if (userInfoParams.containsKey("username"))
+                    qcConfig.setParameter("username", userInfoParams.get("username"));
 
-                if (password != null && !password.isEmpty())
-                    qcConfig.setParameter("password", password);
+                if (userInfoParams.containsKey("password"))
+                    qcConfig.setParameter("password", userInfoParams.get("password"));
             }
-
+            catch (UnsupportedEncodingException e) {
+                throw new GuacamoleServerException("Unexpected lack of UTF-8 encoding support.", e);
+            }
         }
 
         return qcConfig;
@@ -182,6 +182,43 @@ public class QCParser {
         }
 
         return parameters;
+    }
+
+    /**
+     * Parse the given string for username and password values,
+     * and return a map containing the username, password
+     * or both.
+     *
+     * @param userInfo
+     *     The string to parse for username/password values.
+     * 
+     * @return
+     *     A map with the username, password, or both.
+     *
+     * @throws UnsupportedEncodingException
+     *     If Java lacks UTF-8 support.
+     */
+    public static Map<String, String> parseUserInfo(String userInfo)
+            throws UnsupportedEncodingException {
+
+        Map<String, String> userInfoMap = new HashMap<String, String>();
+        Matcher userinfoMatcher = userinfoPattern.matcher(userInfo);
+
+        if (userinfoMatcher.matches()) {
+            String username = URLDecoder.decode(
+                    userinfoMatcher.group(USERNAME_GROUP), "UTF-8");
+            String password = URLDecoder.decode(
+                    userinfoMatcher.group(PASSWORD_GROUP), "UTF-8");
+
+            if (username != null && !username.isEmpty())
+                userInfoMap.put("username", username);
+
+            if (password != null && !password.isEmpty())
+                userInfoMap.put("password", password);
+        }
+
+        return userInfoMap;
+
     }
 
     /**
