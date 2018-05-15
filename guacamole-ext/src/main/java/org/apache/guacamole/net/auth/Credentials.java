@@ -142,6 +142,9 @@ public class Credentials implements Serializable {
 
     /**
      * Sets the HttpServletRequest associated with this set of credentials.
+     * Also sets the remoteAddress and remoteHostname objects, checking the
+     * request for X-Forwarded-For or falling back to provided remote address.
+     * 
      * @param request  The HttpServletRequest to associated with this set of
      *                 credentials.
      */
@@ -153,14 +156,14 @@ public class Credentials implements Serializable {
         if (header != null) {
             Matcher matcher = X_FORWARDED_FOR.matcher(header);
             if (matcher.matches())
-                setRemoteAddress(matcher.group(1));
+                this.remoteAddress = matcher.group(1);
         }
         // Header not present, just use remote address
         else {
-            setRemoteAddress(request.getRemoteAddr());
+            this.remoteAddress = request.getRemoteAddr();
         }
         
-        setRemoteHostname(request.getRemoteHost());
+        this.remoteHostname = request.getRemoteHost();
         
     }
 
@@ -195,18 +198,6 @@ public class Credentials implements Serializable {
     }
 
     /**
-     * Sets the address of the client end of the connection which provided
-     * these credentials.
-     *
-     * @param remoteAddress
-     *     The address of the client end of the connection which provided these
-     *     credentials, or null if the address is not known.
-     */
-    public void setRemoteAddress(String remoteAddress) {
-        this.remoteAddress = remoteAddress;
-    }
-
-    /**
      * Returns the hostname of the client end of the connection which provided
      * these credentials, if known. If the hostname of the client cannot be
      * determined, but the address is known, the address may be returned
@@ -218,20 +209,6 @@ public class Credentials implements Serializable {
      */
     public String getRemoteHostname() {
         return remoteHostname;
-    }
-
-    /**
-     * Sets the hostname of the client end of the connection which provided
-     * these credentials, if known. If the hostname of the client cannot be
-     * determined, but the address is known, the address may be specified
-     * instead.
-     *
-     * @param remoteHostname
-     *     The hostname or address of the client end of the connection which
-     *     provided these credentials, or null if the hostname is not known.
-     */
-    public void setRemoteHostname(String remoteHostname) {
-        this.remoteHostname = remoteHostname;
     }
 
 }
