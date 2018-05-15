@@ -20,6 +20,8 @@
 package org.apache.guacamole.net.auth;
 
 import java.io.Serializable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -38,6 +40,27 @@ public class Credentials implements Serializable {
      * Unique identifier associated with this specific version of Credentials.
      */
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Regular expression which matches any IPv4 address.
+     */
+    private static final String IPV4_ADDRESS_REGEX = "([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})";
+
+    /**
+     * Regular expression which matches any IPv6 address.
+     */
+    private static final String IPV6_ADDRESS_REGEX = "([0-9a-fA-F]*(:[0-9a-fA-F]*){0,7})";
+    
+    /**
+     * Regular expression which matches any IP address, regardless of version.
+     */
+    private static final String IP_ADDRESS_REGEX = "(" + IPV4_ADDRESS_REGEX + "|" + IPV6_ADDRESS_REGEX + ")";
+    
+    /**
+     * Pattern which matches valid values of the de-facto standard
+     * "X-Forwarded-For" header.
+     */
+    private static final Pattern X_FORWARDED_FOR = Pattern.compile("^" + IP_ADDRESS_REGEX + "(, " + IP_ADDRESS_REGEX + ")*$");
 
     /**
      * An arbitrary username.
@@ -124,6 +147,21 @@ public class Credentials implements Serializable {
      */
     public void setRequest(HttpServletRequest request) {
         this.request = request;
+        
+        // Use X-Forwarded-For to get remote address, if present and valid
+        String header = request.getHeader("X-Forwarded-For");
+        if (header != null) {
+            Matcher matcher = X_FORWARDED_FOR.matcher(header);
+            if (matcher.matches())
+                setRemoteAddress(matcher.group(1));
+        }
+        // Header not present, just use remote address
+        else {
+            setRemoteAddress(request.getRemoteAddr());
+        }
+        
+        setRemoteHostname(request.getRemoteHost());
+        
     }
 
     /**

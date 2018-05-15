@@ -55,7 +55,7 @@ public class TokenRESTService {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(TokenRESTService.class);
-
+    
     /**
      * Service for authenticating users and managing their Guacamole sessions.
      */
@@ -122,8 +122,6 @@ public class TokenRESTService {
         credentials.setPassword(password);
         credentials.setRequest(request);
         credentials.setSession(request.getSession(false));
-        credentials.setRemoteAddress(request.getRemoteAddr());
-        credentials.setRemoteHostname(request.getRemoteHost());
 
         return credentials;
 
