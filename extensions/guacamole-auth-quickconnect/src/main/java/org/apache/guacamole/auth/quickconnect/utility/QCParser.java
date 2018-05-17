@@ -137,13 +137,7 @@ public class QCParser {
         if (userInfo != null && !userInfo.isEmpty()) {
 
             try {
-                Map<String, String> userInfoParams = parseUserInfo(userInfo);
-
-                if (userInfoParams.containsKey("username"))
-                    qcConfig.setParameter("username", userInfoParams.get("username"));
-
-                if (userInfoParams.containsKey("password"))
-                    qcConfig.setParameter("password", userInfoParams.get("password"));
+                parseUserInfo(userInfo, qcConfig);
             }
             catch (UnsupportedEncodingException e) {
                 throw new GuacamoleServerException("Unexpected lack of UTF-8 encoding support.", e);
@@ -186,38 +180,37 @@ public class QCParser {
 
     /**
      * Parse the given string for username and password values,
-     * and return a map containing the username, password
-     * or both.
+     * and, if values are present, decode them and set them in
+     * the provided GuacamoleConfiguration object.
      *
      * @param userInfo
      *     The string to parse for username/password values.
-     * 
-     * @return
-     *     A map with the username, password, or both.
+     *
+     * @param config
+     *     The GuacamoleConfiguration object to store the username
+     *     and password in.
      *
      * @throws UnsupportedEncodingException
      *     If Java lacks UTF-8 support.
      */
-    public static Map<String, String> parseUserInfo(String userInfo)
+    public static void parseUserInfo(String userInfo, 
+            GuacamoleConfiguration config)
             throws UnsupportedEncodingException {
 
-        Map<String, String> userInfoMap = new HashMap<String, String>();
         Matcher userinfoMatcher = userinfoPattern.matcher(userInfo);
 
         if (userinfoMatcher.matches()) {
-            String username = URLDecoder.decode(
-                    userinfoMatcher.group(USERNAME_GROUP), "UTF-8");
-            String password = URLDecoder.decode(
-                    userinfoMatcher.group(PASSWORD_GROUP), "UTF-8");
+            String username = userinfoMatcher.group(USERNAME_GROUP);
+            String password = userinfoMatcher.group(PASSWORD_GROUP);
 
             if (username != null && !username.isEmpty())
-                userInfoMap.put("username", username);
+                config.setParameter("username",
+                        URLDecoder.decode(username, "UTF-8"));
 
             if (password != null && !password.isEmpty())
-                userInfoMap.put("password", password);
+                config.setParameter("password",
+                        URLDecoder.decode(password, "UTF-8"));
         }
-
-        return userInfoMap;
 
     }
 
