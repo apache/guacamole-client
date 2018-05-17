@@ -134,6 +134,27 @@
     padding-top: 1em;
 }
 
+.menu-section input.zoom-ctrl {
+    width: 2em;
+    font-size: 1em;
+    padding: 0;
+    background: transparent;
+    border-color: rgba(0, 0, 0, 0.125);
+}
+
+.menu-section div.zoom-ctrl {
+    font-size: 1.5em;
+    display: inline;
+    align-content: center;
+    vertical-align: middle;
+}
+
+.menu-section .zoom-ctrl::-webkit-inner-spin-button,
+.menu-section .zoom-ctrl::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 .menu,
 .menu.closed {
     left: -480px;
