@@ -42,17 +42,6 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
 public class QCParser {
 
     /**
-     * The default protocol to use if one is not provided in
-     * the incoming URI.
-     */
-    public static final String DEFAULT_URI_PROTOCOL = "ssh";
-
-    /**
-     * The default host to use if one is not defined.
-     */
-    public static final String DEFAULT_URI_HOST = "localhost";
-
-    /**
      * The regex to use to split username and password.
      */
     private static final Pattern userinfoPattern = Pattern.compile("(^[^:]+):?(.*)");
@@ -89,6 +78,8 @@ public class QCParser {
         URI qcUri;
         try {
             qcUri = new URI(uri);
+            if (!qcUri.isAbsolute())
+                throw new GuacamoleClientException("URI must be absolute.");
         }
         catch (URISyntaxException e) {
             throw new GuacamoleClientException("Invalid URI Syntax", e);
@@ -108,7 +99,7 @@ public class QCParser {
         if (protocol != null && !protocol.isEmpty())
             qcConfig.setProtocol(protocol);
         else
-            qcConfig.setProtocol(DEFAULT_URI_PROTOCOL);
+            throw new GuacamoleClientException("No protocol specified.");
 
         // Check for provided port number
         if (port > 0)
@@ -118,7 +109,7 @@ public class QCParser {
         if (host != null && !host.isEmpty())
             qcConfig.setParameter("hostname", host);
         else
-            qcConfig.setParameter("hostname", DEFAULT_URI_HOST);
+            throw new GuacamoleClientException("No host specified.");
 
         // Look for extra query parameters and parse them out.
         if (query != null && !query.isEmpty()) {
