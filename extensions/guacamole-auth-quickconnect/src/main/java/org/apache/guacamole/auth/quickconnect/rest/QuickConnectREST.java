@@ -56,14 +56,15 @@ public class QuickConnectREST {
 
     /**
      * Parse the URI read from the POST input, add the connection
-     * to the directory, and return the identifier of the newly-created
-     * connection.
+     * to the directory, and return a Map containing a single key,
+     * identifier, and the identifier of the new connection.
      *
      * @param uri
      *     The URI to parse into a connection.
      *
      * @return
-     *     The identifier of the connection in the directory.
+     *     A Map containing a single key, identifier, and the
+     *     identifier of the new connection.
      *
      * @throws GuacamoleException
      *     If an error is encountered parsing the URI.
