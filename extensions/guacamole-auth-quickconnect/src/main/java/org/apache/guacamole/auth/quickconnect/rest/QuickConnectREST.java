@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.quickconnect.rest;
 
+import java.util.Collections;
+import java.util.Map;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.POST;
@@ -68,10 +70,11 @@ public class QuickConnectREST {
      */
     @POST
     @Path("create")
-    public String create(@FormParam("uri") String uri) 
+    public Map<String, String> create(@FormParam("uri") String uri) 
             throws GuacamoleException {
 
-        return directory.create(QCParser.getConfiguration(uri));
+        return Collections.singletonMap("identifier",
+                directory.create(QCParser.getConfiguration(uri)));
  
     }
 

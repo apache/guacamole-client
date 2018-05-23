@@ -60,7 +60,7 @@ angular.module('guacQuickConnect').factory('quickConnectService', ['$injector',
             cacheService.users.removeAll();
 
             // Pass on the connection identifier
-            return connectionId;
+            return connectionId.identifier;
         });
 
     };
