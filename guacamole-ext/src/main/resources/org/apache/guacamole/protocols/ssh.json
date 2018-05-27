@@ -43,8 +43,7 @@
             "fields" : [
                 {
                     "name"  : "color-scheme",
-                    "type"  : "ENUM",
-                    "options" : [ "", "black-white", "gray-black", "green-black", "white-black" ]
+                    "type"  : "TEXT"
                 },
                 {
                     "name"  : "font-name",
