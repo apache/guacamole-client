@@ -88,10 +88,19 @@ angular.module('client').factory('ManagedClientState', [function defineManagedCl
         /**
          * The Guacamole connection has been successfully established, and
          * initial graphical data has been received.
-         * 
+         *
          * @type String
          */
         CONNECTED : "CONNECTED",
+
+        /**
+         * The Guacamole connection has been successfully established, but the
+         * network connection seems unstable. The connection may perform poorly
+         * or disconnect.
+         * 
+         * @type String
+         */
+        UNSTABLE : "UNSTABLE",
 
         /**
          * The Guacamole connection has terminated successfully. No errors are
