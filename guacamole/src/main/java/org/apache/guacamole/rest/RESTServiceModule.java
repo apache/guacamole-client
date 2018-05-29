@@ -88,6 +88,9 @@ public class RESTServiceModule extends ServletModule {
         MethodInterceptor interceptor = new RESTExceptionWrapper();
         requestInjection(interceptor);
         bindInterceptor(Matchers.any(), new RESTMethodMatcher(), interceptor);
+        
+        // Get the ExceptionMapper that will rewrite exceptions into JSON.
+        bind(GuacamoleExceptionMapper.class);
 
         // Set up the API endpoints
         bind(ExtensionRESTService.class);
