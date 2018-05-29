@@ -39,7 +39,6 @@ import org.apache.guacamole.resource.Resource;
 import org.apache.guacamole.resource.ResourceServlet;
 import org.apache.guacamole.resource.SequenceResource;
 import org.apache.guacamole.resource.WebApplicationResource;
-import org.apache.guacamole.rest.GuacamoleExceptionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -418,10 +417,7 @@ public class ExtensionModule extends ServletModule {
         // Bind resource services
         bind(LanguageResourceService.class).toInstance(languageResourceService);
         bind(PatchResourceService.class).toInstance(patchResourceService);
-
-        // Get ExceptionMapper to rewrite exceptions in JSON.
-        bind(GuacamoleExceptionMapper.class);
-        
+ 
         // Load initial language resources from servlet context
         languageResourceService.addLanguageResources(getServletContext());
 
