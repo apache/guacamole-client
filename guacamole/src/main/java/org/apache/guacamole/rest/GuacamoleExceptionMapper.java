@@ -92,7 +92,6 @@ public class GuacamoleExceptionMapper
     
     @Override
     public Response toResponse(GuacamoleException e) {
-        logger.debug(">>>EXMAPPER<<< Mapping exception {}", e.getMessage());
         
         if (e instanceof GuacamoleUnauthorizedException) {
             String token = getAuthenticationToken();
