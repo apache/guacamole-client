@@ -417,7 +417,7 @@ public class ExtensionModule extends ServletModule {
         // Bind resource services
         bind(LanguageResourceService.class).toInstance(languageResourceService);
         bind(PatchResourceService.class).toInstance(patchResourceService);
- 
+
         // Load initial language resources from servlet context
         languageResourceService.addLanguageResources(getServletContext());
 
