@@ -92,7 +92,7 @@ public class RESTExceptionMapper implements ExceptionMapper<Throwable> {
         if (t instanceof GuacamoleException)
             return Response
                     .status(((GuacamoleException) t).getHttpStatusCode())
-                    .entity(new APIError((GuacamoleException)t))
+                    .entity(new APIError((GuacamoleException) t))
                     .type(MediaType.APPLICATION_JSON)
                     .build();
         
@@ -109,7 +109,8 @@ public class RESTExceptionMapper implements ExceptionMapper<Throwable> {
             
         return Response
                 .status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity("Unexpected Internal Error.")
+                .entity(new APIError(
+                        new GuacamoleException("Unexpected internal error", t)))
                 .type(MediaType.APPLICATION_JSON)
                 .build();
         
