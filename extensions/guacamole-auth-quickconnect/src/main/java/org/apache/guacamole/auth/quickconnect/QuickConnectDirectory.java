@@ -31,8 +31,8 @@ import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**
- * Implementation of a directory to stored Connection objects
- * completely in-memory.
+ * Implementation of a directory to store Connection objects
+ * completely in memory.
  */
 public class QuickConnectDirectory extends SimpleDirectory<Connection> {
 
@@ -89,7 +89,7 @@ public class QuickConnectDirectory extends SimpleDirectory<Connection> {
      * identifier value of the new connection.
      *
      * @param config
-     *     The GuacamoleConfiguration to use to create the
+     *     The GuacamoleConfiguration object to use to create the
      *     SimpleConnection object.
      *
      * @return
@@ -100,23 +100,23 @@ public class QuickConnectDirectory extends SimpleDirectory<Connection> {
      */
     public String create(GuacamoleConfiguration config) throws GuacamoleException {
 
-        // Get the next connection identifier.
-        String connectionId = Integer.toString(getNextConnectionID());
+        // Get the next available connection identifier.
+        String newConnectionId = Integer.toString(getNextConnectionID());
 
         // Generate a name for the configuration.
         String name = QCParser.getName(config);
 
         // Create a new connection and set the parent identifier.
-        Connection connection = new SimpleConnection(name, connectionId, config);
+        Connection connection = new SimpleConnection(name, newConnectionId, config);
         connection.setParentIdentifier(QuickConnectUserContext.ROOT_IDENTIFIER);
 
         // Place the object in this directory.
         add(connection);
 
         // Add connection to the tree.
-        this.rootGroup.addConnectionIdentifier(connectionId);
+        rootGroup.addConnectionIdentifier(newConnectionId);
 
-        return connectionId;
+        return newConnectionId;
     }
 
 }

@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.quickconnect.QuickConnectException;
@@ -65,17 +64,16 @@ public class QCParser {
      *     The string form of the URI to be parsed.
      *
      * @return
-     *     A GuacamoleConfiguration using a combination of the parsed
-     *     URI values and default values when not specified in the
-     *     URI.
+     *     A GuacamoleConfiguration generated using the information
+     *     provided by the user in the URI.
      *
      * @throws GuacamoleException
-     *     When an error occurs parsing the URI.
+     *     If an error occurs parsing the URI.
      */
     public static GuacamoleConfiguration getConfiguration(String uri)
             throws GuacamoleException {
 
-        // Parse the URI object from provided string.
+        // Parse the provided String into a URI object.
         URI qcUri;
         try {
             qcUri = new URI(uri);
@@ -98,7 +96,7 @@ public class QCParser {
         // Generate a new GuacamoleConfiguration
         GuacamoleConfiguration qcConfig = new GuacamoleConfiguration();
 
-        // Check for provided protocol or use default
+        // Check for protocol and set it, or throw an error if not present
         if (protocol != null && !protocol.isEmpty())
             qcConfig.setProtocol(protocol);
         else
@@ -109,7 +107,7 @@ public class QCParser {
         if (port > 0)
             qcConfig.setParameter("port", Integer.toString(port));
 
-        // Check for provided host or use default
+        // Check for provided host, or throw an error if not present
         if (host != null && !host.isEmpty())
             qcConfig.setParameter("hostname", host);
         else
@@ -157,7 +155,7 @@ public class QCParser {
      * @throws UnsupportedEncodingException
      *     If Java lacks UTF-8 support.
      */
-    public static Map<String, String> parseQueryString(String queryStr)
+    private static Map<String, String> parseQueryString(String queryStr)
             throws UnsupportedEncodingException {
 
         // Split the query string into the pairs
@@ -189,7 +187,7 @@ public class QCParser {
      * @throws UnsupportedEncodingException
      *     If Java lacks UTF-8 support.
      */
-    public static void parseUserInfo(String userInfo, 
+    private static void parseUserInfo(String userInfo, 
             GuacamoleConfiguration config)
             throws UnsupportedEncodingException {
 

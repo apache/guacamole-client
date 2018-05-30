@@ -29,7 +29,7 @@ import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.simple.SimpleUser;
 
 /**
- * A simple implementation of UserContext to support the QuickConnect
+ * A simple implementation of UserContext to support this
  * extension, used for storing connections the user has created
  * with the QuickConnect bar in the webapp.
  */
@@ -71,12 +71,17 @@ public class QuickConnectUserContext extends AbstractUserContext {
      *     this class.
      *
      * @param username
-     *     The name of the user logging in and using this class.
+     *     The name of the user logging in that will be associated
+     *     with this UserContext.
+     * 
+     * @throws GuacamoleException
+     *     If errors occur initializing the ConnectionGroup,
+     *     ConnectionDirectory, or User.
      */
     public QuickConnectUserContext(AuthenticationProvider authProvider,
             String username) throws GuacamoleException {
 
-        // Initialize the rootGroup to a basic connection group with a
+        // Initialize the rootGroup to a QuickConnectionGroup with a
         // single root identifier.
         this.rootGroup = new QuickConnectionGroup(
             ROOT_IDENTIFIER,

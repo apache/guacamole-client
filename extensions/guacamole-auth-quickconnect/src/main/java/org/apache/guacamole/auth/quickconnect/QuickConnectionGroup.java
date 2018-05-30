@@ -63,7 +63,7 @@ public class QuickConnectionGroup extends AbstractConnectionGroup {
 
     /**
      * Add a connection identifier to this connection group, and
-     * return the identifier if the add succeeds, otheriwse
+     * return the identifier if the add succeeds, otherwise
      * return null.
      *
      * @param identifier
@@ -81,6 +81,7 @@ public class QuickConnectionGroup extends AbstractConnectionGroup {
 
     @Override
     public int getActiveConnections() {
+        // This group does not track active connections.
         return 0;
     }
 
@@ -91,11 +92,13 @@ public class QuickConnectionGroup extends AbstractConnectionGroup {
 
     @Override
     public Set<String> getConnectionGroupIdentifiers() {
+        // This group contains only connections, not other groups.
         return Collections.<String>emptySet();
     }
 
     @Override
     public Map<String, String> getAttributes() {
+        // There are no attributes associated with this group.
         return Collections.<String, String>emptyMap();
     }
 
@@ -107,6 +110,7 @@ public class QuickConnectionGroup extends AbstractConnectionGroup {
     @Override
     public GuacamoleTunnel connect(GuacamoleClientInformation info) 
             throws GuacamoleException {
+        // This group does not support connections
         throw new GuacamoleSecurityException("Permission denied.");
     }
 
