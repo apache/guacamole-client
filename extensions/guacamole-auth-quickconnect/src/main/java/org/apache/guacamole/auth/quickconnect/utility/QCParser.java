@@ -155,7 +155,7 @@ public class QCParser {
      * @throws UnsupportedEncodingException
      *     If Java lacks UTF-8 support.
      */
-    private static Map<String, String> parseQueryString(String queryStr)
+    public static Map<String, String> parseQueryString(String queryStr)
             throws UnsupportedEncodingException {
 
         // Split the query string into the pairs
@@ -187,7 +187,7 @@ public class QCParser {
      * @throws UnsupportedEncodingException
      *     If Java lacks UTF-8 support.
      */
-    private static void parseUserInfo(String userInfo, 
+    public static void parseUserInfo(String userInfo, 
             GuacamoleConfiguration config)
             throws UnsupportedEncodingException {
 
