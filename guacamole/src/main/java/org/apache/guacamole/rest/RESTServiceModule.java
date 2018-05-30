@@ -84,8 +84,8 @@ public class RESTServiceModule extends ServletModule {
         bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
         bind(DecorationService.class);
         
-        // Get the ExceptionMapper that will rewrite exceptions into JSON.
-        bind(GuacamoleExceptionMapper.class);
+        // Automatically translate GuacamoleExceptions for REST methods
+        bind(RESTExceptionMapper.class);
 
         // Set up the API endpoints
         bind(ExtensionRESTService.class);

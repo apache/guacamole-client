@@ -21,18 +21,12 @@ package org.apache.guacamole.rest;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-import org.aopalliance.intercept.MethodInvocation;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
 import org.apache.guacamole.rest.auth.AuthenticationService;
@@ -46,18 +40,18 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @Singleton
-public class GuacamoleExceptionMapper
-        implements ExceptionMapper<GuacamoleException> {
+public class RESTExceptionMapper implements ExceptionMapper<Throwable> {
     
     /**
      * The logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(GuacamoleExceptionMapper.class);
+    private final Logger logger = LoggerFactory.getLogger(RESTExceptionMapper.class);
     
     /**
      * The request associated with this instance of this mapper.
      */
-    @Context private HttpServletRequest request;
+    @Context
+    private HttpServletRequest request;
     
     /**
      * The authentication service associated with the currently active session.
@@ -75,37 +69,50 @@ public class GuacamoleExceptionMapper
      */
     private String getAuthenticationToken() {
 
-        @SuppressWarnings("unchecked")
-        Map<String, String[]> parameters = request.getParameterMap();
-
-        for (String paramName : parameters.keySet()) {
-            if (paramName.equals("token")) {
-                String tokenParams[] = parameters.get(paramName);
-                if (tokenParams[0] != null && !tokenParams[0].isEmpty())
-                    return tokenParams[0];
-            }
-        }
+        String token = request.getParameter("token");
+        if (token != null && !token.isEmpty())
+            return token;
         
         return null;
 
     }
     
     @Override
-    public Response toResponse(GuacamoleException e) {
+    public Response toResponse(Throwable t) {
         
-        if (e instanceof GuacamoleUnauthorizedException) {
+        // Ensure any associated session is invalidated if unauthorized 
+        if (t instanceof GuacamoleUnauthorizedException) {
             String token = getAuthenticationToken();
             
             if (authenticationService.destroyGuacamoleSession(token))
                 logger.debug("Implicitly invalidated session for token \"{}\"", token);
         }
         
+        // Translate GuacamoleException subclasses to HTTP error codes 
+        if (t instanceof GuacamoleException)
+            return Response
+                    .status(((GuacamoleException) t).getHttpStatusCode())
+                    .entity(new APIError((GuacamoleException)t))
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        
+        // Rethrow unchecked exceptions such that they are properly wrapped            
+        String message = t.getMessage();
+        if (message != null)
+            logger.error("Unexpected internal error: {}", message);
+        else
+            logger.error("An internal error occurred, but did not contain "
+                    + "an error message. Enable debug-level logging for "
+                    + "details.");
+            
+        logger.debug("Unexpected error in REST endpoint.", t);
+            
         return Response
-                .status(e.getHttpStatusCode())
-                .entity(new APIError(e))
+                .status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("Unexpected Internal Error.")
                 .type(MediaType.APPLICATION_JSON)
                 .build();
-      
+        
     }
     
 }
