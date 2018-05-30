@@ -83,7 +83,7 @@ public class RESTServiceModule extends ServletModule {
         bind(AuthenticationService.class);
         bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
         bind(DecorationService.class);
-        
+
         // Automatically translate GuacamoleExceptions for REST methods
         bind(RESTExceptionMapper.class);
 
