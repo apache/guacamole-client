@@ -1,0 +1,32 @@
+{
+
+    "guacamoleVersion" : "1.0.0",
+
+    "name"      : "Wake-on-LAN Extensions",
+    "namespace" : "wol",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.wol.WOLAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/en.json"
+    ],
+
+    "js" : [
+        "wol.min.js"
+    ],
+
+    "css" : [
+        "wol.min.css"
+    ],
+    
+    "html" : [
+        "templates/wol.html"
+    ],
+
+    "resources" : {
+        "templates/wol.html" : "text/html"
+    }
+
+}

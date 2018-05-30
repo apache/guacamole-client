@@ -17,40 +17,12 @@
  * under the License.
  */
 
-.history-unavailable div.recent-connections {
-    display: none;
-}
+/**
+ * Module which provides Wake-on-LAN and associated functionality.
+ */
+angular.module('guacWOL',[
+    'form'
+]);
 
-div.recent-connections,
-div.clipboardDiv,
-div.settings,
-div.all-connections {
-    margin: 1em;
-    padding: 0;
-}
-
-.all-connections .list-buttons {
-    text-align: center;
-    padding: 0;
-}
-
-div.recent-connections {
-    text-align: center;
-}
-
-div.recent-connections div.connection {
-    -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
-    -khtml-border-radius: 0.5em;
-    border-radius: 0.5em;
-    display: inline-block;
-    padding: 1em;
-    margin: 1em;
-    text-align: center;
-    max-width: 75%;
-    overflow: hidden;
-}
-
-a.home-connection {
-    display: inline-block;
-}
+// Load the WOL module with the lot of them
+angular.module('index').requires.push('guacWOL');

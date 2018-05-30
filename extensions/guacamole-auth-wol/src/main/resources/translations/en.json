@@ -1,0 +1,16 @@
+{
+    "DATA_SOURCE_WOL" : {
+        "NAME" : "Wake-on-LAN Extension"
+    },
+    
+    "WOL" : {
+        "ACTION_WAKE" : "Wake"
+    },
+    
+    "CONNECTION_ATTRIBUTES" : {
+        "FIELD_HEADER_WOL_MAC_ADDRESS"     : "MAC address",
+        "FIELD_HEADER_WOL_NET_BROADCAST"   : "IP broadcast address",
+        
+        "SECTION_HEADER_WOL_ATTRIBUTES" : "Wake-on-LAN Attributes"
+    }
+}

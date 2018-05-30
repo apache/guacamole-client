@@ -1,0 +1,11 @@
+<meta name="after" content="a.home-connection" />
+<span class="wol"
+      ng-controller="wolController"
+      ng-show="this.type == GroupListItem.Type.CONNECTION"
+      ng-init="getStatus(item.dataSource, item.identifier)">
+    <button class="wol"
+            ng-class="hostUp ? 'host-up' : 'host-down'"
+            ng-click="sendWake(item.identifier)">
+        {{ 'WOL.ACTION_WAKE' | translate }}
+    </button>
+</span>
