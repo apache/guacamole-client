@@ -48,7 +48,9 @@ public class RESTExceptionMapper implements ExceptionMapper<Throwable> {
     private final Logger logger = LoggerFactory.getLogger(RESTExceptionMapper.class);
     
     /**
-     * The request associated with this instance of this mapper.
+     * The HttpServletRequest for the Throwable being intercepted.  Despite this
+     * class being a Singleton, this object will always be scoped with the
+     * current request for the Throwable that is being processed by this class.
      */
     @Context
     private HttpServletRequest request;
