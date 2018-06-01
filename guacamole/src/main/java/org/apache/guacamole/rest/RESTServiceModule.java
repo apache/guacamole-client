@@ -85,9 +85,7 @@ public class RESTServiceModule extends ServletModule {
         bind(DecorationService.class);
 
         // Automatically translate GuacamoleExceptions for REST methods
-        MethodInterceptor interceptor = new RESTExceptionWrapper();
-        requestInjection(interceptor);
-        bindInterceptor(Matchers.any(), new RESTMethodMatcher(), interceptor);
+        bind(RESTExceptionMapper.class);
 
         // Set up the API endpoints
         bind(ExtensionRESTService.class);
