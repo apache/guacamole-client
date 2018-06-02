@@ -195,6 +195,10 @@
                 {
                     "name"  : "static-channels",
                     "type"  : "TEXT"
+                },
+                {
+                    "name"  : "timezone",
+                    "type"  : "TIMEZONE"
                 }
             ]
         },
