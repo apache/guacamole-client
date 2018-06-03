@@ -42,6 +42,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
     var connectionService      = $injector.get('connectionService');
+    var preferenceService      = $injector.get('preferenceService');
     var requestService         = $injector.get('requestService');
     var tunnelService          = $injector.get('tunnelService');
     var guacAudio              = $injector.get('guacAudio');
@@ -225,6 +226,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             + "&GUAC_WIDTH="       + Math.floor(optimal_width)
             + "&GUAC_HEIGHT="      + Math.floor(optimal_height)
             + "&GUAC_DPI="         + Math.floor(optimal_dpi)
+            + "&GUAC_TIMEZONE="    + encodeURIComponent(preferenceService.preferences.timezone)
             + (connectionParameters ? '&' + connectionParameters : '');
 
         // Add audio mimetypes to connect string
