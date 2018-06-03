@@ -153,7 +153,7 @@ public class GuacamoleClientInformation {
     /**
      * Return the timezone as reported by the client.
      * 
-     * @returns
+     * @return
      *     A string value of the timezone reported by the client.
      */
     public String getTimezone() {
