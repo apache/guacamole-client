@@ -476,6 +476,15 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 activeConnections.put(connection.getIdentifier(), activeConnection);
                 activeConnectionGroups.put(connection.getParentIdentifier(), activeConnection);
                 config = getGuacamoleConfiguration(activeConnection.getUser(), connection);
+                
+                // If timezone is provided by tunnel parameter, and not
+                // overriden by connection parameter, set it.
+                String tzTunnel = info.getTimezone();
+                String tzParam = config.getParameter("timezone");
+                if ((tzParam == null || tzParam.isEmpty())
+                        && tzTunnel != null && !tzTunnel.isEmpty())
+                    config.setParameter("timezone", tzTunnel);
+                
             }
 
             // If we ARE joining an active connection, generate a configuration
