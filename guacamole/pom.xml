@@ -493,6 +493,14 @@
             </exclusions>
 
         </dependency>
+        
+        <!-- JSTZ for TimeZone Detection -->
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>jstz</artifactId>
+            <version>1.0.10</version>
+        </dependency>
+
 
     </dependencies>
 
