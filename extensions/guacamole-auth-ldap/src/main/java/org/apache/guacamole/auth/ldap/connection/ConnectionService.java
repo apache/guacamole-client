@@ -16,14 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.guacamole.auth.ldap.connection;
 
 import com.google.inject.Inject;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import org.apache.directory.api.ldap.model.cursor.CursorException;
 import org.apache.directory.api.ldap.model.cursor.SearchCursor;
@@ -31,17 +28,20 @@ import org.apache.directory.api.ldap.model.entry.Attribute;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.entry.Value;
 import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.exception.LdapInvalidAttributeValueException;
 import org.apache.directory.api.ldap.model.exception.LdapReferralException;
+import org.apache.directory.api.ldap.model.message.Referral;
 import org.apache.directory.api.ldap.model.message.Response;
-import org.apache.directory.api.ldap.model.message.SearchScope;
-import org.apache.directory.api.ldap.model.message.SearchRequestImpl;
 import org.apache.directory.api.ldap.model.message.SearchRequest;
 import org.apache.directory.api.ldap.model.message.SearchResultEntry;
+import org.apache.directory.api.ldap.model.message.SearchResultReference;
 import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.directory.api.ldap.model.url.LdapUrl;
 import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.directory.ldap.client.api.LdapConnectionConfig;
 import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.auth.ldap.LDAPAuthenticationProvider;
+import org.apache.guacamole.auth.ldap.LDAPConnectionService;
 import org.apache.guacamole.auth.ldap.ConfigurationService;
 import org.apache.guacamole.auth.ldap.EscapingService;
 import org.apache.guacamole.GuacamoleException;
@@ -79,6 +79,12 @@ public class ConnectionService {
     private ConfigurationService confService;
 
     /**
+     * The LDAP connection service.
+     */
+    @Inject
+    private LDAPConnectionService ldapService;
+
+    /**
      * Returns all Guacamole connections accessible to the user currently bound
      * under the given LDAP connection.
      *
@@ -109,13 +115,14 @@ public class ConnectionService {
         try {
 
             // Pull the current user DN from the LDAP connection
-            LdapConnectionConfig ldapConnectionConfig = ((LdapNetworkConnection)ldapConnection).getConfig();
+            LdapConnectionConfig ldapConnectionConfig =
+                    ((LdapNetworkConnection) ldapConnection).getConfig();
             String userDN = ldapConnectionConfig.getName();
 
             // getConnections() will only be called after a connection has been
             // authenticated (via non-anonymous bind), thus userDN cannot
             // possibly be null
-            assert(userDN != null);
+            assert (userDN != null);
 
             // Get the search filter for finding connections accessible by the
             // current user
@@ -125,17 +132,8 @@ public class ConnectionService {
             // looking for direct membership in the guacConfigGroup
             // and possibly any groups the user is a member of that are
             // referred to in the seeAlso attribute of the guacConfigGroup.
-            SearchRequest request = new SearchRequestImpl();
-            request.setBase(configurationBaseDN);
-            request.setDerefAliases(confService.getDereferenceAliases());
-            request.setScope(SearchScope.SUBTREE);
-            request.setFilter(connectionSearchFilter);
-            request.setSizeLimit(confService.getMaxResults());
-            request.setTimeLimit(confService.getOperationTimeout());
-            request.setTypesOnly(false);
-
-            if(confService.getFollowReferrals())
-                request.followReferrals();
+            SearchRequest request = ldapService.getSearchRequest(
+                    configurationBaseDN, connectionSearchFilter);
 
             SearchCursor results = ldapConnection.search(request);
 
@@ -149,65 +147,29 @@ public class ConnectionService {
 
                 // Get the entry
                 Response response = results.get();
-                Entry entry;
-                if (response instanceof SearchResultEntry)
-                    entry = ((SearchResultEntry)results).getEntry();
-                else
-                    continue;
-
-                // Get common name (CN)
-                Attribute cn = entry.get("cn");
-                if (cn == null) {
-                    logger.warn("guacConfigGroup is missing a cn.");
-                    continue;
+                if (response instanceof SearchResultEntry) {
+                    
+                    Entry entry = ((SearchResultEntry) results).getEntry();
+                    Connection connection = entryToConnection(entry, tokenFilter);
+                    if (connection != null)
+                        connections.put(connection.getName(), connection);
+                
                 }
-
-                // Get associated protocol
-                Attribute protocol = entry.get("guacConfigProtocol");
-                if (protocol == null) {
-                    logger.warn("guacConfigGroup \"{}\" is missing the "
-                              + "required \"guacConfigProtocol\" attribute.",
-                            cn.getString());
-                    continue;
-                }
-
-                // Set protocol
-                GuacamoleConfiguration config = new GuacamoleConfiguration();
-                config.setProtocol(protocol.getString());
-
-                // Get parameters, if any
-                Attribute parameterAttribute = entry.get("guacConfigParameter");
-                if (parameterAttribute != null) {
-
-                    // For each parameter
-                    for (Value<?> paramValue : parameterAttribute) {
-
-                        String parameter = paramValue.getString();
-
-                        // Parse parameter
-                        int equals = parameter.indexOf('=');
-                        if (equals != -1) {
-
-                            // Parse name
-                            String name = parameter.substring(0, equals);
-                            String value = parameter.substring(equals+1);
-
-                            config.setParameter(name, value);
-
-                        }
-
+                
+                // Follow the referral
+                else if (response instanceof SearchResultReference &&
+                        request.isFollowReferrals()) {
+                    
+                    Referral referral = ((SearchResultReference) response).getReferral();
+                    Integer referralHop = 0;
+                    for (String url : referral.getLdapUrls()) {
+                        LdapConnection referralConnection =
+                                ldapService.referralConnection(new LdapUrl(url), 
+                                        ldapConnectionConfig, referralHop++);
+                        connections.putAll(getConnections(user,referralConnection));
                     }
 
                 }
-
-                // Filter the configuration, substituting all defined tokens
-                tokenFilter.filterValues(config.getParameters());
-
-                // Store connection using cn for both identifier and name
-                String name = cn.getString();
-                Connection connection = new SimpleConnection(name, name, config);
-                connection.setParentIdentifier(LDAPAuthenticationProvider.ROOT_CONNECTION_GROUP);
-                connections.put(name, connection);
 
             }
 
@@ -265,17 +227,9 @@ public class ConnectionService {
         if (groupBaseDN != null) {
 
             // Get all groups the user is a member of starting at the groupBaseDN, excluding guacConfigGroups
-            SearchRequest request = new SearchRequestImpl();
-            request.setBase(groupBaseDN);
-            request.setDerefAliases(confService.getDereferenceAliases());
-            request.setScope(SearchScope.SUBTREE);
-            request.setFilter("(&(!(objectClass=guacConfigGroup))(member=" + escapingService.escapeLDAPSearchFilter(userDN) + "))");
-            request.setSizeLimit(confService.getMaxResults());
-            request.setTimeLimit(confService.getOperationTimeout());
-            request.setTypesOnly(false);
-
-            if (confService.getFollowReferrals())
-                request.followReferrals();
+            SearchRequest request = ldapService.getSearchRequest(groupBaseDN,
+                    "(&(!(objectClass=guacConfigGroup))(member=" 
+                  + escapingService.escapeLDAPSearchFilter(userDN) + "))");
 
             SearchCursor userRoleGroupResults = ldapConnection.search(request);
 
@@ -287,9 +241,29 @@ public class ConnectionService {
             try {
                 while (userRoleGroupResults.next()) {
                     Response response = userRoleGroupResults.get();
+                    
                     if (response instanceof SearchResultEntry) {
                         Entry entry = ((SearchResultEntry)response).getEntry();
                         connectionSearchFilter.append("(seeAlso=").append(escapingService.escapeLDAPSearchFilter(entry.getDn().toString())).append(")");
+                    }
+                    
+                    else if (response instanceof SearchResultReference &&
+                            request.isFollowReferrals()) {
+                        
+                        Referral referral = ((SearchResultReference) response).getReferral();
+                        Integer referralHop = 0;
+                        for (String url : referral.getLdapUrls()) {
+                            LdapConnection referralConnection =
+                                    ldapService.referralConnection(new LdapUrl(url),
+                                            ((LdapNetworkConnection) ldapConnection).getConfig(),
+                                            referralHop++);
+                            
+                            connectionSearchFilter.append(
+                                    getConnectionSearchFilter(userDN,
+                                            referralConnection));
+                            
+                        }
+                        
                     }
                 }
             }
@@ -304,5 +278,92 @@ public class ConnectionService {
         return connectionSearchFilter.toString();
     }
 
-}
+    /**
+     * Given the provided LDAP Entry object, generate a Guacamole Connection
+     * object from the information in the entry, or null if the required
+     * information is not found.
+     * 
+     * @param entry
+     *     The LDAP Entry object to use to generate the connection.
+     * 
+     * @param tokenFilter
+     *     The TokenFilter object to use to filter out the connection
+     *     parameters for tokens.
+     * 
+     * @return
+     *     A Guacamole Connection object using the provided LDAP
+     *     entry information.
+     */
+    private Connection entryToConnection(Entry entry, TokenFilter tokenFilter) {
+        
+        // Get common name (CN)
+        Attribute cn = entry.get("cn");
+        if (cn == null) {
+            logger.warn("guacConfigGroup is missing a cn.");
+            return null;
+        }
+        
+        String name;
+        try {
+            name = cn.getString();
+        }
+        catch (LdapInvalidAttributeValueException e) {
+            logger.warn("Entry does not contain a valid CN value.");
+            return null;
+        }
 
+        // Get associated protocol
+        Attribute protocol = entry.get("guacConfigProtocol");
+        if (protocol == null) {
+            logger.warn("guacConfigGroup \"{}\" is missing the "
+                    + "required \"guacConfigProtocol\" attribute.",
+                    name);
+            return null;
+        }
+
+        // Set protocol
+        GuacamoleConfiguration config = new GuacamoleConfiguration();
+        try {
+            config.setProtocol(protocol.getString());
+        }
+        catch (LdapInvalidAttributeValueException e) {
+            logger.warn("guacConfigGroup \"{}\" has an invalid value"
+                    + "for the required \"guacConfigProtocol\" attribute.", name);
+            return null;
+        }
+
+        // Get parameters, if any
+        Attribute parameterAttribute = entry.get("guacConfigParameter");
+        if (parameterAttribute != null) {
+
+            // For each parameter
+            for (Value<?> paramValue : parameterAttribute) {
+
+                String parameter = paramValue.getString();
+
+                // Parse parameter
+                int equals = parameter.indexOf('=');
+                if (equals != -1) {
+
+                    // Parse name
+                    String pName = parameter.substring(0, equals);
+                    String pValue = parameter.substring(equals + 1);
+
+                    config.setParameter(pName, pValue);
+
+                }
+
+            }
+
+        }
+
+        // Filter the configuration, substituting all defined tokens
+        tokenFilter.filterValues(config.getParameters());
+
+        // Store connection using cn for both identifier and name
+        Connection connection = new SimpleConnection(name, name, config);
+        connection.setParentIdentifier(LDAPAuthenticationProvider.ROOT_CONNECTION_GROUP);
+        return connection;
+    }
+
+}

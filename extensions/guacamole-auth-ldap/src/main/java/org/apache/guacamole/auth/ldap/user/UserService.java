@@ -31,18 +31,21 @@ import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.exception.LdapReferralException;
+import org.apache.directory.api.ldap.model.message.Referral;
 import org.apache.directory.api.ldap.model.message.Response;
-import org.apache.directory.api.ldap.model.message.SearchScope;
-import org.apache.directory.api.ldap.model.message.SearchRequestImpl;
 import org.apache.directory.api.ldap.model.message.SearchRequest;
 import org.apache.directory.api.ldap.model.message.SearchResultEntry;
+import org.apache.directory.api.ldap.model.message.SearchResultReference;
 import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.directory.api.ldap.model.url.LdapUrl;
 import org.apache.directory.ldap.client.api.LdapConnection;
+import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.auth.ldap.ConfigurationService;
 import org.apache.guacamole.auth.ldap.EscapingService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.ldap.LDAPGuacamoleProperties;
+import org.apache.guacamole.auth.ldap.LDAPConnectionService;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.simple.SimpleUser;
 import org.slf4j.Logger;
@@ -70,6 +73,12 @@ public class UserService {
      */
     @Inject
     private ConfigurationService confService;
+    
+    /**
+     * Service for handling LDAP connections.
+     */
+    @Inject
+    private LDAPConnectionService ldapService;
 
     /**
      * Adds all Guacamole users accessible to the user currently bound under
@@ -104,17 +113,8 @@ public class UserService {
             userSearchFilter.append("=*))");
          
             // Find all Guacamole users underneath base DN
-            SearchRequest request = new SearchRequestImpl();
-            request.setBase(confService.getUserBaseDN());
-            request.setDerefAliases(confService.getDereferenceAliases());
-            request.setScope(SearchScope.SUBTREE);
-            request.setFilter(userSearchFilter.toString());
-            request.setSizeLimit(confService.getMaxResults());
-            request.setTimeLimit(confService.getOperationTimeout());
-            request.setTypesOnly(false);
-
-            if (confService.getFollowReferrals())
-                request.followReferrals();
+            SearchRequest request = ldapService.getSearchRequest(
+                    confService.getUserBaseDN(), userSearchFilter.toString());
 
             SearchCursor results = ldapConnection.search(request);
 
@@ -124,23 +124,39 @@ public class UserService {
                 // Get the entry
                 Response response = results.get();
 
-                Entry entry;
-                if (response instanceof SearchResultEntry)
-                    entry = ((SearchResultEntry)response).getEntry();
-                else
-                    continue;
-
-                // Get username from record
-                Attribute username = entry.get(usernameAttribute);
-                if (username == null) {
-                    logger.warn("Queried user is missing the username attribute \"{}\".", usernameAttribute);
-                    continue;
+                // Process entry
+                if (response instanceof SearchResultEntry) {
+                    Entry entry = ((SearchResultEntry)response).getEntry();
+                 
+                    // Get username from record
+                    Attribute username = entry.get(usernameAttribute);
+                    if (username == null) {
+                        logger.warn("Queried user is missing the username attribute \"{}\".",
+                                entry.getDn().toString());
+                        continue;
+                    }
+                    
+                    String identifier = username.getString();
+                    if (users.put(identifier, new SimpleUser(identifier)) != null)
+                        logger.warn("Possibly ambiguous user account: \"{}\".", identifier);
+                    
                 }
-
-                // Store user using their username as the identifier
-                String identifier = username.getString();
-                if (users.put(identifier, new SimpleUser(identifier)) != null)
-                    logger.warn("Possibly ambiguous user account: \"{}\".", identifier);
+                
+                // Chase referrals
+                else if (response instanceof SearchResultReference &&
+                        request.isFollowReferrals()) {
+                    
+                    Referral referral = ((SearchResultReference) response).getReferral();
+                    Integer referralHop = 0;
+                    for (String url : referral.getLdapUrls()) {
+                        LdapConnection referralConnection =
+                                ldapService.referralConnection(new LdapUrl(url), 
+                                        ((LdapNetworkConnection) ldapConnection).getConfig(),
+                                        referralHop++);
+                        
+                        putAllUsers(users, referralConnection, usernameAttribute);
+                    }
+                }
 
             }
 
@@ -284,17 +300,8 @@ public class UserService {
             // Find all Guacamole users underneath base DN and matching the
             // specified username
 
-            SearchRequest request = new SearchRequestImpl();
-            request.setBase(confService.getUserBaseDN());
-            request.setDerefAliases(confService.getDereferenceAliases());
-            request.setScope(SearchScope.SUBTREE);
-            request.setFilter(generateLDAPQuery(username));
-            request.setSizeLimit(confService.getMaxResults());
-            request.setTimeLimit(confService.getOperationTimeout());
-            request.setTypesOnly(false);
-
-            if (confService.getFollowReferrals())
-                request.followReferrals();
+            SearchRequest request = ldapService.getSearchRequest(
+                    confService.getUserBaseDN(),generateLDAPQuery(username));
 
             SearchCursor results = ldapConnection.search(request);
 
@@ -305,6 +312,21 @@ public class UserService {
                 if (response instanceof SearchResultEntry) {
                     Entry entry = ((SearchResultEntry)response).getEntry();
                     userDNs.add(entry.getDn());
+                }
+                
+                else if (response instanceof SearchResultReference && 
+                        request.isFollowReferrals()) {
+                    
+                    Referral referral = ((SearchResultReference) response).getReferral();
+                    Integer referralHop = 0;
+                    for (String url : referral.getLdapUrls()) {
+                        LdapConnection referralConnection =
+                                ldapService.referralConnection(new LdapUrl(url), 
+                                        ((LdapNetworkConnection) ldapConnection).getConfig(),
+                                        referralHop++);
+                        
+                        userDNs.addAll(getUserDNs(referralConnection,username));
+                    }
                 }
             }
 

@@ -24,10 +24,16 @@ import java.io.IOException;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.message.BindRequest;
 import org.apache.directory.api.ldap.model.message.BindRequestImpl;
+import org.apache.directory.api.ldap.model.message.SearchRequest;
+import org.apache.directory.api.ldap.model.message.SearchRequestImpl;
+import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.directory.api.ldap.model.url.LdapUrl;
 import org.apache.directory.ldap.client.api.LdapConnection;
+import org.apache.directory.ldap.client.api.LdapConnectionConfig;
 import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,6 +161,67 @@ public class LDAPConnectionService {
         return ldapConnection;
 
     }
+    
+    /**
+     * Generate a new LdapConnection object for following a referral
+     * with the given LdapUrl, and copy the username and password
+     * from the original connection.
+     * 
+     * @param referralUrl
+     *     The LDAP URL to follow.
+     * 
+     * @param ldapConfig
+     *     The connection config to use to retrieve username and
+     *     password.
+     * 
+     * @param hop
+     *     The current hop number of this referral - once the configured
+     *     limit is reached, this method will throw an exception.
+     * 
+     * @return
+     *     A LdapConnection object that points at the location
+     *     specified in the referralUrl.
+     *     
+     * @throws GuacamoleException
+     *     If an error occurs parsing out the LdapUrl object or the
+     *     maximum number of referral hops is reached.
+     */
+    public LdapConnection referralConnection(LdapUrl referralUrl,
+            LdapConnectionConfig ldapConfig, Integer hop) 
+            throws GuacamoleException {
+       
+        if (hop >= confService.getMaxReferrals())
+            throw new GuacamoleServerException("Maximum number of referrals reached.");
+        
+        LdapConnectionConfig referralConfig = new LdapConnectionConfig();
+        
+        // Copy bind name and password from original config
+        referralConfig.setName(ldapConfig.getName());
+        referralConfig.setCredentials(ldapConfig.getCredentials());        
+        
+        // Look for host - if not there, bail out.
+        String host = referralUrl.getHost();
+        if (host == null || host.isEmpty())
+            throw new GuacamoleServerException("Referral URL contains no host.");
+       
+        referralConfig.setLdapHost(host);
+       
+        // Look for port, or assign a default.
+        int port = referralUrl.getPort();
+        if (port < 1)
+            referralConfig.setLdapPort(389);
+        else
+            referralConfig.setLdapPort(port);
+        
+        // Deal with SSL connections
+        if (referralUrl.getScheme() == LdapUrl.LDAPS_SCHEME)
+            referralConfig.setUseSsl(true);
+        else
+            referralConfig.setUseSsl(false);
+        
+        return new LdapNetworkConnection(referralConfig);
+        
+    }
 
     /**
      * Disconnects the given LDAP connection, logging any failure to do so
@@ -176,6 +243,45 @@ public class LDAPConnectionService {
             logger.debug("LDAP disconnect failed.", e);
         }
 
+    }
+    
+    /**
+     * Generate a SearchRequest object using the given Base DN and filter
+     * and retrieving other properties from the LDAP configuration service.
+     * 
+     * @param baseDn
+     *     The LDAP Base DN at which to search the search.
+     * 
+     * @param filter
+     *     A string representation of a LDAP filter to use for the search.
+     * 
+     * @return
+     *     The properly-configured SearchRequest object.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs retrieving any of the configuration values.
+     */
+    public SearchRequest getSearchRequest(Dn baseDn, String filter)
+            throws GuacamoleException {
+        
+        SearchRequest searchRequest = new SearchRequestImpl();
+        try {
+            searchRequest.setBase(baseDn);
+            searchRequest.setDerefAliases(confService.getDereferenceAliases());
+            searchRequest.setScope(SearchScope.SUBTREE);
+            searchRequest.setFilter(filter);
+            searchRequest.setSizeLimit(confService.getMaxResults());
+            searchRequest.setTimeLimit(confService.getOperationTimeout());
+            searchRequest.setTypesOnly(false);
+        
+            if (confService.getFollowReferrals())
+                searchRequest.followReferrals();
+        
+            return searchRequest;
+        }
+        catch (LdapException e) {
+            throw new GuacamoleServerException("Error creating search request.", e);
+        }
     }
 
 }

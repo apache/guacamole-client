@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.ldap;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.List;
-import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.guacamole.auth.ldap.user.AuthenticatedUser;
