@@ -113,8 +113,7 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
         new TextField(User.Attribute.FULL_NAME),
         new EmailField(User.Attribute.EMAIL_ADDRESS),
         new TextField(User.Attribute.ORGANIZATION),
-        new TextField(User.Attribute.ORGANIZATIONAL_ROLE),
-        new TimeZoneField(TIMEZONE_ATTRIBUTE_NAME)
+        new TextField(User.Attribute.ORGANIZATIONAL_ROLE)
     ));
 
     /**
@@ -349,9 +348,6 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
 
         // Set role attribute
         attributes.put(User.Attribute.ORGANIZATIONAL_ROLE, getModel().getOrganizationalRole());
-
-        // Set timezone attribute
-        attributes.put(TIMEZONE_ATTRIBUTE_NAME, getModel().getTimeZone());
 
     }
 
