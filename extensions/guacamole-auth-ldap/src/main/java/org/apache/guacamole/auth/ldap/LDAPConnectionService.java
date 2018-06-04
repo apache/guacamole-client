@@ -46,7 +46,7 @@ public class LDAPConnectionService {
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(LDAPConnectionService.class);
+    private static final Logger logger = LoggerFactory.getLogger(LDAPConnectionService.class);
 
     /**
      * Service for retrieving LDAP server configuration information.

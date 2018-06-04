@@ -26,18 +26,11 @@ import org.apache.directory.api.ldap.model.message.AliasDerefMode;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Service for retrieving configuration information regarding the LDAP server.
  */
 public class ConfigurationService {
-
-    /**
-     * Logger for this class.
-     */
-    private final Logger logger = LoggerFactory.getLogger(ConfigurationService.class);
 
     /**
      * The Guacamole server environment.

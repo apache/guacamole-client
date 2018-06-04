@@ -43,7 +43,7 @@ public class AuthenticationProviderService {
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
 
     /**
      * Service for creating and managing connections to LDAP servers.

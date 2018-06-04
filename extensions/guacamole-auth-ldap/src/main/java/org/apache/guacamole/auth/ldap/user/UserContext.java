@@ -37,19 +37,12 @@ import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionGroup;
 import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 import org.apache.guacamole.net.auth.simple.SimpleUser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An LDAP-specific implementation of UserContext which queries all Guacamole
  * connections and users from the LDAP directory.
  */
 public class UserContext extends AbstractUserContext {
-
-    /**
-     * Logger for this class.
-     */
-    private final Logger logger = LoggerFactory.getLogger(UserContext.class);
 
     /**
      * Service for retrieving Guacamole connections from the LDAP server.

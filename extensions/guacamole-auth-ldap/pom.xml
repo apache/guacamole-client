@@ -134,6 +134,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- SLF4J -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.7</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Apache Directory LDAP API -->
         <dependency>
             <groupId>org.apache.directory.api</groupId>

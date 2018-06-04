@@ -60,7 +60,7 @@ public class UserService {
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(UserService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     /**
      * Service for escaping parts of LDAP queries.
