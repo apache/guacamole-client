@@ -20,6 +20,7 @@
 package org.apache.guacamole.net.auth;
 
 import java.io.Serializable;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -71,6 +72,11 @@ public class Credentials implements Serializable {
      * The HttpSession carrying additional credentials, if any.
      */
     private transient HttpSession session;
+    
+    /**
+     * Arbitrary attributes associated with this Credential object.
+     */
+    private Map<String, String> attributes;
 
     /**
      * Returns the password associated with this set of credentials.
@@ -194,6 +200,55 @@ public class Credentials implements Serializable {
      */
     public void setRemoteHostname(String remoteHostname) {
         this.remoteHostname = remoteHostname;
+    }
+    
+    /**
+     * Get the map of attributes associated with this Credential object.
+     * 
+     * @return
+     *     The Map of arbitrary attributes associated with this Credential
+     *     object.
+     */
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+    
+    /**
+     * Set a map of attributes associated with this Credential object.
+     * 
+     * @param attributes
+     *     A Map of attribute key/value pairs to add to these credentials.
+     */
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
+    
+    /**
+     * Retrieve a single attribute value from the map of arbitrary attributes
+     * stored in this Credential object.
+     * 
+     * @param key
+     *     The key of the attribute to retrieve.
+     * 
+     * @return
+     *     The value of the attribute with the specified key. 
+     */
+    public String getAttribute(String key) {
+        return attributes.get(key);
+    }
+    
+    /**
+     * Set the attribute of the given key to the given value.
+     * 
+     * @param key
+     *     The key name of the attribute to set (or overwrite, if it
+     *     already exists).
+     * 
+     * @param value
+     *     The value of the attribute to set or overwrite.
+     */
+    public void setAttribute(String key, String value) {
+        attributes.put(key, value);
     }
 
 }
