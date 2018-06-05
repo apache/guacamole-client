@@ -20,6 +20,7 @@
 package org.apache.guacamole.net.auth;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -76,7 +77,7 @@ public class Credentials implements Serializable {
     /**
      * Arbitrary attributes associated with this Credential object.
      */
-    private Map<String, String> attributes;
+    private Map<String, String> attributes = new HashMap<String, String>();
 
     /**
      * Returns the password associated with this set of credentials.
@@ -224,6 +225,19 @@ public class Credentials implements Serializable {
     }
     
     /**
+     * Add the Map of attributes to the current set, without completely
+     * replacing the existing set.  However, if duplicate keys exist the new
+     * values will replace any existing ones.
+     * 
+     * @param attributes
+     *     A Map of attributes to add to the existing attributes, without
+     *     completely overwriting them.
+     */
+    public void addAttributes(Map<String, String> attributes) {
+        this.attributes.putAll(attributes);
+    }
+    
+    /**
      * Retrieve a single attribute value from the map of arbitrary attributes
      * stored in this Credential object.
      * 
@@ -238,7 +252,9 @@ public class Credentials implements Serializable {
     }
     
     /**
-     * Set the attribute of the given key to the given value.
+     * Set the attribute of the given key to the given value, either adding
+     * a new value if the specified key does not exist, or replacing an existing
+     * value.
      * 
      * @param key
      *     The key name of the attribute to set (or overwrite, if it
