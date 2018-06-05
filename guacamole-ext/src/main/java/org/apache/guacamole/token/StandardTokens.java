@@ -21,6 +21,8 @@ package org.apache.guacamole.token;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
+import java.util.Map.Entry;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 
@@ -73,6 +75,11 @@ public class StandardTokens {
      * be compatible with Java's SimpleDateFormat.
      */
     private static final String TIME_FORMAT = "HHmmss";
+    
+    /**
+     * The prefix of the arbitrary attribute tokens.
+     */
+    public static final String ATTR_TOKEN_PREFIX = "GUAC_ATTR:";
 
     /**
      * This utility class should not be instantiated.
@@ -94,6 +101,29 @@ public class StandardTokens {
         filter.setToken(DATE_TOKEN, new SimpleDateFormat(DATE_FORMAT).format(currentTime));
         filter.setToken(TIME_TOKEN, new SimpleDateFormat(TIME_FORMAT).format(currentTime));
 
+    }
+    
+    /**
+     * Add attribute tokens to the TokenFilter object.  These are arbitrary
+     * key/value pairs that may be configured by the various authentication
+     * extensions.
+     * 
+     * @param filter
+     *     The TokenFilter to add attributes tokens to.
+     * 
+     * @param attributes
+     *     The map of key/value pairs to add tokens for.
+     */
+    public static void addAttributeTokens(TokenFilter filter,
+            Map<String, String> attributes) {
+        
+        for (Entry entry : attributes.entrySet()) {
+            String key = entry.getKey().toString();
+            String tokenName = ATTR_TOKEN_PREFIX + key.toUpperCase();
+            String tokenValue = entry.getValue().toString();
+            filter.setToken(tokenName, tokenValue);
+        }
+        
     }
 
     /**
@@ -134,6 +164,9 @@ public class StandardTokens {
         if (address != null)
             filter.setToken(CLIENT_ADDRESS_TOKEN, address);
 
+        // Add tokens derived from the attribute map
+        addAttributeTokens(filter, credentials.getAttributes());
+        
         // Add any tokens which do not require credentials
         addStandardTokens(filter);
 
