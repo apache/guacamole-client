@@ -87,7 +87,7 @@
                 {
                     "name"  : "terminal-type",
                     "type"    : "ENUM",
-                    "options" : [ "xterm", "xterm-256color", "vt220", "vt100", "ansi", "linux" ]
+                    "options" : [ "", "xterm", "xterm-256color", "vt220", "vt100", "ansi", "linux" ]
                 }
             ]
         },
