@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-totp</artifactId>
     <packaging>jar</packaging>
-    <version>0.9.14</version>
+    <version>1.0.0</version>
     <name>guacamole-auth-totp</name>
     <url>http://guacamole.incubator.apache.org/</url>
 
@@ -210,7 +210,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.9.14</version>
+            <version>1.0.0</version>
             <scope>provided</scope>
         </dependency>
 
