@@ -378,12 +378,6 @@
         "FIELD_HEADER_PRIVATE_KEY" : "Privater Schlüssel:",
         "FIELD_HEADER_READ_ONLY"   : "Nur-Lesen:",
 
-        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Schwarz auf Weiß",
-        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
-        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grau auf Schwarz",
-        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Grün auf Schwarz",
-        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Weiß auf Schwarz",
-
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
         "FIELD_OPTION_FONT_SIZE_10"    : "10",
@@ -421,12 +415,6 @@
         "FIELD_HEADER_PASSWORD_REGEX" : "Reguläre Passwortersetzungen:",
         "FIELD_HEADER_PORT"           : "Port:",
         "FIELD_HEADER_READ_ONLY"      : "Nur-Lesen:",
-
-        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Schwarz auf Weiß",
-        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
-        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grau auf Schwarz",
-        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Grün auf Schwarz",
-        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Weiß auf Schwarz",
 
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
