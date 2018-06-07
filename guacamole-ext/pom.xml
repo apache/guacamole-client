@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-ext</artifactId>
     <packaging>jar</packaging>
-    <version>0.9.14</version>
+    <version>1.0.0</version>
     <name>guacamole-ext</name>
     <url>http://guacamole.apache.org/</url>
 
@@ -148,7 +148,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-common</artifactId>
-            <version>0.9.14</version>
+            <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
 
