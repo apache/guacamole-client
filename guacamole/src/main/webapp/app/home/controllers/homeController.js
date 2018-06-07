@@ -70,7 +70,7 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
      */
     $scope.isLoaded = function isLoaded() {
 
-        return $scope.rootConnectionGroup !== null;
+        return $scope.rootConnectionGroups !== null;
 
     };
 
