@@ -397,12 +397,6 @@
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript naam:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript map:",
 
-        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Zwart op wit",
-        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
-        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grijs op zwart",
-        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Groen op zwart",
-        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Wit op zwart",
-
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
         "FIELD_OPTION_FONT_SIZE_10"    : "10",
@@ -448,12 +442,6 @@
         "FIELD_HEADER_RECORDING_PATH" : "Opname map:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript naam:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript map:",
-
-        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Zwart op wit",
-        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
-        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grijs op zwart",
-        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Groen op zwart",
-        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Wit op zwart",
 
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
