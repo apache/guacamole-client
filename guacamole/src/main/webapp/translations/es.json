@@ -435,12 +435,6 @@
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Nombre script escritura:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Ruta script escritura:",
 
-        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Negro sobre blanco",
-        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
-        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Gris sobre negro",
-        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Verde sobre negro",
-        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Blanco sobre negro",
-
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
         "FIELD_OPTION_FONT_SIZE_10"    : "10",
@@ -486,12 +480,6 @@
         "FIELD_HEADER_RECORDING_PATH" : "Ruta grabación:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Nombre script escritura:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Ruta script escritura:",
-
-        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Negro sobre blanco",
-        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
-        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Gris sobre negro",
-        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Verde sobre negro",
-        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Blanco sobre negro",
 
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
