@@ -26,12 +26,21 @@ import java.util.List;
 import org.apache.guacamole.auth.ldap.user.AuthenticatedUser;
 import org.apache.guacamole.auth.ldap.user.UserContext;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.ldap.user.UserService;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.Iterator;
+import com.novell.ldap.LDAPAttributeSet;
+import com.novell.ldap.LDAPEntry;
+import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPException;
 
 /**
  * Service providing convenience functions for the LDAP AuthenticationProvider
@@ -189,7 +198,7 @@ public class AuthenticationProviderService {
 
     /**
      * Returns an AuthenticatedUser representing the user authenticated by the
-     * given credentials.
+     * given credentials. Also adds custom LDAP attributes to credentials object.
      *
      * @param credentials
      *     The credentials to use for authentication.
@@ -221,6 +230,14 @@ public class AuthenticationProviderService {
             throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
 
         try {
+            try {
+                String username = credentials.getUsername();
+                Map<String, String> ldapAttrs = getLDAPAttributes(ldapConnection, username);
+                credentials.setLDAPAttributes(ldapAttrs);
+            }
+            catch (LDAPException e) {
+                throw new GuacamoleServerException("Error while querying for LDAP User Attributes.", e);
+            }
 
             // Return AuthenticatedUser if bind succeeds
             AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
@@ -234,6 +251,58 @@ public class AuthenticationProviderService {
             ldapService.disconnect(ldapConnection);
         }
 
+    }
+
+    /**
+     * Returns all custom LDAP attributes on the user currently bound under
+     * the given LDAP connection. The custom attributes are specified in
+     * guacamole.properties.
+     *
+     * @param ldapConnection
+     *     LDAP connection to find the custom LDAP attributes.
+     * @param username
+     *     The username of the user whose attributes are queried.
+     *
+     * @return
+     *     All attributes on the user currently bound under the
+     *     given LDAP connection, as a map of attribute name to
+     *     corresponding attribute value.
+     *
+     * @throws LDAPException
+     *     If an error occurs while searching for the user attributes.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs retrieving the user DN.
+     */
+    private Map<String, String> getLDAPAttributes(LDAPConnection ldapConnection,
+            String username) throws LDAPException, GuacamoleException {
+
+        // Get attributes from configuration information
+        List<String> attrList = confService.getAttributes();
+
+        // If there are no attributes there is no reason to search LDAP
+        if (attrList.size() == 0)
+            return null;
+
+        // Build LDAP query parameters
+        String[] attrArray = attrList.toArray(new String[attrList.size()]);
+        String userDN = getUserBindDN(username);
+
+        // Get LDAP attributes by querying LDAP
+        LDAPEntry userEntry = ldapConnection.read(userDN, attrArray);
+        LDAPAttributeSet attrSet = userEntry.getAttributeSet();
+
+        // Add each attribute into Map
+        Map<String, String> attrMap = new HashMap<String, String>();
+        Iterator attrIterator = attrSet.iterator();
+        while (attrIterator.hasNext()) {
+            LDAPAttribute attr = (LDAPAttribute)attrIterator.next();
+            String attrName = attr.getName();
+            String attrValue = attr.getStringValue();
+            attrMap.put(attrName, attrValue);
+        }
+
+        return attrMap;
     }
 
     /**
