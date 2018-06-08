@@ -23,6 +23,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
+import java.util.Map;
+import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class which provides access to standardized token names, as well as
@@ -73,6 +77,12 @@ public class StandardTokens {
      * be compatible with Java's SimpleDateFormat.
      */
     private static final String TIME_FORMAT = "HHmmss";
+
+    /**
+     * Standard prefix to append to beginning of the name of each custom
+    *  LDAP attribute before adding attributes as tokens.
+     */
+    private static final String LDAP_ATTR_PREFIX = "USER_ATTR:";
 
     /**
      * This utility class should not be instantiated.
@@ -133,6 +143,15 @@ public class StandardTokens {
         String address = credentials.getRemoteAddress();
         if (address != null)
             filter.setToken(CLIENT_ADDRESS_TOKEN, address);
+
+        // Add each custom client LDAP attribute token
+        Map<String, String> ldapAttrs = credentials.getLDAPAttributes();
+        if (ldapAttrs != null) {
+            for (Map.Entry<String, String> attr : ldapAttrs.entrySet()) {
+                String tokenName = LDAP_ATTR_PREFIX + attr.getKey().toUpperCase();
+                filter.setToken(tokenName, attr.getValue());
+            }
+        }
 
         // Add any tokens which do not require credentials
         addStandardTokens(filter);
