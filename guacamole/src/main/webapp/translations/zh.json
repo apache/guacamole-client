@@ -142,7 +142,7 @@
         "TEXT_RECONNECT_COUNTDOWN"        : "在{REMAINING}秒后重连……",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
 
-        "URL_OSK_LAYOUT" : "layouts/zh-cn-qwerty.json"
+        "URL_OSK_LAYOUT" : "layouts/en-us-qwerty.json"
 
     },
 
