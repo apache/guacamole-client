@@ -22,7 +22,14 @@ package org.apache.guacamole.auth.ldap;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.novell.ldap.LDAPConnection;
+import com.novell.ldap.LDAPAttributeSet;
+import com.novell.ldap.LDAPEntry;
+import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Iterator;
+import java.util.Map;
 import org.apache.guacamole.auth.ldap.user.AuthenticatedUser;
 import org.apache.guacamole.auth.ldap.user.UserContext;
 import org.apache.guacamole.GuacamoleException;
@@ -33,14 +40,6 @@ import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.Iterator;
-import com.novell.ldap.LDAPAttributeSet;
-import com.novell.ldap.LDAPEntry;
-import com.novell.ldap.LDAPAttribute;
-import com.novell.ldap.LDAPException;
 
 /**
  * Service providing convenience functions for the LDAP AuthenticationProvider
@@ -230,22 +229,21 @@ public class AuthenticationProviderService {
             throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
 
         try {
-            try {
-                String username = credentials.getUsername();
-                Map<String, String> ldapAttrs = getLDAPAttributes(ldapConnection, username);
-                credentials.setLDAPAttributes(ldapAttrs);
-            }
-            catch (LDAPException e) {
-                throw new GuacamoleServerException("Error while querying for LDAP User Attributes.", e);
-            }
-
             // Return AuthenticatedUser if bind succeeds
             AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
             authenticatedUser.init(credentials);
+
+            //set attributes
+            String username = credentials.getUsername();
+            Map<String, String> attrs = getLDAPAttributes(ldapConnection, username);
+            authenticatedUser.setAttributes(attrs);
+
             return authenticatedUser;
 
         }
-
+        catch (LDAPException e) {
+            throw new GuacamoleServerException("Error while querying for User Attributes.", e);
+        }
         // Always disconnect
         finally {
             ldapService.disconnect(ldapConnection);
@@ -275,13 +273,13 @@ public class AuthenticationProviderService {
      *     If an error occurs retrieving the user DN.
      */
     private Map<String, String> getLDAPAttributes(LDAPConnection ldapConnection,
-            String username) throws LDAPException, GuacamoleException {
+            String username) throws LDAPException {
 
         // Get attributes from configuration information
         List<String> attrList = confService.getAttributes();
 
         // If there are no attributes there is no reason to search LDAP
-        if (attrList.size() == 0)
+        if (attrList == null || attrList.isEmpty())
             return null;
 
         // Build LDAP query parameters
@@ -294,9 +292,8 @@ public class AuthenticationProviderService {
 
         // Add each attribute into Map
         Map<String, String> attrMap = new HashMap<String, String>();
-        Iterator attrIterator = attrSet.iterator();
-        while (attrIterator.hasNext()) {
-            LDAPAttribute attr = (LDAPAttribute)attrIterator.next();
+        for (Object attrObj : attrSet) {
+            LDAPAttribute attr = (LDAPAttribute)attrObj;
             String attrName = attr.getName();
             String attrValue = attr.getStringValue();
             attrMap.put(attrName, attrValue);
