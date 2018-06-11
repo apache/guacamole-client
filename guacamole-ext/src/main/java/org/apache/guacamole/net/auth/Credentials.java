@@ -22,7 +22,7 @@ package org.apache.guacamole.net.auth;
 import java.io.Serializable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Map;
+
 
 /**
  * Simple arbitrary set of credentials, including a username/password pair,
@@ -71,29 +71,6 @@ public class Credentials implements Serializable {
      * The HttpSession carrying additional credentials, if any.
      */
     private transient HttpSession session;
-
-    /**
-     * Arbitrary LDAP attributes specified in guacamole.properties
-     */
-     private Map<String, String> ldapAttrs;
-
-     /**
-      * Returns the lDAP attributes associated with this set of credentials.
-      * @return The LDAP attributes Map associated with this set of credentials,
-      *         or  null if no LDAP Attributes have been set.
-      */
-     public Map<String, String> getLDAPAttributes() {
-         return ldapAttrs;
-     }
-
-     /**
-      * Sets the LDAP attributes associated with this set of credentials.
-      * @param attributes The LDAP attributes to associate with this set of
-      *                   credentials.
-      */
-     public void setLDAPAttributes(Map<String, String> attributes) {
-         this.ldapAttrs = attributes;
-     }
 
     /**
      * Returns the password associated with this set of credentials.
