@@ -25,8 +25,6 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import java.util.Map;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility class which provides access to standardized token names, as well as
@@ -79,11 +77,10 @@ public class StandardTokens {
     private static final String TIME_FORMAT = "HHmmss";
 
     /**
-     * Standard prefix to append to beginning of the name of each custom
-    *  LDAP attribute before adding attributes as tokens.
+     * The prefix of the arbitrary attribute tokens.
      */
-    private static final String LDAP_ATTR_PREFIX = "USER_ATTR:";
-
+    public static final String ATTR_TOKEN_PREFIX = "GUAC_ATTR:";
+    
     /**
      * This utility class should not be instantiated.
      */
@@ -144,15 +141,6 @@ public class StandardTokens {
         if (address != null)
             filter.setToken(CLIENT_ADDRESS_TOKEN, address);
 
-        // Add each custom client LDAP attribute token
-        Map<String, String> ldapAttrs = credentials.getLDAPAttributes();
-        if (ldapAttrs != null) {
-            for (Map.Entry<String, String> attr : ldapAttrs.entrySet()) {
-                String tokenName = LDAP_ATTR_PREFIX + attr.getKey().toUpperCase();
-                filter.setToken(tokenName, attr.getValue());
-            }
-        }
-
         // Add any tokens which do not require credentials
         addStandardTokens(filter);
 
@@ -182,6 +170,31 @@ public class StandardTokens {
 
         // Add tokens specific to credentials
         addStandardTokens(filter, user.getCredentials());
+
+    }
+
+    /**
+     * Add attribute tokens to StandardTokens.  These are arbitrary
+     * key/value pairs that may be configured by the various authentication
+     * extensions.
+     *
+     * @param filter
+     *     The TokenFilter to add attributes tokens to.
+     *
+     * @param attributes
+     *     The map of key/value pairs to add tokens for.
+     */
+    public static void addAttributeTokens(TokenFilter filter,
+            Map<String, String> attributes) {
+
+        if (attributes != null) {
+            for (Map.Entry entry : attributes.entrySet()) {
+                String key = entry.getKey().toString();
+                String tokenName = ATTR_TOKEN_PREFIX + key.toUpperCase();
+                String tokenValue = entry.getValue().toString();
+                filter.setToken(tokenName, tokenValue);
+            }
+        }
 
     }
 
