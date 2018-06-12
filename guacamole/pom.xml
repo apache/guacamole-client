@@ -388,7 +388,7 @@
 
         <!-- Polyfill for <datalist> element support -->
         <dependency>
-            <groupId>org.webjars.bowergithub.mfranzke</groupId>
+            <groupId>org.webjars.npm</groupId>
             <artifactId>datalist-polyfill</artifactId>
             <version>1.14.0</version>
             <scope>runtime</scope>
