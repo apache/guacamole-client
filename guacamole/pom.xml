@@ -386,6 +386,14 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Polyfill for <datalist> element support -->
+        <dependency>
+            <groupId>org.webjars.bowergithub.mfranzke</groupId>
+            <artifactId>datalist-polyfill</artifactId>
+            <version>1.14.0</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Jetty 8 servlet API (websocket)  -->
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
