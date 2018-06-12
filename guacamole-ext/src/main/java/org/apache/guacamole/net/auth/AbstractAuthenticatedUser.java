@@ -20,6 +20,7 @@
 package org.apache.guacamole.net.auth;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -39,6 +40,14 @@ public abstract class AbstractAuthenticatedUser extends AbstractIdentifiable
     @Override
     public void invalidate() {
         // Nothing to invalidate
+    }
+
+    public Map<String, String> getAttributes() {
+        return Collections.<String, String>emptyMap();
+    }
+
+    public void setAttributes(Map<String, String> attributes) {
+        //do nothing
     }
 
 }
