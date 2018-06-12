@@ -27,8 +27,8 @@ import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.auth.ldap.user.AuthenticatedUser;
 import org.apache.guacamole.auth.ldap.user.UserContext;
@@ -241,9 +241,6 @@ public class AuthenticationProviderService {
             return authenticatedUser;
 
         }
-        catch (LDAPException e) {
-            throw new GuacamoleServerException("Error while querying for User Attributes.", e);
-        }
         // Always disconnect
         finally {
             ldapService.disconnect(ldapConnection);
@@ -258,6 +255,7 @@ public class AuthenticationProviderService {
      *
      * @param ldapConnection
      *     LDAP connection to find the custom LDAP attributes.
+     *
      * @param username
      *     The username of the user whose attributes are queried.
      *
@@ -273,7 +271,7 @@ public class AuthenticationProviderService {
      *     If an error occurs retrieving the user DN.
      */
     private Map<String, String> getLDAPAttributes(LDAPConnection ldapConnection,
-            String username) throws LDAPException {
+            String username) throws GuacamoleException {
 
         // Get attributes from configuration information
         List<String> attrList = confService.getAttributes();
@@ -286,17 +284,22 @@ public class AuthenticationProviderService {
         String[] attrArray = attrList.toArray(new String[attrList.size()]);
         String userDN = getUserBindDN(username);
 
-        // Get LDAP attributes by querying LDAP
-        LDAPEntry userEntry = ldapConnection.read(userDN, attrArray);
-        LDAPAttributeSet attrSet = userEntry.getAttributeSet();
-
-        // Add each attribute into Map
         Map<String, String> attrMap = new HashMap<String, String>();
-        for (Object attrObj : attrSet) {
-            LDAPAttribute attr = (LDAPAttribute)attrObj;
-            String attrName = attr.getName();
-            String attrValue = attr.getStringValue();
-            attrMap.put(attrName, attrValue);
+        try {
+            // Get LDAP attributes by querying LDAP
+            LDAPEntry userEntry = ldapConnection.read(userDN, attrArray);
+            LDAPAttributeSet attrSet = userEntry.getAttributeSet();
+
+            // Add each attribute into Map
+            for (Object attrObj : attrSet) {
+                LDAPAttribute attr = (LDAPAttribute)attrObj;
+                String attrName = attr.getName();
+                String attrValue = attr.getStringValue();
+                attrMap.put(attrName, attrValue);
+            }
+        }
+        catch (LDAPException e) {
+            throw new GuacamoleServerException("Error while querying for User Attributes.", e);
         }
 
         return attrMap;
