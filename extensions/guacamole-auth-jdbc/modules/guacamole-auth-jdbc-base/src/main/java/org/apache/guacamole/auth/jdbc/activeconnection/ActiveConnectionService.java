@@ -110,14 +110,12 @@ public class ActiveConnectionService
     @Override
     public void deleteObject(ModeledAuthenticatedUser user, String identifier)
         throws GuacamoleException {
-
-        // Only administrators may delete active connections
-        if (!user.getUser().isAdministrator())
-            throw new GuacamoleSecurityException("Permission denied.");
-
+        
         // Close connection, if it exists (and we have permission)
         ActiveConnection activeConnection = retrieveObject(user, identifier);
-        if (activeConnection != null) {
+        if (activeConnection != null && 
+                (user.getUser().isAdministrator() 
+                || user.getIdentifier().equals(activeConnection.getUsername()))) {
 
             // Close connection if not already closed
             GuacamoleTunnel tunnel = activeConnection.getTunnel();
@@ -125,6 +123,8 @@ public class ActiveConnectionService
                 tunnel.close();
 
         }
+        else
+            throw new GuacamoleSecurityException("Permission denied.");
         
     }
 

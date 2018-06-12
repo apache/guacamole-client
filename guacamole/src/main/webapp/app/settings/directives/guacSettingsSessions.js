@@ -189,12 +189,14 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
                         var connection = allConnections[dataSource][activeConnection.connectionIdentifier];
 
                         // Add wrapper
-                        $scope.wrappers.push(new ActiveConnectionWrapper({
-                            dataSource       : dataSource,
-                            name             : connection.name,
-                            startDate        : $filter('date')(activeConnection.startDate, sessionDateFormat),
-                            activeConnection : activeConnection
-                        }));
+                        if (activeConnection.username !== null) {
+                            $scope.wrappers.push(new ActiveConnectionWrapper({
+                                dataSource       : dataSource,
+                                name             : connection.name,
+                                startDate        : $filter('date')(activeConnection.startDate, sessionDateFormat),
+                                activeConnection : activeConnection
+                            }));
+                        }
 
                     });
                 });
