@@ -21,11 +21,10 @@ package org.apache.guacamole.token;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.net.auth.Credentials;
 import java.util.Map;
 import java.util.Set;
-
+import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.apache.guacamole.net.auth.Credentials;
 /**
  * Utility class which provides access to standardized token names, as well as
  * facilities for generating those tokens from common objects.
@@ -80,7 +79,7 @@ public class StandardTokens {
      * The prefix of the arbitrary attribute tokens.
      */
     public static final String ATTR_TOKEN_PREFIX = "GUAC_ATTR:";
-    
+
     /**
      * This utility class should not be instantiated.
      */
