@@ -197,7 +197,8 @@ public class AuthenticationProviderService {
 
     /**
      * Returns an AuthenticatedUser representing the user authenticated by the
-     * given credentials. Also adds custom LDAP attributes to credentials object.
+     * given credentials. Also adds custom LDAP attributes to the
+     * AuthenticatedUser.
      *
      * @param credentials
      *     The credentials to use for authentication.
@@ -233,7 +234,7 @@ public class AuthenticationProviderService {
             AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
             authenticatedUser.init(credentials);
 
-            //set attributes
+            // Set attributes
             String username = credentials.getUsername();
             Map<String, String> attrs = getLDAPAttributes(ldapConnection, username);
             authenticatedUser.setAttributes(attrs);
@@ -293,9 +294,7 @@ public class AuthenticationProviderService {
             // Add each attribute into Map
             for (Object attrObj : attrSet) {
                 LDAPAttribute attr = (LDAPAttribute)attrObj;
-                String attrName = attr.getName();
-                String attrValue = attr.getStringValue();
-                attrMap.put(attrName, attrValue);
+                attrMap.put(attr.getName(), attr.getStringValue());
             }
         }
         catch (LDAPException e) {

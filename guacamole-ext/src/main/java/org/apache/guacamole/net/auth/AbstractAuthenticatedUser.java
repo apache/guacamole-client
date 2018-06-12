@@ -42,10 +42,12 @@ public abstract class AbstractAuthenticatedUser extends AbstractIdentifiable
         // Nothing to invalidate
     }
 
+    @Override
     public Map<String, String> getAttributes() {
         return Collections.<String, String>emptyMap();
     }
 
+    @Override
     public void setAttributes(Map<String, String> attributes) {
         //do nothing
     }

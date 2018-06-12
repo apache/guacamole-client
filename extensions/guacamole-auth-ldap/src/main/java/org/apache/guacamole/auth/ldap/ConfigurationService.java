@@ -348,8 +348,7 @@ public class ConfigurationService {
      * Returns names for custom LDAP user attributes.
      *
      * @return
-     *     LDAP user attributes as defined in the guacamole.properties file
-     *     as ldap-user-attributes: ''
+     *     Custom LDAP user attributes as configured in guacamole.properties.
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.

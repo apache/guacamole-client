@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
+
 /**
  * Utility class which provides access to standardized token names, as well as
  * facilities for generating those tokens from common objects.

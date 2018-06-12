@@ -61,24 +61,11 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
         setIdentifier(credentials.getUsername());
     }
 
-    /**
-     * Get a map of attributes associated with this AuthenticatedUser.
-     *
-     * @return
-     *     The Map of arbitrary attributes associated with this
-     *     AuthenticatedUser object.
-     */
     @Override
     public Map<String, String> getAttributes() {
         return attributes;
     }
 
-    /**
-     * Sets a map of attributes associated with this AuthenticatedUser.
-     *
-     * @param attributes
-     *      A map of attribute key/value pairs to add to this AuthenticatedUser.
-     */
     @Override
     public void setAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
