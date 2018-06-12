@@ -36,7 +36,6 @@ import org.apache.guacamole.auth.ldap.EscapingService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
-//import org.apache.guacamole.auth.ldap.user.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.simple.SimpleConnection;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
@@ -128,7 +127,7 @@ public class ConnectionService {
             StandardTokens.addStandardTokens(tokenFilter, user);
 
             // Add custom attribute tokens
-            Map<String, String> attrs = ( (org.apache.guacamole.auth.ldap.user.AuthenticatedUser) user).getAttributes();
+            Map<String, String> attrs = user.getAttributes();
             StandardTokens.addAttributeTokens(tokenFilter, attrs);
 
             // Produce connections for each readable configuration
