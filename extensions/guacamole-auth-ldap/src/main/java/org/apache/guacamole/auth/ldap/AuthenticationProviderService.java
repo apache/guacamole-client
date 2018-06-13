@@ -265,9 +265,6 @@ public class AuthenticationProviderService {
      *     given LDAP connection, as a map of attribute name to
      *     corresponding attribute value.
      *
-     * @throws LDAPException
-     *     If an error occurs while searching for the user attributes.
-     *
      * @throws GuacamoleException
      *     If an error occurs retrieving the user DN or the attributes.
      */

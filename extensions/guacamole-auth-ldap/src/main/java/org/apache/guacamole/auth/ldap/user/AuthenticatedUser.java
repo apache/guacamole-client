@@ -23,7 +23,6 @@ import com.google.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
-import org.apache.guacamole.net.auth.Attributes;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 
