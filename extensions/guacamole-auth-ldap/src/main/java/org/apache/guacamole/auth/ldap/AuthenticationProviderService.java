@@ -21,11 +21,12 @@ package org.apache.guacamole.auth.ldap;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPAttributeSet;
-import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPAttributeSet;
+import com.novell.ldap.LDAPConnection;
+import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
+import com.novell.ldap.LDAPReferralException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
