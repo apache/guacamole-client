@@ -98,6 +98,37 @@ angular.module('form').directive('guacFormField', [function formField() {
             };
 
             /**
+             * Produces the translation string for the given field option
+             * value. The translation string will be of the form:
+             *
+             * <code>NAMESPACE.FIELD_OPTION_NAME_VALUE<code>
+             *
+             * where <code>NAMESPACE</code> is the namespace provided to the
+             * directive, <code>NAME</code> is the field name transformed
+             * via translationStringService.canonicalize(), and
+             * <code>VALUE</code> is the option value transformed via
+             * translationStringService.canonicalize()
+             *
+             * @param {String} value
+             *     The name of the option value.
+             *
+             * @returns {String}
+             *     The translation string which produces the translated name of the
+             *     value specified.
+             */
+            $scope.getFieldOption = function getFieldOption(value) {
+
+                // If no field, or no value, then no corresponding translation string
+                if (!$scope.field || !$scope.field.name || !value)
+                    return '';
+
+                return translationStringService.canonicalize($scope.namespace || 'MISSING_NAMESPACE')
+                        + '.FIELD_OPTION_' + translationStringService.canonicalize($scope.field.name)
+                        + '_'              + translationStringService.canonicalize(value || 'EMPTY');
+
+            };
+
+            /**
              * Returns whether the current field should be displayed.
              *
              * @returns {Boolean}

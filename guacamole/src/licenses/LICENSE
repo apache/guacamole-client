@@ -390,6 +390,15 @@ Carlito (http://code.google.com/p/chromium/issues/detail?id=280557)
         SIL Open Font (bundled/carlito/LICENSE)
 
 
+datalist-polyfill (https://github.com/mfranzke/datalist-polyfill)
+-----------------------------------------------------------------
+
+    Version: 1.14.0
+    From: 'Maximilian Franzke' (https://github.com/mfranzke)
+    License(s):
+        MIT (bundled/datalist-polyfill-1.14.0/LICENSE)
+
+
 FileSaver.js (https://github.com/eligrey/FileSaver.js)
 ------------------------------------------------------
 

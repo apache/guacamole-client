@@ -43,7 +43,8 @@
             "fields" : [
                 {
                     "name"  : "color-scheme",
-                    "type"  : "TEXT"
+                    "type"  : "TEXT",
+                    "options" : [ "", "black-white", "gray-black", "green-black", "white-black" ]
                 },
                 {
                     "name"  : "font-name",
