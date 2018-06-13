@@ -71,10 +71,10 @@ angular.module('navigation').factory('userPageService', ['$injector',
         var settingsPages = generateSettingsPages(permissions);
 
         // If user has access to settings pages, return home page and skip
-        // evaluation for automatic connections.  The Preferences and Session
-        // Management pages are "Settings" pages and are always visible, so
-        // we look for more than two to indicate access to administrative pages.
-        if (settingsPages.length > 2)
+        // evaluation for automatic connections.  The Preferences page is
+        // a Settings page and is always visible, so we look for more than
+        // one to indicate access to administrative pages.
+        if (settingsPages.length > 1)
             return SYSTEM_HOME_PAGE;
 
         // Determine whether a connection or balancing group should serve as
@@ -265,7 +265,24 @@ angular.module('navigation').factory('userPageService', ['$injector',
                 canViewConnectionRecords.push(dataSource);
             }
 
+            // Determine whether the current user needs access to view session management
+            if (
+                    // Permission to manage active sessions.
+                       PermissionSet.hasSystemPermission(permissions,           PermissionSet.SystemPermissionType.ADMINISTER)
+                    || PermissionSet.hasActiveConnectionPermission(permissions, PermissionSet.ObjectPermissionType.DELETE)
+            ) {
+                canManageSessions.push(dataSource);
+            }
+
         });
+
+        // If user can manage sessions, add link to sessions management page
+        if (canManageSessions.length) {
+            pages.push(new PageDefinition({
+                name : 'USER_MENU.ACTION_MANAGE_SESSIONS',
+                url  : '/settings/sessions'
+            }));
+        }
 
         // If user can manage connections, add links for connection management pages
         angular.forEach(canViewConnectionRecords, function addConnectionHistoryLink(dataSource) {
@@ -296,12 +313,6 @@ angular.module('navigation').factory('userPageService', ['$injector',
                 url  : '/settings/' + encodeURIComponent(dataSource) + '/connections'
             }));
         });
-
-        // Add link to session management (always accessible)
-        pages.push(new PageDefinition({
-            name : 'USER_MENU.ACTION_MANAGE_SESSIONS',
-            url  : '/settings/sessions'
-        }));
 
         // Add link to user preferences (always accessible)
         pages.push(new PageDefinition({
