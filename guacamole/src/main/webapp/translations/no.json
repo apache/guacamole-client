@@ -379,6 +379,12 @@
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript navn:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript sti:",
 
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Svart på hvit",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grå på svart",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Grønn på svart",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Hvit på svart",
+
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
         "FIELD_OPTION_FONT_SIZE_10"    : "10",
@@ -423,6 +429,12 @@
         "FIELD_HEADER_RECORDING_PATH" : "Sti til opptak:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript navn:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript sti:",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Svart på hvit",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grå på svart",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Grønn på svart",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Hvit på svart",
 
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",

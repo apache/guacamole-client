@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.form;
 
+import java.util.Collection;
+
 /**
  * Represents a basic text field. The field may generally contain any data, but
  * may not contain multiple lines.
@@ -33,6 +35,21 @@ public class TextField extends Field {
      */
     public TextField(String name) {
         super(name, Field.Type.TEXT);
+    }
+
+    /**
+     * Creates a new TextField with the given name and possible values. As a
+     * text field may contain any data by definition, any provided options are
+     * simply known-good values.
+     *
+     * @param name
+     *     The unique name to associate with this field.
+     *
+     * @param options
+     *     A set of known legal options for this field.
+     */
+    public TextField(String name, Collection<String> options) {
+        super(name, Field.Type.TEXT, options);
     }
 
     /**

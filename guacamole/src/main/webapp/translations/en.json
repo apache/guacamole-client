@@ -455,6 +455,12 @@
         "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
         "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
 
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Black on white",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Gray on black",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Green on black",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "White on black",
+
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
         "FIELD_OPTION_FONT_SIZE_10"    : "10",
@@ -518,6 +524,12 @@
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
         "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
         "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Black on white",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Gray on black",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Green on black",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "White on black",
 
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",

@@ -19,15 +19,22 @@
 
 
 /**
- * Controller for select fields.
+ * Controller for text fields.
  */
-angular.module('form').controller('selectFieldController', ['$scope', '$injector',
-    function selectFieldController($scope, $injector) {
+angular.module('form').controller('textFieldController', ['$scope', '$injector',
+    function textFieldController($scope, $injector) {
 
-    // Interpret undefined/null as empty string
-    $scope.$watch('model', function setModel(model) {
-        if (!model && model !== '')
-            $scope.model = '';
-    });
+    /**
+     * The ID of the datalist element that should be associated with the text
+     * field, providing a set of known-good values. If no such values are
+     * defined, this will be null.
+     *
+     * @type String
+     */
+    $scope.dataListId = null;
+
+    // Generate unique ID for datalist, if applicable
+    if ($scope.field.options && $scope.field.options.length)
+        $scope.dataListId = $scope.field.name + '-datalist';
 
 }]);

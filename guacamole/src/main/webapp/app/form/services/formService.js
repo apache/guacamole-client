@@ -44,6 +44,8 @@ angular.module('form').provider('formService', function formServiceProvider() {
          * @type FieldType
          */
         'TEXT' : {
+            module      : 'form',
+            controller  : 'textFieldController',
             templateUrl : 'app/form/templates/textField.html'
         },
 
