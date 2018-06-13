@@ -269,7 +269,7 @@ public class AuthenticationProviderService {
      *     If an error occurs while searching for the user attributes.
      *
      * @throws GuacamoleException
-     *     If an error occurs retrieving the user DN.
+     *     If an error occurs retrieving the user DN or the attributes.
      */
     private Map<String, String> getLDAPAttributes(LDAPConnection ldapConnection,
             String username) throws GuacamoleException {

@@ -71,49 +71,6 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
         this.attributes = attributes;
     }
 
-    /**
-     * Add the Map of attributes to the current set, without completely
-     * replacing the existing set.  However, if duplicate keys exist the new
-     * values will replace any existing ones.
-     *
-     * @param attributes
-     *     A Map of attributes to add to the existing attributes, without
-     *     completely overwriting them.
-     */
-    public void addAttributes(Map<String, String> attributes) {
-        this.attributes.putAll(attributes);
-    }
-
-    /**
-     * Retrieve a single attribute value from the map of arbitrary attributes
-     * stored in this AuthenticatedUser object.
-     *
-     * @param key
-     *     The key of the attribute to retrieve.
-     *
-     * @return
-     *     The value of the attribute with the specified key.
-     */
-    public String getAttribute(String key) {
-        return attributes.get(key);
-    }
-
-    /**
-     * Set the attribute of the given key to the given value, either adding
-     * a new value if the specified key does not exist, or replacing an existing
-     * value.
-     *
-     * @param key
-     *     The key name of the attribute to set (or overwrite, if it
-     *     already exists).
-     *
-     * @param value
-     *     The value of the attribute to set or overwrite.
-     */
-    public void setAttribute(String key, String value) {
-        attributes.put(key, value);
-    }
-
     @Override
     public AuthenticationProvider getAuthenticationProvider() {
         return authProvider;
