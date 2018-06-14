@@ -150,10 +150,11 @@ public class StandardTokens {
      * Adds tokens which are standardized by guacamole-ext to the given
      * TokenFilter using the values from the given AuthenticatedUser object,
      * including any associated credentials. These standardized tokens include
-     * the current username (GUAC_USERNAME), password (GUAC_PASSWORD), and the
-     * server date and time (GUAC_DATE and GUAC_TIME respectively). If either
-     * the username or password are not set within the given user or their
-     * provided credentials, the corresponding token(s) will remain unset.
+     * the current username (GUAC_USERNAME), password (GUAC_PASSWORD), the
+     * server date and time (GUAC_DATE and GUAC_TIME respectively), and custom
+     * user attributes. If either the username or password are not set within
+     * the given user or their provided credentials, the corresponding token(s)
+     * will remain unset.
      *
      * @param filter
      *     The TokenFilter to add standard tokens to.
