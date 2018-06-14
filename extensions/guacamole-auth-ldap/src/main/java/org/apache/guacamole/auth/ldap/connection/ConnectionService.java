@@ -126,10 +126,6 @@ public class ConnectionService {
             TokenFilter tokenFilter = new TokenFilter();
             StandardTokens.addStandardTokens(tokenFilter, user);
 
-            // Add custom attribute tokens
-            Map<String, String> attrs = user.getAttributes();
-            StandardTokens.addAttributeTokens(tokenFilter, attrs);
-
             // Produce connections for each readable configuration
             Map<String, Connection> connections = new HashMap<String, Connection>();
             while (results.hasMore()) {

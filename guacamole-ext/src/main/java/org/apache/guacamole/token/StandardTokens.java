@@ -171,6 +171,8 @@ public class StandardTokens {
         // Add tokens specific to credentials
         addStandardTokens(filter, user.getCredentials());
 
+        // Add custom attribute tokens
+        addAttributeTokens(filter, user.getAttributes());
     }
 
     /**
