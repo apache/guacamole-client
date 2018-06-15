@@ -96,6 +96,45 @@ public class Credentials implements Serializable {
     private transient HttpSession session;
 
     /**
+     * Construct a Credentials object with the given username, password,
+     * and HTTP request.  The information is assigned to the various
+     * storage objects, and the remote hostname and address is parsed out
+     * of the request object.
+     * 
+     * @param username
+     *     The username that was provided for authentication.
+     * 
+     * @param password
+     *     The password that was provided for authentication.
+     * 
+     * @param request 
+     *     The HTTP request associated with the authentication
+     *     request.
+     */
+    public Credentials(String username, String password, HttpServletRequest request) {
+        this.username = username;
+        this.password = password;
+        this.request = request;
+        
+        // Use X-Forwarded-For to get remote address, if present and valid
+        String header = request.getHeader("X-Forwarded-For");
+        if (header != null) {
+            Matcher matcher = X_FORWARDED_FOR.matcher(header);
+            if (matcher.matches())
+                this.remoteAddress = matcher.group(1);
+        }
+        // Header not present, just use remote address
+        else {
+            this.remoteAddress = request.getRemoteAddr();
+        }
+        
+        this.remoteHostname = request.getRemoteHost();
+        
+        this.session = request.getSession(false);
+        
+    }
+    
+    /**
      * Returns the password associated with this set of credentials.
      * @return The password associated with this username/password pair, or
      *         null if no password has been set.
@@ -150,21 +189,6 @@ public class Credentials implements Serializable {
      */
     public void setRequest(HttpServletRequest request) {
         this.request = request;
-        
-        // Use X-Forwarded-For to get remote address, if present and valid
-        String header = request.getHeader("X-Forwarded-For");
-        if (header != null) {
-            Matcher matcher = X_FORWARDED_FOR.matcher(header);
-            if (matcher.matches())
-                this.remoteAddress = matcher.group(1);
-        }
-        // Header not present, just use remote address
-        else {
-            this.remoteAddress = request.getRemoteAddr();
-        }
-        
-        this.remoteHostname = request.getRemoteHost();
-        
     }
 
     /**

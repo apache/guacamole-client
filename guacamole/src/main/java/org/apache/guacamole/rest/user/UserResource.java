@@ -155,11 +155,8 @@ public class UserResource
             @Context HttpServletRequest request) throws GuacamoleException {
 
         // Build credentials
-        Credentials credentials = new Credentials();
-        credentials.setUsername(user.getIdentifier());
-        credentials.setPassword(userPasswordUpdate.getOldPassword());
-        credentials.setRequest(request);
-        credentials.setSession(request.getSession(false));
+        Credentials credentials = new Credentials(user.getIdentifier(),
+                userPasswordUpdate.getOldPassword(), request);
 
         // Verify that the old password was correct
         try {

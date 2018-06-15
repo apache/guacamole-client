@@ -42,7 +42,7 @@ public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
      * The host from which this user authenticated.
      */
     private final String remoteHost;
- 
+
     /**
      * Creates a new RemoteAuthenticatedUser, deriving the associated remote
      * host from the given credentials.
