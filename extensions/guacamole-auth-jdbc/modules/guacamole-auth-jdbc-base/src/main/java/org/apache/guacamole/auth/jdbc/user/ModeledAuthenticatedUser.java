@@ -26,11 +26,6 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.util.Map;
-
-
 /**
  * Associates a user with the credentials they used to authenticate, their
  * corresponding ModeledUser, and the AuthenticationProvider which produced
@@ -84,7 +79,7 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
         super(authenticatedUser.getAuthenticationProvider(), authenticatedUser.getCredentials());
         this.modelAuthenticationProvider = modelAuthenticationProvider;
         this.user = user;
-        this.setAttributes(authenticatedUser.getAttributes());
+        super.setAttributes(authenticatedUser.getAttributes());
     }
 
     /**
