@@ -79,7 +79,7 @@ public class StandardTokens {
     /**
      * The prefix of the arbitrary attribute tokens.
      */
-    public static final String ATTR_TOKEN_PREFIX = "GUAC_ATTR:";
+    public static final String ATTR_TOKEN_PREFIX = "GUAC_ATTR_";
 
     /**
      * This utility class should not be instantiated.
