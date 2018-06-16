@@ -112,7 +112,7 @@ public class ActiveConnectionService
     @Override
     public void deleteObject(ModeledAuthenticatedUser user, String identifier)
         throws GuacamoleException {
-        
+
         // Close connection, if it exists and we have permission
         ActiveConnection activeConnection = retrieveObject(user, identifier);
         if (activeConnection != null 
@@ -162,7 +162,7 @@ public class ActiveConnectionService
         throw new GuacamoleSecurityException("Permission denied.");
 
     }
-    
+
     /**
      * Retrieve the permission set for the specified user that relates
      * to access to active connections.
@@ -181,7 +181,7 @@ public class ActiveConnectionService
             throws GuacamoleException {
         return user.getUser().getActiveConnectionPermissions();
     }
-    
+
     /**
      * Return a boolean value representing whether or not a user has the given
      * permission available to them on the active connection with the given
