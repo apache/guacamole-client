@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.ldap;
+package org.apache.guacamole.auth.ldap.conf;
 
 import org.apache.directory.api.ldap.model.message.AliasDerefMode;
 import org.apache.guacamole.GuacamoleException;

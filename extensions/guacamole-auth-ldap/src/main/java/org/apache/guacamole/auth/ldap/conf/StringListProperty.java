@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.ldap;
+package org.apache.guacamole.auth.ldap.conf;
 
 import java.util.Arrays;
 import java.util.List;

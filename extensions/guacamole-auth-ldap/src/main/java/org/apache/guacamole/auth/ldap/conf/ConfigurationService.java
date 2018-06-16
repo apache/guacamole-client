@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.ldap;
+package org.apache.guacamole.auth.ldap.conf;
 
 import com.google.inject.Inject;
 import java.util.Collections;
