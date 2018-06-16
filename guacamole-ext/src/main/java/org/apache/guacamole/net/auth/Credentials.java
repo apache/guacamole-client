@@ -227,7 +227,7 @@ public class Credentials implements Serializable {
     public String getRemoteAddress() {
         return remoteAddress;
     }
-    
+
     /**
      * Sets the address of the client end of the connection which provided
      * these credentials.
@@ -253,7 +253,7 @@ public class Credentials implements Serializable {
     public String getRemoteHostname() {
         return remoteHostname;
     }
-    
+
     /**
      * Sets the hostname of the client end of the connection which provided
      * these credentials, if known. If the hostname of the client cannot be
