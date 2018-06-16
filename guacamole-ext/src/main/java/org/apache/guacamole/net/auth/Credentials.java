@@ -227,6 +227,18 @@ public class Credentials implements Serializable {
     public String getRemoteAddress() {
         return remoteAddress;
     }
+    
+    /**
+     * Sets the address of the client end of the connection which provided
+     * these credentials.
+     *
+     * @param remoteAddress
+     *     The address of the client end of the connection which provided these
+     *     credentials, or null if the address is not known.
+     */
+    public void setRemoteAddress(String remoteAddress) {
+        this.remoteAddress = remoteAddress;
+    }
 
     /**
      * Returns the hostname of the client end of the connection which provided
@@ -240,6 +252,20 @@ public class Credentials implements Serializable {
      */
     public String getRemoteHostname() {
         return remoteHostname;
+    }
+    
+    /**
+     * Sets the hostname of the client end of the connection which provided
+     * these credentials, if known. If the hostname of the client cannot be
+     * determined, but the address is known, the address may be specified
+     * instead.
+     *
+     * @param remoteHostname
+     *     The hostname or address of the client end of the connection which
+     *     provided these credentials, or null if the hostname is not known.
+     */
+    public void setRemoteHostname(String remoteHostname) {
+        this.remoteHostname = remoteHostname;
     }
 
 }
