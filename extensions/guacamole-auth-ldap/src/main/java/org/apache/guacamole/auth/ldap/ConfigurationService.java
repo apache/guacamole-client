@@ -262,19 +262,19 @@ public class ConfigurationService {
             false
         );
     }
-    
+
     /**
      * Return an integer value representing the maximum number of
      * referrals that will be followed.
-     * 
+     *
      * @return
      *     The maximum number of referrals to follow per LDAP
      *     search.  The default is 5.
-     * 
+     *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public Integer getMaxReferrals() throws GuacamoleException {
+    public Integer getMaxReferralHops() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_MAX_REFERRALS,
             5

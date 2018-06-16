@@ -184,16 +184,15 @@ public class LDAPGuacamoleProperties {
         public String getName() { return "ldap-follow-referrals"; }
 
     };
-    
+
     /**
      * Maximum number of referrals to follow per search.
      */
     public static final IntegerGuacamoleProperty LDAP_MAX_REFERRALS = new IntegerGuacamoleProperty() {
-      
+
         @Override
         public String getName() { return "ldap-max-referrals"; }
-        
-        
+
     };
 
     /**

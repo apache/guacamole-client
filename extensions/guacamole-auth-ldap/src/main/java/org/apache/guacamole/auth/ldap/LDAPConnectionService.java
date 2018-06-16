@@ -190,7 +190,7 @@ public class LDAPConnectionService {
             LdapConnectionConfig ldapConfig, Integer hop) 
             throws GuacamoleException {
        
-        if (hop >= confService.getMaxReferrals())
+        if (hop >= confService.getMaxReferralHops())
             throw new GuacamoleServerException("Maximum number of referrals reached.");
         
         LdapConnectionConfig referralConfig = new LdapConnectionConfig();

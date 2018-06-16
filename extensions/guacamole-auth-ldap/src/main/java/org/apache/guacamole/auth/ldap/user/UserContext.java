@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.ldap.user;
 
 import com.google.inject.Inject;
-import java.util.Collection;
 import java.util.Collections;
 import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.guacamole.auth.ldap.LDAPAuthenticationProvider;

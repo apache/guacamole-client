@@ -139,7 +139,7 @@ public class UserService {
                     String identifier = username.getString();
                     if (users.put(identifier, new SimpleUser(identifier)) != null)
                         logger.warn("Possibly ambiguous user account: \"{}\".", identifier);
-                    
+
                 }
                 
                 // Chase referrals
