@@ -96,7 +96,7 @@ public class ActiveConnectionPermissionService
                 String identifier = record.getUUID().toString();
                 permissions.add(new ObjectPermission(ObjectPermission.Type.READ, identifier));
 
-                // If we're and admin, or the connection is ours, then we also have DELETE
+                // If we're an admin, or the connection is ours, then we can DELETE
                 if (isAdmin || targetUser.getIdentifier().equals(record.getUsername()))
                     permissions.add(new ObjectPermission(ObjectPermission.Type.DELETE, identifier));
 
