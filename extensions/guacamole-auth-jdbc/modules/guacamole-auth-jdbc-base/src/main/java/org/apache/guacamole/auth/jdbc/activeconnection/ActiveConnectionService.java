@@ -115,8 +115,10 @@ public class ActiveConnectionService
 
         // Close connection, if it exists and we have permission
         ActiveConnection activeConnection = retrieveObject(user, identifier);
-        if (activeConnection != null 
-                && hasObjectPermissions(user, identifier, ObjectPermission.Type.DELETE)) {
+        if (activeConnection == null)
+            return;
+        
+        if (hasObjectPermissions(user, identifier, ObjectPermission.Type.DELETE)) {
 
             // Close connection if not already closed
             GuacamoleTunnel tunnel = activeConnection.getTunnel();
