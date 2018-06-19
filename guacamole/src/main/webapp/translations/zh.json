@@ -732,7 +732,7 @@
         
         "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_SESSIONS" : "下表中是所有当前活动的Guacamole会话。如需终止一个或多个会话，勾选目标会话并点击“终止会话”。终止会话会立即断开对应用户的连接。",
+        "HELP_SESSIONS" : "此处列出您当前活动的Guacamole会话，并且管理员将能够查看所有用户的当前活动会话。如需终止一个或多个会话，勾选目标会话并点击“终止会话”。终止会话会立即断开对应用户的连接。",
         
         "INFO_NO_SESSIONS" : "无活动会话",
 

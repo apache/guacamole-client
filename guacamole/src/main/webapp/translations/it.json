@@ -566,7 +566,7 @@
         
         "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_SESSIONS" : "All currently-active Guacamole sessions are listed here. If you wish to kill one or more sessions, check the box next to those sessions and click \"Kill Sessions\". Killing a session will immediately disconnect the user from the associated connection.",
+        "HELP_SESSIONS" : "Le tue sessioni Guacamole attualmente attive sono elencate qui e gli amministratori potranno vedere le sessioni attualmente attive per tutti gli utenti. Se desideri uccidere una o più sessioni, seleziona la casella accanto a quelle sessioni e fai clic su \"Uccidi sessioni \". L'uccisione di una sessione interromperà immediatamente l'utente dalla connessione associata.",
         
         "INFO_NO_SESSIONS" : "Nessuna sessione attiva",
 

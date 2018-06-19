@@ -621,7 +621,7 @@
         
         "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_SESSIONS" : "Alle aktiven Guacamole Sitzungen werden hier aufgelistet. Wenn Sie eine oder mehrere Sitzungen beenden wollen, wählen Sie diese Sitzung durch Aktivierung der nebenstehende Box und klicken auf \"Beende Sitzung\". Beendung einer Sitzung trennt den Benutzer von dessen Verbindung unverzüglich.",
+        "HELP_SESSIONS" : "Ihre derzeit aktiven Guacamole-Sitzungen sind hier aufgelistet, und Administratoren können derzeit aktive Sitzungen für alle Benutzer sehen. Wenn Sie eine oder mehrere Sitzungen beenden wollen, wählen Sie diese Sitzung durch Aktivierung der nebenstehende Box und klicken auf \"Beende Sitzung\". Beendung einer Sitzung trennt den Benutzer von dessen Verbindung unverzüglich.",
         
         "INFO_NO_SESSIONS" : "Keine aktiven Sitzungen",
 

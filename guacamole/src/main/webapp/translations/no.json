@@ -635,7 +635,7 @@
         
         "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_SESSIONS" : "Alle aktive Guacamolesesjoner er listet opp her. Dersom du ønsker å avbryte en eller flere sesjoner haker du av boksen ved siden av sesjonen og klikker \"Avbryt sesjoner\". Avbrytes en sesjon vil brukeren umiddelbart kobles av den aktuelle sesjonen.",
+        "HELP_SESSIONS" : "Dine nåværende Guacamole-økter er oppført her, og administratorer kan se øyeblikkelig aktive økter for alle brukere. Dersom du ønsker å avbryte en eller flere sesjoner haker du av boksen ved siden av sesjonen og klikker \"Avbryt sesjoner\". Avbrytes en sesjon vil brukeren umiddelbart kobles av den aktuelle sesjonen.",
         
         "INFO_NO_SESSIONS" : "Ingen aktive sesjoner",
 
