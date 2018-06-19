@@ -196,7 +196,6 @@ angular.module('navigation').factory('userPageService', ['$injector',
         var canManageUsers = [];
         var canManageConnections = [];
         var canViewConnectionRecords = [];
-        var canManageSessions = [];
 
         // Inspect the contents of each provided permission set
         angular.forEach(authenticationService.getAvailableDataSources(), function inspectPermissions(dataSource) {
@@ -269,6 +268,12 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         });
 
+        // Add link to Session management (always accessible)
+        pages.push(new PageDefinition({
+            name : 'USER_MENU.ACTION_MANAGE_SESSIONS',
+            url  : '/settings/sessions'
+        }));
+
         // If user can manage connections, add links for connection management pages
         angular.forEach(canViewConnectionRecords, function addConnectionHistoryLink(dataSource) {
             pages.push(new PageDefinition({
@@ -303,12 +308,6 @@ angular.module('navigation').factory('userPageService', ['$injector',
         pages.push(new PageDefinition({
             name : 'USER_MENU.ACTION_MANAGE_PREFERENCES',
             url  : '/settings/preferences'
-        }));
-
-        // Add link to Session management (always accessible)
-        pages.push(new PageDefinition({
-            name : 'USER_MENU.ACTION_MANAGE_SESSIONS',
-            url  : '/settings/sessions'
         }));
 
         return pages;
