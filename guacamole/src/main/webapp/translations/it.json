@@ -566,7 +566,7 @@
         
         "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_SESSIONS" : "Le tue sessioni Guacamole attualmente attive sono elencate qui e gli amministratori potranno vedere le sessioni attualmente attive per tutti gli utenti. Se desideri uccidere una o più sessioni, seleziona la casella accanto a quelle sessioni e fai clic su \"Uccidi sessioni \". L'uccisione di una sessione interromperà immediatamente l'utente dalla connessione associata.",
+        "HELP_SESSIONS" : "Questa pagina verrà popolata con connessioni attualmente attive. Le connessioni elencate e la possibilità di uccidere tali connessioni dipende dal tuo livello di accesso. Se desideri uccidere una o più sessioni, seleziona la casella accanto a quelle sessioni e fai clic su \"Uccidi sessioni \". L'uccisione di una sessione interromperà immediatamente l'utente dalla connessione associata.",
         
         "INFO_NO_SESSIONS" : "Nessuna sessione attiva",
 
