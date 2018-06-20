@@ -624,7 +624,7 @@
         
         "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_SESSIONS" : "Toutes les connexions actives Guacamole sont listées ici. Si vous souhaitez en fermer une ou plusieurs, sélectionner les et cliquer sur \"Fermer Sessions\". La fermeture d'une session déconnectera immédiatement l'utilisateur.", 
+        "HELP_SESSIONS" : "Cette page sera remplie avec des connexions actuellement actives. Les connexions répertoriées et la possibilité de supprimer ces connexions dépendent de votre niveau d'accès. Si vous souhaitez en fermer une ou plusieurs, sélectionner les et cliquer sur \"Fermer Sessions\". La fermeture d'une session déconnectera immédiatement l'utilisateur.", 
         
         "INFO_NO_SESSIONS" : "Pas de session ouverte",
 

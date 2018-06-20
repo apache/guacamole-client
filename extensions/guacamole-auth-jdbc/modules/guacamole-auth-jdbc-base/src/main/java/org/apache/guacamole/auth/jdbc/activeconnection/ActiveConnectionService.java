@@ -34,6 +34,8 @@ import org.apache.guacamole.auth.jdbc.tunnel.ActiveConnectionRecord;
 import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.ActiveConnection;
+import org.apache.guacamole.net.auth.permission.ObjectPermission;
+import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -111,13 +113,12 @@ public class ActiveConnectionService
     public void deleteObject(ModeledAuthenticatedUser user, String identifier)
         throws GuacamoleException {
 
-        // Only administrators may delete active connections
-        if (!user.getUser().isAdministrator())
-            throw new GuacamoleSecurityException("Permission denied.");
-
-        // Close connection, if it exists (and we have permission)
+        // Close connection, if it exists and we have permission
         ActiveConnection activeConnection = retrieveObject(user, identifier);
-        if (activeConnection != null) {
+        if (activeConnection == null)
+            return;
+        
+        if (hasObjectPermissions(user, identifier, ObjectPermission.Type.DELETE)) {
 
             // Close connection if not already closed
             GuacamoleTunnel tunnel = activeConnection.getTunnel();
@@ -125,6 +126,8 @@ public class ActiveConnectionService
                 tunnel.close();
 
         }
+        else
+            throw new GuacamoleSecurityException("Permission denied.");
         
     }
 
@@ -160,6 +163,56 @@ public class ActiveConnectionService
         // Updating active connections is not implemented
         throw new GuacamoleSecurityException("Permission denied.");
 
+    }
+
+    /**
+     * Retrieve the permission set for the specified user that relates
+     * to access to active connections.
+     * 
+     * @param user
+     *     The user for which to retrieve the permission set.
+     * 
+     * @return
+     *     A permission set associated with the given user that specifies
+     *     the permissions available for active connection objects.
+     * 
+     * @throws GuacamoleException
+     *     If permission to read permissions for the user is denied.
+     */
+    private ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user) 
+            throws GuacamoleException {
+        return user.getUser().getActiveConnectionPermissions();
+    }
+
+    /**
+     * Return a boolean value representing whether or not a user has the given
+     * permission available to them on the active connection with the given
+     * identifier.
+     * 
+     * @param user
+     *     The user for which the permissions are being queried.
+     * 
+     * @param identifier
+     *     The identifier of the active connection we are wondering about.
+     * 
+     * @param type
+     *     The type of permission being requested.
+     * 
+     * @return
+     *     True if the user has the necessary permission; otherwise false.
+     * 
+     * @throws GuacamoleException 
+     *     If the user does not have access to read permissions.
+     */
+    private boolean hasObjectPermissions(ModeledAuthenticatedUser user,
+            String identifier, ObjectPermission.Type type)
+            throws GuacamoleException {
+        
+        ObjectPermissionSet permissionSet = getPermissionSet(user);
+        
+        return user.getUser().isAdministrator() 
+                || permissionSet.hasPermission(type, identifier);
+        
     }
 
 }

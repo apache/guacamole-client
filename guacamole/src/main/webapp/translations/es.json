@@ -695,7 +695,7 @@
         
         "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_SESSIONS" : "Aquí se listan todas las sesiones activas que tiene actualmente Guacamole. Si quiere finalizar una o mas sesiones, marque la casilla correspondiente a esa/s sesión/es y haga clic en \"Finalizar Sesiones\". Si finaliza una sesión desconectará inmediatamente al usuario de la conexión asociada.",
+        "HELP_SESSIONS" : "Esta página se completará con las conexiones actualmente activas. Las conexiones enumeradas y la capacidad de eliminar esas conexiones dependen de su nivel de acceso. Si quiere finalizar una o mas sesiones, marque la casilla correspondiente a esa/s sesión/es y haga clic en \"Finalizar Sesiones\". Si finaliza una sesión desconectará inmediatamente al usuario de la conexión asociada.",
         
         "INFO_NO_SESSIONS" : "No hay sesiones activas",
 

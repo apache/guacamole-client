@@ -72,9 +72,11 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         // If user has access to settings pages, return home page and skip
         // evaluation for automatic connections.  The Preferences page is
-        // a Settings page and is always visible, so we look for more than
-        // one to indicate access to administrative pages.
-        if (settingsPages.length > 1)
+        // a Settings page and is always visible, and the Session management
+        // page is also available to all users so that they can kill their
+        // own session.  We look for more than those two pages to determine
+        // if we should go to the home page.
+        if (settingsPages.length > 2)
             return SYSTEM_HOME_PAGE;
 
         // Determine whether a connection or balancing group should serve as
@@ -194,7 +196,6 @@ angular.module('navigation').factory('userPageService', ['$injector',
         var canManageUsers = [];
         var canManageConnections = [];
         var canViewConnectionRecords = [];
-        var canManageSessions = [];
 
         // Inspect the contents of each provided permission set
         angular.forEach(authenticationService.getAvailableDataSources(), function inspectPermissions(dataSource) {
@@ -257,24 +258,21 @@ angular.module('navigation').factory('userPageService', ['$injector',
                 canManageConnections.push(dataSource);
             }
 
-            // Determine whether the current user needs access to the session management UI or view connection history
+            // Determine whether the current user needs access to view connection history
             if (
-                    // A user must be a system administrator to manage sessions
+                    // A user must be a system administrator to view connection records
                     PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
             ) {
-                canManageSessions.push(dataSource);
                 canViewConnectionRecords.push(dataSource);
             }
 
         });
 
-        // If user can manage sessions, add link to sessions management page
-        if (canManageSessions.length) {
-            pages.push(new PageDefinition({
-                name : 'USER_MENU.ACTION_MANAGE_SESSIONS',
-                url  : '/settings/sessions'
-            }));
-        }
+        // Add link to Session management (always accessible)
+        pages.push(new PageDefinition({
+            name : 'USER_MENU.ACTION_MANAGE_SESSIONS',
+            url  : '/settings/sessions'
+        }));
 
         // If user can manage connections, add links for connection management pages
         angular.forEach(canViewConnectionRecords, function addConnectionHistoryLink(dataSource) {
