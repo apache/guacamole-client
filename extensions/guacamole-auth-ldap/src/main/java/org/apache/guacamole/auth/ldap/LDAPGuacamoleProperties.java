@@ -206,8 +206,8 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
-     * Custom attribute or attributes in Guacamole user's record in the
-     * LDAP directory.
+     * Custom attribute or attributes to query from Guacamole user's record in
+     * the LDAP directory.
      */
     public static final StringListProperty LDAP_USER_ATTRIBUTES = new StringListProperty() {
 

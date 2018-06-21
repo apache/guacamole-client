@@ -26,9 +26,7 @@ import com.novell.ldap.LDAPAttributeSet;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
-import com.novell.ldap.LDAPReferralException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.auth.ldap.user.AuthenticatedUser;
@@ -236,9 +234,7 @@ public class AuthenticationProviderService {
             authenticatedUser.init(credentials);
 
             // Set attributes
-            String username = credentials.getUsername();
-            Map<String, String> attrs = getLDAPAttributes(ldapConnection, username);
-            authenticatedUser.setAttributes(attrs);
+            authenticatedUser.setAttributes(getLDAPAttributes(ldapConnection, credentials.getUsername()));
 
             return authenticatedUser;
 

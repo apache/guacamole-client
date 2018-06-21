@@ -182,7 +182,7 @@ public class StandardTokens {
      * extensions.
      *
      * @param filter
-     *     The TokenFilter to add attributes tokens to.
+     *     The TokenFilter to add attribute tokens to.
      *
      * @param attributes
      *     The map of key/value pairs to add tokens for.
