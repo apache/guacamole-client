@@ -227,7 +227,7 @@ public class ConfigurationService {
     private int getMaxResults() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_MAX_SEARCH_RESULTS,
-            1000 
+            1000
         );
     }
 
@@ -341,6 +341,21 @@ public class ConfigurationService {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_OPERATION_TIMEOUT,
             30
+        );
+    }
+
+    /**
+     * Returns names for custom LDAP user attributes.
+     *
+     * @return
+     *     Custom LDAP user attributes as configured in guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public List<String> getAttributes() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_USER_ATTRIBUTES
         );
     }
 

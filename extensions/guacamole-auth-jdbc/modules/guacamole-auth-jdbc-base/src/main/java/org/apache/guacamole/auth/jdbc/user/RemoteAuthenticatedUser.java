@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.jdbc.user;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
@@ -68,6 +70,21 @@ public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
     private static final Pattern X_FORWARDED_FOR = Pattern.compile("^" + IP_ADDRESS_REGEX + "(, " + IP_ADDRESS_REGEX + ")*$");
 
     /**
+     * Arbitrary attributes associated with this RemoteAuthenticatedUser object.
+     */
+    private Map<String, String> attributes = new HashMap<String, String>();
+
+    @Override
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+
+    @Override
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
+
+    /**
      * Derives the remote host of the authenticating user from the given
      * credentials object. The remote host is derived from X-Forwarded-For
      * in addition to the actual source IP of the request, and thus is not
@@ -98,7 +115,7 @@ public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
         return request.getRemoteAddr();
 
     }
-    
+
     /**
      * Creates a new RemoteAuthenticatedUser, deriving the associated remote
      * host from the given credentials.
@@ -106,7 +123,7 @@ public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
      * @param authenticationProvider
      *     The AuthenticationProvider that has authenticated the given user.
      *
-     * @param credentials 
+     * @param credentials
      *     The credentials given by the user when they authenticated.
      */
     public RemoteAuthenticatedUser(AuthenticationProvider authenticationProvider,

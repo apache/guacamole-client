@@ -21,6 +21,8 @@ package org.apache.guacamole.token;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
+import java.util.Set;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 
@@ -73,6 +75,11 @@ public class StandardTokens {
      * be compatible with Java's SimpleDateFormat.
      */
     private static final String TIME_FORMAT = "HHmmss";
+
+    /**
+     * The prefix of the arbitrary attribute tokens.
+     */
+    public static final String ATTR_TOKEN_PREFIX = "GUAC_ATTR_";
 
     /**
      * This utility class should not be instantiated.
@@ -143,10 +150,11 @@ public class StandardTokens {
      * Adds tokens which are standardized by guacamole-ext to the given
      * TokenFilter using the values from the given AuthenticatedUser object,
      * including any associated credentials. These standardized tokens include
-     * the current username (GUAC_USERNAME), password (GUAC_PASSWORD), and the
-     * server date and time (GUAC_DATE and GUAC_TIME respectively). If either
-     * the username or password are not set within the given user or their
-     * provided credentials, the corresponding token(s) will remain unset.
+     * the current username (GUAC_USERNAME), password (GUAC_PASSWORD), the
+     * server date and time (GUAC_DATE and GUAC_TIME respectively), and custom
+     * user attributes. If either the username or password are not set within
+     * the given user or their provided credentials, the corresponding token(s)
+     * will remain unset.
      *
      * @param filter
      *     The TokenFilter to add standard tokens to.
@@ -163,6 +171,33 @@ public class StandardTokens {
 
         // Add tokens specific to credentials
         addStandardTokens(filter, user.getCredentials());
+
+        // Add custom attribute tokens
+        addAttributeTokens(filter, user.getAttributes());
+    }
+
+    /**
+     * Add attribute tokens to StandardTokens.  These are arbitrary
+     * key/value pairs that may be configured by the various authentication
+     * extensions.
+     *
+     * @param filter
+     *     The TokenFilter to add attribute tokens to.
+     *
+     * @param attributes
+     *     The map of key/value pairs to add tokens for.
+     */
+    public static void addAttributeTokens(TokenFilter filter,
+            Map<String, String> attributes) {
+
+        if (attributes != null) {
+            for (Map.Entry entry : attributes.entrySet()) {
+                String key = entry.getKey().toString();
+                String tokenName = ATTR_TOKEN_PREFIX + key.toUpperCase();
+                String tokenValue = entry.getValue().toString();
+                filter.setToken(tokenName, tokenValue);
+            }
+        }
 
     }
 

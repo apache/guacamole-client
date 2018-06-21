@@ -79,6 +79,7 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
         super(authenticatedUser.getAuthenticationProvider(), authenticatedUser.getCredentials());
         this.modelAuthenticationProvider = modelAuthenticationProvider;
         this.user = user;
+        super.setAttributes(authenticatedUser.getAttributes());
     }
 
     /**
@@ -93,7 +94,7 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
      *     A ModeledUser object which is backed by the data associated with
      *     this user in the database.
      *
-     * @param credentials 
+     * @param credentials
      *     The credentials given by the user when they authenticated.
      */
     public ModeledAuthenticatedUser(AuthenticationProvider authenticationProvider,
@@ -107,7 +108,7 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
      * Returns a ModeledUser object which is backed by the data associated with
      * this user within the database.
      *
-     * @return 
+     * @return
      *     A ModeledUser object which is backed by the data associated with
      *     this user in the database.
      */
