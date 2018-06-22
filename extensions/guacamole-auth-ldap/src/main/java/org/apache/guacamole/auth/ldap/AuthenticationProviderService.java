@@ -26,6 +26,7 @@ import com.novell.ldap.LDAPAttributeSet;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -283,7 +284,12 @@ public class AuthenticationProviderService {
         try {
             // Get LDAP attributes by querying LDAP
             LDAPEntry userEntry = ldapConnection.read(userDN, attrArray);
+            if (userEntry == null)
+                return null;
+
             LDAPAttributeSet attrSet = userEntry.getAttributeSet();
+            if (attrSet == null)
+                return null;
 
             // Add each attribute into Map
             for (Object attrObj : attrSet) {
