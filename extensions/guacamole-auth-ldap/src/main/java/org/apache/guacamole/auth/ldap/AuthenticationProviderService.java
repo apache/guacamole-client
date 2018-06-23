@@ -250,7 +250,8 @@ public class AuthenticationProviderService {
     /**
      * Returns all custom LDAP attributes on the user currently bound under
      * the given LDAP connection. The custom attributes are specified in
-     * guacamole.properties.
+     * guacamole.properties.  If no attributes are specified or none are
+     * found on the LDAP user object, an empty map is returned.
      *
      * @param ldapConnection
      *     LDAP connection to find the custom LDAP attributes.
@@ -261,7 +262,9 @@ public class AuthenticationProviderService {
      * @return
      *     All attributes on the user currently bound under the
      *     given LDAP connection, as a map of attribute name to
-     *     corresponding attribute value.
+     *     corresponding attribute value, or an empty map if no
+     *     attributes are specified or none are found on the user
+     *     object.
      *
      * @throws GuacamoleException
      *     If an error occurs retrieving the user DN or the attributes.
@@ -274,7 +277,7 @@ public class AuthenticationProviderService {
 
         // If there are no attributes there is no reason to search LDAP
         if (attrList == null || attrList.isEmpty())
-            return null;
+            return Collections.<String, String>emptyMap();
 
         // Build LDAP query parameters
         String[] attrArray = attrList.toArray(new String[attrList.size()]);
@@ -285,11 +288,11 @@ public class AuthenticationProviderService {
             // Get LDAP attributes by querying LDAP
             LDAPEntry userEntry = ldapConnection.read(userDN, attrArray);
             if (userEntry == null)
-                return null;
+                return Collections.<String, String>emptyMap();
 
             LDAPAttributeSet attrSet = userEntry.getAttributeSet();
             if (attrSet == null)
-                return null;
+                return Collections.<String, String>emptyMap();
 
             // Add each attribute into Map
             for (Object attrObj : attrSet) {
