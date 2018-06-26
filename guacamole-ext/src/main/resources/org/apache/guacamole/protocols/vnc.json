@@ -129,7 +129,7 @@
                 },
                 {
                     "name"  : "sftp-host-key",
-                    "type"  : "MULTILINE"
+                    "type"  : "TEXT"
                 },
                 {
                     "name"  : "sftp-username",
