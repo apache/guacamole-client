@@ -25,8 +25,9 @@ angular.module('rest').factory('requestService', ['$injector',
         function requestService($injector) {
 
     // Required services
-    var $http = $injector.get('$http');
-    var $log  = $injector.get('$log');
+    var $http      = $injector.get('$http');
+    var $log       = $injector.get('$log');
+    var $rootScope = $injector.get('$rootScope');
 
     // Required types
     var Error = $injector.get('Error');
@@ -113,6 +114,21 @@ angular.module('rest').factory('requestService', ['$injector',
      */
     service.WARN = service.createErrorCallback(function warnRequestFailed(error) {
         $log.warn(error.type, error.message || error.translatableMessage);
+    });
+
+    /**
+     * Promise error callback which replaces the content of the page with a
+     * generic error message warning that the page could not be displayed. All
+     * rejections are logged to the browser console as errors. This callback
+     * should be used in favor of @link{WARN} if REST errors will result in the
+     * page being unusable.
+     *
+     * @constant
+     * @type Function
+     */
+    service.DIE = service.createErrorCallback(function fatalPageError(error) {
+        $rootScope.$broadcast('guacFatalPageError', error);
+        $log.error(error.type, error.message || error.translatableMessage);
     });
 
     return service;
