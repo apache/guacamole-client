@@ -277,7 +277,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
                     PermissionSet.hasConnectionPermission,
                     identifier);
 
-    }, requestService.WARN);
+    }, requestService.DIE);
 
     /**
      * @borrows Protocol.getNamespace

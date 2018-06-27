@@ -245,7 +245,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
                     PermissionSet.hasConnectionPermission,
                     identifier);
 
-    }, requestService.WARN);
+    }, requestService.DIE);
 
     /**
      * Cancels all pending edits, returning to the main list of connections

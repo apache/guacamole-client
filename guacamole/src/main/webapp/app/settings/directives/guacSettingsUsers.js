@@ -275,9 +275,9 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
                         });
                     });
 
-                }, requestService.WARN);
+                }, requestService.DIE);
 
-            }, requestService.WARN);
+            }, requestService.DIE);
             
         }]
     };

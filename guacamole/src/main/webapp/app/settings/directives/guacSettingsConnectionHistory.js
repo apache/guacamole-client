@@ -178,7 +178,7 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
                        $scope.historyEntryWrappers.push(new ConnectionHistoryEntryWrapper(historyEntry)); 
                     });
 
-                }, requestService.WARN);
+                }, requestService.DIE);
 
             };
             

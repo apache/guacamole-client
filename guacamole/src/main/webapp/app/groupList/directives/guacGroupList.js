@@ -222,7 +222,7 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
                             });
                         });
 
-                    }, requestService.WARN);
+                    }, requestService.DIE);
 
                 }
 

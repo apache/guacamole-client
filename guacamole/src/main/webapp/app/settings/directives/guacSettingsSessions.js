@@ -222,7 +222,7 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
                 // Attempt to produce wrapped list of active connections
                 wrapAllActiveConnections();
 
-            }, requestService.WARN);
+            }, requestService.DIE);
             
             // Query active sessions
             dataSourceService.apply(
@@ -237,7 +237,7 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
                 // Attempt to produce wrapped list of active connections
                 wrapAllActiveConnections();
 
-            }, requestService.WARN);
+            }, requestService.DIE);
 
             // Get session date format
             $translate('SETTINGS_SESSIONS.FORMAT_STARTDATE').then(function sessionDateFormatReceived(retrievedSessionDateFormat) {

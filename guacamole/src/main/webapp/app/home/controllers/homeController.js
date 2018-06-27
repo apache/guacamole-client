@@ -127,6 +127,6 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     )
     .then(function rootGroupsRetrieved(rootConnectionGroups) {
         $scope.rootConnectionGroups = rootConnectionGroups;
-    }, requestService.WARN);
+    }, requestService.DIE);
 
 }]);

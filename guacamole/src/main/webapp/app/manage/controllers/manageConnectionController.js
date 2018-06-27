@@ -287,7 +287,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
                     PermissionSet.hasConnectionPermission,
                     identifier);
 
-    }, requestService.WARN);
+    }, requestService.DIE);
     
     // Get history date format
     $translate('MANAGE_CONNECTION.FORMAT_HISTORY_START').then(function historyDateFormatReceived(historyDateFormat) {

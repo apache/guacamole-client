@@ -172,7 +172,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         })
         .then(function rootConnectionGroupsPermissionsRetrieved(data) {
             deferred.resolve(generateHomePage(data.rootGroups,data.permissionsSets));
-        }, requestService.WARN);
+        }, requestService.DIE);
 
         return deferred.promise;
 
@@ -336,7 +336,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         // Resolve promise using settings pages derived from permissions
         .then(function permissionsRetrieved(permissions) {
             deferred.resolve(generateSettingsPages(permissions));
-        }, requestService.WARN);
+        }, requestService.DIE);
         
         return deferred.promise;
 
@@ -417,7 +417,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         .then(function rootConnectionGroupsRetrieved(retrievedRootGroups) {
             rootGroups = retrievedRootGroups;
             resolveMainPages();
-        }, requestService.WARN);
+        }, requestService.DIE);
 
         // Retrieve current permissions
         dataSourceService.apply(
@@ -430,7 +430,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         .then(function permissionsRetrieved(retrievedPermissions) {
             permissions = retrievedPermissions;
             resolveMainPages();
-        }, requestService.WARN);
+        }, requestService.DIE);
         
         return deferred.promise;
 

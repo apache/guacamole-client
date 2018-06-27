@@ -147,7 +147,7 @@ angular.module('manage').directive('systemPermissionEditor', ['$injector',
         )
         .then(function permissionsReceived(permissions) {
             $scope.permissions = permissions;
-        }, requestService.WARN);
+        }, requestService.DIE);
 
         /**
          * Returns whether the current user has permission to change the system
