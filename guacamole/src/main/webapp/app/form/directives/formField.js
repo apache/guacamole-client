@@ -119,7 +119,7 @@ angular.module('form').directive('guacFormField', [function formField() {
             $scope.getFieldOption = function getFieldOption(value) {
 
                 // If no field, or no value, then no corresponding translation string
-                if (!$scope.field || !$scope.field.name || !value)
+                if (!$scope.field || !$scope.field.name)
                     return '';
 
                 return translationStringService.canonicalize($scope.namespace || 'MISSING_NAMESPACE')
