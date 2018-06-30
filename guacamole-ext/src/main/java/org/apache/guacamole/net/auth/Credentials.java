@@ -40,27 +40,6 @@ public class Credentials implements Serializable {
      * Unique identifier associated with this specific version of Credentials.
      */
     private static final long serialVersionUID = 1L;
-    
-    /**
-     * Regular expression which matches any IPv4 address.
-     */
-    private static final String IPV4_ADDRESS_REGEX = "([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})";
-
-    /**
-     * Regular expression which matches any IPv6 address.
-     */
-    private static final String IPV6_ADDRESS_REGEX = "([0-9a-fA-F]*(:[0-9a-fA-F]*){0,7})";
-    
-    /**
-     * Regular expression which matches any IP address, regardless of version.
-     */
-    private static final String IP_ADDRESS_REGEX = "(" + IPV4_ADDRESS_REGEX + "|" + IPV6_ADDRESS_REGEX + ")";
-    
-    /**
-     * Pattern which matches valid values of the de-facto standard
-     * "X-Forwarded-For" header.
-     */
-    private static final Pattern X_FORWARDED_FOR = Pattern.compile("^" + IP_ADDRESS_REGEX + "(, " + IP_ADDRESS_REGEX + ")*$");
 
     /**
      * An arbitrary username.
@@ -115,25 +94,16 @@ public class Credentials implements Serializable {
         this.username = username;
         this.password = password;
         this.request = request;
-        
-        // Use X-Forwarded-For to get remote address, if present and valid
-        String header = request.getHeader("X-Forwarded-For");
-        if (header != null) {
-            Matcher matcher = X_FORWARDED_FOR.matcher(header);
-            if (matcher.matches())
-                this.remoteAddress = matcher.group(1);
-        }
-        
-        // Header not present, just use remote address
-        else
-            this.remoteAddress = request.getRemoteAddr();
-        
+
+        // Set the remote address
+        this.remoteAddress = request.getRemoteAddr();
+
         // Get the remote hostname
         this.remoteHostname = request.getRemoteHost();
-        
+
         // If session exists get it, but don't create a new one.
         this.session = request.getSession(false);
-        
+
     }
     
     /**
