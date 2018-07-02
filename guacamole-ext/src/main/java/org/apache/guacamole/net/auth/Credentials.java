@@ -73,7 +73,40 @@ public class Credentials implements Serializable {
     private transient HttpSession session;
 
     /**
+     * Construct a Credentials object with the given username, password,
+     * and HTTP request.  The information is assigned to the various
+     * storage objects, and the remote hostname and address is parsed out
+     * of the request object.
+     * 
+     * @param username
+     *     The username that was provided for authentication.
+     * 
+     * @param password
+     *     The password that was provided for authentication.
+     * 
+     * @param request 
+     *     The HTTP request associated with the authentication
+     *     request.
+     */
+    public Credentials(String username, String password, HttpServletRequest request) {
+        this.username = username;
+        this.password = password;
+        this.request = request;
+
+        // Set the remote address
+        this.remoteAddress = request.getRemoteAddr();
+
+        // Get the remote hostname
+        this.remoteHostname = request.getRemoteHost();
+
+        // If session exists get it, but don't create a new one.
+        this.session = request.getSession(false);
+
+    }
+    
+    /**
      * Returns the password associated with this set of credentials.
+     *
      * @return The password associated with this username/password pair, or
      *         null if no password has been set.
      */
@@ -83,6 +116,7 @@ public class Credentials implements Serializable {
 
     /**
      * Sets the password associated with this set of credentials.
+     *
      * @param password The password to associate with this username/password
      *                 pair.
      */
@@ -92,6 +126,7 @@ public class Credentials implements Serializable {
 
     /**
      * Returns the username associated with this set of credentials.
+     *
      * @return The username associated with this username/password pair, or
      *         null if no username has been set.
      */
@@ -101,6 +136,7 @@ public class Credentials implements Serializable {
 
     /**
      * Sets the username associated with this set of credentials.
+     *
      * @param username The username to associate with this username/password
      *                 pair.
      */
@@ -110,6 +146,7 @@ public class Credentials implements Serializable {
 
     /**
      * Returns the HttpServletRequest associated with this set of credentials.
+     *
      * @return The HttpServletRequest associated with this set of credentials,
      *         or null if no such request exists.
      */
@@ -119,6 +156,7 @@ public class Credentials implements Serializable {
 
     /**
      * Sets the HttpServletRequest associated with this set of credentials.
+     *
      * @param request  The HttpServletRequest to associated with this set of
      *                 credentials.
      */
@@ -128,6 +166,7 @@ public class Credentials implements Serializable {
 
     /**
      * Returns the HttpSession associated with this set of credentials.
+     *
      * @return The HttpSession associated with this set of credentials, or null
      *         if no such request exists.
      */
@@ -137,6 +176,7 @@ public class Credentials implements Serializable {
 
     /**
      * Sets the HttpSession associated with this set of credentials.
+     *
      * @param session The HttpSession to associated with this set of
      *                credentials.
      */
