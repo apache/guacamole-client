@@ -117,15 +117,7 @@ public class TokenRESTService {
         } // end Authorization header fallback
 
         // Build credentials
-        Credentials credentials = new Credentials();
-        credentials.setUsername(username);
-        credentials.setPassword(password);
-        credentials.setRequest(request);
-        credentials.setSession(request.getSession(false));
-        credentials.setRemoteAddress(request.getRemoteAddr());
-        credentials.setRemoteHostname(request.getRemoteHost());
-
-        return credentials;
+        return new Credentials(username, password, request);
 
     }
 

@@ -137,7 +137,7 @@ public class ModeledUserContext extends RestrictedObject
         userRecord = new ActivityRecordModel();
         userRecord.setUsername(currentUser.getIdentifier());
         userRecord.setStartDate(new Date());
-        userRecord.setRemoteHost(currentUser.getCredentials().getRemoteHostname());
+        userRecord.setRemoteHost(currentUser.getCredentials().getRemoteAddress());
 
         // Insert record representing login
         userRecordMapper.insert(userRecord);
