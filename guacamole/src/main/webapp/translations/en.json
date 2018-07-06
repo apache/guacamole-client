@@ -349,6 +349,7 @@
         "FIELD_HEADER_LOAD_BALANCE_INFO" : "Load balance info/cookie:",
         "FIELD_HEADER_PASSWORD"        : "Password:",
         "FIELD_HEADER_PORT"            : "Port:",
+        "FIELD_HEADER_PRINTER_NAME"    : "Redirected printer name:",
         "FIELD_HEADER_PRECONNECTION_BLOB" : "Preconnection BLOB (VM ID):",
         "FIELD_HEADER_PRECONNECTION_ID"   : "RDP source ID:",
         "FIELD_HEADER_READ_ONLY"      : "Read-only:",
