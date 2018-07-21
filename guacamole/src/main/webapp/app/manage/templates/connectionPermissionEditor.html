@@ -1,15 +1,13 @@
 <div class="connection-permissions">
-    <div class="header">
+    <div class="header tabbed">
         <h2>{{'MANAGE_USER.SECTION_HEADER_CONNECTIONS' | translate}}</h2>
-        <div class="filter">
-            <label><input type="checkbox" ng-model="displayReadableOnly"> {{'MANAGE_USER.' | translate}}</label>
-        </div>
         <guac-group-list-filter connection-groups="getRootGroups()"
             filtered-connection-groups="filteredRootGroups"
             placeholder="'MANAGE_USER.FIELD_PLACEHOLDER_FILTER' | translate"
             connection-properties="filteredConnectionProperties"
             connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>
     </div>
+    <guac-section-tabs namespace="MANAGE_USER" current="currentTab" tabs="tabs"></guac-section-tabs>
     <div class="section">
         <guac-group-list
             context="groupListContext"

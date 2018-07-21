@@ -110,11 +110,40 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
         var readableRootGroups = null;
 
         /**
-         * Whether the items displayed within the connection permission editor
-         * should be limited to those which had explicit READ permission at the
-         * time the editor was loaded.
+         * The name of the tab within the connection permission editor which
+         * displays readable connections only.
+         *
+         * @constant
+         * @type String
          */
-        $scope.displayReadableOnly = false;
+        var SELECTED_CONNECTIONS = 'SELECTED_CONNECTIONS';
+
+        /**
+         * The name of the tab within the connection permission editor which
+         * displays all connections, regardless of whether they are readable.
+         *
+         * @constant
+         * @type String
+         */
+        var ALL_CONNECTIONS = 'ALL_CONNECTIONS';
+
+        /**
+         * The names of all tabs which should be available within the
+         * connection permission editor, in display order.
+         *
+         * @type String[]
+         */
+        $scope.tabs = [
+            SELECTED_CONNECTIONS,
+            ALL_CONNECTIONS
+        ];
+
+        /**
+         * The name of the currently selected tab.
+         *
+         * @type String
+         */
+        $scope.currentTab = ALL_CONNECTIONS;
 
         /**
          * Array of all connection properties that are filterable.
@@ -145,7 +174,7 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          *     root connection groups within those data sources.
          */
         $scope.getRootGroups = function getRootGroups() {
-            return $scope.displayReadableOnly ? readableRootGroups : allRootGroups;
+            return $scope.currentTab === SELECTED_CONNECTIONS ? readableRootGroups : allRootGroups;
         };
 
         /**
@@ -312,7 +341,7 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
 
                 // Display only readable connections by default if at least one
                 // readable connection exists
-                $scope.displayReadableOnly = !!readableRootGroups[$scope.dataSource].children.length;
+                $scope.currentTab = !!readableRootGroups[$scope.dataSource].children.length ? SELECTED_CONNECTIONS : ALL_CONNECTIONS;
 
             });
 
