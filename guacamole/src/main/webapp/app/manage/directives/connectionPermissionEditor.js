@@ -85,6 +85,38 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
     directive.controller = ['$scope', function connectionPermissionEditorController($scope) {
 
         /**
+         * A map of data source identifiers to all root connection groups
+         * within those data sources, regardless of the permissions granted for
+         * the items within those groups. As only one data source is applicable
+         * to any particular permission set being edited/created, this will only
+         * contain a single key. If the data necessary to produce this map has
+         * not yet been loaded, this will be null.
+         *
+         * @type Object.<String, GroupListItem>
+         */
+        var allRootGroups = null;
+
+        /**
+         * A map of data source identifiers to the root connection groups within
+         * those data sources, excluding all items which are not explicitly
+         * readable according to $scope.permissionFlags. As only one data
+         * source is applicable to any particular permission set being
+         * edited/created, this will only contain a single key. If the data
+         * necessary to produce this map has not yet been loaded, this will be
+         * null.
+         *
+         * @type Object.<String, GroupListItem>
+         */
+        var readableRootGroups = null;
+
+        /**
+         * Whether the items displayed within the connection permission editor
+         * should be limited to those which had explicit READ permission at the
+         * time the editor was loaded.
+         */
+        $scope.displayReadableOnly = false;
+
+        /**
          * Array of all connection properties that are filterable.
          *
          * @type String[]
@@ -104,31 +136,53 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
         ];
 
         /**
-         * A map of data source identifiers to the root connection groups within
-         * thost data sources. As only one data source is applicable to any
-         * particular permission set being edited/created, this will only
-         * contain a single key.
+         * Returns the root groups which should be displayed within the
+         * connection permission editor.
          *
-         * @type Object.<String, GroupListItem>
+         * @returns {Object.<String, GroupListItem>}
+         *     The root groups which should be displayed within the connection
+         *     permission editor as a map of data source identifiers to the
+         *     root connection groups within those data sources.
          */
-        $scope.rootGroups = null;
+        $scope.getRootGroups = function getRootGroups() {
+            return $scope.displayReadableOnly ? readableRootGroups : allRootGroups;
+        };
 
-        // Retrieve all connections for which we have ADMINISTER permission
-        dataSourceService.apply(
-            connectionGroupService.getConnectionGroupTree,
-            [$scope.dataSource],
-            ConnectionGroup.ROOT_IDENTIFIER,
-            [PermissionSet.ObjectPermissionType.ADMINISTER]
-        )
-        .then(function connectionGroupReceived(rootGroups) {
+        /**
+         * Returns whether the given PermissionFlagSet declares explicit READ
+         * permission for the connection, connection group, or sharing profile
+         * represented by the given GroupListItem.
+         *
+         * @param {GroupListItem} item
+         *     The GroupListItem which should be checked against the
+         *     PermissionFlagSet.
+         *
+         * @param {PemissionFlagSet} flags
+         *     The set of permissions which should be used to determine whether
+         *     explicit READ permission is granted for the given item.
+         *
+         * @returns {Boolean}
+         *     true if explicit READ permission is granted for the given item
+         *     according to the given permission set, false otherwise.
+         */
+        var isReadable = function isReadable(item, flags) {
 
-            // Convert all received ConnectionGroup objects into GroupListItems
-            $scope.rootGroups = {};
-            angular.forEach(rootGroups, function addGroupListItem(rootGroup, dataSource) {
-                $scope.rootGroups[dataSource] = GroupListItem.fromConnectionGroup(dataSource, rootGroup);
-            });
+            switch (item.type) {
 
-        }, requestService.WARN);
+                case GroupListItem.Type.CONNECTION:
+                    return flags.connectionPermissions.READ[item.identifier];
+
+                case GroupListItem.Type.CONNECTION_GROUP:
+                    return flags.connectionGroupPermissions.READ[item.identifier];
+
+                case GroupListItem.Type.SHARING_PROFILE:
+                    return flags.sharingProfilePermissions.READ[item.identifier];
+
+            }
+
+            return false;
+
+        };
 
         /**
          * Expands all items within the tree descending from the given
@@ -144,6 +198,9 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          * @param {PemissionFlagSet} flags
          *     The set of permissions which should be used to determine whether
          *     the given item and its descendants are expanded.
+         *
+         * @returns {Boolean}
+         *     true if the given item has been expanded, false otherwise.
          */
         var expandReadable = function expandReadable(item, flags) {
 
@@ -152,29 +209,10 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
             if (item.expandable && item.children) {
                 angular.forEach(item.children, function expandReadableChild(child) {
 
-                    // Determine whether the permission set contains READ
-                    // permission for the current child object
-                    var readable = false;
-                    switch (child.type) {
-
-                        case GroupListItem.Type.CONNECTION:
-                            readable = flags.connectionPermissions.READ[child.identifier];
-                            break;
-
-                        case GroupListItem.Type.CONNECTION_GROUP:
-                            readable = flags.connectionGroupPermissions.READ[child.identifier];
-                            break;
-
-                        case GroupListItem.Type.SHARING_PROFILE:
-                            readable = flags.sharingProfilePermissions.READ[child.identifier];
-                            break;
-
-                    }
-
                     // The parent should be expanded by default if the child is
                     // expanded by default OR the permission set contains READ
                     // permission on the child
-                    item.expanded |= expandReadable(child, flags) || readable;
+                    item.expanded |= expandReadable(child, flags) || isReadable(child, flags);
 
                 });
             }
@@ -183,22 +221,102 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
 
         };
 
-        // Update default expanded state whenever connection groups and
-        // associated permissions change
-        $scope.$watchGroup(['rootGroups', 'permissionFlags'], function updateDefaultExpandedStates() {
+        /**
+         * Creates a deep copy of all items within the tree descending from the
+         * given GroupListItem which have at least one descendant for which
+         * explicit READ permission is granted. Items which lack explicit READ
+         * permission and which have no descendants having explicit READ
+         * permission are omitted from the copy.
+         *
+         * @param {GroupListItem} item
+         *     The GroupListItem which should be conditionally copied
+         *     depending on whether READ permission is granted for any of its
+         *     descendants.
+         *
+         * @param {PemissionFlagSet} flags
+         *     The set of permissions which should be used to determine whether
+         *     the given item or any of its descendants are copied.
+         *
+         * @returns {GroupListItem}
+         *     A new GroupListItem containing a deep copy of the given item,
+         *     omitting any items which lack explicit READ permission and whose
+         *     descendants also lack explicit READ permission, or null if even
+         *     the given item would not be copied.
+         */
+        var copyReadable = function copyReadable(item, flags) {
 
-            if (!$scope.rootGroups || !$scope.permissionFlags)
-                return;
+            // Produce initial shallow copy of given item
+            item = new GroupListItem(item);
 
-            angular.forEach($scope.rootGroups, function updateExpandedStates(rootGroup) {
+            // Replace children array with an array containing only readable
+            // children (or children with at least one readable descendant),
+            // flagging the current item for copying if any such children exist
+            if (item.children) {
 
-                // Automatically expand all objects with any descendants for
-                // which the permission set contains READ permission
-                expandReadable(rootGroup, $scope.permissionFlags);
+                var children = [];
+                angular.forEach(item.children, function copyReadableChildren(child) {
+
+                    // Reduce child tree to only explicitly readable items and
+                    // their parents
+                    child = copyReadable(child, flags);
+
+                    // Include child only if they are explicitly readable or
+                    // they have explicitly readable descendants
+                    if ((child.children && child.children.length) || isReadable(child, flags))
+                        children.push(child);
+
+                });
+
+                item.children = children;
+
+            }
+
+            return item;
+
+        };
+
+        // Retrieve all connections for which we have ADMINISTER permission
+        dataSourceService.apply(
+            connectionGroupService.getConnectionGroupTree,
+            [$scope.dataSource],
+            ConnectionGroup.ROOT_IDENTIFIER,
+            [PermissionSet.ObjectPermissionType.ADMINISTER]
+        )
+        .then(function connectionGroupReceived(rootGroups) {
+
+            // Update default expanded state and the all / readable-only views
+            // when associated permissions change
+            $scope.$watchGroup(['permissionFlags'], function updateDefaultExpandedStates() {
+
+                if (!$scope.permissionFlags)
+                    return;
+
+                allRootGroups = {};
+                readableRootGroups = {};
+
+                angular.forEach(rootGroups, function addGroupListItem(rootGroup, dataSource) {
+
+                    // Convert all received ConnectionGroup objects into GroupListItems
+                    var item = GroupListItem.fromConnectionGroup(dataSource, rootGroup);
+                    allRootGroups[dataSource] = item;
+
+                    // Automatically expand all objects with any descendants for
+                    // which the permission set contains READ permission
+                    expandReadable(item, $scope.permissionFlags);
+
+                    // Create a duplicate view which contains only readable
+                    // items
+                    readableRootGroups[dataSource] = copyReadable(item, $scope.permissionFlags);
+
+                });
+
+                // Display only readable connections by default if at least one
+                // readable connection exists
+                $scope.displayReadableOnly = !!readableRootGroups[$scope.dataSource].children.length;
 
             });
 
-        });
+        }, requestService.WARN);
 
         /**
          * Updates the permissionsAdded and permissionsRemoved permission sets

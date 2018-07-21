@@ -1,7 +1,10 @@
 <div class="connection-permissions">
     <div class="header">
         <h2>{{'MANAGE_USER.SECTION_HEADER_CONNECTIONS' | translate}}</h2>
-        <guac-group-list-filter connection-groups="rootGroups"
+        <div class="filter">
+            <label><input type="checkbox" ng-model="displayReadableOnly"> {{'MANAGE_USER.' | translate}}</label>
+        </div>
+        <guac-group-list-filter connection-groups="getRootGroups()"
             filtered-connection-groups="filteredRootGroups"
             placeholder="'MANAGE_USER.FIELD_PLACEHOLDER_FILTER' | translate"
             connection-properties="filteredConnectionProperties"
