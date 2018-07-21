@@ -303,11 +303,11 @@
 
         "INFO_READ_ONLY" : "Sorry, but this user account cannot be edited.",
 
-        "SECTION_HEADER_ALL_CONNECTIONS"      : "All Connections",
-        "SECTION_HEADER_CONNECTIONS"          : "Connections",
-        "SECTION_HEADER_EDIT_USER"            : "Edit User",
-        "SECTION_HEADER_PERMISSIONS"          : "Permissions",
-        "SECTION_HEADER_SELECTED_CONNECTIONS" : "Selected Connections",
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "All Connections",
+        "SECTION_HEADER_CONNECTIONS"         : "Connections",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "Current Connections",
+        "SECTION_HEADER_EDIT_USER"           : "Edit User",
+        "SECTION_HEADER_PERMISSIONS"         : "Permissions",
 
         "TEXT_CONFIRM_DELETE" : "Users cannot be restored after they have been deleted. Are you sure you want to delete this user?"
 

@@ -111,12 +111,12 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
 
         /**
          * The name of the tab within the connection permission editor which
-         * displays readable connections only.
+         * displays currently selected (readable) connections only.
          *
          * @constant
          * @type String
          */
-        var SELECTED_CONNECTIONS = 'SELECTED_CONNECTIONS';
+        var CURRENT_CONNECTIONS = 'CURRENT_CONNECTIONS';
 
         /**
          * The name of the tab within the connection permission editor which
@@ -134,7 +134,7 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          * @type String[]
          */
         $scope.tabs = [
-            SELECTED_CONNECTIONS,
+            CURRENT_CONNECTIONS,
             ALL_CONNECTIONS
         ];
 
@@ -174,7 +174,7 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          *     root connection groups within those data sources.
          */
         $scope.getRootGroups = function getRootGroups() {
-            return $scope.currentTab === SELECTED_CONNECTIONS ? readableRootGroups : allRootGroups;
+            return $scope.currentTab === CURRENT_CONNECTIONS ? readableRootGroups : allRootGroups;
         };
 
         /**
@@ -344,7 +344,7 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
 
                 // Display only readable connections by default if at least one
                 // readable connection exists
-                $scope.currentTab = !!readableRootGroups[$scope.dataSource].children.length ? SELECTED_CONNECTIONS : ALL_CONNECTIONS;
+                $scope.currentTab = !!readableRootGroups[$scope.dataSource].children.length ? CURRENT_CONNECTIONS : ALL_CONNECTIONS;
 
             });
 
