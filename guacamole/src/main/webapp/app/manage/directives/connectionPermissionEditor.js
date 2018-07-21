@@ -289,9 +289,12 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
                     // their parents
                     child = copyReadable(child, flags);
 
-                    // Include child only if they are explicitly readable or
-                    // they have explicitly readable descendants
-                    if ((child.children && child.children.length) || isReadable(child, flags))
+                    // Include child only if they are explicitly readable, they
+                    // have explicitly readable descendants, or their parent is
+                    // readable (and thus all children are relevant)
+                    if ((child.children && child.children.length)
+                            || isReadable(item, flags)
+                            || isReadable(child, flags))
                         children.push(child);
 
                 });
