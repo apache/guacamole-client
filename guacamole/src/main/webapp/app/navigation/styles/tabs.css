@@ -17,23 +17,27 @@
  * under the License.
  */
 
-.page-tabs .page-list ul {
+.page-tabs .page-list ul,
+.section-tabs ul {
     margin: 0;
     padding: 0;
     background: rgba(0, 0, 0, 0.0125);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.page-tabs .page-list ul + ul {
+.page-tabs .page-list ul + ul,
+.section-tabs ul + ul {
     font-size: 0.75em;
 }
 
-.page-tabs .page-list li {
+.page-tabs .page-list li,
+.section-tabs li {
     display: inline-block;
     list-style: none;
 }
 
-.page-tabs .page-list li a[href] {
+.page-tabs .page-list li a[href],
+.section-tabs li a {
     display: block;
     color: black;
     text-decoration: none;
@@ -44,12 +48,16 @@
     color: black;
 }
 
-.page-tabs .page-list li a[href]:hover {
+.page-tabs .page-list li a[href]:hover,
+.section-tabs li a:hover {
     background-color: #CDA;
+    cursor: pointer;
 }
 
 .page-tabs .page-list li a[href].current,
-.page-tabs .page-list li a[href].current:hover {
+.page-tabs .page-list li a[href].current:hover,
+.section-tabs li a.current,
+.section-tabs li a.current:hover {
     background: rgba(0,0,0,0.3);
     cursor: default;
 }
