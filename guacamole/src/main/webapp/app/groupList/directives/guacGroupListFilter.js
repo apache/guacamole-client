@@ -30,9 +30,10 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
 
             /**
              * The property to which a subset of the provided map of connection
-             * groups will be assigned.
+             * groups will be assigned. The type of each item within the
+             * original map is preserved within the filtered map.
              *
-             * @type Array
+             * @type Object.<String, ConnectionGroup|GroupListItem>
              */
             filteredConnectionGroups : '=',
 
@@ -156,6 +157,94 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
             };
 
             /**
+             * Flattens the connection group hierarchy of the given
+             * GroupListItem such that all descendants are copied as immediate
+             * children. The hierarchy of nested items is otherwise completely
+             * preserved. A connection or connection group nested two or more
+             * levels deep within the hierarchy will thus appear within the
+             * returned item in two places: in its original location AND as an
+             * immediate child.
+             *
+             * @param {GroupListItem} item
+             *     The GroupListItem whose descendents should be copied as
+             *     first-level children.
+             *
+             * @returns {GroupListItem}
+             *     A new GroupListItem completely identical to the provided
+             *     item, except that absolutely all descendents have been
+             *     copied into the first level of children.
+             */
+            var flattenGroupListItem = function flattenGroupListItem(item) {
+
+                // Replace item with shallow copy
+                item = new GroupListItem(item);
+
+                // Ensure children are defined and independent copies
+                item.children = angular.copy(item.children) || [];
+
+                // Flatten all children to the top-level group
+                angular.forEach(item.children, function flattenChild(child) {
+                    if (child.type === GroupListItem.Type.CONNECTION_GROUP) {
+
+                        var flattenedChild = flattenConnectionGroup(child);
+
+                        // Merge all children
+                        Array.prototype.push.apply(
+                            item.children,
+                            flattenedChild.children
+                        );
+
+                    }
+                });
+
+                return item;
+
+            };
+
+            /**
+             * Replaces the set of children within the given GroupListItem such
+             * that only children which match the filter predicate for the
+             * current search string are present.
+             *
+             * @param {GroupListItem} item
+             *     The GroupListItem whose children should be filtered.
+             */
+            var filterGroupListItem = function filterGroupListItem(item) {
+                item.children = item.children.filter(function applyFilterPattern(child) {
+
+                    // Filter connections and connection groups by
+                    // given pattern
+                    switch (child.type) {
+
+                        case GroupListItem.Type.CONNECTION:
+                            return connectionFilterPattern.predicate(child.wrappedItem);
+
+                        case GroupListItem.Type.CONNECTION_GROUP:
+                            return connectionGroupFilterPattern.predicate(child.wrappedItem);
+
+                    }
+
+                    // Include all other children
+                    return true;
+
+                });
+            };
+
+            /**
+             * Replaces the set of child connections and connection groups
+             * within the given connection group such that only children which
+             * match the filter predicate for the current search string are
+             * present.
+             *
+             * @param {ConnectionGroup} connectionGroup
+             *     The connection group whose children should be filtered.
+             */
+            var filterConnectionGroup = function filterConnectionGroup(connectionGroup) {
+                connectionGroup.childConnections = connectionGroup.childConnections.filter(connectionFilterPattern.predicate);
+                connectionGroup.childConnectionGroups = connectionGroup.childConnectionGroups.filter(connectionGroupFilterPattern.predicate);
+            };
+
+            /**
              * Applies the current filter predicate, filtering all provided
              * connection groups and storing the result in
              * filteredConnectionGroups.
@@ -177,16 +266,17 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
                 if (connectionGroups) {
                     angular.forEach(connectionGroups, function updateFilteredConnectionGroup(connectionGroup, dataSource) {
 
-                        // Unwrap GroupListItem
-                        if (connectionGroup instanceof GroupListItem)
-                            connectionGroup = connectionGroup.wrappedItem;
+                        var filteredGroup;
 
-                        // Flatten hierarchy of connection group
-                        var filteredGroup = flattenConnectionGroup(connectionGroup);
-
-                        // Filter all direct children
-                        filteredGroup.childConnections = filteredGroup.childConnections.filter(connectionFilterPattern.predicate);
-                        filteredGroup.childConnectionGroups = filteredGroup.childConnectionGroups.filter(connectionGroupFilterPattern.predicate);
+                        // Flatten and filter depending on type
+                        if (connectionGroup instanceof GroupListItem) {
+                            filteredGroup = flattenGroupListItem(connectionGroup);
+                            filterGroupListItem(filteredGroup);
+                        }
+                        else {
+                            filteredGroup = flattenConnectionGroup(connectionGroup);
+                            filterConnectionGroup(filteredGroup);
+                        }
 
                         // Store now-filtered root
                         $scope.filteredConnectionGroups[dataSource] = filteredGroup;

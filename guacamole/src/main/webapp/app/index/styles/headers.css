@@ -74,6 +74,10 @@ h2 {
 
 }
 
+.header.tabbed {
+    margin-bottom: 0;
+}
+
 .header ~ * .header,
 .header ~ .header {
     margin-top: 1em;
