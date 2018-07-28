@@ -415,9 +415,9 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
                 )
                 .then(function connectionGroupsReceived(rootGroups) {
                     $scope.rootGroups = rootGroups;
-                }, requestService.WARN);
+                }, requestService.DIE);
 
-            }, requestService.WARN); // end retrieve permissions
+            }, requestService.DIE); // end retrieve permissions
 
         }]
     };

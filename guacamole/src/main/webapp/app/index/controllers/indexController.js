@@ -28,7 +28,15 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     var $window          = $injector.get('$window');
     var clipboardService = $injector.get('clipboardService');
     var guacNotification = $injector.get('guacNotification');
-    
+
+    /**
+     * The error that prevents the current page from rendering at all. If no
+     * such error has occurred, this will be null.
+     *
+     * @type Error
+     */
+    $scope.fatalError = null;
+
     /**
      * The notification service.
      */
@@ -159,6 +167,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         $scope.loginHelpText = null;
         $scope.acceptedCredentials = {};
         $scope.expectedCredentials = error.expected;
+        $scope.fatalError = null;
     });
 
     // Prompt for remaining credentials if provided credentials were not enough
@@ -168,6 +177,15 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         $scope.loginHelpText = error.translatableMessage;
         $scope.acceptedCredentials = parameters;
         $scope.expectedCredentials = error.expected;
+        $scope.fatalError = null;
+    });
+
+    // Replace absolutely all content with an error message if the page itself
+    // cannot be displayed due to an error
+    $scope.$on('guacFatalPageError', function fatalPageError(error) {
+        $scope.page.title = 'APP.NAME';
+        $scope.page.bodyClassName = '';
+        $scope.fatalError = error;
     });
 
     // Update title and CSS class upon navigation
@@ -181,6 +199,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
             $scope.loginHelpText = null;
             $scope.acceptedCredentials = null;
             $scope.expectedCredentials = null;
+            $scope.fatalError = null;
 
             // Set title
             var title = current.$$route.title;

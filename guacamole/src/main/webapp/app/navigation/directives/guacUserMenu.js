@@ -111,7 +111,7 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
                 var email = user.attributes[User.Attributes.EMAIL_ADDRESS];
                 $scope.userURL = email ? 'mailto:' + email : null;
 
-            }, requestService.WARN);
+            }, requestService.DIE);
 
             /**
              * The available main pages for the current user.

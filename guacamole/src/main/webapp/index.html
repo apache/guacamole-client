@@ -32,26 +32,40 @@
     </head>
     <body ng-class="page.bodyClassName">
 
-        <!-- Content for logged-in users -->
-        <div ng-if="!expectedCredentials">
-        
-            <!-- Global status/error dialog -->
-            <div ng-class="{shown: guacNotification.getStatus()}" class="status-outer">
-                <div class="status-middle">
-                    <guac-notification notification="guacNotification.getStatus()"></guac-notification>
+        <div ng-if="!fatalError">
+
+            <!-- Content for logged-in users -->
+            <div ng-if="!expectedCredentials">
+
+                <!-- Global status/error dialog -->
+                <div ng-class="{shown: guacNotification.getStatus()}" class="status-outer">
+                    <div class="status-middle">
+                        <guac-notification notification="guacNotification.getStatus()"></guac-notification>
+                    </div>
                 </div>
+
+                <div id="content" ng-view>
+                </div>
+
             </div>
-            
-            <div id="content" ng-view>
-            </div>
-            
+
+            <!-- Login screen for logged-out users -->
+            <guac-login ng-show="expectedCredentials"
+                        help-text="loginHelpText"
+                        form="expectedCredentials"
+                        values="acceptedCredentials"></guac-login>
+
         </div>
 
-        <!-- Login screen for logged-out users -->
-        <guac-login ng-show="expectedCredentials"
-                    help-text="loginHelpText"
-                    form="expectedCredentials"
-                    values="acceptedCredentials"></guac-login>
+        <!-- Absolute fatal error -->
+        <div ng-if="fatalError" class="fatal-page-error-outer">
+            <div class="fatal-page-error-middle">
+                <div class="fatal-page-error">
+                    <h1 translate="APP.DIALOG_HEADER_ERROR"></h1>
+                    <p translate="APP.ERROR_PAGE_UNAVAILABLE"></p>
+                </div>
+            </div>
+        </div>
 
         <!-- Reformat URL for AngularJS if query parameters are present -->
         <script type="text/javascript" src="relocateParameters.js"></script>

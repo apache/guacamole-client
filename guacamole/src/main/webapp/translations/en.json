@@ -31,6 +31,7 @@
 
         "DIALOG_HEADER_ERROR" : "Error",
 
+        "ERROR_PAGE_UNAVAILABLE"  : "An error has occurred and this action cannot be completed. If the problem persists, please notify your system administrator or check your system logs.",
         "ERROR_PASSWORD_BLANK"    : "Your password cannot be blank.",
         "ERROR_PASSWORD_MISMATCH" : "The provided passwords do not match.",
         

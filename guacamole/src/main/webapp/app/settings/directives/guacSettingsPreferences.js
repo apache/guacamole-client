@@ -178,7 +178,7 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                         value: languages[key]
                     };
                 });
-            }, requestService.WARN);
+            }, requestService.DIE);
 
             // Retrieve current permissions
             permissionService.getEffectivePermissions(dataSource, username)

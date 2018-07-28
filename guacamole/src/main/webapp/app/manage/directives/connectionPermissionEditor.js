@@ -348,7 +348,7 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
 
             });
 
-        }, requestService.WARN);
+        }, requestService.DIE);
 
         /**
          * Updates the permissionsAdded and permissionsRemoved permission sets

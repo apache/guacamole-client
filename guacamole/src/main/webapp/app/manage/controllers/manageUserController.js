@@ -335,7 +335,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
         });
 
-    }, requestService.WARN);
+    }, requestService.DIE);
 
     /**
      * Returns the URL for the page which manages the user account currently
