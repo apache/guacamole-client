@@ -215,4 +215,11 @@ public class LDAPGuacamoleProperties {
         public String getName() { return "ldap-user-attributes"; }
 
     };
+    
+    public static final StringGuacamoleProperty LDAP_MEMBER_ATTRIBUTE = new StringGuacamoleProperty() {
+      
+        @Override
+        public String getName() { return "ldap-member-attribute"; }
+        
+    };
 }

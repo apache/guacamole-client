@@ -358,5 +358,12 @@ public class ConfigurationService {
             LDAPGuacamoleProperties.LDAP_USER_ATTRIBUTES
         );
     }
+    
+    public String getMemberAttribute() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_MEMBER_ATTRIBUTE,
+            "member"
+        );
+    }
 
 }
