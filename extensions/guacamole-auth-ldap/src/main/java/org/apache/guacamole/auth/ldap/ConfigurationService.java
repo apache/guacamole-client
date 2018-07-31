@@ -359,6 +359,17 @@ public class ConfigurationService {
         );
     }
     
+    /**
+     * Returns the name of the LDAP attribute used to enumerate
+     * members in a group, or "member" by default.
+     * 
+     * @return
+     *     The name of the LDAP attribute to use to enumerate
+     *     members in a group.
+     * 
+     * @throws GuacamoleException
+     *     If guacamole.properties connect be parsed.
+     */
     public String getMemberAttribute() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_MEMBER_ATTRIBUTE,

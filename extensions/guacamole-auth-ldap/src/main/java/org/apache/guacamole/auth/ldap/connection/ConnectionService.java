@@ -247,7 +247,8 @@ public class ConnectionService {
         // Add the prefix to the search filter, prefix filter searches for guacConfigGroups with the userDN as the member attribute value
         connectionSearchFilter.append("(&(objectClass=guacConfigGroup)");
         connectionSearchFilter.append("(|(");
-        connectionSearchFilter.append(confService.getMemberAttribute());
+        connectionSearchFilter.append(escapingService.escapeLDAPSearchFilter(
+                confService.getMemberAttribute()));
         connectionSearchFilter.append("=");
         connectionSearchFilter.append(escapingService.escapeLDAPSearchFilter(userDN));
         connectionSearchFilter.append(")");
@@ -261,7 +262,8 @@ public class ConnectionService {
                 groupBaseDN,
                 LDAPConnection.SCOPE_SUB,
                 "(&(!(objectClass=guacConfigGroup))(" 
-                        + confService.getMemberAttribute() 
+                        + escapingService.escapeLDAPSearchFilter(
+                                confService.getMemberAttribute()) 
                         + "=" + escapingService.escapeLDAPSearchFilter(userDN) 
                         + "))",
                 null,

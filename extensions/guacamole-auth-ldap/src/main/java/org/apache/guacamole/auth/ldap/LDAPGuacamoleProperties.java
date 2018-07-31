@@ -216,6 +216,9 @@ public class LDAPGuacamoleProperties {
 
     };
     
+    /**
+     * LDAP attribute used to enumerate members of a group in the LDAP directory.
+     */
     public static final StringGuacamoleProperty LDAP_MEMBER_ATTRIBUTE = new StringGuacamoleProperty() {
       
         @Override
