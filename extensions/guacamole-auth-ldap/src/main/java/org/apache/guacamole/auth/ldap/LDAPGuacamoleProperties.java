@@ -215,4 +215,14 @@ public class LDAPGuacamoleProperties {
         public String getName() { return "ldap-user-attributes"; }
 
     };
+    
+    /**
+     * LDAP attribute used to enumerate members of a group in the LDAP directory.
+     */
+    public static final StringGuacamoleProperty LDAP_MEMBER_ATTRIBUTE = new StringGuacamoleProperty() {
+      
+        @Override
+        public String getName() { return "ldap-member-attribute"; }
+        
+    };
 }
