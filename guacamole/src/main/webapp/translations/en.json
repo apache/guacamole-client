@@ -301,13 +301,17 @@
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
-        "INFO_READ_ONLY" : "Sorry, but this user account cannot be edited.",
+        "HELP_NO_USER_GROUPS" : "This user does not currently belong to any groups. Expand this section to add groups.",
+
+        "INFO_READ_ONLY"                : "Sorry, but this user account cannot be edited.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "No groups available.",
 
         "SECTION_HEADER_ALL_CONNECTIONS"     : "All Connections",
         "SECTION_HEADER_CONNECTIONS"         : "Connections",
         "SECTION_HEADER_CURRENT_CONNECTIONS" : "Current Connections",
         "SECTION_HEADER_EDIT_USER"           : "Edit User",
         "SECTION_HEADER_PERMISSIONS"         : "Permissions",
+        "SECTION_HEADER_USER_GROUPS"         : "Groups",
 
         "TEXT_CONFIRM_DELETE" : "Users cannot be restored after they have been deleted. Are you sure you want to delete this user?"
 
