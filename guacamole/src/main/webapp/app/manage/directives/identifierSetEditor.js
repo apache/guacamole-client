@@ -118,6 +118,15 @@ angular.module('manage').directive('identifierSetEditor', ['$injector',
         $scope.identifierFlags = {};
 
         /**
+         * Map of identifiers to boolean flags indicating whether that
+         * identifier is editable. If an identifier is not editable, it will be
+         * absent from this map.
+         *
+         * @type Object.<String, Boolean>
+         */
+        $scope.isEditable = {};
+
+        /**
          * Adds the given identifier to the given sorted array of identifiers,
          * preserving the sorted order of the array. If the identifier is
          * already present, no change is made to the array. The given array
@@ -192,6 +201,16 @@ angular.module('manage').directive('identifierSetEditor', ['$injector',
                 $scope.identifierFlags[identifier] = true;
             });
 
+        });
+
+        // An identifier is editable iff it is available to be added or removed
+        // from the identifier set being edited (iff it is within the
+        // identifiersAvailable array)
+        $scope.$watch('identifiersAvailable', function availableIdentifiersChanged(identifiers) {
+            $scope.isEditable = {};
+            angular.forEach(identifiers, function storeEditableIdentifier(identifier) {
+                $scope.isEditable[identifier] = true;
+            });
         });
 
         /**

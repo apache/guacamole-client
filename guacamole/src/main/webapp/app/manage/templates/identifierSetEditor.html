@@ -18,7 +18,8 @@
             <ul>
                 <li ng-repeat="identifier in identifiers | filter: filterString">
                     <label><img src="images/x-red.png" alt="Remove" class="remove"
-                                ng-click="removeIdentifier(identifier)"/><span class="identifier">{{ identifier }}</span>
+                                ng-click="removeIdentifier(identifier)"
+                                ng-show="isEditable[identifier]"/><span class="identifier">{{ identifier }}</span>
                     </label>
                 </li>
             </ul>
