@@ -260,6 +260,20 @@ angular.module('manage').directive('identifierSetEditor', ['$injector',
             $scope.expanded = false;
         };
 
+        /**
+         * Returns whether there are absolutely no identifiers that can be
+         * managed using this editor. If true, the editor is effectively
+         * useless, as there is nothing whatsoever to display.
+         *
+         * @returns {Boolean}
+         *     true if there are no identifiers that can be managed using this
+         *     editor, false otherwise.
+         */
+        $scope.isEmpty = function isEmpty() {
+            return _.isEmpty($scope.identifiers)
+                && _.isEmpty($scope.identifiersAvailable);
+        };
+
     }];
 
     return directive;
