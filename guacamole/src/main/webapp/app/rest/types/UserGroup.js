@@ -50,7 +50,7 @@ angular.module('rest').factory('UserGroup', [function defineUserGroup() {
          *
          * @type Object.<String, String>
          */
-        this.attributes = {};
+        this.attributes = template.attributes || {};
 
     };
 
