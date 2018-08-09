@@ -119,9 +119,11 @@ angular.module('settings').directive('guacSettingsUserGroups', ['$injector',
                 return null;
 
             // For each data source
-            for (var dataSource in permissions) {
+            var dataSources = _.keys(permissions).sort();
+            for (var i = 0; i < dataSources.length; i++) {
 
                 // Retrieve corresponding permission set
+                var dataSource = dataSources[i];
                 var permissionSet = permissions[dataSource];
 
                 // Can create user groups if adminstrator or have explicit permission
