@@ -290,12 +290,6 @@ END`
         exit 1;
     fi
 
-    # Verify required parameters are present
-    if [ -z "$POSTGRES_USER" -o -z "$POSTGRES_PASSWORD" -o -z "$POSTGRES_DATABASE" ]; then
-        cat 
-        exit 1;
-    fi
-
     # Update config file
     set_property "postgresql-hostname" "$POSTGRES_HOSTNAME"
     set_property "postgresql-port"     "$POSTGRES_PORT"
@@ -458,13 +452,13 @@ set_property "guacd-port"     "$GUACD_PORT"
 INSTALLED_AUTH=""
 
 # Use MySQL if database specified
-if [ -n "$MYSQL_DATABASE" ]; then
+if [ -n "$MYSQL_DATABASE" -o -n "$MYSQL_DATABASE_FILE" ]; then
     associate_mysql
     INSTALLED_AUTH="$INSTALLED_AUTH mysql"
 fi
 
 # Use PostgreSQL if database specified
-if [ -n "$POSTGRES_DATABASE" ]; then
+if [ -n "$POSTGRES_DATABASE" -o -n "$POSTGRES_DATABASE_FILE" ]; then
     associate_postgresql
     INSTALLED_AUTH="$INSTALLED_AUTH postgres"
 fi
