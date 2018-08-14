@@ -21,6 +21,7 @@
         "ACTION_MANAGE_SETTINGS"    : "Settings",
         "ACTION_MANAGE_SESSIONS"    : "Active Sessions",
         "ACTION_MANAGE_USERS"       : "Users",
+        "ACTION_MANAGE_USER_GROUPS" : "Groups",
         "ACTION_NAVIGATE_BACK"      : "Back",
         "ACTION_NAVIGATE_HOME"      : "Home",
         "ACTION_SAVE"               : "Save",
@@ -293,6 +294,7 @@
         "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Administer system:",
         "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Change own password:",
         "FIELD_HEADER_CREATE_NEW_USERS"              : "Create new users:",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "Create new user groups:",
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Create new connections:",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Create new connection groups:",
         "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "Create new sharing profiles:",
@@ -302,15 +304,62 @@
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
-        "INFO_READ_ONLY" : "Sorry, but this user account cannot be edited.",
+        "HELP_NO_USER_GROUPS" : "This user does not currently belong to any groups. Expand this section to add groups.",
+
+        "INFO_READ_ONLY"                : "Sorry, but this user account cannot be edited.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "No groups available.",
 
         "SECTION_HEADER_ALL_CONNECTIONS"     : "All Connections",
         "SECTION_HEADER_CONNECTIONS"         : "Connections",
         "SECTION_HEADER_CURRENT_CONNECTIONS" : "Current Connections",
         "SECTION_HEADER_EDIT_USER"           : "Edit User",
         "SECTION_HEADER_PERMISSIONS"         : "Permissions",
+        "SECTION_HEADER_USER_GROUPS"         : "Groups",
 
         "TEXT_CONFIRM_DELETE" : "Users cannot be restored after they have been deleted. Are you sure you want to delete this user?"
+
+    },
+
+    "MANAGE_USER_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Delete Group",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+        "FIELD_HEADER_USER_GROUP_NAME"               : "Group name:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS"        : "This group does not currently belong to any groups. Expand this section to add groups.",
+        "HELP_NO_MEMBER_USER_GROUPS" : "This group does not currently contain any groups. Expand this section to add groups.",
+        "HELP_NO_MEMBER_USERS"       : "This group does not currently contain any users. Expand this section to add users.",
+
+        "INFO_READ_ONLY"                : "Sorry, but this group cannot be edited.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "@:MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE",
+        "INFO_NO_USERS_AVAILABLE"       : "No users available.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "@:MANAGE_USER.SECTION_HEADER_ALL_CONNECTIONS",
+        "SECTION_HEADER_CONNECTIONS"         : "@:MANAGE_USER.SECTION_HEADER_CONNECTIONS",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "@:MANAGE_USER.SECTION_HEADER_CURRENT_CONNECTIONS",
+        "SECTION_HEADER_EDIT_USER_GROUP"     : "Edit Group",
+        "SECTION_HEADER_MEMBER_USERS"        : "Member Users",
+        "SECTION_HEADER_MEMBER_USER_GROUPS"  : "Member Groups",
+        "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS",
+        "SECTION_HEADER_USER_GROUPS"         : "Parent Groups",
+
+        "TEXT_CONFIRM_DELETE" : "Groups cannot be restored after they have been deleted. Are you sure you want to delete this group?"
 
     },
     
@@ -744,7 +793,26 @@
         "TABLE_HEADER_USERNAME"    : "Username"
 
     },
-    
+
+    "SETTINGS_USER_GROUPS" : {
+
+        "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER_GROUP" : "New Group",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USER_GROUPS" : "Click or tap on a group below to manage that group. Depending on your access level, groups can be added and deleted, and their member users and groups can be changed.",
+
+        "SECTION_HEADER_USER_GROUPS" : "Groups",
+
+        "TABLE_HEADER_USER_GROUP_NAME" : "Group Name"
+
+    },
+
     "SETTINGS_SESSIONS" : {
         
         "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
@@ -790,6 +858,7 @@
         "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
         "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
         "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
+        "ACTION_MANAGE_USER_GROUPS" : "@:APP.ACTION_MANAGE_USER_GROUPS",
         "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
         "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
 

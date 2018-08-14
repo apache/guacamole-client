@@ -69,7 +69,7 @@ angular.module('rest').factory('User', [function defineUser() {
          *
          * @type Object.<String, String>
          */
-        this.attributes = {};
+        this.attributes = template.attributes || {};
 
     };
 

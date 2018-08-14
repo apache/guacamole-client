@@ -84,7 +84,7 @@ angular.module('rest').factory('Connection', [function defineConnection() {
          *
          * @type Object.<String, String>
          */
-        this.attributes = {};
+        this.attributes = template.attributes || {};
 
         /**
          * The count of currently active connections using this connection.

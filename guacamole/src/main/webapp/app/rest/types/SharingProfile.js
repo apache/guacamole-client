@@ -76,7 +76,7 @@ angular.module('rest').factory('SharingProfile', [function defineSharingProfile(
          *
          * @type Object.<String, String>
          */
-        this.attributes = {};
+        this.attributes = template.attributes || {};
 
     };
 

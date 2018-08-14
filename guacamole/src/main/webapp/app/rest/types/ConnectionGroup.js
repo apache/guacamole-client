@@ -95,7 +95,7 @@ angular.module('rest').factory('ConnectionGroup', [function defineConnectionGrou
          *
          * @type Object.<String, String>
          */
-        this.attributes = {};
+        this.attributes = template.attributes || {};
 
         /**
          * The count of currently active connections using this connection
