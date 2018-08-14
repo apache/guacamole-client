@@ -36,9 +36,11 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var $q                       = $injector.get('$q');
     var authenticationService    = $injector.get('authenticationService');
     var dataSourceService        = $injector.get('dataSourceService');
+    var membershipService        = $injector.get('membershipService');
     var permissionService        = $injector.get('permissionService');
     var requestService           = $injector.get('requestService');
     var schemaService            = $injector.get('schemaService');
+    var userGroupService         = $injector.get('userGroupService');
     var userService              = $injector.get('userService');
 
     /**
@@ -134,6 +136,46 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $scope.permissionsRemoved = new PermissionSet();
 
     /**
+     * The identifiers of all user groups which can be manipulated (all groups
+     * for which the user accessing this interface has UPDATE permission),
+     * either through adding the current user as a member or removing the
+     * current user from that group. If this information has not yet been
+     * retrieved, this will be null.
+     *
+     * @type String[]
+     */
+    $scope.availableGroups = null;
+
+    /**
+     * The identifiers of all user groups of which the user is a member,
+     * taking into account any user groups which will be added/removed when
+     * saved. If this information has not yet been retrieved, this will be
+     * null.
+     *
+     * @type String[]
+     */
+    $scope.parentGroups = null;
+
+    /**
+     * The set of identifiers of all parent user groups to which the user will
+     * be added when saved. Parent groups will only be present in this set if
+     * they are manually added, and not later manually removed before saving.
+     *
+     * @type String[]
+     */
+    $scope.parentGroupsAdded = [];
+
+    /**
+     * The set of identifiers of all parent user groups from which the user
+     * will be removed when saved. Parent groups will only be present in this
+     * set if they are manually removed, and not later manually added before
+     * saving.
+     *
+     * @type String[]
+     */
+    $scope.parentGroupsRemoved = [];
+
+    /**
      * For each applicable data source, the management-related actions that the
      * current user may perform on the user account currently being created
      * or modified, as a map of data source identifier to the
@@ -166,6 +208,8 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         return $scope.users                 !== null
             && $scope.permissionFlags       !== null
             && $scope.managementPermissions !== null
+            && $scope.availableGroups       !== null
+            && $scope.parentGroups          !== null
             && $scope.attributes            !== null;
 
     };
@@ -204,12 +248,14 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var loadExistingUser = function loadExistingUser(dataSource, username) {
         return $q.all({
             users : dataSourceService.apply(userService.getUser, dataSources, username),
-            permissions : permissionService.getPermissions(dataSource, username)
+            permissions : permissionService.getPermissions(dataSource, username),
+            parentGroups : membershipService.getUserGroups(dataSource, username)
         })
         .then(function userDataRetrieved(values) {
 
             $scope.users = values.users;
             $scope.user  = values.users[dataSource];
+            $scope.parentGroups = values.parentGroups;
 
             // Create skeleton user if user does not exist
             if (!$scope.user)
@@ -243,12 +289,15 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var loadClonedUser = function loadClonedUser(dataSource, username) {
         return $q.all({
             users : dataSourceService.apply(userService.getUser, [dataSource], username),
-            permissions : permissionService.getPermissions(dataSource, username)
+            permissions : permissionService.getPermissions(dataSource, username),
+            parentGroups : membershipService.getUserGroups(dataSource, username)
         })
         .then(function userDataRetrieved(values) {
 
             $scope.users = {};
             $scope.user  = values.users[dataSource];
+            $scope.parentGroups = values.parentGroups;
+            $scope.parentGroupsAdded = values.parentGroups;
 
             // The current user will be associated with cloneSourceUsername in the
             // retrieved permission set
@@ -274,6 +323,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
         // Use skeleton user object with no associated permissions
         $scope.user = new User();
+        $scope.parentGroups = [];
         $scope.permissionFlags = new PermissionFlagSet();
 
         // As no permissions are yet associated with the user, it is safe to
@@ -314,6 +364,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $q.all({
         userData    : loadRequestedUser(),
         permissions : dataSourceService.apply(permissionService.getEffectivePermissions, dataSources, currentUsername),
+        userGroups  : userGroupService.getUserGroups($scope.dataSource, [ PermissionSet.ObjectPermissionType.UPDATE ]),
         attributes  : schemaService.getUserAttributes($scope.dataSource)
     })
     .then(function dataReceived(values) {
@@ -325,6 +376,12 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
             // Determine whether data source contains this user
             var exists = (dataSource in $scope.users);
+
+            // Add the identifiers of all modifiable user groups
+            $scope.availableGroups = [];
+            angular.forEach(values.userGroups, function addUserGroupIdentifier(userGroup) {
+                $scope.availableGroups.push(userGroup.identifier);
+            });
 
             // Calculate management actions available for this specific account
             $scope.managementPermissions[dataSource] = ManagementPermissions.fromPermissionSet(
@@ -415,9 +472,11 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
                 
             }
 
-            // Upon success, save any changed permissions
-            return permissionService.patchPermissions($scope.dataSource, $scope.user.username,
-                $scope.permissionsAdded, $scope.permissionsRemoved);
+            // Upon success, save any changed permissions/groups
+            return $q.all([
+                permissionService.patchPermissions($scope.dataSource, $scope.user.username, $scope.permissionsAdded, $scope.permissionsRemoved),
+                membershipService.patchUserGroups($scope.dataSource, $scope.user.username, $scope.parentGroupsAdded, $scope.parentGroupsRemoved)
+            ]);
 
         });
 

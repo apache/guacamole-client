@@ -36,8 +36,8 @@ angular.module('manage').controller('settingsController', ['$scope', '$injector'
     $scope.settingsPages = null;
 
     /**
-     * The currently-selected settings tab. This may be 'users', 'connections',
-     * or 'sessions'.
+     * The currently-selected settings tab. This may be 'users', 'userGroups',
+     * 'connections', 'history', 'preferences', or 'sessions'.
      *
      * @type String
      */

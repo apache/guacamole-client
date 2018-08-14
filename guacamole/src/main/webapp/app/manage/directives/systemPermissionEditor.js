@@ -126,6 +126,10 @@ angular.module('manage').directive('systemPermissionEditor', ['$injector',
                 value: PermissionSet.SystemPermissionType.CREATE_USER
             },
             {
+                label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
+                value: PermissionSet.SystemPermissionType.CREATE_USER_GROUP
+            },
+            {
                 label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
                 value: PermissionSet.SystemPermissionType.CREATE_CONNECTION
             },

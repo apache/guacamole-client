@@ -18,12 +18,14 @@
  */
 
 .user,
+.user-group,
 .connection-group,
 .connection {
     cursor: pointer;
 }
 
 .user a,
+.user-group a,
 .connection a,
 .connection-group a {
     text-decoration:none;
@@ -31,6 +33,7 @@
 }
 
 .user a:hover,
+.user-group a:hover,
 .connection a:hover,
 .connection-group a:hover {
     text-decoration:none;
@@ -38,6 +41,7 @@
 }
 
 .user a:visited,
+.user-group a:visited,
 .connection a:visited,
 .connection-group a:visited {
     text-decoration:none;

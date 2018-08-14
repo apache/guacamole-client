@@ -76,9 +76,12 @@ angular.module('manage').directive('dataSourceTabs', ['$injector',
         $scope.$watch('permissions', function permissionsChanged(permissions) {
 
             $scope.pages = [];
-            angular.forEach(permissions, function addDataSourcePage(managementPermissions, dataSource) {
+
+            var dataSources = _.keys($scope.permissions).sort();
+            angular.forEach(dataSources, function addDataSourcePage(dataSource) {
 
                 // Determine whether data source contains this object
+                var managementPermissions = permissions[dataSource];
                 var exists = !!managementPermissions.identifier;
 
                 // Data source is not relevant if the associated object does not
