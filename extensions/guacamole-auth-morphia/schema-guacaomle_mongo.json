@@ -1,0 +1,62 @@
+/**
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+**/
+
+use GUACAMOLE_DB
+
+db.createCollection("guacamole_connection");
+db.createCollection("guacamole_connection_attribute");
+db.createCollection("guacamole_connection_group");
+db.createCollection("guacamole_connection_group_attribute");
+db.createCollection("guacamole_connection_group_permission");
+db.createCollection("guacamole_connection_history");
+db.createCollection("guacamole_connection_parameter");
+db.createCollection("guacamole_connection_permission");
+db.createCollection("guacamole_sharing_profile");
+db.createCollection("guacamole_sharing_profile_attribute");
+db.createCollection("guacamole_sharing_profile_parameter");
+db.createCollection("guacamole_sharing_profile_permission");
+db.createCollection("guacamole_system_permission");
+db.createCollection("guacamole_user");
+db.createCollection("guacamole_user_attribute");
+db.createCollection("guacamole_user_history");
+db.createCollection("guacamole_user_password_history");
+db.createCollection("guacamole_user_permission");
+
+db.guacamole_user.insert({
+    "className" : "org.apache.guacamole.morphia.user.UserModel",
+    "username" : "guacadmin",
+    "password_hash" : new BinData(0, "s0AZi8t2DIKYM1AId1XlKrkO9WBnAiPTSY/LQqiJiEQ="),
+    "password_salt" : new BinData(0, "MDZnV+gJvWSsy90TeShhOyGjSxZco2NonK8UYt+ca3I="),
+    "password_date" : ISODate("2018-04-28T23:40:41.934Z"),
+    "disabled" : 0.0,
+    "expired" : 0.0
+});
+
+var id_user_guacadmin = db.guacamole_user.findOne({username: "guacadmin"})._id;
+var user_guacadmin = {$ref: "guacamole_user", $id: id_user_guacadmin};
+
+db.guacamole_system_permission.insert({"className": "org.apache.guacamole.morphia.permission.SystemPermissionModel", "user": user_guacadmin, "permission": "ADMINISTER"});
+db.guacamole_system_permission.insert({"className": "org.apache.guacamole.morphia.permission.SystemPermissionModel", "user": user_guacadmin, "permission": "CREATE_CONNECTION"});
+db.guacamole_system_permission.insert({"className": "org.apache.guacamole.morphia.permission.SystemPermissionModel", "user": user_guacadmin, "permission": "CREATE_CONNECTION_GROUP"});
+db.guacamole_system_permission.insert({"className": "org.apache.guacamole.morphia.permission.SystemPermissionModel", "user": user_guacadmin, "permission": "CREATE_SHARING_PROFILE"});
+db.guacamole_system_permission.insert({"className": "org.apache.guacamole.morphia.permission.SystemPermissionModel", "user": user_guacadmin, "permission": "CREATE_USER"});
+
+db.guacamole_user_permission.insert({"className": "org.apache.guacamole.morphia.user.UserPermissionModel", "user": user_guacadmin, "affected_user": user_guacadmin, "permission": "ADMINISTER"});
+db.guacamole_user_permission.insert({"className": "org.apache.guacamole.morphia.user.UserPermissionModel", "user": user_guacadmin, "affected_user": user_guacadmin, "permission": "UPDATE"});
+db.guacamole_user_permission.insert({"className": "org.apache.guacamole.morphia.user.UserPermissionModel", "user": user_guacadmin, "affected_user": user_guacadmin, "permission": "READ"});
