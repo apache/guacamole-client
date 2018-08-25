@@ -222,6 +222,19 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
             throw e;
 
         }
+        catch (Error e) {
+
+            // Skip using this authentication provider if configured to ignore
+            // internal failures during auth
+            if (isFailureTolerated()) {
+                warnAuthProviderSkipped(e);
+                return null;
+            }
+
+            warnAuthAborted();
+            throw e;
+
+        }
 
     }
 
@@ -277,6 +290,19 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
 
         }
         catch (RuntimeException e) {
+
+            // Skip using this authentication provider if configured to ignore
+            // internal failures during auth
+            if (isFailureTolerated()) {
+                warnAuthProviderSkipped(e);
+                return null;
+            }
+
+            warnAuthAborted();
+            throw e;
+
+        }
+        catch (Error e) {
 
             // Skip using this authentication provider if configured to ignore
             // internal failures during auth
