@@ -19,14 +19,14 @@
 
 package org.apache.guacamole.extension;
 
+import java.util.Set;
 import java.util.UUID;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
-import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
+import org.apache.guacamole.net.auth.credentials.GuacamoleCredentialsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +49,16 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
     private final AuthenticationProvider authProvider;
 
     /**
+     * The set of identifiers of all authentication providers whose internal
+     * failures should be tolerated during the authentication process. If the
+     * identifier of this authentication provider is within this set, errors
+     * during authentication will result in the authentication provider being
+     * ignored for that authentication attempt. By default, errors during
+     * authentication halt the authentication process entirely.
+     */
+    private final Set<String> tolerateFailures;
+
+    /**
      * The identifier to provide for the underlying authentication provider if
      * the authentication provider could not be loaded.
      */
@@ -63,9 +73,21 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
      *
      * @param authProviderClass
      *     The AuthenticationProvider subclass to instantiate.
+     *
+     * @param tolerateFailures
+     *     The set of identifiers of all authentication providers whose
+     *     internal failures should be tolerated during the authentication
+     *     process. If the identifier of this authentication provider is within
+     *     this set, errors during authentication will result in the
+     *     authentication provider being ignored for that authentication
+     *     attempt. By default, errors during authentication halt the
+     *     authentication process entirely.
      */
-    public AuthenticationProviderFacade(Class<? extends AuthenticationProvider> authProviderClass) {
-        authProvider = ProviderFactory.newInstance("authentication provider",
+    public AuthenticationProviderFacade(
+            Class<? extends AuthenticationProvider> authProviderClass,
+            Set<String> tolerateFailures) {
+        this.tolerateFailures = tolerateFailures;
+        this.authProvider = ProviderFactory.newInstance("authentication provider",
             authProviderClass);
     }
 
@@ -97,6 +119,41 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
 
     }
 
+    /**
+     * Returns whether this authentication provider should tolerate internal
+     * failures during the authentication process, allowing other
+     * authentication providers to continue operating as if this authentication
+     * provider simply is not present.
+     *
+     * @return
+     *     true if this authentication provider should tolerate internal
+     *     failures during the authentication process, false otherwise.
+     */
+    private boolean isFailureTolerated() {
+        return tolerateFailures.contains(getIdentifier());
+    }
+
+    /**
+     * Logs a warning that this authentication provider is being skipped due to
+     * an internal error. If debug-level logging is enabled, the full details
+     * of the internal error are also logged.
+     *
+     * @param e
+     *     The internal error that occurred which has resulted in this
+     *     authentication provider being skipped.
+     */
+    private void warnAuthProviderSkipped(Throwable e) {
+
+        logger.warn("The \"{}\" authentication provider has been skipped due "
+                + "to an internal error. If this is unexpected or you are the "
+                + "developer of this authentication provider, you may wish to "
+                + "enable debug-level logging: {}",
+                getIdentifier(), e.getMessage());
+
+        logger.debug("Authentication provider skipped due to an internal failure.", e);
+
+    }
+
     @Override
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
@@ -104,11 +161,46 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
         // Ignore auth attempts if no auth provider could be loaded
         if (authProvider == null) {
             logger.warn("Authentication attempt denied because the authentication system could not be loaded. Please check for errors earlier in the logs.");
-            throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
+            return null;
         }
 
         // Delegate to underlying auth provider
-        return authProvider.authenticateUser(credentials);
+        try {
+            return authProvider.authenticateUser(credentials);
+        }
+
+        // Pass through credential exceptions untouched, as these are not
+        // internal failures
+        catch (GuacamoleCredentialsException e) {
+            throw e;
+        }
+
+        // Pass through all other exceptions (aborting authentication entirely)
+        // only if not configured to ignore such failures
+        catch (GuacamoleException e) {
+
+            // Skip using this authentication provider if configured to ignore
+            // internal failures during auth
+            if (isFailureTolerated()) {
+                warnAuthProviderSkipped(e);
+                return null;
+            }
+
+            throw e;
+
+        }
+        catch (RuntimeException e) {
+
+            // Skip using this authentication provider if configured to ignore
+            // internal failures during auth
+            if (isFailureTolerated()) {
+                warnAuthProviderSkipped(e);
+                return null;
+            }
+
+            throw e;
+
+        }
 
     }
 
@@ -119,7 +211,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
         // Ignore auth attempts if no auth provider could be loaded
         if (authProvider == null) {
             logger.warn("Reauthentication attempt denied because the authentication system could not be loaded. Please check for errors earlier in the logs.");
-            throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
+            return null;
         }
 
         // Delegate to underlying auth provider
@@ -138,8 +230,43 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
         }
 
         // Delegate to underlying auth provider
-        return authProvider.getUserContext(authenticatedUser);
-        
+        try {
+            return authProvider.getUserContext(authenticatedUser);
+        }
+
+        // Pass through credential exceptions untouched, as these are not
+        // internal failures
+        catch (GuacamoleCredentialsException e) {
+            throw e;
+        }
+
+        // Pass through all other exceptions (aborting authentication entirely)
+        // only if not configured to ignore such failures
+        catch (GuacamoleException e) {
+
+            // Skip using this authentication provider if configured to ignore
+            // internal failures during auth
+            if (isFailureTolerated()) {
+                warnAuthProviderSkipped(e);
+                return null;
+            }
+
+            throw e;
+
+        }
+        catch (RuntimeException e) {
+
+            // Skip using this authentication provider if configured to ignore
+            // internal failures during auth
+            if (isFailureTolerated()) {
+                warnAuthProviderSkipped(e);
+                return null;
+            }
+
+            throw e;
+
+        }
+
     }
 
     @Override
