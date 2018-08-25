@@ -93,11 +93,11 @@ public class ExtensionModule extends ServletModule {
      * providers that are not within this list will halt the authentication
      * process entirely.
      */
-    private final StringSetProperty TOLERATE_INTERNAL_FAILURES = new StringSetProperty() {
+    private final StringSetProperty SKIP_IF_UNAVAILABLE = new StringSetProperty() {
 
         @Override
         public String getName() {
-            return "tolerate-internal-failures";
+            return "skip-if-unavailable";
         }
 
     };
@@ -379,13 +379,13 @@ public class ExtensionModule extends ServletModule {
         // Parse list of auth providers whose internal failures should be
         // tolerated
         try {
-            return environment.getProperty(TOLERATE_INTERNAL_FAILURES, Collections.<String>emptySet());
+            return environment.getProperty(SKIP_IF_UNAVAILABLE, Collections.<String>emptySet());
         }
 
         // Use empty set by default if property cannot be parsed
         catch (GuacamoleException e) {
-            logger.warn("The list of authentication providers specified via the \"{}\" property could not be parsed: {}", TOLERATE_INTERNAL_FAILURES.getName(), e.getMessage());
-            logger.debug("Unable to parse \"{}\" property.", TOLERATE_INTERNAL_FAILURES.getName(), e);
+            logger.warn("The list of authentication providers specified via the \"{}\" property could not be parsed: {}", SKIP_IF_UNAVAILABLE.getName(), e.getMessage());
+            logger.debug("Unable to parse \"{}\" property.", SKIP_IF_UNAVAILABLE.getName(), e);
             return Collections.<String>emptySet();
         }
 
