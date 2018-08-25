@@ -93,7 +93,7 @@ public class ExtensionModule extends ServletModule {
      * providers that are not within this list will halt the authentication
      * process entirely.
      */
-    private final StringSetProperty SKIP_IF_UNAVAILABLE = new StringSetProperty() {
+    public static final StringSetProperty SKIP_IF_UNAVAILABLE = new StringSetProperty() {
 
         @Override
         public String getName() {

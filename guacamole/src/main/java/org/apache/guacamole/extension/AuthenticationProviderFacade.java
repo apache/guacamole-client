@@ -154,6 +154,25 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
 
     }
 
+    /**
+     * Logs a warning that the authentication process will be entirely aborted
+     * due to an internal error, advising the administrator to set the
+     * "skip-if-unavailable" property if error encountered is expected and
+     * should be tolerated.
+     */
+    private void warnAuthAborted() {
+        String identifier = getIdentifier();
+        logger.warn("The \"{}\" authentication provider has encountered an "
+                + "internal error which will halt the authentication "
+                + "process. If this is unexpected or you are the developer of "
+                + "this authentication provider, you may wish to enable "
+                + "debug-level logging. If this is expected and you wish to "
+                + "ignore such failures in the future, please set \"{}: {}\" "
+                + "within your guacamole.properties.",
+                identifier, ExtensionModule.SKIP_IF_UNAVAILABLE.getName(),
+                identifier);
+    }
+
     @Override
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
@@ -186,6 +205,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
                 return null;
             }
 
+            warnAuthAborted();
             throw e;
 
         }
@@ -198,6 +218,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
                 return null;
             }
 
+            warnAuthAborted();
             throw e;
 
         }
@@ -251,6 +272,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
                 return null;
             }
 
+            warnAuthAborted();
             throw e;
 
         }
@@ -263,6 +285,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
                 return null;
             }
 
+            warnAuthAborted();
             throw e;
 
         }
