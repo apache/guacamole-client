@@ -49,11 +49,10 @@ public class FailoverGuacamoleSocket implements GuacamoleSocket {
             LoggerFactory.getLogger(FailoverGuacamoleSocket.class);
 
     /**
-     * The maximum number of characters of Guacamole instruction data to store
-     * within the instruction queue while searching for errors. Once this limit
-     * is exceeded, the connection is assumed to be successful.
+     * The default maximum number of characters of Guacamole instruction data
+     * to store if no explicit limit is provided.
      */
-    private static final int INSTRUCTION_QUEUE_LIMIT = 2048;
+    private static final int DEFAULT_INSTRUCTION_QUEUE_LIMIT = 131072;
 
     /**
      * The wrapped socket being used.
@@ -131,15 +130,22 @@ public class FailoverGuacamoleSocket implements GuacamoleSocket {
     /**
      * Creates a new FailoverGuacamoleSocket which reads Guacamole instructions
      * from the given socket, searching for errors from the upstream remote
-     * desktop. If an upstream error is encountered, it is thrown as a
+     * desktop until the given instruction queue limit is reached. If an
+     * upstream error is encountered, it is thrown as a
      * GuacamoleUpstreamException. This constructor will block until an error
-     * is encountered, or until the connection appears to have been successful.
+     * is encountered, until insufficient space remains in the instruction
+     * queue, or until the connection appears to have been successful.
      * Once the FailoverGuacamoleSocket has been created, all reads, writes,
      * etc. will be delegated to the provided socket.
      *
      * @param socket
      *     The GuacamoleSocket of the Guacamole connection this
      *     FailoverGuacamoleSocket should handle.
+     *
+     * @param instructionQueueLimit
+     *     The maximum number of characters of Guacamole instruction data to
+     *     store within the instruction queue while searching for errors. Once
+     *     this limit is exceeded, the connection is assumed to be successful.
      *
      * @throws GuacamoleException
      *     If an error occurs while reading data from the provided socket.
@@ -148,7 +154,8 @@ public class FailoverGuacamoleSocket implements GuacamoleSocket {
      *     If the connection to guacd succeeded, but an error occurred while
      *     connecting to the remote desktop.
      */
-    public FailoverGuacamoleSocket(GuacamoleSocket socket)
+    public FailoverGuacamoleSocket(GuacamoleSocket socket,
+            final int instructionQueueLimit)
             throws GuacamoleException, GuacamoleUpstreamException {
 
         int totalQueueSize = 0;
@@ -177,13 +184,40 @@ public class FailoverGuacamoleSocket implements GuacamoleSocket {
             // Otherwise, track total data parsed, and assume connection is
             // successful if no error encountered within reasonable space
             totalQueueSize += instruction.toString().length();
-            if (totalQueueSize >= INSTRUCTION_QUEUE_LIMIT)
+            if (totalQueueSize >= instructionQueueLimit)
                 break;
 
         }
 
         this.socket = socket;
 
+    }
+
+    /**
+     * Creates a new FailoverGuacamoleSocket which reads Guacamole instructions
+     * from the given socket, searching for errors from the upstream remote
+     * desktop until a maximum of 128KB of instruction data has been queued. If
+     * an upstream error is encountered, it is thrown as a
+     * GuacamoleUpstreamException. This constructor will block until an error
+     * is encountered, until insufficient space remains in the instruction
+     * queue, or until the connection appears to have been successful.
+     * Once the FailoverGuacamoleSocket has been created, all reads, writes,
+     * etc. will be delegated to the provided socket.
+     *
+     * @param socket
+     *     The GuacamoleSocket of the Guacamole connection this
+     *     FailoverGuacamoleSocket should handle.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while reading data from the provided socket.
+     *
+     * @throws GuacamoleUpstreamException
+     *     If the connection to guacd succeeded, but an error occurred while
+     *     connecting to the remote desktop.
+     */
+    public FailoverGuacamoleSocket(GuacamoleSocket socket)
+            throws GuacamoleException, GuacamoleUpstreamException {
+        this(socket, DEFAULT_INSTRUCTION_QUEUE_LIMIT);
     }
 
     /**
