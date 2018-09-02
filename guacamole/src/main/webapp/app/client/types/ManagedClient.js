@@ -346,16 +346,14 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                             ManagedClientState.ConnectionState.CONNECTING);
                         break;
 
-                    // Connection is established
+                    // Connection is established / no longer unstable
                     case Guacamole.Tunnel.State.OPEN:
-                        ManagedClientState.setConnectionState(managedClient.clientState,
-                            ManagedClientState.ConnectionState.CONNECTED);
+                        ManagedClientState.setTunnelUnstable(managedClient.clientState, false);
                         break;
 
                     // Connection is established but misbehaving
                     case Guacamole.Tunnel.State.UNSTABLE:
-                        ManagedClientState.setConnectionState(managedClient.clientState,
-                            ManagedClientState.ConnectionState.UNSTABLE);
+                        ManagedClientState.setTunnelUnstable(managedClient.clientState, true);
                         break;
 
                     // Connection has closed

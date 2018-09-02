@@ -46,6 +46,16 @@ angular.module('client').factory('ManagedClientState', [function defineManagedCl
         this.connectionState = template.connectionState || ManagedClientState.ConnectionState.IDLE;
 
         /**
+         * Whether the network connection used by the tunnel seems unstable. If
+         * the network connection is unstable, the remote desktop connection
+         * may perform poorly or disconnect.
+         *
+         * @type Boolean
+         * @default false
+         */
+        this.tunnelUnstable = template.tunnelUnstable || false;
+
+        /**
          * The status code of the current error condition, if connectionState
          * is CLIENT_ERROR or TUNNEL_ERROR. For all other connectionState
          * values, this will be @link{Guacamole.Status.Code.SUCCESS}.
@@ -94,15 +104,6 @@ angular.module('client').factory('ManagedClientState', [function defineManagedCl
         CONNECTED : "CONNECTED",
 
         /**
-         * The Guacamole connection has been successfully established, but the
-         * network connection seems unstable. The connection may perform poorly
-         * or disconnect.
-         * 
-         * @type String
-         */
-        UNSTABLE : "UNSTABLE",
-
-        /**
          * The Guacamole connection has terminated successfully. No errors are
          * indicated.
          * 
@@ -130,7 +131,9 @@ angular.module('client').factory('ManagedClientState', [function defineManagedCl
 
     /**
      * Sets the current client state and, if given, the associated status code.
-     * If an error is already represented, this function has no effect.
+     * If an error is already represented, this function has no effect. If the
+     * client state was previously marked as unstable, that flag is implicitly
+     * cleared.
      *
      * @param {ManagedClientState} clientState
      *     The ManagedClientState to update.
@@ -153,11 +156,28 @@ angular.module('client').factory('ManagedClientState', [function defineManagedCl
 
         // Update connection state
         clientState.connectionState = connectionState;
+        clientState.tunnelUnstable = false;
 
         // Set status code, if given
         if (statusCode)
             clientState.statusCode = statusCode;
 
+    };
+
+    /**
+     * Updates the given client state, setting whether the underlying tunnel
+     * is currently unstable. An unstable tunnel is not necessarily
+     * disconnected, but appears to be misbehaving and may be disconnected.
+     *
+     * @param {ManagedClientState} clientState
+     *     The ManagedClientState to update.
+     *
+     * @param {Boolean} unstable
+     *     Whether the underlying tunnel of the connection currently appears
+     *     unstable.
+     */
+    ManagedClientState.setTunnelUnstable = function setTunnelUnstable(clientState, unstable) {
+        clientState.tunnelUnstable = unstable;
     };
 
     return ManagedClientState;
