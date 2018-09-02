@@ -74,6 +74,17 @@ Guacamole.Tunnel = function() {
     };
 
     /**
+     * Returns whether this tunnel is currently connected.
+     *
+     * @returns {Boolean}
+     *     true if this tunnel is currently connected, false otherwise.
+     */
+    this.isConnected = function isConnected() {
+        return this.state === Guacamole.Tunnel.State.OPEN
+            || this.state === Guacamole.Tunnel.State.UNSTABLE;
+    };
+
+    /**
      * The current state of this tunnel.
      * 
      * @type {Number}
@@ -342,7 +353,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
     this.sendMessage = function() {
 
         // Do not attempt to send messages if not connected
-        if (tunnel.state !== Guacamole.Tunnel.State.OPEN)
+        if (!tunnel.isConnected())
             return;
 
         // Do not attempt to send empty messages
@@ -384,7 +395,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
     function sendPendingMessages() {
 
         // Do not attempt to send messages if not connected
-        if (tunnel.state !== Guacamole.Tunnel.State.OPEN)
+        if (!tunnel.isConnected())
             return;
 
         if (outputMessageBuffer.length > 0) {
@@ -462,7 +473,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
         function parseResponse() {
 
             // Do not handle responses if not connected
-            if (tunnel.state !== Guacamole.Tunnel.State.OPEN) {
+            if (!tunnel.isConnected()) {
                 
                 // Clean up interval if polling
                 if (interval !== null)
@@ -835,7 +846,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
     this.sendMessage = function(elements) {
 
         // Do not attempt to send messages if not connected
-        if (tunnel.state !== Guacamole.Tunnel.State.OPEN)
+        if (!tunnel.isConnected())
             return;
 
         // Do not attempt to send empty messages
@@ -945,7 +956,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
                     var opcode = elements.shift();
 
                     // Update state and UUID when first instruction received
-                    if (tunnel.state !== Guacamole.Tunnel.State.OPEN) {
+                    if (tunnel.state === Guacamole.Tunnel.State.CONNECTING) {
 
                         // Associate tunnel UUID if received
                         if (opcode === Guacamole.Tunnel.INTERNAL_DATA_OPCODE)
