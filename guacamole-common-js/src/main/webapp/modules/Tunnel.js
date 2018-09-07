@@ -153,7 +153,8 @@ Guacamole.Tunnel = function() {
  * use by tunnel implementations. The value of this opcode is guaranteed to be
  * the empty string (""). Tunnel implementations may use this opcode for any
  * purpose. It is currently used by the HTTP tunnel to mark the end of the HTTP
- * response, and by the WebSocket tunnel to transmit the tunnel UUID.
+ * response, and by the WebSocket tunnel to transmit the tunnel UUID and send
+ * connection stability test pings/responses.
  *
  * @constant
  * @type {String}
@@ -743,6 +744,15 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
     var unstableTimeout = null;
 
     /**
+     * The current connection stability test ping interval ID, if any. This
+     * will only be set upon successful connection.
+     *
+     * @private
+     * @type {Number}
+     */
+    var pingInterval = null;
+
+    /**
      * The WebSocket protocol corresponding to the protocol used for the current
      * location.
      * @private
@@ -751,6 +761,16 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         "http:":  "ws:",
         "https:": "wss:"
     };
+
+    /**
+     * The number of milliseconds to wait between connection stability test
+     * pings.
+     *
+     * @private
+     * @constant
+     * @type {Number}
+     */
+    var PING_FREQUENCY = 500;
 
     // Transform current URL to WebSocket URL
 
@@ -828,6 +848,9 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         window.clearTimeout(receive_timeout);
         window.clearTimeout(unstableTimeout);
 
+        // Cease connection test pings
+        window.clearInterval(pingInterval);
+
         // Ignore if already closed
         if (tunnel.state === Guacamole.Tunnel.State.CLOSED)
             return;
@@ -892,6 +915,13 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
         socket.onopen = function(event) {
             reset_timeout();
+
+            // Ping tunnel endpoint regularly to test connection stability
+            pingInterval = setInterval(function sendPing() {
+                tunnel.sendMessage(Guacamole.Tunnel.INTERNAL_DATA_OPCODE,
+                    "ping", new Date().getTime());
+            }, PING_FREQUENCY);
+
         };
 
         socket.onclose = function(event) {
