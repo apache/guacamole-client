@@ -259,6 +259,25 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
     var unstableTimeout = null;
 
     /**
+     * The current connection stability test ping interval ID, if any. This
+     * will only be set upon successful connection.
+     *
+     * @private
+     * @type {Number}
+     */
+    var pingInterval = null;
+
+    /**
+     * The number of milliseconds to wait between connection stability test
+     * pings.
+     *
+     * @private
+     * @constant
+     * @type {Number}
+     */
+    var PING_FREQUENCY = 500;
+
+    /**
      * Additional headers to be sent in tunnel requests. This dictionary can be
      * populated with key/value header pairs to pass information such as authentication
      * tokens, etc.
@@ -326,6 +345,9 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
         // Get rid of old timeouts (if any)
         window.clearTimeout(receive_timeout);
         window.clearTimeout(unstableTimeout);
+
+        // Cease connection test pings
+        window.clearInterval(pingInterval);
 
         // Ignore if already closed
         if (tunnel.state === Guacamole.Tunnel.State.CLOSED)
@@ -412,6 +434,8 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
             // Once response received, send next queued event.
             message_xmlhttprequest.onreadystatechange = function() {
                 if (message_xmlhttprequest.readyState === 4) {
+
+                    reset_timeout();
 
                     // If an error occurs during send, handle it
                     if (message_xmlhttprequest.status !== 200)
@@ -686,6 +710,11 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
 
             // Mark as open
             tunnel.setState(Guacamole.Tunnel.State.OPEN);
+
+            // Ping tunnel endpoint regularly to test connection stability
+            pingInterval = setInterval(function sendPing() {
+                tunnel.sendMessage("nop");
+            }, PING_FREQUENCY);
 
             // Start reading data
             handleResponse(makeRequest());
