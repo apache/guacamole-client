@@ -179,7 +179,9 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
 
         // Ignore auth attempts if no auth provider could be loaded
         if (authProvider == null) {
-            logger.warn("Authentication attempt denied because the authentication system could not be loaded. Please check for errors earlier in the logs.");
+            logger.warn("Authentication attempt ignored because the relevant "
+                    + "authentication provider could not be loaded. Please "
+                    + "check for errors earlier in the logs.");
             return null;
         }
 
@@ -244,7 +246,9 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
 
         // Ignore auth attempts if no auth provider could be loaded
         if (authProvider == null) {
-            logger.warn("Reauthentication attempt denied because the authentication system could not be loaded. Please check for errors earlier in the logs.");
+            logger.warn("Reauthentication attempt ignored because the relevant "
+                    + "authentication provider could not be loaded. Please "
+                    + "check for errors earlier in the logs.");
             return null;
         }
 
@@ -259,7 +263,9 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
 
         // Ignore auth attempts if no auth provider could be loaded
         if (authProvider == null) {
-            logger.warn("User data retrieval attempt denied because the authentication system could not be loaded. Please check for errors earlier in the logs.");
+            logger.warn("User data retrieval attempt ignored because the "
+                    + "relevant authentication provider could not be loaded. "
+                    + "Please check for errors earlier in the logs.");
             return null;
         }
 
@@ -325,7 +331,9 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
 
         // Ignore auth attempts if no auth provider could be loaded
         if (authProvider == null) {
-            logger.warn("User data refresh attempt denied because the authentication system could not be loaded. Please check for errors earlier in the logs.");
+            logger.warn("User data refresh attempt ignored because the "
+                    + "relevant authentication provider could not be loaded. "
+                    + "Please check for errors earlier in the logs.");
             return null;
         }
 
