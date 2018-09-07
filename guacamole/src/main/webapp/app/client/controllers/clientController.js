@@ -635,7 +635,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      *     otherwise.
      */
     $scope.isConnectionUnstable = function isConnectionUnstable() {
-        return $scope.client && $scope.client.clientState.connectionState === ManagedClientState.ConnectionState.UNSTABLE;
+        return $scope.client && $scope.client.clientState.tunnelUnstable;
     };
 
     // Show status dialog when connection status changes
