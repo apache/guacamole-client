@@ -38,6 +38,11 @@ public class SystemPermission implements Permission<SystemPermission.Type> {
         CREATE_USER,
 
         /**
+         * Create user groups.
+         */
+        CREATE_USER_GROUP,
+
+        /**
          * Create connections.
          */
         CREATE_CONNECTION,
