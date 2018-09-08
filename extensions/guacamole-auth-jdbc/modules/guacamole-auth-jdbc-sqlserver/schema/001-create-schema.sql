@@ -34,6 +34,22 @@ EXEC sp_bindrule
 GO
 
 --
+-- Entity types
+--
+
+CREATE RULE [guacamole_entity_type_list] AS @list IN (
+    'USER',
+    'USER_GROUP'
+);
+GO
+
+CREATE TYPE [guacamole_entity_type] FROM [nvarchar](16);
+EXEC sp_bindrule
+    'guacamole_entity_type_list',
+    'guacamole_entity_type';
+GO
+
+--
 -- Object permission types
 --
 
@@ -60,6 +76,7 @@ CREATE RULE [guacamole_system_permission_list] AS @list IN (
     'CREATE_CONNECTION_GROUP',
     'CREATE_SHARING_PROFILE',
     'CREATE_USER',
+    'CREATE_USER_GROUP',
     'ADMINISTER'
 );
 GO
@@ -164,6 +181,28 @@ CREATE NONCLUSTERED INDEX [IX_guacamole_connection_parent_id]
 GO
 
 --
+-- Table of base entities which may each be either a user or user group. Other
+-- tables which represent qualities shared by both users and groups will point
+-- to guacamole_entity, while tables which represent qualities specific to
+-- users or groups will point to guacamole_user or guacamole_user_group.
+--
+
+CREATE TABLE [guacamole_entity] (
+
+    [entity_id]     [int] IDENTITY(1,1)     NOT NULL,
+    [name]          [nvarchar](128)         NOT NULL,
+    [type]          [guacamole_entity_type] NOT NULL,
+
+    CONSTRAINT [PK_guacamole_entity]
+        PRIMARY KEY CLUSTERED ([entity_id]),
+
+    CONSTRAINT [AK_guacamole_entity_name_scope]
+        UNIQUE ([type], [name])
+
+);
+GO
+
+--
 -- Table of users. Each user has a unique username and a hashed password
 -- with corresponding salt. Although the authentication system will always set
 -- salted passwords, other systems may set unsalted passwords by simply not
@@ -172,10 +211,10 @@ GO
 
 CREATE TABLE [guacamole_user] (
 
-    [user_id] [int] IDENTITY(1,1) NOT NULL,
+    [user_id]   [int] IDENTITY(1,1) NOT NULL,
+    [entity_id] [int]               NOT NULL,
 
-    -- Username and optionally-salted password
-    [username]      [nvarchar](128) NOT NULL,
+    -- Optionally-salted password
     [password_hash] [binary](32)    NOT NULL,
     [password_salt] [binary](32),
     [password_date] [datetime]      NOT NULL,
@@ -204,8 +243,68 @@ CREATE TABLE [guacamole_user] (
     CONSTRAINT [PK_guacamole_user]
         PRIMARY KEY CLUSTERED ([user_id]),
 
-    CONSTRAINT [AK_guacamole_user_username]
-        UNIQUE ([username])
+    CONSTRAINT [AK_guacamole_user_single_entity]
+        UNIQUE ([entity_id]),
+
+    CONSTRAINT [FK_guacamole_user_entity]
+        FOREIGN KEY ([entity_id])
+        REFERENCES [guacamole_entity] ([entity_id])
+        ON DELETE CASCADE
+
+);
+GO
+
+--
+-- Table of user groups. Each user group may have an arbitrary set of member
+-- users and member groups, with those members inheriting the permissions
+-- granted to that group.
+--
+
+CREATE TABLE [guacamole_user_group] (
+
+    [user_group_id] [int] IDENTITY(1,1) NOT NULL,
+    [entity_id]     [int]               NOT NULL,
+
+    -- Group disabled status
+    [disabled] [bit] NOT NULL DEFAULT 0,
+
+    CONSTRAINT [PK_guacamole_user_group]
+        PRIMARY KEY CLUSTERED ([user_group_id]),
+
+    CONSTRAINT [guacamole_user_group_single_entity]
+        UNIQUE ([entity_id]),
+
+    CONSTRAINT [guacamole_user_group_entity]
+        FOREIGN KEY ([entity_id])
+        REFERENCES [guacamole_entity] ([entity_id])
+        ON DELETE CASCADE
+
+);
+GO
+
+--
+-- Table of users which are members of given user groups.
+--
+
+CREATE TABLE [guacamole_user_group_member] (
+
+    [user_group_id]    [int] NOT NULL,
+    [member_entity_id] [int] NOT NULL,
+
+    CONSTRAINT [PK_guacamole_user_group_member]
+        PRIMARY KEY CLUSTERED ([user_group_id], [member_entity_id]),
+
+    -- Parent must be a user group
+    CONSTRAINT [guacamole_user_group_member_parent_id]
+        FOREIGN KEY ([user_group_id])
+        REFERENCES [guacamole_user_group] ([user_group_id])
+        ON DELETE CASCADE,
+
+    -- Member may be either a user or a user group (any entity)
+    CONSTRAINT [guacamole_user_group_member_entity_id]
+        FOREIGN KEY ([member_entity_id])
+        REFERENCES [guacamole_entity] ([entity_id])
+        -- ON DELETE CASCADE handled by guacamole_delete_entity trigger
 
 );
 GO
@@ -266,6 +365,34 @@ CREATE TABLE [guacamole_user_attribute] (
 
 CREATE NONCLUSTERED INDEX [IX_guacamole_user_attribute_user_id]
     ON [guacamole_user_attribute] ([user_id])
+    INCLUDE ([attribute_name], [attribute_value]);
+GO
+
+--
+-- Table of arbitrary user group attributes. Each attribute is simply a
+-- name/value pair associated with a user group. Arbitrary attributes are
+-- defined by other extensions. Attributes defined by this extension will be
+-- mapped to properly-typed columns of a specific table.
+--
+
+CREATE TABLE [guacamole_user_group_attribute] (
+
+    [user_group_id]   [int]            NOT NULL,
+    [attribute_name]  [nvarchar](128)  NOT NULL,
+    [attribute_value] [nvarchar](4000) NOT NULL,
+
+    CONSTRAINT [PK_guacamole_user_group_attribute]
+        PRIMARY KEY CLUSTERED ([user_group_id], [attribute_name]),
+
+    CONSTRAINT [FK_guacamole_user_attribute_user_group_id]
+        FOREIGN KEY ([user_group_id])
+        REFERENCES [guacamole_user_group] ([user_group_id])
+        ON DELETE CASCADE
+
+);
+
+CREATE NONCLUSTERED INDEX [IX_guacamole_user_group_attribute_user_id]
+    ON [guacamole_user_group_attribute] ([user_group_id])
     INCLUDE ([attribute_name], [attribute_value]);
 GO
 
@@ -403,27 +530,27 @@ CREATE NONCLUSTERED INDEX [IX_guacamole_sharing_profile_parameter_sharing_profil
 GO
 
 --
--- Table of connection permissions. Each connection permission grants a user
--- specific access to a connection.
+-- Table of connection permissions. Each connection permission grants a user or
+-- user group specific access to a connection.
 --
 
 CREATE TABLE [guacamole_connection_permission] (
 
-    [user_id]       [int]                         NOT NULL,
+    [entity_id]     [int]                         NOT NULL,
     [connection_id] [int]                         NOT NULL,
     [permission]    [guacamole_object_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_connection_permission]
-        PRIMARY KEY CLUSTERED  ([user_id], [connection_id], [permission]),
+        PRIMARY KEY CLUSTERED  ([entity_id], [connection_id], [permission]),
 
     CONSTRAINT [FK_guacamole_connection_permission_connection_id]
         FOREIGN KEY ([connection_id])
         REFERENCES [guacamole_connection] ([connection_id])
         ON DELETE CASCADE,
 
-    CONSTRAINT [FK_guacamole_connection_permission_user_id]
-        FOREIGN KEY ([user_id])
-        REFERENCES [guacamole_user] ([user_id])
+    CONSTRAINT [FK_guacamole_connection_permission_entity_id]
+        FOREIGN KEY ([entity_id])
+        REFERENCES [guacamole_entity] ([entity_id])
         ON DELETE CASCADE
 
 );
@@ -431,32 +558,32 @@ CREATE TABLE [guacamole_connection_permission] (
 CREATE NONCLUSTERED INDEX [IX_guacamole_connection_permission_connection_id]
     ON [guacamole_connection_permission] ([connection_id]);
 
-CREATE NONCLUSTERED INDEX [IX_guacamole_connection_permission_user_id]
-    ON [guacamole_connection_permission] ([user_id]);
+CREATE NONCLUSTERED INDEX [IX_guacamole_connection_permission_entity_id]
+    ON [guacamole_connection_permission] ([entity_id]);
 GO
 
 --
 -- Table of connection group permissions. Each group permission grants a user
--- specific access to a connection group.
+-- or user group specific access to a connection group.
 --
 
 CREATE TABLE [guacamole_connection_group_permission] (
 
-    [user_id]             [int]                         NOT NULL,
+    [entity_id]           [int]                         NOT NULL,
     [connection_group_id] [int]                         NOT NULL,
     [permission]          [guacamole_object_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_connection_group_permission]
-        PRIMARY KEY CLUSTERED ([user_id], [connection_group_id], [permission]),
+        PRIMARY KEY CLUSTERED ([entity_id], [connection_group_id], [permission]),
 
     CONSTRAINT [FK_guacamole_connection_group_permission_connection_group_id]
         FOREIGN KEY ([connection_group_id])
         REFERENCES [guacamole_connection_group] ([connection_group_id])
         ON DELETE CASCADE,
 
-    CONSTRAINT [FK_guacamole_connection_group_permission_user_id]
-        FOREIGN KEY ([user_id])
-        REFERENCES [guacamole_user] ([user_id])
+    CONSTRAINT [FK_guacamole_connection_group_permission_entity_id]
+        FOREIGN KEY ([entity_id])
+        REFERENCES [guacamole_entity] ([entity_id])
         ON DELETE CASCADE
 
 );
@@ -464,32 +591,32 @@ CREATE TABLE [guacamole_connection_group_permission] (
 CREATE NONCLUSTERED INDEX [IX_guacamole_connection_group_permission_connection_group_id]
     ON [guacamole_connection_group_permission] ([connection_group_id]);
 
-CREATE NONCLUSTERED INDEX [IX_guacamole_connection_group_permission_user_id]
-    ON [guacamole_connection_group_permission] ([user_id]);
+CREATE NONCLUSTERED INDEX [IX_guacamole_connection_group_permission_entity_id]
+    ON [guacamole_connection_group_permission] ([entity_id]);
 GO
 
 --
 -- Table of sharing profile permissions. Each sharing profile permission grants
--- a user specific access to a sharing profile.
+-- a user or user group specific access to a sharing profile.
 --
 
 CREATE TABLE [guacamole_sharing_profile_permission] (
 
-    [user_id]            [int]                         NOT NULL,
+    [entity_id]          [int]                         NOT NULL,
     [sharing_profile_id] [int]                         NOT NULL,
     [permission]         [guacamole_object_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_sharing_profile_permission]
-        PRIMARY KEY CLUSTERED ([user_id], [sharing_profile_id], [permission]),
+        PRIMARY KEY CLUSTERED ([entity_id], [sharing_profile_id], [permission]),
 
     CONSTRAINT [FK_guacamole_sharing_profile_permission_sharing_profile_id]
         FOREIGN KEY ([sharing_profile_id])
         REFERENCES [guacamole_sharing_profile] ([sharing_profile_id])
         ON DELETE CASCADE,
 
-    CONSTRAINT [FK_guacamole_sharing_profile_permission_user_id]
-        FOREIGN KEY ([user_id])
-        REFERENCES [guacamole_user] ([user_id])
+    CONSTRAINT [FK_guacamole_sharing_profile_permission_entity_id]
+        FOREIGN KEY ([entity_id])
+        REFERENCES [guacamole_entity] ([entity_id])
         ON DELETE CASCADE
 
 );
@@ -497,65 +624,100 @@ CREATE TABLE [guacamole_sharing_profile_permission] (
 CREATE NONCLUSTERED INDEX [IX_guacamole_sharing_profile_permission_sharing_profile_id]
     ON [guacamole_sharing_profile_permission] ([sharing_profile_id]);
 
-CREATE NONCLUSTERED INDEX [IX_guacamole_sharing_profile_permission_user_id]
-    ON [guacamole_sharing_profile_permission] ([user_id]);
+CREATE NONCLUSTERED INDEX [IX_guacamole_sharing_profile_permission_entity_id]
+    ON [guacamole_sharing_profile_permission] ([entity_id]);
 GO
 
 --
--- Table of system permissions. Each system permission grants a user a
--- system-level privilege of some kind.
+-- Table of system permissions. Each system permission grants a user or user
+-- group a system-level privilege of some kind.
 --
 
 CREATE TABLE [guacamole_system_permission] (
 
-    [user_id]    [int]                         NOT NULL,
+    [entity_id]  [int]                         NOT NULL,
     [permission] [guacamole_system_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_system_permission]
-        PRIMARY KEY CLUSTERED ([user_id], [permission]),
+        PRIMARY KEY CLUSTERED ([entity_id], [permission]),
 
-    CONSTRAINT [FK_guacamole_system_permission_user_id]
-        FOREIGN KEY ([user_id])
-        REFERENCES [guacamole_user] ([user_id])
+    CONSTRAINT [FK_guacamole_system_permission_entity_id]
+        FOREIGN KEY ([entity_id])
+        REFERENCES [guacamole_entity] ([entity_id])
         ON DELETE CASCADE
 
 );
 
-CREATE NONCLUSTERED INDEX [IX_guacamole_system_permission_user_id]
-    ON [guacamole_system_permission] ([user_id]);
+CREATE NONCLUSTERED INDEX [IX_guacamole_system_permission_entity_id]
+    ON [guacamole_system_permission] ([entity_id]);
 GO
 
 --
--- Table of user permissions. Each user permission grants a user access to
--- another user (the "affected" user) for a specific type of operation.
+-- Table of user permissions. Each user permission grants a user or user group
+-- access to another user (the "affected" user) for a specific type of
+-- operation.
 --
 
 CREATE TABLE [guacamole_user_permission] (
 
-    [user_id]          [int]                         NOT NULL,
+    [entity_id]        [int]                         NOT NULL,
     [affected_user_id] [int]                         NOT NULL,
     [permission]       [guacamole_object_permission] NOT NULL,
 
     CONSTRAINT [PK_guacamole_user_permission]
-        PRIMARY KEY CLUSTERED ([user_id], [affected_user_id], [permission]),
+        PRIMARY KEY CLUSTERED ([entity_id], [affected_user_id], [permission]),
 
     CONSTRAINT [FK_guacamole_user_permission_affected_user_id]
         FOREIGN KEY ([affected_user_id])
-        REFERENCES [guacamole_user] ([user_id]),
-        -- ON DELETE CASCADE handled by guacamole_delete_user trigger
-
-    CONSTRAINT [FK_guacamole_user_permission_user_id]
-        FOREIGN KEY ([user_id])
         REFERENCES [guacamole_user] ([user_id])
-        -- ON DELETE CASCADE handled by guacamole_delete_user trigger
+        ON DELETE CASCADE,
+
+    CONSTRAINT [FK_guacamole_user_permission_entity_id]
+        FOREIGN KEY ([entity_id])
+        REFERENCES [guacamole_entity] ([entity_id])
+        -- ON DELETE CASCADE handled by guacamole_delete_entity trigger
 
 );
 
-CREATE NONCLUSTERED INDEX [IX_guacamole_user_permission_user_id]
-    ON [guacamole_user_permission] ([user_id]);
+CREATE NONCLUSTERED INDEX [IX_guacamole_user_permission_entity_id]
+    ON [guacamole_user_permission] ([entity_id]);
 
 CREATE NONCLUSTERED INDEX [IX_guacamole_user_permission_affected_user_id]
     ON [guacamole_user_permission] ([affected_user_id]);
+GO
+
+--
+-- Table of user group permissions. Each user group permission grants a user
+-- or user group access to a another user group (the "affected" user group) for
+-- a specific type of operation.
+--
+
+CREATE TABLE [guacamole_user_group_permission] (
+
+    [entity_id]              [int]                         NOT NULL,
+    [affected_user_group_id] [int]                         NOT NULL,
+    [permission]             [guacamole_object_permission] NOT NULL,
+
+    CONSTRAINT [PK_guacamole_user_group_permission]
+        PRIMARY KEY CLUSTERED ([entity_id], [affected_user_group_id], [permission]),
+
+    CONSTRAINT [FK_guacamole_user_group_permission_affected_user_group_id]
+        FOREIGN KEY ([affected_user_group_id])
+        REFERENCES [guacamole_user_group] ([user_group_id])
+        ON DELETE CASCADE,
+
+    CONSTRAINT [FK_guacamole_user_group_permission_entity_id]
+        FOREIGN KEY ([entity_id])
+        REFERENCES [guacamole_entity] ([entity_id])
+        -- ON DELETE CASCADE handled by guacamole_delete_entity trigger
+
+);
+
+CREATE NONCLUSTERED INDEX [IX_guacamole_user_group_permission_entity_id]
+    ON [guacamole_user_group_permission] ([entity_id]);
+
+CREATE NONCLUSTERED INDEX [IX_guacamole_user_group_permission_affected_user_group_id]
+    ON [guacamole_user_group_permission] ([affected_user_group_id]);
 GO
 
 --
@@ -682,12 +844,12 @@ GO
 
 --
 -- Handle cascading deletion/updates of records in response to deletion of
--- guacamole_user records, where such deletion is not already covered by
+-- guacamole_entity records, where such deletion is not already covered by
 -- ON DELETE CASCADE or ON DELETE SET NULL.
 --
 
-CREATE TRIGGER [guacamole_delete_user]
-   ON [guacamole_user]
+CREATE TRIGGER [guacamole_delete_entity]
+   ON [guacamole_entity]
    INSTEAD OF DELETE
 AS BEGIN
 
@@ -696,13 +858,18 @@ AS BEGIN
 
     -- Delete all associated permissions not covered by ON DELETE CASCADE
     DELETE FROM [guacamole_user_permission]
-    WHERE
-           [user_id] IN (SELECT [user_id] FROM DELETED)
-        OR [user_id] IN (SELECT [user_id] FROM DELETED);
+    WHERE [entity_id] IN (SELECT [entity_id] FROM DELETED);
+
+    DELETE FROM [guacamole_user_group_permission]
+    WHERE [entity_id] IN (SELECT [entity_id] FROM DELETED);
+
+    -- Delete all associated group memberships not covered by ON DELETE CASCADE
+    DELETE FROM [guacamole_user_group_member]
+    WHERE [member_entity_id] IN (SELECT [entity_id] FROM DELETED);
 
     -- Perform original deletion
-    DELETE FROM [guacamole_user]
-    WHERE [user_id] IN (SELECT [user_id] FROM DELETED);
+    DELETE FROM [guacamole_entity]
+    WHERE [entity_id] IN (SELECT [entity_id] FROM DELETED);
 
 END
 GO
@@ -746,6 +913,20 @@ AS BEGIN
     -- Do not take trigger into account when producing row counts for the DELETE
     SET NOCOUNT ON;
 
+    -- Delete all descendant connections
+    WITH [connection_groups] ([connection_group_id]) AS (
+        SELECT [connection_group_id] FROM DELETED
+    UNION ALL
+        SELECT [guacamole_connection_group].[connection_group_id]
+        FROM [guacamole_connection_group]
+        JOIN [connection_groups] ON [connection_groups].[connection_group_id] = [guacamole_connection_group].[parent_id]
+    )
+    DELETE FROM [guacamole_connection]
+    WHERE [parent_id] IN (
+        SELECT [connection_group_id]
+        FROM [connection_groups]
+    );
+
     -- Delete all requested connection groups, including descendants
     WITH [connection_groups] ([connection_group_id]) AS (
         SELECT [connection_group_id] FROM DELETED
@@ -759,10 +940,6 @@ AS BEGIN
         SELECT [connection_group_id]
         FROM [connection_groups]
     );
-
-    -- Delete all child connections
-    DELETE FROM [guacamole_connection]
-    WHERE [parent_id] IN (SELECT [connection_group_id] FROM DELETED);
 
 END
 GO

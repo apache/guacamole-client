@@ -79,6 +79,25 @@ CREATE TABLE `guacamole_connection` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table of base entities which may each be either a user or user group. Other
+-- tables which represent qualities shared by both users and groups will point
+-- to guacamole_entity, while tables which represent qualities specific to
+-- users or groups will point to guacamole_user or guacamole_user_group.
+--
+
+CREATE TABLE `guacamole_entity` (
+
+  `entity_id`     int(11)            NOT NULL AUTO_INCREMENT,
+  `name`          varchar(128)       NOT NULL,
+  `type`          enum('USER',
+                       'USER_GROUP') NOT NULL,
+
+  PRIMARY KEY (`entity_id`),
+  UNIQUE KEY `guacamole_entity_name_scope` (`type`, `name`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table of users. Each user has a unique username and a hashed password
 -- with corresponding salt. Although the authentication system will always set
 -- salted passwords, other systems may set unsalted passwords by simply not
@@ -88,9 +107,9 @@ CREATE TABLE `guacamole_connection` (
 CREATE TABLE `guacamole_user` (
 
   `user_id`       int(11)      NOT NULL AUTO_INCREMENT,
+  `entity_id`     int(11)      NOT NULL,
 
-  -- Username and optionally-salted password
-  `username`      varchar(128) NOT NULL,
+  -- Optionally-salted password
   `password_hash` binary(32)   NOT NULL,
   `password_salt` binary(32),
   `password_date` datetime     NOT NULL,
@@ -117,7 +136,61 @@ CREATE TABLE `guacamole_user` (
   `organizational_role` VARCHAR(256),
 
   PRIMARY KEY (`user_id`),
-  UNIQUE KEY `username` (`username`)
+
+  UNIQUE KEY `guacamole_user_single_entity` (`entity_id`),
+
+  CONSTRAINT `guacamole_user_entity`
+    FOREIGN KEY (`entity_id`)
+    REFERENCES `guacamole_entity` (`entity_id`)
+    ON DELETE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table of user groups. Each user group may have an arbitrary set of member
+-- users and member groups, with those members inheriting the permissions
+-- granted to that group.
+--
+
+CREATE TABLE `guacamole_user_group` (
+
+  `user_group_id` int(11)      NOT NULL AUTO_INCREMENT,
+  `entity_id`     int(11)      NOT NULL,
+
+  -- Group disabled status
+  `disabled`      boolean      NOT NULL DEFAULT 0,
+
+  PRIMARY KEY (`user_group_id`),
+
+  UNIQUE KEY `guacamole_user_group_single_entity` (`entity_id`),
+
+  CONSTRAINT `guacamole_user_group_entity`
+    FOREIGN KEY (`entity_id`)
+    REFERENCES `guacamole_entity` (`entity_id`)
+    ON DELETE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table of users which are members of given user groups.
+--
+
+CREATE TABLE `guacamole_user_group_member` (
+
+  `user_group_id`    int(11)     NOT NULL,
+  `member_entity_id` int(11)     NOT NULL,
+
+  PRIMARY KEY (`user_group_id`, `member_entity_id`),
+
+  -- Parent must be a user group
+  CONSTRAINT `guacamole_user_group_member_parent_id`
+    FOREIGN KEY (`user_group_id`)
+    REFERENCES `guacamole_user_group` (`user_group_id`) ON DELETE CASCADE,
+
+  -- Member may be either a user or a user group (any entity)
+  CONSTRAINT `guacamole_user_group_member_entity_id`
+    FOREIGN KEY (`member_entity_id`)
+    REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -208,6 +281,28 @@ CREATE TABLE guacamole_user_attribute (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table of arbitrary user group attributes. Each attribute is simply a
+-- name/value pair associated with a user group. Arbitrary attributes are
+-- defined by other extensions. Attributes defined by this extension will be
+-- mapped to properly-typed columns of a specific table.
+--
+
+CREATE TABLE guacamole_user_group_attribute (
+
+  `user_group_id`   int(11)       NOT NULL,
+  `attribute_name`  varchar(128)  NOT NULL,
+  `attribute_value` varchar(4096) NOT NULL,
+
+  PRIMARY KEY (`user_group_id`, `attribute_name`),
+  KEY `user_group_id` (`user_group_id`),
+
+  CONSTRAINT `guacamole_user_group_attribute_ibfk_1`
+    FOREIGN KEY (`user_group_id`)
+    REFERENCES `guacamole_user_group` (`user_group_id`) ON DELETE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table of arbitrary connection attributes. Each attribute is simply a
 -- name/value pair associated with a connection. Arbitrary attributes are
 -- defined by other extensions. Attributes defined by this extension will be
@@ -274,128 +369,157 @@ CREATE TABLE guacamole_sharing_profile_attribute (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table of connection permissions. Each connection permission grants a user
--- specific access to a connection.
+-- Table of connection permissions. Each connection permission grants a user or
+-- user group specific access to a connection.
 --
 
 CREATE TABLE `guacamole_connection_permission` (
 
-  `user_id`       int(11) NOT NULL,
+  `entity_id`     int(11) NOT NULL,
   `connection_id` int(11) NOT NULL,
   `permission`    enum('READ',
                        'UPDATE',
                        'DELETE',
                        'ADMINISTER') NOT NULL,
 
-  PRIMARY KEY (`user_id`,`connection_id`,`permission`),
+  PRIMARY KEY (`entity_id`,`connection_id`,`permission`),
 
   CONSTRAINT `guacamole_connection_permission_ibfk_1`
     FOREIGN KEY (`connection_id`)
     REFERENCES `guacamole_connection` (`connection_id`) ON DELETE CASCADE,
 
-  CONSTRAINT `guacamole_connection_permission_ibfk_2`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
+  CONSTRAINT `guacamole_connection_permission_entity`
+    FOREIGN KEY (`entity_id`)
+    REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table of connection group permissions. Each group permission grants a user
--- specific access to a connection group.
+-- or user group specific access to a connection group.
 --
 
 CREATE TABLE `guacamole_connection_group_permission` (
 
-  `user_id`             int(11) NOT NULL,
+  `entity_id`           int(11) NOT NULL,
   `connection_group_id` int(11) NOT NULL,
   `permission`          enum('READ',
                              'UPDATE',
                              'DELETE',
                              'ADMINISTER') NOT NULL,
 
-  PRIMARY KEY (`user_id`,`connection_group_id`,`permission`),
+  PRIMARY KEY (`entity_id`,`connection_group_id`,`permission`),
 
   CONSTRAINT `guacamole_connection_group_permission_ibfk_1`
     FOREIGN KEY (`connection_group_id`)
     REFERENCES `guacamole_connection_group` (`connection_group_id`) ON DELETE CASCADE,
 
-  CONSTRAINT `guacamole_connection_group_permission_ibfk_2`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
+  CONSTRAINT `guacamole_connection_group_permission_entity`
+    FOREIGN KEY (`entity_id`)
+    REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table of sharing profile permissions. Each sharing profile permission grants
--- a user specific access to a sharing profile.
+-- a user or user group specific access to a sharing profile.
 --
 
 CREATE TABLE guacamole_sharing_profile_permission (
 
-  `user_id`            integer NOT NULL,
+  `entity_id`          integer NOT NULL,
   `sharing_profile_id` integer NOT NULL,
   `permission`         enum('READ',
                             'UPDATE',
                             'DELETE',
                             'ADMINISTER') NOT NULL,
 
-  PRIMARY KEY (`user_id`, `sharing_profile_id`, `permission`),
+  PRIMARY KEY (`entity_id`, `sharing_profile_id`, `permission`),
 
   CONSTRAINT `guacamole_sharing_profile_permission_ibfk_1`
     FOREIGN KEY (`sharing_profile_id`)
     REFERENCES `guacamole_sharing_profile` (`sharing_profile_id`) ON DELETE CASCADE,
 
-  CONSTRAINT `guacamole_sharing_profile_permission_ibfk_2`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
+  CONSTRAINT `guacamole_sharing_profile_permission_entity`
+    FOREIGN KEY (`entity_id`)
+    REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table of system permissions. Each system permission grants a user a
--- system-level privilege of some kind.
+-- Table of system permissions. Each system permission grants a user or user
+-- group a system-level privilege of some kind.
 --
 
 CREATE TABLE `guacamole_system_permission` (
 
-  `user_id`    int(11) NOT NULL,
+  `entity_id`  int(11) NOT NULL,
   `permission` enum('CREATE_CONNECTION',
                     'CREATE_CONNECTION_GROUP',
                     'CREATE_SHARING_PROFILE',
                     'CREATE_USER',
+                    'CREATE_USER_GROUP',
                     'ADMINISTER') NOT NULL,
 
-  PRIMARY KEY (`user_id`,`permission`),
+  PRIMARY KEY (`entity_id`,`permission`),
 
-  CONSTRAINT `guacamole_system_permission_ibfk_1`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
+  CONSTRAINT `guacamole_system_permission_entity`
+    FOREIGN KEY (`entity_id`)
+    REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table of user permissions. Each user permission grants a user access to
--- another user (the "affected" user) for a specific type of operation.
+-- Table of user permissions. Each user permission grants a user or user group
+-- access to another user (the "affected" user) for a specific type of
+-- operation.
 --
 
 CREATE TABLE `guacamole_user_permission` (
 
-  `user_id`          int(11) NOT NULL,
+  `entity_id`        int(11) NOT NULL,
   `affected_user_id` int(11) NOT NULL,
   `permission`       enum('READ',
                           'UPDATE',
                           'DELETE',
                           'ADMINISTER') NOT NULL,
 
-  PRIMARY KEY (`user_id`,`affected_user_id`,`permission`),
+  PRIMARY KEY (`entity_id`,`affected_user_id`,`permission`),
 
   CONSTRAINT `guacamole_user_permission_ibfk_1`
     FOREIGN KEY (`affected_user_id`)
     REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE,
 
-  CONSTRAINT `guacamole_user_permission_ibfk_2`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
+  CONSTRAINT `guacamole_user_permission_entity`
+    FOREIGN KEY (`entity_id`)
+    REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table of user group permissions. Each user group permission grants a user
+-- or user group access to a another user group (the "affected" user group) for
+-- a specific type of operation.
+--
+
+CREATE TABLE `guacamole_user_group_permission` (
+
+  `entity_id`              int(11) NOT NULL,
+  `affected_user_group_id` int(11) NOT NULL,
+  `permission`             enum('READ',
+                                'UPDATE',
+                                'DELETE',
+                                'ADMINISTER') NOT NULL,
+
+  PRIMARY KEY (`entity_id`, `affected_user_group_id`, `permission`),
+
+  CONSTRAINT `guacamole_user_group_permission_affected_user_group`
+    FOREIGN KEY (`affected_user_group_id`)
+    REFERENCES `guacamole_user_group` (`user_group_id`) ON DELETE CASCADE,
+
+  CONSTRAINT `guacamole_user_group_permission_entity`
+    FOREIGN KEY (`entity_id`)
+    REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
