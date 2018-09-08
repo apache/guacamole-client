@@ -225,5 +225,10 @@ public class MySQLEnvironment extends JDBCEnvironment {
     public String getMySQLPassword() throws GuacamoleException {
         return getRequiredProperty(MySQLGuacamoleProperties.MYSQL_PASSWORD);
     }
-    
+
+    @Override
+    public boolean isRecursiveQuerySupported() {
+        return false; // Only very recent versions of MySQL / MariaDB support recursive queries through CTEs
+    }
+
 }

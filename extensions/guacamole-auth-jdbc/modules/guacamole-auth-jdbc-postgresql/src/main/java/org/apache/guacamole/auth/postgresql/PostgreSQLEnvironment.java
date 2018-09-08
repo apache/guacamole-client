@@ -242,5 +242,10 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     public String getPostgreSQLPassword() throws GuacamoleException {
         return getRequiredProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_PASSWORD);
     }
+
+    @Override
+    public boolean isRecursiveQuerySupported() {
+        return true; // All versions of PostgreSQL support recursive queries through CTEs
+    }
     
 }

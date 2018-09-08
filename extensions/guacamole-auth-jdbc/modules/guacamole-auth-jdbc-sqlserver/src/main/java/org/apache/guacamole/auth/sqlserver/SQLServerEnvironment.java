@@ -250,5 +250,10 @@ public class SQLServerEnvironment extends JDBCEnvironment {
             SQLSERVER_DEFAULT_DRIVER
         );
     }
-    
+
+    @Override
+    public boolean isRecursiveQuerySupported() {
+        return true; // All versions of SQL Server support recursive queries through CTEs
+    }
+
 }

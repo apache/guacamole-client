@@ -137,4 +137,15 @@ public abstract class JDBCEnvironment extends LocalEnvironment {
      */
     public abstract PasswordPolicy getPasswordPolicy();
 
+    /**
+     * Returns whether the database supports recursive queries. Many database
+     * engines support recursive queries through CTEs. If recursive queries are
+     * not supported, queries that are intended to be recursive may need to be
+     * invoked multiple times to retrieve the same data.
+     *
+     * @return
+     *     true if the database supports recursive queries, false otherwise.
+     */
+    public abstract boolean isRecursiveQuerySupported();
+
 }

@@ -47,6 +47,12 @@ public interface EntityMapper {
      * member, taking into account the given collection of known group
      * memberships which are not necessarily defined within the database.
      *
+     * NOTE: This query is expected to handle recursion through the membership
+     * graph on its own. If the database engine does not support recursive
+     * queries (isRecursiveQuerySupported() of JDBCEnvironment returns false),
+     * then this query will only return one level of depth past the effective
+     * groups given and will need to be invoked multiple times.
+     *
      * @param entity
      *     The entity whose effective groups should be returned.
      *

@@ -22,12 +22,19 @@ package org.apache.guacamole.auth.jdbc.base;
 import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Set;
+import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating entities.
  */
 public class EntityService {
+
+    /**
+     * The Guacamole server environment.
+     */
+    @Inject
+    private JDBCEnvironment environment;
 
     /**
      * Mapper for Entity model objects.
@@ -59,7 +66,23 @@ public class EntityService {
      */
     public Set<String> retrieveEffectiveGroups(ModeledPermissions<? extends EntityModel> entity,
             Collection<String> effectiveGroups) {
-        return entityMapper.selectEffectiveGroupIdentifiers(entity.getModel(), effectiveGroups);
+
+        // Retrieve the effective user groups of the given entity, recursively if possible
+        Set<String> identifiers = entityMapper.selectEffectiveGroupIdentifiers(entity.getModel(), effectiveGroups);
+
+        // If the set of user groups retrieved was not produced recursively,
+        // manually repeat the query to expand the set until all effective
+        // groups have been found
+        if (!environment.isRecursiveQuerySupported() && !identifiers.isEmpty()) {
+            Set<String> previousIdentifiers;
+            do {
+                previousIdentifiers = identifiers;
+                identifiers = entityMapper.selectEffectiveGroupIdentifiers(entity.getModel(), previousIdentifiers);
+            } while (identifiers.size() > previousIdentifiers.size());
+        }
+
+        return identifiers;
+
     }
 
 }
