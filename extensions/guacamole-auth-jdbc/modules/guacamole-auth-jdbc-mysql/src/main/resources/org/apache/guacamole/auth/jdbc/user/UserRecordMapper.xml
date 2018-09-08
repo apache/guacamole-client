@@ -44,8 +44,9 @@
             guacamole_user_history.end_date
         FROM guacamole_user_history
         JOIN guacamole_user ON guacamole_user_history.user_id = guacamole_user.user_id
+        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
         WHERE
-            guacamole_user.username = #{username,jdbcType=VARCHAR}
+            guacamole_entity.name = #{username,jdbcType=VARCHAR}
         ORDER BY
             guacamole_user_history.start_date DESC,
             guacamole_user_history.end_date DESC
@@ -66,7 +67,10 @@
         VALUES (
             #{record.remoteHost,jdbcType=VARCHAR},
             (SELECT user_id FROM guacamole_user
-             WHERE username = #{record.username,jdbcType=VARCHAR}),
+             JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+             WHERE
+                   guacamole_entity.name = #{record.username,jdbcType=VARCHAR}
+               AND guacamole_entity.type = 'USER'),
             #{record.username,jdbcType=VARCHAR},
             #{record.startDate,jdbcType=TIMESTAMP},
             #{record.endDate,jdbcType=TIMESTAMP}
@@ -79,7 +83,10 @@
         UPDATE guacamole_user_history
         SET remote_host = #{record.remoteHost,jdbcType=VARCHAR},
             user_id     = (SELECT user_id FROM guacamole_user
-                           WHERE username = #{record.username,jdbcType=VARCHAR}),
+                           JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+                           WHERE
+                                   guacamole_entity.name = #{record.username,jdbcType=VARCHAR}
+                               AND guacamole_entity.type = 'USER'),
             username    = #{record.username,jdbcType=VARCHAR},
             start_date  = #{record.startDate,jdbcType=TIMESTAMP},
             end_date    = #{record.endDate,jdbcType=TIMESTAMP}
@@ -105,7 +112,10 @@
                 guacamole_user_history.user_id IN (
                     SELECT user_id
                     FROM guacamole_user
-                    WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN username) > 0
+                    JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+                    WHERE
+                            POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
+                        AND guacamole_entity.type = 'USER'),
                 )
 
                 <if test="term.startDate != null and term.endDate != null">
@@ -146,7 +156,11 @@
         <!-- Restrict to readable users -->
         JOIN guacamole_user_permission ON
                 guacamole_user_history.user_id       = guacamole_user_permission.affected_user_id
-            AND guacamole_user_permission.user_id    = #{user.objectID,jdbcType=INTEGER}
+            AND <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"   value="guacamole_user_permission.entity_id"/>
+                <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"   value="effectiveGroups"/>
+            </include>
             AND guacamole_user_permission.permission = 'READ'
 
         <!-- Search terms -->
@@ -157,7 +171,10 @@
                 guacamole_user_history.user_id IN (
                     SELECT user_id
                     FROM guacamole_user
-                    WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN username) > 0
+                    JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+                    WHERE
+                            POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
+                        AND guacamole_entity.type = 'USER'
                 )
 
                 <if test="term.startDate != null and term.endDate != null">
