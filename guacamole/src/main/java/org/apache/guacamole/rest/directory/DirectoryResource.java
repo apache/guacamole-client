@@ -120,6 +120,26 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
     }
 
     /**
+     * Returns the ObjectPermissionSet defined within the given Permissions
+     * that represents the permissions affecting objects available within this
+     * DirectoryResource.
+     *
+     * @param permissions
+     *     The Permissions object from which the ObjectPermissionSet should be
+     *     retrieved.
+     *
+     * @return
+     *     The ObjectPermissionSet defined within the given Permissions object
+     *     that represents the permissions affecting objects available within
+     *     this DirectoryResource.
+     *
+     * @throws GuacamoleException
+     *     If an error prevents retrieval of permissions.
+     */
+    protected abstract ObjectPermissionSet getObjectPermissions(
+            Permissions permissions) throws GuacamoleException;
+
+    /**
      * Returns a map of all objects available within this DirectoryResource,
      * filtering the returned map by the given permission, if specified.
      *
@@ -149,7 +169,7 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
         // Filter objects, if requested
         Collection<String> identifiers = directory.getIdentifiers();
         if (!isAdmin && permissions != null && !permissions.isEmpty()) {
-            ObjectPermissionSet objectPermissions = effective.getUserPermissions();
+            ObjectPermissionSet objectPermissions = getObjectPermissions(effective);
             identifiers = objectPermissions.getAccessibleObjects(permissions, identifiers);
         }
 
