@@ -52,7 +52,11 @@
         SELECT sharing_profile_id
         FROM [guacamole_sharing_profile_permission]
         WHERE
-            user_id = #{user.objectID,jdbcType=INTEGER}
+            <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"   value="entity_id"/>
+                <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"   value="effectiveGroups"/>
+            </include>
             AND permission = 'READ'
     </select>
 
@@ -99,7 +103,11 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}
             </foreach>
-            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"   value="entity_id"/>
+                <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"   value="effectiveGroups"/>
+            </include>
             AND permission = 'READ';
 
         SELECT
@@ -113,7 +121,11 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=INTEGER}
             </foreach>
-            AND user_id = #{user.objectID,jdbcType=INTEGER}
+            AND <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"   value="entity_id"/>
+                <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"   value="effectiveGroups"/>
+            </include>
             AND permission = 'READ';
 
     </select>
