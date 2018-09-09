@@ -60,12 +60,21 @@ public interface EntityMapper {
      *     The identifiers of any known effective groups that should be taken
      *     into account, such as those defined externally to the database.
      *
+     * @param recursive
+     *     Whether the query should leverage database engine features to return
+     *     absolutely all effective groups, including those inherited through
+     *     group membership. If false, this query will return only one level of
+     *     depth and may need to be executed multiple times. If it is known
+     *     that the database engine in question will always support (or always
+     *     not support) recursive queries, this parameter may be ignored.
+     *
      * @return
      *     The set of identifiers of all groups that the given entity is a
      *     member of, including those where membership is inherited through
      *     membership in other groups.
      */
     Set<String> selectEffectiveGroupIdentifiers(@Param("entity") EntityModel entity,
-            @Param("effectiveGroups") Collection<String> effectiveGroups);
+            @Param("effectiveGroups") Collection<String> effectiveGroups,
+            @Param("recursive") boolean recursive);
 
 }

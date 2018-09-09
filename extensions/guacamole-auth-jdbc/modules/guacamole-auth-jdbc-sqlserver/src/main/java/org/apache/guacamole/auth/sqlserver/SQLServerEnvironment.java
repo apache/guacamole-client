@@ -24,6 +24,7 @@ import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
+import org.apache.ibatis.session.SqlSession;
 
 /**
  * A SQLServer-specific implementation of JDBCEnvironment provides database
@@ -252,7 +253,7 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     }
 
     @Override
-    public boolean isRecursiveQuerySupported() {
+    public boolean isRecursiveQuerySupported(SqlSession session) {
         return true; // All versions of SQL Server support recursive queries through CTEs
     }
 

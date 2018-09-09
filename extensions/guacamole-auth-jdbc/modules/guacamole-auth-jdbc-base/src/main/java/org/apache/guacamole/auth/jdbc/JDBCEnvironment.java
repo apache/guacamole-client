@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.jdbc;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
+import org.apache.ibatis.session.SqlSession;
 
 /**
  * A JDBC-specific implementation of Environment that defines generic properties
@@ -143,9 +144,12 @@ public abstract class JDBCEnvironment extends LocalEnvironment {
      * not supported, queries that are intended to be recursive may need to be
      * invoked multiple times to retrieve the same data.
      *
+     * @param session
+     *     The SqlSession provided by MyBatis for the current transaction.
+     *
      * @return
      *     true if the database supports recursive queries, false otherwise.
      */
-    public abstract boolean isRecursiveQuerySupported();
+    public abstract boolean isRecursiveQuerySupported(SqlSession session);
 
 }

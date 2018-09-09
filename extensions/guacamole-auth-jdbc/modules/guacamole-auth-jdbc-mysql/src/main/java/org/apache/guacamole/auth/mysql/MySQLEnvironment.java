@@ -19,11 +19,16 @@
 
 package org.apache.guacamole.auth.mysql;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
+import org.apache.ibatis.exceptions.PersistenceException;
+import org.apache.ibatis.session.SqlSession;
 
 /**
  * A MySQL-specific implementation of JDBCEnvironment provides database
@@ -35,7 +40,17 @@ public class MySQLEnvironment extends JDBCEnvironment {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(MySQLEnvironment.class);
-    
+
+    /**
+     * The earliest version of MariaDB that supported recursive CTEs.
+     */
+    private static final MySQLVersion MARIADB_SUPPORTS_CTE = new MySQLVersion(10, 2, 2, true);
+
+    /**
+     * The earliest version of MySQL that supported recursive CTEs.
+     */
+    private static final MySQLVersion MYSQL_SUPPORTS_CTE = new MySQLVersion(8, 0, 1, false);
+
     /**
      * The default host to connect to, if MYSQL_HOSTNAME is not specified.
      */
@@ -227,8 +242,39 @@ public class MySQLEnvironment extends JDBCEnvironment {
     }
 
     @Override
-    public boolean isRecursiveQuerySupported() {
-        return false; // Only very recent versions of MySQL / MariaDB support recursive queries through CTEs
+    public boolean isRecursiveQuerySupported(SqlSession session) {
+
+        // Retrieve database version string from JDBC connection
+        String versionString;
+        try {
+            Connection connection = session.getConnection();
+            DatabaseMetaData metaData = connection.getMetaData();
+            versionString = metaData.getDatabaseProductVersion();
+        }
+        catch (SQLException e) {
+            throw new PersistenceException("Cannot determine whether "
+                    + "MySQL / MariaDB supports recursive queries.", e);
+        }
+
+        try {
+
+            // Parse MySQL / MariaDB version from version string
+            MySQLVersion version = new MySQLVersion(versionString);
+            logger.debug("Database recognized as {}.", version);
+
+            // Recursive queries are supported for MariaDB 10.2.2+ and
+            // MySQL 8.0.1+
+            return version.isAtLeast(MARIADB_SUPPORTS_CTE)
+                || version.isAtLeast(MYSQL_SUPPORTS_CTE);
+
+        }
+        catch (IllegalArgumentException e) {
+            logger.debug("Unrecognized MySQL / MariaDB version string: "
+                    + "\"{}\". Assuming database engine does not support "
+                    + "recursive queries.", session);
+            return false;
+        }
+
     }
 
 }

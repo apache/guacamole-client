@@ -23,6 +23,8 @@ import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
+import org.apache.ibatis.session.SqlSession;
+import org.mybatis.guice.transactional.Transactional;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -41,6 +43,12 @@ public class EntityService {
      */
     @Inject
     private EntityMapper entityMapper;
+
+    /**
+     * The current SQL session used by MyBatis.
+     */
+    @Inject
+    private SqlSession sqlSession;
 
     /**
      * Returns the set of all group identifiers of which the given entity is a
@@ -64,20 +72,22 @@ public class EntityService {
      *     member of, including those where membership is inherited through
      *     membership in other groups.
      */
+    @Transactional
     public Set<String> retrieveEffectiveGroups(ModeledPermissions<? extends EntityModel> entity,
             Collection<String> effectiveGroups) {
 
         // Retrieve the effective user groups of the given entity, recursively if possible
-        Set<String> identifiers = entityMapper.selectEffectiveGroupIdentifiers(entity.getModel(), effectiveGroups);
+        boolean recursive = environment.isRecursiveQuerySupported(sqlSession);
+        Set<String> identifiers = entityMapper.selectEffectiveGroupIdentifiers(entity.getModel(), effectiveGroups, recursive);
 
         // If the set of user groups retrieved was not produced recursively,
         // manually repeat the query to expand the set until all effective
         // groups have been found
-        if (!environment.isRecursiveQuerySupported() && !identifiers.isEmpty()) {
+        if (!recursive && !identifiers.isEmpty()) {
             Set<String> previousIdentifiers;
             do {
                 previousIdentifiers = identifiers;
-                identifiers = entityMapper.selectEffectiveGroupIdentifiers(entity.getModel(), previousIdentifiers);
+                identifiers = entityMapper.selectEffectiveGroupIdentifiers(entity.getModel(), previousIdentifiers, false);
             } while (identifiers.size() > previousIdentifiers.size());
         }
 
