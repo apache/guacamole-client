@@ -65,9 +65,10 @@
     <!-- Select names of all effective groups (including inherited) -->
     <select id="selectEffectiveGroupIdentifiers" resultType="string">
 
-        WITH [related_entity] ([entity_id]) AS (
+        WITH [related_entity] ([entity_id], [path]) AS (
             SELECT
-                [guacamole_user_group].entity_id
+                [guacamole_user_group].entity_id,
+                '{' + CAST([guacamole_user_group].entity_id AS VARCHAR(MAX)) + '}'
             FROM [guacamole_user_group]
             JOIN [guacamole_user_group_member] ON [guacamole_user_group].user_group_id = [guacamole_user_group_member].user_group_id
             WHERE
@@ -76,7 +77,8 @@
             <if test="!effectiveGroups.isEmpty()">
                 UNION ALL
                     SELECT
-                        [guacamole_entity].entity_id
+                        [guacamole_entity].entity_id,
+                        '{' + CAST([guacamole_entity].entity_id AS VARCHAR(MAX)) + '}'
                     FROM [guacamole_entity]
                     JOIN [guacamole_user_group] ON [guacamole_user_group].entity_id = [guacamole_entity].entity_id
                     WHERE
@@ -90,12 +92,14 @@
             </if>
             UNION ALL
                 SELECT
-                    [guacamole_user_group].entity_id
+                    [guacamole_user_group].entity_id,
+                    [related_entity].path + '{' + CAST([guacamole_user_group].entity_id AS VARCHAR(MAX)) + '}'
                 FROM [related_entity]
                 JOIN [guacamole_user_group_member] ON [related_entity].entity_id = [guacamole_user_group_member].member_entity_id
                 JOIN [guacamole_user_group] ON [guacamole_user_group].user_group_id = [guacamole_user_group_member].user_group_id
                 WHERE
                     [guacamole_user_group].disabled = 0
+                    AND [related_entity].path NOT LIKE '%{' + CAST([guacamole_user_group].entity_id AS VARCHAR(MAX)) + '}%'
         )
         SELECT DISTINCT name
         FROM [related_entity]
