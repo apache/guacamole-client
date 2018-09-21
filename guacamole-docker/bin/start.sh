@@ -84,6 +84,29 @@ set_optional_property() {
 
 }
 
+# Print error message regarding missing required variables for MySQL authentication
+mysql_missing_vars() {
+   cat <<END
+FATAL: Missing required environment variables
+-------------------------------------------------------------------------------
+If using a MySQL database, you must provide each of the following
+environment variables or their corresponding Docker secrets by appending _FILE
+to the environment variable, and setting the value to the path of the 
+corresponding secret:
+
+    MYSQL_USER         The user to authenticate as when connecting to
+                       MySQL.
+
+    MYSQL_PASSWORD     The password to use when authenticating with MySQL as
+                       MYSQL_USER.
+
+    MYSQL_DATABASE     The name of the MySQL database to use for Guacamole
+                       authentication.
+END
+    exit 1;
+}
+
+
 ##
 ## Adds properties to guacamole.properties which select the MySQL
 ## authentication provider, and configure it to connect to the linked MySQL
@@ -125,23 +148,6 @@ END
         exit 1;
     fi
 
-    MYSQL_MISSING_VARS=`cat <<END
-FATAL: Missing required environment variables
--------------------------------------------------------------------------------
-If using a MySQL database, you must provide each of the following
-environment variables or their corresponding Docker secrets by appending _FILE
-to the environment variable, and setting the value to the path of the 
-corresponding secret:
-
-    MYSQL_USER         The user to authenticate as when connecting to
-                       MySQL.
-
-    MYSQL_PASSWORD     The password to use when authenticating with MySQL as
-                       MYSQL_USER.
-
-    MYSQL_DATABASE     The name of the MySQL database to use for Guacamole
-                       authentication.
-END`
 
     # Verify that the required Docker secrets are present, else, default to their normal environment variables
     if [ -n "$MYSQL_USER_FILE" ]; then
@@ -149,7 +155,7 @@ END`
     elif [ -n "$MYSQL_USER" ]; then
         set_property "mysql-username" "$MYSQL_USER"
     else
-        cat "$MYSQL_MISSING_VARS"
+        mysql_missing_vars
         exit 1;
     fi
     
@@ -158,7 +164,7 @@ END`
     elif [ -n "$MYSQL_PASSWORD" ]; then
         set_property "mysql-password" "$MYSQL_PASSWORD"
     else
-        cat "$MYSQL_MISSING_VARS"
+        mysql_missing_vars
         exit 1;
     fi
 
@@ -167,7 +173,7 @@ END`
     elif [ -n "$MYSQL_DATABASE" ]; then
         set_property "mysql-database" "$MYSQL_DATABASE"
     else
-        cat "$MYSQL_MISSING_VARS"
+        mysql_missing_vars
         exit 1;
     fi
 
@@ -199,6 +205,28 @@ END`
     ln -s /opt/guacamole/mysql/mysql-connector-*.jar "$GUACAMOLE_LIB"
     ln -s /opt/guacamole/mysql/guacamole-auth-*.jar "$GUACAMOLE_EXT"
 
+}
+
+# Print error message regarding missing required variables for PostgreSQL authentication
+postgres_missing_vars() {
+    cat <<END
+FATAL: Missing required environment variables
+-------------------------------------------------------------------------------
+If using a PostgreSQL database, you must provide each of the following
+environment variables or their corresponding Docker secrets by appending _FILE
+to the environment variable, and setting the value to the path of the 
+corresponding secret:
+
+    POSTGRES_USER      The user to authenticate as when connecting to
+                       PostgreSQL.
+
+    POSTGRES_PASSWORD  The password to use when authenticating with PostgreSQL
+                       as POSTGRES_USER.
+
+    POSTGRES_DATABASE  The name of the PostgreSQL database to use for Guacamole
+                       authentication.
+END
+    exit 1;
 }
 
 ##
@@ -244,31 +272,13 @@ END
         exit 1;
     fi
 
-    POSTGRES_MISSING_VARS=`cat <<END
-FATAL: Missing required environment variables
--------------------------------------------------------------------------------
-If using a PostgreSQL database, you must provide each of the following
-environment variables or their corresponding Docker secrets by appending _FILE
-to the environment variable, and setting the value to the path of the 
-corresponding secret:
-
-    POSTGRES_USER      The user to authenticate as when connecting to
-                       PostgreSQL.
-
-    POSTGRES_PASSWORD  The password to use when authenticating with PostgreSQL
-                       as POSTGRES_USER.
-
-    POSTGRES_DATABASE  The name of the PostgreSQL database to use for Guacamole
-                       authentication.
-END`
-
     # Verify that the required Docker secrets are present, else, default to their normal environment variables
     if [ -n "$POSTGRES_USER_FILE" ]; then
         set_property "postgresql-username" `cat $POSTGRES_USER_FILE`
     elif [ -n "$POSTGRES_USER" ]; then
         set_property "postgresql-username" "$POSTGRES_USER"
     else
-        cat "$POSTGRES_MISSING_VARS"
+        postgres_missing_vars
         exit 1;
     fi
     
@@ -277,7 +287,7 @@ END`
     elif [ -n "$POSTGRES_PASSWORD" ]; then
         set_property "postgresql-password" "$POSTGRES_PASSWORD"
     else
-        cat "$POSTGRES_MISSING_VARS"
+        postgres_missing_vars
         exit 1;
     fi
 
@@ -286,7 +296,7 @@ END`
     elif [ -n "$POSTGRES_DATABASE" ]; then
         set_property "postgresql-database" "$POSTGRES_DATABASE"
     else
-        cat "$POSTGRES_MISSING_VARS"
+        postgres_missing_vars
         exit 1;
     fi
 
