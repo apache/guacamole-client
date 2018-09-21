@@ -789,7 +789,9 @@
 
         "SECTION_HEADER_USERS"       : "Users",
 
+        "TABLE_HEADER_FULL_NAME"   : "Full name",
         "TABLE_HEADER_LAST_ACTIVE" : "Last active",
+        "TABLE_HEADER_ORGANIZATION" : "Organization",
         "TABLE_HEADER_USERNAME"    : "Username"
 
     },

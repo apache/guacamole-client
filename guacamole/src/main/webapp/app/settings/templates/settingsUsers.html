@@ -27,6 +27,12 @@
                 <th guac-sort-order="order" guac-sort-property="'user.username'" class="username">
                     {{'SETTINGS_USERS.TABLE_HEADER_USERNAME' | translate}}
                 </th>
+                <th guac-sort-order="order" guac-sort-property="'user.attributes[\'guac-organization\']'" class="organization">
+                    {{'SETTINGS_USERS.TABLE_HEADER_ORGANIZATION' | translate}}
+                </th>
+                <th guac-sort-order="order" guac-sort-property="'user.attributes[\'guac-full-name\']'" class="full-name">
+                    {{'SETTINGS_USERS.TABLE_HEADER_FULL_NAME' | translate}}
+                </th>
                 <th guac-sort-order="order" guac-sort-property="'user.lastActive'" class="last-active">
                     {{'SETTINGS_USERS.TABLE_HEADER_LAST_ACTIVE' | translate}}
                 </th>
@@ -40,6 +46,8 @@
                         <span class="name">{{manageableUser.user.username}}</span>
                     </a>
                 </td>
+                <td class="organization">{{manageableUser.user.attributes['guac-organization']}}</td>
+                <td class="full-name">{{manageableUser.user.attributes['guac-full-name']}}</td>
                 <td class="last-active">{{manageableUser.user.lastActive | date : dateFormat}}</td>
             </tr>
         </tbody>
