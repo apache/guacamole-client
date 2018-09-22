@@ -714,7 +714,9 @@
 
         "SECTION_HEADER_USERS"       : "用户",
 
+        "TABLE_HEADER_FULL_NAME"   : "全名",
         "TABLE_HEADER_LAST_ACTIVE" : "最近活动",
+        "TABLE_HEADER_ORGANIZATION" : "组织",
         "TABLE_HEADER_USERNAME"    : "用户名"
 
     },

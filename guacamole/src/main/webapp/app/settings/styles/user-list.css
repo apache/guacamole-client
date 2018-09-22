@@ -24,12 +24,11 @@
 .settings.users table.user-list th.last-active,
 .settings.users table.user-list td.last-active {
     white-space: nowrap;
-    width: 0;
 }
 
-.settings.users table.user-list th.username,
-.settings.users table.user-list td.username {
-    width: 100%;
+.settings.users table.user-list th,
+.settings.users table.user-list td {
+    width: 25%;
 }
 
 .settings.users table.user-list tr.user td.username a[href] {
