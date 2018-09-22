@@ -28,7 +28,19 @@
                     "type"  : "PASSWORD"
                 },
                 {
+                    "name"  : "username-regex",
+                    "type"  : "TEXT"
+                },
+                {
                     "name"  : "password-regex",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "login-success-regex",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "login-failure-regex",
                     "type"  : "TEXT"
                 }
             ]
