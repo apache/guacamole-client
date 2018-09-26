@@ -63,6 +63,14 @@
         "NAME" : "Shared Connections (PostgreSQL)"
     },
 
+    "DATA_SOURCE_SQLITE" : {
+        "NAME" : "SQLite"
+    },
+
+    "DATA_SOURCE_SQLITE_SHARED" : {
+        "NAME" : "Shared Connections (SQLite)"
+    },
+
     "DATA_SOURCE_SQLSERVER" : {
         "NAME" : "SQL Server"
     },

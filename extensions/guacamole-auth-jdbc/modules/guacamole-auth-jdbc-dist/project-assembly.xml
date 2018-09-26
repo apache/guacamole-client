@@ -49,6 +49,14 @@
             </includes>
         </dependencySet>
 
+        <!-- SQLite extension .jar -->
+        <dependencySet>
+            <outputDirectory>sqlite</outputDirectory>
+            <includes>
+                <include>org.apache.guacamole:guacamole-auth-jdbc-sqlite</include>
+            </includes>
+        </dependencySet>
+
         <!-- SQL Server extension .jar -->
         <dependencySet>
             <outputDirectory>sqlserver</outputDirectory>
@@ -78,6 +86,12 @@
         <fileSet>
             <outputDirectory>postgresql/schema</outputDirectory>
             <directory>../guacamole-auth-jdbc-postgresql/schema</directory>
+        </fileSet>
+
+        <!-- SQLite schema scripts -->
+        <fileSet>
+            <outputDirectory>sqlite/schema</outputDirectory>
+            <directory>../guacamole-auth-jdbc-sqlite/schema</directory>
         </fileSet>
 
         <!-- SQL Server schema scripts -->
