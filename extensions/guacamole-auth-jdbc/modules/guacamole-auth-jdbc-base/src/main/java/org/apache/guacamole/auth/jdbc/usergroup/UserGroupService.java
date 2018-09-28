@@ -162,19 +162,15 @@ public class UserGroupService extends ModeledDirectoryObjectService<ModeledUserG
 
         super.beforeUpdate(user, object, model);
         
-        // Username must not be blank
+        // Group names must not be blank
         if (model.getIdentifier() == null || model.getIdentifier().trim().isEmpty())
             throw new GuacamoleClientException("The group name must not be blank.");
         
-        // Check whether such a group is already present
+        // Do not allow groups to be renamed if the name collides with that of
+        // another, existing group
         UserGroupModel existing = userGroupMapper.selectOne(model.getIdentifier());
-        if (existing != null) {
-
-            // Do not rename to existing user group
-            if (!existing.getObjectID().equals(model.getObjectID()))
-                throw new GuacamoleClientException("Group \"" + model.getIdentifier() + "\" already exists.");
-            
-        }
+        if (existing != null && !existing.getObjectID().equals(model.getObjectID()))
+            throw new GuacamoleClientException("Group \"" + model.getIdentifier() + "\" already exists.");
 
     }
 
