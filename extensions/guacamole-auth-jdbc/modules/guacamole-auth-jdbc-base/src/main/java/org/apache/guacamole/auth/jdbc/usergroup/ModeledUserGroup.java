@@ -123,12 +123,6 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
     }
 
     /**
-     * Creates a new, empty ModeledUserGroup.
-     */
-    public ModeledUserGroup() {
-    }
-
-    /**
      * Stores all restricted (privileged) attributes within the given Map,
      * pulling the values of those attributes from the underlying user group
      * model. If no value is yet defined for an attribute, that attribute will
