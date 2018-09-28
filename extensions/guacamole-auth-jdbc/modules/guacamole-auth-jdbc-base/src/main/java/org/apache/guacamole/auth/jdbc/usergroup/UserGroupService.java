@@ -21,8 +21,6 @@ package org.apache.guacamole.auth.jdbc.usergroup;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import java.util.Collection;
-import java.util.Collections;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
 import org.apache.guacamole.GuacamoleClientException;
@@ -147,8 +145,8 @@ public class UserGroupService extends ModeledDirectoryObjectService<ModeledUserG
             throw new GuacamoleClientException("The group name must not be blank.");
         
         // Do not create duplicate user groups
-        Collection<UserGroupModel> existing = userGroupMapper.select(Collections.singleton(model.getIdentifier()));
-        if (!existing.isEmpty())
+        UserGroupModel existing = userGroupMapper.selectOne(model.getIdentifier());
+        if (existing != null)
             throw new GuacamoleClientException("Group \"" + model.getIdentifier() + "\" already exists.");
 
         // Create base entity object, implicitly populating underlying entity ID
