@@ -155,7 +155,7 @@ UPDATE guacamole_user SET entity_id = (
 ALTER TABLE guacamole_user
     ALTER COLUMN entity_id SET NOT NULL;
 
--- The entity_id column should now safely point to guacamole_entity entries
+-- The entity_id column should now be unique for each user
 ALTER TABLE guacamole_user
     ADD CONSTRAINT guacamole_user_single_entity
     UNIQUE (entity_id);

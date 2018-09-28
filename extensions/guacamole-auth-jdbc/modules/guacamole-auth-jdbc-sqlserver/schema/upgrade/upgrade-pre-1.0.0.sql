@@ -202,7 +202,7 @@ GO
 ALTER TABLE [guacamole_user]
     ALTER COLUMN [entity_id] [int] NOT NULL;
 
--- The entity_id column should now safely point to guacamole_entity entries
+-- The entity_id column should now be unique for each user
 ALTER TABLE [guacamole_user]
     ADD CONSTRAINT [AK_guacamole_user_single_entity]
     UNIQUE ([entity_id]);
