@@ -56,7 +56,7 @@ public interface ObjectRelationMapper<ParentModelType extends ObjectModel> {
             @Param("children") Collection<String> children);
 
     /**
-     * Deletes rows as necessary to establish the one-to-many relationship
+     * Deletes rows as necessary to modify the one-to-many relationship
      * represented by the RelatedObjectSet between the given parent and
      * children. If the relation for any parent/child pair does not exist,
      * that specific relation is ignored, and deletion proceeds with the
