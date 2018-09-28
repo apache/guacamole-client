@@ -68,7 +68,7 @@ public class SystemPermissionService
 
         SystemPermissionModel model = new SystemPermissionModel();
 
-        // Populate model object with data from user and permission
+        // Populate model object with data from entity and permission
         model.setEntityID(targetEntity.getModel().getEntityID());
         model.setType(permission.getType());
 
@@ -81,7 +81,7 @@ public class SystemPermissionService
             ModeledPermissions<? extends EntityModel> targetEntity,
             Set<String> effectiveGroups) throws GuacamoleException {
 
-        // Create permission set for requested user
+        // Create permission set for requested entity
         SystemPermissionSet permissionSet = systemPermissionSetProvider.get();
         permissionSet.init(user, targetEntity, effectiveGroups);
 
@@ -144,13 +144,13 @@ public class SystemPermissionService
      *
      * @param effectiveGroups
      *     The identifiers of all groups that should be taken into account
-     *     when determining the permissions effectively granted to the user. If
-     *     no groups are given, only permissions directly granted to the user
-     *     will be used.
+     *     when determining the permissions effectively granted to the entity.
+     *     If no groups are given, only permissions directly granted to the
+     *     entity will be used.
      *
      * @return
      *     true if permission of the given type has been granted to the given
-     *     user, false otherwise.
+     *     entity, false otherwise.
      *
      * @throws GuacamoleException
      *     If an error occurs while retrieving the requested permission.
@@ -164,7 +164,7 @@ public class SystemPermissionService
         if (canReadPermissions(user, targetEntity))
             return getPermissionMapper().selectOne(targetEntity.getModel(), type, effectiveGroups) != null;
 
-        // User cannot read this user's permissions
+        // User cannot read this entity's permissions
         throw new GuacamoleSecurityException("Permission denied.");
         
     }

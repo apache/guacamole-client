@@ -136,7 +136,7 @@ public interface PermissionService<PermissionSetType extends PermissionSet<Permi
      *     The permissions to delete.
      *
      * @throws GuacamoleException
-     *     If the entity lacks permission to delete the permissions, or an error
+     *     If the user lacks permission to delete the permissions, or an error
      *     occurs while deleting the permissions.
      */
     void deletePermissions(ModeledAuthenticatedUser user,
