@@ -85,6 +85,7 @@ public class SimpleDirectory<ObjectType extends Identifiable>
      * @param objects
      *     The objects that should be present in this directory.
      */
+    @SafeVarargs
     public SimpleDirectory(ObjectType... objects) {
         this(Arrays.asList(objects));
     }
