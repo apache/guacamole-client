@@ -106,6 +106,21 @@ public abstract class ModeledPermissions<ModelType extends EntityModel>
     }
 
     /**
+     * Returns whether the underlying entity represents a specific user having
+     * the given username.
+     *
+     * @param username
+     *     The username of a user.
+     *
+     * @return
+     *     true if the underlying entity is a user that has the given username,
+     *     false otherwise.
+     */
+    public boolean isUser(String username) {
+        return isUser() && getIdentifier().equals(username);
+    }
+
+    /**
      * Returns whether the underlying entity is a user group. Entities may be
      * either users or user groups.
      *
