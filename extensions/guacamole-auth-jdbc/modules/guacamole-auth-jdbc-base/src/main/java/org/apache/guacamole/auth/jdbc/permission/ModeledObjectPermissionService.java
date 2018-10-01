@@ -187,19 +187,15 @@ public abstract class ModeledObjectPermissionService
         if (identifiers.isEmpty())
             return identifiers;
         
-        // Retrieve permissions only if allowed
-        if (canReadPermissions(user, targetEntity)) {
+        // If user is an admin, everything is accessible
+        if (user.getUser().isAdministrator())
+            return identifiers;
 
-            // If user is an admin, everything is accessible
-            if (user.getUser().isAdministrator())
-                return identifiers;
-
-            // Otherwise, return explicitly-retrievable identifiers
+        // Otherwise, return explicitly-retrievable identifiers only if allowed
+        if (canReadPermissions(user, targetEntity))
             return getPermissionMapper().selectAccessibleIdentifiers(
                     targetEntity.getModel(), permissions, identifiers,
                     effectiveGroups);
-            
-        }
 
         // User cannot read this entity's permissions
         throw new GuacamoleSecurityException("Permission denied.");
