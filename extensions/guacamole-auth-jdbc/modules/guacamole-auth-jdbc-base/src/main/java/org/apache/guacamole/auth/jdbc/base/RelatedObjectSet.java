@@ -123,7 +123,7 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
             throws GuacamoleException;
 
     /**
-     * Returns whether the current user has permission to alter that status of
+     * Returns whether the current user has permission to alter the status of
      * the relation between the parent object and the given child objects.
      *
      * @param identifiers
