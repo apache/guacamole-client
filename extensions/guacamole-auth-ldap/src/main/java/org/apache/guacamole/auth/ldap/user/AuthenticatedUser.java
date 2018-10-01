@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.ldap.user;
 
 import com.google.inject.Inject;
-import java.util.HashMap;
 import java.util.Map;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -47,16 +46,22 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
     /**
      * Arbitrary attributes associated with this AuthenticatedUser object.
      */
-    private Map<String, String> attributes = new HashMap<String, String>();
+    private Map<String, String> attributes;
 
     /**
-     * Initializes this AuthenticatedUser using the given credentials.
+     * Initializes this AuthenticatedUser using the given credentials and
+     * arbitrary attributes.
      *
      * @param credentials
      *     The credentials provided when this user was authenticated.
+     *
+     * @param attributes
+     *     The map of arbitrary attribute name/value pairs to associate with
+     *     this AuthenticatedUser.
      */
-    public void init(Credentials credentials) {
+    public void init(Credentials credentials, Map<String, String> attributes) {
         this.credentials = credentials;
+        this.attributes = attributes;
         setIdentifier(credentials.getUsername());
     }
 
@@ -67,7 +72,7 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
 
     @Override
     public void setAttributes(Map<String, String> attributes) {
-        this.attributes = attributes;
+        // All attributes are read-only
     }
 
     @Override

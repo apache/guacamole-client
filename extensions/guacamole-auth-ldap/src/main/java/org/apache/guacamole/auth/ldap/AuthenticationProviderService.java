@@ -232,10 +232,7 @@ public class AuthenticationProviderService {
         try {
             // Return AuthenticatedUser if bind succeeds
             AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-            authenticatedUser.init(credentials);
-
-            // Set attributes
-            authenticatedUser.setAttributes(getLDAPAttributes(ldapConnection, credentials.getUsername()));
+            authenticatedUser.init(credentials, getLDAPAttributes(ldapConnection, credentials.getUsername()));
 
             return authenticatedUser;
 
