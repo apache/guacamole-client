@@ -131,26 +131,26 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
             throws GuacamoleException {
 
         // Return whether user has explicit connection creation permission
-        SystemPermissionSet permissionSet = user.getUser().getSystemPermissions();
+        SystemPermissionSet permissionSet = user.getUser().getEffectivePermissions().getSystemPermissions();
         return permissionSet.hasPermission(SystemPermission.Type.CREATE_CONNECTION);
 
     }
 
     @Override
-    protected ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user)
+    protected ObjectPermissionSet getEffectivePermissionSet(ModeledAuthenticatedUser user)
             throws GuacamoleException {
 
         // Return permissions related to connections 
-        return user.getUser().getConnectionPermissions();
+        return user.getUser().getEffectivePermissions().getConnectionPermissions();
 
     }
 
     @Override
-    protected ObjectPermissionSet getParentPermissionSet(ModeledAuthenticatedUser user)
+    protected ObjectPermissionSet getParentEffectivePermissionSet(ModeledAuthenticatedUser user)
             throws GuacamoleException {
 
         // Connections are contained by connection groups
-        return user.getUser().getConnectionGroupPermissions();
+        return user.getUser().getEffectivePermissions().getConnectionGroupPermissions();
 
     }
 
@@ -303,7 +303,9 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
 
         // Otherwise only return explicitly readable identifiers
         else
-            return connectionMapper.selectReadableIdentifiersWithin(user.getUser().getModel(), identifier);
+            return connectionMapper.selectReadableIdentifiersWithin(
+                    user.getUser().getModel(), identifier,
+                    user.getEffectiveUserGroups());
 
     }
 
@@ -475,8 +477,9 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
 
         // Otherwise only return explicitly readable history records
         else
-            searchResults = connectionRecordMapper.searchReadable(user.getUser().getModel(),
-                    requiredContents, sortPredicates, limit);
+            searchResults = connectionRecordMapper.searchReadable(
+                    user.getUser().getModel(), requiredContents, sortPredicates,
+                    limit, user.getEffectiveUserGroups());
 
         return getObjectInstances(searchResults);
 

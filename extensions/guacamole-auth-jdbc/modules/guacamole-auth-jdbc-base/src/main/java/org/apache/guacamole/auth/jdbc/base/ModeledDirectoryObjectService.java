@@ -126,7 +126,8 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
     /**
      * Returns whether the given user has permission to create the type of
-     * objects that this directory object service manages.
+     * objects that this directory object service manages, taking into account
+     * permission inheritance through user groups.
      *
      * @param user
      *     The user being checked.
@@ -143,7 +144,8 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
     /**
      * Returns whether the given user has permission to perform a certain
-     * action on a specific object managed by this directory object service.
+     * action on a specific object managed by this directory object service,
+     * taking into account permission inheritance through user groups.
      *
      * @param user
      *     The user being checked.
@@ -166,7 +168,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
             throws GuacamoleException {
 
         // Get object permissions
-        ObjectPermissionSet permissionSet = getPermissionSet(user);
+        ObjectPermissionSet permissionSet = getEffectivePermissionSet(user);
         
         // Return whether permission is granted
         return user.getUser().isAdministrator()
@@ -176,7 +178,8 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
  
     /**
      * Returns the permission set associated with the given user and related
-     * to the type of objects handled by this directory object service.
+     * to the type of objects handled by this directory object service, taking
+     * into account permission inheritance via user groups.
      *
      * @param user
      *     The user whose permissions are being retrieved.
@@ -189,7 +192,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      * @throws GuacamoleException
      *     If permission to read the user's permissions is denied.
      */
-    protected abstract ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user)
+    protected abstract ObjectPermissionSet getEffectivePermissionSet(ModeledAuthenticatedUser user)
             throws GuacamoleException;
 
     /**
@@ -398,7 +401,8 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
         // Otherwise only return explicitly readable identifiers
         else
-            objects = getObjectMapper().selectReadable(user.getUser().getModel(), identifiers);
+            objects = getObjectMapper().selectReadable(user.getUser().getModel(),
+                    identifiers, user.getEffectiveUserGroups());
         
         // Return collection of requested objects
         return getObjectInstances(user, objects);
@@ -432,8 +436,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
             // Create model which grants this permission to the current user
             ObjectPermissionModel permissionModel = new ObjectPermissionModel();
-            permissionModel.setUserID(userModel.getObjectID());
-            permissionModel.setUsername(userModel.getIdentifier());
+            permissionModel.setEntityID(userModel.getEntityID());
             permissionModel.setType(permission);
             permissionModel.setObjectIdentifier(model.getIdentifier());
 
@@ -510,7 +513,8 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
         // Otherwise only return explicitly readable identifiers
         else
-            return getObjectMapper().selectReadableIdentifiers(user.getUser().getModel());
+            return getObjectMapper().selectReadableIdentifiers(user.getUser().getModel(),
+                    user.getEffectiveUserGroups());
 
     }
 

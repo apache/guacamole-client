@@ -38,5 +38,5 @@ public interface UserMapper extends ModeledDirectoryObjectMapper<UserModel> {
      *     The user having the given username, or null if no such user exists.
      */
     UserModel selectOne(@Param("username") String username);
-    
+
 }

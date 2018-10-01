@@ -102,12 +102,19 @@ public interface ConnectionRecordMapper {
      * @param limit
      *     The maximum number of records that should be returned.
      *
+     * @param effectiveGroups
+     *     The identifiers of all groups that should be taken into account
+     *     when determining the permissions effectively granted to the user. If
+     *     no groups are given, only permissions directly granted to the user
+     *     will be used.
+     *
      * @return
      *     The results of the search performed with the given parameters.
      */
     List<ConnectionRecordModel> searchReadable(@Param("user") UserModel user,
             @Param("terms") Collection<ActivityRecordSearchTerm> terms,
             @Param("sortPredicates") List<ActivityRecordSortPredicate> sortPredicates,
-            @Param("limit") int limit);
+            @Param("limit") int limit,
+            @Param("effectiveGroups") Collection<String> effectiveGroups);
 
 }

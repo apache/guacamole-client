@@ -79,7 +79,10 @@
             #{record.sharingProfileIdentifier,jdbcType=INTEGER},
             #{record.sharingProfileName,jdbcType=VARCHAR},
             (SELECT user_id FROM [guacamole_user]
-             WHERE username = #{record.username,jdbcType=VARCHAR}),
+             JOIN [guacamole_entity] ON [guacamole_user].entity_id = [guacamole_entity].entity_id
+             WHERE
+                   [guacamole_entity].name = #{record.username,jdbcType=VARCHAR}
+               AND [guacamole_entity].type = 'USER'),
             #{record.username,jdbcType=VARCHAR},
             #{record.startDate,jdbcType=TIMESTAMP},
             #{record.endDate,jdbcType=TIMESTAMP}
@@ -161,13 +164,21 @@
         <!-- Restrict to readable connections -->
         JOIN [guacamole_connection_permission] ON
                 [guacamole_connection_history].connection_id = [guacamole_connection_permission].connection_id
-            AND [guacamole_connection_permission].user_id    = #{user.objectID,jdbcType=INTEGER}
+            AND <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"   value="[guacamole_connection_permission].entity_id"/>
+                <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"   value="effectiveGroups"/>
+            </include>
             AND [guacamole_connection_permission].permission = 'READ'
 
         <!-- Restrict to readable users -->
         JOIN [guacamole_user_permission] ON
                 [guacamole_connection_history].user_id = [guacamole_user_permission].affected_user_id
-            AND [guacamole_user_permission].user_id    = #{user.objectID,jdbcType=INTEGER}
+            AND <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"   value="[guacamole_user_permission].entity_id"/>
+                <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"   value="effectiveGroups"/>
+            </include>
             AND [guacamole_user_permission].permission = 'READ'
 
         <!-- Search terms -->
@@ -178,7 +189,10 @@
                 [guacamole_connection_history].user_id IN (
                     SELECT user_id
                     FROM [guacamole_user]
-                    WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN username) > 0
+                    JOIN [guacamole_entity] ON [guacamole_user].entity_id = [guacamole_entity].entity_id
+                    WHERE
+                            POSITION(#{term.term,jdbcType=VARCHAR} IN [guacamole_entity].name) > 0
+                        AND [guacamole_entity].type = 'USER'
                 )
 
                 OR [guacamole_connection_history].connection_id IN (
