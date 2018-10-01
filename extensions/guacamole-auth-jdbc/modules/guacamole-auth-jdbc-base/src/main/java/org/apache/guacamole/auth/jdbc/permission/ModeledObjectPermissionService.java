@@ -22,10 +22,12 @@ package org.apache.guacamole.auth.jdbc.permission;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.auth.jdbc.base.EntityModel;
+import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 
@@ -47,14 +49,14 @@ public abstract class ModeledObjectPermissionService
     }
 
     @Override
-    protected ObjectPermissionModel getModelInstance(ModeledUser targetUser,
+    protected ObjectPermissionModel getModelInstance(
+            ModeledPermissions<? extends EntityModel> targetEntity,
             ObjectPermission permission) {
 
         ObjectPermissionModel model = new ObjectPermissionModel();
 
-        // Populate model object with data from user and permission
-        model.setUserID(targetUser.getModel().getObjectID());
-        model.setUsername(targetUser.getModel().getIdentifier());
+        // Populate model object with data from entity and permission
+        model.setEntityID(targetEntity.getModel().getEntityID());
         model.setType(permission.getType());
         model.setObjectIdentifier(permission.getObjectIdentifier());
 
@@ -64,30 +66,32 @@ public abstract class ModeledObjectPermissionService
 
     /**
      * Determines whether the current user has permission to update the given
-     * target user, adding or removing the given permissions. Such permission
+     * target entity, adding or removing the given permissions. Such permission
      * depends on whether the current user is a system administrator, whether
-     * they have explicit UPDATE permission on the target user, and whether
+     * they have explicit UPDATE permission on the target entity, and whether
      * they have explicit ADMINISTER permission on all affected objects.
+     * Permission inheritance via user groups is taken into account.
      *
      * @param user
      *     The user who is changing permissions.
      *
-     * @param targetUser
-     *     The user whose permissions are being changed.
+     * @param targetEntity
+     *     The entity whose permissions are being changed.
      *
      * @param permissions
      *     The permissions that are being added or removed from the target
-     *     user.
+     *     entity.
      *
      * @return
-     *     true if the user has permission to change the target users
+     *     true if the user has permission to change the target entity's
      *     permissions as specified, false otherwise.
      *
      * @throws GuacamoleException
      *     If an error occurs while checking permission status, or if
      *     permission is denied to read the current user's permissions.
      */
-    protected boolean canAlterPermissions(ModeledAuthenticatedUser user, ModeledUser targetUser,
+    protected boolean canAlterPermissions(ModeledAuthenticatedUser user,
+            ModeledPermissions<? extends EntityModel> targetEntity,
             Collection<ObjectPermission> permissions)
             throws GuacamoleException {
 
@@ -95,9 +99,9 @@ public abstract class ModeledObjectPermissionService
         if (user.getUser().isAdministrator())
             return true;
         
-        // Verify user has update permission on the target user
-        ObjectPermissionSet userPermissionSet = user.getUser().getUserPermissions();
-        if (!userPermissionSet.hasPermission(ObjectPermission.Type.UPDATE, targetUser.getIdentifier()))
+        // Verify user has update permission on the target entity
+        ObjectPermissionSet permissionSet = getRelevantPermissionSet(user.getUser(), targetEntity);
+        if (!permissionSet.hasPermission(ObjectPermission.Type.UPDATE, targetEntity.getIdentifier()))
             return false;
 
         // Produce collection of affected identifiers
@@ -106,7 +110,7 @@ public abstract class ModeledObjectPermissionService
             affectedIdentifiers.add(permission.getObjectIdentifier());
 
         // Determine subset of affected identifiers that we have admin access to
-        ObjectPermissionSet affectedPermissionSet = getPermissionSet(user, user.getUser());
+        ObjectPermissionSet affectedPermissionSet = getPermissionSet(user, user.getUser(), user.getEffectiveUserGroups());
         Collection<String> allowedSubset = affectedPermissionSet.getAccessibleObjects(
             Collections.singleton(ObjectPermission.Type.ADMINISTER),
             affectedIdentifiers
@@ -121,13 +125,14 @@ public abstract class ModeledObjectPermissionService
     }
     
     @Override
-    public void createPermissions(ModeledAuthenticatedUser user, ModeledUser targetUser,
+    public void createPermissions(ModeledAuthenticatedUser user,
+            ModeledPermissions<? extends EntityModel> targetEntity,
             Collection<ObjectPermission> permissions)
             throws GuacamoleException {
 
         // Create permissions only if user has permission to do so
-        if (canAlterPermissions(user, targetUser, permissions)) {
-            Collection<ObjectPermissionModel> models = getModelInstances(targetUser, permissions);
+        if (canAlterPermissions(user, targetEntity, permissions)) {
+            Collection<ObjectPermissionModel> models = getModelInstances(targetEntity, permissions);
             getPermissionMapper().insert(models);
             return;
         }
@@ -138,13 +143,14 @@ public abstract class ModeledObjectPermissionService
     }
 
     @Override
-    public void deletePermissions(ModeledAuthenticatedUser user, ModeledUser targetUser,
+    public void deletePermissions(ModeledAuthenticatedUser user,
+            ModeledPermissions<? extends EntityModel> targetEntity,
             Collection<ObjectPermission> permissions)
             throws GuacamoleException {
 
         // Delete permissions only if user has permission to do so
-        if (canAlterPermissions(user, targetUser, permissions)) {
-            Collection<ObjectPermissionModel> models = getModelInstances(targetUser, permissions);
+        if (canAlterPermissions(user, targetEntity, permissions)) {
+            Collection<ObjectPermissionModel> models = getModelInstances(targetEntity, permissions);
             getPermissionMapper().delete(models);
             return;
         }
@@ -155,49 +161,43 @@ public abstract class ModeledObjectPermissionService
     }
 
     @Override
-    public ObjectPermission retrievePermission(ModeledAuthenticatedUser user,
-            ModeledUser targetUser, ObjectPermission.Type type,
-            String identifier) throws GuacamoleException {
+    public boolean hasPermission(ModeledAuthenticatedUser user,
+            ModeledPermissions<? extends EntityModel> targetEntity,
+            ObjectPermission.Type type, String identifier,
+            Set<String> effectiveGroups) throws GuacamoleException {
 
         // Retrieve permissions only if allowed
-        if (canReadPermissions(user, targetUser)) {
+        if (canReadPermissions(user, targetEntity))
+            return getPermissionMapper().selectOne(targetEntity.getModel(),
+                    type, identifier, effectiveGroups) != null;
 
-            // Read permission from database, return null if not found
-            ObjectPermissionModel model = getPermissionMapper().selectOne(targetUser.getModel(), type, identifier);
-            if (model == null)
-                return null;
-
-            return getPermissionInstance(model);
-
-        }
-
-        // User cannot read this user's permissions
+        // User cannot read this entity's permissions
         throw new GuacamoleSecurityException("Permission denied.");
         
     }
 
     @Override
     public Collection<String> retrieveAccessibleIdentifiers(ModeledAuthenticatedUser user,
-            ModeledUser targetUser, Collection<ObjectPermission.Type> permissions,
-            Collection<String> identifiers) throws GuacamoleException {
+            ModeledPermissions<? extends EntityModel> targetEntity,
+            Collection<ObjectPermission.Type> permissions,
+            Collection<String> identifiers, Set<String> effectiveGroups)
+            throws GuacamoleException {
 
         // Nothing is always accessible
         if (identifiers.isEmpty())
             return identifiers;
         
-        // Retrieve permissions only if allowed
-        if (canReadPermissions(user, targetUser)) {
+        // If user is an admin, everything is accessible
+        if (user.getUser().isAdministrator())
+            return identifiers;
 
-            // If user is an admin, everything is accessible
-            if (user.getUser().isAdministrator())
-                return identifiers;
+        // Otherwise, return explicitly-retrievable identifiers only if allowed
+        if (canReadPermissions(user, targetEntity))
+            return getPermissionMapper().selectAccessibleIdentifiers(
+                    targetEntity.getModel(), permissions, identifiers,
+                    effectiveGroups);
 
-            // Otherwise, return explicitly-retrievable identifiers
-            return getPermissionMapper().selectAccessibleIdentifiers(targetUser.getModel(), permissions, identifiers);
-            
-        }
-
-        // User cannot read this user's permissions
+        // User cannot read this entity's permissions
         throw new GuacamoleSecurityException("Permission denied.");
 
     }

@@ -21,7 +21,7 @@ package org.apache.guacamole.auth.jdbc.permission;
 
 /**
  * Generic base permission model which grants a permission of a particular type
- * to a specific user.
+ * to a specific entity (user or user group).
  *
  * @param <PermissionType>
  *     The type of permissions allowed within this model.
@@ -29,14 +29,9 @@ package org.apache.guacamole.auth.jdbc.permission;
 public abstract class PermissionModel<PermissionType> {
 
     /**
-     * The database ID of the user to whom this permission is granted.
+     * The database ID of the entity to whom this permission is granted.
      */
-    private Integer userID;
-
-    /**
-     * The username of the user to whom this permission is granted.
-     */
-    private String username;
+    private Integer entityID;
 
     /**
      * The type of action granted by this permission.
@@ -44,43 +39,24 @@ public abstract class PermissionModel<PermissionType> {
     private PermissionType type;
     
     /**
-     * Returns the database ID of the user to whom this permission is granted.
+     * Returns the database ID of the entity to whom this permission is
+     * granted.
      * 
      * @return
-     *     The database ID of the user to whom this permission is granted.
+     *     The database ID of the entity to whom this permission is granted.
      */
-    public Integer getUserID() {
-        return userID;
+    public Integer getEntityID() {
+        return entityID;
     }
 
     /**
-     * Sets the database ID of the user to whom this permission is granted.
+     * Sets the database ID of the entity to whom this permission is granted.
      *
-     * @param userID
-     *     The database ID of the user to whom this permission is granted.
+     * @param entityID
+     *     The database ID of the entity to whom this permission is granted.
      */
-    public void setUserID(Integer userID) {
-        this.userID = userID;
-    }
-
-    /**
-     * Returns the username of the user to whom this permission is granted.
-     * 
-     * @return
-     *     The username of the user to whom this permission is granted.
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * Sets the username of the user to whom this permission is granted.
-     *
-     * @param username
-     *     The username of the user to whom this permission is granted.
-     */
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEntityID(Integer entityID) {
+        this.entityID = entityID;
     }
 
     /**
