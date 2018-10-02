@@ -101,7 +101,7 @@ public abstract class AbstractPermissionService<PermissionSetType extends Permis
             throws GuacamoleException {
 
         // A user can always read their own permissions
-        if (targetEntity.isUser() && user.getUser().getIdentifier().equals(targetEntity.getIdentifier()))
+        if (targetEntity.isUser(user.getUser().getIdentifier()))
             return true;
         
         // A system adminstrator can do anything
