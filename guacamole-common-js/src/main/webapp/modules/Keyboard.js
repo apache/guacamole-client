@@ -616,6 +616,19 @@ Guacamole.Keyboard = function Keyboard(element) {
     this.pressed = {};
 
     /**
+     * The state of every key, indexed by keysym, for strictly those keys whose
+     * status has been indirectly determined thorugh observation of other key
+     * events. If a particular key is implicitly pressed, the value of
+     * implicitlyPressed for that keysym will be true. If a key
+     * is not currently implicitly pressed (the key is not pressed OR the state
+     * of the key is explicitly known), it will not be defined.
+     *
+     * @private
+     * @tyle {Object.<Number, Boolean>}
+     */
+    var implicitlyPressed = {};
+
+    /**
      * The last result of calling the onkeydown handler for each key, indexed
      * by keysym. This is used to prevent/allow default actions for key events,
      * even when the onkeydown handler cannot be called again because the key
@@ -851,6 +864,7 @@ Guacamole.Keyboard = function Keyboard(element) {
             
             // Mark key as released
             delete guac_keyboard.pressed[keysym];
+            delete implicitlyPressed[keysym];
 
             // Stop repeat
             window.clearTimeout(key_repeat_timeout);
@@ -953,7 +967,13 @@ Guacamole.Keyboard = function Keyboard(element) {
                     return;
             }
 
-            guac_keyboard.press(keysyms[0]);
+            // Press key and mark as implicitly pressed (if not already
+            // explicitly pressed)
+            var keysym = keysyms[0];
+            if (!guac_keyboard.pressed(keysym)) {
+                implicitlyPressed[keysym] = true;
+                guac_keyboard.press(keysym);
+            }
 
         }
 
@@ -1014,6 +1034,27 @@ Guacamole.Keyboard = function Keyboard(element) {
     };
 
     /**
+     * Returns whether all currently pressed keys were implicitly pressed. A
+     * key is implicitly pressed if its status was inferred indirectly from
+     * inspection of other key events.
+     *
+     * @private
+     * @returns {Boolean}
+     *     true if all currently pressed keys were implicitly pressed, false
+     *     otherwise.
+     */
+    var isStateImplicit = function isStateImplicit() {
+
+        for (var keysym in guac_keyboard.pressed) {
+            if (!implicitlyPressed[keysym])
+                return true;
+        }
+
+        return false;
+
+    };
+
+    /**
      * Reads through the event log, removing events from the head of the log
      * when the corresponding true key presses are known (or as known as they
      * can be).
@@ -1035,6 +1076,11 @@ Guacamole.Keyboard = function Keyboard(element) {
             last_event = handled_event;
             handled_event = interpret_event();
         } while (handled_event !== null);
+
+        // Reset keyboard state if we cannot expect to receive any further
+        // keyup events
+        if (isStateImplicit())
+            guac_keyboard.reset();
 
         return last_event.defaultPrevented;
 
