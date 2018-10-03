@@ -387,8 +387,12 @@ Guacamole.Keyboard = function Keyboard(element) {
 
         // If key is known from keyCode or DOM3 alone, use that
         this.keysym =  keysym_from_keycode(keyCode, location)
-                    || recentKeysym[keyCode]
                     || keysym_from_key_identifier(key, location); // keyCode is still more reliable for keyup when dead keys are in use
+
+        // Fall back to the most recently pressed keysym associated with the
+        // keyCode if the inferred key doesn't seem to actually be pressed
+        if (!guac_keyboard.pressed[this.keysym])
+            this.keysym = recentKeysym[keyCode] || this.keysym;
 
         // Keyup is as reliable as it will ever be
         this.reliable = true;
