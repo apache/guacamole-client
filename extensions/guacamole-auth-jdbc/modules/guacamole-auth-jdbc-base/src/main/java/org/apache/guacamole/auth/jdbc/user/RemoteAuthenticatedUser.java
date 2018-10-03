@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.jdbc.user;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Collections;
 import java.util.Set;
@@ -48,11 +47,6 @@ public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
     private final String remoteHost;
 
     /**
-     * Arbitrary attributes associated with this RemoteAuthenticatedUser object.
-     */
-    private Map<String, String> attributes = new HashMap<String, String>();
-
-    /**
      * The identifiers of any groups of which this user is a member, including
      * groups inherited through membership in other groups.
      */
@@ -60,12 +54,12 @@ public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
 
     @Override
     public Map<String, String> getAttributes() {
-        return attributes;
+        return Collections.<String, String>emptyMap();
     }
 
     @Override
     public void setAttributes(Map<String, String> attributes) {
-        this.attributes = attributes;
+        // No attributes supported
     }
 
     /**
