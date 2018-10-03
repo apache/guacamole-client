@@ -1051,10 +1051,10 @@ Guacamole.Keyboard = function Keyboard(element) {
 
         for (var keysym in guac_keyboard.pressed) {
             if (!implicitlyPressed[keysym])
-                return true;
+                return false;
         }
 
-        return false;
+        return true;
 
     };
 
