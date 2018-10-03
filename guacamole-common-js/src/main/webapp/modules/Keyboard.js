@@ -1149,6 +1149,7 @@ Guacamole.Keyboard = function Keyboard(element) {
             var keysym = first.keysym;
             if (keysym) {
                 guac_keyboard.release(keysym);
+                delete recentKeysym[first.keyCode];
                 first.defaultPrevented = true;
             }
 
