@@ -29,7 +29,7 @@ import org.apache.guacamole.net.auth.Credentials;
  * An LDAP-specific implementation of AuthenticatedUser, associating a
  * particular set of credentials with the LDAP authentication provider.
  */
-public class AuthenticatedUser extends AbstractAuthenticatedUser {
+public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
 
     /**
      * Reference to the authentication provider associated with this

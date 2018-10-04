@@ -30,11 +30,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.guacamole.auth.ldap.user.AuthenticatedUser;
-import org.apache.guacamole.auth.ldap.user.UserContext;
+import org.apache.guacamole.auth.ldap.user.LDAPAuthenticatedUser;
+import org.apache.guacamole.auth.ldap.user.LDAPUserContext;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.ldap.user.UserService;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
@@ -74,13 +75,13 @@ public class AuthenticationProviderService {
      * Provider for AuthenticatedUser objects.
      */
     @Inject
-    private Provider<AuthenticatedUser> authenticatedUserProvider;
+    private Provider<LDAPAuthenticatedUser> authenticatedUserProvider;
 
     /**
      * Provider for UserContext objects.
      */
     @Inject
-    private Provider<UserContext> userContextProvider;
+    private Provider<LDAPUserContext> userContextProvider;
 
     /**
      * Determines the DN which corresponds to the user having the given
@@ -211,7 +212,7 @@ public class AuthenticationProviderService {
      *     If an error occurs while authenticating the user, or if access is
      *     denied.
      */
-    public AuthenticatedUser authenticateUser(Credentials credentials)
+    public LDAPAuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 
         // Attempt bind
@@ -231,7 +232,7 @@ public class AuthenticationProviderService {
 
         try {
             // Return AuthenticatedUser if bind succeeds
-            AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+            LDAPAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
             authenticatedUser.init(credentials, getLDAPAttributes(ldapConnection, credentials.getUsername()));
 
             return authenticatedUser;
@@ -318,7 +319,7 @@ public class AuthenticationProviderService {
      * @throws GuacamoleException
      *     If the UserContext cannot be created due to an error.
      */
-    public UserContext getUserContext(org.apache.guacamole.net.auth.AuthenticatedUser authenticatedUser)
+    public LDAPUserContext getUserContext(AuthenticatedUser authenticatedUser)
             throws GuacamoleException {
 
         // Bind using credentials associated with AuthenticatedUser
@@ -330,7 +331,7 @@ public class AuthenticationProviderService {
         try {
 
             // Build user context by querying LDAP
-            UserContext userContext = userContextProvider.get();
+            LDAPUserContext userContext = userContextProvider.get();
             userContext.init(authenticatedUser, ldapConnection);
             return userContext;
 

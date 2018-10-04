@@ -42,12 +42,12 @@ import org.slf4j.LoggerFactory;
  * An LDAP-specific implementation of UserContext which queries all Guacamole
  * connections and users from the LDAP directory.
  */
-public class UserContext extends AbstractUserContext {
+public class LDAPUserContext extends AbstractUserContext {
 
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(UserContext.class);
+    private final Logger logger = LoggerFactory.getLogger(LDAPUserContext.class);
 
     /**
      * Service for retrieving Guacamole connections from the LDAP server.
