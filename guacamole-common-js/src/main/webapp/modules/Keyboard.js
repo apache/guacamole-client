@@ -964,20 +964,23 @@ Guacamole.Keyboard = function Keyboard(element) {
         // Press if modifier is implicitly pressed
         else if (!remoteState && localState) {
 
-            // Verify that modifier flag isn't set due to another version of
-            // the same key being held down
+            // Verify that modifier flag isn't already pressed or already set
+            // due to another version of the same key being held down
             for (i = 0; i < keysyms.length; i++) {
                 if (guac_keyboard.pressed[keysyms[i]])
                     return;
             }
 
-            // Press key and mark as implicitly pressed (if not already
-            // explicitly pressed)
+            // Mark as implicitly pressed only if there is other information
+            // within the key event relating to a different key. Some
+            // platforms, such as iOS, will send essentially empty key events
+            // for modifier keys, using only the modifier flags to signal the
+            // identity of the key.
             var keysym = keysyms[0];
-            if (!guac_keyboard.pressed(keysym)) {
+            if (keyEvent.keysym)
                 implicitlyPressed[keysym] = true;
-                guac_keyboard.press(keysym);
-            }
+
+            guac_keyboard.press(keysym);
 
         }
 
