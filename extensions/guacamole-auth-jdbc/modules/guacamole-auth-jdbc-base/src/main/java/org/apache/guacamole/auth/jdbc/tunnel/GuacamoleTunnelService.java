@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.jdbc.tunnel;
 
 import java.util.Collection;
+import java.util.Map;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
@@ -73,6 +74,10 @@ public interface GuacamoleTunnelService {
      *     Information describing the Guacamole client connecting to the given
      *     connection.
      *
+     * @param tokens
+     *     A Map containing the token names and corresponding values to be
+     *     applied as parameter tokens when establishing the connection.
+     *
      * @return
      *     A new GuacamoleTunnel which is configured and connected to the given
      *     connection.
@@ -82,8 +87,8 @@ public interface GuacamoleTunnelService {
      *     rules.
      */
     GuacamoleTunnel getGuacamoleTunnel(ModeledAuthenticatedUser user,
-            ModeledConnection connection, GuacamoleClientInformation info)
-            throws GuacamoleException;
+            ModeledConnection connection, GuacamoleClientInformation info,
+            Map<String, String> tokens) throws GuacamoleException;
 
     /**
      * Returns a collection containing connection records representing all
@@ -117,6 +122,10 @@ public interface GuacamoleTunnelService {
      *     Information describing the Guacamole client connecting to the given
      *     connection group.
      *
+     * @param tokens
+     *     A Map containing the token names and corresponding values to be
+     *     applied as parameter tokens when establishing the connection.
+     *
      * @return
      *     A new GuacamoleTunnel which is configured and connected to the given
      *     connection group.
@@ -127,7 +136,7 @@ public interface GuacamoleTunnelService {
      */
     GuacamoleTunnel getGuacamoleTunnel(ModeledAuthenticatedUser user,
             ModeledConnectionGroup connectionGroup,
-            GuacamoleClientInformation info)
+            GuacamoleClientInformation info, Map<String, String> tokens)
             throws GuacamoleException;
 
     /**
@@ -163,6 +172,10 @@ public interface GuacamoleTunnelService {
      *     Information describing the Guacamole client connecting to the given
      *     connection.
      *
+     * @param tokens
+     *     A Map containing the token names and corresponding values to be
+     *     applied as parameter tokens when establishing the connection.
+     *
      * @return
      *     A new GuacamoleTunnel which is configured and connected to the given
      *     active connection.
@@ -173,7 +186,7 @@ public interface GuacamoleTunnelService {
      */
     GuacamoleTunnel getGuacamoleTunnel(RemoteAuthenticatedUser user,
             SharedConnectionDefinition definition,
-            GuacamoleClientInformation info)
+            GuacamoleClientInformation info, Map<String, String> tokens)
             throws GuacamoleException;
 
 }

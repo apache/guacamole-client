@@ -29,7 +29,12 @@ import org.apache.guacamole.net.auth.Credentials;
 /**
  * Utility class which provides access to standardized token names, as well as
  * facilities for generating those tokens from common objects.
+ *
+ * @deprecated Standard tokens are now supplied by default to the connect()
+ * functions of connections and connection groups. Manually generating the
+ * standard tokens is not necessary.
  */
+@Deprecated
 public class StandardTokens {
 
     /**

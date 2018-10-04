@@ -128,9 +128,9 @@ public class DelegatingConnection implements Connection {
     }
 
     @Override
-    public GuacamoleTunnel connect(GuacamoleClientInformation info)
-            throws GuacamoleException {
-        return connection.connect(info);
+    public GuacamoleTunnel connect(GuacamoleClientInformation info,
+            Map<String, String> tokens) throws GuacamoleException {
+        return connection.connect(info, tokens);
     }
 
     @Override

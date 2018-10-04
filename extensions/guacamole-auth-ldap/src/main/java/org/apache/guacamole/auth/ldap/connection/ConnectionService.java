@@ -39,8 +39,6 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.simple.SimpleConnection;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
-import org.apache.guacamole.token.StandardTokens;
-import org.apache.guacamole.token.TokenFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,10 +120,6 @@ public class ConnectionService {
                 confService.getLDAPSearchConstraints()
             );
 
-            // Build token filter containing credential tokens
-            TokenFilter tokenFilter = new TokenFilter();
-            StandardTokens.addStandardTokens(tokenFilter, user);
-
             // Produce connections for each readable configuration
             Map<String, Connection> connections = new HashMap<String, Connection>();
             while (results.hasMore()) {
@@ -179,9 +173,6 @@ public class ConnectionService {
                         }
 
                     }
-
-                    // Filter the configuration, substituting all defined tokens
-                    tokenFilter.filterValues(config.getParameters());
 
                     // Store connection using cn for both identifier and name
                     String name = cn.getStringValue();

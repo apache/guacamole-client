@@ -22,6 +22,7 @@ package org.apache.guacamole.tunnel;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.List;
+import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleSession;
@@ -187,6 +188,10 @@ public class TunnelRequestService {
      * @param info
      *     Information describing the connected Guacamole client.
      *
+     * @param tokens
+     *     A Map containing the token names and corresponding values to be
+     *     applied as parameter tokens when establishing the connection.
+     *
      * @return
      *     A new tunnel, connected as required by the request.
      *
@@ -195,7 +200,7 @@ public class TunnelRequestService {
      */
     protected GuacamoleTunnel createConnectedTunnel(UserContext context,
             final TunnelRequest.Type type, String id,
-            GuacamoleClientInformation info)
+            GuacamoleClientInformation info, Map<String, String> tokens)
             throws GuacamoleException {
 
         // Create connected tunnel from identifier
@@ -216,7 +221,7 @@ public class TunnelRequestService {
                 }
 
                 // Connect tunnel
-                tunnel = connection.connect(info);
+                tunnel = connection.connect(info, tokens);
                 logger.info("User \"{}\" connected to connection \"{}\".", context.self().getIdentifier(), id);
                 break;
             }
@@ -235,7 +240,7 @@ public class TunnelRequestService {
                 }
 
                 // Connect tunnel
-                tunnel = group.connect(info);
+                tunnel = group.connect(info, tokens);
                 logger.info("User \"{}\" connected to group \"{}\".", context.self().getIdentifier(), id);
                 break;
             }
@@ -385,16 +390,17 @@ public class TunnelRequestService {
         GuacamoleClientInformation info = getClientInformation(request);
 
         GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        AuthenticatedUser authenticatedUser = session.getAuthenticatedUser();
         UserContext userContext = session.getUserContext(authProviderIdentifier);
 
         try {
 
             // Create connected tunnel using provided connection ID and client information
-            GuacamoleTunnel tunnel = createConnectedTunnel(userContext, type, id, info);
+            GuacamoleTunnel tunnel = createConnectedTunnel(userContext, type,
+                    id, info, new StandardTokenMap(authenticatedUser));
 
             // Notify listeners to allow connection to be vetoed
-            fireTunnelConnectEvent(session.getAuthenticatedUser(),
-                    session.getAuthenticatedUser().getCredentials(), tunnel);
+            fireTunnelConnectEvent(authenticatedUser, authenticatedUser.getCredentials(), tunnel);
 
             // Associate tunnel with session
             return createAssociatedTunnel(tunnel, authToken, session, userContext, type, id);
