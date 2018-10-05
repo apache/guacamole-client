@@ -54,12 +54,6 @@ public class AuthenticationProviderService {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
 
     /**
-     * The prefix string to add to each parameter token generated from an LDAP
-     * attribute name.
-     */
-    private static final String LDAP_ATTRIBUTE_TOKEN_PREFIX = "LDAP_ATTR_";
-
-    /**
      * Service for creating and managing connections to LDAP servers.
      */
     @Inject
@@ -302,7 +296,7 @@ public class AuthenticationProviderService {
             // Convert each retrieved attribute into a corresponding token
             for (Object attrObj : attrSet) {
                 LDAPAttribute attr = (LDAPAttribute)attrObj;
-                tokens.put(LDAP_ATTRIBUTE_TOKEN_PREFIX + attr.getName(), attr.getStringValue());
+                tokens.put(TokenName.fromAttribute(attr.getName()), attr.getStringValue());
             }
 
         }
