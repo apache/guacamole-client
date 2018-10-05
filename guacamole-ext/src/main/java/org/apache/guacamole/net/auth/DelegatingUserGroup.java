@@ -46,6 +46,16 @@ public class DelegatingUserGroup implements UserGroup {
         this.userGroup = userGroup;
     }
 
+    /**
+     * Returns the underlying UserGroup wrapped by this DelegatingUserGroup.
+     *
+     * @return
+     *     The UserGroup wrapped by this DelegatingUserGroup.
+     */
+    protected UserGroup getDelegateUserGroupGroup() {
+        return userGroup;
+    }
+
     @Override
     public String getIdentifier() {
         return userGroup.getIdentifier();

@@ -43,6 +43,17 @@ public class DelegatingSharingProfile implements SharingProfile {
         this.sharingProfile = sharingProfile;
     }
 
+    /**
+     * Returns the underlying SharingProfile wrapped by this
+     * DelegatingSharingProfile.
+     *
+     * @return
+     *     The SharingProfile wrapped by this DelegatingSharingProfile.
+     */
+    protected SharingProfile getDelegateSharingProfile() {
+        return sharingProfile;
+    }
+
     @Override
     public String getIdentifier() {
         return sharingProfile.getIdentifier();

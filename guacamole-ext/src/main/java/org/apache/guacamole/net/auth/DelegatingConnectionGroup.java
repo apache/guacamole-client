@@ -47,6 +47,17 @@ public class DelegatingConnectionGroup implements ConnectionGroup {
         this.connectionGroup = connectionGroup;
     }
 
+    /**
+     * Returns the underlying ConnectionGroup wrapped by this
+     * DelegatingConnectionGroup.
+     *
+     * @return
+     *     The ConnectionGroup wrapped by this DelegatingConnectionGroup.
+     */
+    protected ConnectionGroup getDelegateConnectionGroup() {
+        return connectionGroup;
+    }
+
     @Override
     public String getIdentifier() {
         return connectionGroup.getIdentifier();
