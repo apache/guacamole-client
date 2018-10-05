@@ -31,7 +31,7 @@ public class TokenName {
      * The prefix string to add to each parameter token generated from an LDAP
      * attribute name.
      */
-    private static final String LDAP_ATTRIBUTE_TOKEN_PREFIX = "LDAP_ATTR_";
+    private static final String LDAP_ATTRIBUTE_TOKEN_PREFIX = "LDAP_";
 
     /**
      * Pattern which matches logical groupings of words within an LDAP
@@ -71,7 +71,7 @@ public class TokenName {
      * will automatically be transformed from "CamelCase", "headlessCamelCase",
      * "lowercase_with_underscores", and "mixes_ofBoth_Styles" to consistent
      * "UPPERCASE_WITH_UNDERSCORES". Each returned attribute will be prefixed
-     * with "LDAP_ATTR_".
+     * with "LDAP_".
      *
      * @param name
      *     The name of the LDAP attribute to use to generate the token name.

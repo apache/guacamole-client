@@ -34,20 +34,20 @@ public class TokenNameTest {
      */
     @Test
     public void testFromAttribute() {
-        assertEquals("LDAP_ATTR_A", TokenName.fromAttribute("a"));
-        assertEquals("LDAP_ATTR_B", TokenName.fromAttribute("b"));
-        assertEquals("LDAP_ATTR_1", TokenName.fromAttribute("1"));
-        assertEquals("LDAP_ATTR_SOME_URL", TokenName.fromAttribute("someURL"));
-        assertEquals("LDAP_ATTR_LOWERCASE_WITH_DASHES", TokenName.fromAttribute("lowercase-with-dashes"));
-        assertEquals("LDAP_ATTR_HEADLESS_CAMEL_CASE", TokenName.fromAttribute("headlessCamelCase"));
-        assertEquals("LDAP_ATTR_CAMEL_CASE", TokenName.fromAttribute("CamelCase"));
-        assertEquals("LDAP_ATTR_CAMEL_CASE", TokenName.fromAttribute("CamelCase"));
-        assertEquals("LDAP_ATTR_LOWERCASE_WITH_UNDERSCORES", TokenName.fromAttribute("lowercase_with_underscores"));
-        assertEquals("LDAP_ATTR_UPPERCASE_WITH_UNDERSCORES", TokenName.fromAttribute("UPPERCASE_WITH_UNDERSCORES"));
-        assertEquals("LDAP_ATTR_A_VERY_INCONSISTENT_MIX_OF_ALL_STYLES", TokenName.fromAttribute("aVery-INCONSISTENTMix_ofAllStyles"));
-        assertEquals("LDAP_ATTR_ABC_123_DEF_456", TokenName.fromAttribute("abc123def456"));
-        assertEquals("LDAP_ATTR_ABC_123_DEF_456", TokenName.fromAttribute("ABC123DEF456"));
-        assertEquals("LDAP_ATTR_WORD_A_WORD_AB_WORD_ABC_WORD", TokenName.fromAttribute("WordAWordABWordABCWord"));
+        assertEquals("LDAP_A", TokenName.fromAttribute("a"));
+        assertEquals("LDAP_B", TokenName.fromAttribute("b"));
+        assertEquals("LDAP_1", TokenName.fromAttribute("1"));
+        assertEquals("LDAP_SOME_URL", TokenName.fromAttribute("someURL"));
+        assertEquals("LDAP_LOWERCASE_WITH_DASHES", TokenName.fromAttribute("lowercase-with-dashes"));
+        assertEquals("LDAP_HEADLESS_CAMEL_CASE", TokenName.fromAttribute("headlessCamelCase"));
+        assertEquals("LDAP_CAMEL_CASE", TokenName.fromAttribute("CamelCase"));
+        assertEquals("LDAP_CAMEL_CASE", TokenName.fromAttribute("CamelCase"));
+        assertEquals("LDAP_LOWERCASE_WITH_UNDERSCORES", TokenName.fromAttribute("lowercase_with_underscores"));
+        assertEquals("LDAP_UPPERCASE_WITH_UNDERSCORES", TokenName.fromAttribute("UPPERCASE_WITH_UNDERSCORES"));
+        assertEquals("LDAP_A_VERY_INCONSISTENT_MIX_OF_ALL_STYLES", TokenName.fromAttribute("aVery-INCONSISTENTMix_ofAllStyles"));
+        assertEquals("LDAP_ABC_123_DEF_456", TokenName.fromAttribute("abc123def456"));
+        assertEquals("LDAP_ABC_123_DEF_456", TokenName.fromAttribute("ABC123DEF456"));
+        assertEquals("LDAP_WORD_A_WORD_AB_WORD_ABC_WORD", TokenName.fromAttribute("WordAWordABWordABCWord"));
     }
 
 }
