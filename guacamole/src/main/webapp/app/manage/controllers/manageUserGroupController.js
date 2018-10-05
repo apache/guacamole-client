@@ -303,24 +303,39 @@ angular.module('manage').controller('manageUserGroupController', ['$scope', '$in
     var loadExistingUserGroup = function loadExistingGroup(dataSource, identifier) {
         return $q.all({
             userGroups   : dataSourceService.apply(userGroupService.getUserGroup, dataSources, identifier),
-            permissions  : permissionService.getPermissions(dataSource, identifier, true),
-            parentGroups : membershipService.getUserGroups(dataSource, identifier, true),
-            memberGroups : membershipService.getMemberUserGroups(dataSource, identifier),
-            memberUsers  : membershipService.getMemberUsers(dataSource, identifier)
+
+            // Use empty permission set if group cannot be found
+            permissions:
+                    permissionService.getPermissions(dataSource, identifier, true)
+                    ['catch'](requestService.defaultValue(new PermissionSet())),
+
+            // Assume no parent groups if group cannot be found
+            parentGroups:
+                    membershipService.getUserGroups(dataSource, identifier, true)
+                    ['catch'](requestService.defaultValue([])),
+
+            // Assume no member groups if group cannot be found
+            memberGroups:
+                    membershipService.getMemberUserGroups(dataSource, identifier)
+                    ['catch'](requestService.defaultValue([])),
+
+            // Assume no member users if group cannot be found
+            memberUsers:
+                    membershipService.getMemberUsers(dataSource, identifier)
+                    ['catch'](requestService.defaultValue([]))
+
         })
         .then(function userGroupDataRetrieved(values) {
 
             $scope.userGroups = values.userGroups;
-            $scope.userGroup  = values.userGroups[dataSource];
             $scope.parentGroups = values.parentGroups;
             $scope.memberGroups = values.memberGroups;
             $scope.memberUsers = values.memberUsers;
 
             // Create skeleton user group if user group does not exist
-            if (!$scope.userGroup)
-                $scope.userGroup = new UserGroup({
-                    'identifier' : identifier
-                });
+            $scope.userGroup  = values.userGroups[dataSource] || new UserGroup({
+                'identifier' : identifier
+            });
 
             $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(values.permissions);
 
