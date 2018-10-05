@@ -45,6 +45,17 @@ public class DelegatingUserContext implements UserContext {
         this.userContext = userContext;
     }
 
+    /**
+     * Returns the underlying UserContext wrapped by this
+     * DelegatingUserContext.
+     *
+     * @return
+     *     The UserContext wrapped by this DelegatingUserContext.
+     */
+    protected UserContext getDelegateUserContext() {
+        return userContext;
+    }
+
     @Override
     public User self() {
         return userContext.self();

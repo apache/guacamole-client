@@ -42,11 +42,6 @@ public class TOTPUser extends DelegatingUser {
     public static final String TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME = "guac-totp-key-confirmed";
 
     /**
-     * The User object wrapped by this TOTPUser.
-     */
-    private final User undecorated;
-
-    /**
      * Wraps the given User object, hiding and blocking access to the core
      * attributes used by TOTP.
      *
@@ -55,7 +50,6 @@ public class TOTPUser extends DelegatingUser {
      */
     public TOTPUser(User user) {
         super(user);
-        this.undecorated = user;
     }
 
     /**
@@ -65,7 +59,7 @@ public class TOTPUser extends DelegatingUser {
      *     The wrapped User object.
      */
     public User getUndecorated() {
-        return undecorated;
+        return getDelegateUser();
     }
 
     @Override
