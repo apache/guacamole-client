@@ -248,20 +248,27 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var loadExistingUser = function loadExistingUser(dataSource, username) {
         return $q.all({
             users : dataSourceService.apply(userService.getUser, dataSources, username),
-            permissions : permissionService.getPermissions(dataSource, username),
-            parentGroups : membershipService.getUserGroups(dataSource, username)
+
+            // Use empty permission set if user cannot be found
+            permissions:
+                    permissionService.getPermissions(dataSource, username)
+                    ['catch'](requestService.defaultValue(new PermissionSet())),
+
+            // Assume no parent groups if user cannot be found
+            parentGroups:
+                    membershipService.getUserGroups(dataSource, username)
+                    ['catch'](requestService.defaultValue([]))
+
         })
         .then(function userDataRetrieved(values) {
 
             $scope.users = values.users;
-            $scope.user  = values.users[dataSource];
             $scope.parentGroups = values.parentGroups;
 
             // Create skeleton user if user does not exist
-            if (!$scope.user)
-                $scope.user = new User({
-                    'username' : username
-                });
+            $scope.user = values.users[dataSource] || new User({
+                'username' : username
+            });
 
             // The current user will be associated with username of the existing
             // user in the retrieved permission set
