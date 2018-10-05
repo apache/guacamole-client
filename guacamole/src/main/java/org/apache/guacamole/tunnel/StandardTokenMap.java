@@ -22,7 +22,6 @@ package org.apache.guacamole.tunnel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 
@@ -77,11 +76,6 @@ public class StandardTokenMap extends HashMap<String, String> {
     private static final String TIME_FORMAT = "HHmmss";
 
     /**
-     * The prefix of the arbitrary attribute tokens.
-     */
-    public static final String ATTR_TOKEN_PREFIX = "GUAC_ATTR_";
-
-    /**
      * Creates a new StandardTokenMap which is pre-populated with the
      * name/value pairs of all standardized tokens available for the given
      * AuthenticatedUser.
@@ -97,7 +91,6 @@ public class StandardTokenMap extends HashMap<String, String> {
         put(TIME_TOKEN, new SimpleDateFormat(TIME_FORMAT).format(currentTime));
 
         Credentials credentials = authenticatedUser.getCredentials();
-        Map<String, String> attributes = authenticatedUser.getAttributes();
 
         // Add username token
         String username = credentials.getUsername();
@@ -123,16 +116,6 @@ public class StandardTokenMap extends HashMap<String, String> {
         String address = credentials.getRemoteAddress();
         if (address != null)
             put(CLIENT_ADDRESS_TOKEN, address);
-
-        // Add tokens for all attributes on the AuthenticatedUser
-        if (attributes != null) {
-            for (Map.Entry entry : attributes.entrySet()) {
-                String key = entry.getKey().toString();
-                String tokenName = ATTR_TOKEN_PREFIX + key.toUpperCase();
-                String tokenValue = entry.getValue().toString();
-                put(tokenName, tokenValue);
-            }
-        }
 
     }
 

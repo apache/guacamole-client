@@ -79,7 +79,6 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
         super(authenticatedUser.getAuthenticationProvider(), authenticatedUser.getCredentials(), authenticatedUser.getEffectiveUserGroups());
         this.modelAuthenticationProvider = modelAuthenticationProvider;
         this.user = user;
-        super.setAttributes(authenticatedUser.getAttributes());
     }
 
     /**

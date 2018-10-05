@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.jdbc.user;
 
-import java.util.Map;
 import java.util.Collections;
 import java.util.Set;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
@@ -51,16 +50,6 @@ public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
      * groups inherited through membership in other groups.
      */
     private final Set<String> effectiveGroups;
-
-    @Override
-    public Map<String, String> getAttributes() {
-        return Collections.<String, String>emptyMap();
-    }
-
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        // No attributes supported
-    }
 
     /**
      * Creates a new RemoteAuthenticatedUser, deriving the associated remote

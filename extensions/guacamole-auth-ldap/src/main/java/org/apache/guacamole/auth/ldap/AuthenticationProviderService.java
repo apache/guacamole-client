@@ -54,6 +54,12 @@ public class AuthenticationProviderService {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
 
     /**
+     * The prefix string to add to each parameter token generated from an LDAP
+     * attribute name.
+     */
+    private static final String LDAP_ATTRIBUTE_TOKEN_PREFIX = "LDAP_ATTR_";
+
+    /**
      * Service for creating and managing connections to LDAP servers.
      */
     @Inject
@@ -233,7 +239,7 @@ public class AuthenticationProviderService {
         try {
             // Return AuthenticatedUser if bind succeeds
             LDAPAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-            authenticatedUser.init(credentials, getLDAPAttributes(ldapConnection, credentials.getUsername()));
+            authenticatedUser.init(credentials, getAttributeTokens(ldapConnection, credentials.getUsername()));
 
             return authenticatedUser;
 
@@ -246,43 +252,44 @@ public class AuthenticationProviderService {
     }
 
     /**
-     * Returns all custom LDAP attributes on the user currently bound under
-     * the given LDAP connection. The custom attributes are specified in
-     * guacamole.properties.  If no attributes are specified or none are
+     * Returns parameter tokens generated from LDAP attributes on the user
+     * currently bound under the given LDAP connection. The attributes to be
+     * converted into parameter tokens must be explicitly listed in
+     * guacamole.properties. If no attributes are specified or none are
      * found on the LDAP user object, an empty map is returned.
      *
      * @param ldapConnection
-     *     LDAP connection to find the custom LDAP attributes.
+     *     LDAP connection to use to read the attributes of the user.
      *
      * @param username
-     *     The username of the user whose attributes are queried.
+     *     The username of the user whose attributes are to be queried.
      *
      * @return
-     *     All attributes on the user currently bound under the
-     *     given LDAP connection, as a map of attribute name to
-     *     corresponding attribute value, or an empty map if no
-     *     attributes are specified or none are found on the user
-     *     object.
+     *     A map of parameter tokens generated from attributes on the user
+     *     currently bound under the given LDAP connection, as a map of token
+     *     name to corresponding value, or an empty map if no attributes are
+     *     specified or none are found on the user object.
      *
      * @throws GuacamoleException
      *     If an error occurs retrieving the user DN or the attributes.
      */
-    private Map<String, String> getLDAPAttributes(LDAPConnection ldapConnection,
+    private Map<String, String> getAttributeTokens(LDAPConnection ldapConnection,
             String username) throws GuacamoleException {
 
         // Get attributes from configuration information
         List<String> attrList = confService.getAttributes();
 
         // If there are no attributes there is no reason to search LDAP
-        if (attrList == null || attrList.isEmpty())
+        if (attrList.isEmpty())
             return Collections.<String, String>emptyMap();
 
         // Build LDAP query parameters
         String[] attrArray = attrList.toArray(new String[attrList.size()]);
         String userDN = getUserBindDN(username);
 
-        Map<String, String> attrMap = new HashMap<String, String>();
+        Map<String, String> tokens = new HashMap<String, String>();
         try {
+
             // Get LDAP attributes by querying LDAP
             LDAPEntry userEntry = ldapConnection.read(userDN, attrArray);
             if (userEntry == null)
@@ -292,17 +299,19 @@ public class AuthenticationProviderService {
             if (attrSet == null)
                 return Collections.<String, String>emptyMap();
 
-            // Add each attribute into Map
+            // Convert each retrieved attribute into a corresponding token
             for (Object attrObj : attrSet) {
                 LDAPAttribute attr = (LDAPAttribute)attrObj;
-                attrMap.put(attr.getName(), attr.getStringValue());
+                tokens.put(LDAP_ATTRIBUTE_TOKEN_PREFIX + attr.getName(), attr.getStringValue());
             }
+
         }
         catch (LDAPException e) {
-            throw new GuacamoleServerException("Error while querying for User Attributes.", e);
+            throw new GuacamoleServerException("Could not query LDAP user attributes.", e);
         }
 
-        return attrMap;
+        return tokens;
+
     }
 
     /**
