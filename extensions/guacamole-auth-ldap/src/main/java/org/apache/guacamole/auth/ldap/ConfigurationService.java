@@ -355,7 +355,8 @@ public class ConfigurationService {
      */
     public List<String> getAttributes() throws GuacamoleException {
         return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_USER_ATTRIBUTES
+            LDAPGuacamoleProperties.LDAP_USER_ATTRIBUTES,
+            Collections.<String>emptyList()
         );
     }
     

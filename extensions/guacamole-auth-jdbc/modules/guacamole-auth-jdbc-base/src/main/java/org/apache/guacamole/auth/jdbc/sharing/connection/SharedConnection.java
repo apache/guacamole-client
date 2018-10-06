@@ -131,9 +131,9 @@ public class SharedConnection implements Connection {
     }
 
     @Override
-    public GuacamoleTunnel connect(GuacamoleClientInformation info)
-            throws GuacamoleException {
-        return tunnelService.getGuacamoleTunnel(user, definition, info);
+    public GuacamoleTunnel connect(GuacamoleClientInformation info,
+            Map<String, String> tokens) throws GuacamoleException {
+        return tunnelService.getGuacamoleTunnel(user, definition, info, tokens);
     }
 
     @Override

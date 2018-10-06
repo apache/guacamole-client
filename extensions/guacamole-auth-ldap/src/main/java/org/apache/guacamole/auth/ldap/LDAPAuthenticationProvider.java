@@ -23,9 +23,11 @@ package org.apache.guacamole.auth.ldap;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.ldap.user.LDAPAuthenticatedUser;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.TokenInjectingUserContext;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
@@ -82,6 +84,21 @@ public class LDAPAuthenticationProvider extends AbstractAuthenticationProvider {
 
         AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
         return authProviderService.getUserContext(authenticatedUser);
+
+    }
+
+    @Override
+    public UserContext decorate(UserContext context,
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
+
+        // Only decorate if the user authenticated against LDAP
+        if (!(authenticatedUser instanceof LDAPAuthenticatedUser))
+            return context;
+
+        // Apply LDAP-specific tokens to all connections / connection groups
+        return new TokenInjectingUserContext(context,
+                ((LDAPAuthenticatedUser) authenticatedUser).getTokens());
 
     }
 

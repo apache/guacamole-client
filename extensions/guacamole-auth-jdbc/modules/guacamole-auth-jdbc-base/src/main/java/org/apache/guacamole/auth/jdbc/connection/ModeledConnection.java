@@ -259,8 +259,9 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
     }
 
     @Override
-    public GuacamoleTunnel connect(GuacamoleClientInformation info) throws GuacamoleException {
-        return connectionService.connect(getCurrentUser(), this, info);
+    public GuacamoleTunnel connect(GuacamoleClientInformation info,
+            Map<String, String> tokens) throws GuacamoleException {
+        return connectionService.connect(getCurrentUser(), this, info, tokens);
     }
 
     @Override

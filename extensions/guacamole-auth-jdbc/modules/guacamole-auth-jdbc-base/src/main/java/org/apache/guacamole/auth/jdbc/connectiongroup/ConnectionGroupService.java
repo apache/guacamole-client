@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.jdbc.connectiongroup;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
@@ -243,6 +244,10 @@ public class ConnectionGroupService extends ModeledChildDirectoryObjectService<M
      * @param info
      *     Information associated with the connecting client.
      *
+     * @param tokens
+     *     A Map containing the token names and corresponding values to be
+     *     applied as parameter tokens when establishing the connection.
+     *
      * @return
      *     A connected GuacamoleTunnel associated with a newly-established
      *     connection.
@@ -251,12 +256,12 @@ public class ConnectionGroupService extends ModeledChildDirectoryObjectService<M
      *     If permission to connect to this connection is denied.
      */
     public GuacamoleTunnel connect(ModeledAuthenticatedUser user,
-            ModeledConnectionGroup connectionGroup, GuacamoleClientInformation info)
-            throws GuacamoleException {
+            ModeledConnectionGroup connectionGroup, GuacamoleClientInformation info,
+            Map<String, String> tokens) throws GuacamoleException {
 
         // Connect only if READ permission is granted
         if (hasObjectPermission(user, connectionGroup.getIdentifier(), ObjectPermission.Type.READ))
-            return tunnelService.getGuacamoleTunnel(user, connectionGroup, info);
+            return tunnelService.getGuacamoleTunnel(user, connectionGroup, info, tokens);
 
         // The user does not have permission to connect
         throw new GuacamoleSecurityException("Permission denied.");

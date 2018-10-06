@@ -128,7 +128,8 @@ public class APIConnectionWrapper implements Connection {
     }
 
     @Override
-    public GuacamoleTunnel connect(GuacamoleClientInformation info) throws GuacamoleException {
+    public GuacamoleTunnel connect(GuacamoleClientInformation info,
+            Map<String, String> tokens) throws GuacamoleException {
         throw new UnsupportedOperationException("Operation not supported.");
     }
 
