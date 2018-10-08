@@ -31,13 +31,13 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.vault.azure.conf.AzureKeyVaultAuthenticationException;
 import org.apache.guacamole.auth.vault.azure.conf.AzureKeyVaultConfigurationService;
-import org.apache.guacamole.auth.vault.secret.VaultSecretService;
+import org.apache.guacamole.auth.vault.secret.CachedVaultSecretService;
 
 /**
  * Service which retrieves secrets from Azure Key Vault.
  */
 @Singleton
-public class AzureKeyVaultSecretService implements VaultSecretService {
+public class AzureKeyVaultSecretService extends CachedVaultSecretService {
 
     /**
      * Pattern which matches contiguous groups of characters which are not
@@ -71,23 +71,20 @@ public class AzureKeyVaultSecretService implements VaultSecretService {
     }
 
     @Override
-    public String getValue(String name) throws GuacamoleException {
+    protected CachedSecret refreshCachedSecret(String name)
+            throws GuacamoleException {
+
+        int ttl = confService.getSecretTTL();
+        String url = confService.getVaultURL();
 
         try {
 
-            // Retrieve configuration information necessary for connecting to
-            // Azure Key Vault
-            String url = confService.getVaultURL();
-            KeyVaultCredentials credentials = credentialProvider.get();
-
-            // Authenticate against Azure Key Vault
-            KeyVaultClient client = new KeyVaultClient(credentials);
-
-            // Retrieve requested secret
+            // Retrieve requested secret from Azure Key Vault
+            KeyVaultClient client = new KeyVaultClient(credentialProvider.get());
             SecretBundle secret = client.getSecret(url, name);
 
             // FIXME: STUB
-            return null;
+            return new CachedSecret(null, ttl);
 
         }
         catch (AzureKeyVaultAuthenticationException e) {
