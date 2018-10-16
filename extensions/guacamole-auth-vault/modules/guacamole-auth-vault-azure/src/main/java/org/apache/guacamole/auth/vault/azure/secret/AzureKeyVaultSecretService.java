@@ -83,8 +83,9 @@ public class AzureKeyVaultSecretService extends CachedVaultSecretService {
             KeyVaultClient client = new KeyVaultClient(credentialProvider.get());
             SecretBundle secret = client.getSecret(url, name);
 
-            // FIXME: STUB
-            return new CachedSecret(null, ttl);
+            // Cache retrieved value
+            String value = (secret != null) ? secret.value() : null;
+            return new CachedSecret(value, ttl);
 
         }
         catch (AzureKeyVaultAuthenticationException e) {
