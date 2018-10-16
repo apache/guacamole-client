@@ -122,7 +122,14 @@ public class TokenInjectingUserContext extends DelegatingUserContext {
 
             @Override
             protected ConnectionGroup decorate(ConnectionGroup object) throws GuacamoleException {
-                return new TokenInjectingConnectionGroup(object, getTokens(object));
+                return new TokenInjectingConnectionGroup(object) {
+
+                    @Override
+                    protected Map<String, String> getTokens() throws GuacamoleException {
+                        return TokenInjectingUserContext.this.getTokens(object);
+                    }
+
+                };
             }
 
             @Override
@@ -140,7 +147,14 @@ public class TokenInjectingUserContext extends DelegatingUserContext {
 
             @Override
             protected Connection decorate(Connection object) throws GuacamoleException {
-                return new TokenInjectingConnection(object, getTokens(object));
+                return new TokenInjectingConnection(object) {
+
+                    @Override
+                    protected Map<String, String> getTokens() throws GuacamoleException {
+                        return TokenInjectingUserContext.this.getTokens(object);
+                    }
+
+                };
             }
 
             @Override
