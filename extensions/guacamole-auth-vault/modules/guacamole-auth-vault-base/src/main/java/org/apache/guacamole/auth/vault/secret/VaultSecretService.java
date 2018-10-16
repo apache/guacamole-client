@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.vault.secret;
 
+import java.util.concurrent.Future;
 import org.apache.guacamole.GuacamoleException;
 
 /**
@@ -49,19 +50,23 @@ public interface VaultSecretService {
     String canonicalize(String name);
 
     /**
-     * Returns the value of the secret having the given name. If no such
-     * secret exists, null is returned.
+     * Returns a Future which eventually completes with the value of the secret
+     * having the given name. If no such secret exists, the Future will be
+     * completed with null.
      *
      * @param name
      *     The name of the secret to retrieve.
      *
      * @return
-     *     The value of the secret having the given name, or null if no such
-     *     secret exists.
+     *     A Future which completes with value of the secret having the given
+     *     name. If no such secret exists, the Future will be completed with
+     *     null. If an error occurs asynchronously which prevents retrieval of
+     *     the secret, that error will be exposed through an ExecutionException
+     *     when an attempt is made to retrieve the value from the Future.
      *
      * @throws GuacamoleException
      *     If the secret cannot be retrieved due to an error.
      */
-    String getValue(String name) throws GuacamoleException;
+    Future<String> getValue(String name) throws GuacamoleException;
 
 }

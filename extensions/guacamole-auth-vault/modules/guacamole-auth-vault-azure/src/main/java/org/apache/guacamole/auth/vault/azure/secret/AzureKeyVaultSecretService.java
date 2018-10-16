@@ -25,10 +25,11 @@ import com.google.inject.Singleton;
 import com.microsoft.azure.keyvault.KeyVaultClient;
 import com.microsoft.azure.keyvault.authentication.KeyVaultCredentials;
 import com.microsoft.azure.keyvault.models.SecretBundle;
+import com.microsoft.rest.ServiceCallback;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.vault.azure.conf.AzureKeyVaultAuthenticationException;
 import org.apache.guacamole.auth.vault.azure.conf.AzureKeyVaultConfigurationService;
 import org.apache.guacamole.auth.vault.secret.CachedVaultSecretService;
@@ -77,20 +78,43 @@ public class AzureKeyVaultSecretService extends CachedVaultSecretService {
         int ttl = confService.getSecretTTL();
         String url = confService.getVaultURL();
 
-        try {
+        CompletableFuture<String> retrievedValue = new CompletableFuture<>();
 
-            // Retrieve requested secret from Azure Key Vault
-            KeyVaultClient client = new KeyVaultClient(credentialProvider.get());
-            SecretBundle secret = client.getSecret(url, name);
+        // getSecretAsync() still blocks for around half a second, despite
+        // technically being asynchronous
+        (new Thread() {
 
-            // Cache retrieved value
-            String value = (secret != null) ? secret.value() : null;
-            return new CachedSecret(value, ttl);
+            @Override
+            public void run() {
+                try {
 
-        }
-        catch (AzureKeyVaultAuthenticationException e) {
-            throw new GuacamoleServerException("Unable to authenticate with Azure.", e);
-        }
+                    // Retrieve requested secret from Azure Key Vault
+                    KeyVaultClient client = new KeyVaultClient(credentialProvider.get());
+                    client.getSecretAsync(url, name, new ServiceCallback<SecretBundle>() {
+
+                        @Override
+                        public void failure(Throwable t) {
+                            retrievedValue.completeExceptionally(t);
+                        }
+
+                        @Override
+                        public void success(SecretBundle secret) {
+                            String value = (secret != null) ? secret.value() : null;
+                            retrievedValue.complete(value);
+                        }
+
+                    });
+
+                }
+                catch (AzureKeyVaultAuthenticationException e) {
+                    retrievedValue.completeExceptionally(e);
+                }
+            }
+
+        }).start();
+
+        // Cache retrieved value
+        return new CachedSecret(retrievedValue, ttl);
 
     }
 

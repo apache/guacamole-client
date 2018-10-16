@@ -48,9 +48,10 @@ public abstract class CachedVaultSecretService implements VaultSecretService {
     protected class CachedSecret {
 
         /**
-         * The value of the secret at the time it was last retrieved.
+         * A Future which contains or will contain the value of the secret at
+         * the time it was last retrieved.
          */
-        private final String value;
+        private final Future<String> value;
 
         /**
          * The time the value should be considered out-of-date, in milliseconds
@@ -64,13 +65,15 @@ public abstract class CachedVaultSecretService implements VaultSecretService {
          * which it should be considered out-of-date.
          *
          * @param value
-         *     The current value of the secret.
+         *     A Future which contains or will contain the current value of the
+         *     secret. If no such secret exists, the given Future should
+         *     complete with null.
          *
          * @param ttl
          *     The maximum number of milliseconds that this value should be
          *     cached.
          */
-        public CachedSecret(String value, int ttl) {
+        public CachedSecret(Future<String> value, int ttl) {
             this.value = value;
             this.expires = System.currentTimeMillis() + ttl;
         }
@@ -80,9 +83,14 @@ public abstract class CachedVaultSecretService implements VaultSecretService {
          * The actual value of the secret may have changed.
          *
          * @return
-         *     The value of the secret at the time it was last retrieved.
+         *     A Future which will eventually complete with the value of the
+         *     secret at the time it was last retrieved. If no such secret
+         *     exists, the Future will be completed with null. If an error
+         *     occurs which prevents retrieval of the secret, that error will
+         *     be exposed through an ExecutionException when an attempt is made
+         *     to retrieve the value from the Future.
          */
-        public String getValue() {
+        public Future<String> getValue() {
             return value;
         }
 
@@ -129,7 +137,7 @@ public abstract class CachedVaultSecretService implements VaultSecretService {
             throws GuacamoleException;
 
     @Override
-    public String getValue(String name) throws GuacamoleException {
+    public Future<String> getValue(String name) throws GuacamoleException {
 
         CompletableFuture<CachedSecret> refreshEntry;
 
@@ -175,7 +183,7 @@ public abstract class CachedVaultSecretService implements VaultSecretService {
         try {
             CachedSecret secret = refreshCachedSecret(name);
             refreshEntry.complete(secret);
-            logger.debug("Cached secret for \"{}\" has been refreshed.", name);
+            logger.debug("Cached secret for \"{}\" will be refreshed.", name);
             return secret.getValue();
         }
 
