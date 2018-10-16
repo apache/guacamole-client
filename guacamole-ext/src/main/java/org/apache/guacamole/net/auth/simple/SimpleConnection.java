@@ -113,8 +113,7 @@ public class SimpleConnection extends AbstractConnection {
 
         // Apply tokens to config parameters
         GuacamoleConfiguration filteredConfig = new GuacamoleConfiguration(config);
-        TokenFilter tokenFilter = new TokenFilter();
-        tokenFilter.filterValues(config.getParameters());
+        new TokenFilter(tokens).filterValues(filteredConfig.getParameters());
 
         GuacamoleSocket socket;
 
