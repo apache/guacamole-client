@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.token;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -68,7 +69,27 @@ public class TokenFilter {
     /**
      * The values of all known tokens.
      */
-    private final Map<String, String> tokenValues = new HashMap<String, String>();
+    private final Map<String, String> tokenValues;
+
+    /**
+     * Creates a new TokenFilter which has no associated tokens. Tokens must
+     * later be given using {@link #setToken(java.lang.String, java.lang.String)}
+     * or {@link #setTokens(java.util.Map)}.
+     */
+    public TokenFilter() {
+         this(Collections.<String, String>emptyMap());
+    }
+
+    /**
+     * Creates a new TokenFilter which is initialized with the given token
+     * name/value pairs.
+     *
+     * @param tokenValues
+     *     A map containing token names and their corresponding values.
+     */
+    public TokenFilter(Map<String, String> tokenValues) {
+        this.tokenValues = new HashMap<>(tokenValues);
+    }
 
     /**
      * Sets the token having the given name to the given value. Any existing
