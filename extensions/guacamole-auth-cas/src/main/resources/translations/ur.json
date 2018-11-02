@@ -1,0 +1,12 @@
+{
+
+    "DATA_SOURCE_CAS" : {
+        "NAME" : "CAS SSO Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_TICKET"        : "",
+        "INFO_CAS_REDIRECT_PENDING"  : "(CAS) براہ مہربانی انتظار کریں۔ سی اے ایس اوتھنٹیکیشن کی طرف ریڈائيریکٹ کیا جا رہا ہے۔۔۔"
+    }
+
+}
