@@ -35,9 +35,6 @@ import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
-import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
-import org.apache.guacamole.net.auth.simple.SimpleRelatedObjectSet;
-import org.apache.guacamole.net.auth.simple.SimpleSystemPermissionSet;
 
 /**
  * An immutable implementation of User which defines READ permission for each of
@@ -122,7 +119,7 @@ public class SharedUser implements User {
 
     @Override
     public SystemPermissionSet getSystemPermissions() throws GuacamoleException {
-        return new SimpleSystemPermissionSet();
+        return SystemPermissionSet.EMPTY_SET;
     }
 
     @Override
@@ -145,22 +142,22 @@ public class SharedUser implements User {
 
     @Override
     public ObjectPermissionSet getUserGroupPermissions() throws GuacamoleException {
-        return new SimpleObjectPermissionSet();
+        return ObjectPermissionSet.EMPTY_SET;
     }
 
     @Override
     public ObjectPermissionSet getSharingProfilePermissions() throws GuacamoleException {
-        return new SimpleObjectPermissionSet();
+        return ObjectPermissionSet.EMPTY_SET;
     }
 
     @Override
     public ObjectPermissionSet getActiveConnectionPermissions() throws GuacamoleException {
-        return new SimpleObjectPermissionSet();
+        return ObjectPermissionSet.EMPTY_SET;
     }
 
     @Override
     public RelatedObjectSet getUserGroups() throws GuacamoleException {
-        return new SimpleRelatedObjectSet();
+        return RelatedObjectSet.EMPTY_SET;
     }
 
     @Override

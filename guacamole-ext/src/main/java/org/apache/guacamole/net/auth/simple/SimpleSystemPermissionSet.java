@@ -38,7 +38,10 @@ public class SimpleSystemPermissionSet implements SystemPermissionSet {
     private Set<SystemPermission> permissions = Collections.<SystemPermission>emptySet();
 
     /**
-     * Creates a new empty SimpleSystemPermissionSet.
+     * Creates a new empty SimpleSystemPermissionSet. If you are not extending
+     * SimpleSystemPermissionSet and only need an immutable, empty
+     * SystemPermissionSet, consider using {@link SystemPermissionSet#EMPTY_SET}
+     * instead.
      */
     public SimpleSystemPermissionSet() {
     }

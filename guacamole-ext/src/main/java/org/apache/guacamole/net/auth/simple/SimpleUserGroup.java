@@ -62,57 +62,57 @@ public class SimpleUserGroup extends AbstractIdentifiable implements UserGroup {
     @Override
     public SystemPermissionSet getSystemPermissions()
             throws GuacamoleException {
-        return new SimpleSystemPermissionSet();
+        return SystemPermissionSet.EMPTY_SET;
     }
 
     @Override
     public ObjectPermissionSet getConnectionPermissions()
             throws GuacamoleException {
-        return new SimpleObjectPermissionSet();
+        return ObjectPermissionSet.EMPTY_SET;
     }
 
     @Override
     public ObjectPermissionSet getConnectionGroupPermissions()
             throws GuacamoleException {
-        return new SimpleObjectPermissionSet();
+        return ObjectPermissionSet.EMPTY_SET;
     }
 
     @Override
     public ObjectPermissionSet getUserPermissions()
             throws GuacamoleException {
-        return new SimpleObjectPermissionSet();
+        return ObjectPermissionSet.EMPTY_SET;
     }
 
     @Override
     public ObjectPermissionSet getUserGroupPermissions()
             throws GuacamoleException {
-        return new SimpleObjectPermissionSet();
+        return ObjectPermissionSet.EMPTY_SET;
     }
 
     @Override
     public ObjectPermissionSet getActiveConnectionPermissions()
             throws GuacamoleException {
-        return new SimpleObjectPermissionSet();
+        return ObjectPermissionSet.EMPTY_SET;
     }
 
     @Override
     public ObjectPermissionSet getSharingProfilePermissions() {
-        return new SimpleObjectPermissionSet();
+        return ObjectPermissionSet.EMPTY_SET;
     }
 
     @Override
     public RelatedObjectSet getUserGroups() throws GuacamoleException {
-        return new SimpleRelatedObjectSet();
+        return RelatedObjectSet.EMPTY_SET;
     }
 
     @Override
     public RelatedObjectSet getMemberUsers() throws GuacamoleException {
-        return new SimpleRelatedObjectSet();
+        return RelatedObjectSet.EMPTY_SET;
     }
 
     @Override
     public RelatedObjectSet getMemberUserGroups() throws GuacamoleException {
-        return new SimpleRelatedObjectSet();
+        return RelatedObjectSet.EMPTY_SET;
     }
 
 }

@@ -41,7 +41,10 @@ public class SimpleObjectPermissionSet implements ObjectPermissionSet {
     private Set<ObjectPermission> permissions = Collections.<ObjectPermission>emptySet();
 
     /**
-     * Creates a new empty SimpleObjectPermissionSet.
+     * Creates a new empty SimpleObjectPermissionSet. If you are not extending
+     * SimpleObjectPermissionSet and only need an immutable, empty
+     * ObjectPermissionSet, consider using {@link ObjectPermissionSet#EMPTY_SET}
+     * instead.
      */
     public SimpleObjectPermissionSet() {
     }
