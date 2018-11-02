@@ -28,13 +28,14 @@ import com.novell.ldap.LDAPReferralException;
 import com.novell.ldap.LDAPSearchResults;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.auth.ldap.LDAPAuthenticationProvider;
 import org.apache.guacamole.auth.ldap.ConfigurationService;
 import org.apache.guacamole.auth.ldap.EscapingService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.auth.ldap.ObjectQueryService;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.simple.SimpleConnection;
@@ -66,6 +67,12 @@ public class ConnectionService {
      */
     @Inject
     private ConfigurationService confService;
+
+    /**
+     * Service for executing LDAP queries.
+     */
+    @Inject
+    private ObjectQueryService queryService;
 
     /**
      * Returns all Guacamole connections accessible to the user currently bound
@@ -113,101 +120,71 @@ public class ConnectionService {
             // looking for direct membership in the guacConfigGroup
             // and possibly any groups the user is a member of that are
             // referred to in the seeAlso attribute of the guacConfigGroup.
-            LDAPSearchResults results = ldapConnection.search(
-                configurationBaseDN,
-                LDAPConnection.SCOPE_SUB,
-                connectionSearchFilter,
-                null,
-                false,
-                confService.getLDAPSearchConstraints()
-            );
+            List<LDAPEntry> results = queryService.search(ldapConnection, configurationBaseDN, connectionSearchFilter);
 
             // Build token filter containing credential tokens
             TokenFilter tokenFilter = new TokenFilter();
             StandardTokens.addStandardTokens(tokenFilter, user);
 
-            // Produce connections for each readable configuration
-            Map<String, Connection> connections = new HashMap<String, Connection>();
-            while (results.hasMore()) {
+            // Return a map of all readable connections
+            return queryService.asMap(results, (entry) -> {
 
-                try {
+                // Get common name (CN)
+                LDAPAttribute cn = entry.getAttribute("cn");
+                if (cn == null) {
+                    logger.warn("guacConfigGroup is missing a cn.");
+                    return null;
+                }
 
-                    LDAPEntry entry = results.next();
+                // Get associated protocol
+                LDAPAttribute protocol = entry.getAttribute("guacConfigProtocol");
+                if (protocol == null) {
+                    logger.warn("guacConfigGroup \"{}\" is missing the "
+                              + "required \"guacConfigProtocol\" attribute.",
+                            cn.getStringValue());
+                    return null;
+                }
 
-                    // Get common name (CN)
-                    LDAPAttribute cn = entry.getAttribute("cn");
-                    if (cn == null) {
-                        logger.warn("guacConfigGroup is missing a cn.");
-                        continue;
-                    }
+                // Set protocol
+                GuacamoleConfiguration config = new GuacamoleConfiguration();
+                config.setProtocol(protocol.getStringValue());
 
-                    // Get associated protocol
-                    LDAPAttribute protocol = entry.getAttribute("guacConfigProtocol");
-                    if (protocol == null) {
-                        logger.warn("guacConfigGroup \"{}\" is missing the "
-                                  + "required \"guacConfigProtocol\" attribute.",
-                                cn.getStringValue());
-                        continue;
-                    }
+                // Get parameters, if any
+                LDAPAttribute parameterAttribute = entry.getAttribute("guacConfigParameter");
+                if (parameterAttribute != null) {
 
-                    // Set protocol
-                    GuacamoleConfiguration config = new GuacamoleConfiguration();
-                    config.setProtocol(protocol.getStringValue());
+                    // For each parameter
+                    Enumeration<?> parameters = parameterAttribute.getStringValues();
+                    while (parameters.hasMoreElements()) {
 
-                    // Get parameters, if any
-                    LDAPAttribute parameterAttribute = entry.getAttribute("guacConfigParameter");
-                    if (parameterAttribute != null) {
+                        String parameter = (String) parameters.nextElement();
 
-                        // For each parameter
-                        Enumeration<?> parameters = parameterAttribute.getStringValues();
-                        while (parameters.hasMoreElements()) {
+                        // Parse parameter
+                        int equals = parameter.indexOf('=');
+                        if (equals != -1) {
 
-                            String parameter = (String) parameters.nextElement();
+                            // Parse name
+                            String name = parameter.substring(0, equals);
+                            String value = parameter.substring(equals+1);
 
-                            // Parse parameter
-                            int equals = parameter.indexOf('=');
-                            if (equals != -1) {
-
-                                // Parse name
-                                String name = parameter.substring(0, equals);
-                                String value = parameter.substring(equals+1);
-
-                                config.setParameter(name, value);
-
-                            }
+                            config.setParameter(name, value);
 
                         }
 
                     }
 
-                    // Filter the configuration, substituting all defined tokens
-                    tokenFilter.filterValues(config.getParameters());
-
-                    // Store connection using cn for both identifier and name
-                    String name = cn.getStringValue();
-                    Connection connection = new SimpleConnection(name, name, config);
-                    connection.setParentIdentifier(LDAPAuthenticationProvider.ROOT_CONNECTION_GROUP);
-                    connections.put(name, connection);
-
                 }
 
-                // Deal with issues following LDAP referrals
-                catch (LDAPReferralException e) {
-                    if (confService.getFollowReferrals()) {
-                        logger.error("Could not follow referral: {}", e.getFailedReferral());
-                        logger.debug("Error encountered trying to follow referral.", e);
-                        throw new GuacamoleServerException("Could not follow LDAP referral.", e);
-                    }
-                    else {
-                        logger.warn("Given a referral, but referrals are disabled. Error was: {}", e.getMessage());
-                        logger.debug("Got a referral, but configured to not follow them.", e);
-                    }
-                }
+                // Filter the configuration, substituting all defined tokens
+                tokenFilter.filterValues(config.getParameters());
 
-            }
+                // Store connection using cn for both identifier and name
+                String name = cn.getStringValue();
+                Connection connection = new SimpleConnection(name, name, config);
+                connection.setParentIdentifier(LDAPAuthenticationProvider.ROOT_CONNECTION_GROUP);
+                return connection;
 
-            // Return map of all connections
-            return connections;
+            });
 
         }
         catch (LDAPException e) {
