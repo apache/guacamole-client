@@ -20,36 +20,16 @@
 package org.apache.guacamole.net.auth;
 
 import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
- * Base implementation of User which provides default implementations of
+ * Base implementation of UserGroup which provides default implementations of
  * most functions.
  */
-public abstract class AbstractUser extends AbstractIdentifiable
-        implements User {
-
-    /**
-     * This user's password. Note that while this provides a means for the
-     * password to be set, the data stored in this String is not necessarily
-     * the user's actual password. It may be hashed, it may be arbitrary.
-     */
-    private String password;
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public void setPassword(String password) {
-        this.password = password;
-    }
+public class AbstractUserGroup extends AbstractIdentifiable implements UserGroup {
 
     /**
      * {@inheritDoc}
@@ -72,29 +52,6 @@ public abstract class AbstractUser extends AbstractIdentifiable
     @Override
     public void setAttributes(Map<String, String> attributes) {
         // Ignore all attributes by default
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation simply returns {@code null}. Implementations that
-     * wish to expose the date and time that a user was last active should
-     * override this function.
-     */
-    @Override
-    public Date getLastActive() {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation simply an immutable, empty list. Implementations
-     * that wish to expose user login history should override this function.
-     */
-    @Override
-    public List<ActivityRecord> getHistory() throws GuacamoleException {
-        return Collections.<ActivityRecord>emptyList();
     }
 
     /**
@@ -202,13 +159,25 @@ public abstract class AbstractUser extends AbstractIdentifiable
     /**
      * {@inheritDoc}
      *
-     * <p>This implementation simply returns {@code this}. Implementations that
-     * wish to expose permissions which apply indirectly (such as through
-     * group inheritance) should override this function.
+     * <p>This implementation simply an immutable, empty related object set.
+     * Implementations that wish to expose group membership should override
+     * this function.
      */
     @Override
-    public Permissions getEffectivePermissions() throws GuacamoleException {
-        return this;
+    public RelatedObjectSet getMemberUsers() throws GuacamoleException {
+        return RelatedObjectSet.EMPTY_SET;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>This implementation simply an immutable, empty related object set.
+     * Implementations that wish to expose group membership should override
+     * this function.
+     */
+    @Override
+    public RelatedObjectSet getMemberUserGroups() throws GuacamoleException {
+        return RelatedObjectSet.EMPTY_SET;
     }
 
 }

@@ -20,20 +20,12 @@
 package org.apache.guacamole.net.auth.simple;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AbstractUser;
-import org.apache.guacamole.net.auth.ActivityRecord;
-import org.apache.guacamole.net.auth.Permissions;
-import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
-import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
  * A read-only User implementation which has no permissions. Implementations
@@ -70,10 +62,7 @@ public class SimpleUser extends AbstractUser {
      *     The username to assign to this SimpleUser.
      */
     public SimpleUser(String username) {
-
-        // Set username
         super.setIdentifier(username);
-
     }
 
     /**
@@ -173,32 +162,6 @@ public class SimpleUser extends AbstractUser {
     }
 
     @Override
-    public Map<String, String> getAttributes() {
-        return Collections.<String, String>emptyMap();
-    }
-
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        // Do nothing - there are no attributes
-    }
-
-    @Override
-    public Date getLastActive() {
-        return null;
-    }
-
-    @Override
-    public List<ActivityRecord> getHistory() throws GuacamoleException {
-        return Collections.<ActivityRecord>emptyList();
-    }
-
-    @Override
-    public SystemPermissionSet getSystemPermissions()
-            throws GuacamoleException {
-        return SystemPermissionSet.EMPTY_SET;
-    }
-
-    @Override
     public ObjectPermissionSet getConnectionPermissions()
             throws GuacamoleException {
         return new SimpleObjectPermissionSet(connectionPermissions);
@@ -214,33 +177,6 @@ public class SimpleUser extends AbstractUser {
     public ObjectPermissionSet getUserPermissions()
             throws GuacamoleException {
         return new SimpleObjectPermissionSet(userPermissions);
-    }
-
-    @Override
-    public ObjectPermissionSet getUserGroupPermissions()
-            throws GuacamoleException {
-        return ObjectPermissionSet.EMPTY_SET;
-    }
-
-    @Override
-    public ObjectPermissionSet getActiveConnectionPermissions()
-            throws GuacamoleException {
-        return ObjectPermissionSet.EMPTY_SET;
-    }
-
-    @Override
-    public ObjectPermissionSet getSharingProfilePermissions() {
-        return ObjectPermissionSet.EMPTY_SET;
-    }
-
-    @Override
-    public RelatedObjectSet getUserGroups() throws GuacamoleException {
-        return RelatedObjectSet.EMPTY_SET;
-    }
-
-    @Override
-    public Permissions getEffectivePermissions() throws GuacamoleException {
-        return this;
     }
 
 }

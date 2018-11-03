@@ -19,21 +19,14 @@
 
 package org.apache.guacamole.net.auth.simple;
 
-import java.util.Collections;
-import java.util.Map;
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.net.auth.AbstractIdentifiable;
-import org.apache.guacamole.net.auth.RelatedObjectSet;
-import org.apache.guacamole.net.auth.UserGroup;
-import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
-import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
+import org.apache.guacamole.net.auth.AbstractUserGroup;
 
 /**
  * A read-only UserGroup implementation which has no members and no
  * permissions. Implementations that need to define members or permissions
  * should extend this class and override the associated getters.
  */
-public class SimpleUserGroup extends AbstractIdentifiable implements UserGroup {
+public class SimpleUserGroup extends AbstractUserGroup {
 
     /**
      * Creates a completely uninitialized SimpleUserGroup.
@@ -49,72 +42,6 @@ public class SimpleUserGroup extends AbstractIdentifiable implements UserGroup {
      */
     public SimpleUserGroup(String identifier) {
         super.setIdentifier(identifier);
-    }
-
-    @Override
-    public Map<String, String> getAttributes() {
-        return Collections.<String, String>emptyMap();
-    }
-
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        // Do nothing - there are no attributes
-    }
-
-    @Override
-    public SystemPermissionSet getSystemPermissions()
-            throws GuacamoleException {
-        return SystemPermissionSet.EMPTY_SET;
-    }
-
-    @Override
-    public ObjectPermissionSet getConnectionPermissions()
-            throws GuacamoleException {
-        return ObjectPermissionSet.EMPTY_SET;
-    }
-
-    @Override
-    public ObjectPermissionSet getConnectionGroupPermissions()
-            throws GuacamoleException {
-        return ObjectPermissionSet.EMPTY_SET;
-    }
-
-    @Override
-    public ObjectPermissionSet getUserPermissions()
-            throws GuacamoleException {
-        return ObjectPermissionSet.EMPTY_SET;
-    }
-
-    @Override
-    public ObjectPermissionSet getUserGroupPermissions()
-            throws GuacamoleException {
-        return ObjectPermissionSet.EMPTY_SET;
-    }
-
-    @Override
-    public ObjectPermissionSet getActiveConnectionPermissions()
-            throws GuacamoleException {
-        return ObjectPermissionSet.EMPTY_SET;
-    }
-
-    @Override
-    public ObjectPermissionSet getSharingProfilePermissions() {
-        return ObjectPermissionSet.EMPTY_SET;
-    }
-
-    @Override
-    public RelatedObjectSet getUserGroups() throws GuacamoleException {
-        return RelatedObjectSet.EMPTY_SET;
-    }
-
-    @Override
-    public RelatedObjectSet getMemberUsers() throws GuacamoleException {
-        return RelatedObjectSet.EMPTY_SET;
-    }
-
-    @Override
-    public RelatedObjectSet getMemberUserGroups() throws GuacamoleException {
-        return RelatedObjectSet.EMPTY_SET;
     }
 
 }
