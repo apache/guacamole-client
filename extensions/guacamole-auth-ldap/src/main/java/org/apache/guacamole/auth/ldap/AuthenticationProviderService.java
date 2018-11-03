@@ -23,9 +23,11 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.novell.ldap.LDAPConnection;
 import java.util.List;
+import java.util.Set;
 import org.apache.guacamole.auth.ldap.user.AuthenticatedUser;
 import org.apache.guacamole.auth.ldap.user.UserContext;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.ldap.group.UserGroupService;
 import org.apache.guacamole.auth.ldap.user.UserService;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
@@ -61,6 +63,12 @@ public class AuthenticationProviderService {
      */
     @Inject
     private UserService userService;
+
+    /**
+     * Service for retrieving user groups.
+     */
+    @Inject
+    private UserGroupService userGroupService;
 
     /**
      * Provider for AuthenticatedUser objects.
@@ -222,9 +230,14 @@ public class AuthenticationProviderService {
 
         try {
 
+            // Retrieve group membership of the user that just authenticated
+            Set<String> effectiveGroups =
+                    userGroupService.getParentUserGroupIdentifiers(ldapConnection,
+                            ldapConnection.getAuthenticationDN());
+
             // Return AuthenticatedUser if bind succeeds
             AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-            authenticatedUser.init(credentials);
+            authenticatedUser.init(credentials, effectiveGroups);
             return authenticatedUser;
 
         }

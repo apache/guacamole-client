@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.ldap.user;
 
 import com.google.inject.Inject;
+import java.util.Set;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -43,13 +44,25 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
     private Credentials credentials;
 
     /**
-     * Initializes this AuthenticatedUser using the given credentials.
+     * The unique identifiers of all user groups which affect the permissions
+     * available to this user.
+     */
+    private Set<String> effectiveGroups;
+
+    /**
+     * Initializes this AuthenticatedUser with the given credentials and set of
+     * effective user groups.
      *
      * @param credentials
      *     The credentials provided when this user was authenticated.
+     *
+     * @param effectiveGroups
+     *     The unique identifiers of all user groups which affect the
+     *     permissions available to this user.
      */
-    public void init(Credentials credentials) {
+    public void init(Credentials credentials, Set<String> effectiveGroups) {
         this.credentials = credentials;
+        this.effectiveGroups = effectiveGroups;
         setIdentifier(credentials.getUsername());
     }
 
@@ -61,6 +74,11 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
     @Override
     public Credentials getCredentials() {
         return credentials;
+    }
+
+    @Override
+    public Set<String> getEffectiveUserGroups() {
+        return effectiveGroups;
     }
 
 }

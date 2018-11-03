@@ -24,8 +24,6 @@ import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
-import com.novell.ldap.LDAPReferralException;
-import com.novell.ldap.LDAPSearchResults;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -36,6 +34,7 @@ import org.apache.guacamole.auth.ldap.EscapingService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.ldap.ObjectQueryService;
+import org.apache.guacamole.auth.ldap.group.UserGroupService;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.simple.SimpleConnection;
@@ -73,6 +72,12 @@ public class ConnectionService {
      */
     @Inject
     private ObjectQueryService queryService;
+
+    /**
+     * Service for retrieving user groups.
+     */
+    @Inject
+    private UserGroupService userGroupService;
 
     /**
      * Returns all Guacamole connections accessible to the user currently bound
@@ -226,43 +231,12 @@ public class ConnectionService {
         connectionSearchFilter.append(escapingService.escapeLDAPSearchFilter(userDN));
         connectionSearchFilter.append(")");
 
-        // If group base DN is specified search for user groups
-        String groupBaseDN = confService.getGroupBaseDN();
-        if (groupBaseDN != null) {
-
-            // Get all groups the user is a member of starting at the groupBaseDN, excluding guacConfigGroups
-            LDAPSearchResults userRoleGroupResults = ldapConnection.search(
-                groupBaseDN,
-                LDAPConnection.SCOPE_SUB,
-                "(&(!(objectClass=guacConfigGroup))(member=" + escapingService.escapeLDAPSearchFilter(userDN) + "))",
-                null,
-                false,
-                confService.getLDAPSearchConstraints()
-            );
-
-            // Append the additional user groups to the LDAP filter
-            // Now the filter will also look for guacConfigGroups that refer
-            // to groups the user is a member of
-            // The guacConfig group uses the seeAlso attribute to refer
-            // to these other groups
-            while (userRoleGroupResults.hasMore()) {
-                try {
-                    LDAPEntry entry = userRoleGroupResults.next();
-                    connectionSearchFilter.append("(seeAlso=").append(escapingService.escapeLDAPSearchFilter(entry.getDN())).append(")");
-                }
-
-                catch (LDAPReferralException e) {
-                    if (confService.getFollowReferrals()) {
-                        logger.error("Could not follow referral: {}", e.getFailedReferral());
-                        logger.debug("Error encountered trying to follow referral.", e);
-                        throw new GuacamoleServerException("Could not follow LDAP referral.", e);
-                    }
-                    else {
-                        logger.warn("Given a referral, but referrals are disabled. Error was: {}", e.getMessage());
-                        logger.debug("Got a referral, but configured to not follow them.", e);
-                    }
-                }
-            }
+        // Additionally filter by group membership if the current user is a
+        // member of any user groups
+        List<LDAPEntry> userGroups = userGroupService.getParentUserGroupEntries(ldapConnection, userDN);
+        if (!userGroups.isEmpty()) {
+            for (LDAPEntry entry : userGroups)
+                connectionSearchFilter.append("(seeAlso=").append(escapingService.escapeLDAPSearchFilter(entry.getDN())).append(")");
         }
 
         // Complete the search filter.

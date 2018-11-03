@@ -25,6 +25,7 @@ import java.util.Collections;
 import org.apache.guacamole.auth.ldap.connection.ConnectionService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.ldap.LDAPAuthenticationProvider;
+import org.apache.guacamole.auth.ldap.group.UserGroupService;
 import org.apache.guacamole.net.auth.AbstractUserContext;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -32,6 +33,7 @@ import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionGroup;
 import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 import org.apache.guacamole.net.auth.simple.SimpleUser;
@@ -62,6 +64,12 @@ public class UserContext extends AbstractUserContext {
     private UserService userService;
 
     /**
+     * Service for retrieving user groups.
+     */
+    @Inject
+    private UserGroupService userGroupService;
+
+    /**
      * Reference to the AuthenticationProvider associated with this
      * UserContext.
      */
@@ -79,6 +87,12 @@ public class UserContext extends AbstractUserContext {
      * with this UserContext.
      */
     private Directory<User> userDirectory;
+
+    /**
+     * Directory containing all UserGroup objects accessible to the user
+     * associated with this UserContext.
+     */
+    private Directory<UserGroup> userGroupDirectory;
 
     /**
      * Directory containing all Connection objects accessible to the user
@@ -112,12 +126,17 @@ public class UserContext extends AbstractUserContext {
             throws GuacamoleException {
 
         // Query all accessible users
-        userDirectory = new SimpleDirectory<User>(
+        userDirectory = new SimpleDirectory<>(
             userService.getUsers(ldapConnection)
         );
 
+        // Query all accessible user groups
+        userGroupDirectory = new SimpleDirectory<>(
+            userGroupService.getUserGroups(ldapConnection)
+        );
+
         // Query all accessible connections
-        connectionDirectory = new SimpleDirectory<Connection>(
+        connectionDirectory = new SimpleDirectory<>(
             connectionService.getConnections(user, ldapConnection)
         );
 
@@ -133,6 +152,7 @@ public class UserContext extends AbstractUserContext {
         self = new SimpleUser(
             user.getIdentifier(),
             userDirectory.getIdentifiers(),
+            userGroupDirectory.getIdentifiers(),
             connectionDirectory.getIdentifiers(),
             Collections.singleton(LDAPAuthenticationProvider.ROOT_CONNECTION_GROUP)
         );
@@ -152,6 +172,11 @@ public class UserContext extends AbstractUserContext {
     @Override
     public Directory<User> getUserDirectory() throws GuacamoleException {
         return userDirectory;
+    }
+
+    @Override
+    public Directory<UserGroup> getUserGroupDirectory() throws GuacamoleException {
+        return userGroupDirectory;
     }
 
     @Override
