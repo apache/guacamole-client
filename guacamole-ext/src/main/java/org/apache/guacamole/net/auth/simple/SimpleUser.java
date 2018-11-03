@@ -36,7 +36,9 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
- * An extremely basic User implementation.
+ * A read-only User implementation which has no permissions. Implementations
+ * that need to define permissions should extend this class and override the
+ * associated getters.
  */
 public class SimpleUser extends AbstractUser {
 
@@ -62,7 +64,7 @@ public class SimpleUser extends AbstractUser {
     }
 
     /**
-     * Creates a new SimpleUser having the given username and no permissions.
+     * Creates a new SimpleUser having the given username.
      *
      * @param username
      *     The username to assign to this SimpleUser.

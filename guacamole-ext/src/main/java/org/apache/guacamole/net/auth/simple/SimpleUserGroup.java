@@ -29,7 +29,9 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
- * A read-only UserGroup implementation which has no members.
+ * A read-only UserGroup implementation which has no members and no
+ * permissions. Implementations that need to define members or permissions
+ * should extend this class and override the associated getters.
  */
 public class SimpleUserGroup extends AbstractIdentifiable implements UserGroup {
 
