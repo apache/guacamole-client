@@ -41,22 +41,24 @@ import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 public class SimpleUser extends AbstractUser {
 
     /**
-     * All connection permissions granted to this user.
+     * All user permissions granted to this user.
      */
-    private final Set<ObjectPermission> userPermissions =
-            new HashSet<ObjectPermission>();
+    private final Set<ObjectPermission> userPermissions = new HashSet<>();
+
+    /**
+     * All user group permissions granted to this user.
+     */
+    private final Set<ObjectPermission> userGroupPermissions = new HashSet<>();
 
     /**
      * All connection permissions granted to this user.
      */
-    private final Set<ObjectPermission> connectionPermissions =
-            new HashSet<ObjectPermission>();
+    private final Set<ObjectPermission> connectionPermissions = new HashSet<>();
     
     /**
      * All connection group permissions granted to this user.
      */
-    private final Set<ObjectPermission> connectionGroupPermissions =
-            new HashSet<ObjectPermission>();
+    private final Set<ObjectPermission> connectionGroupPermissions = new HashSet<>();
 
     /**
      * Creates a completely uninitialized SimpleUser.
@@ -73,7 +75,7 @@ public class SimpleUser extends AbstractUser {
     public SimpleUser(String username) {
 
         // Set username
-        setIdentifier(username);
+        super.setIdentifier(username);
 
     }
 
@@ -92,18 +94,17 @@ public class SimpleUser extends AbstractUser {
             Collection<String> identifiers) {
 
         // Add a READ permission to the set for each identifier given
-        for (String identifier : identifiers) {
-            permissions.add(new ObjectPermission (
+        identifiers.forEach(identifier ->
+            permissions.add(new ObjectPermission(
                 ObjectPermission.Type.READ,
-                identifier
+                identifier)
             ));
-        }
 
     }
-    
+
     /**
      * Creates a new SimpleUser having the given username and READ access to
-     * the connections and groups having the given identifiers.
+     * the connections and connection groups having the given identifiers.
      *
      * @param username
      *     The username to assign to this SimpleUser.
@@ -122,6 +123,43 @@ public class SimpleUser extends AbstractUser {
         this(username);
 
         // Add permissions
+        addReadPermissions(connectionPermissions,      connectionIdentifiers);
+        addReadPermissions(connectionGroupPermissions, connectionGroupIdentifiers);
+
+    }
+
+    /**
+     * Creates a new SimpleUser having the given username and READ access to
+     * the users, user groups, connections, and connection groups having the
+     * given identifiers.
+     *
+     * @param username
+     *     The username to assign to this SimpleUser.
+     *
+     * @param userIdentifiers
+     *     The identifiers of all users this user has READ access to.
+     *
+     * @param userGroupIdentifiers
+     *     The identifiers of all user groups this user has READ access to.
+     *
+     * @param connectionIdentifiers
+     *     The identifiers of all connections this user has READ access to.
+     *
+     * @param connectionGroupIdentifiers
+     *     The identifiers of all connection groups this user has READ access
+     *     to.
+     */
+    public SimpleUser(String username,
+            Collection<String> userIdentifiers,
+            Collection<String> userGroupIdentifiers,
+            Collection<String> connectionIdentifiers,
+            Collection<String> connectionGroupIdentifiers) {
+
+        this(username);
+
+        // Add permissions
+        addReadPermissions(userPermissions,            userIdentifiers);
+        addReadPermissions(userGroupPermissions,       userGroupIdentifiers);
         addReadPermissions(connectionPermissions,      connectionIdentifiers);
         addReadPermissions(connectionGroupPermissions, connectionGroupIdentifiers);
 
