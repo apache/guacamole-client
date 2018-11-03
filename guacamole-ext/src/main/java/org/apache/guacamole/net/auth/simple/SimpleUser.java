@@ -46,11 +46,6 @@ public class SimpleUser extends AbstractUser {
     private final Set<ObjectPermission> userPermissions = new HashSet<>();
 
     /**
-     * All user group permissions granted to this user.
-     */
-    private final Set<ObjectPermission> userGroupPermissions = new HashSet<>();
-
-    /**
      * All connection permissions granted to this user.
      */
     private final Set<ObjectPermission> connectionPermissions = new HashSet<>();
@@ -115,7 +110,15 @@ public class SimpleUser extends AbstractUser {
      * @param connectionGroupIdentifiers
      *     The identifiers of all connection groups this user has READ access
      *     to.
+     *
+     * @deprecated
+     *     Extend and override the applicable permission set getters instead,
+     *     relying on SimpleUser to expose no permissions by default for all
+     *     permission sets that aren't overridden. See {@link SimpleObjectPermissionSet}
+     *     for convenient methods of providing a read-only permission set with
+     *     specific permissions.
      */
+    @Deprecated
     public SimpleUser(String username,
             Collection<String> connectionIdentifiers,
             Collection<String> connectionGroupIdentifiers) {
@@ -123,43 +126,6 @@ public class SimpleUser extends AbstractUser {
         this(username);
 
         // Add permissions
-        addReadPermissions(connectionPermissions,      connectionIdentifiers);
-        addReadPermissions(connectionGroupPermissions, connectionGroupIdentifiers);
-
-    }
-
-    /**
-     * Creates a new SimpleUser having the given username and READ access to
-     * the users, user groups, connections, and connection groups having the
-     * given identifiers.
-     *
-     * @param username
-     *     The username to assign to this SimpleUser.
-     *
-     * @param userIdentifiers
-     *     The identifiers of all users this user has READ access to.
-     *
-     * @param userGroupIdentifiers
-     *     The identifiers of all user groups this user has READ access to.
-     *
-     * @param connectionIdentifiers
-     *     The identifiers of all connections this user has READ access to.
-     *
-     * @param connectionGroupIdentifiers
-     *     The identifiers of all connection groups this user has READ access
-     *     to.
-     */
-    public SimpleUser(String username,
-            Collection<String> userIdentifiers,
-            Collection<String> userGroupIdentifiers,
-            Collection<String> connectionIdentifiers,
-            Collection<String> connectionGroupIdentifiers) {
-
-        this(username);
-
-        // Add permissions
-        addReadPermissions(userPermissions,            userIdentifiers);
-        addReadPermissions(userGroupPermissions,       userGroupIdentifiers);
         addReadPermissions(connectionPermissions,      connectionIdentifiers);
         addReadPermissions(connectionGroupPermissions, connectionGroupIdentifiers);
 
@@ -181,7 +147,15 @@ public class SimpleUser extends AbstractUser {
      * @param connectionGroupIdentifiers
      *     The identifiers of all connection groups this user has READ access
      *     to.
+     *
+     * @deprecated
+     *     Extend and override the applicable permission set getters instead,
+     *     relying on SimpleUser to expose no permissions by default for all
+     *     permission sets that aren't overridden. See {@link SimpleObjectPermissionSet}
+     *     for convenient methods of providing a read-only permission set with
+     *     specific permissions.
      */
+    @Deprecated
     public SimpleUser(String username,
             Collection<String> userIdentifiers,
             Collection<String> connectionIdentifiers,

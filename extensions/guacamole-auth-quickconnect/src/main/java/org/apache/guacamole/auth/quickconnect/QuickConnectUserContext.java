@@ -26,6 +26,8 @@ import org.apache.guacamole.net.auth.AbstractUserContext;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
+import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
 import org.apache.guacamole.net.auth.simple.SimpleUser;
 
 /**
@@ -93,10 +95,19 @@ public class QuickConnectUserContext extends AbstractUserContext {
 
         // Initialize the user to a SimpleUser with the provided username,
         // no connections, and the single root group.
-        this.self = new SimpleUser(username,
-            connectionDirectory.getIdentifiers(),
-            Collections.singleton(ROOT_IDENTIFIER)
-        );
+        this.self = new SimpleUser(username) {
+
+            @Override
+            public ObjectPermissionSet getConnectionPermissions() throws GuacamoleException {
+                return new SimpleObjectPermissionSet(connectionDirectory.getIdentifiers());
+            }
+
+            @Override
+            public ObjectPermissionSet getConnectionGroupPermissions() throws GuacamoleException {
+                return new SimpleObjectPermissionSet(Collections.singleton(ROOT_IDENTIFIER));
+            }
+
+        };
 
         // Set the authProvider to the calling authProvider object.
         this.authProvider = authProvider;

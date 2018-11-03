@@ -34,8 +34,10 @@ import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserGroup;
+import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionGroup;
 import org.apache.guacamole.net.auth.simple.SimpleDirectory;
+import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
 import org.apache.guacamole.net.auth.simple.SimpleUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,13 +151,29 @@ public class UserContext extends AbstractUserContext {
         );
 
         // Init self with basic permissions
-        self = new SimpleUser(
-            user.getIdentifier(),
-            userDirectory.getIdentifiers(),
-            userGroupDirectory.getIdentifiers(),
-            connectionDirectory.getIdentifiers(),
-            Collections.singleton(LDAPAuthenticationProvider.ROOT_CONNECTION_GROUP)
-        );
+        self = new SimpleUser(user.getIdentifier()) {
+
+            @Override
+            public ObjectPermissionSet getUserPermissions() throws GuacamoleException {
+                return new SimpleObjectPermissionSet(userDirectory.getIdentifiers());
+            }
+
+            @Override
+            public ObjectPermissionSet getUserGroupPermissions() throws GuacamoleException {
+                return new SimpleObjectPermissionSet(userGroupDirectory.getIdentifiers());
+            }
+
+            @Override
+            public ObjectPermissionSet getConnectionPermissions() throws GuacamoleException {
+                return new SimpleObjectPermissionSet(connectionDirectory.getIdentifiers());
+            }
+
+            @Override
+            public ObjectPermissionSet getConnectionGroupPermissions() throws GuacamoleException {
+                return new SimpleObjectPermissionSet(Collections.singleton(LDAPAuthenticationProvider.ROOT_CONNECTION_GROUP));
+            }
+
+        };
 
     }
 
