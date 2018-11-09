@@ -20,21 +20,17 @@
 package org.apache.guacamole.auth.ldap.user;
 
 import com.google.inject.Inject;
-import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
-import com.novell.ldap.LDAPException;
-import com.novell.ldap.LDAPReferralException;
-import com.novell.ldap.LDAPSearchResults;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.auth.ldap.ConfigurationService;
 import org.apache.guacamole.auth.ldap.EscapingService;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.ldap.LDAPGuacamoleProperties;
+import org.apache.guacamole.auth.ldap.ObjectQueryService;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.simple.SimpleUser;
 import org.slf4j.Logger;
@@ -64,89 +60,10 @@ public class UserService {
     private ConfigurationService confService;
 
     /**
-     * Adds all Guacamole users accessible to the user currently bound under
-     * the given LDAP connection to the provided map. Only users with the
-     * specified attribute are added. If the same username is encountered
-     * multiple times, warnings about possible ambiguity will be logged.
-     *
-     * @param ldapConnection
-     *     The current connection to the LDAP server, associated with the
-     *     current user.
-     *
-     * @return
-     *     All users accessible to the user currently bound under the given
-     *     LDAP connection, as a map of connection identifier to corresponding
-     *     user object.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs preventing retrieval of users.
+     * Service for executing LDAP queries.
      */
-    private void putAllUsers(Map<String, User> users, LDAPConnection ldapConnection,
-            String usernameAttribute) throws GuacamoleException {
-
-        try {
-
-            // Build a filter using the configured or default user search filter
-            // to find all user objects in the LDAP tree
-            StringBuilder userSearchFilter = new StringBuilder();
-            userSearchFilter.append("(&");
-            userSearchFilter.append(confService.getUserSearchFilter());
-            userSearchFilter.append("(");
-            userSearchFilter.append(escapingService.escapeLDAPSearchFilter(usernameAttribute));
-            userSearchFilter.append("=*))");
-         
-            // Find all Guacamole users underneath base DN
-            LDAPSearchResults results = ldapConnection.search(
-                confService.getUserBaseDN(),
-                LDAPConnection.SCOPE_SUB,
-                userSearchFilter.toString(),
-                null,
-                false,
-                confService.getLDAPSearchConstraints()
-            );
-
-            // Read all visible users
-            while (results.hasMore()) {
-
-                try {
-
-                    LDAPEntry entry = results.next();
-
-                    // Get username from record
-                    LDAPAttribute username = entry.getAttribute(usernameAttribute);
-                    if (username == null) {
-                        logger.warn("Queried user is missing the username attribute \"{}\".", usernameAttribute);
-                        continue;
-                    }
-
-                    // Store user using their username as the identifier
-                    String identifier = username.getStringValue();
-                    if (users.put(identifier, new SimpleUser(identifier)) != null)
-                        logger.warn("Possibly ambiguous user account: \"{}\".", identifier);
-
-                }
-
-                // Deal with errors trying to follow referrals
-                catch (LDAPReferralException e) {
-                    if (confService.getFollowReferrals()) {
-                        logger.error("Could not follow referral: {}", e.getFailedReferral());
-                        logger.debug("Error encountered trying to follow referral.", e);
-                        throw new GuacamoleServerException("Could not follow LDAP referral.", e);
-                    }
-                    else {
-                        logger.warn("Given a referral, but referrals are disabled. Error was: {}", e.getMessage());
-                        logger.debug("Got a referral, but configured to not follow them.", e);
-                    }
-                }
-
-            }
-
-        }
-        catch (LDAPException e) {
-            throw new GuacamoleServerException("Error while querying users.", e);
-        }
-
-    }
+    @Inject
+    private ObjectQueryService queryService;
 
     /**
      * Returns all Guacamole users accessible to the user currently bound under
@@ -167,80 +84,28 @@ public class UserService {
     public Map<String, User> getUsers(LDAPConnection ldapConnection)
             throws GuacamoleException {
 
-        // Build map of users by querying each username attribute separately
-        Map<String, User> users = new HashMap<String, User>();
-        for (String usernameAttribute : confService.getUsernameAttributes()) {
+        // Retrieve all visible user objects
+        Collection<String> attributes = confService.getUsernameAttributes();
+        List<LDAPEntry> results = queryService.search(ldapConnection,
+                confService.getUserBaseDN(),
+                confService.getUserSearchFilter(),
+                attributes,
+                null);
 
-            // Attempt to pull all users with given attribute
-            try {
-                putAllUsers(users, ldapConnection, usernameAttribute);
+        // Convert retrieved users to map of identifier to Guacamole user object
+        return queryService.asMap(results, entry -> {
+
+            // Get username from record
+            String username = queryService.getIdentifier(entry, attributes);
+            if (username == null) {
+                logger.warn("User \"{}\" is missing a username attribute "
+                        + "and will be ignored.", entry.getDN());
+                return null;
             }
 
-            // Log any errors non-fatally
-            catch (GuacamoleException e) {
-                logger.warn("Could not query list of all users for attribute \"{}\": {}",
-                        usernameAttribute, e.getMessage());
-                logger.debug("Error querying list of all users.", e);
-            }
+            return new SimpleUser(username);
 
-        }
-
-        // Return map of all users
-        return users;
-
-    }
-
-    /**
-     * Generates a properly-escaped LDAP query which finds all objects having
-     * at least one username attribute set to the specified username, where
-     * the possible username attributes are defined within
-     * guacamole.properties.
-     *
-     * @param username
-     *     The username that the resulting LDAP query should search for within
-     *     objects within the LDAP directory.
-     *
-     * @return
-     *     An LDAP query which will search for arbitrary LDAP objects
-     *     containing at least one username attribute set to the specified
-     *     username.
-     *
-     * @throws GuacamoleException
-     *     If the LDAP query cannot be generated because the list of username
-     *     attributes cannot be parsed from guacamole.properties.
-     */
-    private String generateLDAPQuery(String username)
-            throws GuacamoleException {
-
-        List<String> usernameAttributes = confService.getUsernameAttributes();
-
-        // Build LDAP query for users having at least one username attribute
-        // and with the configured or default search filter
-        StringBuilder ldapQuery = new StringBuilder();
-        ldapQuery.append("(&");
-        ldapQuery.append(confService.getUserSearchFilter());
-
-        // Include all attributes within OR clause if there are more than one
-        if (usernameAttributes.size() > 1)
-            ldapQuery.append("(|");
-
-        // Add equality comparison for each possible username attribute
-        for (String usernameAttribute : usernameAttributes) {
-            ldapQuery.append("(");
-            ldapQuery.append(escapingService.escapeLDAPSearchFilter(usernameAttribute));
-            ldapQuery.append("=");
-            ldapQuery.append(escapingService.escapeLDAPSearchFilter(username));
-            ldapQuery.append(")");
-        }
-
-        // Close OR clause, if any
-        if (usernameAttributes.size() > 1)
-            ldapQuery.append(")");
-
-        // Close overall query (AND clause)
-        ldapQuery.append(")");
-
-        return ldapQuery.toString();
+        });
 
     }
 
@@ -268,49 +133,18 @@ public class UserService {
     public List<String> getUserDNs(LDAPConnection ldapConnection,
             String username) throws GuacamoleException {
 
-        try {
-
-            List<String> userDNs = new ArrayList<String>();
-
-            // Find all Guacamole users underneath base DN and matching the
-            // specified username
-            LDAPSearchResults results = ldapConnection.search(
+        // Retrieve user objects having a matching username
+        List<LDAPEntry> results = queryService.search(ldapConnection,
                 confService.getUserBaseDN(),
-                LDAPConnection.SCOPE_SUB,
-                generateLDAPQuery(username),
-                null,
-                false,
-                confService.getLDAPSearchConstraints()
-            );
+                confService.getUserSearchFilter(),
+                confService.getUsernameAttributes(),
+                username);
 
-            // Add all DNs for found users
-            while (results.hasMore()) {
-                try {
-                    LDAPEntry entry = results.next();
-                    userDNs.add(entry.getDN());
-                }
-          
-                // Deal with errors following referrals
-                catch (LDAPReferralException e) {
-                    if (confService.getFollowReferrals()) {
-                        logger.error("Error trying to follow a referral: {}", e.getFailedReferral());
-                        logger.debug("Encountered an error trying to follow a referral.", e);
-                        throw new GuacamoleServerException("Failed while trying to follow referrals.", e);
-                    }
-                    else {
-                        logger.warn("Given a referral, not following it. Error was: {}", e.getMessage());
-                        logger.debug("Given a referral, but configured to not follow them.", e);
-                    }
-                }
-            }
+        // Build list of all DNs for retrieved users
+        List<String> userDNs = new ArrayList<>(results.size());
+        results.forEach(entry -> userDNs.add(entry.getDN()));
 
-            // Return all discovered DNs (if any)
-            return userDNs;
-
-        }
-        catch (LDAPException e) {
-            throw new GuacamoleServerException("Error while query user DNs.", e);
-        }
+        return userDNs;
 
     }
 

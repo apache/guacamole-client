@@ -19,8 +19,10 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.Collections;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleSecurityException;
 
 /**
  * An arbitrary set of existing objects sharing some common relation. Unlike a
@@ -74,5 +76,29 @@ public interface RelatedObjectSet {
      *     remove objects is denied.
      */
     void removeObjects(Set<String> identifiers) throws GuacamoleException;
+
+    /**
+     * An immutable instance of RelatedObjectSEt which contains no objects.
+     */
+    static final RelatedObjectSet EMPTY_SET = new RelatedObjectSet() {
+
+        @Override
+        public Set<String> getObjects() throws GuacamoleException {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public void addObjects(Set<String> identifiers)
+                throws GuacamoleException {
+            throw new GuacamoleSecurityException("Permission denied.");
+        }
+
+        @Override
+        public void removeObjects(Set<String> identifiers)
+                throws GuacamoleException {
+            throw new GuacamoleSecurityException("Permission denied.");
+        }
+
+    };
 
 }
