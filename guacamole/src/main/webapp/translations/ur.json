@@ -2,6 +2,8 @@
     
     "NAME" : "اردو",
     
+    "DIRECTION":"rtl",
+    
     "APP" : {
 
         "NAME"    : "Apache Guacamole",
@@ -27,17 +29,17 @@
         "ACTION_SAVE"               : "محفوظ",
         "ACTION_SEARCH"             : "تلاش ",
         "ACTION_SHARE"              : "بانٹنا- تقسیم کرنا ",
-        "ACTION_UPDATE_PASSWORD"    : "نیا پاسورڈ بنانا",
+        "ACTION_UPDATE_PASSWORD"    : "نیا پاس ورڈ بنانا",
         "ACTION_VIEW_HISTORY"       : "ہسٹری",
 
         "DIALOG_HEADER_ERROR" : "خرابی ",
 
-        "ERROR_PAGE_UNAVAILABLE"  : "ایک خرابی کی بدولت یہ کام مکمل نہیں ہو سکا۔ اگر یہ مسئلہ برقرار رہے تو برائے مہربانی سسٹم ایڈمنسٹریٹر کو اطلاع دیں یا اپنے سسٹم لاگ کا جائزہ لیں۔  ",
-        "ERROR_PASSWORD_BLANK"    : "آپ کا پاسورڈ خالی نہیں رکھا جا سکتا ",
-        "ERROR_PASSWORD_MISMATCH" : "مطلوبہ پاسورڈ ایک جیسے نہیں ہیں۔",
+        "ERROR_PAGE_UNAVAILABLE"  : "ایک خرابی کی بدولت یہ کام مکمل نہیں ہو سکا۔ اگر یہ مسئلہ برقرار رہے تو برائے مہربانی سسٹم ایڈمنسٹریٹر کو اطلاع دیں یا اپنے سسٹم لاگ کی جانچ پڑتال کریں۔  ",
+        "ERROR_PASSWORD_BLANK"    : "آپ کا پاس ورڈ خالی نہیں رکھا جا سکتا ",
+        "ERROR_PASSWORD_MISMATCH" : "مطلوبہ پاس ورڈ ایک جیسے نہیں ہیں۔",
         
-        "FIELD_HEADER_PASSWORD"       : ":پاسورڈ",
-        "FIELD_HEADER_PASSWORD_AGAIN" : ": پاسورڈ دوبارہ درج کریں",
+        "FIELD_HEADER_PASSWORD"       : ":پاس ورڈ",
+        "FIELD_HEADER_PASSWORD_AGAIN" : ": پاس ورڈ دوبارہ درج کریں",
 
         "FIELD_PLACEHOLDER_FILTER" : "فلٹر",
 
@@ -64,7 +66,7 @@
         "ACTION_UPLOAD_FILES"              : "فائلیں اپلوڈ کریں",
 
         "DIALOG_HEADER_CONNECTING"       : "رابطہ قائم ہو رہا ہے",
-        "DIALOG_HEADER_CONNECTION_ERROR" : "رابطہ قائم ہونے میں مسئل درپیش ",
+        "DIALOG_HEADER_CONNECTION_ERROR" : "رابطہ قائم ہونے میں مسئلہ درپیش ",
         "DIALOG_HEADER_DISCONNECTED"     : "رابطہ منقطع",
 
         "ERROR_CLIENT_201"     : "یہ رابطہ  بند کر دیا گیا ہے کیونکہ سرور مصروف ہے۔ برائے مہربانی کچھ دیر اننتظار کے بعد پھر کوشش کریں۔",
@@ -77,21 +79,21 @@
         "ERROR_CLIENT_20B"     : "ریمورٹ ڈیسکٹاپ نے زبردستی رابطہ بند کر دیا ہے۔ اگر یہ غیر مطلوبہ یا غیر متوقع ہے تو برائے مہربانی سسٹم ایڈمنسٹریٹر کو اطلاع دیں یا اپنے سسٹم لاگز پر نظر دہرائیں۔",
         "ERROR_CLIENT_301"     : "لاگ ان میں ناکامی ہوئی۔ برائے مہربانی پھر سے کوشش کریں۔",
         "ERROR_CLIENT_303"     : "ریمورٹ ڈیسکٹاپ سرور نے رابطے میں رسائی حاصل کرنے سے انکار کر دیا ہے۔ اگر آپ رسائی حاصل کرنا چاہتے ہیں تو برائے مہربانی اپنے سسٹم ایڈمنسٹریٹر کے زریعے رسائی حاصل کریں یا سسٹم کی ترتیبات پر نظر دہرائیں۔",
-        "ERROR_CLIENT_308"     : "گواکامولی سرور نے رابطہ بند کر دیا ہے کیونکہ آپ کے براؤزر سے کافی دیر تک کوئ جواب نہیں حاصل ہوا جس سے ظاہرن یہ لگتا ہے کہ رابطہ منقطعہ ہو گیا ہے۔ یہ خراب نیٹورک کی وجہ سے درپیش ہوتا ہے مثال کے طور پر خراب سگنل یا بری نیٹورک سپیڈ۔ برائے مہربانی اپنے نیٹورک کی جانچ کریں اور دوبارہ کوشش کریں۔",
-        "ERROR_CLIENT_31D"     : "گواکامولی سرور اس کونیکشن تک رسائی نہیں دے رہا کیونکہ آپ بیک وقت رابطوں کی حد پوری کر چکے ہیں۔ برائے مہربانی ایک یا دو روابط بند کر کے دوبارہ کوشش کریں۔",
+        "ERROR_CLIENT_308"     : "گواکامولی سرور نے رابطہ بند کر دیا ہے کیونکہ آپ کے براؤزر سے کافی دیر تک کوئ جواب نہیں حاصل ہوا جس سے ظاہرن یہ لگتا ہے کہ رابطہ منقطعہ ہو گیا ہے۔ یہ خراب نیٹ ورک کی وجہ سے درپیش ہوتا ہے مثال کے طور پر خراب سگنل یا بری نیٹ ورک سپیڈ۔ برائے مہربانی اپنے نیٹ ورک کی جانچ کریں اور دوبارہ کوشش کریں۔",
+        "ERROR_CLIENT_31D"     : "گواکامولی سرور اس کنیکشن تک رسائی نہیں دے رہا کیونکہ آپ بیک وقت رابطوں کی حد پوری کر چکے ہیں۔ برائے مہربانی ایک یا دو روابط بند کر کے دوبارہ کوشش کریں۔",
         "ERROR_CLIENT_DEFAULT" : "ایک اندرونی خرابی کی وجہ سے گواکامولی سرور نے رابطہ منقطع کر دیا ہے۔  اگر یہ مسئلہ برقرار رہے تو برائے مہربانی اپنے سسٹم ایڈمنسٹریٹر کو مطلع کریں یا اپنےسسٹم لاگز پر نظر دہرائیں۔",
 
         "ERROR_TUNNEL_201"     : "گواکامولی سرور نے اس رابطہ قائم کرنے کی کوشش کو مسترد کر دیا ہے کیونکہ بیک وقت بہت سارے رابطے قائم ہیں۔ برائے مہربانی چند منٹ انتظار کریں اور دوبارہ کوشش کریں۔",
-        "ERROR_TUNNEL_202"     : " رابطہ بند کر دیا گیا ہے کیونکہ سرور جواب دینے میں تاخیر کر رھا ہے۔ یہ عام طور پر خراب نیٹورک کی وجہ سے درپیش ہوتا ہے مثال کے طور پر خراب سگنل یا بری نیٹورک سپیڈ۔ براہ مہربانی اپنے نیٹورک کونیکشن پر دوبارہ نظر ڈالیں یا سسٹم ایڈمنسٹریٹر سے رابطہ کریں۔",
+        "ERROR_TUNNEL_202"     : " رابطہ بند کر دیا گیا ہے کیونکہ سرور جواب دینے میں تاخیر کر رھا ہے۔ یہ عام طور پر خراب نیٹ ورک کی وجہ سے درپیش ہوتا ہے مثال کے طور پر خراب سگنل یا بری نیٹ ورک سپیڈ۔ براہ مہربانی اپنے نیٹ ورک کنیکشن پر دوبارہ نظر ڈالیں یا سسٹم ایڈمنسٹریٹر سے رابطہ کریں۔",
         "ERROR_TUNNEL_203"     : "سرور کو خرابی کا سامنہ کرنا پڑا اور رابطہ بند کر دیا۔ براہ مہربانی دوبارہ کوشش کریں یا اپنے سسٹم ایڈمنسٹریٹر سے رابطہ کریں۔",
         "ERROR_TUNNEL_204"     : "درخواستکردہ رابطے کا  وجود نھیں ہے ۔ براہ مہربانی رابطے کے نام پر نظر ڈالیں اور دوبارہ کوشش کریں۔",
         "ERROR_TUNNEL_205"     : "یہ رابطہ اس وقت استعمال میں ہے اور بیک وقت استعمال کی اجازت نہیں ہے۔ کچھ دیر بعد پھر کوشش کریں۔",
-        "ERROR_TUNNEL_207"     : "گواکامولی سرور سے اس وقت رابطہ قئم نہیں ہو سکتا۔ اپنے نیٹورک پر نظر ڈالیں اور دوبارہ کوشش کریں۔",
-        "ERROR_TUNNEL_208"     : "گواکامولی سرور اس وقت رابطے منظور نہیں کر رہا۔ اپنے نیٹورک پر نظر ڈالیں اور دوبارہ کوشش کریں۔",
+        "ERROR_TUNNEL_207"     : "گواکامولی سرور سے اس وقت رابطہ قئم نہیں ہو سکتا۔ اپنے نیٹ ورک پر نظر ڈالیں اور دوبارہ کوشش کریں۔",
+        "ERROR_TUNNEL_208"     : "گواکامولی سرور اس وقت رابطے منظور نہیں کر رہا۔ اپنے نیٹ ورک پر نظر ڈالیں اور دوبارہ کوشش کریں۔",
         "ERROR_TUNNEL_301"     : "آپ کو اس رابطے کی رسائ حاصل کرنے کی اجازت نہیں ہے کینکہ آپ نے لاگ ان نہیں کیا۔ براہ مہربانی لاگ ان کر کے دوبارہ کوشش کریں۔",
         "ERROR_TUNNEL_303"     : "آپ کو اس رابطے کی رسائ حاصل کرنے کی اجازت نہیں ہے۔ اگر آپ رسائ حاصل کرنا چاہتے ہیں تو براہ مہربانی اپنے سسٹم ایڈمنسٹریٹر سے درخواست کریں کہ وہ آپ کو اجازت یافتہ صارفین کی فہرست میں شامل کر دیں یا اپنے سسٹم کی ترتیبات پر نظر ڈالیں۔",
-        "ERROR_TUNNEL_308"     : "گواکامولی سرور نے رابطہ بند کر دیا ہے کیونکہ آپ کے براؤزر سے کافی دیر تک کوئ جواب موصول نہیں ہوا جس سے یہ لگتا ہے کہ رابطہ منقطعہ ہو گیا ہے۔ یہ امومن خراب نیٹورک کی وجہ سے درپیش ہوتا ہے مثال کے طور پر خراب سگنل یا بری نیٹورک سپیڈ۔  برائے مہربانی اپنے نیٹورک پر نظر ڈالیں اور دوبارہ کوشش کریں۔",
-        "ERROR_TUNNEL_31D"     : "گواکامولی سرور اس کونیکشن تک رسائی نہیں دے رہا کیونکہ آپ بیک وقت رابطوں کی حد پوری کر چکے ہیں۔ برائے مہربانی چند روابط بند کر کے دربارہ کوشش کریں۔",
+        "ERROR_TUNNEL_308"     : "گواکامولی سرور نے رابطہ بند کر دیا ہے کیونکہ آپ کے براؤزر سے کافی دیر تک کوئ جواب موصول نہیں ہوا جس سے یہ لگتا ہے کہ رابطہ منقطعہ ہو گیا ہے۔ یہ امومن خراب نیٹ ورک کی وجہ سے درپیش ہوتا ہے مثال کے طور پر خراب سگنل یا بری نیٹ ورک سپیڈ۔  برائے مہربانی اپنے نیٹ ورک پر نظر ڈالیں اور دوبارہ کوشش کریں۔",
+        "ERROR_TUNNEL_31D"     : "گواکامولی سرور اس کنیکشن تک رسائی نہیں دے رہا کیونکہ آپ بیک وقت رابطوں کی حد پوری کر چکے ہیں۔ برائے مہربانی چند روابط بند کر کے دربارہ کوشش کریں۔",
         "ERROR_TUNNEL_DEFAULT" : "ایک اندرونی خرابی گواکامولی سرور میں برپا ہوئ ہے اور رابطے کو ختم کر دیا گیا ہے۔  اگر یہ مسئلہ برقرار رہے تو برائے مہربانی اپنے سسٹم ایڈمنسٹریٹر کو مطلع کریں یا اپنےسسٹم لاگز پر نظر ڈالیں۔",
 
         "ERROR_UPLOAD_100"     : "فائل ٹرانسفر کی یا تو اجازت نہیں ہے یا دستیاب نھیں۔ براہ مہربانی اپنے سسٹم ایڈمنسٹریٹر سے رابطہ کریں یا اپنے سسٹم لاگ کا جائزہ لیں۔",
@@ -102,7 +104,7 @@
         "ERROR_UPLOAD_205"     : "فائل کی منتقلی کی منزل پر اس تالہ لگا ہوا ہے۔ براہ مہربانی منزل کی موجودگی کا جائزہ لیں اور دوبارہ کوشش کریں۔ براہ مہربانی جاری کاموں کو مکمل ہونے دیں اور دوبارہ کوشش کریں۔",
         "ERROR_UPLOAD_301"     : "آپ کو اس فائل کو اپلوڈ کرنے کی اجازت نہیں ہے کیوکہ آپ لاگ ان نہیں ہیں۔ براہ مہربانی لاگ ان کریں او دوبارہ کوشش کریں۔",
         "ERROR_UPLOAD_303"     : "آپ کو فائل اپلوڈ کرنے کی اجازت نہیں ہے۔ اگر آپ رسائی حاصل کرنا چاہتے ہیں تو براہ مہربانی اپنے سسٹم کی تتیبات کی جانچ بڑتال کریں یا اپنے سسٹم ایڈمنسٹریٹر کا جائزہ لیں۔",
-        "ERROR_UPLOAD_308"     : "فائل ٹرانسفر میں رکاوٹ آئ ہے۔  یہ امومن خراب نیٹورک کی وجہ سے درپیش ہوتا ہے مثال کے طور پر خراب سگنل یا بری نیٹورک سپیڈ۔ براہ مہربانی اپنے نیٹورک کا جائزہ لیں اور دوبارہ کوشش کریں۔",
+        "ERROR_UPLOAD_308"     : "فائل ٹرانسفر میں رکاوٹ آئ ہے۔  یہ امومن خراب نیٹ ورک کی وجہ سے درپیش ہوتا ہے مثال کے طور پر خراب سگنل یا بری نیٹ ورک سپیڈ۔ براہ مہربانی اپنے نیٹ ورک کا جائزہ لیں اور دوبارہ کوشش کریں۔",
         "ERROR_UPLOAD_31D"     : "بہت ساری فئیلیں اس وقت منتقل ہو رہی ہیں۔ براہ مہربانی موجودہ منتقلیوں کو مکمل ہونے دیں اور دوبارہ کوشش کریں۔",
         "ERROR_UPLOAD_DEFAULT" : "ایک اندرونی خرابی گواکامولی سرور میں پیش آئی ہے اور رابطے کو ختم کر دیا گیا ہے۔  اگر یہ مسئلہ برقرار رہے تو برائے مہربانی اپنے سسٹم ایڈمنسٹریٹر کو مطلع کریں یا اپنے سسٹم لاگز پر نظر ڈالیں۔",
 
@@ -115,7 +117,7 @@
         "HELP_MOUSE_MODE_RELATIVE" : "ماؤس کے پواینٹر کو حرکت میں لانے کے لیے گھسیٹیں اور کلک کرنے کے لیے ٹیپ کریں۔ پوئينٹر کی جگہ پر کلک اثر کرے گا۔",
         "HELP_SHARE_LINK"          : " کے زریعے کوئ بھی رسائ حاصل کر سکتا ہے۔  {LINKS, plural, one{اس لنک} other{ان لنکس}}موجودہ لنک اس وقت بٹ رہا ہے  ",
 
-        "INFO_CONNECTION_SHARED" : "یہ رابطہ اب بٹ رہا ہے۔",
+        "INFO_CONNECTION_SHARED" : "یہ رابطہ اب تقصیم ہو رہا ہے۔",
         "INFO_NO_FILE_TRANSFERS" : "کوئ منتقل فائل موجود نہیں۔",
 
         "NAME_INPUT_METHOD_NONE"   : "کوئ نہیں",
@@ -139,7 +141,7 @@
         "TEXT_CLIENT_STATUS_IDLE"         : "ناکارہ۔",
         "TEXT_CLIENT_STATUS_CONNECTING"   : "گواکامولی سے رابطہ قائم ہو رہا ہے۔۔۔",
         "TEXT_CLIENT_STATUS_DISCONNECTED" : "آپ کا رابطہ منقطع ہو گیا ہے۔",
-        "TEXT_CLIENT_STATUS_UNSTABLE"     : "نیٹورک کا گواکامولی سرور سے رابطہ غیر مستحکم ہے۔",
+        "TEXT_CLIENT_STATUS_UNSTABLE"     : "نیٹ ورک کا گواکامولی سرور سے رابطہ غیر مستحکم ہے۔",
         "TEXT_CLIENT_STATUS_WAITING"      : " گواکامولی سے رابطہ قائم ہو گیا ہے۔ جواب کا انتظر کیا جا رہا ہے۔۔۔",
         "TEXT_RECONNECT_COUNTDOWN"        : "میں۔۔۔ {REMAINING} {REMAINING, plural, one{سیکنڈ} other{سیکنڈ}} دوبارہ رابطہ",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
@@ -157,8 +159,8 @@
         "FIELD_PLACEHOLDER_DATE" : "YYYY-MM-DD",
         "FIELD_PLACEHOLDER_TIME" : "HH:MM:SS",
 
-        "HELP_SHOW_PASSWORD" : "کلک کر کے پاسورڈ دکھائیں",
-        "HELP_HIDE_PASSWORD" : "کلک کر کے پاسورڈ چھپائیں"
+        "HELP_SHOW_PASSWORD" : "کلک کر کے پاس ورڈ دکھائیں",
+        "HELP_HIDE_PASSWORD" : "کلک کر کے پاس ورڈ چھپائیں"
 
     },
 
@@ -168,9 +170,9 @@
 
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 
-        "INFO_NO_RECENT_CONNECTIONS" : "کوئی حالیہ کونیکشن موجود نہیں۔",
+        "INFO_NO_RECENT_CONNECTIONS" : "کوئی حالیہ کنیکشن موجود نہیں۔",
         
-        "PASSWORD_CHANGED" : "پاسورڈ تبدیل ہو گیا۔",
+        "PASSWORD_CHANGED" : "پاس ورڈ تبدیل ہو گیا۔",
 
         "SECTION_HEADER_ALL_CONNECTIONS"    : "سارے روابط",
         "SECTION_HEADER_RECENT_CONNECTIONS" : "حالیہ روابط"
@@ -194,7 +196,7 @@
         "ERROR_INVALID_LOGIN" : "غیر معتبر لاگ ان",
 
         "FIELD_HEADER_USERNAME" : "صارف کا نام",
-        "FIELD_HEADER_PASSWORD" : "پاسورڈ"
+        "FIELD_HEADER_PASSWORD" : "پاس ورڈ"
 
     },
 
@@ -251,7 +253,7 @@
         "NAME_TYPE_BALANCING"       : "توازن",
         "NAME_TYPE_ORGANIZATIONAL"  : "تنظیمی ",
 
-        "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "کونیکشن گروپ میں ترمیم کریں",
+        "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "کنیکشن گروپ میں ترمیم کریں",
 
         "TEXT_CONFIRM_DELETE" : "کنیکشن گروپ کو مٹانے کے بعد بحال نہیںکیا جا سکتا۔ کیا آپ یقینی طور پر کنیکشن گروپ کو مٹانا چاہتے ہیں؟"
 
@@ -292,7 +294,7 @@
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
         "FIELD_HEADER_ADMINISTER_SYSTEM"             : ": سسٹم ایڈمنسٹر",
-        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : ": اپنا پاسورڈ تبدیل کریں",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : ": اپنا پاس ورڈ تبدیل کریں",
         "FIELD_HEADER_CREATE_NEW_USERS"              : ": نۓ صارفین بنائیں",
         "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : ": نۓ صارفین کے گروہ بنائیں",
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : ": نۓ روابط بنائیں",
@@ -392,7 +394,7 @@
         "FIELD_HEADER_ENABLE_WALLPAPER"           : ": والپیپر کا اختیار دیں",
         "FIELD_HEADER_GATEWAY_DOMAIN"   : ": ڈومین",
         "FIELD_HEADER_GATEWAY_HOSTNAME" : ": ھوسٹ کا نام",
-        "FIELD_HEADER_GATEWAY_PASSWORD" : ": پاسورڈ",
+        "FIELD_HEADER_GATEWAY_PASSWORD" : ": پاس ورڈ",
         "FIELD_HEADER_GATEWAY_PORT"     : ": پورٹ",
         "FIELD_HEADER_GATEWAY_USERNAME" : ": صارف کا نام",
         "FIELD_HEADER_HEIGHT"          : ": اونچائی",
@@ -400,10 +402,10 @@
         "FIELD_HEADER_IGNORE_CERT"     : ": سرور کے سرٹیفیکیٹ کو نظر انداز کریں",
         "FIELD_HEADER_INITIAL_PROGRAM" : ": ابتدائی پروگرام",
         "FIELD_HEADER_LOAD_BALANCE_INFO" : ": بیلینس انفو یا کوکی کو لوڈ کریں",
-        "FIELD_HEADER_PASSWORD"        : ": پاسورڈ",
+        "FIELD_HEADER_PASSWORD"        : ": پاس ورڈ",
         "FIELD_HEADER_PORT"            : ": پورٹ",
         "FIELD_HEADER_PRINTER_NAME"    : ": ریڈائيریکٹڈ پرنٹر کا نام",
-        "FIELD_HEADER_PRECONNECTION_BLOB" : ": (VM ID) BLOB پری کونیکشن",
+        "FIELD_HEADER_PRECONNECTION_BLOB" : ": (VM ID) BLOB پری کنیکشن",
         "FIELD_HEADER_PRECONNECTION_ID"   : ":ID سورس -RDP",
         "FIELD_HEADER_READ_ONLY"      : ":ریڈ اونلی",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : ": ماؤس ہٹا دیں",
@@ -420,32 +422,32 @@
         "FIELD_HEADER_SFTP_DIRECTORY"             : ": ڈیفالٹ زیر استعمال ڈایریکٹوری",
         "FIELD_HEADER_SFTP_HOST_KEY"              : ": (Base64) پبلک ھوسٹ کی",
         "FIELD_HEADER_SFTP_HOSTNAME"              : ": ھوسٹ کا نام",
-        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : ": کو چلتے دینے کا وقفہSFTP ",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : ": کیپ الائيو اینٹرویل-SFTP ",
         "FIELD_HEADER_SFTP_PASSPHRASE"            : ": فریز‌پاس ",
-        "FIELD_HEADER_SFTP_PASSWORD"              : ": پاسورڈ",
+        "FIELD_HEADER_SFTP_PASSWORD"              : ": پاس ورڈ",
         "FIELD_HEADER_SFTP_PORT"                  : ": پورٹ",
         "FIELD_HEADER_SFTP_PRIVATE_KEY"           : ": پرائیویٹ کی",
-        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : ": فائل براؤزر کی روٹ ڈائیریکٹوری",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : ": فائل براؤزر روٹ ڈائیریکٹوری",
         "FIELD_HEADER_SFTP_USERNAME"              : ": صارف کا نام",
         "FIELD_HEADER_STATIC_CHANNELS" : ": ساکن چینل کے نام",
         "FIELD_HEADER_USERNAME"        : ": صارف کا نام",
         "FIELD_HEADER_WIDTH"           : ": چوڑائی",
 
-        "FIELD_OPTION_COLOR_DEPTH_16"    : "12-bit(بٹ-۱۲) نیچا رنگ",
-        "FIELD_OPTION_COLOR_DEPTH_24"    : "24-bit(بٹ-۲۴) اصل رنگ",
-        "FIELD_OPTION_COLOR_DEPTH_32"    : "36-bit(بٹ-۳۶) اصل رنگ",
-        "FIELD_OPTION_COLOR_DEPTH_8"     : "رنگ۲۵۶",
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "12-bit(بٹ-۱۲) لوکلر",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "24-bit(بٹ-۲۴) ٹروکلر",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "36-bit(بٹ-۳۶) ٹروکلر",
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "کلر۲۵۶",
         "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
 
         "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "\"Display Update\" virtual channel (RDP 8.1+)",
         "FIELD_OPTION_RESIZE_METHOD_EMPTY"          : "",
-        "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "دوبارہ کونیکٹ کریں",
+        "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "دوبارہ رابطہ قائم کریں",
 
         "FIELD_OPTION_SECURITY_ANY"   : "کوئی بھی",
         "FIELD_OPTION_SECURITY_EMPTY" : "",
         "FIELD_OPTION_SECURITY_NLA"   : "NLA (Network Level Authentication)",
-        "FIELD_OPTION_SECURITY_RDP"   : "خفیہ کاری-RDP",
-        "FIELD_OPTION_SECURITY_TLS"   : "خفیہ کاری-TLS",
+        "FIELD_OPTION_SECURITY_RDP"   : "انکریپشن-RDP",
+        "FIELD_OPTION_SECURITY_TLS"   : "انکریپشن-TLS",
 
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "German (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
@@ -465,13 +467,13 @@
 
         "SECTION_HEADER_AUTHENTICATION"     : "تصدیق",
         "SECTION_HEADER_BASIC_PARAMETERS"   : "بنیادی ترتیبات",
-        "SECTION_HEADER_DEVICE_REDIRECTION" : "آلہ کا نیا راستہ",
+        "SECTION_HEADER_DEVICE_REDIRECTION" : "آلہ کی نئ سمت",
         "SECTION_HEADER_DISPLAY"            : "ڈسپلے",
         "SECTION_HEADER_GATEWAY"            : "ریموٹ ڈیسکٹاپ گیٹوے",
         "SECTION_HEADER_LOAD_BALANCING"     : "بوجھ کا توازن کریں",
-        "SECTION_HEADER_NETWORK"            : "نیٹورک",
+        "SECTION_HEADER_NETWORK"            : "نیٹ ورک",
         "SECTION_HEADER_PERFORMANCE"        : "کارکردگی",
-        "SECTION_HEADER_PRECONNECTION_PDU"  : "(PDU/ Hyper-V)  رابطے سے پہلے",
+        "SECTION_HEADER_PRECONNECTION_PDU"  : "(PDU/ Hyper-V)  پری کنیکشن",
         "SECTION_HEADER_RECORDING"          : "سکرین کی رکارڈنگ",
         "SECTION_HEADER_REMOTEAPP"          : "ریموٹ ایپ",
         "SECTION_HEADER_SFTP"               : "SFTP"
@@ -483,26 +485,26 @@
         "FIELD_HEADER_BACKSPACE"    : ": بیکسپیس کی سینڈز",
         "FIELD_HEADER_COLOR_SCHEME" : ": کلر سکیم",
         "FIELD_HEADER_COMMAND"      : ": حکم کی تعمیل",
-        "FIELD_HEADER_CREATE_RECORDING_PATH" : ": خودکار طریقے سے ریکارڈنگ کا راستہ بنانا",
-        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : ": خودکار طریقے سے ٹائپ سکریپٹ کا راستہ بنانا",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : ": خودکار طریقے سے ریکارڈنگ کا راستہ بنائیں",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : ": خودکار طریقے سے ٹائپ سکریپٹ کا راستہ بنائیں",
         "FIELD_HEADER_FONT_NAME"     : ": فانٹ کا نام",
         "FIELD_HEADER_FONT_SIZE"     : ": فانٹ کا ناپ",
         "FIELD_HEADER_ENABLE_SFTP"   : ": کو اختیار دیں-SFTP",
-        "FIELD_HEADER_HOST_KEY"      : ":(Base64) پبلک حسٹ کی",
-        "FIELD_HEADER_HOSTNAME"      : ": حوسٹ کا نام",
+        "FIELD_HEADER_HOST_KEY"      : ":(Base64) پبلک ھوسٹ کی",
+        "FIELD_HEADER_HOSTNAME"      : ": ھوسٹ کا نام",
         "FIELD_HEADER_USERNAME"      : ": صارف کا نام",
-        "FIELD_HEADER_PASSWORD"      : ": پاسورڈ",
+        "FIELD_HEADER_PASSWORD"      : ": پاس ورڈ",
         "FIELD_HEADER_PASSPHRASE"    : ": پاس فریز",
         "FIELD_HEADER_PORT"          : ": پورٹ",
         "FIELD_HEADER_PRIVATE_KEY"   : ": پرائیویٹ کی",
         "FIELD_HEADER_READ_ONLY"     : ": ریڈ اونلی",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : ": ماؤس کے بغیر",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : ": گرافیکس یا سٹریم کے بغیر",
-        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : ": کی سے ہونے والے اثرات کے ساتھ",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : ": کی ایوینٹس شامل کریں",
         "FIELD_HEADER_RECORDING_NAME" : ": ریکارڈنگ کا نام",
         "FIELD_HEADER_RECORDING_PATH" : ": ریکارڈنگ کا راستہ",
         "FIELD_HEADER_SERVER_ALIVE_INTERVAL" : ": سرور کو چلنے دینے کا وقفہ",
-        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : ": ائل براؤزر کی روٹ ڈائیریکٹوری",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : ": فائل براؤزر روٹ ڈائیریکٹوری",
         "FIELD_HEADER_TERMINAL_TYPE"   : ": ٹرمنل کی قسم",
         "FIELD_HEADER_TYPESCRIPT_NAME" : ": ٹائیپسکرپٹ کا نام",
         "FIELD_HEADER_TYPESCRIPT_PATH" : ": ٹائیپسکرپٹ کا رستہ",
@@ -511,11 +513,11 @@
         "FIELD_OPTION_BACKSPACE_8"     : "(Ctrl-H) بیک سپیس",
         "FIELD_OPTION_BACKSPACE_127"   : "(Ctrl-?) ڈیلیٹ",
 
-        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "کالہ سفید پہ",
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "سفید پہ کالہ",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
-        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "سرمئی کالے پہ",
-        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "سبز کالے پہ",
-        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "سفید کالے پہ",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "کالے پہ سرمائی",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "کالے پہ سبز",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "کالے پہ سفید",
 
         "FIELD_OPTION_FONT_SIZE_8"     : "۸",
         "FIELD_OPTION_FONT_SIZE_9"     : "۹",
@@ -546,7 +548,7 @@
         "SECTION_HEADER_AUTHENTICATION" : "تصدیق",
         "SECTION_HEADER_BEHAVIOR"       : "ٹرمنل کا برتاؤ",
         "SECTION_HEADER_DISPLAY"        : "ڈسپلے",
-        "SECTION_HEADER_NETWORK"        : "نیٹورک",
+        "SECTION_HEADER_NETWORK"        : "نیٹ ورک",
         "SECTION_HEADER_RECORDING"      : "سکرین کی ریکارڈنگ",
         "SECTION_HEADER_SESSION"        : "اجلاس یا ماحول",
         "SECTION_HEADER_TYPESCRIPT"     : "(Text Session Recording) ٹائیپسکرپٹ",
@@ -562,13 +564,13 @@
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : ": خودکار طریقے سے ٹائپ سکریپٹ کا راستہ بنائيں",
         "FIELD_HEADER_FONT_NAME"      : ": فانٹ کا نام",
         "FIELD_HEADER_FONT_SIZE"      : ": فانٹ کا ناپ",
-        "FIELD_HEADER_HOSTNAME"       : ": حوسٹ کا نام",
+        "FIELD_HEADER_HOSTNAME"       : ": ھوسٹ کا نام",
         "FIELD_HEADER_LOGIN_FAILURE_REGEX" : ": ریگیولر ایکسپریشن میں لاگ ان ناکام",
         "FIELD_HEADER_LOGIN_SUCCESS_REGEX" : ": ریگیولر ایکسپریشن میں لاگ ان کامیاب",
         "FIELD_HEADER_USERNAME"       : ": صارف کا نام",
         "FIELD_HEADER_USERNAME_REGEX" : ": ریگیولر ایکسپریشن میں صارف کا نام",
-        "FIELD_HEADER_PASSWORD"       : ": پاسورڈ",
-        "FIELD_HEADER_PASSWORD_REGEX" : ": ریگیولر ایکسپریشن میں پاسورڈ",
+        "FIELD_HEADER_PASSWORD"       : ": پاس ورڈ",
+        "FIELD_HEADER_PASSWORD_REGEX" : ": ریگیولر ایکسپریشن میں پاس ورڈ",
         "FIELD_HEADER_PORT"           : ": پورٹ",
         "FIELD_HEADER_READ_ONLY"      : ": ریڈ اونلی",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : ": ماؤس کے بغیر",
@@ -584,11 +586,11 @@
         "FIELD_OPTION_BACKSPACE_8"     : "(Ctrl-H) بیک سپیس",
         "FIELD_OPTION_BACKSPACE_127"   : "(Ctrl-?) ڈیلیٹ",
 
-        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "کالہ سفید پہ",
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "سفید پہ کالہ",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
-        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "سرمائی کالے پہ",
-        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "ہرا کالے پہ",
-        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "سفید کالے پہ",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "سفید پہ کالہ ",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "کالے پہ سبز",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "کالے پہ سفید",
         
         "FIELD_OPTION_FONT_SIZE_8"     : "۸",
         "FIELD_OPTION_FONT_SIZE_9"     : "۹",
@@ -621,7 +623,7 @@
         "SECTION_HEADER_DISPLAY"        : "ڈسپلے",
         "SECTION_HEADER_RECORDING"      : "سکرین کی ریکارڈنگ",
         "SECTION_HEADER_TYPESCRIPT"     : "(Text Session Recording) ٹائیپسکرپٹ",
-        "SECTION_HEADER_NETWORK"        : "نیٹورک"
+        "SECTION_HEADER_NETWORK"        : "نیٹ ورک"
 
     },
 
@@ -632,35 +634,35 @@
         "FIELD_HEADER_COLOR_DEPTH"      : ": رنگ کی گہرائ",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : ": خودکار طریقے سے ریکارڈنگ کا راستہ بنائيں",
         "FIELD_HEADER_CURSOR"           : ": کرسر",
-        "FIELD_HEADER_DEST_HOST"        : ": ڈیسٹینیشن حوسٹ",
+        "FIELD_HEADER_DEST_HOST"        : ": ڈیسٹینیشن ھوسٹ",
         "FIELD_HEADER_DEST_PORT"        : ": ڈیسٹینیشن پورٹ",
         "FIELD_HEADER_ENABLE_AUDIO"     : ": آواز کی اجازت",
         "FIELD_HEADER_ENABLE_SFTP"      : ": کی اجازت-SFTP",
-        "FIELD_HEADER_HOSTNAME"         : ": حوسٹ کا نام",
-        "FIELD_HEADER_PASSWORD"         : ": پاسورڈ",
+        "FIELD_HEADER_HOSTNAME"         : ": ھوسٹ کا نام",
+        "FIELD_HEADER_PASSWORD"         : ": پاس ورڈ",
         "FIELD_HEADER_PORT"             : ": پورٹ",
         "FIELD_HEADER_READ_ONLY"        : ": ریڈ اونلی",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : ": ماؤس کے بغیر",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : ": گرافکس یا سٹریم کے بغیر",
-        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : ": کی سے ایوینٹس کے ساتھ",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : ": کی ایوینٹس شامل کریں",
         "FIELD_HEADER_RECORDING_NAME" : ": ریکارڈنگ کا نام",
         "FIELD_HEADER_RECORDING_PATH" : ": ریکارڈنگ کا راستہ",
         "FIELD_HEADER_SFTP_DIRECTORY"             : ": ڈیفالٹ اپلوڈ ڈایریکٹوری",
         "FIELD_HEADER_SFTP_HOST_KEY"              : ":(Base64) پبلک ھوسٹ کی",
         "FIELD_HEADER_SFTP_HOSTNAME"              : "ھوسٹ کا نام:",
-        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : ": کیپ الائيو اینٹرول -SFTP",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : ":کیپ الائيو اینٹرویل -SFTP",
         "FIELD_HEADER_SFTP_PASSPHRASE"            : ": پاس فریز",
-        "FIELD_HEADER_SFTP_PASSWORD"              : ": پاسورڈ",
+        "FIELD_HEADER_SFTP_PASSWORD"              : ": پاس ورڈ",
         "FIELD_HEADER_SFTP_PORT"                  : ": پورٹ",
         "FIELD_HEADER_SFTP_PRIVATE_KEY"           : ": پرائیویٹ کی",
-        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : ": فائل براؤزر کی روٹ ڈائیریکٹوری",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : ": فائل براؤزر روٹ ڈائیریکٹوری",
         "FIELD_HEADER_SFTP_USERNAME"              : ": صارف کا نام",
-        "FIELD_HEADER_SWAP_RED_BLUE"    : ": لال یا نیلے جزو کا ادل بدل",
+        "FIELD_HEADER_SWAP_RED_BLUE"    : ":لال یا نیلے جزو کو ادل بدل کریں",
         
         "FIELD_OPTION_COLOR_DEPTH_8"     : "رنگ۲۵۶",
-        "FIELD_OPTION_COLOR_DEPTH_16"    : "12-bit(بٹ-۱۲) نیچا رنگ",
-        "FIELD_OPTION_COLOR_DEPTH_24"    : "24-bit(بٹ-۲۴) اصل رنگ",
-        "FIELD_OPTION_COLOR_DEPTH_32"    : "36-bit(بٹ-۳۶) اصل رنگ",
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "12-bit(بٹ-۱۲) لو کلر",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "24-bit(بٹ-۲۴) ٹرو کلر",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "36-bit(بٹ-۳۶) ٹرو کلر",
         "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
 
         "FIELD_OPTION_CURSOR_EMPTY"  : "",
@@ -681,7 +683,7 @@
         "SECTION_HEADER_DISPLAY"        : "ڈسپلے",
         "SECTION_HEADER_NETWORK"        : "نیٹ ورک",
         "SECTION_HEADER_RECORDING"      : "سکرین کی ریکارڈنگ",
-        "SECTION_HEADER_REPEATER"       : "VNC Repeater",
+        "SECTION_HEADER_REPEATER"       : "ریپیٹر-VNC",
         "SECTION_HEADER_SFTP"           : "SFTP"
 
     },
@@ -703,12 +705,12 @@
 
         "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_CONNECTION_HISTORY" : "گزشتہ روبط کی تریخ کے ریکارڈ یہاں مندرج ہیں اور کالم کی ہیڈر کو کلک کر کے ان کی ترتیب کی جا سکتی ہے۔ کسی مخصوص ریکارڈ کو ڈھونڈنے کے لیے فلٹر میں متن درج کریں اور سرچ پر کلک کریں۔ آپ کے ٹائيپ ہوۓ متن سے ملتے ہوۓ ریکارڈ ہی ڈسپلے ہوں گے۔",
+        "HELP_CONNECTION_HISTORY" : "گزشتہ روابط کی تاریخ کے ریکارڈ یہاں مندرج ہیں اور کالم کے ہیڈر کو کلک کر کے ان کی ترتیب کی جا سکتیں ہیں۔ کسی مخصوص ریکارڈ کو ڈھونڈنے کے لیے فلٹر میں متن درج کریں اور سرچ پر کلک کریں۔ آپ کے ٹائيپ ہوۓ متن سے ملتے ہوۓ ریکارڈ ہی ڈسپلے ہوں گے۔",
 
         "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
-        "INFO_NO_HISTORY"                  : "کوئی ملتا ریکارڈ وجود میں نہیں",
+        "INFO_NO_HISTORY"                  : "اس جیسا کوئی ریکارڈ وجود میں نہیں",
 
-        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "کونیکشن کا نام",
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "راببطے کا نام",
         "TABLE_HEADER_SESSION_DURATION"        : "مدت",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "ریموٹ ھوسٹ",
         "TABLE_HEADER_SESSION_STARTDATE"       : "آغاز کا وقت",
@@ -729,7 +731,7 @@
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
-        "HELP_CONNECTIONS"   : "نیچے دیے گۓ کسی ایک رابطے کی نظم کرنے کے لیے کلک کریں۔ آپ کی رسائی کی سطح کے عین مطابق راوبط شامل یا نکالے جا سکتے ہیں اور ان کی خصوصیات تبدیل کی جا سکتیں ہیں۔",
+        "HELP_CONNECTIONS"   : "نیچے دیے گۓ کسی ایک رابطے کو نظم کرنے کے لیے کلک یا ٹیپ کریں۔ آپ کی رسائی کی سطح کے عین مطابق راوبط شامل یا نکالے جا سکتے ہیں اور ان کی خصوصیات تبدیل کی جا سکتی ہیں۔",
         
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 
@@ -749,31 +751,31 @@
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
         "FIELD_HEADER_LANGUAGE"           : ": ڈسپلے لینگویج",
-        "FIELD_HEADER_PASSWORD"           : ": پاسورڈ",
-        "FIELD_HEADER_PASSWORD_OLD"       : ": موجودہ پاسورڈ",
-        "FIELD_HEADER_PASSWORD_NEW"       : ": نیا پاسورڈ",
-        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : ": نیا پاسورڈ کنفرم",
+        "FIELD_HEADER_PASSWORD"           : ": پاس ورڈ",
+        "FIELD_HEADER_PASSWORD_OLD"       : ": موجودہ پاس ورڈ",
+        "FIELD_HEADER_PASSWORD_NEW"       : ": نیا پاس ورڈ",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : ": نیا پاس ورڈ کنفرم",
         "FIELD_HEADER_USERNAME"           : ": صارف کا نام",
         
-        "HELP_DEFAULT_INPUT_METHOD" : "ڈیفالٹ ان پٹ کا طریقہ اس بات کا تعین کرتا ہے کہ گواکامولی کی بورڈ ایوینٹس کو کیسے وصول کرتا ہے۔ اس ترتیب کو شاید موبائل کے آلات کے لیے تبدیل کرنا لازم ہو یا جب آئ ایم ای کے زریعے ٹائپ کرنا ہو۔ یہ ترتیب گواکاموی مینیو کے اندر ہر رابطے کی بنیاد پر منسوخ کی جا سکتیں ہے۔",
-        "HELP_DEFAULT_MOUSE_MODE"   : "ڈیفالٹ ماؤس کا ایمیولیشن موڈ اس بات کی تعین کرتا ہے کہ ریموٹ ماؤس کا نۓ رابطوں میں چھونے کی نسبت کیسا برتاؤ ہو گا۔ یہ ترتیب گواکاموی مینیو کے اندر ہر رابطے کی بنیاد پر منسوخ کی جا سکتیں ہیں۔",
+        "HELP_DEFAULT_INPUT_METHOD" : "ڈیفالٹ ان پٹ کا طریقہ اس بات کا تعین کرتا ہے کہ گواکامولی کی بورڈ ایوینٹس کو کیسے وصول کرتا ہے۔ اس ترتیب کو شاید موبائل کے آلات کے لیے تبدیل کرنا لازم ہو یا جب آئ ایم ای کے زریعے ٹائپ کرنا ہو۔ یہ ترتیب گواکاموی مینیو کے اندر ہر رابطے کی بنیاد پر منسوخ کیا جا سکتا ہے۔",
+        "HELP_DEFAULT_MOUSE_MODE"   : "ڈیفالٹ ماؤس ایمیولیشن موڈ اس بات کا تعین کرتا ہے کہ ریموٹ ماؤس کا نۓ رابطوں میں چھونے کی نسبت کیسا برتاؤ ہو گا۔ یہ ترتیب گواکاموی مینیو کے اندر ہر رابطے کی بنیاد پر منسوخ کیا جا سکتا ہے۔",
         "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
         "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
         "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
-        "HELP_LANGUAGE"             : "گواکامولی کے سارے متن کو تبدیل کرنے کے لیے نیچے دی گئی زبانوں میں سے ایک کو منتخب کریں۔ میسر انتخابات میں صرف وہ زبانیں شامل ہیں جنہیں انسٹال کیا جا چکا ہے۔",
+        "HELP_LANGUAGE"             : "گواکامولی کے سارے متن کو تبدیل کرنے کے لیے نیچے دی گئی زبانوں میں سے ایک کو منتخب کریں۔ میسر انتخاب میں صرف وہ زبانیں شامل ہیں جنہیں انسٹال کیا جا چکا ہے۔",
         "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
         "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
-        "HELP_UPDATE_PASSWORD"      : "اگر آپ پاسورڈ بدلنا چاہتے ہیں تو اپنا موجودہ پاسورڈ اور مطلوبہ پاسورڈ نیچے درج کریں اور اپڈیٹ پاسورڈ پر کلک کریں۔ تبدیلی فوری طور پر اثر انداز ہو گی۔",
+        "HELP_UPDATE_PASSWORD"      : "اگر آپ پاس ورڈ بدلنا چاہتے ہیں تو اپنا موجودہ پاس ورڈ اور مطلوبہ پاس ورڈ نیچے درج کریں اور اپڈیٹ پاس ورڈ پر کلک کریں۔ تبدیلی فوری طور پر اثر انداز ہو گی۔",
 
-        "INFO_PASSWORD_CHANGED" : "پاسورڈ تبدیل۔",
+        "INFO_PASSWORD_CHANGED" : "پاس ورڈ تبدیل ہو گیا ہے۔",
 
         "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
         "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
         "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
 
         "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "ڈیفالٹ ان پٹ کا طریقہ",
-        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "ڈیفالٹ ماؤس کا ایمیولیشن موڈ",
-        "SECTION_HEADER_UPDATE_PASSWORD"      : "پاسورڈ تبدیل کریں"
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "ڈیفالٹ ماؤس ایمیولیشن موڈ",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "پاس ورڈ تبدیل کریں"
 
     },
 
@@ -788,7 +790,7 @@
 
         "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_USERS" : "نیچے دیے گئے کسی ایک صارف پر نظم کرنے کے لیے کلک یا ٹیپ کریں۔  آپ کی رسائی کی سطح کے عین مطابق صارف شامل یا نکالے جا سکتے ہیں اور ان کے پاس ورڈ تبدیل کیے جا سکتیں ہیں۔",
+        "HELP_USERS" : "نیچے دیے گئے کسی ایک صارف کا نظم کرنے کے لیے کلک یا ٹیپ کریں۔  آپ کی رسائی کی سطح کے عین مطابق صارف شامل یا نکالے جا سکتے ہیں اور ان کے پاس ورڈ تبدیل کیے جا سکتیں ہیں۔",
 
         "SECTION_HEADER_USERS"       : "صارفین",
 
@@ -810,7 +812,7 @@
 
         "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_USER_GROUPS" : "نیچے دیے گئے کسی ایک گروہ پر نظم کرنے کے لیے کلک یا ٹیپ کریں۔ آپ کی رسائی کی سطح کے عین مطابق گروہ شامل یا نکالے جا سکتے ہیں اور ان کے صارف ممبران اور گروہ تبدیل کیے جا سکتے یں۔",
+        "HELP_USER_GROUPS" : "نیچے دیے گئے کسی ایک گروہ کا نظم کرنے کے لیے کلک یا ٹیپ کریں۔ آپ کی رسائی کی سطح کے عین مطابق گروہ شامل یا نکالے جا سکتے ہیں اور ان کے صارف ممبران اور گروہ تبدیل کیے جا سکتے ہیں۔",
 
         "SECTION_HEADER_USER_GROUPS" : "گروہ",
 
@@ -822,27 +824,27 @@
         
         "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
-        "ACTION_DELETE"      : "اجلاس حزف کریں",
+        "ACTION_DELETE"      : "اجلاس منسوخ کریں",
         
-        "DIALOG_HEADER_CONFIRM_DELETE" : "اجلاس حزف کریں",
+        "DIALOG_HEADER_CONFIRM_DELETE" : "اجلاس منسوخ کریں",
         "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
         
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
         
         "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_SESSIONS" : "یہ پیج اس وقت کے جاری اجلاس سے بھر جاۓ گا۔ ان اجلاس کو حزف کرنے کی اجازت آپ کی رسائ کی حدود پر مشتمل ہے۔ اگر آپ ایک یا ایک سے زیادہ اجلاس کو حزف کرنا چاہتے ہیں تو ان کے ساتھ والے خانے کو منتخب کریں اور اجلاس حزف کریں پر کلک کریں۔ اجلاس کو حزف کرنے سے فوری طور پر صارف تعلق شدہ رابطے سے منقطع ہو جاۓ گا۔",
+        "HELP_SESSIONS" : "یہ پیج اس وقت کے جاری رابطوں سے بھر جاۓ گا۔ ان رابطوں کو منسوخ کرنے کی اجازت آپ کی رسائ کی حدود پر انحصار کرتی ہے۔ اگر آپ ایک یا ایک سے زاید اجلاس کو حزف کرنا چاہتے ہیں تو ان کے ساتھ والے خانے کو منتخب کریں اور اجلاس منسوخ کرنے پر کلک کریں۔ اجلاس کو منسوخ کرنے سے فوری طور پر صارف تعلق شدہ رابطے سے منقطع ہو جاۓ گا۔",
         
         "INFO_NO_SESSIONS" : "کوئی سرگرم اجلاس نہیں",
 
         "SECTION_HEADER_SESSIONS" : "سرگرم اجلاس ",
         
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "رابطے کا نام",
-        "TABLE_HEADER_SESSION_REMOTEHOST"      : "ریموٹ حوسٹ",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "ریموٹ ھوسٹ",
         "TABLE_HEADER_SESSION_STARTDATE"       : "سرگرمی کی شروعات",
         "TABLE_HEADER_SESSION_USERNAME"        : "صارف کا نام",
         
-        "TEXT_CONFIRM_DELETE" : "کیا آپ یقینی طور پر منتخب شدہ اجلاس کو حزف کرنا چاہتے ہیں؟ ان اجلاس کو استعمال کرنے والے صارفین فوری طور پر ڈسکونیکٹ ہو جائیں گے۔"
+        "TEXT_CONFIRM_DELETE" : "کیا آپ یقینی طور پر منتخب شدہ اجلاس کو منسوخ کرنا چاہتے ہیں؟ ان اجلاس کو استعمال کرنے والے صارفین کے رابطے فوری طور پر منقطہ ہو جائیں گے۔"
 
     },
 

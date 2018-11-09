@@ -1,0 +1,34 @@
+{
+
+    "DATA_SOURCE_TOTP" : {
+        "NAME" : "TOTP TFA Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_TOTP" : ""
+    },
+
+    "TOTP" : {
+
+        "ACTION_HIDE_DETAILS" : "چھپائیے",
+        "ACTION_SHOW_DETAILS" : "دکھائیے",
+
+        "FIELD_HEADER_ALGORITHM"  : ": الگورتھم",
+        "FIELD_HEADER_DIGITS"     : ": ہندسے",
+        "FIELD_HEADER_INTERVAL"   : ": وقفہ",
+        "FIELD_HEADER_SECRET_KEY" : ": سیکرٹ کی",
+
+        "FIELD_PLACEHOLDER_CODE" : "تصدیقی کوڈ",
+
+        "INFO_CODE_REQUIRED"       : "براہ مہربانی اپنی شناخت کی تصدیق کروانے کے لیے تصدیقی کوڈ درج کیجیے۔",
+        "INFO_ENROLL_REQUIRED"     : "آپ کے اکاؤنٹ کو ملٹی فیکٹر تصدیق کی اجازت مل گئی ہے۔",
+        "INFO_VERIFICATION_FAILED" : "تصدیق میں ناکامی۔ براہ مہربانی دوبارہ کوشش کریں۔",
+
+        "HELP_ENROLL_BARCODE" : "انرولمنٹ کے عمل کو پورا کرنے کے لیے نیچے دیے گۓ بارکوڈ کو ٹو فیکٹر تصدیق ایپ سے سکین کریں۔",
+        "HELP_ENROLL_VERIFY"  : "بارکوڈ کو سکین کرنے کے بعد ڈسپلے ہونے والے تصدیق کوڈ کو درج کریں تاکہ کامیاب انرولمنٹ کی تصدیق ہو سکے۔",
+
+        "SECTION_HEADER_DETAILS" : "Details:"
+
+    }
+
+}

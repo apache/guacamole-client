@@ -1,0 +1,113 @@
+{
+
+    "LOGIN" : {
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_SAME"     : "نیا پاسورڈ ایکسپائر ہوۓ پاسورڈ سے مختلف ہونا چاہیے۔",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_NOT_VALID"         : "اس صارف کا اکاؤنٹ فی الحال غیر مواثر ہے۔",
+        "ERROR_NOT_ACCESSIBLE"    : "اس اکاؤنٹ کی فی الحال رسائی نہیں مل سکتی۔ براہ مہربانی کچھ دیر بعد کوشش کریں۔",
+
+        "INFO_PASSWORD_EXPIRED" : "آپ کا پاسورڈ ایکسپائر ہو چکا ہے اور نیا پاسورڈ بنانا لازمی ہے۔ براہ مہربانی آگے بڑھنے کے لیے نیا پاسورڈ ڈالیں۔",
+
+        "FIELD_HEADER_NEW_PASSWORD"         : "نیا پاسورڈ",
+        "FIELD_HEADER_CONFIRM_NEW_PASSWORD" : "نۓ پاسورڈ کی تصدیق کریں۔"
+
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+
+        "FIELD_HEADER_MAX_CONNECTIONS"          : ": کنیکشنز کی زیادہ سے زیادہ حد",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : ": فی صارف کنیکشنز کی زیادہ سے زیادہ حد",
+
+        "FIELD_HEADER_FAILOVER_ONLY"            : ": صرف فیل آوور کے لیے استعمال کریں",
+        "FIELD_HEADER_WEIGHT"                   : ": کنیکشن ویٹ",
+
+        "FIELD_HEADER_GUACD_HOSTNAME"   : ": ھوسٹ کا نام",
+        "FIELD_HEADER_GUACD_ENCRYPTION" : ": انکرپشن",
+        "FIELD_HEADER_GUACD_PORT"       : ": پورٹ",
+
+        "FIELD_OPTION_GUACD_ENCRYPTION_EMPTY" : "",
+        "FIELD_OPTION_GUACD_ENCRYPTION_NONE"  : "کوئی نہیں (unencrypted)",
+        "FIELD_OPTION_GUACD_ENCRYPTION_SSL"   : "SSL / TLS",
+
+        "SECTION_HEADER_CONCURRENCY"    : "کنکرنسی کی حد",
+        "SECTION_HEADER_LOAD_BALANCING" : "بوجھ کا توازن ہو رہا ہے",
+        "SECTION_HEADER_GUACD"          : "گواکامولی کے پروکسی پیرمیٹرز(guacd)"
+
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_ENABLE_SESSION_AFFINITY"  : ": انیبل سیشن  افینیٹی",
+        "FIELD_HEADER_MAX_CONNECTIONS"          : ": کنیکشنز کی زیادہ سے زیادہ حد",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : ": فی صارف کنیکشنز کی زیادہ سے زیادہ حد",
+
+        "SECTION_HEADER_CONCURRENCY" : "کنکرنسی کی حد-(Balancing Groups)"
+
+    },
+
+    "DATA_SOURCE_MYSQL" : {
+        "NAME" : "MySQL"
+    },
+
+    "DATA_SOURCE_MYSQL_SHARED" : {
+        "NAME" : "شیرڈ کنیکشنز-(MySQL)"
+    },
+
+    "DATA_SOURCE_POSTGRESQL" : {
+        "NAME" : "PostgreSQL"
+    },
+
+    "DATA_SOURCE_POSTGRESQL_SHARED" : {
+        "NAME" : "شیرڈ کنیکشنز -(PostgreSQL)"
+    },
+
+    "DATA_SOURCE_SQLSERVER" : {
+        "NAME" : "سرور-SQL"
+    },
+
+    "DATA_SOURCE_SQLSERVER_SHARED" : {
+        "NAME" : "شیرڈ کنیکشنز-(SQL Server)"
+    },
+
+    "HOME" : {
+        "INFO_SHARED_BY" : "کے ساتھ شیر ہو رہا ہے۔-{USERNAME}"
+    },
+
+    "PASSWORD_POLICY" : {
+
+        "ERROR_CONTAINS_USERNAME"      : "صارف کا نام پاسورڈ کا حصہ نہیں ہو سکتا۔",
+        "ERROR_REQUIRES_DIGIT"         : "پاسورڈ میں کم از کم ایک ہندسہ ہونا لازمی ہے۔",
+        "ERROR_REQUIRES_MULTIPLE_CASE" : "پاسورڈ میں دونوں بڑے اور چھوٹے حروف کا ہونا لازمی ہے۔",
+        "ERROR_REQUIRES_NON_ALNUM"     : "پاسورڈ میں کم از کم ایک سمبل ہونا لازمی ہے۔",
+        "ERROR_REUSED"                 : "یہ پاسورڈ پہلے استعمال ہو چکا ہے۔ براہ مربانی پچھلے پاسورڈ کو استعمال نہ کریں۔",
+        "ERROR_TOO_SHORT"              : "کیریکٹر کم از کم پاسورڈ میں ہونے چاہیں۔-{LENGTH}",
+        "ERROR_TOO_YOUNG"              : "The password for this account has already been reset. Please wait at least {WAIT} more {WAIT, plural, one{day} other{days}} before changing the password again."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_DISABLED"            : ": لاگ ان غیر فعال کر دیا ہے",
+        "FIELD_HEADER_EXPIRED"             : ": پاسورڈ ایکسپائر ہو گیا ہے",
+        "FIELD_HEADER_ACCESS_WINDOW_END"   : ": اس کے بعد رسائ کی اجازت نہ دیں",
+        "FIELD_HEADER_ACCESS_WINDOW_START" : ": اس کے بعد رسائ کی اجازت دیں",
+        "FIELD_HEADER_TIMEZONE"            : ": صارف کا ٹائم زون",
+        "FIELD_HEADER_VALID_FROM"          : ": اس کے بعد اکاؤنٹ کو فعال کر دیں",
+        "FIELD_HEADER_VALID_UNTIL"         : ": اس کے بعد اکاؤنٹ کو غیر فعال کر دیں",
+
+        "SECTION_HEADER_RESTRICTIONS" : "اکاؤنٹ کی پابندیاں",
+        "SECTION_HEADER_PROFILE"      : "پروفائل"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_DISABLED" : "@:USER_ATTRIBUTES.FIELD_HEADER_DISABLED",
+
+        "SECTION_HEADER_RESTRICTIONS" : "@:USER_ATTRIBUTES.SECTION_HEADER_RESTRICTIONS"
+
+    }
+
+}
