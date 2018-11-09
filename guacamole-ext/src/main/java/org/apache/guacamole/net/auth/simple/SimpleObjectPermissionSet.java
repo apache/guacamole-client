@@ -38,7 +38,7 @@ public class SimpleObjectPermissionSet implements ObjectPermissionSet {
     /**
      * The set of all permissions currently granted.
      */
-    private Set<ObjectPermission> permissions = Collections.<ObjectPermission>emptySet();
+    private Set<ObjectPermission> permissions = Collections.emptySet();
 
     /**
      * Creates a new empty SimpleObjectPermissionSet. If you are not extending

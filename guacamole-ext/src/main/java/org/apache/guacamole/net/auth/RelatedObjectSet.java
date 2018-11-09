@@ -84,7 +84,7 @@ public interface RelatedObjectSet {
 
         @Override
         public Set<String> getObjects() throws GuacamoleException {
-            return Collections.<String>emptySet();
+            return Collections.emptySet();
         }
 
         @Override

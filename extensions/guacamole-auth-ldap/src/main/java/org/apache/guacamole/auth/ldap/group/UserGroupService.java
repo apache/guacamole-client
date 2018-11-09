@@ -108,7 +108,7 @@ public class UserGroupService {
         // Do not return any user groups if base DN is not specified
         String groupBaseDN = confService.getGroupBaseDN();
         if (groupBaseDN == null)
-            return Collections.<String, UserGroup>emptyMap();
+            return Collections.emptyMap();
 
         // Retrieve all visible user groups which are not guacConfigGroups
         Collection<String> attributes = confService.getGroupNameAttributes();
@@ -163,7 +163,7 @@ public class UserGroupService {
         // Do not return any user groups if base DN is not specified
         String groupBaseDN = confService.getGroupBaseDN();
         if (groupBaseDN == null)
-            return Collections.<LDAPEntry>emptyList();
+            return Collections.emptyList();
 
         // Get all groups the user is a member of starting at the groupBaseDN,
         // excluding guacConfigGroups

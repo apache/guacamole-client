@@ -110,7 +110,7 @@ public interface SystemPermissionSet extends PermissionSet<SystemPermission> {
         @Override
         public Set<SystemPermission> getPermissions()
                 throws GuacamoleException {
-            return Collections.<SystemPermission>emptySet();
+            return Collections.emptySet();
         }
 
         @Override

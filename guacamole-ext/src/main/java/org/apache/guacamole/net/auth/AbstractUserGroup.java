@@ -39,7 +39,7 @@ public class AbstractUserGroup extends AbstractIdentifiable implements UserGroup
      */
     @Override
     public Map<String, String> getAttributes() {
-        return Collections.<String, String>emptyMap();
+        return Collections.emptyMap();
     }
 
     /**

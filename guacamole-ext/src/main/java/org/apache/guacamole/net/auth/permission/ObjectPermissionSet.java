@@ -155,13 +155,13 @@ public interface ObjectPermissionSet extends PermissionSet<ObjectPermission> {
         @Override
         public Collection<String> getAccessibleObjects(Collection<ObjectPermission.Type> permissions,
                 Collection<String> identifiers) throws GuacamoleException {
-            return Collections.<String>emptySet();
+            return Collections.emptySet();
         }
 
         @Override
         public Set<ObjectPermission> getPermissions()
                 throws GuacamoleException {
-            return Collections.<ObjectPermission>emptySet();
+            return Collections.emptySet();
         }
 
         @Override

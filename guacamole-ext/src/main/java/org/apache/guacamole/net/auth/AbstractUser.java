@@ -59,7 +59,7 @@ public abstract class AbstractUser extends AbstractIdentifiable
      */
     @Override
     public Map<String, String> getAttributes() {
-        return Collections.<String, String>emptyMap();
+        return Collections.emptyMap();
     }
 
     /**
@@ -94,7 +94,7 @@ public abstract class AbstractUser extends AbstractIdentifiable
      */
     @Override
     public List<ActivityRecord> getHistory() throws GuacamoleException {
-        return Collections.<ActivityRecord>emptyList();
+        return Collections.emptyList();
     }
 
     /**
