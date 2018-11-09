@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.ldap.user;
 import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -51,8 +52,14 @@ public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
     private Map<String, String> tokens;
 
     /**
-     * Initializes this AuthenticatedUser using the given credentials and
-     * connection parameter tokens.
+     * The unique identifiers of all user groups which affect the permissions
+     * available to this user.
+     */
+    private Set<String> effectiveGroups;
+
+    /**
+     * Initializes this AuthenticatedUser with the given credentials,
+     * connection parameter tokens. and set of effective user groups.
      *
      * @param credentials
      *     The credentials provided when this user was authenticated.
@@ -60,10 +67,15 @@ public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
      * @param tokens
      *     A Map of all name/value pairs that should be applied as parameter
      *     tokens when connections are established using the AuthenticatedUser.
+     *
+     * @param effectiveGroups
+     *     The unique identifiers of all user groups which affect the
+     *     permissions available to this user.
      */
-    public void init(Credentials credentials, Map<String, String> tokens) {
+    public void init(Credentials credentials, Map<String, String> tokens, Set<String> effectiveGroups) {
         this.credentials = credentials;
         this.tokens = Collections.unmodifiableMap(tokens);
+        this.effectiveGroups = effectiveGroups;
         setIdentifier(credentials.getUsername());
     }
 
@@ -89,6 +101,11 @@ public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
     @Override
     public Credentials getCredentials() {
         return credentials;
+    }
+
+    @Override
+    public Set<String> getEffectiveUserGroups() {
+        return effectiveGroups;
     }
 
 }

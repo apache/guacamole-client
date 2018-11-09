@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.net.auth.simple;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.guacamole.GuacamoleException;
@@ -29,6 +28,7 @@ import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -113,20 +113,19 @@ public class SimpleUserContext extends AbstractUserContext {
 
     @Override
     public User self() {
+        return new SimpleUser(username) {
 
-        try {
-            return new SimpleUser(username,
-                    getConnectionDirectory().getIdentifiers(),
-                    getConnectionGroupDirectory().getIdentifiers()
-            );
-        }
+            @Override
+            public ObjectPermissionSet getConnectionGroupPermissions() throws GuacamoleException {
+                return new SimpleObjectPermissionSet(getConnectionDirectory().getIdentifiers());
+            }
 
-        catch (GuacamoleException e) {
-            return new SimpleUser(username,
-                    Collections.<String>emptySet(),
-                    Collections.<String>emptySet());
-        }
+            @Override
+            public ObjectPermissionSet getConnectionPermissions() throws GuacamoleException {
+                return new SimpleObjectPermissionSet(getConnectionGroupDirectory().getIdentifiers());
+            }
 
+        };
     }
 
     @Override
