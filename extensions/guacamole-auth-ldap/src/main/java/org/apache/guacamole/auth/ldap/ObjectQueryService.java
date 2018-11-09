@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * Guacamole-related objects. Referrals are automatically handled. Convenience
  * functions are provided for generating the LDAP queries typically required
  * for retrieving Guacamole objects, as well as for converting the results of a
- * query into a Map of Guacamole objects.
+ * query into a {@link Map} of Guacamole objects.
  */
 public class ObjectQueryService {
 
@@ -277,11 +277,11 @@ public class ObjectQueryService {
     }
 
     /**
-     * Converts a given list of LDAP entries to a map of Guacamole objects
-     * stored by their identifiers.
+     * Converts a given list of LDAP entries to a {@link Map} of Guacamole
+     * objects stored by their identifiers.
      *
      * @param <ObjectType>
-     *     The type of object to store within the map.
+     *     The type of object to store within the {@link Map}.
      *
      * @param entries
      *     A list of LDAP entries to convert to Guacamole objects.
@@ -292,9 +292,9 @@ public class ObjectQueryService {
      *     converted, null should be returned.
      *
      * @return
-     *     A new map containing Guacamole object versions of each of the given
-     *     LDAP entries, where each object is stored within the map under its
-     *     corresponding identifier.
+     *     A new {@link Map} containing Guacamole object versions of each of
+     *     the given LDAP entries, where each object is stored within the
+     *     {@link Map} under its corresponding identifier.
      */
     public <ObjectType extends Identifiable> Map<String, ObjectType>
         asMap(List<LDAPEntry> entries, Function<LDAPEntry, ObjectType> mapper) {
