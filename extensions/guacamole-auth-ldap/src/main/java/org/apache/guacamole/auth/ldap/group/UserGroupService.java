@@ -62,9 +62,9 @@ public class UserGroupService {
     /**
      * Returns the base search filter which should be used to retrieve user
      * groups which do not represent Guacamole connections. As excluding the
-     * guacConfigGroup object class may not work as expected (may always return
-     * zero results) if guacConfigGroup object class is not defined, it should
-     * only be explicitly excluded if it is expected to have been defined.
+     * guacConfigGroup object class may not work as expected if it is not
+     * defined (may always return zero results), it should only be explicitly
+     * excluded if it is expected to have been defined.
      *
      * @return
      *     The base search filter which should be used to retrieve user groups.
