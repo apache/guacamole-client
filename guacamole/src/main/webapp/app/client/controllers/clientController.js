@@ -268,6 +268,18 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.client = guacClientManager.getManagedClient($routeParams.id, $routeParams.params);
 
     /**
+     * All active clients which are not the current client ($scope.client).
+     * Each key is the ID of the connection used by that client.
+     *
+     * @type Object.<String, ManagedClient>
+     */
+    $scope.otherClients = (function getOtherClients(clients) {
+        var otherClients = angular.extend({}, clients);
+        delete otherClients[$scope.client.id];
+        return otherClients;
+    })(guacClientManager.getManagedClients());
+
+    /**
      * Map of data source identifier to the root connection group of that data
      * source, or null if the connection group hierarchy has not yet been
      * loaded.

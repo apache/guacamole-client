@@ -8,8 +8,20 @@
             <!-- Central portion of view -->
             <div class="client-body" guac-touch-drag="clientDrag" guac-touch-pinch="clientPinch">
 
-                <!-- Client -->
+                <!-- Client for current connection -->
                 <guac-client client="client"></guac-client>
+
+                <!-- All other active connections -->
+                <div id="other-connections">
+                    <div ng-repeat="otherClient in otherClients" class="connection">
+                        <a href="#/client/{{otherClient.id}}">
+                            <div class="thumbnail">
+                                <guac-thumbnail client="otherClient"></guac-thumbnail>
+                            </div>
+                            <div class="name">{{ otherClient.title }}</div>
+                        </a>
+                    </div>
+                </div>
 
             </div>
 

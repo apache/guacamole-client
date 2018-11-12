@@ -1,0 +1,72 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+#other-connections {
+
+    text-align: right;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+
+    /* Render above modal status */
+    z-index: 20;
+
+}
+
+#other-connections .connection {
+
+    display: inline-block;
+    position: relative;
+
+    margin: 1em;
+    border: 1px solid white;
+    background: black;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+
+    opacity: 0.5;
+    transition: opacity 0.25s;
+
+    width: 192px;
+    max-width: 30vw;
+
+}
+
+#other-connections .connection .name {
+
+    position: absolute;
+    padding: 0.25em 0.5em;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    text-align: left;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    font-size: 0.75em;
+    font-weight: bold;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+}
+
+#other-connections .connection:hover {
+    opacity: 1;
+}
