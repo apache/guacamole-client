@@ -20,7 +20,11 @@
 /**
  * Provides the GroupListItem class definition.
  */
-angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', function defineGroupListItem(ConnectionGroup) {
+angular.module('groupList').factory('GroupListItem', ['$injector', function defineGroupListItem($injector) {
+
+    // Required types
+    var ClientIdentifier = $injector.get('ClientIdentifier');
+    var ConnectionGroup  = $injector.get('ConnectionGroup');
 
     /**
      * Creates a new GroupListItem, initializing the properties of that
@@ -109,13 +113,49 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
 
         /**
          * Returns the number of currently active users for this connection,
-         * connection group, or sharing profile, if known.
+         * connection group, or sharing profile, if known. If unknown, null may
+         * be returned.
          * 
-         * @type Number
+         * @returns {Number}
+         *     The number of currently active users for this connection,
+         *     connection group, or sharing profile.
          */
         this.getActiveConnections = template.getActiveConnections || (function getActiveConnections() {
             return null;
         });
+
+        /**
+         * Returns the unique string identifier that must be used when
+         * connecting to a connection or connection group represented by this
+         * GroupListItem.
+         *
+         * @returns {String}
+         *     The client identifier associated with the connection or
+         *     connection group represented by this GroupListItem, or null if
+         *     this GroupListItem cannot have an associated client identifier.
+         */
+        this.getClientIdentifier = template.getClientIdentifier || function getClientIdentifier() {
+
+            // If the item is a connection, generate a connection identifier
+            if (this.type === GroupListItem.Type.CONNECTION)
+                return ClientIdentifier.toString({
+                    dataSource : this.dataSource,
+                    type       : ClientIdentifier.Types.CONNECTION,
+                    id         : this.identifier
+                });
+
+            // If the item is a connection group, generate a connection group identifier
+            if (this.type === GroupListItem.Type.CONNECTION_GROUP)
+                return ClientIdentifier.toString({
+                    dataSource : this.dataSource,
+                    type       : ClientIdentifier.Types.CONNECTION_GROUP,
+                    id         : this.identifier
+                });
+
+            // Otherwise, no such identifier can exist
+            return null;
+
+        };
 
         /**
          * The connection, connection group, or sharing profile whose data is
