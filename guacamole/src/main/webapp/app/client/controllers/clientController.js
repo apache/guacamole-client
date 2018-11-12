@@ -24,22 +24,25 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         function clientController($scope, $routeParams, $injector) {
 
     // Required types
+    var ConnectionGroup    = $injector.get('ConnectionGroup');
     var ManagedClient      = $injector.get('ManagedClient');
     var ManagedClientState = $injector.get('ManagedClientState');
     var ManagedFilesystem  = $injector.get('ManagedFilesystem');
     var ScrollState        = $injector.get('ScrollState');
 
     // Required services
-    var $location             = $injector.get('$location');
-    var authenticationService = $injector.get('authenticationService');
-    var clipboardService      = $injector.get('clipboardService');
-    var guacClientManager     = $injector.get('guacClientManager');
-    var guacNotification      = $injector.get('guacNotification');
-    var iconService           = $injector.get('iconService');
-    var preferenceService     = $injector.get('preferenceService');
-    var requestService        = $injector.get('requestService');
-    var tunnelService         = $injector.get('tunnelService');
-    var userPageService       = $injector.get('userPageService');
+    var $location              = $injector.get('$location');
+    var authenticationService  = $injector.get('authenticationService');
+    var connectionGroupService = $injector.get('connectionGroupService');
+    var clipboardService       = $injector.get('clipboardService');
+    var dataSourceService      = $injector.get('dataSourceService');
+    var guacClientManager      = $injector.get('guacClientManager');
+    var guacNotification       = $injector.get('guacNotification');
+    var iconService            = $injector.get('iconService');
+    var preferenceService      = $injector.get('preferenceService');
+    var requestService         = $injector.get('requestService');
+    var tunnelService          = $injector.get('tunnelService');
+    var userPageService        = $injector.get('userPageService');
 
     /**
      * The minimum number of pixels a drag gesture must move to result in the
@@ -263,6 +266,25 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * @type ManagedClient
      */
     $scope.client = guacClientManager.getManagedClient($routeParams.id, $routeParams.params);
+
+    /**
+     * Map of data source identifier to the root connection group of that data
+     * source, or null if the connection group hierarchy has not yet been
+     * loaded.
+     *
+     * @type Object.<String, ConnectionGroup>
+     */
+    $scope.rootConnectionGroups = null;
+
+    // Retrieve root groups and all descendants
+    dataSourceService.apply(
+        connectionGroupService.getConnectionGroupTree,
+        authenticationService.getAvailableDataSources(),
+        ConnectionGroup.ROOT_IDENTIFIER
+    )
+    .then(function rootGroupsRetrieved(rootConnectionGroups) {
+        $scope.rootConnectionGroups = rootConnectionGroups;
+    }, requestService.WARN);
 
     /**
      * Map of all available sharing profiles for the current connection by

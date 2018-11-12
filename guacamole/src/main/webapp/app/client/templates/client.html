@@ -47,7 +47,20 @@
 
             <!-- Stationary header -->
             <div class="header">
-                <h2>{{client.name}}</h2>
+                <h2 ng-hide="rootConnectionGroups">{{client.name}}</h2>
+                <h2 ng-show="rootConnectionGroups">
+                    <guac-menu menu-title="client.name">
+                        <div class="all-connections">
+                            <guac-group-list
+                                connection-groups="rootConnectionGroups"
+                                templates="{
+                                    'connection'       : 'app/client/templates/connection.html',
+                                    'connection-group' : 'app/client/templates/connectionGroup.html'
+                                }"
+                                page-size="20"></guac-group-list>
+                        </div>
+                    </guac-menu>
+                </h2>
                 <div class="share-menu" ng-show="canShareConnection()">
                     <guac-menu menu-title="'CLIENT.ACTION_SHARE' | translate">
                         <ul ng-repeat="sharingProfile in sharingProfiles">
