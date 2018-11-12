@@ -17,23 +17,10 @@
  * under the License.
  */
 
-.keyboard-container {
-
+.text-input-container {
     display: none;
-    text-align: center;
-
-    width: 100%;
-    margin: 0;
-    padding: 0;
-
-    border-top: 1px solid black;
-    background: #222;
-    opacity: 0.85;
-
-    z-index: 1;
-
 }
 
-.keyboard-container.open {
+.text-input-container.open {
     display: block;
 }
