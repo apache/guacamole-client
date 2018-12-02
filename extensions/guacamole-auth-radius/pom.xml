@@ -230,6 +230,14 @@
             <artifactId>jradius-extended</artifactId>
             <version>1.1.5</version>
         </dependency>
+        
+        <!-- slf4j Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.7</version>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 
