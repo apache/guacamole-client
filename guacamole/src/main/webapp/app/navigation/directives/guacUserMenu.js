@@ -95,12 +95,9 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
              */
             $scope.role = null;
 
-            // Pull user data
+            // Display user profile attributes if available
             userService.getUser(authenticationService.getDataSource(), $scope.username)
                     .then(function userRetrieved(user) {
-
-                // Store retrieved user object
-                $scope.user = user;
 
                 // Pull basic profile information
                 $scope.fullName = user.attributes[User.Attributes.FULL_NAME];
@@ -111,7 +108,7 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
                 var email = user.attributes[User.Attributes.EMAIL_ADDRESS];
                 $scope.userURL = email ? 'mailto:' + email : null;
 
-            }, requestService.DIE);
+            }, requestService.IGNORE);
 
             /**
              * The available main pages for the current user.
