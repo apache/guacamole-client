@@ -21,8 +21,7 @@
  * Module which provides handling for CAS authentication.
  */
 angular.module('guacCAS', [
-    'form',
-    'ngRoute',
+    'form'
 ]);
 
 // Ensure the CAS module is loaded along with the rest of the app
