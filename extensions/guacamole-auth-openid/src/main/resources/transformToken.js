@@ -18,16 +18,19 @@
  */
 
 /**
- * Config block which registers openid-specific field types.
+ * Before AngularJS routing takes effect, test whether the URL fragment
+ * contains an OpenID Connect "id_token" parameter, and reformat the fragment
+ * such that the client side of Guacamole's authentication system will
+ * automatically forward the "id_token" value for server-side validation.
+ * 
+ * Note that not all OpenID identity providers will include the "id_token"
+ * parameter in the first position; it may occur after several other parameters
+ * within the hash.
  */
-angular.module('guacOpenID').config(['formServiceProvider',
-        function guacOpenIDConfig(formServiceProvider) {
+(function guacOpenIDTransformToken() {
 
-    // Define field for token from OpenID service
-    formServiceProvider.registerFieldType("GUAC_OPENID_TOKEN", {
-        templateUrl : 'app/ext/guac-openid/templates/openidTokenField.html',
-        controller  : 'guacOpenIDController',
-        module      : 'guacOpenID'
-    });
+    // Transform "/#id_token=..." to "/#/?id_token=..."
+    if (/(^#|&)id_token=/.test(location.hash))
+        location.hash = '/?' + location.hash.substring(1);
 
-}]);
+})();
