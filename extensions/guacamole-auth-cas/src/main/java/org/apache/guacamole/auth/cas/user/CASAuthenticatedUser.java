@@ -20,6 +20,8 @@
 package org.apache.guacamole.auth.cas.user;
 
 import com.google.inject.Inject;
+import java.util.Collections;
+import java.util.Map;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -29,7 +31,7 @@ import org.apache.guacamole.net.auth.Credentials;
  * username and particular set of credentials with the CAS authentication
  * provider.
  */
-public class AuthenticatedUser extends AbstractAuthenticatedUser {
+public class CASAuthenticatedUser extends AbstractAuthenticatedUser {
 
     /**
      * Reference to the authentication provider associated with this
@@ -42,6 +44,11 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
      * The credentials provided when this user was authenticated.
      */
     private Credentials credentials;
+    
+    /**
+     * Tokens associated with this authenticated user.
+     */
+    private Map<String, String> tokens;
 
     /**
      * Initializes this AuthenticatedUser using the given username and
@@ -52,10 +59,28 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
      *
      * @param credentials
      *     The credentials provided when this user was authenticated.
+     * 
+     * @param tokens
+     *     A map of all the name/value pairs that should be available
+     *     as tokens when connections are established with this user.
      */
-    public void init(String username, Credentials credentials) {
+    public void init(String username, Credentials credentials,
+            Map<String, String> tokens) {
         this.credentials = credentials;
+        this.tokens = Collections.unmodifiableMap(tokens);
         setIdentifier(username.toLowerCase());
+    }
+
+    /**
+     * Returns a Map containing the name/value pairs that can be applied
+     * as parameter tokens when connections are established by the user.
+     * 
+     * @return
+     *     A Map containing all of the name/value pairs that can be
+     *     used as parameter tokens by this user.
+     */
+    public Map<String, String> getTokens() {
+        return tokens;
     }
 
     @Override

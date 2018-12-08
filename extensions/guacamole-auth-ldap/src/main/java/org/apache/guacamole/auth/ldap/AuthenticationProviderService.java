@@ -309,7 +309,7 @@ public class AuthenticationProviderService {
             // Convert each retrieved attribute into a corresponding token
             for (Object attrObj : attrSet) {
                 LDAPAttribute attr = (LDAPAttribute)attrObj;
-                tokens.put(TokenName.fromAttribute(attr.getName()), attr.getStringValue());
+                tokens.put(LDAPTokenName.fromAttribute(attr.getName()), attr.getStringValue());
             }
 
         }
