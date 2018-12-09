@@ -58,12 +58,14 @@ public class LDAPConnectionService {
     private ConfigurationService confService;
 
     /**
-     * Creates a new instance of LDAPConnection, configured as required to use
-     * whichever encryption method is requested within guacamole.properties.
+     * Creates a new instance of LdapNetworkConnection, configured as required
+     * to use whichever encryption method is requested within
+     * guacamole.properties.
      *
      * @return
-     *     A new LDAPConnection instance which has already been configured to
-     *     use the encryption method requested within guacamole.properties.
+     *     A new LdapNetworkConnection instance which has already been 
+     *     configured to use the encryption method requested within 
+     *     guacamole.properties.
      *
      * @throws GuacamoleException
      *     If an error occurs while parsing guacamole.properties, or if the
@@ -91,7 +93,7 @@ public class LDAPConnectionService {
             // LDAP + STARTTLS
             case STARTTLS:
                 logger.debug("Connecting to LDAP server using STARTTLS.");
-                return new LdapNetworkConnection(host, port, false);
+                return new LdapNetworkConnection(host, port);
 
             // The encryption method, though known, is not actually
             // implemented. If encountered, this would be a bug.
@@ -122,7 +124,7 @@ public class LDAPConnectionService {
     public LdapConnection bindAs(Dn userDN, String password)
             throws GuacamoleException {
 
-        // Obtain appropriately-configured LdapConnection instance
+        // Obtain appropriately-configured LdapNetworkConnection instance
         LdapNetworkConnection ldapConnection = createLDAPConnection();
 
         try {
@@ -171,7 +173,7 @@ public class LDAPConnectionService {
      *     The LDAP URL to follow.
      * 
      * @param ldapConfig
-     *     The connection config to use to retrieve username and
+     *     The connection configuration to use to retrieve username and
      *     password.
      * 
      * @param hop

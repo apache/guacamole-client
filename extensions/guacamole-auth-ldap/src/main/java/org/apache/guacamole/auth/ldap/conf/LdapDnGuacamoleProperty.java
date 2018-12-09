@@ -27,7 +27,8 @@ import org.apache.guacamole.properties.GuacamoleProperty;
 
 /**
  * A GuacamoleProperty that converts a string to a Dn that can be used
- * in LDAP connections.
+ * in LDAP connections.  An exception is thrown if the provided DN is invalid
+ * and cannot be parsed.
  */
 public abstract class LdapDnGuacamoleProperty implements GuacamoleProperty<Dn> {
 

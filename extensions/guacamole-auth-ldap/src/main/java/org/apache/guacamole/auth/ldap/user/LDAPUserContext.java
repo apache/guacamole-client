@@ -102,7 +102,7 @@ public class LDAPUserContext extends AbstractUserContext {
 
     /**
      * Initializes this UserContext using the provided AuthenticatedUser and
-     * LDAPConnection.
+     * LdapConnection.
      *
      * @param user
      *     The AuthenticatedUser representing the user that authenticated. This

@@ -284,7 +284,8 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the maximum number of referral hops to follow.
+     * Returns the maximum number of referral hops to follow.  By default
+     * a maximum of 5 hops is allowed.
      *
      * @return
      *     The maximum number of referral hops to follow
@@ -338,7 +339,8 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns names for custom LDAP user attributes.
+     * Returns names for custom LDAP user attributes.  By default no
+     * attributes will be returned.
      *
      * @return
      *     Custom LDAP user attributes as configured in guacamole.properties.

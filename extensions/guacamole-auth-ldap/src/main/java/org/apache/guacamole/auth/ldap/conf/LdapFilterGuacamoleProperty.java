@@ -27,9 +27,10 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.properties.GuacamoleProperty;
 
 /**
- * A GuacamoleProperty with a value of AliasDerefMode. The possible strings
- * "never", "searching", "finding", and "always" are mapped to their values as a
- * AliasDerefMode object. Anything else results in a parse error.
+ * A GuacamoleProperty with a value of an ExprNode query filter.  The string
+ * provided is passed through the FilterParser returning the ExprNode object,
+ * or an exception is thrown if the filter is invalid and cannot be correctly
+ * parsed.
  */
 public abstract class LdapFilterGuacamoleProperty implements GuacamoleProperty<ExprNode> {
 
