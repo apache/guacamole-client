@@ -29,6 +29,7 @@ import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidAttributeValueException;
 import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.directory.api.ldap.model.name.Rdn;
 import org.apache.guacamole.auth.ldap.conf.ConfigurationService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
@@ -104,6 +105,7 @@ public class UserService {
                 return new SimpleUser(username);
             }
             catch (LdapInvalidAttributeValueException e) {
+                
                 return null;
             }
 
@@ -184,10 +186,10 @@ public class UserService {
 
         // Derive user DN from base DN
         try {
-            return new Dn(usernameAttributes.get(0) + "=" + username
-                + "," + confService.getUserBaseDN().toString());
+            return new Dn(new Rdn(usernameAttributes.get(0), username),
+                confService.getUserBaseDN());
         }
-        catch (LdapInvalidDnException e) {
+        catch (LdapInvalidAttributeValueException | LdapInvalidDnException e) {
             throw new GuacamoleServerException("Error trying to derive user DN.", e);
         }
 

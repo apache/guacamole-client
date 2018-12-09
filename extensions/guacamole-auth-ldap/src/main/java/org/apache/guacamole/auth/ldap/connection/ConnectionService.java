@@ -134,12 +134,13 @@ public class ConnectionService {
 
                 // Get common name (CN)
                 Attribute cn = entry.get("cn");
-                String cnName;
                 
                 if (cn == null) {
                     logger.warn("guacConfigGroup is missing a cn.");
                     return null;
                 }
+                
+                String cnName;
                 
                 try {
                     cnName = cn.getString();
@@ -179,6 +180,7 @@ public class ConnectionService {
                             parameter = parameterAttribute.getString();
                         }
                         catch (LdapInvalidAttributeValueException e) {
+                            logger.warn("Parameter value not valid for {}", cnName, e);
                             return null;
                         }
                         parameterAttribute.remove(parameter);
@@ -235,7 +237,7 @@ public class ConnectionService {
      *     An LDAP search filter which queries all guacConfigGroup objects
      *     accessible by the user having the given DN.
      *
-     * @throws LDAPException
+     * @throws LdapException
      *     If an error occurs preventing retrieval of user groups.
      *
      * @throws GuacamoleException

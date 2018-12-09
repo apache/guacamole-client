@@ -50,7 +50,7 @@ public class UserGroupService {
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(UserGroupService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserGroupService.class);
 
     /**
      * Service for retrieving LDAP server configuration information.
