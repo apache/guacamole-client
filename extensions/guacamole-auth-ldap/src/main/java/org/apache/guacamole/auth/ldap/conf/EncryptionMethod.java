@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.ldap;
+package org.apache.guacamole.auth.ldap.conf;
 
 /**
  * All possible encryption methods which may be used when connecting to an LDAP

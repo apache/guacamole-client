@@ -141,11 +141,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- JLDAP -->
+        <!-- Apache Directory LDAP API -->
         <dependency>
-            <groupId>com.novell.ldap</groupId>
-            <artifactId>jldap</artifactId>
-            <version>4.3</version>
+            <groupId>org.apache.directory.api</groupId>
+            <artifactId>api-all</artifactId>
+            <version>2.0.0.AM2</version>
         </dependency>
 
         <!-- Guice -->

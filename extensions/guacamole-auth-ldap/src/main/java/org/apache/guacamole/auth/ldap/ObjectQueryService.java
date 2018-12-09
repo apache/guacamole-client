@@ -20,18 +20,32 @@
 package org.apache.guacamole.auth.ldap;
 
 import com.google.inject.Inject;
-import com.novell.ldap.LDAPAttribute;
-import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPEntry;
-import com.novell.ldap.LDAPException;
-import com.novell.ldap.LDAPReferralException;
-import com.novell.ldap.LDAPSearchResults;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import org.apache.directory.api.ldap.model.cursor.CursorException;
+import org.apache.directory.api.ldap.model.cursor.SearchCursor;
+import org.apache.directory.api.ldap.model.entry.Attribute;
+import org.apache.directory.api.ldap.model.entry.Entry;
+import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.exception.LdapInvalidAttributeValueException;
+import org.apache.directory.api.ldap.model.filter.AndNode;
+import org.apache.directory.api.ldap.model.filter.EqualityNode;
+import org.apache.directory.api.ldap.model.filter.ExprNode;
+import org.apache.directory.api.ldap.model.filter.OrNode;
+import org.apache.directory.api.ldap.model.message.Referral;
+import org.apache.directory.api.ldap.model.message.Response;
+import org.apache.directory.api.ldap.model.message.SearchRequest;
+import org.apache.directory.api.ldap.model.message.SearchResultEntry;
+import org.apache.directory.api.ldap.model.message.SearchResultReference;
+import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.directory.api.ldap.model.url.LdapUrl;
+import org.apache.directory.ldap.client.api.LdapConnection;
+import org.apache.directory.ldap.client.api.LdapConnectionConfig;
+import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.net.auth.Identifiable;
@@ -50,19 +64,13 @@ public class ObjectQueryService {
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(ObjectQueryService.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(ObjectQueryService.class);
+    
     /**
-     * Service for escaping parts of LDAP queries.
+     * Service for connecting to LDAP directory.
      */
     @Inject
-    private EscapingService escapingService;
-
-    /**
-     * Service for retrieving LDAP server configuration information.
-     */
-    @Inject
-    private ConfigurationService confService;
+    private LDAPConnectionService ldapService;
 
     /**
      * Returns the identifier of the object represented by the given LDAP
@@ -86,14 +94,18 @@ public class ObjectQueryService {
      *     The identifier of the object represented by the given LDAP entry, or
      *     null if no attributes declared as containing the identifier of the
      *     object are present on the entry.
+     * 
+     * @throws LdapInvalidAttributeValueException
+     *     If an error occurs retrieving the value of the identifier attribute.
      */
-    public String getIdentifier(LDAPEntry entry, Collection<String> attributes) {
+    public String getIdentifier(Entry entry, Collection<String> attributes) 
+            throws LdapInvalidAttributeValueException {
 
         // Retrieve the first value of the highest priority identifier attribute
         for (String identifierAttribute : attributes) {
-            LDAPAttribute identifier = entry.getAttribute(identifierAttribute);
+            Attribute identifier = entry.get(identifierAttribute);
             if (identifier != null)
-                return identifier.getStringValue();
+                return identifier.getString();
         }
 
         // No identifier attribute is present on the entry
@@ -125,42 +137,25 @@ public class ObjectQueryService {
      *     An LDAP query which will search for arbitrary LDAP objects having at
      *     least one of the given attributes set to the specified value.
      */
-    public String generateQuery(String filter,
+    public ExprNode generateQuery(ExprNode filter,
             Collection<String> attributes, String attributeValue) {
 
         // Build LDAP query for objects having at least one attribute and with
         // the given search filter
-        StringBuilder ldapQuery = new StringBuilder();
-        ldapQuery.append("(&");
-        ldapQuery.append(filter);
+        AndNode searchFilter = new AndNode();
+        searchFilter.addNode(filter);
 
         // Include all attributes within OR clause if there are more than one
-        if (attributes.size() > 1)
-            ldapQuery.append("(|");
-
+        OrNode attributeFilter = new OrNode();
+       
         // Add equality comparison for each possible attribute
-        for (String attribute : attributes) {
-            ldapQuery.append("(");
-            ldapQuery.append(escapingService.escapeLDAPSearchFilter(attribute));
+        attributes.forEach(attribute ->
+            attributeFilter.addNode(new EqualityNode(attribute, attributeValue))
+        );
 
-            if (attributeValue != null) {
-                ldapQuery.append("=");
-                ldapQuery.append(escapingService.escapeLDAPSearchFilter(attributeValue));
-                ldapQuery.append(")");
-            }
-            else
-                ldapQuery.append("=*)");
-
-        }
-
-        // Close OR clause, if any
-        if (attributes.size() > 1)
-            ldapQuery.append(")");
-
-        // Close overall query (AND clause)
-        ldapQuery.append(")");
-
-        return ldapQuery.toString();
+        searchFilter.addNode(attributeFilter);
+        
+        return searchFilter;
 
     }
 
@@ -188,38 +183,42 @@ public class ObjectQueryService {
      *     information required to execute the query cannot be read from
      *     guacamole.properties.
      */
-    public List<LDAPEntry> search(LDAPConnection ldapConnection,
-            String baseDN, String query) throws GuacamoleException {
+    public List<Entry> search(LdapConnection ldapConnection,
+            Dn baseDN, ExprNode query) throws GuacamoleException {
 
         logger.debug("Searching \"{}\" for objects matching \"{}\".", baseDN, query);
 
         try {
 
+            LdapConnectionConfig ldapConnectionConfig =
+                    ((LdapNetworkConnection) ldapConnection).getConfig();
+            
             // Search within subtree of given base DN
-            LDAPSearchResults results = ldapConnection.search(baseDN,
-                    LDAPConnection.SCOPE_SUB, query, null, false,
-                    confService.getLDAPSearchConstraints());
+            SearchRequest request = ldapService.getSearchRequest(baseDN,
+                    query);
+            
+            SearchCursor results = ldapConnection.search(request);
 
             // Produce list of all entries in the search result, automatically
             // following referrals if configured to do so
-            List<LDAPEntry> entries = new ArrayList<>(results.getCount());
-            while (results.hasMore()) {
+            List<Entry> entries = new ArrayList<>();
+            while (results.next()) {
 
-                try {
-                    entries.add(results.next());
+                Response response = results.get();
+                if (response instanceof SearchResultEntry) {
+                    entries.add(((SearchResultEntry) response).getEntry());
                 }
-
-                // Warn if referrals cannot be followed
-                catch (LDAPReferralException e) {
-                    if (confService.getFollowReferrals()) {
-                        logger.error("Could not follow referral: {}", e.getFailedReferral());
-                        logger.debug("Error encountered trying to follow referral.", e);
-                        throw new GuacamoleServerException("Could not follow LDAP referral.", e);
+                else if (response instanceof SearchResultReference &&
+                        request.isFollowReferrals()) {
+                    
+                    Referral referral = ((SearchResultReference) response).getReferral();
+                    int referralHop = 0;
+                    for (String url : referral.getLdapUrls()) {
+                        LdapConnection referralConnection = ldapService.referralConnection(
+                            new LdapUrl(url), ldapConnectionConfig, referralHop++);
+                        entries.addAll(search(referralConnection, baseDN, query));
                     }
-                    else {
-                        logger.warn("Given a referral, but referrals are disabled. Error was: {}", e.getMessage());
-                        logger.debug("Got a referral, but configured to not follow them.", e);
-                    }
+                    
                 }
                 
                 catch (LDAPException e) {
@@ -232,7 +231,7 @@ public class ObjectQueryService {
             return entries;
 
         }
-        catch (LDAPException | GuacamoleException e) {
+        catch (CursorException | LdapException e) {
             throw new GuacamoleServerException("Unable to query list of "
                     + "objects from LDAP directory.", e);
         }
@@ -274,10 +273,10 @@ public class ObjectQueryService {
      *     information required to execute the query cannot be read from
      *     guacamole.properties.
      */
-    public List<LDAPEntry> search(LDAPConnection ldapConnection, String baseDN,
-            String filter, Collection<String> attributes, String attributeValue)
+    public List<Entry> search(LdapConnection ldapConnection, Dn baseDN,
+            ExprNode filter, Collection<String> attributes, String attributeValue)
             throws GuacamoleException {
-        String query = generateQuery(filter, attributes, attributeValue);
+        ExprNode query = generateQuery(filter, attributes, attributeValue);
         return search(ldapConnection, baseDN, query);
     }
 
@@ -302,15 +301,15 @@ public class ObjectQueryService {
      *     {@link Map} under its corresponding identifier.
      */
     public <ObjectType extends Identifiable> Map<String, ObjectType>
-        asMap(List<LDAPEntry> entries, Function<LDAPEntry, ObjectType> mapper) {
+        asMap(List<Entry> entries, Function<Entry, ObjectType> mapper) {
 
         // Convert each entry to the corresponding Guacamole API object
         Map<String, ObjectType> objects = new HashMap<>(entries.size());
-        for (LDAPEntry entry : entries) {
+        for (Entry entry : entries) {
 
             ObjectType object = mapper.apply(entry);
             if (object == null) {
-                logger.debug("Ignoring object \"{}\".", entry.getDN());
+                logger.debug("Ignoring object \"{}\".", entry.getDn().toString());
                 continue;
             }
 
@@ -320,7 +319,7 @@ public class ObjectQueryService {
             if (objects.putIfAbsent(identifier, object) != null)
                 logger.warn("Multiple objects ambiguously map to the "
                         + "same identifier (\"{}\"). Ignoring \"{}\" as "
-                        + "a duplicate.", identifier, entry.getDN());
+                        + "a duplicate.", identifier, entry.getDn().toString());
 
         }
 

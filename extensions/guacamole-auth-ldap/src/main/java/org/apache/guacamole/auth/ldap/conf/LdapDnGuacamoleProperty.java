@@ -17,41 +17,32 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.ldap;
+package org.apache.guacamole.auth.ldap.conf;
 
+import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
+import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.properties.GuacamoleProperty;
 
 /**
- * A GuacamoleProperty whose value is an EncryptionMethod. The string values
- * "none", "ssl", and "starttls" are each parsed to their corresponding values
- * within the EncryptionMethod enum. All other string values result in parse
- * errors.
+ * A GuacamoleProperty that converts a string to a Dn that can be used
+ * in LDAP connections.
  */
-public abstract class EncryptionMethodProperty implements GuacamoleProperty<EncryptionMethod> {
+public abstract class LdapDnGuacamoleProperty implements GuacamoleProperty<Dn> {
 
     @Override
-    public EncryptionMethod parseValue(String value) throws GuacamoleException {
+    public Dn parseValue(String value) throws GuacamoleException {
 
-        // If no value provided, return null.
         if (value == null)
             return null;
 
-        // Plaintext (no encryption)
-        if (value.equals("none"))
-            return EncryptionMethod.NONE;
-
-        // SSL
-        if (value.equals("ssl"))
-            return EncryptionMethod.SSL;
-
-        // STARTTLS
-        if (value.equals("starttls"))
-            return EncryptionMethod.STARTTLS;
-
-        // The provided value is not legal
-        throw new GuacamoleServerException("Encryption method must be one of \"none\", \"ssl\", or \"starttls\".");
+        try {
+            return new Dn(value);
+        }
+        catch (LdapInvalidDnException e) {
+            throw new GuacamoleServerException("Invalid DN specified in configuration.", e);
+        }
 
     }
 

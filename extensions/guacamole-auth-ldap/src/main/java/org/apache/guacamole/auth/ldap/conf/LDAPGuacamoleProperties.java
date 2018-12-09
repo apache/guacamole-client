@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.ldap;
+package org.apache.guacamole.auth.ldap.conf;
 
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
@@ -39,7 +39,8 @@ public class LDAPGuacamoleProperties {
     /**
      * The base DN to search for Guacamole configurations.
      */
-    public static final StringGuacamoleProperty LDAP_CONFIG_BASE_DN = new StringGuacamoleProperty() {
+    public static final LdapDnGuacamoleProperty LDAP_CONFIG_BASE_DN =
+            new LdapDnGuacamoleProperty() {
 
         @Override
         public String getName() { return "ldap-config-base-dn"; }
@@ -52,7 +53,8 @@ public class LDAPGuacamoleProperties {
      * credentials for querying other LDAP users, all users must be direct
      * children of this base DN, varying only by LDAP_USERNAME_ATTRIBUTE.
      */
-    public static final StringGuacamoleProperty LDAP_USER_BASE_DN = new StringGuacamoleProperty() {
+    public static final LdapDnGuacamoleProperty LDAP_USER_BASE_DN =
+            new LdapDnGuacamoleProperty() {
 
         @Override
         public String getName() { return "ldap-user-base-dn"; }
@@ -64,7 +66,8 @@ public class LDAPGuacamoleProperties {
      * will be used for RBAC must be contained somewhere within the subtree of
      * this DN.
      */
-    public static final StringGuacamoleProperty LDAP_GROUP_BASE_DN = new StringGuacamoleProperty() {
+    public static final LdapDnGuacamoleProperty LDAP_GROUP_BASE_DN =
+            new LdapDnGuacamoleProperty() {
 
         @Override
         public String getName() { return "ldap-group-base-dn"; }
@@ -79,7 +82,8 @@ public class LDAPGuacamoleProperties {
      * one attribute, and the concatenation of that attribute and the value of
      * LDAP_USER_BASE_DN must equal the user's full DN.
      */
-    public static final StringListProperty LDAP_USERNAME_ATTRIBUTE = new StringListProperty() {
+    public static final StringListProperty LDAP_USERNAME_ATTRIBUTE =
+            new StringListProperty() {
 
         @Override
         public String getName() { return "ldap-username-attribute"; }
@@ -91,7 +95,8 @@ public class LDAPGuacamoleProperties {
      * attributes must be present within each Guacamole user group's record in
      * the LDAP directory for that group to be visible.
      */
-    public static final StringListProperty LDAP_GROUP_NAME_ATTRIBUTE = new StringListProperty() {
+    public static final StringListProperty LDAP_GROUP_NAME_ATTRIBUTE =
+            new StringListProperty() {
 
         @Override
         public String getName() { return "ldap-group-name-attribute"; }
@@ -101,7 +106,8 @@ public class LDAPGuacamoleProperties {
     /**
      * The port on the LDAP server to connect to when authenticating users.
      */
-    public static final IntegerGuacamoleProperty LDAP_PORT = new IntegerGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty LDAP_PORT =
+            new IntegerGuacamoleProperty() {
 
         @Override
         public String getName() { return "ldap-port"; }
@@ -111,7 +117,8 @@ public class LDAPGuacamoleProperties {
     /**
      * The hostname of the LDAP server to connect to when authenticating users.
      */
-    public static final StringGuacamoleProperty LDAP_HOSTNAME = new StringGuacamoleProperty() {
+    public static final StringGuacamoleProperty LDAP_HOSTNAME =
+            new StringGuacamoleProperty() {
 
         @Override
         public String getName() { return "ldap-hostname"; }
@@ -124,7 +131,8 @@ public class LDAPGuacamoleProperties {
      * specified, the DNs of users attempting to log in will be derived from
      * the LDAP_BASE_DN and LDAP_USERNAME_ATTRIBUTE directly.
      */
-    public static final StringGuacamoleProperty LDAP_SEARCH_BIND_DN = new StringGuacamoleProperty() {
+    public static final LdapDnGuacamoleProperty LDAP_SEARCH_BIND_DN =
+            new LdapDnGuacamoleProperty() {
 
         @Override
         public String getName() { return "ldap-search-bind-dn"; }
@@ -137,7 +145,8 @@ public class LDAPGuacamoleProperties {
      * property has no effect. If this property is not specified, no password
      * will be provided when attempting to bind as LDAP_SEARCH_BIND_DN.
      */
-    public static final StringGuacamoleProperty LDAP_SEARCH_BIND_PASSWORD = new StringGuacamoleProperty() {
+    public static final StringGuacamoleProperty LDAP_SEARCH_BIND_PASSWORD =
+            new StringGuacamoleProperty() {
 
         @Override
         public String getName() { return "ldap-search-bind-password"; }
@@ -149,7 +158,8 @@ public class LDAPGuacamoleProperties {
      * The chosen method will also dictate the default port if not already
      * explicitly specified via LDAP_PORT.
      */
-    public static final EncryptionMethodProperty LDAP_ENCRYPTION_METHOD = new EncryptionMethodProperty() {
+    public static final EncryptionMethodProperty LDAP_ENCRYPTION_METHOD =
+            new EncryptionMethodProperty() {
 
         @Override
         public String getName() { return "ldap-encryption-method"; }
@@ -159,7 +169,8 @@ public class LDAPGuacamoleProperties {
     /**
      * The maximum number of results a LDAP query can return.
      */
-    public static final IntegerGuacamoleProperty LDAP_MAX_SEARCH_RESULTS = new IntegerGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty LDAP_MAX_SEARCH_RESULTS =
+            new IntegerGuacamoleProperty() {
 
         @Override
         public String getName() { return "ldap-max-search-results"; }
@@ -170,7 +181,8 @@ public class LDAPGuacamoleProperties {
      * Property that controls whether or not the LDAP connection follows
      * (dereferences) aliases as it searches the tree.
      */
-    public static final DereferenceAliasesProperty LDAP_DEREFERENCE_ALIASES = new DereferenceAliasesProperty() {
+    public static final DereferenceAliasesProperty LDAP_DEREFERENCE_ALIASES =
+            new DereferenceAliasesProperty() {
 
         @Override
         public String getName() { return "ldap-dereference-aliases"; }
@@ -180,7 +192,8 @@ public class LDAPGuacamoleProperties {
     /**
      * A search filter to apply to user LDAP queries.
      */
-    public static final StringGuacamoleProperty LDAP_USER_SEARCH_FILTER = new StringGuacamoleProperty() {
+    public static final LdapFilterGuacamoleProperty LDAP_USER_SEARCH_FILTER =
+            new LdapFilterGuacamoleProperty() {
 
         @Override
         public String getName() { return "ldap-user-search-filter"; }
@@ -190,7 +203,8 @@ public class LDAPGuacamoleProperties {
     /**
      * Whether or not we should follow referrals.
      */
-    public static final BooleanGuacamoleProperty LDAP_FOLLOW_REFERRALS = new BooleanGuacamoleProperty() {
+    public static final BooleanGuacamoleProperty LDAP_FOLLOW_REFERRALS =
+            new BooleanGuacamoleProperty() {
 
         @Override
         public String getName() { return "ldap-follow-referrals"; }
@@ -200,7 +214,8 @@ public class LDAPGuacamoleProperties {
     /**
      * Maximum number of referral hops to follow.
      */
-    public static final IntegerGuacamoleProperty LDAP_MAX_REFERRAL_HOPS = new IntegerGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty LDAP_MAX_REFERRAL_HOPS =
+            new IntegerGuacamoleProperty() {
 
         @Override
         public String getName() { return "ldap-max-referral-hops"; }
@@ -210,7 +225,8 @@ public class LDAPGuacamoleProperties {
     /**
      * Number of seconds to wait for LDAP operations to complete.
      */
-    public static final IntegerGuacamoleProperty LDAP_OPERATION_TIMEOUT = new IntegerGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty LDAP_OPERATION_TIMEOUT =
+            new IntegerGuacamoleProperty() {
 
         @Override
         public String getName() { return "ldap-operation-timeout"; }
@@ -221,7 +237,8 @@ public class LDAPGuacamoleProperties {
      * Custom attribute or attributes to query from Guacamole user's record in
      * the LDAP directory.
      */
-    public static final StringListProperty LDAP_USER_ATTRIBUTES = new StringListProperty() {
+    public static final StringListProperty LDAP_USER_ATTRIBUTES =
+            new StringListProperty() {
 
         @Override
         public String getName() { return "ldap-user-attributes"; }
@@ -231,7 +248,8 @@ public class LDAPGuacamoleProperties {
     /**
      * LDAP attribute used to enumerate members of a group in the LDAP directory.
      */
-    public static final StringGuacamoleProperty LDAP_MEMBER_ATTRIBUTE = new StringGuacamoleProperty() {
+    public static final StringGuacamoleProperty LDAP_MEMBER_ATTRIBUTE =
+            new StringGuacamoleProperty() {
       
         @Override
         public String getName() { return "ldap-member-attribute"; }
