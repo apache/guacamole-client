@@ -49,7 +49,7 @@ public class VaultUserContext extends TokenInjectingUserContext {
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(VaultUserContext.class);
+    private static final Logger logger = LoggerFactory.getLogger(VaultUserContext.class);
 
     /**
      * The name of the token which will be replaced with the username of the
