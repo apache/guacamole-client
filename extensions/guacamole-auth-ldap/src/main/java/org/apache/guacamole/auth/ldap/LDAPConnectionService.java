@@ -38,6 +38,8 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.auth.ldap.conf.ConfigurationService;
 import org.apache.guacamole.auth.ldap.conf.EncryptionMethod;
+import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
+import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,7 +123,7 @@ public class LDAPConnectionService {
      * @throws GuacamoleException
      *     If an error occurs while binding to the LDAP server.
      */
-    public LdapConnection bindAs(Dn userDN, String password)
+    public LdapNetworkConnection bindAs(Dn userDN, String password)
             throws GuacamoleException {
 
         // Obtain appropriately-configured LdapNetworkConnection instance
@@ -138,9 +140,7 @@ public class LDAPConnectionService {
 
         }
         catch (LdapException e) {
-            logger.error("Unable to connect to LDAP server: {}", e.getMessage());
-            logger.debug("Failed to connect to LDAP server.", e);
-            return null;
+            throw new GuacamoleServerException("Error connecting to LDAP server.", e);
         }
 
         // Bind using provided credentials
@@ -156,8 +156,12 @@ public class LDAPConnectionService {
         // Disconnect if an error occurs during bind
         catch (LdapException e) {
             logger.debug("Unable to bind to LDAP server.", e);
+            throw new GuacamoleInvalidCredentialsException(
+                    "Unable to bind to the LDAP server.",
+                    CredentialsInfo.USERNAME_PASSWORD);
+        }
+        finally {
             disconnect(ldapConnection);
-            return null;
         }
 
         return ldapConnection;
@@ -165,7 +169,7 @@ public class LDAPConnectionService {
     }
     
     /**
-     * Generate a new LdapConnection object for following a referral
+     * Generate a new LdapNetworkConnection object for following a referral
      * with the given LdapUrl, and copy the username and password
      * from the original connection.
      * 
@@ -181,15 +185,15 @@ public class LDAPConnectionService {
      *     limit is reached, this method will throw an exception.
      * 
      * @return
-     *     A LdapConnection object that points at the location
+     *     A LdapNetworkConnection object that points at the location
      *     specified in the referralUrl.
      *     
      * @throws GuacamoleException
      *     If an error occurs parsing out the LdapUrl object or the
      *     maximum number of referral hops is reached.
      */
-    public LdapConnection referralConnection(LdapUrl referralUrl,
-            LdapConnectionConfig ldapConfig, Integer hop) 
+    public LdapNetworkConnection referralConnection(LdapUrl referralUrl,
+            LdapConnectionConfig ldapConfig, int hop) 
             throws GuacamoleException {
        
         if (hop >= confService.getMaxReferralHops())

@@ -24,12 +24,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidAttributeValueException;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.api.ldap.model.name.Rdn;
+import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.auth.ldap.conf.ConfigurationService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
@@ -79,7 +79,7 @@ public class UserService {
      * @throws GuacamoleException
      *     If an error occurs preventing retrieval of users.
      */
-    public Map<String, User> getUsers(LdapConnection ldapConnection)
+    public Map<String, User> getUsers(LdapNetworkConnection ldapConnection)
             throws GuacamoleException {
 
         // Retrieve all visible user objects
@@ -134,7 +134,7 @@ public class UserService {
      *     If an error occurs while querying the user DNs, or if the username
      *     attribute property cannot be parsed within guacamole.properties.
      */
-    public List<Dn> getUserDNs(LdapConnection ldapConnection,
+    public List<Dn> getUserDNs(LdapNetworkConnection ldapConnection,
             String username) throws GuacamoleException {
 
         // Retrieve user objects having a matching username

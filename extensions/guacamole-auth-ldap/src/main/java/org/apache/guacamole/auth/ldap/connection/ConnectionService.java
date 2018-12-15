@@ -32,7 +32,6 @@ import org.apache.directory.api.ldap.model.filter.EqualityNode;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
 import org.apache.directory.api.ldap.model.filter.OrNode;
 import org.apache.directory.api.ldap.model.name.Dn;
-import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.directory.ldap.client.api.LdapConnectionConfig;
 import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.auth.ldap.LDAPAuthenticationProvider;
@@ -100,7 +99,7 @@ public class ConnectionService {
      *     If an error occurs preventing retrieval of connections.
      */
     public Map<String, Connection> getConnections(AuthenticatedUser user,
-            LdapConnection ldapConnection) throws GuacamoleException {
+            LdapNetworkConnection ldapConnection) throws GuacamoleException {
 
         // Do not return any connections if base DN is not specified
         Dn configurationBaseDN = confService.getConfigurationBaseDN();
@@ -110,8 +109,7 @@ public class ConnectionService {
         try {
 
             // Pull the current user DN from the LDAP connection
-            LdapConnectionConfig ldapConnectionConfig =
-                    ((LdapNetworkConnection) ldapConnection).getConfig();
+            LdapConnectionConfig ldapConnectionConfig = ldapConnection.getConfig();
             Dn userDN = new Dn(ldapConnectionConfig.getName());
 
             // getConnections() will only be called after a connection has been
@@ -244,7 +242,7 @@ public class ConnectionService {
      *     If an error occurs retrieving the group base DN.
      */
     private ExprNode getConnectionSearchFilter(Dn userDN,
-            LdapConnection ldapConnection)
+            LdapNetworkConnection ldapConnection)
             throws LdapException, GuacamoleException {
 
         AndNode searchFilter = new AndNode();

@@ -26,13 +26,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidAttributeValueException;
 import org.apache.directory.api.ldap.model.filter.EqualityNode;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
 import org.apache.directory.api.ldap.model.filter.NotNode;
 import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.auth.ldap.conf.ConfigurationService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.ldap.ObjectQueryService;
@@ -107,7 +107,7 @@ public class UserGroupService {
      * @throws GuacamoleException
      *     If an error occurs preventing retrieval of user groups.
      */
-    public Map<String, UserGroup> getUserGroups(LdapConnection ldapConnection)
+    public Map<String, UserGroup> getUserGroups(LdapNetworkConnection ldapConnection)
             throws GuacamoleException {
 
         // Do not return any user groups if base DN is not specified
@@ -167,7 +167,7 @@ public class UserGroupService {
      * @throws GuacamoleException
      *     If an error occurs preventing retrieval of user groups.
      */
-    public List<Entry> getParentUserGroupEntries(LdapConnection ldapConnection,
+    public List<Entry> getParentUserGroupEntries(LdapNetworkConnection ldapConnection,
             Dn userDN) throws GuacamoleException {
 
         // Do not return any user groups if base DN is not specified
@@ -206,7 +206,7 @@ public class UserGroupService {
      * @throws GuacamoleException
      *     If an error occurs preventing retrieval of user groups.
      */
-    public Set<String> getParentUserGroupIdentifiers(LdapConnection ldapConnection,
+    public Set<String> getParentUserGroupIdentifiers(LdapNetworkConnection ldapConnection,
             Dn userDN) throws GuacamoleException {
 
         Collection<String> attributes = confService.getGroupNameAttributes();

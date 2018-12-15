@@ -45,7 +45,7 @@ public abstract class LdapFilterGuacamoleProperty implements GuacamoleProperty<E
             return FilterParser.parse(value);
         }
         catch (ParseException e) {
-            throw new GuacamoleServerException("Error parsing filter", e);
+            throw new GuacamoleServerException("\"" + value + "\" is not a valid LDAP filter.", e);
         }
 
     }

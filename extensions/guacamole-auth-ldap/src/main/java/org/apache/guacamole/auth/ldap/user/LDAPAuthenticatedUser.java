@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -72,13 +73,14 @@ public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
      *     The unique identifiers of all user groups which affect the
      *     permissions available to this user.
      */
-    public void init(Credentials credentials, Map<String, String> tokens, Set<String> effectiveGroups) {
+    public void init(Credentials credentials, Map<String, String> tokens,
+            Set<String> effectiveGroups) {
         this.credentials = credentials;
         this.tokens = Collections.unmodifiableMap(tokens);
         this.effectiveGroups = effectiveGroups;
         setIdentifier(credentials.getUsername());
     }
-
+    
     /**
      * Returns a Map of all name/value pairs that should be applied as
      * parameter tokens when connections are established using this

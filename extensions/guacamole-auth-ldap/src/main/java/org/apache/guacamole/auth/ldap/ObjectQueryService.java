@@ -37,13 +37,9 @@ import org.apache.directory.api.ldap.model.filter.EqualityNode;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
 import org.apache.directory.api.ldap.model.filter.OrNode;
 import org.apache.directory.api.ldap.model.message.Referral;
-import org.apache.directory.api.ldap.model.message.Response;
 import org.apache.directory.api.ldap.model.message.SearchRequest;
-import org.apache.directory.api.ldap.model.message.SearchResultEntry;
-import org.apache.directory.api.ldap.model.message.SearchResultReference;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.api.ldap.model.url.LdapUrl;
-import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.directory.ldap.client.api.LdapConnectionConfig;
 import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.GuacamoleException;
@@ -183,15 +179,14 @@ public class ObjectQueryService {
      *     information required to execute the query cannot be read from
      *     guacamole.properties.
      */
-    public List<Entry> search(LdapConnection ldapConnection,
+    public List<Entry> search(LdapNetworkConnection ldapConnection,
             Dn baseDN, ExprNode query) throws GuacamoleException {
 
         logger.debug("Searching \"{}\" for objects matching \"{}\".", baseDN, query);
 
         try {
 
-            LdapConnectionConfig ldapConnectionConfig =
-                    ((LdapNetworkConnection) ldapConnection).getConfig();
+            LdapConnectionConfig ldapConnectionConfig = ldapConnection.getConfig();
             
             // Search within subtree of given base DN
             SearchRequest request = ldapService.getSearchRequest(baseDN,
@@ -204,17 +199,15 @@ public class ObjectQueryService {
             List<Entry> entries = new ArrayList<>();
             while (results.next()) {
 
-                Response response = results.get();
-                if (response instanceof SearchResultEntry) {
-                    entries.add(((SearchResultEntry) response).getEntry());
+                if (results.isEntry()) {
+                    entries.add(results.getEntry());
                 }
-                else if (response instanceof SearchResultReference &&
-                        request.isFollowReferrals()) {
+                else if (results.isReferral() && request.isFollowReferrals()) {
                     
-                    Referral referral = ((SearchResultReference) response).getReferral();
+                    Referral referral = results.getReferral();
                     int referralHop = 0;
                     for (String url : referral.getLdapUrls()) {
-                        LdapConnection referralConnection = ldapService.referralConnection(
+                        LdapNetworkConnection referralConnection = ldapService.referralConnection(
                             new LdapUrl(url), ldapConnectionConfig, referralHop++);
                         entries.addAll(search(referralConnection, baseDN, query));
                     }
@@ -273,7 +266,7 @@ public class ObjectQueryService {
      *     information required to execute the query cannot be read from
      *     guacamole.properties.
      */
-    public List<Entry> search(LdapConnection ldapConnection, Dn baseDN,
+    public List<Entry> search(LdapNetworkConnection ldapConnection, Dn baseDN,
             ExprNode filter, Collection<String> attributes, String attributeValue)
             throws GuacamoleException {
         ExprNode query = generateQuery(filter, attributes, attributeValue);

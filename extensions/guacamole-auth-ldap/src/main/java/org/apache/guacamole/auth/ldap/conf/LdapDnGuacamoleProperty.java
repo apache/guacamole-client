@@ -42,7 +42,7 @@ public abstract class LdapDnGuacamoleProperty implements GuacamoleProperty<Dn> {
             return new Dn(value);
         }
         catch (LdapInvalidDnException e) {
-            throw new GuacamoleServerException("Invalid DN specified in configuration.", e);
+            throw new GuacamoleServerException("The DN \"" + value + "\" is invalid.", e);
         }
 
     }
