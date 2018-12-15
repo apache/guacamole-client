@@ -125,7 +125,8 @@ public class ConnectionService {
             // looking for direct membership in the guacConfigGroup
             // and possibly any groups the user is a member of that are
             // referred to in the seeAlso attribute of the guacConfigGroup.
-            List<Entry> results = queryService.search(ldapConnection, configurationBaseDN, connectionSearchFilter);
+            List<Entry> results = queryService.search(ldapConnection,
+                    configurationBaseDN, connectionSearchFilter, 0);
 
             // Return a map of all readable connections
             return queryService.asMap(results, (entry) -> {

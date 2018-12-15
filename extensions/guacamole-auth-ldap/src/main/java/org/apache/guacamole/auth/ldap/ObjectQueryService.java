@@ -169,6 +169,9 @@ public class ObjectQueryService {
      *
      * @param query
      *     The LDAP query to execute.
+     * 
+     * @param searchHop
+     *     The level of depth for this search, used for tracking referrals.
      *
      * @return
      *     A list of all results accessible to the user currently bound under
@@ -180,7 +183,7 @@ public class ObjectQueryService {
      *     guacamole.properties.
      */
     public List<Entry> search(LdapNetworkConnection ldapConnection,
-            Dn baseDN, ExprNode query) throws GuacamoleException {
+            Dn baseDN, ExprNode query, int searchHop) throws GuacamoleException {
 
         logger.debug("Searching \"{}\" for objects matching \"{}\".", baseDN, query);
 
@@ -205,11 +208,10 @@ public class ObjectQueryService {
                 else if (results.isReferral() && request.isFollowReferrals()) {
                     
                     Referral referral = results.getReferral();
-                    int referralHop = 0;
                     for (String url : referral.getLdapUrls()) {
                         LdapNetworkConnection referralConnection = ldapService.referralConnection(
-                            new LdapUrl(url), ldapConnectionConfig, referralHop++);
-                        entries.addAll(search(referralConnection, baseDN, query));
+                            new LdapUrl(url), ldapConnectionConfig, searchHop++);
+                        entries.addAll(search(referralConnection, baseDN, query, searchHop));
                     }
                     
                 }
@@ -270,7 +272,7 @@ public class ObjectQueryService {
             ExprNode filter, Collection<String> attributes, String attributeValue)
             throws GuacamoleException {
         ExprNode query = generateQuery(filter, attributes, attributeValue);
-        return search(ldapConnection, baseDN, query);
+        return search(ldapConnection, baseDN, query, 0);
     }
 
     /**
