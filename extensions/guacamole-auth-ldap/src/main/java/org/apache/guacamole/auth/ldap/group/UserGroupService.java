@@ -87,7 +87,7 @@ public class UserGroupService {
 
         // Read any object as a group if LDAP is not being used for connection
         // storage (guacConfigGroup)
-        return new EqualityNode("objectClass","*");
+        return new EqualityNode("objectClass","group");
 
     }
 

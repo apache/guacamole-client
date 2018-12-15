@@ -304,12 +304,12 @@ public class ConfigurationService {
     /**
      * Returns the search filter that should be used when querying the
      * LDAP server for Guacamole users.  If no filter is specified,
-     * a default of "(objectClass=*)" is returned.
+     * a default of "(objectClass=user)" is returned.
      *
      * @return
      *     The search filter that should be used when querying the
      *     LDAP server for users that are valid in Guacamole, or
-     *     "(objectClass=*)" if not specified.
+     *     "(objectClass=user)" if not specified.
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
@@ -317,7 +317,7 @@ public class ConfigurationService {
     public ExprNode getUserSearchFilter() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_USER_SEARCH_FILTER,
-            new EqualityNode("objectClass","*")
+            new EqualityNode("objectClass","user")
         );
     }
 
