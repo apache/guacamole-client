@@ -300,22 +300,25 @@ public class AuthenticationProviderService {
 
         // Bind using credentials associated with AuthenticatedUser
         Credentials credentials = authenticatedUser.getCredentials();
-        Dn bindDn = ((LDAPAuthenticatedUser) authenticatedUser).getBindDn();
-        LdapNetworkConnection ldapConnection = ldapService.bindAs(bindDn, credentials.getPassword());
+        if (authenticatedUser instanceof LDAPAuthenticatedUser) {
+            Dn bindDn = ((LDAPAuthenticatedUser) authenticatedUser).getBindDn();
+            LdapNetworkConnection ldapConnection = ldapService.bindAs(bindDn, credentials.getPassword());
 
-        try {
+            try {
 
-            // Build user context by querying LDAP
-            LDAPUserContext userContext = userContextProvider.get();
-            userContext.init(authenticatedUser, ldapConnection);
-            return userContext;
+                // Build user context by querying LDAP
+                LDAPUserContext userContext = userContextProvider.get();
+                userContext.init(authenticatedUser, ldapConnection);
+                return userContext;
 
+            }
+
+            // Always disconnect
+            finally {
+                ldapService.disconnect(ldapConnection);
+            }
         }
-
-        // Always disconnect
-        finally {
-            ldapService.disconnect(ldapConnection);
-        }
+        return null;
 
     }
 
