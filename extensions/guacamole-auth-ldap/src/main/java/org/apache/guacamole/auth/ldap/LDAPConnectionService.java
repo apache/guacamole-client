@@ -156,14 +156,12 @@ public class LDAPConnectionService {
         // Disconnect if an error occurs during bind
         catch (LdapException e) {
             logger.debug("Unable to bind to LDAP server.", e);
+            disconnect(ldapConnection);
             throw new GuacamoleInvalidCredentialsException(
                     "Unable to bind to the LDAP server.",
                     CredentialsInfo.USERNAME_PASSWORD);
         }
-        finally {
-            disconnect(ldapConnection);
-        }
-
+        
         return ldapConnection;
 
     }
