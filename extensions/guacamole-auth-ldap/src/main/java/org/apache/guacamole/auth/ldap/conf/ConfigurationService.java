@@ -22,8 +22,8 @@ package org.apache.guacamole.auth.ldap.conf;
 import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.List;
-import org.apache.directory.api.ldap.model.filter.EqualityNode;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
+import org.apache.directory.api.ldap.model.filter.PresenceNode;
 import org.apache.directory.api.ldap.model.message.AliasDerefMode;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.guacamole.GuacamoleException;
@@ -317,7 +317,7 @@ public class ConfigurationService {
     public ExprNode getUserSearchFilter() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_USER_SEARCH_FILTER,
-            new EqualityNode("objectClass","user")
+            new PresenceNode("objectClass")
         );
     }
 

@@ -31,6 +31,7 @@ import org.apache.directory.api.ldap.model.exception.LdapInvalidAttributeValueEx
 import org.apache.directory.api.ldap.model.filter.EqualityNode;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
 import org.apache.directory.api.ldap.model.filter.NotNode;
+import org.apache.directory.api.ldap.model.filter.PresenceNode;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.auth.ldap.conf.ConfigurationService;
@@ -87,7 +88,7 @@ public class UserGroupService {
 
         // Read any object as a group if LDAP is not being used for connection
         // storage (guacConfigGroup)
-        return new EqualityNode("objectClass","group");
+        return new PresenceNode("objectClass");
 
     }
 
