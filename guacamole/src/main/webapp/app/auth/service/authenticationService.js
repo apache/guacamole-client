@@ -301,6 +301,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
         
         .then(function logoutCompleted(data) {
             
+            // Notify listeners that logout has been completed
             $rootScope.$broadcast('guacLogout', data);
             
         });
