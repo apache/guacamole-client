@@ -78,7 +78,7 @@ angular.module('rest').factory('cacheService', ['$injector',
     };
 
     // Clear caches on logout
-    $rootScope.$on('guacLogout', function handleLogout() {
+    $rootScope.$on('beforeGuacLogout', function handleLogout() {
         service.clearCaches();
     });
 

@@ -290,8 +290,8 @@ angular.module('auth').factory('authenticationService', ['$injector',
         var token = service.getCurrentToken();
         clearAuthenticationResult();
 
-        // Notify listeners that a token is being destroyed
-        $rootScope.$broadcast('guacLogout', token);
+        // Notify listeners that a token is about to be destroyed
+        $rootScope.$broadcast('beforeGuacLogout', token);
 
         // Delete old token
         return requestService({

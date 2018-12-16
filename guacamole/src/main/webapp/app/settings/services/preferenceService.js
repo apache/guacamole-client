@@ -178,7 +178,7 @@ angular.module('settings').provider('preferenceService', ['$injector',
         });
 
         // Persist settings upon logout
-        $rootScope.$on('guacLogout', function handleLogout() {
+        $rootScope.$on('beforeGuacLogout', function handleLogout() {
             service.save();
         });
 

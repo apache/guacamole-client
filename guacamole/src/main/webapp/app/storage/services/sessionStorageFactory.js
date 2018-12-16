@@ -88,7 +88,7 @@ angular.module('storage').factory('sessionStorageFactory', ['$injector', functio
         });
 
         // Reset value and disallow storage when the user is logged out
-        $rootScope.$on('guacLogout', function userLoggedOut() {
+        $rootScope.$on('beforeGuacLogout', function userLoggedOut() {
 
             // Call destructor before storage is teared down
             if (angular.isDefined(value) && destructor)
