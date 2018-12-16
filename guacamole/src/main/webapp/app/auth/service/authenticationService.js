@@ -297,6 +297,12 @@ angular.module('auth').factory('authenticationService', ['$injector',
         return requestService({
             method: 'DELETE',
             url: 'api/tokens/' + token
+        })
+        
+        .then(function logoutCompleted(data) {
+            
+            $rootScope.$broadcast('guacLogout', data);
+            
         });
 
     };
