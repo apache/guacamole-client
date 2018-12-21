@@ -30,6 +30,8 @@ ARG TOMCAT_JRE=jre8
 # Use official maven image for the build
 FROM maven:3-jdk-8 AS builder
 
+# Use args to build radius auth extension such as
+# `--build-arg BUILD_PROFILE=lgpl-extensions`
 ARG BUILD_PROFILE
 
 # Build environment variables
