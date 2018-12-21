@@ -53,7 +53,12 @@ mkdir -p "$DESTINATION"
 #
 
 cd "$BUILD_DIR"
-mvn package
+
+if [ -z "$BUILD_PROFILE" ]; then
+  mvn package
+else
+  mvn -P "$BUILD_PROFILE" package
+fi
 
 #
 # Copy guacamole.war to destination
@@ -107,3 +112,11 @@ tar -xzf extensions/guacamole-auth-ldap/target/*.tar.gz \
     "*.jar"                                             \
     "*.ldif"
 
+#
+# Copy Radius auth extension if it was build
+#
+
+if [[ "$BUILD_PROFILE ~= "lgpl-extentions" ]]; then
+  mkdir -p "$DESTINATION/radius"
+  cp extensions/guacamole-auth-radius/target/guacamole-auth-radius*.jar "$DESTINATION/radius"
+fi
