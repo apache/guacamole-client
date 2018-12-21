@@ -370,7 +370,7 @@ make sure they are readable for the user in the container.
 END
         exit 1;
     fi
-    if [ $RADIUS_AUTH_PROTOCOL == "eap-ttls" -a -z "$RADIUS_EAP_TTLS_INNER_PROTOCOL" ]; then
+    if [ "$RADIUS_AUTH_PROTOCOL" == "eap-ttls" -a -z "$RADIUS_EAP_TTLS_INNER_PROTOCOL" ]; then
        cat <<END
 FATAL: Authentication protocol "eap-ttls" specified but
        RADIUS_EAP_TTLS_INNER_PROTOCOL is not set!

@@ -41,6 +41,7 @@
 
 BUILD_DIR="$1"
 DESTINATION="$2"
+BUILD_PROFILE="$3"
 
 #
 # Create destination, if it does not yet exist
@@ -116,7 +117,7 @@ tar -xzf extensions/guacamole-auth-ldap/target/*.tar.gz \
 # Copy Radius auth extension if it was build
 #
 
-if [[ "$BUILD_PROFILE ~= "lgpl-extentions" ]]; then
+if [ -f extensions/guacamole-auth-radius/target/guacamole-auth-radius*.jar ]; then
   mkdir -p "$DESTINATION/radius"
   cp extensions/guacamole-auth-radius/target/guacamole-auth-radius*.jar "$DESTINATION/radius"
 fi
