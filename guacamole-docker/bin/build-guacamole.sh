@@ -56,9 +56,9 @@ mkdir -p "$DESTINATION"
 cd "$BUILD_DIR"
 
 if [ -z "$BUILD_PROFILE" ]; then
-  mvn package
+    mvn package
 else
-  mvn -P "$BUILD_PROFILE" package
+    mvn -P "$BUILD_PROFILE" package
 fi
 
 #
@@ -118,6 +118,6 @@ tar -xzf extensions/guacamole-auth-ldap/target/*.tar.gz \
 #
 
 if [ -f extensions/guacamole-auth-radius/target/guacamole-auth-radius*.jar ]; then
-  mkdir -p "$DESTINATION/radius"
-  cp extensions/guacamole-auth-radius/target/guacamole-auth-radius*.jar "$DESTINATION/radius"
+    mkdir -p "$DESTINATION/radius"
+    cp extensions/guacamole-auth-radius/target/guacamole-auth-radius*.jar "$DESTINATION/radius"
 fi
