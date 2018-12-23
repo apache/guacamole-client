@@ -38,6 +38,11 @@
 ##     subdirectories within this directory, and files will thus be grouped by
 ##     extension type.
 ##
+## @param BUILD_PROFILE
+##     The build profile that will be passed to Maven build process. Defaults
+##     to empty string. Can be set to "lgpl-extensions" to e.g. include
+##     RADIUS authentication extension.
+##
 
 BUILD_DIR="$1"
 DESTINATION="$2"
