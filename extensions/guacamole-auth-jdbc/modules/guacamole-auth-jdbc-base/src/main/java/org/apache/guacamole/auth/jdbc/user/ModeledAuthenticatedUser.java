@@ -76,10 +76,9 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
      */
     public ModeledAuthenticatedUser(AuthenticatedUser authenticatedUser,
             AuthenticationProvider modelAuthenticationProvider, ModeledUser user) {
-        super(authenticatedUser.getAuthenticationProvider(), authenticatedUser.getCredentials());
+        super(authenticatedUser.getAuthenticationProvider(), authenticatedUser.getCredentials(), authenticatedUser.getEffectiveUserGroups());
         this.modelAuthenticationProvider = modelAuthenticationProvider;
         this.user = user;
-        super.setAttributes(authenticatedUser.getAttributes());
     }
 
     /**
@@ -99,7 +98,7 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
      */
     public ModeledAuthenticatedUser(AuthenticationProvider authenticationProvider,
             ModeledUser user, Credentials credentials) {
-        super(authenticationProvider, credentials);
+        super(authenticationProvider, credentials, user.getEffectiveUserGroups());
         this.modelAuthenticationProvider = authenticationProvider;
         this.user = user;
     }
@@ -168,11 +167,6 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
     @Override
     public void setIdentifier(String identifier) {
         user.setIdentifier(identifier);
-    }
-
-    @Override
-    public Set<String> getEffectiveUserGroups() {
-        return Collections.<String>emptySet();
     }
 
 }

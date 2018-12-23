@@ -305,6 +305,7 @@ END
     set_optional_property "ldap-encryption-method"  "$LDAP_ENCRYPTION_METHOD"
     set_property          "ldap-user-base-dn"       "$LDAP_USER_BASE_DN"
     set_optional_property "ldap-username-attribute" "$LDAP_USERNAME_ATTRIBUTE"
+    set_optional_property "ldap-member-attribute"   "$LDAP_MEMBER_ATTRIBUTE"
     set_optional_property "ldap-group-base-dn"      "$LDAP_GROUP_BASE_DN"
     set_optional_property "ldap-config-base-dn"     "$LDAP_CONFIG_BASE_DN"
 

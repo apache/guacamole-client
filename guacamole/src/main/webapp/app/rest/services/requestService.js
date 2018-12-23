@@ -93,6 +93,33 @@ angular.module('rest').factory('requestService', ['$injector',
     };
 
     /**
+     * Creates a promise error callback which resolves the promise with the
+     * given default value only if the @link{Error} in the original rejection
+     * is a NOT_FOUND error. All other errors are passed through and must be
+     * handled as yet more rejections.
+     *
+     * @param {*} value
+     *     The default value to use to resolve the promise if the promise is
+     *     rejected with a NOT_FOUND error.
+     *
+     * @returns {Function}
+     *     A function which can be provided as the error callback for a
+     *     promise.
+     */
+    service.defaultValue = function defaultValue(value) {
+        return service.createErrorCallback(function resolveIfNotFound(error) {
+
+            // Return default value only if not found
+            if (error.type === Error.Type.NOT_FOUND)
+                return value;
+
+            // Reject promise with original error otherwise
+            throw error;
+
+        });
+    };
+
+    /**
      * Promise error callback which ignores all rejections due to REST errors,
      * but logs all other rejections, such as those due to JavaScript errors.
      * This callback should be used in favor of angular.noop in cases where

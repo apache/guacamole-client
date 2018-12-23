@@ -29,12 +29,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.guacamole.auth.file.FileAuthenticationProvider;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.event.listener.Listener;
+import org.apache.guacamole.properties.StringSetProperty;
 import org.apache.guacamole.resource.Resource;
 import org.apache.guacamole.resource.ResourceServlet;
 import org.apache.guacamole.resource.SequenceResource;
@@ -80,6 +82,25 @@ public class ExtensionModule extends ServletModule {
      * recognized as extensions.
      */
     private static final String EXTENSION_SUFFIX = ".jar";
+
+    /**
+     * A comma-separated list of the identifiers of all authentication
+     * providers whose internal failures should be tolerated during the
+     * authentication process. If an authentication provider within this list
+     * encounters an internal error during the authentication process, it will
+     * simply be skipped, allowing other authentication providers to continue
+     * trying to authenticate the user. Internal errors within authentication
+     * providers that are not within this list will halt the authentication
+     * process entirely.
+     */
+    public static final StringSetProperty SKIP_IF_UNAVAILABLE = new StringSetProperty() {
+
+        @Override
+        public String getName() {
+            return "skip-if-unavailable";
+        }
+
+    };
 
     /**
      * The Guacamole server environment.
@@ -156,13 +177,26 @@ public class ExtensionModule extends ServletModule {
      *
      * @param authenticationProvider
      *     The AuthenticationProvider class to bind.
+     *
+     * @param tolerateFailures
+     *     The set of identifiers of all authentication providers whose
+     *     internal failures should be tolerated during the authentication
+     *     process. If the identifier of an authentication provider is within
+     *     this set, errors during authentication will result in the
+     *     authentication provider being ignored for that authentication
+     *     attempt, with the authentication process proceeding as if that
+     *     authentication provider were not present. By default, errors during
+     *     authentication halt the authentication process entirely.
      */
-    private void bindAuthenticationProvider(Class<? extends AuthenticationProvider> authenticationProvider) {
+    private void bindAuthenticationProvider(
+            Class<? extends AuthenticationProvider> authenticationProvider,
+            Set<String> tolerateFailures) {
 
         // Bind authentication provider
         logger.debug("[{}] Binding AuthenticationProvider \"{}\".",
                 boundAuthenticationProviders.size(), authenticationProvider.getName());
-        boundAuthenticationProviders.add(new AuthenticationProviderFacade(authenticationProvider));
+        boundAuthenticationProviders.add(new AuthenticationProviderFacade(
+                authenticationProvider, tolerateFailures));
 
     }
 
@@ -173,12 +207,24 @@ public class ExtensionModule extends ServletModule {
      *
      * @param authProviders
      *     The AuthenticationProvider classes to bind.
+     *
+     * @param tolerateFailures
+     *     The set of identifiers of all authentication providers whose
+     *     internal failures should be tolerated during the authentication
+     *     process. If the identifier of an authentication provider is within
+     *     this set, errors during authentication will result in the
+     *     authentication provider being ignored for that authentication
+     *     attempt, with the authentication process proceeding as if that
+     *     authentication provider were not present. By default, errors during
+     *     authentication halt the authentication process entirely.
      */
-    private void bindAuthenticationProviders(Collection<Class<AuthenticationProvider>> authProviders) {
+    private void bindAuthenticationProviders(
+            Collection<Class<AuthenticationProvider>> authProviders,
+            Set<String> tolerateFailures) {
 
         // Bind each authentication provider within extension
         for (Class<AuthenticationProvider> authenticationProvider : authProviders)
-            bindAuthenticationProvider(authenticationProvider);
+            bindAuthenticationProvider(authenticationProvider, tolerateFailures);
 
     }
 
@@ -314,6 +360,38 @@ public class ExtensionModule extends ServletModule {
     }
 
     /**
+     * Returns the set of identifiers of all authentication providers whose
+     * internal failures should be tolerated during the authentication process.
+     * If the identifier of an authentication provider is within this set,
+     * errors during authentication will result in the authentication provider
+     * being ignored for that authentication attempt, with the authentication
+     * process proceeding as if that authentication provider were not present.
+     * By default, errors during authentication halt the authentication process
+     * entirely.
+     *
+     * @return
+     *     The set of identifiers of all authentication providers whose
+     *     internal failures should be tolerated during the authentication
+     *     process.
+     */
+    private Set<String> getToleratedAuthenticationProviders() {
+
+        // Parse list of auth providers whose internal failures should be
+        // tolerated
+        try {
+            return environment.getProperty(SKIP_IF_UNAVAILABLE, Collections.<String>emptySet());
+        }
+
+        // Use empty set by default if property cannot be parsed
+        catch (GuacamoleException e) {
+            logger.warn("The list of authentication providers specified via the \"{}\" property could not be parsed: {}", SKIP_IF_UNAVAILABLE.getName(), e.getMessage());
+            logger.debug("Unable to parse \"{}\" property.", SKIP_IF_UNAVAILABLE.getName(), e);
+            return Collections.<String>emptySet();
+        }
+
+    }
+
+    /**
      * Loads all extensions within the GUACAMOLE_HOME/extensions directory, if
      * any, adding their static resource to the given resoure collections.
      *
@@ -324,9 +402,20 @@ public class ExtensionModule extends ServletModule {
      * @param cssResources
      *     A modifiable collection of static CSS resources which may receive
      *     new CSS resources from extensions.
+     *
+     * @param toleratedAuthProviders
+     *     The set of identifiers of all authentication providers whose
+     *     internal failures should be tolerated during the authentication
+     *     process. If the identifier of an authentication provider is within
+     *     this set, errors during authentication will result in the
+     *     authentication provider being ignored for that authentication
+     *     attempt, with the authentication process proceeding as if that
+     *     authentication provider were not present. By default, errors during
+     *     authentication halt the authentication process entirely.
      */
     private void loadExtensions(Collection<Resource> javaScriptResources,
-            Collection<Resource> cssResources) {
+            Collection<Resource> cssResources,
+            Set<String> toleratedAuthProviders) {
 
         // Retrieve and validate extensions directory
         File extensionsDir = new File(environment.getGuacamoleHome(), EXTENSIONS_DIRECTORY);
@@ -375,7 +464,7 @@ public class ExtensionModule extends ServletModule {
                 cssResources.addAll(extension.getCSSResources().values());
 
                 // Attempt to load all authentication providers
-                bindAuthenticationProviders(extension.getAuthenticationProviderClasses());
+                bindAuthenticationProviders(extension.getAuthenticationProviderClasses(), toleratedAuthProviders);
 
                 // Attempt to load all listeners
                 bindListeners(extension.getListenerClasses());
@@ -430,10 +519,11 @@ public class ExtensionModule extends ServletModule {
         cssResources.add(new WebApplicationResource(getServletContext(), "/guacamole.min.css"));
 
         // Load all extensions
-        loadExtensions(javaScriptResources, cssResources);
+        final Set<String> toleratedAuthProviders = getToleratedAuthenticationProviders();
+        loadExtensions(javaScriptResources, cssResources, toleratedAuthProviders);
 
         // Always bind default file-driven auth last
-        bindAuthenticationProvider(FileAuthenticationProvider.class);
+        bindAuthenticationProvider(FileAuthenticationProvider.class, toleratedAuthProviders);
 
         // Dynamically generate app.js and app.css from extensions
         serve("/app.js").with(new ResourceServlet(new SequenceResource(javaScriptResources)));

@@ -20,9 +20,11 @@
 package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
+import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.base.EntityModel;
+import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 
@@ -35,41 +37,48 @@ public interface ObjectPermissionService
     extends PermissionService<ObjectPermissionSet, ObjectPermission> {
 
     /**
-     * Retrieves the permission of the given type associated with the given
-     * user and object, if it exists. If no such permission exists, null is
+     * Returns whether the permission of the given type and associated with the
+     * given object has been granted to the given entity.
      *
      * @param user
      *     The user retrieving the permission.
      *
-     * @param targetUser
-     *     The user associated with the permission to be retrieved.
-     * 
+     * @param targetEntity
+     *     The entity associated with the permission to be retrieved.
+     *
      * @param type
      *     The type of permission to retrieve.
      *
      * @param identifier
      *     The identifier of the object affected by the permission to return.
      *
+     * @param effectiveGroups
+     *     The identifiers of all groups that should be taken into account
+     *     when determining the permissions effectively granted to the entity.
+     *     If no groups are given, only permissions directly granted to the
+     *     entity will be used.
+     *
      * @return
-     *     The permission of the given type associated with the given user and
-     *     object, or null if no such permission exists.
+     *     true if permission of the given type and associated with the given
+     *     object has been granted to the given entity, false otherwise.
      *
      * @throws GuacamoleException
      *     If an error occurs while retrieving the requested permission.
      */
-    ObjectPermission retrievePermission(ModeledAuthenticatedUser user,
-            ModeledUser targetUser, ObjectPermission.Type type,
-            String identifier) throws GuacamoleException;
+    boolean hasPermission(ModeledAuthenticatedUser user,
+            ModeledPermissions<? extends EntityModel> targetEntity,
+            ObjectPermission.Type type, String identifier,
+            Set<String> effectiveGroups) throws GuacamoleException;
 
     /**
-     * Retrieves the subset of the given identifiers for which the given user
+     * Retrieves the subset of the given identifiers for which the given entity
      * has at least one of the given permissions.
      *
      * @param user
      *     The user checking the permissions.
      *
-     * @param targetUser
-     *     The user to check permissions of.
+     * @param targetEntity
+     *     The entity to check permissions of.
      *
      * @param permissions
      *     The permissions to check. An identifier will be included in the
@@ -80,6 +89,12 @@ public interface ObjectPermissionService
      *     The identifiers of the objects affected by the permissions being
      *     checked.
      *
+     * @param effectiveGroups
+     *     The identifiers of all groups that should be taken into account
+     *     when determining the permissions effectively granted to the entity.
+     *     If no groups are given, only permissions directly granted to the
+     *     entity will be used.
+     *
      * @return
      *     A collection containing the subset of identifiers for which at least
      *     one of the specified permissions is granted.
@@ -88,7 +103,9 @@ public interface ObjectPermissionService
      *     If an error occurs while retrieving permissions.
      */
     Collection<String> retrieveAccessibleIdentifiers(ModeledAuthenticatedUser user,
-            ModeledUser targetUser, Collection<ObjectPermission.Type> permissions,
-            Collection<String> identifiers) throws GuacamoleException;
+            ModeledPermissions<? extends EntityModel> targetEntity,
+            Collection<ObjectPermission.Type> permissions,
+            Collection<String> identifiers, Set<String> effectiveGroups)
+            throws GuacamoleException;
 
 }

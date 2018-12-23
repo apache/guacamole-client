@@ -87,6 +87,18 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
+     * The attribute or attributes which identify user groups. One of these
+     * attributes must be present within each Guacamole user group's record in
+     * the LDAP directory for that group to be visible.
+     */
+    public static final StringListProperty LDAP_GROUP_NAME_ATTRIBUTE = new StringListProperty() {
+
+        @Override
+        public String getName() { return "ldap-group-name-attribute"; }
+
+    };
+
+    /**
      * The port on the LDAP server to connect to when authenticating users.
      */
     public static final IntegerGuacamoleProperty LDAP_PORT = new IntegerGuacamoleProperty() {

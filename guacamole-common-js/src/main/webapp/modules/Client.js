@@ -448,6 +448,31 @@ Guacamole.Client = function(tunnel) {
     };
 
     /**
+     * Opens a new argument value stream for writing, having the given
+     * parameter name and mimetype, requesting that the connection parameter
+     * with the given name be updated to the value described by the contents
+     * of the following stream. The instruction necessary to create this stream
+     * will automatically be sent.
+     *
+     * @param {String} mimetype
+     *     The mimetype of the data being sent.
+     *
+     * @param {String} name
+     *     The name of the connection parameter to attempt to update.
+     *
+     * @return {Guacamole.OutputStream}
+     *     The created argument value stream.
+     */
+    this.createArgumentValueStream = function createArgumentValueStream(mimetype, name) {
+
+        // Allocate and associate stream with argument value metadata
+        var stream = guac_client.createOutputStream();
+        tunnel.sendMessage("argv", stream.index, mimetype, name);
+        return stream;
+
+    };
+
+    /**
      * Creates a new output stream associated with the given object and having
      * the given mimetype and name. The legality of a mimetype and name is
      * dictated by the object itself. The instruction necessary to create this

@@ -112,26 +112,26 @@ public class SharingProfileService
             throws GuacamoleException {
 
         // Return whether user has explicit sharing profile creation permission
-        SystemPermissionSet permissionSet = user.getUser().getSystemPermissions();
+        SystemPermissionSet permissionSet = user.getUser().getEffectivePermissions().getSystemPermissions();
         return permissionSet.hasPermission(SystemPermission.Type.CREATE_SHARING_PROFILE);
 
     }
 
     @Override
-    protected ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user)
+    protected ObjectPermissionSet getEffectivePermissionSet(ModeledAuthenticatedUser user)
             throws GuacamoleException {
 
         // Return permissions related to sharing profiles
-        return user.getUser().getSharingProfilePermissions();
+        return user.getUser().getEffectivePermissions().getSharingProfilePermissions();
 
     }
 
     @Override
-    protected ObjectPermissionSet getParentPermissionSet(ModeledAuthenticatedUser user)
+    protected ObjectPermissionSet getParentEffectivePermissionSet(ModeledAuthenticatedUser user)
             throws GuacamoleException {
 
         // Sharing profiles are children of connections
-        return user.getUser().getConnectionPermissions();
+        return user.getUser().getEffectivePermissions().getConnectionPermissions();
 
     }
 

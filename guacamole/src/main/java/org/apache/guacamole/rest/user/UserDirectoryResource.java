@@ -24,9 +24,12 @@ import com.google.inject.assistedinject.AssistedInject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.rest.directory.DirectoryObjectResourceFactory;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.directory.DirectoryResource;
@@ -63,6 +66,12 @@ public class UserDirectoryResource extends DirectoryResource<User, APIUser> {
             DirectoryObjectTranslator<User, APIUser> translator,
             DirectoryObjectResourceFactory<User, APIUser> resourceFactory) {
         super(userContext, directory, translator, resourceFactory);
+    }
+
+    @Override
+    protected ObjectPermissionSet getObjectPermissions(Permissions permissions)
+            throws GuacamoleException {
+        return permissions.getUserPermissions();
     }
 
 }

@@ -25,6 +25,7 @@ import java.util.Collections;
 import org.apache.guacamole.auth.ldap.connection.ConnectionService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.ldap.LDAPAuthenticationProvider;
+import org.apache.guacamole.auth.ldap.group.UserGroupService;
 import org.apache.guacamole.net.auth.AbstractUserContext;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -32,8 +33,11 @@ import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.UserGroup;
+import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.simple.SimpleConnectionGroup;
 import org.apache.guacamole.net.auth.simple.SimpleDirectory;
+import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
 import org.apache.guacamole.net.auth.simple.SimpleUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,12 +46,12 @@ import org.slf4j.LoggerFactory;
  * An LDAP-specific implementation of UserContext which queries all Guacamole
  * connections and users from the LDAP directory.
  */
-public class UserContext extends AbstractUserContext {
+public class LDAPUserContext extends AbstractUserContext {
 
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(UserContext.class);
+    private final Logger logger = LoggerFactory.getLogger(LDAPUserContext.class);
 
     /**
      * Service for retrieving Guacamole connections from the LDAP server.
@@ -60,6 +64,12 @@ public class UserContext extends AbstractUserContext {
      */
     @Inject
     private UserService userService;
+
+    /**
+     * Service for retrieving user groups.
+     */
+    @Inject
+    private UserGroupService userGroupService;
 
     /**
      * Reference to the AuthenticationProvider associated with this
@@ -79,6 +89,12 @@ public class UserContext extends AbstractUserContext {
      * with this UserContext.
      */
     private Directory<User> userDirectory;
+
+    /**
+     * Directory containing all UserGroup objects accessible to the user
+     * associated with this UserContext.
+     */
+    private Directory<UserGroup> userGroupDirectory;
 
     /**
      * Directory containing all Connection objects accessible to the user
@@ -112,12 +128,17 @@ public class UserContext extends AbstractUserContext {
             throws GuacamoleException {
 
         // Query all accessible users
-        userDirectory = new SimpleDirectory<User>(
+        userDirectory = new SimpleDirectory<>(
             userService.getUsers(ldapConnection)
         );
 
+        // Query all accessible user groups
+        userGroupDirectory = new SimpleDirectory<>(
+            userGroupService.getUserGroups(ldapConnection)
+        );
+
         // Query all accessible connections
-        connectionDirectory = new SimpleDirectory<Connection>(
+        connectionDirectory = new SimpleDirectory<>(
             connectionService.getConnections(user, ldapConnection)
         );
 
@@ -130,12 +151,29 @@ public class UserContext extends AbstractUserContext {
         );
 
         // Init self with basic permissions
-        self = new SimpleUser(
-            user.getIdentifier(),
-            userDirectory.getIdentifiers(),
-            connectionDirectory.getIdentifiers(),
-            Collections.singleton(LDAPAuthenticationProvider.ROOT_CONNECTION_GROUP)
-        );
+        self = new SimpleUser(user.getIdentifier()) {
+
+            @Override
+            public ObjectPermissionSet getUserPermissions() throws GuacamoleException {
+                return new SimpleObjectPermissionSet(userDirectory.getIdentifiers());
+            }
+
+            @Override
+            public ObjectPermissionSet getUserGroupPermissions() throws GuacamoleException {
+                return new SimpleObjectPermissionSet(userGroupDirectory.getIdentifiers());
+            }
+
+            @Override
+            public ObjectPermissionSet getConnectionPermissions() throws GuacamoleException {
+                return new SimpleObjectPermissionSet(connectionDirectory.getIdentifiers());
+            }
+
+            @Override
+            public ObjectPermissionSet getConnectionGroupPermissions() throws GuacamoleException {
+                return new SimpleObjectPermissionSet(Collections.singleton(LDAPAuthenticationProvider.ROOT_CONNECTION_GROUP));
+            }
+
+        };
 
     }
 
@@ -152,6 +190,11 @@ public class UserContext extends AbstractUserContext {
     @Override
     public Directory<User> getUserDirectory() throws GuacamoleException {
         return userDirectory;
+    }
+
+    @Override
+    public Directory<UserGroup> getUserGroupDirectory() throws GuacamoleException {
+        return userGroupDirectory;
     }
 
     @Override

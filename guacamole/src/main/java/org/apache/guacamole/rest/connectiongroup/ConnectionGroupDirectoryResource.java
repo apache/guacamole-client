@@ -27,7 +27,9 @@ import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.rest.directory.DirectoryObjectResource;
 import org.apache.guacamole.rest.directory.DirectoryObjectResourceFactory;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
@@ -100,6 +102,12 @@ public class ConnectionGroupDirectoryResource
 
         return super.getObjectResource(identifier);
 
+    }
+
+    @Override
+    protected ObjectPermissionSet getObjectPermissions(Permissions permissions)
+            throws GuacamoleException {
+        return permissions.getConnectionGroupPermissions();
     }
 
 }

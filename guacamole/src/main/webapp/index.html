@@ -58,7 +58,7 @@
         </div>
 
         <!-- Absolute fatal error -->
-        <div ng-if="fatalError" class="fatal-page-error-outer">
+        <div ng-if="fatalError" ng-class="{shown: fatalError}" class="fatal-page-error-outer">
             <div class="fatal-page-error-middle">
                 <div class="fatal-page-error">
                     <h1 translate="APP.DIALOG_HEADER_ERROR"></h1>

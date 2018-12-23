@@ -38,9 +38,14 @@ import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
 import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
+import org.apache.guacamole.token.TokenFilter;
 
 /**
- * An extremely basic Connection implementation.
+ * An extremely basic Connection implementation. The underlying connection to
+ * guacd is established using the configuration information provided in
+ * guacamole.properties. Parameter tokens provided to connect() are
+ * automatically applied. Tracking of active connections and connection history
+ * is not provided.
  */
 public class SimpleConnection extends AbstractConnection {
 
@@ -95,8 +100,8 @@ public class SimpleConnection extends AbstractConnection {
     }
 
     @Override
-    public GuacamoleTunnel connect(GuacamoleClientInformation info)
-            throws GuacamoleException {
+    public GuacamoleTunnel connect(GuacamoleClientInformation info,
+            Map<String, String> tokens) throws GuacamoleException {
 
         // Retrieve proxy configuration from environment
         Environment environment = new LocalEnvironment();
@@ -105,6 +110,10 @@ public class SimpleConnection extends AbstractConnection {
         // Get guacd connection parameters
         String hostname = proxyConfig.getHostname();
         int port = proxyConfig.getPort();
+
+        // Apply tokens to config parameters
+        GuacamoleConfiguration filteredConfig = new GuacamoleConfiguration(config);
+        new TokenFilter(tokens).filterValues(filteredConfig.getParameters());
 
         GuacamoleSocket socket;
 
@@ -115,7 +124,7 @@ public class SimpleConnection extends AbstractConnection {
             case SSL:
                 socket = new ConfiguredGuacamoleSocket(
                     new SSLGuacamoleSocket(hostname, port),
-                    config, info
+                    filteredConfig, info
                 );
                 break;
 
@@ -123,7 +132,7 @@ public class SimpleConnection extends AbstractConnection {
             case NONE:
                 socket = new ConfiguredGuacamoleSocket(
                     new InetGuacamoleSocket(hostname, port),
-                    config, info
+                    filteredConfig, info
                 );
                 break;
 

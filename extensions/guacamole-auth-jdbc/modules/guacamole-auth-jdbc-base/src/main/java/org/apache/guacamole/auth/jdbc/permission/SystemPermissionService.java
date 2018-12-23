@@ -22,11 +22,13 @@ package org.apache.guacamole.auth.jdbc.permission;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Collection;
+import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
+import org.apache.guacamole.auth.jdbc.base.EntityModel;
+import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 
 /**
@@ -60,14 +62,14 @@ public class SystemPermissionService
     }
 
     @Override
-    protected SystemPermissionModel getModelInstance(final ModeledUser targetUser,
+    protected SystemPermissionModel getModelInstance(
+            final ModeledPermissions<? extends EntityModel> targetEntity,
             final SystemPermission permission) {
 
         SystemPermissionModel model = new SystemPermissionModel();
 
-        // Populate model object with data from user and permission
-        model.setUserID(targetUser.getModel().getObjectID());
-        model.setUsername(targetUser.getModel().getIdentifier());
+        // Populate model object with data from entity and permission
+        model.setEntityID(targetEntity.getModel().getEntityID());
         model.setType(permission.getType());
 
         return model;
@@ -76,23 +78,25 @@ public class SystemPermissionService
 
     @Override
     public SystemPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledUser targetUser) throws GuacamoleException {
+            ModeledPermissions<? extends EntityModel> targetEntity,
+            Set<String> effectiveGroups) throws GuacamoleException {
 
-        // Create permission set for requested user
+        // Create permission set for requested entity
         SystemPermissionSet permissionSet = systemPermissionSetProvider.get();
-        permissionSet.init(user, targetUser);
+        permissionSet.init(user, targetEntity, effectiveGroups);
 
         return permissionSet;
         
     }
     
     @Override
-    public void createPermissions(ModeledAuthenticatedUser user, ModeledUser targetUser,
+    public void createPermissions(ModeledAuthenticatedUser user,
+            ModeledPermissions<? extends EntityModel> targetEntity,
             Collection<SystemPermission> permissions) throws GuacamoleException {
 
         // Only an admin can create system permissions
         if (user.getUser().isAdministrator()) {
-            Collection<SystemPermissionModel> models = getModelInstances(targetUser, permissions);
+            Collection<SystemPermissionModel> models = getModelInstances(targetEntity, permissions);
             systemPermissionMapper.insert(models);
             return;
         }
@@ -103,17 +107,18 @@ public class SystemPermissionService
     }
 
     @Override
-    public void deletePermissions(ModeledAuthenticatedUser user, ModeledUser targetUser,
+    public void deletePermissions(ModeledAuthenticatedUser user,
+            ModeledPermissions<? extends EntityModel> targetEntity,
             Collection<SystemPermission> permissions) throws GuacamoleException {
 
         // Only an admin can delete system permissions
         if (user.getUser().isAdministrator()) {
 
             // Do not allow users to remove their own admin powers
-            if (user.getUser().getIdentifier().equals(targetUser.getIdentifier()))
+            if (user.getUser().getIdentifier().equals(targetEntity.getIdentifier()))
                 throw new GuacamoleUnsupportedException("Removing your own administrative permissions is not allowed.");
             
-            Collection<SystemPermissionModel> models = getModelInstances(targetUser, permissions);
+            Collection<SystemPermissionModel> models = getModelInstances(targetEntity, permissions);
             systemPermissionMapper.delete(models);
             return;
         }
@@ -124,41 +129,42 @@ public class SystemPermissionService
     }
 
     /**
-     * Retrieves the permission of the given type associated with the given
-     * user, if it exists. If no such permission exists, null is returned.
+     * Retrieves whether the permission of the given type has been granted to
+     * the given entity. Permission inheritance through group membership is
+     * taken into account.
      *
      * @param user
      *     The user retrieving the permission.
      *
-     * @param targetUser
-     *     The user associated with the permission to be retrieved.
+     * @param targetEntity
+     *     The entity associated with the permission to be retrieved.
      * 
      * @param type
      *     The type of permission to retrieve.
      *
+     * @param effectiveGroups
+     *     The identifiers of all groups that should be taken into account
+     *     when determining the permissions effectively granted to the entity.
+     *     If no groups are given, only permissions directly granted to the
+     *     entity will be used.
+     *
      * @return
-     *     The permission of the given type associated with the given user, or
-     *     null if no such permission exists.
+     *     true if permission of the given type has been granted to the given
+     *     entity, false otherwise.
      *
      * @throws GuacamoleException
      *     If an error occurs while retrieving the requested permission.
      */
-    public SystemPermission retrievePermission(ModeledAuthenticatedUser user,
-            ModeledUser targetUser, SystemPermission.Type type) throws GuacamoleException {
+    public boolean hasPermission(ModeledAuthenticatedUser user,
+            ModeledPermissions<? extends EntityModel> targetEntity,
+            SystemPermission.Type type, Set<String> effectiveGroups)
+            throws GuacamoleException {
 
         // Retrieve permissions only if allowed
-        if (canReadPermissions(user, targetUser)) {
+        if (canReadPermissions(user, targetEntity))
+            return getPermissionMapper().selectOne(targetEntity.getModel(), type, effectiveGroups) != null;
 
-            // Read permission from database, return null if not found
-            SystemPermissionModel model = getPermissionMapper().selectOne(targetUser.getModel(), type);
-            if (model == null)
-                return null;
-
-            return getPermissionInstance(model);
-
-        }
-
-        // User cannot read this user's permissions
+        // User cannot read this entity's permissions
         throw new GuacamoleSecurityException("Permission denied.");
         
     }

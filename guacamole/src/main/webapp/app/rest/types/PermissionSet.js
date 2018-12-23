@@ -143,6 +143,11 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
         CREATE_USER : "CREATE_USER",
 
         /**
+         * Permission to create new user groups.
+         */
+        CREATE_USER_GROUP : "CREATE_USER_GROUP",
+
+        /**
          * Permission to create new connections.
          */
         CREATE_CONNECTION : "CREATE_CONNECTION",

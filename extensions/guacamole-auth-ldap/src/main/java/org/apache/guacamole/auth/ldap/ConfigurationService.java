@@ -139,6 +139,24 @@ public class ConfigurationService {
     }
 
     /**
+     * Returns all attributes which should be used to determine the unique
+     * identifier of each user group. By default, this will be "cn".
+     *
+     * @return
+     *     The attributes which should be used to determine the unique
+     *     identifier of each group.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public List<String> getGroupNameAttributes() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_GROUP_NAME_ATTRIBUTE,
+            Collections.singletonList("cn")
+        );
+    }
+
+    /**
      * Returns the base DN under which all Guacamole role based access control
      * (RBAC) groups will be stored within the LDAP directory. If RBAC will not
      * be used, null is returned.
@@ -355,7 +373,8 @@ public class ConfigurationService {
      */
     public List<String> getAttributes() throws GuacamoleException {
         return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_USER_ATTRIBUTES
+            LDAPGuacamoleProperties.LDAP_USER_ATTRIBUTES,
+            Collections.<String>emptyList()
         );
     }
     

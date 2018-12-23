@@ -21,9 +21,11 @@ package org.apache.guacamole.auth.jdbc.permission;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.user.ModeledUser;
+import org.apache.guacamole.auth.jdbc.base.EntityModel;
+import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -51,11 +53,12 @@ public class UserPermissionService extends ModeledObjectPermissionService {
 
     @Override
     public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledUser targetUser) throws GuacamoleException {
+            ModeledPermissions<? extends EntityModel> targetEntity,
+            Set<String> effectiveGroups) throws GuacamoleException {
 
-        // Create permission set for requested user
+        // Create permission set for requested entity
         ObjectPermissionSet permissionSet = userPermissionSetProvider.get();
-        permissionSet.init(user, targetUser);
+        permissionSet.init(user, targetEntity, effectiveGroups);
 
         return permissionSet;
         

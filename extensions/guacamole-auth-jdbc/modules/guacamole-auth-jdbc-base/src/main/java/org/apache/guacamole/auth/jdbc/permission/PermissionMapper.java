@@ -20,7 +20,7 @@
 package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
-import org.apache.guacamole.auth.jdbc.user.UserModel;
+import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -32,15 +32,23 @@ import org.apache.ibatis.annotations.Param;
 public interface PermissionMapper<PermissionType> {
 
     /**
-     * Retrieves all permissions associated with the given user.
+     * Retrieves all permissions associated with the given entity (user or user
+     * group).
      *
-     * @param user
-     *     The user to retrieve permissions for.
+     * @param entity
+     *     The entity to retrieve permissions for.
+     *
+     * @param effectiveGroups
+     *     The identifiers of all groups that should be taken into account
+     *     when determining the permissions effectively granted to the user. If
+     *     no groups are given, only permissions directly granted to the user
+     *     will be used.
      *
      * @return
-     *     All permissions associated with the given user.
+     *     All permissions associated with the given entity.
      */
-    Collection<PermissionType> select(@Param("user") UserModel user);
+    Collection<PermissionType> select(@Param("entity") EntityModel entity,
+            @Param("effectiveGroups") Collection<String> effectiveGroups);
 
     /**
      * Inserts the given permissions into the database. If any permissions

@@ -20,9 +20,7 @@
 package org.apache.guacamole.auth.cas.form;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.net.URLEncoder;
-import java.security.SecureRandom;
 import org.apache.guacamole.form.Field;
 
 

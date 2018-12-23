@@ -20,8 +20,8 @@
 package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
+import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.ibatis.annotations.Param;
-import org.apache.guacamole.auth.jdbc.user.UserModel;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 
 /**
@@ -31,32 +31,39 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
 
     /**
      * Retrieve the permission of the given type associated with the given
-     * user and object, if it exists. If no such permission exists, null is
+     * entity and object, if it exists. If no such permission exists, null is
      * returned.
      *
-     * @param user
-     *     The user to retrieve permissions for.
-     * 
+     * @param entity
+     *     The entity to retrieve permissions for.
+     *
      * @param type
      *     The type of permission to return.
-     * 
+     *
      * @param identifier
      *     The identifier of the object affected by the permission to return.
      *
+     * @param effectiveGroups
+     *     The identifiers of all groups that should be taken into account
+     *     when determining the permissions effectively granted to the user. If
+     *     no groups are given, only permissions directly granted to the user
+     *     will be used.
+     *
      * @return
      *     The requested permission, or null if no such permission is granted
-     *     to the given user for the given object.
+     *     to the given entity for the given object.
      */
-    ObjectPermissionModel selectOne(@Param("user") UserModel user,
+    ObjectPermissionModel selectOne(@Param("entity") EntityModel entity,
             @Param("type") ObjectPermission.Type type,
-            @Param("identifier") String identifier);
+            @Param("identifier") String identifier,
+            @Param("effectiveGroups") Collection<String> effectiveGroups);
 
     /**
-     * Retrieves the subset of the given identifiers for which the given user
+     * Retrieves the subset of the given identifiers for which the given entity
      * has at least one of the given permissions.
      *
-     * @param user
-     *     The user to check permissions of.
+     * @param entity
+     *     The entity to check permissions of.
      *
      * @param permissions
      *     The permissions to check. An identifier will be included in the
@@ -67,12 +74,19 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
      *     The identifiers of the objects affected by the permissions being
      *     checked.
      *
+     * @param effectiveGroups
+     *     The identifiers of all groups that should be taken into account
+     *     when determining the permissions effectively granted to the user. If
+     *     no groups are given, only permissions directly granted to the user
+     *     will be used.
+     *
      * @return
      *     A collection containing the subset of identifiers for which at least
      *     one of the specified permissions is granted.
      */
-    Collection<String> selectAccessibleIdentifiers(@Param("user") UserModel user,
+    Collection<String> selectAccessibleIdentifiers(@Param("entity") EntityModel entity,
             @Param("permissions") Collection<ObjectPermission.Type> permissions,
-            @Param("identifiers") Collection<String> identifiers);
+            @Param("identifiers") Collection<String> identifiers,
+            @Param("effectiveGroups") Collection<String> effectiveGroups);
 
 }

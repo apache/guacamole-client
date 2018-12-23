@@ -37,14 +37,14 @@
     <build>
         <plugins>
 
-            <!-- Written for 1.6 -->
+            <!-- Written for Java 1.8 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.3</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <compilerArgs>
                         <arg>-Xlint:all</arg>
                         <arg>-Werror</arg>
@@ -215,6 +215,12 @@
             <groupId>net.jradius</groupId>
             <artifactId>jradius-core</artifactId>
             <version>1.1.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- JRadius Dictionary, for accessing packet attributes -->

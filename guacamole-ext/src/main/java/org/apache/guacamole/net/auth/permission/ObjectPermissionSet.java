@@ -20,8 +20,10 @@
 package org.apache.guacamole.net.auth.permission;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleSecurityException;
 
 
 /**
@@ -125,5 +127,55 @@ public interface ObjectPermissionSet extends PermissionSet<ObjectPermission> {
     @Override
     void removePermissions(Set<ObjectPermission> permissions)
             throws GuacamoleException;
+
+    /**
+     * An immutable instance of ObjectPermissionSet which contains no
+     * permissions.
+     */
+    static final ObjectPermissionSet EMPTY_SET = new ObjectPermissionSet() {
+
+        @Override
+        public boolean hasPermission(ObjectPermission.Type permission,
+                String identifier) throws GuacamoleException {
+            return false;
+        }
+
+        @Override
+        public void addPermission(ObjectPermission.Type permission,
+                String identifier) throws GuacamoleException {
+            throw new GuacamoleSecurityException("Permission denied.");
+        }
+
+        @Override
+        public void removePermission(ObjectPermission.Type permission,
+                String identifier) throws GuacamoleException {
+            throw new GuacamoleSecurityException("Permission denied.");
+        }
+
+        @Override
+        public Collection<String> getAccessibleObjects(Collection<ObjectPermission.Type> permissions,
+                Collection<String> identifiers) throws GuacamoleException {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public Set<ObjectPermission> getPermissions()
+                throws GuacamoleException {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public void addPermissions(Set<ObjectPermission> permissions)
+                throws GuacamoleException {
+            throw new GuacamoleSecurityException("Permission denied.");
+        }
+
+        @Override
+        public void removePermissions(Set<ObjectPermission> permissions)
+                throws GuacamoleException {
+            throw new GuacamoleSecurityException("Permission denied.");
+        }
+
+    };
 
 }

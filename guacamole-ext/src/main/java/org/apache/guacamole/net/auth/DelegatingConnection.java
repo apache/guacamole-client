@@ -50,6 +50,16 @@ public class DelegatingConnection implements Connection {
         this.connection = connection;
     }
 
+    /**
+     * Returns the underlying Connection wrapped by this DelegatingConnection.
+     *
+     * @return
+     *     The Connection wrapped by this DelegatingConnection.
+     */
+    protected Connection getDelegateConnection() {
+        return connection;
+    }
+
     @Override
     public String getIdentifier() {
         return connection.getIdentifier();
@@ -118,9 +128,9 @@ public class DelegatingConnection implements Connection {
     }
 
     @Override
-    public GuacamoleTunnel connect(GuacamoleClientInformation info)
-            throws GuacamoleException {
-        return connection.connect(info);
+    public GuacamoleTunnel connect(GuacamoleClientInformation info,
+            Map<String, String> tokens) throws GuacamoleException {
+        return connection.connect(info, tokens);
     }
 
     @Override

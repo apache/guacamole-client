@@ -20,6 +20,7 @@
 package org.apache.guacamole.tunnel.websocket.jetty8;
 
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.io.GuacamoleReader;
@@ -30,6 +31,8 @@ import org.eclipse.jetty.websocket.WebSocket.Connection;
 import org.eclipse.jetty.websocket.WebSocketServlet;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleConnectionClosedException;
+import org.apache.guacamole.protocol.FilteredGuacamoleWriter;
+import org.apache.guacamole.protocol.GuacamoleFilter;
 import org.apache.guacamole.protocol.GuacamoleInstruction;
 import org.apache.guacamole.tunnel.http.HTTPTunnelRequest;
 import org.apache.guacamole.tunnel.TunnelRequest;
@@ -51,6 +54,15 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
      * The default, minimum buffer size for instructions.
      */
     private static final int BUFFER_SIZE = 8192;
+
+    /**
+     * The opcode of the instruction used to indicate a connection stability
+     * test ping request or response. Note that this instruction is
+     * encapsulated within an internal tunnel instruction (with the opcode
+     * being the empty string), thus this will actually be the value of the
+     * first element of the received instruction.
+     */
+    private static final String PING_OPCODE = "ping";
 
     /**
      * Sends the given numeric Guacamole and WebSocket status
@@ -106,6 +118,58 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
              */
             private GuacamoleTunnel tunnel = null;
 
+            /**
+             * The active WebSocket connection. This value will always be
+             * non-null if tunnel is non-null.
+             */
+            private Connection connection = null;
+
+            /**
+             * Sends a Guacamole instruction along the outbound WebSocket
+             * connection to the connected Guacamole client. If an instruction
+             * is already in the process of being sent by another thread, this
+             * function will block until in-progress instructions are complete.
+             *
+             * @param instruction
+             *     The instruction to send.
+             *
+             * @throws IOException
+             *     If an I/O error occurs preventing the given instruction from
+             *     being sent.
+             */
+            private void sendInstruction(String instruction)
+                    throws IOException {
+
+                // NOTE: Synchronization on the non-final remote field here is
+                // intentional. The outbound websocket connection is only
+                // sensitive to simultaneous attempts to send messages with
+                // respect to itself. If the connection changes, then
+                // synchronization need only be performed in context of the new
+                // connection
+                synchronized (connection) {
+                    connection.sendMessage(instruction);
+                }
+
+            }
+
+            /**
+             * Sends a Guacamole instruction along the outbound WebSocket
+             * connection to the connected Guacamole client. If an instruction
+             * is already in the process of being sent by another thread, this
+             * function will block until in-progress instructions are complete.
+             *
+             * @param instruction
+             *     The instruction to send.
+             *
+             * @throws IOException
+             *     If an I/O error occurs preventing the given instruction from being
+             *     sent.
+             */
+            private void sendInstruction(GuacamoleInstruction instruction)
+                    throws IOException {
+                sendInstruction(instruction.toString());
+            }
+
             @Override
             public void onMessage(String string) {
 
@@ -113,7 +177,43 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                 if (tunnel == null)
                     return;
 
-                GuacamoleWriter writer = tunnel.acquireWriter();
+                // Filter received instructions, handling tunnel-internal
+                // instructions without passing through to guacd
+                GuacamoleWriter writer = new FilteredGuacamoleWriter(tunnel.acquireWriter(), new GuacamoleFilter() {
+
+                    @Override
+                    public GuacamoleInstruction filter(GuacamoleInstruction instruction)
+                            throws GuacamoleException {
+
+                        // Filter out all tunnel-internal instructions
+                        if (instruction.getOpcode().equals(GuacamoleTunnel.INTERNAL_DATA_OPCODE)) {
+
+                            // Respond to ping requests
+                            List<String> args = instruction.getArgs();
+                            if (args.size() >= 2 && args.get(0).equals(PING_OPCODE)) {
+
+                                try {
+                                    sendInstruction(new GuacamoleInstruction(
+                                        GuacamoleTunnel.INTERNAL_DATA_OPCODE,
+                                        PING_OPCODE, args.get(1)
+                                    ));
+                                }
+                                catch (IOException e) {
+                                    logger.debug("Unable to send \"ping\" response for WebSocket tunnel.", e);
+                                }
+
+                            }
+
+                            return null;
+
+                        }
+
+                        // Pass through all non-internal instructions untouched
+                        return instruction;
+
+                    }
+
+                });
 
                 // Write message received
                 try {
@@ -132,6 +232,9 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
 
             @Override
             public void onOpen(final Connection connection) {
+
+                // Store websocket connection for future use via sendInstruction()
+                this.connection = connection;
 
                 try {
                     tunnel = doConnect(tunnelRequest);
@@ -162,10 +265,10 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                         try {
 
                             // Send tunnel UUID
-                            connection.sendMessage(new GuacamoleInstruction(
+                            sendInstruction(new GuacamoleInstruction(
                                 GuacamoleTunnel.INTERNAL_DATA_OPCODE,
                                 tunnel.getUUID().toString()
-                            ).toString());
+                            ));
 
                             try {
 
@@ -177,7 +280,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
 
                                     // Flush if we expect to wait or buffer is getting full
                                     if (!reader.available() || buffer.length() >= BUFFER_SIZE) {
-                                        connection.sendMessage(buffer.toString());
+                                        sendInstruction(buffer.toString());
                                         buffer.setLength(0);
                                     }
 
