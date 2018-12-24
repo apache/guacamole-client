@@ -38,9 +38,15 @@
 ##     subdirectories within this directory, and files will thus be grouped by
 ##     extension type.
 ##
+## @param BUILD_PROFILE
+##     The build profile that will be passed to Maven build process. Defaults
+##     to empty string. Can be set to "lgpl-extensions" to e.g. include
+##     RADIUS authentication extension.
+##
 
 BUILD_DIR="$1"
 DESTINATION="$2"
+BUILD_PROFILE="$3"
 
 #
 # Create destination, if it does not yet exist
@@ -53,7 +59,12 @@ mkdir -p "$DESTINATION"
 #
 
 cd "$BUILD_DIR"
-mvn package
+
+if [ -z "$BUILD_PROFILE" ]; then
+    mvn package
+else
+    mvn -P "$BUILD_PROFILE" package
+fi
 
 #
 # Copy guacamole.war to destination
@@ -107,3 +118,11 @@ tar -xzf extensions/guacamole-auth-ldap/target/*.tar.gz \
     "*.jar"                                             \
     "*.ldif"
 
+#
+# Copy Radius auth extension if it was build
+#
+
+if [ -f extensions/guacamole-auth-radius/target/guacamole-auth-radius*.jar ]; then
+    mkdir -p "$DESTINATION/radius"
+    cp extensions/guacamole-auth-radius/target/guacamole-auth-radius*.jar "$DESTINATION/radius"
+fi
