@@ -25,6 +25,8 @@ import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
 import org.apache.directory.api.ldap.model.message.BindRequest;
 import org.apache.directory.api.ldap.model.message.BindRequestImpl;
+import org.apache.directory.api.ldap.model.message.BindResponse;
+import org.apache.directory.api.ldap.model.message.ResultCodeEnum;
 import org.apache.directory.api.ldap.model.message.SearchRequest;
 import org.apache.directory.api.ldap.model.message.SearchRequestImpl;
 import org.apache.directory.api.ldap.model.message.SearchScope;
@@ -149,9 +151,14 @@ public class LDAPConnectionService {
             BindRequest bindRequest = new BindRequestImpl();
             bindRequest.setDn(userDN);
             bindRequest.setCredentials(password);
-            ldapConnection.bind(bindRequest);
-            if (ldapConnection.isConnected() && ldapConnection.isAuthenticated())
+            BindResponse bindResponse = ldapConnection.bind(bindRequest);
+            if (bindResponse.getLdapResult().getResultCode() == ResultCodeEnum.SUCCESS)
                 return ldapConnection;
+            
+            else
+                throw new GuacamoleInvalidCredentialsException("Error binding"
+                        + " to server: " + bindResponse.toString(),
+                        CredentialsInfo.USERNAME_PASSWORD);
 
         }
 
@@ -163,9 +170,6 @@ public class LDAPConnectionService {
                     "Unable to bind to the LDAP server.",
                     CredentialsInfo.USERNAME_PASSWORD);
         }
-        
-        throw new GuacamoleInvalidCredentialsException("Authentication failed.",
-                CredentialsInfo.USERNAME_PASSWORD);
 
     }
     
