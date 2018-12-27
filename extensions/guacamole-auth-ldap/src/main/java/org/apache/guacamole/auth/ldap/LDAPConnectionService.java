@@ -150,6 +150,8 @@ public class LDAPConnectionService {
             bindRequest.setDn(userDN);
             bindRequest.setCredentials(password);
             ldapConnection.bind(bindRequest);
+            if (ldapConnection.isConnected() && ldapConnection.isAuthenticated())
+                return ldapConnection;
 
         }
 
@@ -162,7 +164,8 @@ public class LDAPConnectionService {
                     CredentialsInfo.USERNAME_PASSWORD);
         }
         
-        return ldapConnection;
+        throw new GuacamoleInvalidCredentialsException("Authentication failed.",
+                CredentialsInfo.USERNAME_PASSWORD);
 
     }
     
