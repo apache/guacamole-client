@@ -317,6 +317,10 @@ END
         "ldap-search-bind-password" \
         "$LDAP_SEARCH_BIND_PASSWORD"
 
+    set_optional_property       \
+        "ldap-user-search-filter" \
+        "$LDAP_USER_SEARCH_FILTER"
+
     # Add required .jar files to GUACAMOLE_EXT
     ln -s /opt/guacamole/ldap/guacamole-auth-*.jar "$GUACAMOLE_EXT"
 
