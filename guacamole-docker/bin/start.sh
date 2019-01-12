@@ -404,6 +404,62 @@ END
     ln -s /opt/guacamole/radius/guacamole-auth-*.jar "$GUACAMOLE_EXT"
 }
 
+## Adds properties to guacamole.properties which select the OPENID
+## authentication provider, and configure it to connect to the specified OPENID
+## provider.
+##
+associate_openid() {
+
+    # Verify required parameters are present
+    if [ -z "$OPENID_AUTHORIZATION_ENDPOINT" ] || \
+       [ -z "$OPENID_JWKS_ENDPOINT" ]          || \
+       [ -z "$OPENID_ISSUER" ]                 || \
+       [ -z "$OPENID_CLIENT_ID" ]              || \          
+       [ -z "$OPENID_REDIRECT_URI" ]
+    then
+        cat <<END
+FATAL: Missing required environment variables
+-------------------------------------------------------------------------------
+If using an openid authentication, you must provide each of the following
+environment variables:
+
+    OPENID_AUTHORIZATION_ENDPOINT   The authorization endpoint (URI) of the OpenID service.
+
+    OPENID_JWKS_ENDPOINT            The endpoint (URI) of the JWKS service which defines
+                                    how received ID tokens (JSON Web Tokens or JWTs) 
+                                    shall be validated.
+
+    OPENID_ISSUER                   The issuer to expect for all received ID tokens.
+
+    OPENID_CLIENT_ID                The OpenID client ID which should be submitted 
+                                    to the OpenID service when necessary. 
+                                    This value is typically provided to you by the OpenID 
+                                    service when OpenID credentials are generated for your application.
+
+    OPENID_REDIRECT_URI             The URI that should be submitted to the OpenID service such that 
+                                    they can redirect the authenticated user back to Guacamole after 
+                                    the authentication process is complete. This must be the full URL 
+                                    that a user would enter into their browser to access Guacamole.
+END
+        exit 1;
+    fi
+
+    # Update config file
+    set_property          "openid-authorization-endpoint"    "$OPENID_AUTHORIZATION_ENDPOINT"
+    set_property          "openid-jwks-endpoint"             "$OPENID_JWKS_ENDPOINT"
+    set_property          "openid-issuer"                    "$OPENID_ISSUER"
+    set_property          "openid-client-id"                 "$OPENID_CLIENT_ID"
+    set_property          "openid-redirect-uri"              "$OPENID_REDIRECT_URI"
+    set_optional_property "openid-username-claim-type"       "$OPENID_USERNAME_CLAIM_TYPE"
+
+    # Add required .jar files to GUACAMOLE_EXT
+    # "1-{}" make it sorted as a first provider (only authentication)
+    # so it can work together with the database providers (authorization)
+    find /opt/guacamole/openid/ -name "*.jar" | awk -F/ '{print $NF}' | \
+    xargs -I '{}' ln -s "/opt/guacamole/openid/{}" "${GUACAMOLE_EXT}/1-{}"
+
+}
+
 ##
 ## Starts Guacamole under Tomcat, replacing the current process with the
 ## Tomcat process. As the current process will be replaced, this MUST be the
@@ -510,6 +566,12 @@ fi
 if [ -n "$RADIUS_SHARED_SECRET" ]; then
     associate_radius
     INSTALLED_AUTH="$INSTALLED_AUTH radius"
+fi
+
+# Use OPENID if specified
+if [ -n "$OPENID_AUTHORIZATION_ENDPOINT" ]; then
+    associate_openid
+    INSTALLED_AUTH="$INSTALLED_AUTH openid"
 fi
 
 #

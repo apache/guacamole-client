@@ -126,3 +126,11 @@ if [ -f extensions/guacamole-auth-radius/target/guacamole-auth-radius*.jar ]; th
     mkdir -p "$DESTINATION/radius"
     cp extensions/guacamole-auth-radius/target/guacamole-auth-radius*.jar "$DESTINATION/radius"
 fi
+
+# Copy OPENID auth extension and schema modifications
+#
+
+if [ -f extensions/guacamole-auth-openid/target/guacamole-auth-openid*.jar ]; then
+    mkdir -p "$DESTINATION/openid"
+    cp extensions/guacamole-auth-openid/target/guacamole-auth-openid*.jar "$DESTINATION/openid"
+fi
