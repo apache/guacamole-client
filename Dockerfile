@@ -30,6 +30,10 @@ ARG TOMCAT_JRE=jre8
 # Use official maven image for the build
 FROM maven:3-jdk-8 AS builder
 
+# Use args to build radius auth extension such as
+# `--build-arg BUILD_PROFILE=lgpl-extensions`
+ARG BUILD_PROFILE
+
 # Build environment variables
 ENV \
     BUILD_DIR=/tmp/guacamole-docker-BUILD
@@ -41,7 +45,7 @@ COPY guacamole-docker/bin/ /opt/guacamole/bin/
 COPY . "$BUILD_DIR"
 
 # Run the build itself
-RUN /opt/guacamole/bin/build-guacamole.sh "$BUILD_DIR" /opt/guacamole
+RUN /opt/guacamole/bin/build-guacamole.sh "$BUILD_DIR" /opt/guacamole "$BUILD_PROFILE"
 
 # For the runtime image, we start with the official Tomcat distribution
 FROM tomcat:${TOMCAT_VERSION}-${TOMCAT_JRE}

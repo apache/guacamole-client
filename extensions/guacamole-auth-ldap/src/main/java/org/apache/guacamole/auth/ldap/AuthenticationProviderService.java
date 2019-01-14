@@ -30,10 +30,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.guacamole.auth.ldap.user.LDAPAuthenticatedUser;
-import org.apache.guacamole.auth.ldap.user.LDAPUserContext;
+import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.auth.ldap.group.UserGroupService;
+import org.apache.guacamole.auth.ldap.user.LDAPAuthenticatedUser;
+import org.apache.guacamole.auth.ldap.user.LDAPUserContext;
 import org.apache.guacamole.auth.ldap.user.UserService;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
@@ -70,6 +72,12 @@ public class AuthenticationProviderService {
      */
     @Inject
     private UserService userService;
+
+    /**
+     * Service for retrieving user groups.
+     */
+    @Inject
+    private UserGroupService userGroupService;
 
     /**
      * Provider for AuthenticatedUser objects.
@@ -231,10 +239,15 @@ public class AuthenticationProviderService {
             throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
 
         try {
+
+            // Retrieve group membership of the user that just authenticated
+            Set<String> effectiveGroups =
+                    userGroupService.getParentUserGroupIdentifiers(ldapConnection,
+                            ldapConnection.getAuthenticationDN());
+
             // Return AuthenticatedUser if bind succeeds
             LDAPAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-            authenticatedUser.init(credentials, getAttributeTokens(ldapConnection, credentials.getUsername()));
-
+            authenticatedUser.init(credentials, getAttributeTokens(ldapConnection, credentials.getUsername()), effectiveGroups);
             return authenticatedUser;
 
         }

@@ -23,10 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.io.IOException;
-import java.lang.IllegalArgumentException;
-import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -35,8 +32,6 @@ import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import org.apache.guacamole.properties.GuacamoleProperty;
 import org.apache.guacamole.GuacamoleServerException;
-import org.apache.guacamole.environment.Environment;
-import org.apache.guacamole.environment.LocalEnvironment;
 
 /**
  * A GuacamoleProperty whose value is derived from a private key file.

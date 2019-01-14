@@ -19,8 +19,10 @@
 
 package org.apache.guacamole.net.auth.permission;
 
+import java.util.Collections;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleSecurityException;
 
 
 /**
@@ -80,5 +82,49 @@ public interface SystemPermissionSet extends PermissionSet<SystemPermission> {
     @Override
     void removePermissions(Set<SystemPermission> permissions)
             throws GuacamoleException;
+
+    /**
+     * An immutable instance of SystemPermissionSet which contains no
+     * permissions.
+     */
+    static final SystemPermissionSet EMPTY_SET = new SystemPermissionSet() {
+
+        @Override
+        public boolean hasPermission(SystemPermission.Type permission)
+                throws GuacamoleException {
+            return false;
+        }
+
+        @Override
+        public void addPermission(SystemPermission.Type permission)
+                throws GuacamoleException {
+            throw new GuacamoleSecurityException("Permission denied.");
+        }
+
+        @Override
+        public void removePermission(SystemPermission.Type permission)
+                throws GuacamoleException {
+            throw new GuacamoleSecurityException("Permission denied.");
+        }
+
+        @Override
+        public Set<SystemPermission> getPermissions()
+                throws GuacamoleException {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public void addPermissions(Set<SystemPermission> permissions)
+                throws GuacamoleException {
+            throw new GuacamoleSecurityException("Permission denied.");
+        }
+
+        @Override
+        public void removePermissions(Set<SystemPermission> permissions)
+                throws GuacamoleException {
+            throw new GuacamoleSecurityException("Permission denied.");
+        }
+
+    };
 
 }
