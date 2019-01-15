@@ -467,9 +467,9 @@ END
 ##
 associate_duo() {
     # Verify required parameters are present
-    if [ -z "$DUO_INTEGRATION_KEY" ]    || \
-    [ -z "$DUO_SECRET_KEY" ]            || \
-    [ ${#DUO_APPLICATION_KEY} -lt 40 ]
+    if [ -z "$DUO_INTEGRATION_KEY" ]      || \
+       [ -z "$DUO_SECRET_KEY" ]           || \
+       [ ${#DUO_APPLICATION_KEY} -lt 40 ]
     then
         cat <<END
 FATAL: Missing required environment variables
