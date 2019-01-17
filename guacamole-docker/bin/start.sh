@@ -405,7 +405,14 @@ END
        "$RADIUS_EAP_TTLS_INNER_PROTOCOL"
 
     # Add required .jar files to GUACAMOLE_EXT
-    ln -s /opt/guacamole/radius/guacamole-auth-*.jar "$GUACAMOLE_EXT"
+    # Since extensions are loaded in alphabetical order you can explicitly name
+    # the link to influence the order in which guacamole extensions are loaded.
+    # E.g. RADIUS_EXT_LINKNAME=1-guacamole-auth-radius.jar
+    if [ -n "$RADIUS_EXT_LINKNAME" ]; then
+        ln -s /opt/guacamole/radius/guacamole-auth-*.jar "$GUACAMOLE_EXT/${RADIUS_EXT_LINKNAME}.jar"
+    else
+        ln -s /opt/guacamole/radius/guacamole-auth-*.jar "$GUACAMOLE_EXT"
+    fi
 }
 
 ## Adds properties to guacamole.properties which select the OPENID
