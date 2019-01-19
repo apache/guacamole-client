@@ -33,18 +33,22 @@ Docker Secrets
 The string `_FILE` may be appended to some of the environment variables listed 
 below if you are using MySQL or PostgreSQL authentication. This will cause the 
 startup script to load the values for those variables from files within
-the container. This is useful for specifying sensitive info, ie. passwords for 
+the container. 
+
+This is useful for specifying sensitive info, ie. passwords for 
 the database, in secured files instead of plaintext environment variables. This
 is generally used for loading values from [Docker secrets](https://docs.docker.com/engine/swarm/secrets/#read-more-about-docker-secret-commands), which are stored at 
 `/run/secrets/<secret_name>` within the container.
 
 It is important to note that the startup script is configured such that:
+
 1. You may mix the use of Docker secrets and normal environment variables. 
 For example, you may wish to use `MYSQL_USER_FILE` and `MYSQL_PASSWORD_FILE`, 
 but wish to specify the database name with `MYSQL_DATABASE`
+
 2. If both a normal environment variable and its corresponding secret are defined
-in the same command line, or section with in a [Compose](https://docs.docker.com/compose/) file, 
-the secret will take precedence. For instance, if both `MYSQL_PASSWORD` 
+in the same command line, or section within a [Compose](https://docs.docker.com/compose/) file, 
+the secret will take precedence. For instance, if both `MYSQL_PASSWORD`
 and `MYSQL_PASSWORD_FILE` are given, `MYSQL_PASSWORD_FILE` will be used.
 
 Deploying Guacamole with PostgreSQL authentication
