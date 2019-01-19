@@ -43,7 +43,7 @@ It is important to note that the startup script is configured such that:
 For example, you may wish to use `MYSQL_USER_FILE` and `MYSQL_PASSWORD_FILE`, 
 but wish to specify the database name with `MYSQL_DATABASE`
 2. If both a normal environment variable and its corresponding secret are defined
-in the same command line, or section with in a [Compose](https://docs.docker.com/compose/)file, 
+in the same command line, or section with in a [Compose](https://docs.docker.com/compose/) file, 
 the secret will take precedence. For instance, if both `MYSQL_PASSWORD` 
 and `MYSQL_PASSWORD_FILE` are given, `MYSQL_PASSWORD_FILE` will be used.
 
