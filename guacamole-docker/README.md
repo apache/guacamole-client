@@ -30,11 +30,22 @@ Docker, as well.
 
 Docker Secrets
 ==============
-The string `_FILE` may be appended to some of the environment variables listed below if you are using MySQL or PostgreSQL authentication. This will cause the startup script to load the values for those variables from files within in the container. This is useful for specifying sensitive info, ie. passwords for the database, in secured files instead of plaintext environment variables, and is generally used for loading values from [Docker secrets](https://docs.docker.com/engine/swarm/secrets/#read-more-about-docker-secret-commands), which are stored in `/run/secrets/<secret_name>` within the container.
+The string `_FILE` may be appended to some of the environment variables listed 
+below if you are using MySQL or PostgreSQL authentication. This will cause the 
+startup script to load the values for those variables from files within
+the container. This is useful for specifying sensitive info, ie. passwords for 
+the database, in secured files instead of plaintext environment variables. This
+is generally used for loading values from [Docker secrets](https://docs.docker.com/engine/swarm/secrets/#read-more-about-docker-secret-commands), which are stored at 
+`/run/secrets/<secret_name>` within the container.
 
 It is important to note that the startup script is configured such that:
-1. You may mix the use of Docker secrets and normal environment variables. For example, you may wish to use `MYSQL_USER_FILE` and `MYSQL_PASSWORD_FILE`, but wish to specify the database name with `MYSQL_DATABASE`
-2. If both a normal environment variable and its corresponding secret are defined in the same command line or compose file, ie. `MYSQL_PASSWORD` and `MYSQL_PASSWORD_FILE`, precedence is given to the secret.
+1. You may mix the use of Docker secrets and normal environment variables. 
+For example, you may wish to use `MYSQL_USER_FILE` and `MYSQL_PASSWORD_FILE`, 
+but wish to specify the database name with `MYSQL_DATABASE`
+2. If both a normal environment variable and its corresponding secret are defined
+in the same command line, or section with in a [Compose](https://docs.docker.com/compose/)file, 
+the secret will take precedence. For instance, if both `MYSQL_PASSWORD` 
+and `MYSQL_PASSWORD_FILE` are given, `MYSQL_PASSWORD_FILE` will be used.
 
 Deploying Guacamole with PostgreSQL authentication
 --------------------------------------------------
@@ -55,10 +66,14 @@ the image will stop:
 
 1. `POSTGRES_DATABASE` - The name of the database to use for Guacamole authentication.
 2. `POSTGRES_USER` - The user that Guacamole will use to connect to PostgreSQL.
-3. `POSTGRES_PASSWORD` - The password that Guacamole will provide when connecting to PostgreSQL as `POSTGRES_USER`.
-4. `POSTGRES_DATABASE_FILE` - The path of the docker secret containing the name of database to use for Guacamole authentication.
-5. `POSTGRES_USER` - The path of the docker secret containing the name of the user that Guacamole will use to connect to PostgreSQL.
-6. `POSTGRES_PASSWORD` - The path of the docker secret containing the password that Guacamole will provide when connecting to PostgreSQL as `POSTGRES_USER`.
+3. `POSTGRES_PASSWORD` - The password that Guacamole will provide when connecting to 
+PostgreSQL as `POSTGRES_USER`.
+4. `POSTGRES_DATABASE_FILE` - The path of the docker secret containing the name of database 
+to use for Guacamole authentication.
+5. `POSTGRES_USER_FILE` - The path of the docker secret containing the name of the 
+user that Guacamole will use to connect to PostgreSQL.
+6. `POSTGRES_PASSWORD_FILE` - The path of the docker secret containing the password 
+that Guacamole will provide when connecting to PostgreSQL as `POSTGRES_USER.
 
 ### Initializing the PostgreSQL database
 
@@ -106,10 +121,14 @@ the image will stop:
 
 1. `MYSQL_DATABASE` - The name of the database to use for Guacamole authentication.
 2. `MYSQL_USER` - The user that Guacamole will use to connect to MySQL.
-3. `MYSQL_PASSWORD` - The password that Guacamole will provide when connecting to MySQL as `MYSQL_USER`.
-4. `MYSQL_DATABASE_FILE` - The path of the docker secret containing the name of database to use for Guacamole authentication.
-5. `MYSQL_USER` - The path of the docker secret containing the name of the user that Guacamole will use to connect to MySQL.
-6. `MYSQL_PASSWORD` - The path of the docker secret containing the password that Guacamole will provide when connecting to MySQL as `MYSQL_USER`.
+3. `MYSQL_PASSWORD` - The password that Guacamole will provide when connecting 
+to MySQL as `MYSQL_USER`.
+4. `MYSQL_DATABASE_FILE` - The path of the docker secret containing the name of the 
+database to use for Guacamole authentication.
+5. `MYSQL_USER_FILE` - The path of the docker secret containing the name of the user 
+that Guacamole will use to connect to MySQL.
+6. `MYSQL_PASSWORD_FILE` - The path of the docker secret containing the password 
+that Guacamole will provide when connecting to MySQL as`MYSQL_USER`.
 
 ### Initializing the MySQL database
 
