@@ -19,49 +19,30 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.EntityModel;
+import org.apache.guacamole.auth.jdbc.base.EntityModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
+import org.apache.guacamole.net.auth.permission.ObjectPermission;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * deleting connection group permissions. This service will automatically
  * enforce the permissions of the current user.
  */
-public class ConnectionGroupPermissionService extends ModeledObjectPermissionService {
+public class ConnectionGroupPermissionService extends ConnectionGroupPermissionServiceAbstract  implements ConnectionGroupPermissionServiceInterface {
 
-    /**
-     * Mapper for connection group permissions.
-     */
-    @Inject
-    private ConnectionGroupPermissionMapper connectionGroupPermissionMapper;
-    
-    /**
-     * Provider for connection group permission sets.
-     */
-    @Inject
-    private Provider<ConnectionGroupPermissionSet> connectionGroupPermissionSetProvider;
-    
-    @Override
-    protected ObjectPermissionMapper getPermissionMapper() {
-        return connectionGroupPermissionMapper;
-    }
+	@Override
+	public ObjectPermissionModel getModelInstance(
+			ModeledPermissions<? extends EntityModelInterface> targetEntity,
+			ObjectPermission permission) {
+		
+		ObjectPermissionModel model = new ObjectPermissionModel();
 
-    @Override
-    public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            Set<String> effectiveGroups) throws GuacamoleException {
+        // Populate model object with data from user and permission
+        model.setEntityID(targetEntity.getModel().getEntityID());
+        model.setType(permission.getType());
+        model.setObjectIdentifier(permission.getObjectIdentifier());
 
-        // Create permission set for requested entity
-        ObjectPermissionSet permissionSet = connectionGroupPermissionSetProvider.get();
-        permissionSet.init(user, targetEntity, effectiveGroups);
-
-        return permissionSet;
-        
-    }
+        return model;
+	}
 
 }

@@ -19,12 +19,13 @@
 
 package org.apache.guacamole.auth.sqlserver;
 
+import java.io.Closeable;
+
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
+import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
-import org.apache.ibatis.session.SqlSession;
 
 /**
  * A SQLServer-specific implementation of JDBCEnvironment provides database
@@ -251,10 +252,10 @@ public class SQLServerEnvironment extends JDBCEnvironment {
             SQLSERVER_DEFAULT_DRIVER
         );
     }
-
+    
     @Override
-    public boolean isRecursiveQuerySupported(SqlSession session) {
+    public boolean isRecursiveQuerySupported(Closeable session) {
         return true; // All versions of SQL Server support recursive queries through CTEs
     }
-
+    
 }

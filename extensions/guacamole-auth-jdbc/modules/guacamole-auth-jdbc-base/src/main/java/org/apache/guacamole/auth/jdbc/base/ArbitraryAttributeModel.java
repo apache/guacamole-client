@@ -27,7 +27,7 @@ package org.apache.guacamole.auth.jdbc.base;
  * are directly supported by the database authentication extension have defined
  * columns and properties with proper types, constraints, etc.
  */
-public class ArbitraryAttributeModel {
+public class ArbitraryAttributeModel implements ArbitraryAttributeModelInterface {
 
     /**
      * The name of the attribute.

@@ -104,6 +104,13 @@
             <artifactId>guacamole-ext</artifactId>
             <scope>provided</scope>
         </dependency>
+        
+        <!-- Guacamole Common Base -->
+        <dependency>
+			<groupId>org.apache.guacamole</groupId>
+	    	<artifactId>guacamole-auth-common-base</artifactId>
+	    	<version>1.0.0</version>
+		</dependency>
 
         <!-- MyBatis -->
         <dependency>

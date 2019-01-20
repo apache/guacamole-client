@@ -33,7 +33,7 @@ package org.apache.guacamole.auth.jdbc.base;
  *   3. The "identifier", which contains the unique "name" value defined for
  *      the entity within the guacamole_entity table.
  */
-public abstract class EntityModel extends ObjectModel {
+public abstract class EntityModel extends ObjectModel implements EntityModelInterface {
 
     /**
      * The ID of the entity entry which corresponds to this object in the

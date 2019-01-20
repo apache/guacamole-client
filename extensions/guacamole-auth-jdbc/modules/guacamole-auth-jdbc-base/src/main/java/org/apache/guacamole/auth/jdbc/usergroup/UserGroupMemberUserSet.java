@@ -19,17 +19,17 @@
 
 package org.apache.guacamole.auth.jdbc.usergroup;
 
-import com.google.inject.Inject;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.ObjectRelationMapper;
 import org.apache.guacamole.auth.jdbc.base.RelatedObjectSet;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
+
+import com.google.inject.Inject;
 
 /**
  * RelatedObjectSet implementation which represents the one-to-many
  * relationship between a particular user group and its user members.
  */
-public class UserGroupMemberUserSet extends RelatedObjectSet<ModeledUserGroup, UserGroupModel> {
+public class UserGroupMemberUserSet extends RelatedObjectSet<ModeledUserGroup, UserGroupModelInterface> {
 
     /**
      * Mapper for the relation between user groups and their user members.
@@ -37,10 +37,10 @@ public class UserGroupMemberUserSet extends RelatedObjectSet<ModeledUserGroup, U
     @Inject
     private UserGroupMemberUserMapper userGroupMemberUserMapper;
 
-    @Override
-    protected ObjectRelationMapper<UserGroupModel> getObjectRelationMapper() {
-        return userGroupMemberUserMapper;
-    }
+	@Override
+	protected UserGroupMemberUserMapper getObjectRelationMapper() {
+		return userGroupMemberUserMapper;
+	}
 
     @Override
     protected ObjectPermissionSet

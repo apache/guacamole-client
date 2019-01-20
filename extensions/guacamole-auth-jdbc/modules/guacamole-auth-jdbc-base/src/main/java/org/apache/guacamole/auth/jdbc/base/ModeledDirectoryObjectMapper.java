@@ -33,7 +33,7 @@ import org.apache.ibatis.annotations.Param;
  *     The type of object contained within the directory whose objects are
  *     mapped by this mapper.
  */
-public interface ModeledDirectoryObjectMapper<ModelType> {
+public interface ModeledDirectoryObjectMapper<ModelType> extends ModeledDirectoryObjectMapperInterface<ModelType> {
 
     /**
      * Selects the identifiers of all objects, regardless of whether they

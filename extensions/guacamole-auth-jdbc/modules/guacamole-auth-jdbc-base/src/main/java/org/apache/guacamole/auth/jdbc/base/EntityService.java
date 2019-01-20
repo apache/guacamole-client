@@ -19,30 +19,19 @@
 
 package org.apache.guacamole.auth.jdbc.base;
 
-import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
+
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.guice.transactional.Transactional;
+
+import com.google.inject.Inject;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating entities.
  */
-public class EntityService {
-
-    /**
-     * The Guacamole server environment.
-     */
-    @Inject
-    private JDBCEnvironment environment;
-
-    /**
-     * Mapper for Entity model objects.
-     */
-    @Inject
-    private EntityMapper entityMapper;
+public class EntityService extends EntityServiceAbstract implements EntityServiceInterface {
 
     /**
      * The current SQL session used by MyBatis.
@@ -73,7 +62,7 @@ public class EntityService {
      *     membership in other groups.
      */
     @Transactional
-    public Set<String> retrieveEffectiveGroups(ModeledPermissions<? extends EntityModel> entity,
+    public Set<String> retrieveEffectiveGroups(ModeledPermissions<? extends EntityModelInterface> entity,
             Collection<String> effectiveGroups) {
 
         // Retrieve the effective user groups of the given entity, recursively if possible

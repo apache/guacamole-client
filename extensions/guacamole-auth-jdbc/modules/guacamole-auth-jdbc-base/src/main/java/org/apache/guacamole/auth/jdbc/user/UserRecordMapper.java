@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.jdbc.user;
 import java.util.Collection;
 import java.util.List;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
+import org.apache.guacamole.auth.jdbc.base.ActivityRecordModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
 import org.apache.ibatis.annotations.Param;
@@ -43,7 +44,7 @@ public interface UserRecordMapper {
      *     having the given username. This collection will be empty if no such
      *     user exists.
      */
-    List<ActivityRecordModel> select(@Param("username") String username);
+    List<ActivityRecordModelInterface> select(@Param("username") String username);
 
     /**
      * Inserts the given user login record.
@@ -88,7 +89,7 @@ public interface UserRecordMapper {
      * @return
      *     The results of the search performed with the given parameters.
      */
-    List<ActivityRecordModel> search(@Param("terms") Collection<ActivityRecordSearchTerm> terms,
+    List<ActivityRecordModelInterface> search(@Param("terms") Collection<ActivityRecordSearchTerm> terms,
             @Param("sortPredicates") List<ActivityRecordSortPredicate> sortPredicates,
             @Param("limit") int limit);
 

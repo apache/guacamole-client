@@ -22,4 +22,4 @@ package org.apache.guacamole.auth.jdbc.permission;
 /**
  * Mapper for user group permissions.
  */
-public interface UserGroupPermissionMapper extends ObjectPermissionMapper {}
+public interface UserGroupPermissionMapper extends ObjectPermissionMapper<ObjectPermissionModel> {}

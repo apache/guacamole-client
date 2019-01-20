@@ -25,7 +25,7 @@ import org.apache.ibatis.annotations.Param;
 /**
  * Mapper for user objects.
  */
-public interface UserMapper extends ModeledDirectoryObjectMapper<UserModel> {
+public interface UserMapper extends ModeledDirectoryObjectMapper<UserModelInterface> {
 
     /**
      * Returns the user having the given username, if any. If no such user
@@ -37,6 +37,6 @@ public interface UserMapper extends ModeledDirectoryObjectMapper<UserModel> {
      * @return
      *     The user having the given username, or null if no such user exists.
      */
-    UserModel selectOne(@Param("username") String username);
-
+    UserModelInterface selectOne(@Param("username") String username);
+    
 }

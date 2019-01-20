@@ -22,13 +22,14 @@ package org.apache.guacamole.auth.jdbc.user;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.guacamole.auth.jdbc.base.EntityType;
 
 /**
  * Object representation of a Guacamole user, as represented in the database.
  */
-public class UserModel extends EntityModel {
+public class UserModel extends EntityModel implements UserModelInterface {
 
     /**
      * The SHA-256 hash of the password and salt.
@@ -498,5 +499,14 @@ public class UserModel extends EntityModel {
     public void setLastActive(Timestamp lastActive) {
         this.lastActive = lastActive;
     }
+
+	public void setValidUntil(java.util.Date validUntil) {
+		this.validUntil = validUntil != null? new Date(validUntil.getTime()): null;
+		
+	}
+
+	public void setValidFrom(java.util.Date validFrom) {
+		this.validFrom = validFrom != null? new Date(validFrom.getTime()): null;		
+	}
 
 }

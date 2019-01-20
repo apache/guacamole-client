@@ -19,22 +19,22 @@
 
 package org.apache.guacamole.auth.jdbc.sharingprofile;
 
-import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
-import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.mybatis.guice.transactional.Transactional;
+
+import com.google.inject.Inject;
 
 /**
  * Implementation of the SharingProfile Directory which is driven by an
  * underlying, arbitrary database.
  */
-public class SharingProfileDirectory extends RestrictedObject
-    implements Directory<SharingProfile> {
+public class SharingProfileDirectory extends SharingProfileDirectoryAbstract
+implements SharingProfileDirectoryInterface {
 
     /**
      * Service for managing sharing profile objects.

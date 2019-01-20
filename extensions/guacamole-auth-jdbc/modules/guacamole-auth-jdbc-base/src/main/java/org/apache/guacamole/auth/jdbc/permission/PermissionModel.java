@@ -26,12 +26,12 @@ package org.apache.guacamole.auth.jdbc.permission;
  * @param <PermissionType>
  *     The type of permissions allowed within this model.
  */
-public abstract class PermissionModel<PermissionType> {
+public abstract class PermissionModel<PermissionType> implements PermissionModelInterface<PermissionType> {
 
-    /**
-     * The database ID of the entity to whom this permission is granted.
-     */
-    private Integer entityID;
+	/**
+    * The database ID of the entity to whom this permission is granted.
+    */
+   private Integer entityID;
 
     /**
      * The type of action granted by this permission.

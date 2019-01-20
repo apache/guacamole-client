@@ -33,7 +33,7 @@ import org.apache.ibatis.annotations.Param;
  *     one-to-many relationship represented by the RelatedObjectSet mapped by
  *     this ObjectRelationMapper.
  */
-public interface ObjectRelationMapper<ParentModelType extends ObjectModel> {
+public interface ObjectRelationMapper<ParentModelType extends ObjectModelInterface> extends ObjectRelationMapperInterface<ParentModelType> {
 
     /**
      * Inserts rows as necessary to establish the one-to-many relationship

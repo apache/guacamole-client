@@ -26,7 +26,7 @@ import org.apache.guacamole.auth.jdbc.base.EntityType;
  * Object representation of a Guacamole user group, as represented in the
  * database.
  */
-public class UserGroupModel extends EntityModel {
+public class UserGroupModel extends EntityModel implements UserGroupModelInterface {
 
     /**
      * Whether the user group is disabled. Disabled accounts exist and can

@@ -20,22 +20,21 @@
 package org.apache.guacamole.auth.jdbc.user;
 
 
-import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
-import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.User;
 import org.mybatis.guice.transactional.Transactional;
+
+import com.google.inject.Inject;
 
 /**
  * Implementation of the User Directory which is driven by an underlying,
  * arbitrary database.
  */
-public class UserDirectory extends RestrictedObject
-    implements Directory<User> {
+public class UserDirectory extends UserDirectoryAbstract implements UserDirectoryInterface {
 
     /**
      * Service for managing user objects.
@@ -51,7 +50,7 @@ public class UserDirectory extends RestrictedObject
     @Override
     @Transactional
     public Collection<User> getAll(Collection<String> identifiers) throws GuacamoleException {
-        Collection<ModeledUser> objects = userService.retrieveObjects(getCurrentUser(), identifiers);
+        Collection<ModeledUserAbstract> objects = userService.retrieveObjects(getCurrentUser(), identifiers);
         return Collections.<User>unmodifiableCollection(objects);
     }
 

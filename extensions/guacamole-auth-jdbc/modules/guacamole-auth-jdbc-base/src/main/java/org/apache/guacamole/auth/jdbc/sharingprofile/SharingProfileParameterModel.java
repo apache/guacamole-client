@@ -22,7 +22,7 @@ package org.apache.guacamole.auth.jdbc.sharingprofile;
 /**
  * A single parameter name/value pair belonging to a sharing profile.
  */
-public class SharingProfileParameterModel {
+public class SharingProfileParameterModel implements SharingProfileParameterModelInterface {
 
     /**
      * The identifier of the sharing profile associated with this parameter.

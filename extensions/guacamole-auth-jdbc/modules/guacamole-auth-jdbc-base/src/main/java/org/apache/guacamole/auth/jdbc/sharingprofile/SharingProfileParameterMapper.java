@@ -25,7 +25,7 @@ import org.apache.ibatis.annotations.Param;
 /**
  * Mapper for sharing profile parameter objects.
  */
-public interface SharingProfileParameterMapper {
+public interface SharingProfileParameterMapper extends SharingProfileParameterMapperInterface {
 
     /**
      * Returns a collection of all parameters associated with the sharing
@@ -40,7 +40,7 @@ public interface SharingProfileParameterMapper {
      *     having the given identifier. This collection will be empty if no
      *     such sharing profile exists.
      */
-    Collection<SharingProfileParameterModel> select(@Param("identifier") String identifier);
+    Collection<SharingProfileParameterModelInterface> select(@Param("identifier") String identifier);
 
     /**
      * Inserts each of the parameter model objects in the given collection as
@@ -52,7 +52,7 @@ public interface SharingProfileParameterMapper {
      * @return
      *     The number of rows inserted.
      */
-    int insert(@Param("parameters") Collection<SharingProfileParameterModel> parameters);
+    int insert(@Param("parameters") Collection<SharingProfileParameterModelInterface> parameters);
 
     /**
      * Deletes all parameters associated with the sharing profile having the

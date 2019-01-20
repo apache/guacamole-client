@@ -25,7 +25,7 @@ import java.util.Collection;
  * Object representation of a Guacamole object, such as a user or connection,
  * as represented in the database.
  */
-public abstract class ObjectModel {
+public abstract class ObjectModel implements ObjectModelInterface {
 
     /**
      * The ID of this object in the database, if any.
@@ -41,8 +41,7 @@ public abstract class ObjectModel {
      * Map of all arbitrary attributes associated with this object but not
      * directly mapped to a particular column.
      */
-    private ArbitraryAttributeMap arbitraryAttributes =
-            new ArbitraryAttributeMap();
+    private ArbitraryAttributeMap arbitraryAttributes = new ArbitraryAttributeMap();
 
     /**
      * Creates a new, empty object.
@@ -129,7 +128,7 @@ public abstract class ObjectModel {
      *      A Collection view of the map returned by
      *      getArbitraryAttributeMap().
      */
-    public Collection<ArbitraryAttributeModel> getArbitraryAttributes() {
+    public Collection<ArbitraryAttributeModelInterface> getArbitraryAttributes() {
         return arbitraryAttributes.toModelCollection();
     }
 

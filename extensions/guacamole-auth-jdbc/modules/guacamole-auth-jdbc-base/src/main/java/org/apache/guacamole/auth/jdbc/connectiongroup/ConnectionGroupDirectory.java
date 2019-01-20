@@ -20,22 +20,22 @@
 package org.apache.guacamole.auth.jdbc.connectiongroup;
 
 
-import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
 import org.apache.guacamole.net.auth.ConnectionGroup;
-import org.apache.guacamole.net.auth.Directory;
 import org.mybatis.guice.transactional.Transactional;
+
+import com.google.inject.Inject;
 
 /**
  * Implementation of the ConnectionGroup Directory which is driven by an
  * underlying, arbitrary database.
  */
-public class ConnectionGroupDirectory extends RestrictedObject
-    implements Directory<ConnectionGroup> {
+public class ConnectionGroupDirectory extends ConnectionGroupDirectoryAbstract
+    implements ConnectionGroupDirectoryInterface {
 
     /**
      * Service for managing connection group objects.
@@ -79,5 +79,7 @@ public class ConnectionGroupDirectory extends RestrictedObject
     public void remove(String identifier) throws GuacamoleException {
         connectionGroupService.deleteObject(getCurrentUser(), identifier);
     }
+
+
 
 }

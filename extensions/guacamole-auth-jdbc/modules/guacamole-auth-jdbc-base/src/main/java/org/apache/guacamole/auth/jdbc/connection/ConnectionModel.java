@@ -29,7 +29,7 @@ import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration.EncryptionMetho
  * Object representation of a Guacamole connection, as represented in the
  * database.
  */
-public class ConnectionModel extends ChildObjectModel {
+public class ConnectionModel extends ChildObjectModel implements ConnectionModelInterface {
 
     /**
      * The human-readable name associated with this connection.

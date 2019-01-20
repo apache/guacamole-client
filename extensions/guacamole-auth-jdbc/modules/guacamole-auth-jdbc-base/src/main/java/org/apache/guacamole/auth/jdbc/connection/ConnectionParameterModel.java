@@ -22,7 +22,7 @@ package org.apache.guacamole.auth.jdbc.connection;
 /**
  * A single parameter name/value pair belonging to a connection.
  */
-public class ConnectionParameterModel {
+public class ConnectionParameterModel implements ConnectionParameterModelInterface{
 
     /**
      * The identifier of the connection associated with this parameter.

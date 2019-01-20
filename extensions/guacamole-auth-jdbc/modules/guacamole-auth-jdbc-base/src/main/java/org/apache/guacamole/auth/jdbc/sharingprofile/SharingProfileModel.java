@@ -25,7 +25,7 @@ import org.apache.guacamole.auth.jdbc.base.ChildObjectModel;
  * Object representation of a Guacamole sharing profile, as represented in the
  * database.
  */
-public class SharingProfileModel extends ChildObjectModel {
+public class SharingProfileModel extends ChildObjectModel implements SharingProfileModelInterface {
 
     /**
      * The human-readable name associated with this sharing profile.

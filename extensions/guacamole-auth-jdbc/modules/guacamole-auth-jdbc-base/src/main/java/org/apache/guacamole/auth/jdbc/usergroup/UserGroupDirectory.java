@@ -19,22 +19,21 @@
 
 package org.apache.guacamole.auth.jdbc.usergroup;
 
-import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
-import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.UserGroup;
 import org.mybatis.guice.transactional.Transactional;
+
+import com.google.inject.Inject;
 
 /**
  * Implementation of the UserGroup Directory which is driven by an underlying,
  * arbitrary database.
  */
-public class UserGroupDirectory extends RestrictedObject
-    implements Directory<UserGroup> {
+public class UserGroupDirectory extends UserGroupDirectoryAbstract implements UserGroupDirectoryInterface {
 
     /**
      * Service for managing user group objects.

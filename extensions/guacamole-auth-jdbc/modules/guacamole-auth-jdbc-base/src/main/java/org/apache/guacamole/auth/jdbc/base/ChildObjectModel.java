@@ -24,7 +24,7 @@ package org.apache.guacamole.auth.jdbc.base;
  * object, such as a connection or sharing profile, as represented in the
  * database.
  */
-public abstract class ChildObjectModel extends ObjectModel {
+public abstract class ChildObjectModel extends ObjectModel implements ChildObjectModelInterface {
 
     /**
      * The unique identifier which identifies the parent of this object.

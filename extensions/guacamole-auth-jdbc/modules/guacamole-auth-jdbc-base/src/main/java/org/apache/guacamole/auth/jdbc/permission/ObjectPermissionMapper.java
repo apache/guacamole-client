@@ -20,14 +20,18 @@
 package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
-import org.apache.guacamole.auth.jdbc.base.EntityModel;
-import org.apache.ibatis.annotations.Param;
+
+import org.apache.guacamole.auth.jdbc.base.EntityModelInterface;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Mapper for object-related permissions.
+ * 
+ * @param <PermissionType>
+ *     The type of permission model object handled by this mapper.
  */
-public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissionModel> {
+public interface ObjectPermissionMapper<PermissionType> extends PermissionMapper<PermissionType> {
 
     /**
      * Retrieve the permission of the given type associated with the given
@@ -53,7 +57,7 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
      *     The requested permission, or null if no such permission is granted
      *     to the given entity for the given object.
      */
-    ObjectPermissionModel selectOne(@Param("entity") EntityModel entity,
+    ObjectPermissionModel selectOne(@Param("entity") EntityModelInterface entity,
             @Param("type") ObjectPermission.Type type,
             @Param("identifier") String identifier,
             @Param("effectiveGroups") Collection<String> effectiveGroups);
@@ -84,7 +88,7 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
      *     A collection containing the subset of identifiers for which at least
      *     one of the specified permissions is granted.
      */
-    Collection<String> selectAccessibleIdentifiers(@Param("entity") EntityModel entity,
+    Collection<String> selectAccessibleIdentifiers(@Param("entity") EntityModelInterface entity,
             @Param("permissions") Collection<ObjectPermission.Type> permissions,
             @Param("identifiers") Collection<String> identifiers,
             @Param("effectiveGroups") Collection<String> effectiveGroups);

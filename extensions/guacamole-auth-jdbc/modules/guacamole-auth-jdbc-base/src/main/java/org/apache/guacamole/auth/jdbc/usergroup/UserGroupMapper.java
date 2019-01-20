@@ -25,7 +25,7 @@ import org.apache.ibatis.annotations.Param;
 /**
  * Mapper for user group objects.
  */
-public interface UserGroupMapper extends ModeledDirectoryObjectMapper<UserGroupModel> {
+public interface UserGroupMapper extends ModeledDirectoryObjectMapper<UserGroupModelInterface> {
 
     /**
      * Returns the group having the given name, if any. If no such group

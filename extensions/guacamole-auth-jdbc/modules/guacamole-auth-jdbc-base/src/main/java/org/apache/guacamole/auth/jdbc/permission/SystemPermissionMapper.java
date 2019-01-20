@@ -20,16 +20,17 @@
 package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
+
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
-import org.apache.ibatis.annotations.Param;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Mapper for system-level permissions.
  */
 public interface SystemPermissionMapper extends PermissionMapper<SystemPermissionModel> {
 
-    /**
+	/**
      * Retrieve the permission of the given type associated with the given
      * entity, if it exists. If no such permission exists, null is returned.
      *

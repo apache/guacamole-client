@@ -19,16 +19,18 @@
 
 package org.apache.guacamole.auth.mysql;
 
+import java.io.Closeable;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A MySQL-specific implementation of JDBCEnvironment provides database
@@ -240,14 +242,14 @@ public class MySQLEnvironment extends JDBCEnvironment {
     public String getMySQLPassword() throws GuacamoleException {
         return getRequiredProperty(MySQLGuacamoleProperties.MYSQL_PASSWORD);
     }
-
+    
     @Override
-    public boolean isRecursiveQuerySupported(SqlSession session) {
+    public boolean isRecursiveQuerySupported(Closeable session) {
 
         // Retrieve database version string from JDBC connection
         String versionString;
         try {
-            Connection connection = session.getConnection();
+            Connection connection = ((SqlSession) session).getConnection();
             DatabaseMetaData metaData = connection.getMetaData();
             versionString = metaData.getDatabaseProductVersion();
         }
@@ -276,5 +278,5 @@ public class MySQLEnvironment extends JDBCEnvironment {
         }
 
     }
-
+    
 }

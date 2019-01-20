@@ -25,12 +25,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.guacamole.auth.jdbc.base.ArbitraryAttributeMapInterface;
+import org.apache.guacamole.auth.jdbc.base.ArbitraryAttributeModelInterface;
+
 /**
  * Map of arbitrary attribute name/value pairs which can alternatively be
  * exposed as a collection of model objects.
  */
-public class ArbitraryAttributeMap extends HashMap<String, String> {
+public class ArbitraryAttributeMap extends HashMap<String, String> implements ArbitraryAttributeMapInterface {
 
+	private static final long serialVersionUID = 1L;
+	
     /**
      * Creates a new ArbitraryAttributeMap containing the name/value pairs
      * within the given collection of model objects.
@@ -67,8 +72,8 @@ public class ArbitraryAttributeMap extends HashMap<String, String> {
      *     A collection of model objects which mirrors the contents of this
      *     ArbitraryAttributeMap.
      */
-    public Collection<ArbitraryAttributeModel> toModelCollection() {
-        return new AbstractCollection<ArbitraryAttributeModel>() {
+    public Collection<ArbitraryAttributeModelInterface> toModelCollection() {
+        return new AbstractCollection<ArbitraryAttributeModelInterface>() {
 
             @Override
             public void clear() {
@@ -103,7 +108,7 @@ public class ArbitraryAttributeMap extends HashMap<String, String> {
             }
 
             @Override
-            public boolean add(ArbitraryAttributeModel e) {
+            public boolean add(ArbitraryAttributeModelInterface e) {
 
                 String newValue = e.getValue();
                 String oldValue = put(e.getName(), newValue);
@@ -139,14 +144,14 @@ public class ArbitraryAttributeMap extends HashMap<String, String> {
             }
 
             @Override
-            public Iterator<ArbitraryAttributeModel> iterator() {
+            public Iterator<ArbitraryAttributeModelInterface> iterator() {
 
                 // Get iterator over all string name/value entries
                 final Iterator<Map.Entry<String, String>> iterator = entrySet().iterator();
 
                 // Dynamically translate each string name/value entry into a
                 // corresponding attribute model object as iteration continues
-                return new Iterator<ArbitraryAttributeModel>() {
+                return new Iterator<ArbitraryAttributeModelInterface>() {
 
                     @Override
                     public boolean hasNext() {

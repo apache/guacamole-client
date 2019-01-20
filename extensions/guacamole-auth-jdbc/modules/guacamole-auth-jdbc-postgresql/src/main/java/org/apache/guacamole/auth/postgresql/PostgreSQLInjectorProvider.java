@@ -19,11 +19,12 @@
 
 package org.apache.guacamole.auth.postgresql;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProviderModule;
 import org.apache.guacamole.auth.jdbc.JDBCInjectorProvider;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * JDBCInjectorProvider implementation which configures Guice injections for

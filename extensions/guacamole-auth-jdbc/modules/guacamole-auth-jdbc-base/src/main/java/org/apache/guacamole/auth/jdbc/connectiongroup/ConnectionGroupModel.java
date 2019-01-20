@@ -28,7 +28,7 @@ import org.apache.guacamole.net.auth.ConnectionGroup;
  * Object representation of a Guacamole connection group, as represented in the
  * database.
  */
-public class ConnectionGroupModel extends ChildObjectModel {
+public class ConnectionGroupModel extends ChildObjectModel implements ConnectionGroupModelInterface {
 
     /**
      * The human-readable name associated with this connection group.

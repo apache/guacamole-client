@@ -26,7 +26,7 @@ import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
  * connection. If the connection was being shared, the sharing profile used to
  * join the connection is included in the record.
  */
-public class ConnectionRecordModel extends ActivityRecordModel {
+public class ConnectionRecordModel extends ActivityRecordModel implements ConnectionRecordModelInterface {
 
     /**
      * The identifier of the connection associated with this connection record.

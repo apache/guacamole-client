@@ -40,7 +40,7 @@ public interface ConnectionParameterMapper {
      *     having the given identifier. This collection will be empty if no
      *     such connection exists.
      */
-    Collection<ConnectionParameterModel> select(@Param("identifier") String identifier);
+    Collection<ConnectionParameterModelInterface> select(@Param("identifier") String identifier);
 
     /**
      * Inserts each of the parameter model objects in the given collection as
@@ -52,7 +52,7 @@ public interface ConnectionParameterMapper {
      * @return
      *     The number of rows inserted.
      */
-    int insert(@Param("parameters") Collection<ConnectionParameterModel> parameters);
+    int insert(@Param("parameters") Collection<ConnectionParameterModelInterface> parameters);
 
     /**
      * Deletes all parameters associated with the connection having the given

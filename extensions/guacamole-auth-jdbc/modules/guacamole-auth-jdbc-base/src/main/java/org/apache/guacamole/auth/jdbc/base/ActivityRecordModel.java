@@ -25,7 +25,7 @@ import java.util.Date;
  * A single activity record representing an arbitrary activity performed by a
  * user.
  */
-public class ActivityRecordModel {
+public class ActivityRecordModel implements ActivityRecordModelInterface {
 
     /**
      * The ID of this object in the database, if any.
