@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.Collections;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -32,9 +33,51 @@ public interface Connectable {
     /**
      * Establishes a connection to guacd using the information associated with
      * this object. The connection will be provided the given client
+     * information.
+     *
+     * @deprecated
+     *     This function has been deprecated in favor of
+     *     {@link #connect(org.apache.guacamole.protocol.GuacamoleClientInformation, java.util.Map)},
+     *     which allows for connection parameter tokens to be injected and
+     *     applied by cooperating extensions, replacing the functionality
+     *     previously provided through the {@link org.apache.guacamole.token.StandardTokens}
+     *     class. It continues to be defined on this interface for
+     *     compatibility. <strong>New implementations should instead implement
+     *     {@link #connect(org.apache.guacamole.protocol.GuacamoleClientInformation, java.util.Map)}.</strong>
+     *
+     * @param info
+     *     Information associated with the connecting client.
+     *
+     * @return
+     *     A fully-established GuacamoleTunnel.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while connecting to guacd, or if permission to
+     *     connect is denied.
+     */
+    @Deprecated
+    default GuacamoleTunnel connect(GuacamoleClientInformation info)
+            throws GuacamoleException {
+        return this.connect(info, Collections.emptyMap());
+    }
+
+    /**
+     * Establishes a connection to guacd using the information associated with
+     * this object. The connection will be provided the given client
      * information. Implementations which support parameter tokens should
      * apply the given tokens when configuring the connection, such as with a
      * {@link org.apache.guacamole.token.TokenFilter}.
+     *
+     * <p>A default implementation which invokes the old, deprecated
+     * {@link #connect(org.apache.guacamole.protocol.GuacamoleClientInformation)}
+     * is provided solely for compatibility with extensions which implement only
+     * the deprecated function. This default implementation is useful only
+     * for extensions relying on the deprecated function and will be removed
+     * when the deprecated function is removed.
+     *
+     * <p><strong>New implementations should always implement this function
+     * in favor of the deprecated
+     * {@link #connect(org.apache.guacamole.protocol.GuacamoleClientInformation)}.</strong>
      *
      * @see <a href="http://guacamole.apache.org/doc/gug/configuring-guacamole.html#parameter-tokens">Parameter Tokens</a>
      *
@@ -54,8 +97,13 @@ public interface Connectable {
      *     If an error occurs while connecting to guacd, or if permission to
      *     connect is denied.
      */
-    public GuacamoleTunnel connect(GuacamoleClientInformation info,
-            Map<String, String> tokens) throws GuacamoleException;
+    default GuacamoleTunnel connect(GuacamoleClientInformation info,
+            Map<String, String> tokens) throws GuacamoleException {
+
+        // Allow old implementations of Connectable to continue to work
+        return this.connect(info);
+
+    }
 
     /**
      * Returns the number of active connections associated with this object.
