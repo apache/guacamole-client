@@ -129,7 +129,7 @@ public class SimpleUserContext extends AbstractUserContext {
             GuacamoleConfiguration config = configEntry.getValue();
 
             // Add as simple connection
-            Connection connection = new SimpleConnection(identifier, identifier, config, true);
+            Connection connection = new SimpleConnection(identifier, identifier, config, interpretTokens);
             connection.setParentIdentifier(DEFAULT_ROOT_CONNECTION_GROUP);
             connections.put(identifier, connection);
 
