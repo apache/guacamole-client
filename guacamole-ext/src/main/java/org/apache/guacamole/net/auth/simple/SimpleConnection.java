@@ -97,8 +97,7 @@ public class SimpleConnection extends AbstractConnection {
      * be set before the SimpleConnection may be used. Parameter tokens within
      * the GuacamoleConfiguration eventually supplied with
      * {@link #setConfiguration(org.apache.guacamole.protocol.GuacamoleConfiguration)}
-     * will not be interpreted unless explicitly requested with
-     * {@link #setInterpretTokens(boolean)}.
+     * will not be interpreted unless explicitly requested.
      *
      * @param interpretTokens
      *     Whether parameter tokens in the underlying GuacamoleConfiguration
@@ -113,7 +112,7 @@ public class SimpleConnection extends AbstractConnection {
      * Creates a new SimpleConnection having the given identifier and
      * GuacamoleConfiguration. Parameter tokens within the
      * GuacamoleConfiguration will not be interpreted unless explicitly
-     * requested with {@link #setInterpretTokens(boolean)}.
+     * requested.
      *
      * @param name
      *     The name to associate with this connection.
@@ -256,7 +255,7 @@ public class SimpleConnection extends AbstractConnection {
      *
      * <p>Implementations requiring more complex behavior should consider using
      * the {@link AbstractConnection} base class or implementing
-     * {@link Connection} directly.
+     * {@link org.apache.guacamole.net.auth.Connection} directly.
      */
     @Override
     public GuacamoleTunnel connect(GuacamoleClientInformation info,
