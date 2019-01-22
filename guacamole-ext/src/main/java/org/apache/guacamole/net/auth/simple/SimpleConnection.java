@@ -41,10 +41,10 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.TokenFilter;
 
 /**
- * An extremely basic Connection implementation. The underlying connection to
- * guacd is established using the configuration information provided in
- * guacamole.properties. Parameter tokens provided to connect() are
- * automatically applied. Tracking of active connections and connection history
+ * A Connection implementation which establishes the underlying connection to
+ * guacd using the configuration information provided in guacamole.properties.
+ * Parameter tokens provided to connect() are automatically applied if
+ * explicitly requested. Tracking of active connections and connection history
  * is not provided.
  */
 public class SimpleConnection extends AbstractConnection {
@@ -162,10 +162,11 @@ public class SimpleConnection extends AbstractConnection {
 
     /**
      * Returns the GuacamoleConfiguration describing how to connect to this
-     * connection. Unlike the GuacamoleConfiguration returned by
-     * {@link #getConfiguration()}, which may omit or tokenize information,
-     * the GuacamoleConfiguration returned by this function contains the full
-     * configuration to be used to establish the connection.
+     * connection. Unlike {@link #getConfiguration()}, which is allowed to omit
+     * or tokenize information, the GuacamoleConfiguration returned by this
+     * function will always be the full configuration to be used to establish
+     * the connection, as provided when this SimpleConnection was created or via
+     * {@link #setConfiguration(org.apache.guacamole.protocol.GuacamoleConfiguration)}.
      *
      * @return
      *     The full GuacamoleConfiguration describing how to connect to this
@@ -244,6 +245,19 @@ public class SimpleConnection extends AbstractConnection {
 
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>This implementation will connect using the GuacamoleConfiguration
+     * returned by {@link #getFullConfiguration()}, honoring the
+     * "guacd-hostname", "guacd-port", and "guacd-ssl" properties set within
+     * guacamole.properties. Parameter tokens will be taken into account if
+     * the SimpleConnection was explicitly requested to do so when created.
+     *
+     * <p>Implementations requiring more complex behavior should consider using
+     * the {@link AbstractConnection} base class or implementing
+     * {@link Connection} directly.
+     */
     @Override
     public GuacamoleTunnel connect(GuacamoleClientInformation info,
             Map<String, String> tokens) throws GuacamoleException {
