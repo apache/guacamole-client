@@ -52,7 +52,7 @@ public class SimpleConnection extends AbstractConnection {
     /**
      * Backing configuration, containing all sensitive information.
      */
-    private GuacamoleConfiguration config;
+    private GuacamoleConfiguration fullConfig;
 
     /**
      * Creates a completely uninitialized SimpleConnection.
@@ -71,17 +71,34 @@ public class SimpleConnection extends AbstractConnection {
      */
     public SimpleConnection(String name, String identifier,
             GuacamoleConfiguration config) {
-        
-        // Set name
-        setName(name);
 
-        // Set identifier
-        setIdentifier(identifier);
+        super.setName(name);
+        super.setIdentifier(identifier);
+        super.setConfiguration(config);
 
-        // Set config
-        setConfiguration(config);
-        this.config = config;
+        this.fullConfig = config;
 
+    }
+
+    /**
+     * Returns the GuacamoleConfiguration describing how to connect to this
+     * connection. Unlike the GuacamoleConfiguration returned by
+     * {@link #getConfiguration()}, which may omit or tokenize information,
+     * the GuacamoleConfiguration returned by this function contains the full
+     * configuration to be used to establish the connection.
+     *
+     * @return
+     *     The full GuacamoleConfiguration describing how to connect to this
+     *     connection, without any information omitted or tokenized.
+     */
+    protected GuacamoleConfiguration getFullConfiguration() {
+        return fullConfig;
+    }
+
+    @Override
+    public void setConfiguration(GuacamoleConfiguration config) {
+        super.setConfiguration(config);
+        this.fullConfig = config;
     }
 
     @Override
@@ -112,7 +129,7 @@ public class SimpleConnection extends AbstractConnection {
         int port = proxyConfig.getPort();
 
         // Apply tokens to config parameters
-        GuacamoleConfiguration filteredConfig = new GuacamoleConfiguration(config);
+        GuacamoleConfiguration filteredConfig = new GuacamoleConfiguration(getFullConfiguration());
         new TokenFilter(tokens).filterValues(filteredConfig.getParameters());
 
         GuacamoleSocket socket;
