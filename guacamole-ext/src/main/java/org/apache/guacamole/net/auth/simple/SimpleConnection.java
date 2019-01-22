@@ -55,6 +55,13 @@ public class SimpleConnection extends AbstractConnection {
     private GuacamoleConfiguration fullConfig;
 
     /**
+     * Whether parameter tokens in the underlying GuacamoleConfiguration should
+     * be automatically applied upon connecting. If false, parameter tokens
+     * will not be interpreted at all.
+     */
+    private final boolean interpretTokens;
+
+    /**
      * The tokens which should apply strictly to the next call to
      * {@link #connect(org.apache.guacamole.protocol.GuacamoleClientInformation)}.
      * This storage is intended as a temporary bridge allowing the old version
@@ -75,28 +82,81 @@ public class SimpleConnection extends AbstractConnection {
     /**
      * Creates a completely uninitialized SimpleConnection. The name,
      * identifier, and configuration of this SimpleConnection must eventually
-     * be set before the SimpleConnection may be used.
+     * be set before the SimpleConnection may be used. Parameter tokens within
+     * the GuacamoleConfiguration eventually supplied with
+     * {@link #setConfiguration(org.apache.guacamole.protocol.GuacamoleConfiguration)}
+     * will not be interpreted.
      */
     public SimpleConnection() {
+        this(false);
+    }
+
+    /**
+     * Creates a completely uninitialized SimpleConnection. The name,
+     * identifier, and configuration of this SimpleConnection must eventually
+     * be set before the SimpleConnection may be used. Parameter tokens within
+     * the GuacamoleConfiguration eventually supplied with
+     * {@link #setConfiguration(org.apache.guacamole.protocol.GuacamoleConfiguration)}
+     * will not be interpreted unless explicitly requested with
+     * {@link #setInterpretTokens(boolean)}.
+     *
+     * @param interpretTokens
+     *     Whether parameter tokens in the underlying GuacamoleConfiguration
+     *     should be automatically applied upon connecting. If false, parameter
+     *     tokens will not be interpreted at all.
+     */
+    public SimpleConnection(boolean interpretTokens) {
+        this.interpretTokens = interpretTokens;
     }
 
     /**
      * Creates a new SimpleConnection having the given identifier and
-     * GuacamoleConfiguration.
+     * GuacamoleConfiguration. Parameter tokens within the
+     * GuacamoleConfiguration will not be interpreted unless explicitly
+     * requested with {@link #setInterpretTokens(boolean)}.
      *
-     * @param name The name to associate with this connection.
-     * @param identifier The identifier to associate with this connection.
-     * @param config The configuration describing how to connect to this
-     *               connection.
+     * @param name
+     *     The name to associate with this connection.
+     *
+     * @param identifier
+     *     The identifier to associate with this connection.
+     *
+     * @param config
+     *     The configuration describing how to connect to this connection.
      */
     public SimpleConnection(String name, String identifier,
             GuacamoleConfiguration config) {
+        this(name, identifier, config, false);
+    }
+
+    /**
+     * Creates a new SimpleConnection having the given identifier and
+     * GuacamoleConfiguration. Parameter tokens will be interpreted if
+     * explicitly requested.
+     *
+     * @param name
+     *     The name to associate with this connection.
+     *
+     * @param identifier
+     *     The identifier to associate with this connection.
+     *
+     * @param config
+     *     The configuration describing how to connect to this connection.
+     *
+     * @param interpretTokens
+     *     Whether parameter tokens in the underlying GuacamoleConfiguration
+     *     should be automatically applied upon connecting. If false, parameter
+     *     tokens will not be interpreted at all.
+     */
+    public SimpleConnection(String name, String identifier,
+            GuacamoleConfiguration config, boolean interpretTokens) {
 
         super.setName(name);
         super.setIdentifier(identifier);
         super.setConfiguration(config);
 
         this.fullConfig = config;
+        this.interpretTokens = interpretTokens;
 
     }
 
@@ -191,8 +251,14 @@ public class SimpleConnection extends AbstractConnection {
         // Make received tokens available within the legacy connect() strictly
         // in context of the current connect() call
         try {
-            currentTokens.set(tokens);
+
+            // Automatically filter configurations only if explicitly
+            // configured to do so
+            if (interpretTokens)
+                currentTokens.set(tokens);
+
             return connect(info);
+
         }
         finally {
             currentTokens.remove();
