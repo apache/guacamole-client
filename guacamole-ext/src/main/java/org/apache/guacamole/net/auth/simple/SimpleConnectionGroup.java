@@ -47,7 +47,7 @@ public class SimpleConnectionGroup extends AbstractConnectionGroup {
      * The identifiers of all connection groups in this group.
      */
     private final Set<String> connectionGroupIdentifiers;
-    
+
     /**
      * Creates a new SimpleConnectionGroup having the given name and identifier
      * which will expose the given contents.
@@ -109,9 +109,16 @@ public class SimpleConnectionGroup extends AbstractConnectionGroup {
     }
 
     @Override
+    @Deprecated
+    public GuacamoleTunnel connect(GuacamoleClientInformation info)
+            throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
+    }
+
+    @Override
     public GuacamoleTunnel connect(GuacamoleClientInformation info,
             Map<String, String> tokens) throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
+        return connect(info);
     }
 
 }
