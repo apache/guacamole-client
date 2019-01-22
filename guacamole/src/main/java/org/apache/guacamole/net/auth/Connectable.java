@@ -46,7 +46,7 @@ public interface Connectable {
      *
      * <p>This definition is the legacy connect() definition from 1.0.0 and
      * older. It is redefined here for the sake of ABI compatibility with
-     * 1.0.0 but is no longer defined within guacamole-ext.
+     * 1.0.0 but is deprecated within guacamole-ext.
      *
      * @deprecated
      *     This definition exists solely for binary compatibility. It should

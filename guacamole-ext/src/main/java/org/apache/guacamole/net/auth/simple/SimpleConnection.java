@@ -196,31 +196,7 @@ public class SimpleConnection extends AbstractConnection {
         // Do nothing - there are no attributes
     }
 
-    /**
-     * Establishes a connection to guacd using the information associated with
-     * this object. The connection will be provided the given client
-     * information.
-     *
-     * <p>This definition is the legacy connect() definition from 1.0.0 and
-     * older. It is redefined here for the sake of ABI compatibility with
-     * 1.0.0 but is no longer defined within the
-     * {@link org.apache.guacamole.net.auth.Connectable} interface.
-     *
-     * @deprecated
-     *     This definition exists solely for binary compatibility. It should
-     *     never be used by new code. New implementations should instead use
-     *     {@link #connect(org.apache.guacamole.protocol.GuacamoleClientInformation, java.util.Map)}.
-     *
-     * @param info
-     *     Information associated with the connecting client.
-     *
-     * @return
-     *     A fully-established GuacamoleTunnel.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while connecting to guacd, or if permission to
-     *     connect is denied.
-     */
+    @Override
     @Deprecated
     public GuacamoleTunnel connect(GuacamoleClientInformation info)
             throws GuacamoleException {
