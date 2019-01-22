@@ -55,7 +55,27 @@ public class SimpleConnection extends AbstractConnection {
     private GuacamoleConfiguration fullConfig;
 
     /**
-     * Creates a completely uninitialized SimpleConnection.
+     * The tokens which should apply strictly to the next call to
+     * {@link #connect(org.apache.guacamole.protocol.GuacamoleClientInformation)}.
+     * This storage is intended as a temporary bridge allowing the old version
+     * of connect() to be overridden while still resulting in the same behavior
+     * as older versions of SimpleConnection. <strong>This storage should be
+     * removed once support for the old, deprecated connect() is removed.</strong>
+     */
+    private final ThreadLocal<Map<String, String>> currentTokens =
+            new ThreadLocal<Map<String, String>>() {
+
+        @Override
+        protected Map<String, String> initialValue() {
+            return Collections.emptyMap();
+        }
+
+    };
+
+    /**
+     * Creates a completely uninitialized SimpleConnection. The name,
+     * identifier, and configuration of this SimpleConnection must eventually
+     * be set before the SimpleConnection may be used.
      */
     public SimpleConnection() {
     }
@@ -117,8 +137,9 @@ public class SimpleConnection extends AbstractConnection {
     }
 
     @Override
-    public GuacamoleTunnel connect(GuacamoleClientInformation info,
-            Map<String, String> tokens) throws GuacamoleException {
+    @SuppressWarnings("deprecation")
+    public GuacamoleTunnel connect(GuacamoleClientInformation info)
+            throws GuacamoleException {
 
         // Retrieve proxy configuration from environment
         Environment environment = new LocalEnvironment();
@@ -130,7 +151,7 @@ public class SimpleConnection extends AbstractConnection {
 
         // Apply tokens to config parameters
         GuacamoleConfiguration filteredConfig = new GuacamoleConfiguration(getFullConfiguration());
-        new TokenFilter(tokens).filterValues(filteredConfig.getParameters());
+        new TokenFilter(currentTokens.get()).filterValues(filteredConfig.getParameters());
 
         GuacamoleSocket socket;
 
@@ -160,6 +181,22 @@ public class SimpleConnection extends AbstractConnection {
         }
 
         return new SimpleGuacamoleTunnel(socket);
+
+    }
+
+    @Override
+    public GuacamoleTunnel connect(GuacamoleClientInformation info,
+            Map<String, String> tokens) throws GuacamoleException {
+
+        // Make received tokens available within the legacy connect() strictly
+        // in context of the current connect() call
+        try {
+            currentTokens.set(tokens);
+            return connect(info);
+        }
+        finally {
+            currentTokens.remove();
+        }
         
     }
 
