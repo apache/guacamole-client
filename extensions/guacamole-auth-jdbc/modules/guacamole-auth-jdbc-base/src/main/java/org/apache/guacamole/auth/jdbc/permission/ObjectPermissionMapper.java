@@ -21,7 +21,7 @@ package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
 
-import org.apache.guacamole.auth.jdbc.base.EntityModelInterface;
+import org.apache.guacamole.auth.common.base.EntityModelInterface;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.ibatis.annotations.Param;
 

@@ -20,8 +20,8 @@
 package org.apache.guacamole.auth.mysql;
 
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
-import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
+import org.apache.guacamole.auth.common.CommonEnvironment;
+import org.apache.guacamole.auth.common.security.PasswordPolicy;
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 
@@ -137,7 +137,7 @@ public class MySQLPasswordPolicy implements PasswordPolicy {
     /**
      * The Guacamole server environment.
      */
-    private final JDBCEnvironment environment;
+    private final CommonEnvironment environment;
 
     /**
      * Creates a new MySQLPasswordPolicy which reads the details of the policy
@@ -147,7 +147,7 @@ public class MySQLPasswordPolicy implements PasswordPolicy {
      *     The environment from which password policy properties should be
      *     read.
      */
-    public MySQLPasswordPolicy(JDBCEnvironment environment) {
+    public MySQLPasswordPolicy(CommonEnvironment environment) {
         this.environment = environment;
     }
 

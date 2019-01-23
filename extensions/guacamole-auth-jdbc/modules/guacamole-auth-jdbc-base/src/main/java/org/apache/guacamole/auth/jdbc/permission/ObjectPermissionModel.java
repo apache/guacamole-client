@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
+import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 
 /**

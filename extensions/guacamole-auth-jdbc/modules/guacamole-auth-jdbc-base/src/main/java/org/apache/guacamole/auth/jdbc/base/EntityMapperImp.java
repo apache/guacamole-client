@@ -22,6 +22,9 @@ package org.apache.guacamole.auth.jdbc.base;
 import java.util.Collection;
 import java.util.Set;
 
+import org.apache.guacamole.auth.common.base.EntityMapperInterface;
+import org.apache.guacamole.auth.common.base.EntityModelInterface;
+
 import com.google.inject.Inject;
 
 /**

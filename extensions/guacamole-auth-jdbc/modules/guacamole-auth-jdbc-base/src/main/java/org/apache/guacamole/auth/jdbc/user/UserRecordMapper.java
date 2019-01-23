@@ -21,10 +21,11 @@ package org.apache.guacamole.auth.jdbc.user;
 
 import java.util.Collection;
 import java.util.List;
+
+import org.apache.guacamole.auth.common.base.ActivityRecordModelInterface;
+import org.apache.guacamole.auth.common.base.ActivityRecordSearchTerm;
+import org.apache.guacamole.auth.common.base.ActivityRecordSortPredicate;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
-import org.apache.guacamole.auth.jdbc.base.ActivityRecordModelInterface;
-import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
-import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
 import org.apache.ibatis.annotations.Param;
 
 /**

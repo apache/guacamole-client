@@ -23,8 +23,9 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 
+import org.apache.guacamole.auth.common.base.EntityType;
+import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
-import org.apache.guacamole.auth.jdbc.base.EntityType;
 
 /**
  * Object representation of a Guacamole user, as represented in the database.

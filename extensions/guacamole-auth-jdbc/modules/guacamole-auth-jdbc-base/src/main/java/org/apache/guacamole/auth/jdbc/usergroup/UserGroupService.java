@@ -22,11 +22,15 @@ package org.apache.guacamole.auth.jdbc.usergroup;
 import java.util.Collection;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
+import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
+import org.apache.guacamole.auth.common.user.UserModelInterface;
+import org.apache.guacamole.auth.common.usergroup.ModeledUserGroup;
+import org.apache.guacamole.auth.common.usergroup.UserGroupModelInterface;
+import org.apache.guacamole.auth.common.usergroup.UserGroupServiceAbstract;
+import org.apache.guacamole.auth.common.usergroup.UserGroupServiceInterface;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
-import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModelInterface;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.auth.jdbc.user.UserModelInterface;
 import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.net.auth.permission.ObjectPermission.Type;
 

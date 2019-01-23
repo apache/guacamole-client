@@ -25,6 +25,9 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupDirectoryAbstract;
+import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupDirectoryInterface;
+import org.apache.guacamole.auth.common.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.mybatis.guice.transactional.Transactional;
 

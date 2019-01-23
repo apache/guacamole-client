@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.jdbc.connection;
 
+import org.apache.guacamole.auth.common.connection.ConnectionParameterModelInterface;
+
 /**
  * A single parameter name/value pair belonging to a connection.
  */

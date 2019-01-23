@@ -25,8 +25,8 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
-import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
+import org.apache.guacamole.auth.common.CommonEnvironment;
+import org.apache.guacamole.auth.common.security.PasswordPolicy;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * A MySQL-specific implementation of JDBCEnvironment provides database
  * properties specifically for MySQL.
  */
-public class MySQLEnvironment extends JDBCEnvironment {
+public class MySQLEnvironment extends CommonEnvironment {
 
     /**
      * Logger for this class.

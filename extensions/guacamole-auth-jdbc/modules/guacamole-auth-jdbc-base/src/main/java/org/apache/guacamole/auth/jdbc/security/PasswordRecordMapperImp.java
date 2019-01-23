@@ -22,7 +22,8 @@ package org.apache.guacamole.auth.jdbc.security;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.guacamole.auth.jdbc.user.PasswordRecordModelInterface;
+import org.apache.guacamole.auth.common.security.PasswordRecordMapperInterface;
+import org.apache.guacamole.auth.common.user.PasswordRecordModelInterface;
 
 import com.google.inject.Inject;
 

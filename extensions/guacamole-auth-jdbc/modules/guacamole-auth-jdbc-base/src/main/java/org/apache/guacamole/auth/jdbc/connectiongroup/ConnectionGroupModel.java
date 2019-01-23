@@ -21,6 +21,8 @@ package org.apache.guacamole.auth.jdbc.connectiongroup;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ChildObjectModel;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 

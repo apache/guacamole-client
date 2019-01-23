@@ -23,10 +23,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.guacamole.auth.common.connection.ConnectionModelInterface;
+import org.apache.guacamole.auth.common.connection.ConnectionParameterModelInterface;
+import org.apache.guacamole.auth.common.connection.ConnectionServiceAbstract;
+import org.apache.guacamole.auth.common.connection.ConnectionServiceInterface;
+import org.apache.guacamole.auth.common.connection.ModeledConnection;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
+import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
+import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
-import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModelInterface;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.auth.jdbc.user.UserModelInterface;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.permission.ObjectPermission.Type;
 

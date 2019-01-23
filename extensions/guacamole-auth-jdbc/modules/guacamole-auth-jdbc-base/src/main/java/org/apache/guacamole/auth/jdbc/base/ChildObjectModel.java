@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.jdbc.base;
 
+import org.apache.guacamole.auth.common.base.ChildObjectModelInterface;
+
 /**
  * Object representation of a Guacamole object which can be the child of another
  * object, such as a connection or sharing profile, as represented in the

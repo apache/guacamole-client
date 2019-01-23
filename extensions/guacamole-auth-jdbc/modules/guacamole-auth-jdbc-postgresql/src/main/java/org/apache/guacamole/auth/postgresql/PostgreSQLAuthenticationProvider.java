@@ -20,8 +20,8 @@
 package org.apache.guacamole.auth.postgresql;
 
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.InjectedAuthenticationProvider;
-import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProviderService;
+import org.apache.guacamole.auth.common.InjectedAuthenticationProvider;
+import org.apache.guacamole.auth.common.CommonAuthenticationProviderService;
 
 /**
  * Provides a PostgreSQL-based implementation of the AuthenticationProvider
@@ -39,7 +39,7 @@ public class PostgreSQLAuthenticationProvider extends InjectedAuthenticationProv
      *     a property.
      */
     public PostgreSQLAuthenticationProvider() throws GuacamoleException {
-        super(new PostgreSQLInjectorProvider(), JDBCAuthenticationProviderService.class);
+        super(new PostgreSQLInjectorProvider(), CommonAuthenticationProviderService.class);
     }
 
     @Override

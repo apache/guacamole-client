@@ -21,6 +21,8 @@ package org.apache.guacamole.auth.jdbc.base;
 
 import java.util.Date;
 
+import org.apache.guacamole.auth.common.base.ActivityRecordModelInterface;
+
 /**
  * A single activity record representing an arbitrary activity performed by a
  * user.

@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
+import org.apache.guacamole.auth.common.permission.PermissionModelInterface;
+
 /**
  * Generic base permission model which grants a permission of a particular type
  * to a specific entity (user or user group).

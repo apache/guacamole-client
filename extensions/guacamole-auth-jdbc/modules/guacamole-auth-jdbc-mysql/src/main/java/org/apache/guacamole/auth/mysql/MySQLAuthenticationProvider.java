@@ -20,8 +20,8 @@
 package org.apache.guacamole.auth.mysql;
 
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.InjectedAuthenticationProvider;
-import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProviderService;
+import org.apache.guacamole.auth.common.InjectedAuthenticationProvider;
+import org.apache.guacamole.auth.common.CommonAuthenticationProviderService;
 
 /**
  * Provides a MySQL based implementation of the AuthenticationProvider
@@ -39,7 +39,7 @@ public class MySQLAuthenticationProvider extends InjectedAuthenticationProvider 
      *     a property.
      */
     public MySQLAuthenticationProvider() throws GuacamoleException {
-        super(new MySQLInjectorProvider(), JDBCAuthenticationProviderService.class);
+        super(new MySQLInjectorProvider(), CommonAuthenticationProviderService.class);
     }
 
     @Override

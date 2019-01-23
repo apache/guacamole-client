@@ -21,6 +21,8 @@ package org.apache.guacamole.auth.jdbc.base;
 
 import java.util.Collection;
 import java.util.Set;
+
+import org.apache.guacamole.auth.common.base.ModeledDirectoryObjectMapperInterface;
 import org.apache.guacamole.auth.jdbc.user.UserModel;
 import org.apache.ibatis.annotations.Param;
 

@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.jdbc.base;
 
+import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
+
 /**
  * A single attribute name/value pair belonging to a object which implements
  * the Attributes interface, such as a Connection or User. Attributes stored

@@ -22,6 +22,10 @@ package org.apache.guacamole.auth.jdbc.base;
 import java.util.Collection;
 import java.util.Set;
 
+import org.apache.guacamole.auth.common.base.EntityModelInterface;
+import org.apache.guacamole.auth.common.base.EntityServiceAbstract;
+import org.apache.guacamole.auth.common.base.EntityServiceInterface;
+import org.apache.guacamole.auth.common.base.ModeledPermissions;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.guice.transactional.Transactional;
 

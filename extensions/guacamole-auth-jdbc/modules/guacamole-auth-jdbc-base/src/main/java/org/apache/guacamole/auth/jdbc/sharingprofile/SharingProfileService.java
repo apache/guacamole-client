@@ -23,11 +23,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
+import org.apache.guacamole.auth.common.sharingprofile.ModeledSharingProfile;
+import org.apache.guacamole.auth.common.sharingprofile.SharingProfileModelInterface;
+import org.apache.guacamole.auth.common.sharingprofile.SharingProfileParameterModelInterface;
+import org.apache.guacamole.auth.common.sharingprofile.SharingProfileServiceAbstract;
+import org.apache.guacamole.auth.common.sharingprofile.SharingProfileServiceInterface;
+import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
+import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
-import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModelInterface;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.auth.jdbc.user.UserModelInterface;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.permission.ObjectPermission.Type;
 

@@ -19,6 +19,9 @@
 
 package org.apache.guacamole.auth.jdbc.base;
 
+import org.apache.guacamole.auth.common.base.EntityModelInterface;
+import org.apache.guacamole.auth.common.base.EntityType;
+
 /**
  * Base representation of a Guacamole object that can be granted permissions
  * (an "entity"), such as a user or user group, as represented in the database.

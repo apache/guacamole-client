@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.jdbc.sharingprofile;
 
+import org.apache.guacamole.auth.common.sharingprofile.SharingProfileParameterModelInterface;
+
 /**
  * A single parameter name/value pair belonging to a sharing profile.
  */

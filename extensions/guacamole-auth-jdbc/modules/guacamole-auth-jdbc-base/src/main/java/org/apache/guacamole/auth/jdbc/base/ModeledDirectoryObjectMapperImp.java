@@ -22,8 +22,9 @@ package org.apache.guacamole.auth.jdbc.base;
 import java.util.Collection;
 import java.util.Set;
 
+import org.apache.guacamole.auth.common.base.ModeledDirectoryObjectMapperInterface;
+import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.jdbc.user.UserModel;
-import org.apache.guacamole.auth.jdbc.user.UserModelInterface;
 
 /**
  * Common interface for objects that will ultimately be made available through

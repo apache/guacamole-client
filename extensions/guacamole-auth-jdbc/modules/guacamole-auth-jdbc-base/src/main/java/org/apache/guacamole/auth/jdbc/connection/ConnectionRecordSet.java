@@ -24,9 +24,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
-import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
-import org.apache.guacamole.auth.jdbc.base.ModeledActivityRecordSet;
+import org.apache.guacamole.auth.common.base.ActivityRecordSearchTerm;
+import org.apache.guacamole.auth.common.base.ActivityRecordSortPredicate;
+import org.apache.guacamole.auth.common.base.ModeledActivityRecordSet;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 

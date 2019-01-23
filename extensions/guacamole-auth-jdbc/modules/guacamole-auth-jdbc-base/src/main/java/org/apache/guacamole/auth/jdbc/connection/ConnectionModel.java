@@ -22,6 +22,8 @@ package org.apache.guacamole.auth.jdbc.connection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.apache.guacamole.auth.common.connection.ConnectionModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ChildObjectModel;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration.EncryptionMethod;
 

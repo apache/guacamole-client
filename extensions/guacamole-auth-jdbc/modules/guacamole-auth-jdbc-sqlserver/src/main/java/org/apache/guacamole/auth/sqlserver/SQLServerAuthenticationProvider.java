@@ -20,8 +20,8 @@
 package org.apache.guacamole.auth.sqlserver;
 
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.InjectedAuthenticationProvider;
-import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProviderService;
+import org.apache.guacamole.auth.common.InjectedAuthenticationProvider;
+import org.apache.guacamole.auth.common.CommonAuthenticationProviderService;
 
 /**
  * Provides a SQLServer-based implementation of the AuthenticationProvider
@@ -39,7 +39,7 @@ public class SQLServerAuthenticationProvider extends InjectedAuthenticationProvi
      *     a property.
      */
     public SQLServerAuthenticationProvider() throws GuacamoleException {
-        super(new SQLServerInjectorProvider(), JDBCAuthenticationProviderService.class);
+        super(new SQLServerInjectorProvider(), CommonAuthenticationProviderService.class);
     }
 
     @Override

@@ -23,10 +23,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.guacamole.auth.common.base.ActivityRecordModelInterface;
+import org.apache.guacamole.auth.common.base.ActivityRecordSearchTerm;
+import org.apache.guacamole.auth.common.base.ActivityRecordSortPredicate;
+import org.apache.guacamole.auth.common.user.UserModelInterface;
+import org.apache.guacamole.auth.common.user.UserRecordMapperInterface;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
-import org.apache.guacamole.auth.jdbc.base.ActivityRecordModelInterface;
-import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
-import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
 
 import com.google.inject.Inject;
 

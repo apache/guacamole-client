@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.guacamole.auth.jdbc.base.ArbitraryAttributeMapInterface;
-import org.apache.guacamole.auth.jdbc.base.ArbitraryAttributeModelInterface;
+import org.apache.guacamole.auth.common.base.ArbitraryAttributeMapInterface;
+import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
 
 /**
  * Map of arbitrary attribute name/value pairs which can alternatively be

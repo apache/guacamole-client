@@ -22,9 +22,10 @@ package org.apache.guacamole.auth.jdbc.connectiongroup;
 import java.util.Collection;
 import java.util.Set;
 
+import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupMapperInterface;
+import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapperImp;
 import org.apache.guacamole.auth.jdbc.user.UserModel;
-import org.apache.guacamole.auth.jdbc.user.UserModelInterface;
 
 import com.google.inject.Inject;
 

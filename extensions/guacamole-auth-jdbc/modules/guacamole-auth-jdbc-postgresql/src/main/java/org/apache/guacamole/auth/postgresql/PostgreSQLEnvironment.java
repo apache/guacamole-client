@@ -22,8 +22,8 @@ package org.apache.guacamole.auth.postgresql;
 import java.io.Closeable;
 
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
-import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
+import org.apache.guacamole.auth.common.CommonEnvironment;
+import org.apache.guacamole.auth.common.security.PasswordPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * A PostgreSQL-specific implementation of JDBCEnvironment provides database
  * properties specifically for PostgreSQL.
  */
-public class PostgreSQLEnvironment extends JDBCEnvironment {
+public class PostgreSQLEnvironment extends CommonEnvironment {
 
     /**
      * Logger for this class.

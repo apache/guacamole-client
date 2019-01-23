@@ -19,8 +19,9 @@
 
 package org.apache.guacamole.auth.jdbc.usergroup;
 
+import org.apache.guacamole.auth.common.base.EntityType;
+import org.apache.guacamole.auth.common.usergroup.UserGroupModelInterface;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
-import org.apache.guacamole.auth.jdbc.base.EntityType;
 
 /**
  * Object representation of a Guacamole user group, as represented in the

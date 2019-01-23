@@ -21,6 +21,9 @@ package org.apache.guacamole.auth.jdbc.base;
 
 import java.util.Collection;
 
+import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
+import org.apache.guacamole.auth.common.base.ObjectModelInterface;
+
 /**
  * Object representation of a Guacamole object, such as a user or connection,
  * as represented in the database.

@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.jdbc.usergroup;
 
+import org.apache.guacamole.auth.common.usergroup.UserGroupModelInterface;
+import org.apache.guacamole.auth.common.usergroup.UserGroupParentUserGroupMapperInterface;
 import org.apache.guacamole.auth.jdbc.base.ObjectRelationMapperImp;
 
 import com.google.inject.Inject;

@@ -24,6 +24,9 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.common.sharingprofile.ModeledSharingProfile;
+import org.apache.guacamole.auth.common.sharingprofile.SharingProfileDirectoryAbstract;
+import org.apache.guacamole.auth.common.sharingprofile.SharingProfileDirectoryInterface;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.mybatis.guice.transactional.Transactional;
 

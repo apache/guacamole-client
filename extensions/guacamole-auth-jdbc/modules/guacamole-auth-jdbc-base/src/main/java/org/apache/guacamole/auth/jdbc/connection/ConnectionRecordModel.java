@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.connection;
 
+import org.apache.guacamole.auth.common.connection.ConnectionRecordModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
 
 /**

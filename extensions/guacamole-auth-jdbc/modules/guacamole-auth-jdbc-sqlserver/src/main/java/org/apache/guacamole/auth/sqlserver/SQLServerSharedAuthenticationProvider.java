@@ -20,8 +20,8 @@
 package org.apache.guacamole.auth.sqlserver;
 
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.InjectedAuthenticationProvider;
-import org.apache.guacamole.auth.jdbc.sharing.SharedAuthenticationProviderService;
+import org.apache.guacamole.auth.common.InjectedAuthenticationProvider;
+import org.apache.guacamole.auth.common.sharing.SharedAuthenticationProviderService;
 
 /**
  * Provides a implementation of AuthenticationProvider which interacts with the

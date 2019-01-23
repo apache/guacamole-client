@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
+import org.apache.guacamole.auth.common.permission.ConnectionPermissionMapperInterface;
+
 import com.google.inject.Inject;
 
 /**

@@ -20,6 +20,8 @@
 package org.apache.guacamole.auth.jdbc.connection;
 
 import java.util.Collection;
+
+import org.apache.guacamole.auth.common.connection.ConnectionParameterModelInterface;
 import org.apache.ibatis.annotations.Param;
 
 /**

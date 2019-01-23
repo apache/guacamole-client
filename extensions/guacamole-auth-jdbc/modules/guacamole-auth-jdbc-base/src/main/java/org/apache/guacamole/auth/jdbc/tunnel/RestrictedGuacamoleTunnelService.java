@@ -21,6 +21,8 @@ package org.apache.guacamole.auth.jdbc.tunnel;
 
 import java.util.Date;
 
+import org.apache.guacamole.auth.common.tunnel.ActiveConnectionRecord;
+import org.apache.guacamole.auth.common.tunnel.RestrictedGuacamoleTunnelServiceAbstract;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel;
 
 import com.google.inject.Singleton;

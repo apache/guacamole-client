@@ -25,6 +25,9 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.common.user.ModeledUserAbstract;
+import org.apache.guacamole.auth.common.user.UserDirectoryAbstract;
+import org.apache.guacamole.auth.common.user.UserDirectoryInterface;
 import org.apache.guacamole.net.auth.User;
 import org.mybatis.guice.transactional.Transactional;
 

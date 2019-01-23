@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.user;
 
+import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ObjectRelationMapper;
 
 /**

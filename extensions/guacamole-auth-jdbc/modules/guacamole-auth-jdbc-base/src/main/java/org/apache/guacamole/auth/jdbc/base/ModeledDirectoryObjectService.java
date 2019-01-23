@@ -21,9 +21,12 @@ package org.apache.guacamole.auth.jdbc.base;
 
 import java.util.Collection;
 
+import org.apache.guacamole.auth.common.base.ModeledDirectoryObject;
+import org.apache.guacamole.auth.common.base.ModeledDirectoryObjectServiceAbstract;
+import org.apache.guacamole.auth.common.base.ObjectModelInterface;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
+import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
-import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModelInterface;
-import org.apache.guacamole.auth.jdbc.user.UserModelInterface;
 import org.apache.guacamole.net.auth.Identifiable;
 import org.apache.guacamole.net.auth.permission.ObjectPermission.Type;
 

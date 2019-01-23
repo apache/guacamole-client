@@ -22,7 +22,9 @@ package org.apache.guacamole.auth.jdbc.base;
 import java.util.Collection;
 import java.util.Set;
 
-import org.apache.guacamole.auth.jdbc.user.UserModelInterface;
+import org.apache.guacamole.auth.common.base.ObjectModelInterface;
+import org.apache.guacamole.auth.common.base.ObjectRelationMapperInterface;
+import org.apache.guacamole.auth.common.user.UserModelInterface;
 
 /**
  * Mapper for the relations represented by a particular RelatedObjectSet

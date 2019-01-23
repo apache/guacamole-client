@@ -21,6 +21,9 @@ package org.apache.guacamole.auth.jdbc.connection;
 
 import java.util.Collection;
 
+import org.apache.guacamole.auth.common.connection.ConnectionParameterMapperInterface;
+import org.apache.guacamole.auth.common.connection.ConnectionParameterModelInterface;
+
 import com.google.inject.Inject;
 
 /**

@@ -22,6 +22,9 @@ package org.apache.guacamole.auth.jdbc.user;
 
 import java.util.Date;
 
+import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
+import org.apache.guacamole.auth.common.user.ModeledUserContextAbstract;
+import org.apache.guacamole.auth.common.user.ModeledUserContextInterface;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
 
 /**

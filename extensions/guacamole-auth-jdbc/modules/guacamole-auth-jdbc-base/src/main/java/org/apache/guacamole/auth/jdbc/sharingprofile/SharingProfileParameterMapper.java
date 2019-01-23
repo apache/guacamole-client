@@ -20,6 +20,9 @@
 package org.apache.guacamole.auth.jdbc.sharingprofile;
 
 import java.util.Collection;
+
+import org.apache.guacamole.auth.common.sharingprofile.SharingProfileParameterMapperInterface;
+import org.apache.guacamole.auth.common.sharingprofile.SharingProfileParameterModelInterface;
 import org.apache.ibatis.annotations.Param;
 
 /**

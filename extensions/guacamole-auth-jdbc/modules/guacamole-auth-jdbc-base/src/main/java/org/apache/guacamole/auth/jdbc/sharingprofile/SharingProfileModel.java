@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.sharingprofile;
 
+import org.apache.guacamole.auth.common.sharingprofile.SharingProfileModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ChildObjectModel;
 
 /**

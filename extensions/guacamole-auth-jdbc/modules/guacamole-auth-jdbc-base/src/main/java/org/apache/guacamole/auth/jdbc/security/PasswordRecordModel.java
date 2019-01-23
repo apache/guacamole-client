@@ -21,8 +21,8 @@ package org.apache.guacamole.auth.jdbc.security;
 
 import java.sql.Timestamp;
 
-import org.apache.guacamole.auth.jdbc.user.PasswordRecordModelInterface;
-import org.apache.guacamole.auth.jdbc.user.UserModelInterface;
+import org.apache.guacamole.auth.common.user.PasswordRecordModelInterface;
+import org.apache.guacamole.auth.common.user.UserModelInterface;
 
 /**
  * A single password record representing a previous password of a particular
