@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.Collections;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -28,6 +29,46 @@ import org.apache.guacamole.protocol.GuacamoleClientInformation;
  * An object which Guacamole can connect to.
  */
 public interface Connectable {
+
+    /*
+     * IMPORTANT:
+     * ----------
+     * The web application (guacamole) defines its own version of this
+     * interface containing defaults which allow backwards compatibility with
+     * 1.0.0. Any changes to this interface MUST be properly reflected in that
+     * copy of the interface such that they are binary compatible.
+     */
+
+    /**
+     * Establishes a connection to guacd using the information associated with
+     * this object. The connection will be provided the given client
+     * information.
+     *
+     * @deprecated
+     *     This function has been deprecated in favor of
+     *     {@link #connect(org.apache.guacamole.protocol.GuacamoleClientInformation, java.util.Map)},
+     *     which allows for connection parameter tokens to be injected and
+     *     applied by cooperating extensions, replacing the functionality
+     *     previously provided through the {@link org.apache.guacamole.token.StandardTokens}
+     *     class. It continues to be defined on this interface for
+     *     compatibility. <strong>New implementations should instead implement
+     *     {@link #connect(org.apache.guacamole.protocol.GuacamoleClientInformation, java.util.Map)}.</strong>
+     *
+     * @param info
+     *     Information associated with the connecting client.
+     *
+     * @return
+     *     A fully-established GuacamoleTunnel.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while connecting to guacd, or if permission to
+     *     connect is denied.
+     */
+    @Deprecated
+    default GuacamoleTunnel connect(GuacamoleClientInformation info)
+            throws GuacamoleException {
+        return this.connect(info, Collections.emptyMap());
+    }
 
     /**
      * Establishes a connection to guacd using the information associated with

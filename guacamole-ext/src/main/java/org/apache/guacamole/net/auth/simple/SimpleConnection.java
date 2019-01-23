@@ -41,10 +41,10 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.TokenFilter;
 
 /**
- * An extremely basic Connection implementation. The underlying connection to
- * guacd is established using the configuration information provided in
- * guacamole.properties. Parameter tokens provided to connect() are
- * automatically applied. Tracking of active connections and connection history
+ * A Connection implementation which establishes the underlying connection to
+ * guacd using the configuration information provided in guacamole.properties.
+ * Parameter tokens provided to connect() are automatically applied if
+ * explicitly requested. Tracking of active connections and connection history
  * is not provided.
  */
 public class SimpleConnection extends AbstractConnection {
@@ -52,36 +52,133 @@ public class SimpleConnection extends AbstractConnection {
     /**
      * Backing configuration, containing all sensitive information.
      */
-    private GuacamoleConfiguration config;
+    private GuacamoleConfiguration fullConfig;
 
     /**
-     * Creates a completely uninitialized SimpleConnection.
+     * Whether parameter tokens in the underlying GuacamoleConfiguration should
+     * be automatically applied upon connecting. If false, parameter tokens
+     * will not be interpreted at all.
+     */
+    private final boolean interpretTokens;
+
+    /**
+     * The tokens which should apply strictly to the next call to
+     * {@link #connect(org.apache.guacamole.protocol.GuacamoleClientInformation)}.
+     * This storage is intended as a temporary bridge allowing the old version
+     * of connect() to be overridden while still resulting in the same behavior
+     * as older versions of SimpleConnection. <strong>This storage should be
+     * removed once support for the old, deprecated connect() is removed.</strong>
+     */
+    private final ThreadLocal<Map<String, String>> currentTokens =
+            new ThreadLocal<Map<String, String>>() {
+
+        @Override
+        protected Map<String, String> initialValue() {
+            return Collections.emptyMap();
+        }
+
+    };
+
+    /**
+     * Creates a completely uninitialized SimpleConnection. The name,
+     * identifier, and configuration of this SimpleConnection must eventually
+     * be set before the SimpleConnection may be used. Parameter tokens within
+     * the GuacamoleConfiguration eventually supplied with
+     * {@link #setConfiguration(org.apache.guacamole.protocol.GuacamoleConfiguration)}
+     * will not be interpreted.
      */
     public SimpleConnection() {
+        this(false);
+    }
+
+    /**
+     * Creates a completely uninitialized SimpleConnection. The name,
+     * identifier, and configuration of this SimpleConnection must eventually
+     * be set before the SimpleConnection may be used. Parameter tokens within
+     * the GuacamoleConfiguration eventually supplied with
+     * {@link #setConfiguration(org.apache.guacamole.protocol.GuacamoleConfiguration)}
+     * will not be interpreted unless explicitly requested.
+     *
+     * @param interpretTokens
+     *     Whether parameter tokens in the underlying GuacamoleConfiguration
+     *     should be automatically applied upon connecting. If false, parameter
+     *     tokens will not be interpreted at all.
+     */
+    public SimpleConnection(boolean interpretTokens) {
+        this.interpretTokens = interpretTokens;
     }
 
     /**
      * Creates a new SimpleConnection having the given identifier and
-     * GuacamoleConfiguration.
+     * GuacamoleConfiguration. Parameter tokens within the
+     * GuacamoleConfiguration will not be interpreted unless explicitly
+     * requested.
      *
-     * @param name The name to associate with this connection.
-     * @param identifier The identifier to associate with this connection.
-     * @param config The configuration describing how to connect to this
-     *               connection.
+     * @param name
+     *     The name to associate with this connection.
+     *
+     * @param identifier
+     *     The identifier to associate with this connection.
+     *
+     * @param config
+     *     The configuration describing how to connect to this connection.
      */
     public SimpleConnection(String name, String identifier,
             GuacamoleConfiguration config) {
-        
-        // Set name
-        setName(name);
+        this(name, identifier, config, false);
+    }
 
-        // Set identifier
-        setIdentifier(identifier);
+    /**
+     * Creates a new SimpleConnection having the given identifier and
+     * GuacamoleConfiguration. Parameter tokens will be interpreted if
+     * explicitly requested.
+     *
+     * @param name
+     *     The name to associate with this connection.
+     *
+     * @param identifier
+     *     The identifier to associate with this connection.
+     *
+     * @param config
+     *     The configuration describing how to connect to this connection.
+     *
+     * @param interpretTokens
+     *     Whether parameter tokens in the underlying GuacamoleConfiguration
+     *     should be automatically applied upon connecting. If false, parameter
+     *     tokens will not be interpreted at all.
+     */
+    public SimpleConnection(String name, String identifier,
+            GuacamoleConfiguration config, boolean interpretTokens) {
 
-        // Set config
-        setConfiguration(config);
-        this.config = config;
+        super.setName(name);
+        super.setIdentifier(identifier);
+        super.setConfiguration(config);
 
+        this.fullConfig = config;
+        this.interpretTokens = interpretTokens;
+
+    }
+
+    /**
+     * Returns the GuacamoleConfiguration describing how to connect to this
+     * connection. Unlike {@link #getConfiguration()}, which is allowed to omit
+     * or tokenize information, the GuacamoleConfiguration returned by this
+     * function will always be the full configuration to be used to establish
+     * the connection, as provided when this SimpleConnection was created or via
+     * {@link #setConfiguration(org.apache.guacamole.protocol.GuacamoleConfiguration)}.
+     *
+     * @return
+     *     The full GuacamoleConfiguration describing how to connect to this
+     *     connection, without any information omitted or tokenized.
+     */
+    protected GuacamoleConfiguration getFullConfiguration() {
+        return fullConfig;
+    }
+
+    @Override
+    public void setConfiguration(GuacamoleConfiguration config) {
+        super.setConfiguration(config);
+        this.fullConfig = config;
     }
 
     @Override
@@ -100,8 +197,9 @@ public class SimpleConnection extends AbstractConnection {
     }
 
     @Override
-    public GuacamoleTunnel connect(GuacamoleClientInformation info,
-            Map<String, String> tokens) throws GuacamoleException {
+    @Deprecated
+    public GuacamoleTunnel connect(GuacamoleClientInformation info)
+            throws GuacamoleException {
 
         // Retrieve proxy configuration from environment
         Environment environment = new LocalEnvironment();
@@ -112,8 +210,8 @@ public class SimpleConnection extends AbstractConnection {
         int port = proxyConfig.getPort();
 
         // Apply tokens to config parameters
-        GuacamoleConfiguration filteredConfig = new GuacamoleConfiguration(config);
-        new TokenFilter(tokens).filterValues(filteredConfig.getParameters());
+        GuacamoleConfiguration filteredConfig = new GuacamoleConfiguration(getFullConfiguration());
+        new TokenFilter(currentTokens.get()).filterValues(filteredConfig.getParameters());
 
         GuacamoleSocket socket;
 
@@ -143,6 +241,41 @@ public class SimpleConnection extends AbstractConnection {
         }
 
         return new SimpleGuacamoleTunnel(socket);
+
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>This implementation will connect using the GuacamoleConfiguration
+     * returned by {@link #getFullConfiguration()}, honoring the
+     * "guacd-hostname", "guacd-port", and "guacd-ssl" properties set within
+     * guacamole.properties. Parameter tokens will be taken into account if
+     * the SimpleConnection was explicitly requested to do so when created.
+     *
+     * <p>Implementations requiring more complex behavior should consider using
+     * the {@link AbstractConnection} base class or implementing
+     * {@link org.apache.guacamole.net.auth.Connection} directly.
+     */
+    @Override
+    public GuacamoleTunnel connect(GuacamoleClientInformation info,
+            Map<String, String> tokens) throws GuacamoleException {
+
+        // Make received tokens available within the legacy connect() strictly
+        // in context of the current connect() call
+        try {
+
+            // Automatically filter configurations only if explicitly
+            // configured to do so
+            if (interpretTokens)
+                currentTokens.set(tokens);
+
+            return connect(info);
+
+        }
+        finally {
+            currentTokens.remove();
+        }
         
     }
 

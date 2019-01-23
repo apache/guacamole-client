@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,24 @@ public class DelegatingConnection implements Connection {
      * The wrapped Connection.
      */
     private final Connection connection;
+
+    /**
+     * The tokens which should apply strictly to the next call to
+     * {@link #connect(org.apache.guacamole.protocol.GuacamoleClientInformation)}.
+     * This storage is intended as a temporary bridge allowing the old version
+     * of connect() to be overridden while still resulting in the same behavior
+     * as older versions of DelegatingConnection. <strong>This storage should be
+     * removed once support for the old, deprecated connect() is removed.</strong>
+     */
+    private final ThreadLocal<Map<String, String>> currentTokens =
+            new ThreadLocal<Map<String, String>>() {
+
+        @Override
+        protected Map<String, String> initialValue() {
+            return Collections.emptyMap();
+        }
+
+    };
 
     /**
      * Wraps the given Connection such that all function calls against this
@@ -128,9 +147,26 @@ public class DelegatingConnection implements Connection {
     }
 
     @Override
+    @Deprecated
+    public GuacamoleTunnel connect(GuacamoleClientInformation info)
+            throws GuacamoleException {
+        return connection.connect(info, currentTokens.get());
+    }
+
+    @Override
     public GuacamoleTunnel connect(GuacamoleClientInformation info,
             Map<String, String> tokens) throws GuacamoleException {
-        return connection.connect(info, tokens);
+
+        // Make received tokens available within the legacy connect() strictly
+        // in context of the current connect() call
+        try {
+            currentTokens.set(tokens);
+            return connect(info);
+        }
+        finally {
+            currentTokens.remove();
+        }
+
     }
 
     @Override
