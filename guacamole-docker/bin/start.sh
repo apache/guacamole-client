@@ -643,6 +643,12 @@ if [ -n "$DUO_API_HOSTNAME" ]; then
     associate_duo
 fi
 
+# Set logback level if specified
+if [ -n "$LOGBACK_LEVEL" ]; then
+    unzip -o -j /opt/guacamole/guacamole.war WEB-INF/classes/logback.xml -d $GUACAMOLE_HOME
+    sed -i "s/level=\"info\"/level=\"$LOGBACK_LEVEL\"/" $GUACAMOLE_HOME/logback.xml
+fi
+
 #
 # Finally start Guacamole (under Tomcat)
 #
