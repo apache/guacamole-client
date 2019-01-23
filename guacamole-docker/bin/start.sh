@@ -321,7 +321,7 @@ END
         "ldap-user-search-filter" \
         "$LDAP_USER_SEARCH_FILTER"
 
-    set_optional_property         \
+    set_optional_property       \
         "ldap-follow-referrals" \
         "$LDAP_FOLLOW_REFERRALS"
 
