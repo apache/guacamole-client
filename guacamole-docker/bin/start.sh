@@ -321,6 +321,10 @@ END
         "ldap-user-search-filter" \
         "$LDAP_USER_SEARCH_FILTER"
 
+    set_optional_property       \
+        "ldap-follow-referrals" \
+        "$LDAP_FOLLOW_REFERRALS"
+
     # Add required .jar files to GUACAMOLE_EXT
     ln -s /opt/guacamole/ldap/guacamole-auth-*.jar "$GUACAMOLE_EXT"
 
