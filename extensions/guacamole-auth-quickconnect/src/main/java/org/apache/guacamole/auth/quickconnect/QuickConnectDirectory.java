@@ -107,7 +107,7 @@ public class QuickConnectDirectory extends SimpleDirectory<Connection> {
         String name = QCParser.getName(config);
 
         // Create a new connection and set the parent identifier.
-        Connection connection = new SimpleConnection(name, newConnectionId, config);
+        Connection connection = new SimpleConnection(name, newConnectionId, config, true);
         connection.setParentIdentifier(QuickConnectUserContext.ROOT_IDENTIFIER);
 
         // Place the object in this directory.

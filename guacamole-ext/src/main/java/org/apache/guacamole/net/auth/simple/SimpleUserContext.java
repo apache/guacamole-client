@@ -59,7 +59,8 @@ public class SimpleUserContext extends AbstractUserContext {
      * Creates a new SimpleUserContext which provides access to only those
      * configurations within the given Map. The username is set to the
      * ANONYMOUS_IDENTIFIER defined by AuthenticatedUser, effectively declaring
-     * the current user as anonymous.
+     * the current user as anonymous. Parameter tokens within the given
+     * GuacamoleConfigurations will not be interpreted.
      *
      * @param authProvider
      *     The AuthenticationProvider creating this UserContext.
@@ -76,6 +77,8 @@ public class SimpleUserContext extends AbstractUserContext {
     /**
      * Creates a new SimpleUserContext for the user with the given username
      * which provides access to only those configurations within the given Map.
+     * Parameter tokens within the given GuacamoleConfigurations will not be
+     * interpreted.
      *
      * @param authProvider
      *     The AuthenticationProvider creating this UserContext.
@@ -89,6 +92,33 @@ public class SimpleUserContext extends AbstractUserContext {
      */
     public SimpleUserContext(AuthenticationProvider authProvider,
             String username, Map<String, GuacamoleConfiguration> configs) {
+        this(authProvider, username, configs, false);
+    }
+
+    /**
+     * Creates a new SimpleUserContext for the user with the given username
+     * which provides access to only those configurations within the given Map.
+     * Parameter tokens within the given GuacamoleConfigurations will be
+     * interpreted if explicitly requested.
+     *
+     * @param authProvider
+     *     The AuthenticationProvider creating this UserContext.
+     *
+     * @param username
+     *     The username of the user associated with this UserContext.
+     *
+     * @param configs
+     *     A Map of all configurations for which the user associated with
+     *     this UserContext has read access.
+     *
+     * @param interpretTokens
+     *     Whether parameter tokens in the underlying GuacamoleConfigurations
+     *     should be automatically applied upon connecting. If false, parameter
+     *     tokens will not be interpreted at all.
+     */
+    public SimpleUserContext(AuthenticationProvider authProvider,
+            String username, Map<String, GuacamoleConfiguration> configs,
+            boolean interpretTokens) {
 
         // Produce map of connections from given configs
         Map<String, Connection> connections = new ConcurrentHashMap<String, Connection>(configs.size());
@@ -99,7 +129,7 @@ public class SimpleUserContext extends AbstractUserContext {
             GuacamoleConfiguration config = configEntry.getValue();
 
             // Add as simple connection
-            Connection connection = new SimpleConnection(identifier, identifier, config);
+            Connection connection = new SimpleConnection(identifier, identifier, config, interpretTokens);
             connection.setParentIdentifier(DEFAULT_ROOT_CONNECTION_GROUP);
             connections.put(identifier, connection);
 
