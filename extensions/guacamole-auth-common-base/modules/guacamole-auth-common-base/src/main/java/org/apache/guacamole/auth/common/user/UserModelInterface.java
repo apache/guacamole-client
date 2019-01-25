@@ -23,14 +23,15 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import org.apache.guacamole.auth.common.base.ObjectEntityModelInterface;
+import org.apache.guacamole.auth.common.base.EntityModelInterface;
+import org.apache.guacamole.auth.common.base.ObjectModelInterface;
 
 /**
  * 
  * Object representation of a Guacamole user, as represented in the database.
  * 
  */
-public interface UserModelInterface extends ObjectEntityModelInterface {
+public interface UserModelInterface extends ObjectModelInterface, EntityModelInterface {
 
 	public boolean isDisabled();
 

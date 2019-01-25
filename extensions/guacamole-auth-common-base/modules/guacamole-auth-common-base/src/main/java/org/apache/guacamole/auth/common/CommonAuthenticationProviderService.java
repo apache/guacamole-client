@@ -26,7 +26,6 @@ import org.apache.guacamole.auth.common.sharing.user.SharedAuthenticatedUser;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.common.user.ModeledUserAbstract;
 import org.apache.guacamole.auth.common.user.ModeledUserContextAbstract;
-import org.apache.guacamole.auth.common.user.ModeledUserContextInterface;
 import org.apache.guacamole.auth.common.user.UserServiceInterface;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -67,7 +66,7 @@ public class CommonAuthenticationProviderService implements AuthenticationProvid
      * Provider for retrieving UserContext instances.
      */
     @Inject
-    private Provider<ModeledUserContextInterface> userContextProvider;
+    private Provider<ModeledUserContextAbstract> userContextProvider;
 
     @Override
     public AuthenticatedUser authenticateUser(AuthenticationProvider authenticationProvider,

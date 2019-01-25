@@ -27,6 +27,7 @@ import org.apache.guacamole.auth.common.activeconnection.ActiveConnectionService
 import org.apache.guacamole.auth.common.activeconnection.TrackedActiveConnection;
 import org.apache.guacamole.auth.common.base.EntityMapperInterface;
 import org.apache.guacamole.auth.common.base.EntityServiceInterface;
+import org.apache.guacamole.auth.common.base.ObjectRelationMapperInterface;
 import org.apache.guacamole.auth.common.connection.ConnectionDirectory;
 import org.apache.guacamole.auth.common.connection.ConnectionMapperInterface;
 import org.apache.guacamole.auth.common.connection.ConnectionParameterMapperInterface;
@@ -74,21 +75,17 @@ import org.apache.guacamole.auth.common.sharingprofile.SharingProfileMapperInter
 import org.apache.guacamole.auth.common.sharingprofile.SharingProfileParameterMapperInterface;
 import org.apache.guacamole.auth.common.sharingprofile.SharingProfileServiceInterface;
 import org.apache.guacamole.auth.common.tunnel.GuacamoleTunnelService;
-import org.apache.guacamole.auth.common.user.ModeledUserContextInterface;
-import org.apache.guacamole.auth.common.user.ModeledUserInterface;
+import org.apache.guacamole.auth.common.user.ModeledUserAbstract;
+import org.apache.guacamole.auth.common.user.ModeledUserContextAbstract;
 import org.apache.guacamole.auth.common.user.UserDirectoryInterface;
 import org.apache.guacamole.auth.common.user.UserMapperInterface;
 import org.apache.guacamole.auth.common.user.UserModelInterface;
-import org.apache.guacamole.auth.common.user.UserParentUserGroupMapperInterface;
 import org.apache.guacamole.auth.common.user.UserRecordMapperInterface;
 import org.apache.guacamole.auth.common.user.UserServiceInterface;
 import org.apache.guacamole.auth.common.usergroup.ModeledUserGroup;
 import org.apache.guacamole.auth.common.usergroup.UserGroupDirectoryInterface;
 import org.apache.guacamole.auth.common.usergroup.UserGroupMapperInterface;
-import org.apache.guacamole.auth.common.usergroup.UserGroupMemberUserGroupMapperInterface;
-import org.apache.guacamole.auth.common.usergroup.UserGroupMemberUserMapperInterface;
 import org.apache.guacamole.auth.common.usergroup.UserGroupModelInterface;
-import org.apache.guacamole.auth.common.usergroup.UserGroupParentUserGroupMapperInterface;
 import org.apache.guacamole.auth.common.usergroup.UserGroupServiceInterface;
 import org.apache.guacamole.auth.jdbc.base.EntityMapper;
 import org.apache.guacamole.auth.jdbc.base.EntityMapperImp;
@@ -157,6 +154,7 @@ import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
 
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
+import com.google.inject.multibindings.MapBinder;
 
 /**
  * Guice module which configures the injections used by the JDBC authentication
@@ -208,11 +206,13 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(UserRecordMapperInterface.class).to(UserRecordMapperImp.class);
         bind(new TypeLiteral<UserGroupMapperInterface<UserGroupModelInterface>>(){}).to(UserGroupMapperImp.class);
         bind(UserGroupPermissionMapperInterface.class).to(UserGroupPermissionMapperImp.class);
-        bind(new TypeLiteral<UserParentUserGroupMapperInterface<UserModelInterface>>(){}).to(UserParentUserGroupMapperImp.class);
-        bind(new TypeLiteral<UserGroupMemberUserMapperInterface<UserGroupModelInterface>>(){}).to(UserGroupMemberUserMapperImp.class);
-        bind(new TypeLiteral<UserGroupMemberUserGroupMapperInterface<UserGroupModelInterface>>(){}).to(UserGroupMemberUserGroupMapperImp.class);
-        bind(new TypeLiteral<UserGroupParentUserGroupMapperInterface<UserGroupModelInterface>>(){}).to(UserGroupParentUserGroupMapperImp.class);
-        		
+        bind(new TypeLiteral<ObjectRelationMapperInterface<UserModelInterface>>(){}).to(UserParentUserGroupMapperImp.class);
+
+        MapBinder<String, ObjectRelationMapperInterface<UserGroupModelInterface>> userGroupModelMultibinder = MapBinder.newMapBinder(binder(), new TypeLiteral<String>(){}, new TypeLiteral<ObjectRelationMapperInterface<UserGroupModelInterface>>(){});
+        userGroupModelMultibinder.addBinding("UserGroupMemberUserMapper").to(UserGroupMemberUserMapperImp.class);
+        userGroupModelMultibinder.addBinding("UserGroupMemberUserGroupMapper").to(UserGroupMemberUserGroupMapperImp.class);
+        userGroupModelMultibinder.addBinding("UserGroupParentUserGroupMapper").to(UserGroupParentUserGroupMapperImp.class);
+
         // Add MyBatis mappers
         addMapperClass(ConnectionMapper.class);
         addMapperClass(ConnectionGroupMapper.class);
@@ -248,8 +248,8 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(ModeledConnectionGroup.class);
         bind(ModeledGuacamoleConfiguration.class);
         bind(ModeledSharingProfile.class);
-        bind(ModeledUserInterface.class).to(ModeledUser.class);
-        bind(ModeledUserContextInterface.class).to(ModeledUserContext.class);
+        bind(ModeledUserAbstract.class).to(ModeledUser.class);
+        bind(ModeledUserContextAbstract.class).to(ModeledUserContext.class);
         bind(ModeledUserGroup.class);
         bind(RootConnectionGroup.class);
         bind(SharingProfileDirectoryInterface.class).to(SharingProfileDirectory.class);

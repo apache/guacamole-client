@@ -20,14 +20,13 @@
 package org.apache.guacamole.auth.jdbc.user;
 
 import org.apache.guacamole.auth.common.user.ModeledUserAbstract;
-import org.apache.guacamole.auth.common.user.ModeledUserInterface;
 import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.jdbc.security.PasswordRecordModel;
 
 /**
  * An implementation of the User object which is backed by a database model.
  */
-public class ModeledUser extends ModeledUserAbstract implements ModeledUserInterface {
+public class ModeledUser extends ModeledUserAbstract {
 
     @Override
     public void setModel(UserModelInterface model) {

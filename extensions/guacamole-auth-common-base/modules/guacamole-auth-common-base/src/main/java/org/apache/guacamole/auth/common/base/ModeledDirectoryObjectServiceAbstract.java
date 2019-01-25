@@ -467,7 +467,7 @@ public abstract class ModeledDirectoryObjectServiceAbstract<InternalType extends
 
     }
 
-    @Override
+	@Override
     public void deleteObject(ModeledAuthenticatedUser user, String identifier)
             throws GuacamoleException {
 

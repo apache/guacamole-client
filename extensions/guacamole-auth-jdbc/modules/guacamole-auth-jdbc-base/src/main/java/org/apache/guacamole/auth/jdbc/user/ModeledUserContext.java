@@ -24,14 +24,13 @@ import java.util.Date;
 
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.common.user.ModeledUserContextAbstract;
-import org.apache.guacamole.auth.common.user.ModeledUserContextInterface;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
 
 /**
  * UserContext implementation which is driven by an arbitrary, underlying
  * database.
  */
-public class ModeledUserContext extends ModeledUserContextAbstract implements ModeledUserContextInterface {
+public class ModeledUserContext extends ModeledUserContextAbstract {
 
     
     @Override

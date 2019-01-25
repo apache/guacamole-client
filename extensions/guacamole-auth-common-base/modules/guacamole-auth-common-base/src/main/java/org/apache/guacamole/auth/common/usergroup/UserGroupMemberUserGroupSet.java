@@ -19,7 +19,10 @@
 
 package org.apache.guacamole.auth.common.usergroup;
 
+import java.util.Map;
+
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.common.base.ObjectRelationMapperInterface;
 import org.apache.guacamole.auth.common.base.RelatedObjectSet;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 
@@ -34,11 +37,15 @@ public class UserGroupMemberUserGroupSet extends RelatedObjectSet<ModeledUserGro
     /**
      * Mapper for the relation between user groups and their user group members.
      */
-    @Inject
-    private UserGroupMemberUserGroupMapperInterface<UserGroupModelInterface> userGroupMemberUserGroupMapper;
+    private ObjectRelationMapperInterface<UserGroupModelInterface> userGroupMemberUserGroupMapper;
+    
+	@Inject
+	public UserGroupMemberUserGroupSet(Map<String, ObjectRelationMapperInterface<UserGroupModelInterface>> mappers) {
+		userGroupMemberUserGroupMapper = mappers.get("UserGroupMemberUserGroupMapper");
+	}
 
 	@Override
-    protected UserGroupMemberUserGroupMapperInterface<UserGroupModelInterface> getObjectRelationMapper() {
+    protected ObjectRelationMapperInterface<UserGroupModelInterface> getObjectRelationMapper() {
         return userGroupMemberUserGroupMapper;
     }
 

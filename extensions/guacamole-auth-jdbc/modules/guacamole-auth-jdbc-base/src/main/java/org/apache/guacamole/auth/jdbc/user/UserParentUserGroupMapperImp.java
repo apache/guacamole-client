@@ -19,8 +19,8 @@
 
 package org.apache.guacamole.auth.jdbc.user;
 
+import org.apache.guacamole.auth.common.base.ObjectRelationMapperInterface;
 import org.apache.guacamole.auth.common.user.UserModelInterface;
-import org.apache.guacamole.auth.common.user.UserParentUserGroupMapperInterface;
 import org.apache.guacamole.auth.jdbc.base.ObjectRelationMapperImp;
 
 import com.google.inject.Inject;
@@ -29,7 +29,7 @@ import com.google.inject.Inject;
  * Mapper for the one-to-many relationship between a user and the user groups
  * of which it is a member.
  */
-public class UserParentUserGroupMapperImp extends ObjectRelationMapperImp<UserModelInterface, UserParentUserGroupMapper> implements UserParentUserGroupMapperInterface<UserModelInterface> {
+public class UserParentUserGroupMapperImp extends ObjectRelationMapperImp<UserModelInterface, UserParentUserGroupMapper> implements ObjectRelationMapperInterface<UserModelInterface> {
 	
 	@Inject 
 	private UserParentUserGroupMapper userParentUserGroupMapper;

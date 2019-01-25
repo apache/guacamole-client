@@ -21,8 +21,8 @@ package org.apache.guacamole.auth.jdbc.sharingprofile;
 
 import java.util.Collection;
 
+import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
 import org.apache.guacamole.auth.common.sharingprofile.SharingProfileParameterMapperInterface;
-import org.apache.guacamole.auth.common.sharingprofile.SharingProfileParameterModelInterface;
 
 import com.google.inject.Inject;
 
@@ -48,7 +48,7 @@ public class SharingProfileParameterMapperImp
      *     having the given identifier. This collection will be empty if no
      *     such sharing profile exists.
      */
-    public Collection<SharingProfileParameterModelInterface> select(String identifier) {
+    public Collection<ArbitraryAttributeModelInterface> select(String identifier) {
     	return sharingProfileParameterMapper.select(identifier);
     }
 
@@ -62,7 +62,7 @@ public class SharingProfileParameterMapperImp
      * @return
      *     The number of rows inserted.
      */
-    public int insert(Collection<SharingProfileParameterModelInterface> parameters) {
+    public int insert(Collection<ArbitraryAttributeModelInterface> parameters) {
     	return sharingProfileParameterMapper.insert(parameters);
     }
 

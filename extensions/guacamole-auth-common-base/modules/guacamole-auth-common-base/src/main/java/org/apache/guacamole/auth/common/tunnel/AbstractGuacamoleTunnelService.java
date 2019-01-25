@@ -35,6 +35,7 @@ import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleUpstreamException;
+import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
 import org.apache.guacamole.auth.common.base.ModeledDirectoryObjectMapperInterface;
 import org.apache.guacamole.auth.common.connection.ConnectionMapperInterface;
 import org.apache.guacamole.auth.common.connection.ConnectionModelInterface;
@@ -46,7 +47,6 @@ import org.apache.guacamole.auth.common.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.auth.common.sharing.connection.SharedConnectionDefinition;
 import org.apache.guacamole.auth.common.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.common.sharingprofile.SharingProfileParameterMapperInterface;
-import org.apache.guacamole.auth.common.sharingprofile.SharingProfileParameterModelInterface;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.common.user.RemoteAuthenticatedUser;
 import org.apache.guacamole.net.GuacamoleSocket;
@@ -267,9 +267,9 @@ public abstract class AbstractGuacamoleTunnelService
         config.setConnectionID(connectionID);
 
         // Set parameters from associated data
-        Collection<SharingProfileParameterModelInterface> parameters = sharingProfileParameterMapper
+        Collection<ArbitraryAttributeModelInterface> parameters = sharingProfileParameterMapper
                 .select(sharingProfile.getIdentifier());
-        for (SharingProfileParameterModelInterface parameter : parameters)
+        for (ArbitraryAttributeModelInterface parameter : parameters)
             config.setParameter(parameter.getName(), parameter.getValue());
 
         return config;

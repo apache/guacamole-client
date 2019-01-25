@@ -19,13 +19,14 @@
 
 package org.apache.guacamole.auth.common.usergroup;
 
-import org.apache.guacamole.auth.common.base.ObjectEntityModelInterface;
+import org.apache.guacamole.auth.common.base.EntityModelInterface;
+import org.apache.guacamole.auth.common.base.ObjectModelInterface;
 
 /**
  * Object representation of a Guacamole user group, as represented in the
  * database.
  */
-public interface UserGroupModelInterface extends ObjectEntityModelInterface {
+public interface UserGroupModelInterface extends ObjectModelInterface, EntityModelInterface {
 
 	public void setDisabled(boolean equals);
 

@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
 import org.apache.guacamole.auth.common.base.ModeledChildDirectoryObjectServiceAbstract;
 import org.apache.guacamole.auth.common.base.ModeledDirectoryObjectMapperInterface;
 import org.apache.guacamole.auth.common.permission.SharingProfilePermissionMapperInterface;
@@ -177,7 +178,7 @@ public abstract class SharingProfileServiceAbstract extends
      * @return A collection of parameter models containing the name/value pairs
      *         of the given sharing profile's parameters.
      */
-    protected abstract Collection<SharingProfileParameterModelInterface> getParameterModels(
+    protected abstract Collection<ArbitraryAttributeModelInterface> getParameterModels(
             ModeledSharingProfile sharingProfile);
 
     @Override
@@ -189,7 +190,7 @@ public abstract class SharingProfileServiceAbstract extends
         sharingProfile.setParameters(object.getParameters());
 
         // Insert new parameters, if any
-        Collection<SharingProfileParameterModelInterface> parameterModels = getParameterModels(
+        Collection<ArbitraryAttributeModelInterface> parameterModels = getParameterModels(
                 sharingProfile);
         if (!parameterModels.isEmpty())
             parameterMapper.insert(parameterModels);
@@ -206,7 +207,7 @@ public abstract class SharingProfileServiceAbstract extends
         super.updateObject(user, object);
 
         // Replace existing parameters with new parameters, if any
-        Collection<SharingProfileParameterModelInterface> parameterModels = getParameterModels(
+        Collection<ArbitraryAttributeModelInterface> parameterModels = getParameterModels(
                 object);
         parameterMapper.delete(object.getIdentifier());
         if (!parameterModels.isEmpty())
@@ -249,7 +250,7 @@ public abstract class SharingProfileServiceAbstract extends
 
         // Populate parameter map if we have permission to do so
         if (canRetrieveParameters) {
-            for (SharingProfileParameterModelInterface parameter : parameterMapper
+            for (ArbitraryAttributeModelInterface parameter : parameterMapper
                     .select(identifier))
                 parameterMap.put(parameter.getName(), parameter.getValue());
         }

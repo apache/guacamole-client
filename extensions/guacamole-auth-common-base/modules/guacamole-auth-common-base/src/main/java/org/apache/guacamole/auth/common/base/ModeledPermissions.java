@@ -45,7 +45,7 @@ import com.google.inject.Inject;
  * @param <ModelType>
  *     The type of model object that corresponds to this object.
  */
-public abstract class ModeledPermissions<ModelType extends ObjectEntityModelInterface>
+public abstract class ModeledPermissions<ModelType extends ObjectModelInterface & EntityModelInterface>
         extends ModeledDirectoryObject<ModelType> implements Permissions {
 
     /**

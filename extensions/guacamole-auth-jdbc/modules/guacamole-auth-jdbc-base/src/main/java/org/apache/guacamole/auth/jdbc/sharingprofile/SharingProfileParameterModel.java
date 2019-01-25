@@ -19,12 +19,12 @@
 
 package org.apache.guacamole.auth.jdbc.sharingprofile;
 
-import org.apache.guacamole.auth.common.sharingprofile.SharingProfileParameterModelInterface;
+import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
 
 /**
  * A single parameter name/value pair belonging to a sharing profile.
  */
-public class SharingProfileParameterModel implements SharingProfileParameterModelInterface {
+public class SharingProfileParameterModel implements ArbitraryAttributeModelInterface {
 
     /**
      * The identifier of the sharing profile associated with this parameter.

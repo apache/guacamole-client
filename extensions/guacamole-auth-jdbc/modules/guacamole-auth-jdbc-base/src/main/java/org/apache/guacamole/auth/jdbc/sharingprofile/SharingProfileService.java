@@ -23,10 +23,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
 import org.apache.guacamole.auth.common.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.common.sharingprofile.SharingProfileModelInterface;
-import org.apache.guacamole.auth.common.sharingprofile.SharingProfileParameterModelInterface;
 import org.apache.guacamole.auth.common.sharingprofile.SharingProfileServiceAbstract;
 import org.apache.guacamole.auth.common.sharingprofile.SharingProfileServiceInterface;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
@@ -74,12 +74,12 @@ public class SharingProfileService extends SharingProfileServiceAbstract impleme
      *     A collection of parameter models containing the name/value pairs
      *     of the given sharing profile's parameters.
      */
-    protected Collection<SharingProfileParameterModelInterface> getParameterModels(ModeledSharingProfile sharingProfile) {
+    protected Collection<ArbitraryAttributeModelInterface> getParameterModels(ModeledSharingProfile sharingProfile) {
 
         Map<String, String> parameters = sharingProfile.getParameters();
         
         // Convert parameters to model objects
-        Collection<SharingProfileParameterModelInterface> parameterModels = new ArrayList<SharingProfileParameterModelInterface>(parameters.size());
+        Collection<ArbitraryAttributeModelInterface> parameterModels = new ArrayList<ArbitraryAttributeModelInterface>(parameters.size());
         for (Map.Entry<String, String> parameterEntry : parameters.entrySet()) {
 
             // Get parameter name and value

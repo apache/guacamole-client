@@ -146,7 +146,7 @@ public abstract class UserServiceAbstract
      * Provider for creating users.
      */
     @Inject
-    private Provider<ModeledUserInterface> userProvider;
+    private Provider<ModeledUserAbstract> userProvider;
 
     /**
      * Service for hashing passwords.

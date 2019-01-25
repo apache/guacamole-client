@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.common.user;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.common.base.ObjectRelationMapperInterface;
 import org.apache.guacamole.auth.common.base.RelatedObjectSet;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 
@@ -37,10 +38,10 @@ public class UserParentUserGroupSet extends RelatedObjectSet<ModeledUserAbstract
      * are members.
      */
     @Inject
-    private UserParentUserGroupMapperInterface<UserModelInterface> userParentUserGroupMapper;
+	private ObjectRelationMapperInterface<UserModelInterface> userParentUserGroupMapper;
 
 	@Override
-    protected UserParentUserGroupMapperInterface<UserModelInterface> getObjectRelationMapper() {
+    protected ObjectRelationMapperInterface<UserModelInterface> getObjectRelationMapper() {
         return userParentUserGroupMapper;
     }
 
