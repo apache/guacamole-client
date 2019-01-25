@@ -51,7 +51,7 @@
     <!-- Select the single permission matching the given criteria -->
     <select id="selectOne" resultMap="ConnectionPermissionResultMap">
 
-        SELECT
+        SELECT DISTINCT
             #{entity.entityID,jdbcType=INTEGER} AS entity_id,
             permission,
             connection_id
