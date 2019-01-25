@@ -126,6 +126,21 @@ angular.module('navigation').factory('userPageService', ['$injector',
                         })
                     });
                 }
+                
+                // Only one group with one connection present, use as home page
+                if (connectionGroup
+                        && connectionGroup.type === ConnectionGroup.Type.ORGANIZATIONAL
+                        && connectionGroup.childConnections.length === 1
+                        && _.isEmpty(connectionGroup.childConnectionGroups)) {
+                    homePage = new PageDefinition({
+                        name : connectionGroup.childConnections[0].name,
+                        url  : '/client/' + ClientIdentifier.toString({
+                            dataSource : dataSource,
+                            type       : ClientIdentifier.Types.CONNECTION,
+                            id         : connectionGroup.childConnections[0].identifier
+                        })
+                    });
+                }
 
             }
 
