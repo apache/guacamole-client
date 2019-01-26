@@ -40,23 +40,15 @@ import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupMapperInt
 import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupServiceInterface;
 import org.apache.guacamole.auth.common.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.auth.common.connectiongroup.RootConnectionGroup;
-import org.apache.guacamole.auth.common.permission.ConnectionGroupPermissionMapperInterface;
-import org.apache.guacamole.auth.common.permission.ConnectionGroupPermissionServiceInterface;
 import org.apache.guacamole.auth.common.permission.ConnectionGroupPermissionSet;
-import org.apache.guacamole.auth.common.permission.ConnectionPermissionMapperInterface;
-import org.apache.guacamole.auth.common.permission.ConnectionPermissionServiceInterface;
 import org.apache.guacamole.auth.common.permission.ConnectionPermissionSet;
-import org.apache.guacamole.auth.common.permission.SharingProfilePermissionMapperInterface;
-import org.apache.guacamole.auth.common.permission.SharingProfilePermissionServiceInterface;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionService;
 import org.apache.guacamole.auth.common.permission.SharingProfilePermissionSet;
 import org.apache.guacamole.auth.common.permission.SystemPermissionMapperInterface;
 import org.apache.guacamole.auth.common.permission.SystemPermissionServiceInterface;
 import org.apache.guacamole.auth.common.permission.SystemPermissionSet;
-import org.apache.guacamole.auth.common.permission.UserGroupPermissionMapperInterface;
-import org.apache.guacamole.auth.common.permission.UserGroupPermissionServiceInterface;
 import org.apache.guacamole.auth.common.permission.UserGroupPermissionSet;
-import org.apache.guacamole.auth.common.permission.UserPermissionMapperInterface;
-import org.apache.guacamole.auth.common.permission.UserPermissionServiceInterface;
 import org.apache.guacamole.auth.common.permission.UserPermissionSet;
 import org.apache.guacamole.auth.common.security.PasswordEncryptionService;
 import org.apache.guacamole.auth.common.security.PasswordPolicyService;
@@ -191,28 +183,36 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         
         bind(ConnectionMapperInterface.class).to(ConnectionMapperImp.class);
         bind(ConnectionGroupMapperInterface.class).to(ConnectionGroupMapperImp.class);
-        bind(ConnectionGroupPermissionMapperInterface.class).to(ConnectionGroupPermissionMapperImp.class);
-        bind(ConnectionPermissionMapperInterface.class).to(ConnectionPermissionMapperImp.class);
         bind(ConnectionRecordMapperInterface.class).to(ConnectionRecordMapperImp.class);
         bind(ConnectionParameterMapperInterface.class).to(ConnectionParameterMapperImp.class);
         bind(EntityMapperInterface.class).to(EntityMapperImp.class);
         bind(PasswordRecordMapperInterface.class).to(PasswordRecordMapperImp.class);
         bind(SharingProfileMapperInterface.class).to(SharingProfileMapperImp.class);
         bind(SharingProfileParameterMapperInterface.class).to(SharingProfileParameterMapperImp.class);
-        bind(SharingProfilePermissionMapperInterface.class).to(SharingProfilePermissionMapperImp.class);
         bind(SystemPermissionMapperInterface.class).to(SystemPermissionMapperImp.class);
         bind(new TypeLiteral<UserMapperInterface<UserModelInterface>>(){}).to(UserMapperImp.class);
-        bind(UserPermissionMapperInterface.class).to(UserPermissionMapperImp.class);
         bind(UserRecordMapperInterface.class).to(UserRecordMapperImp.class);
         bind(new TypeLiteral<UserGroupMapperInterface<UserGroupModelInterface>>(){}).to(UserGroupMapperImp.class);
-        bind(UserGroupPermissionMapperInterface.class).to(UserGroupPermissionMapperImp.class);
         bind(new TypeLiteral<ObjectRelationMapperInterface<UserModelInterface>>(){}).to(UserParentUserGroupMapperImp.class);
 
-        MapBinder<String, ObjectRelationMapperInterface<UserGroupModelInterface>> userGroupModelMultibinder = MapBinder.newMapBinder(binder(), new TypeLiteral<String>(){}, new TypeLiteral<ObjectRelationMapperInterface<UserGroupModelInterface>>(){});
-        userGroupModelMultibinder.addBinding("UserGroupMemberUserMapper").to(UserGroupMemberUserMapperImp.class);
-        userGroupModelMultibinder.addBinding("UserGroupMemberUserGroupMapper").to(UserGroupMemberUserGroupMapperImp.class);
-        userGroupModelMultibinder.addBinding("UserGroupParentUserGroupMapper").to(UserGroupParentUserGroupMapperImp.class);
+        MapBinder<String, ObjectRelationMapperInterface<UserGroupModelInterface>> objectRelationMapperMultibinder = MapBinder.newMapBinder(binder(), new TypeLiteral<String>(){}, new TypeLiteral<ObjectRelationMapperInterface<UserGroupModelInterface>>(){});
+        objectRelationMapperMultibinder.addBinding("UserGroupMemberUserMapper").to(UserGroupMemberUserMapperImp.class);
+        objectRelationMapperMultibinder.addBinding("UserGroupMemberUserGroupMapper").to(UserGroupMemberUserGroupMapperImp.class);
+        objectRelationMapperMultibinder.addBinding("UserGroupParentUserGroupMapper").to(UserGroupParentUserGroupMapperImp.class);
 
+        MapBinder<String, ObjectPermissionMapperInterface> objectPermissionMapperMultibinder = MapBinder.newMapBinder(binder(), String.class, ObjectPermissionMapperInterface.class);
+        objectPermissionMapperMultibinder.addBinding("ConnectionGroupPermissionMapper").to(ConnectionGroupPermissionMapperImp.class);
+        objectPermissionMapperMultibinder.addBinding("ConnectionPermissionMapper").to(ConnectionPermissionMapperImp.class);
+        objectPermissionMapperMultibinder.addBinding("SharingProfilePermissionMapper").to(SharingProfilePermissionMapperImp.class);
+        objectPermissionMapperMultibinder.addBinding("UserPermissionMapper").to(UserPermissionMapperImp.class);
+        objectPermissionMapperMultibinder.addBinding("UserGroupPermissionMapper").to(UserGroupPermissionMapperImp.class);
+
+        MapBinder<String, ObjectPermissionService> objectPermissionServiceMultibinder = MapBinder.newMapBinder(binder(), String.class, ObjectPermissionService.class);
+        objectPermissionServiceMultibinder.addBinding("ConnectionGroupPermissionService").to(ConnectionGroupPermissionService.class);
+        objectPermissionServiceMultibinder.addBinding("ConnectionPermissionService").to(ConnectionPermissionService.class);
+        objectPermissionServiceMultibinder.addBinding("SharingProfilePermissionService").to(SharingProfilePermissionService.class);
+        objectPermissionServiceMultibinder.addBinding("UserGroupPermissionService").to(UserGroupPermissionService.class);
+        objectPermissionServiceMultibinder.addBinding("UserPermissionService").to(UserPermissionService.class);
         // Add MyBatis mappers
         addMapperClass(ConnectionMapper.class);
         addMapperClass(ConnectionGroupMapper.class);
@@ -264,9 +264,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         // Bind services
         bind(ActiveConnectionService.class);
         bind(ActiveConnectionPermissionService.class);
-        bind(ConnectionGroupPermissionServiceInterface.class).to(ConnectionGroupPermissionService.class);
         bind(ConnectionGroupServiceInterface.class).to(ConnectionGroupService.class);
-        bind(ConnectionPermissionServiceInterface.class).to(ConnectionPermissionService.class);
         bind(ConnectionSharingService.class);
         bind(ConnectionServiceInterface.class).to(ConnectionService.class);
         bind(EntityServiceInterface.class).to(EntityService.class);
@@ -276,12 +274,9 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(SaltService.class).to(SecureRandomSaltService.class);
         bind(SharedConnectionMap.class).to(HashSharedConnectionMap.class).in(Scopes.SINGLETON);
         bind(ShareKeyGenerator.class).to(SecureRandomShareKeyGenerator.class).in(Scopes.SINGLETON);
-        bind(SharingProfilePermissionServiceInterface.class).to(SharingProfilePermissionService.class);
         bind(SharingProfileServiceInterface.class).to(SharingProfileService.class);
         bind(SystemPermissionServiceInterface.class).to(SystemPermissionService.class);
         bind(UserGroupServiceInterface.class).to(UserGroupService.class);
-        bind(UserGroupPermissionServiceInterface.class).to(UserGroupPermissionService.class);
-        bind(UserPermissionServiceInterface.class).to(UserPermissionService.class);
         bind(UserServiceInterface.class).to(UserService.class);
         
     }

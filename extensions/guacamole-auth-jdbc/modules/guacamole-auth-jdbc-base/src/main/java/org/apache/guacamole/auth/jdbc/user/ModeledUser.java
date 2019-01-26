@@ -19,16 +19,26 @@
 
 package org.apache.guacamole.auth.jdbc.user;
 
+import java.util.Map;
+
+import org.apache.guacamole.auth.common.permission.ObjectPermissionService;
 import org.apache.guacamole.auth.common.user.ModeledUserAbstract;
 import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.jdbc.security.PasswordRecordModel;
+
+import com.google.inject.Inject;
 
 /**
  * An implementation of the User object which is backed by a database model.
  */
 public class ModeledUser extends ModeledUserAbstract {
 
-    @Override
+	@Inject
+    public ModeledUser(Map<String, ObjectPermissionService> mappers) {
+		super(mappers);
+	}
+
+	@Override
     public void setModel(UserModelInterface model) {
 
         super.setModel(model);

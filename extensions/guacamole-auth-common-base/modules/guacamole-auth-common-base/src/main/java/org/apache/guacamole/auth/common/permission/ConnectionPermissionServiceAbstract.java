@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.common.permission;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.guacamole.GuacamoleException;
@@ -38,19 +39,23 @@ public abstract class ConnectionPermissionServiceAbstract
         extends ModeledObjectPermissionServiceAbstract {
 
     /**
-     * Mapper for connection permissions.
-     */
-    @Inject
-    private ConnectionPermissionMapperInterface connectionPermissionMapper;
-
-    /**
      * Provider for connection permission sets.
      */
     @Inject
     private Provider<ConnectionPermissionSet> connectionPermissionSetProvider;
 
+    /**
+     * Mapper for connection permissions.
+     */
+    private ObjectPermissionMapperInterface connectionPermissionMapper;
+    
+    @Inject
+	public ConnectionPermissionServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
+    	connectionPermissionMapper = mappers.get("ConnectionPermissionMapper");
+	}
+    
     @Override
-    protected ConnectionPermissionMapperInterface getPermissionMapper() {
+    protected ObjectPermissionMapperInterface getPermissionMapper() {
         return connectionPermissionMapper;
     }
 

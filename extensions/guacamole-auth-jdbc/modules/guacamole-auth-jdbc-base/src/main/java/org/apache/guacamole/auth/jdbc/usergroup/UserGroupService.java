@@ -20,8 +20,10 @@
 package org.apache.guacamole.auth.jdbc.usergroup;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.common.user.UserModelInterface;
@@ -34,13 +36,20 @@ import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.net.auth.permission.ObjectPermission.Type;
 
+import com.google.inject.Inject;
+
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating user groups.
  */
 public class UserGroupService extends UserGroupServiceAbstract implements UserGroupServiceInterface {
     
-    @Override
+	@Inject
+    public UserGroupService(Map<String, ObjectPermissionMapperInterface> mappers) {
+		super(mappers);
+	}
+
+	@Override
     protected UserGroupModel getModelInstance(ModeledAuthenticatedUser currentUser,
             final UserGroup object) throws GuacamoleException {
 

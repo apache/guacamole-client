@@ -23,6 +23,7 @@ import java.util.Collection;
 
 import org.apache.guacamole.auth.common.base.EntityModelInterface;
 import org.apache.guacamole.auth.common.permission.SystemPermissionMapperInterface;
+import org.apache.guacamole.auth.common.permission.SystemPermissionModelInterface;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.ibatis.annotations.Param;
@@ -32,7 +33,7 @@ import com.google.inject.Inject;
 /**
  * Mapper for system-level permissions.
  */
-public class SystemPermissionMapperImp extends PermissionMapperImp<SystemPermissionModel, SystemPermissionMapper> implements SystemPermissionMapperInterface {
+public class SystemPermissionMapperImp extends PermissionMapperImp<SystemPermissionModelInterface, SystemPermissionMapper> implements SystemPermissionMapperInterface {
 
 	@Inject 
 	private SystemPermissionMapper systemPermissionMapper;

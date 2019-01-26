@@ -19,16 +19,13 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
-import org.apache.guacamole.auth.common.permission.ConnectionPermissionMapperInterface;
-
 import com.google.inject.Inject;
 
 /**
  * Mapper for connection permissions.
  */
 public class ConnectionPermissionMapperImp 
-		extends ObjectPermissionMapperImp<ObjectPermissionModel, ConnectionPermissionMapper> 
-		implements ConnectionPermissionMapperInterface {
+		extends ObjectPermissionMapperImp<ConnectionPermissionMapper> {
 
 	@Inject 
 	private ConnectionPermissionMapper connectionPermissionMapper;

@@ -26,9 +26,8 @@ import java.util.Set;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
-import org.apache.guacamole.auth.common.permission.CommonPermissionMapperInterface;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
-import org.apache.guacamole.auth.common.permission.PermissionMapperInterface;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.net.auth.Identifiable;
@@ -82,7 +81,7 @@ public abstract class ModeledDirectoryObjectServiceAbstract<InternalType extends
      *         with the permissions that affect the objects used by this
      *         service.
      */
-    protected abstract CommonPermissionMapperInterface getPermissionMapper();
+    protected abstract ObjectPermissionMapperInterface getPermissionMapper();
 
     protected abstract Class<? extends ObjectPermissionModelInterface> getClassPermissionModel();
 
@@ -442,7 +441,6 @@ public abstract class ModeledDirectoryObjectServiceAbstract<InternalType extends
 			Collection<ObjectPermissionModelInterface> implicitPermissions, ModelType model,
 			Type permission);
 
-	@SuppressWarnings("unchecked")
 	@Override
     public InternalType createObject(ModeledAuthenticatedUser user,
             ExternalType object) throws GuacamoleException {
@@ -457,7 +455,7 @@ public abstract class ModeledDirectoryObjectServiceAbstract<InternalType extends
         object.setIdentifier(model.getIdentifier());
 
         // Add implicit permissions
-        ((PermissionMapperInterface<ObjectPermissionModelInterface>) getPermissionMapper()).insert((Collection<ObjectPermissionModelInterface>) getImplicitPermissions(user, model));
+        getPermissionMapper().insert(getImplicitPermissions(user, model));
 
         // Add any arbitrary attributes
         if (model.hasArbitraryAttributes())

@@ -20,8 +20,10 @@
 package org.apache.guacamole.auth.jdbc.user;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.common.user.ModeledUserAbstract;
@@ -33,13 +35,20 @@ import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.permission.ObjectPermission.Type;
 
+import com.google.inject.Inject;
+
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating users.
  */
 public class UserService extends UserServiceAbstract implements UserServiceInterface {
     
-    @Override
+	@Inject
+    public UserService(Map<String, ObjectPermissionMapperInterface> mappers) {
+		super(mappers);
+	}
+
+	@Override
     protected UserModel getModelInstance(ModeledAuthenticatedUser currentUser,
             final User object) throws GuacamoleException {
 

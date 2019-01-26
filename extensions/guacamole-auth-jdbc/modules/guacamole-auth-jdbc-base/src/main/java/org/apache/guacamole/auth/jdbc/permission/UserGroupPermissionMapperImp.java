@@ -19,16 +19,13 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
-import org.apache.guacamole.auth.common.permission.UserGroupPermissionMapperInterface;
-
 import com.google.inject.Inject;
 
 /**
  * Mapper for user group permissions.
  */
 public class UserGroupPermissionMapperImp 
-	extends ObjectPermissionMapperImp<ObjectPermissionModel, UserGroupPermissionMapper> 
-	implements UserGroupPermissionMapperInterface {
+	extends ObjectPermissionMapperImp<UserGroupPermissionMapper> {
 	
 	@Inject 
 	private UserGroupPermissionMapper userGroupPermissionMapper;

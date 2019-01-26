@@ -34,7 +34,7 @@ import org.apache.guacamole.auth.common.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.common.base.ActivityRecordSortPredicate;
 import org.apache.guacamole.auth.common.base.ModeledChildDirectoryObjectServiceAbstract;
 import org.apache.guacamole.auth.common.base.ModeledDirectoryObjectMapperInterface;
-import org.apache.guacamole.auth.common.permission.ConnectionPermissionMapperInterface;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.auth.common.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -63,12 +63,6 @@ public abstract class ConnectionServiceAbstract extends
 	protected ConnectionMapperInterface connectionMapper;
 
     /**
-     * Mapper for manipulating connection permissions.
-     */
-    @Inject
-    private ConnectionPermissionMapperInterface connectionPermissionMapper;
-
-    /**
      * Mapper for accessing connection parameters.
      */
     @Inject
@@ -91,6 +85,16 @@ public abstract class ConnectionServiceAbstract extends
      */
     @Inject
     private GuacamoleTunnelService tunnelService;
+    
+    /**
+     * Mapper for manipulating connection permissions.
+     */
+    private ObjectPermissionMapperInterface connectionPermissionMapper;
+    
+    @Inject
+	public ConnectionServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
+    	connectionPermissionMapper = mappers.get("ConnectionPermissionMapper");
+	}
 
     @SuppressWarnings("unchecked")
 	@Override
@@ -99,7 +103,7 @@ public abstract class ConnectionServiceAbstract extends
     }
 
     @Override
-    protected ConnectionPermissionMapperInterface getPermissionMapper() {
+    protected ObjectPermissionMapperInterface getPermissionMapper() {
         return connectionPermissionMapper;
     }
 

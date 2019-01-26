@@ -41,6 +41,9 @@ public abstract class ModeledObjectPermissionServiceAbstract extends
         ModeledPermissionServiceAbstract<ObjectPermissionSet, ObjectPermission, ObjectPermissionModelInterface>
         implements ObjectPermissionService {
 
+	@Override
+    protected abstract ObjectPermissionMapperInterface getPermissionMapper();
+	
     @Override
     protected ObjectPermission getPermissionInstance(ObjectPermissionModelInterface model) {
         return new ObjectPermission(model.getType(), model.getObjectIdentifier());
@@ -106,7 +109,6 @@ public abstract class ModeledObjectPermissionServiceAbstract extends
 
     }
 
-	@SuppressWarnings("unchecked")
 	@Override
     public void createPermissions(ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
@@ -116,7 +118,7 @@ public abstract class ModeledObjectPermissionServiceAbstract extends
         // Create permissions only if user has permission to do so
         if (canAlterPermissions(user, targetEntity, permissions)) {
             Collection<ObjectPermissionModelInterface> models = getModelInstances(targetEntity, permissions);
-            ((PermissionMapperInterface<ObjectPermissionModelInterface>) getPermissionMapper()).insert(models);
+            getPermissionMapper().insert(models);
             return;
         }
 
@@ -125,7 +127,6 @@ public abstract class ModeledObjectPermissionServiceAbstract extends
 
     }
 
-	@SuppressWarnings("unchecked")
 	@Override
     public void deletePermissions(ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
@@ -135,7 +136,7 @@ public abstract class ModeledObjectPermissionServiceAbstract extends
         // Delete permissions only if user has permission to do so
         if (canAlterPermissions(user, targetEntity, permissions)) {
             Collection<ObjectPermissionModelInterface> models = getModelInstances(targetEntity, permissions);
-            ((PermissionMapperInterface<ObjectPermissionModelInterface>) getPermissionMapper()).delete(models);
+            getPermissionMapper().delete(models);
             return;
         }
 
@@ -144,7 +145,6 @@ public abstract class ModeledObjectPermissionServiceAbstract extends
 
     }
     
-    @SuppressWarnings("unchecked")
 	@Override
     public boolean hasPermission(ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
@@ -153,7 +153,7 @@ public abstract class ModeledObjectPermissionServiceAbstract extends
 
         // Retrieve permissions only if allowed
         if (canReadPermissions(user, targetEntity))
-            return ((ObjectPermissionMapperInterface<ObjectPermissionModelInterface>) getPermissionMapper()).selectOne(targetEntity.getModel(),
+            return getPermissionMapper().selectOne(targetEntity.getModel(),
                     type, identifier, effectiveGroups) != null;
 
         // User cannot read this entity's permissions
@@ -161,7 +161,6 @@ public abstract class ModeledObjectPermissionServiceAbstract extends
         
     }
 
-    @SuppressWarnings("unchecked")
 	@Override
     public Collection<String> retrieveAccessibleIdentifiers(ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
@@ -178,7 +177,7 @@ public abstract class ModeledObjectPermissionServiceAbstract extends
         
         // Otherwise, return explicitly-retrievable identifiers only if allowed
         if (canReadPermissions(user, targetEntity))
-            return ((ObjectPermissionMapperInterface<ObjectPermissionModelInterface>) getPermissionMapper()).selectAccessibleIdentifiers(
+            return getPermissionMapper().selectAccessibleIdentifiers(
                     targetEntity.getModel(), permissions, identifiers,
                     effectiveGroups);
 

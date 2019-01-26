@@ -28,8 +28,7 @@ import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.auth.common.base.ModeledChildDirectoryObjectServiceAbstract;
 import org.apache.guacamole.auth.common.base.ModeledDirectoryObjectMapperInterface;
-import org.apache.guacamole.auth.common.permission.CommonPermissionMapperInterface;
-import org.apache.guacamole.auth.common.permission.ConnectionGroupPermissionMapperInterface;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.auth.common.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -59,9 +58,13 @@ public abstract class ConnectionGroupServiceAbstract extends
     /**
      * Mapper for manipulating connection group permissions.
      */
-    @Inject
-    private ConnectionGroupPermissionMapperInterface connectionGroupPermissionMapper;
+    private ObjectPermissionMapperInterface connectionGroupPermissionMapper;
 
+    @Inject
+	public ConnectionGroupServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
+    	connectionGroupPermissionMapper = mappers.get("ConnectionGroupPermissionMapper");
+	}
+    
     /**
      * Provider for creating connection groups.
      */
@@ -81,7 +84,7 @@ public abstract class ConnectionGroupServiceAbstract extends
     }
 
     @Override
-    protected CommonPermissionMapperInterface getPermissionMapper() {
+    protected ObjectPermissionMapperInterface getPermissionMapper() {
         return connectionGroupPermissionMapper;
     }
 

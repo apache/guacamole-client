@@ -19,12 +19,14 @@
 
 package org.apache.guacamole.auth.common.usergroup;
 
+import java.util.Map;
+
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.base.EntityMapperInterface;
 import org.apache.guacamole.auth.common.base.ModeledDirectoryObjectMapperInterface;
 import org.apache.guacamole.auth.common.base.ModeledDirectoryObjectServiceAbstract;
-import org.apache.guacamole.auth.common.permission.UserGroupPermissionMapperInterface;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
@@ -54,16 +56,20 @@ public abstract class UserGroupServiceAbstract extends ModeledDirectoryObjectSer
 	protected UserGroupMapperInterface<UserGroupModelInterface> userGroupMapper;
 
     /**
-     * Mapper for manipulating user group permissions.
-     */
-    @Inject
-	protected UserGroupPermissionMapperInterface userGroupPermissionMapper;
-
-    /**
      * Provider for creating user groups.
      */
     @Inject
     private Provider<ModeledUserGroup> userGroupProvider;
+
+    /**
+     * Mapper for manipulating user group permissions.
+     */
+	protected ObjectPermissionMapperInterface userGroupPermissionMapper;
+
+    @Inject
+	public UserGroupServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
+    	userGroupPermissionMapper = mappers.get("UserGroupPermissionMapper");
+	}
 
     @Override
     protected ModeledDirectoryObjectMapperInterface<UserGroupModelInterface> getObjectMapper() {
@@ -71,7 +77,7 @@ public abstract class UserGroupServiceAbstract extends ModeledDirectoryObjectSer
     }
 
     @Override
-    protected UserGroupPermissionMapperInterface getPermissionMapper() {
+    protected ObjectPermissionMapperInterface getPermissionMapper() {
         return userGroupPermissionMapper;
     }
 

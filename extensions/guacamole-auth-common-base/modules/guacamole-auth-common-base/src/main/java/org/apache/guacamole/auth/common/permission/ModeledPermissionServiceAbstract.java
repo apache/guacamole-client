@@ -58,7 +58,7 @@ public abstract class ModeledPermissionServiceAbstract<PermissionSetType extends
      * @return A mapper which provides access to the model objects associated
      *         with the permissions used by this service.
      */
-    protected abstract CommonPermissionMapperInterface getPermissionMapper();
+    protected abstract PermissionMapperInterface<ModelType> getPermissionMapper();
 
     /**
      * Returns an instance of a permission which is based on the given model

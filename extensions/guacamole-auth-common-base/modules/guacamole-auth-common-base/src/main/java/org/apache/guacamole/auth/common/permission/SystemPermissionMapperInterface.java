@@ -27,7 +27,7 @@ import org.apache.guacamole.net.auth.permission.SystemPermission;
 /**
  * Mapper for system-level permissions.
  */
-public interface SystemPermissionMapperInterface extends CommonPermissionMapperInterface {
+public interface SystemPermissionMapperInterface extends PermissionMapperInterface<SystemPermissionModelInterface> {
 
     /**
      * Retrieve the permission of the given type associated with the given

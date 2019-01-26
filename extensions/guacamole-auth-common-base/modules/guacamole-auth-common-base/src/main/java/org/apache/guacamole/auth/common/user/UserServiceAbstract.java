@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,7 +39,7 @@ import org.apache.guacamole.auth.common.base.EntityMapperInterface;
 import org.apache.guacamole.auth.common.base.ModeledActivityRecord;
 import org.apache.guacamole.auth.common.base.ModeledDirectoryObjectMapperInterface;
 import org.apache.guacamole.auth.common.base.ModeledDirectoryObjectServiceAbstract;
-import org.apache.guacamole.auth.common.permission.UserPermissionMapperInterface;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.auth.common.security.PasswordEncryptionService;
 import org.apache.guacamole.auth.common.security.PasswordPolicyService;
 import org.apache.guacamole.form.Field;
@@ -131,12 +132,6 @@ public abstract class UserServiceAbstract
 	protected UserMapperInterface<UserModelInterface> userMapper;
 
     /**
-     * Mapper for manipulating user permissions.
-     */
-    @Inject
-    private UserPermissionMapperInterface userPermissionMapper;
-
-    /**
      * Mapper for accessing user login history.
      */
     @Inject
@@ -159,6 +154,16 @@ public abstract class UserServiceAbstract
      */
     @Inject
     private PasswordPolicyService passwordPolicyService;
+    
+    /**
+     * Mapper for manipulating user permissions.
+     */
+    private ObjectPermissionMapperInterface userPermissionMapper;
+    
+    @Inject
+	public UserServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
+    	userPermissionMapper = mappers.get("UserPermissionMapper");
+	}
 
 	@Override
     protected ModeledDirectoryObjectMapperInterface<UserModelInterface> getObjectMapper() {
@@ -166,7 +171,7 @@ public abstract class UserServiceAbstract
     }
 
     @Override
-    protected UserPermissionMapperInterface getPermissionMapper() {
+    protected ObjectPermissionMapperInterface getPermissionMapper() {
         return userPermissionMapper;
     }
 

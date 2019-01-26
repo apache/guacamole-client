@@ -20,16 +20,13 @@
 package org.apache.guacamole.auth.common.base;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.activeconnection.ActiveConnectionPermissionService;
-import org.apache.guacamole.auth.common.permission.ConnectionGroupPermissionServiceInterface;
-import org.apache.guacamole.auth.common.permission.ConnectionPermissionServiceInterface;
-import org.apache.guacamole.auth.common.permission.SharingProfilePermissionServiceInterface;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionService;
 import org.apache.guacamole.auth.common.permission.SystemPermissionServiceInterface;
-import org.apache.guacamole.auth.common.permission.UserGroupPermissionServiceInterface;
-import org.apache.guacamole.auth.common.permission.UserPermissionServiceInterface;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -61,41 +58,45 @@ public abstract class ModeledPermissions<ModelType extends ObjectModelInterface 
     private SystemPermissionServiceInterface systemPermissionService;
 
     /**
-     * Service for retrieving connection permissions.
-     */
-    @Inject
-    private ConnectionPermissionServiceInterface connectionPermissionService;
-
-    /**
-     * Service for retrieving connection group permissions.
-     */
-    @Inject
-    private ConnectionGroupPermissionServiceInterface connectionGroupPermissionService;
-
-    /**
-     * Service for retrieving sharing profile permissions.
-     */
-    @Inject
-    private SharingProfilePermissionServiceInterface sharingProfilePermissionService;
-
-    /**
      * Service for retrieving active connection permissions.
      */
     @Inject
     private ActiveConnectionPermissionService activeConnectionPermissionService;
 
     /**
-     * Service for retrieving user permissions.
+     * Service for retrieving connection group permissions.
      */
-    @Inject
-    private UserPermissionServiceInterface userPermissionService;
+    private ObjectPermissionService connectionGroupPermissionService;
+    
+    /**
+     * Service for retrieving connection permissions.
+     */
+    private ObjectPermissionService connectionPermissionService;
 
+    /**
+     * Service for retrieving sharing profile permissions.
+     */
+    private ObjectPermissionService sharingProfilePermissionService;
+    
     /**
      * Service for retrieving user group permissions.
      */
-    @Inject
-    private UserGroupPermissionServiceInterface userGroupPermissionService;
+    private ObjectPermissionService userGroupPermissionService;
 
+    /**
+     * Service for retrieving user permissions.
+     */
+    private ObjectPermissionService userPermissionService;
+    
+    @Inject
+	public ModeledPermissions(Map<String, ObjectPermissionService> mappers) {
+    	connectionGroupPermissionService = mappers.get("ConnectionGroupPermissionService");
+    	connectionPermissionService = mappers.get("ConnectionPermissionService");
+    	sharingProfilePermissionService = mappers.get("SharingProfilePermissionService");
+    	userGroupPermissionService = mappers.get("UserGroupPermissionService");
+    	userPermissionService = mappers.get("UserPermissionService");
+    }
+    
     /**
      * Returns whether the underlying entity is a user. Entities may be either
      * users or user groups.

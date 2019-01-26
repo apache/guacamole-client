@@ -27,7 +27,7 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 /**
  * Mapper for object-related permissions.
  */
-public interface ObjectPermissionMapperInterface<PermissionModelType extends ObjectPermissionModelInterface> extends PermissionMapperInterface<PermissionModelType> {
+public interface ObjectPermissionMapperInterface extends PermissionMapperInterface<ObjectPermissionModelInterface> {
 
 	/**
      * Retrieve the permission of the given type associated with the given
@@ -53,7 +53,7 @@ public interface ObjectPermissionMapperInterface<PermissionModelType extends Obj
      *     The requested permission, or null if no such permission is granted
      *     to the given entity for the given object.
      */
-	PermissionModelType selectOne(EntityModelInterface entity,
+	ObjectPermissionModelInterface selectOne(EntityModelInterface entity,
             ObjectPermission.Type type,
             String identifier,
             Collection<String> effectiveGroups);

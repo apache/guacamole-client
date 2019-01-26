@@ -22,4 +22,4 @@ package org.apache.guacamole.auth.jdbc.permission;
 /**
  * Mapper for connection permissions.
  */
-public interface ConnectionPermissionMapper extends ObjectPermissionMapper<ObjectPermissionModel> {}
+public interface ConnectionPermissionMapper extends ObjectPermissionMapper {}

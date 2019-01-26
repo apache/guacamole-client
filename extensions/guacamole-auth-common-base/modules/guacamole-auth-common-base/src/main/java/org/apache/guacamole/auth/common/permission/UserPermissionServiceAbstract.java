@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.common.permission;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.guacamole.GuacamoleException;
@@ -37,19 +38,23 @@ import com.google.inject.Provider;
 public abstract class UserPermissionServiceAbstract extends ModeledObjectPermissionServiceAbstract {
 
     /**
-     * Mapper for user permissions.
-     */
-    @Inject
-    private UserPermissionMapperInterface userPermissionMapper;
-
-    /**
      * Provider for user permission sets.
      */
     @Inject
     private Provider<UserPermissionSet> userPermissionSetProvider;
+    
+    /**
+     * Mapper for user permissions.
+     */
+    private ObjectPermissionMapperInterface userPermissionMapper;
+    
+    @Inject
+	public UserPermissionServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
+    	userPermissionMapper = mappers.get("UserPermissionMapper");
+	}
 
     @Override
-    protected UserPermissionMapperInterface getPermissionMapper() {
+    protected ObjectPermissionMapperInterface getPermissionMapper() {
         return userPermissionMapper;
     }
 

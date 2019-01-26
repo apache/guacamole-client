@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.common.permission;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.guacamole.GuacamoleException;
@@ -37,19 +38,23 @@ import com.google.inject.Provider;
 public abstract class ConnectionGroupPermissionServiceAbstract extends ModeledObjectPermissionServiceAbstract {
 
     /**
-     * Mapper for connection group permissions.
-     */
-    @Inject
-    private ConnectionGroupPermissionMapperInterface connectionGroupPermissionMapper;
-    
-    /**
      * Provider for connection group permission sets.
      */
     @Inject
     private Provider<ConnectionGroupPermissionSet> connectionGroupPermissionSetProvider;
     
+    /**
+     * Mapper for connection group permissions.
+     */
+    private ObjectPermissionMapperInterface connectionGroupPermissionMapper;
+
+    @Inject
+	public ConnectionGroupPermissionServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
+    	connectionGroupPermissionMapper = mappers.get("ConnectionGroupPermissionMapper");
+	}
+    
     @Override
-    protected ConnectionGroupPermissionMapperInterface getPermissionMapper() {
+    protected ObjectPermissionMapperInterface getPermissionMapper() {
         return connectionGroupPermissionMapper;
     }
 

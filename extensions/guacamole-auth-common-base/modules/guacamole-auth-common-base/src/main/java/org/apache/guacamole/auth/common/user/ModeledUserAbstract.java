@@ -35,6 +35,7 @@ import java.util.TimeZone;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.base.ModeledPermissions;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionService;
 import org.apache.guacamole.auth.common.security.PasswordEncryptionService;
 import org.apache.guacamole.auth.common.security.SaltService;
 import org.apache.guacamole.form.BooleanField;
@@ -60,7 +61,7 @@ import com.google.inject.Provider;
  */
 public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelInterface> implements User {
 
-    /**	
+	/**	
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(ModeledUserAbstract.class);
@@ -231,8 +232,9 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
     /**
      * Creates a new, empty ModeledUser.
      */
-    public ModeledUserAbstract() {
-    }
+    public ModeledUserAbstract(Map<String, ObjectPermissionService> mappers) {
+		super(mappers);
+	}
 
     @Override
     public String getPassword() {

@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.common.permission;
 
+import java.util.Map;
+
 import com.google.inject.Inject;
 
 /**
@@ -31,8 +33,12 @@ public class SharingProfilePermissionSet extends ObjectPermissionSet {
     /**
      * Service for querying and manipulating sharing profile permissions.
      */
+    private ObjectPermissionService sharingProfilePermissionService;
+    
     @Inject
-    private SharingProfilePermissionServiceInterface sharingProfilePermissionService;
+	public SharingProfilePermissionSet(Map<String, ObjectPermissionService> mappers) {
+    	sharingProfilePermissionService = mappers.get("SharingProfilePermissionService");
+	}
     
     @Override
     protected ObjectPermissionService getObjectPermissionService() {

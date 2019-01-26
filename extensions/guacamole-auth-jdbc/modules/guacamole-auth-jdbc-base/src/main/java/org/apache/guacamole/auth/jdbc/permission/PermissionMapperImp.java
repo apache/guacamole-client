@@ -34,7 +34,8 @@ import org.apache.guacamole.auth.jdbc.base.EntityModel;
  * @param <Mapper>
  *     The specific mapper.
  */
-public abstract class PermissionMapperImp<PermissionType, Mapper extends PermissionMapper<PermissionType>> 
+@SuppressWarnings("unchecked")
+public abstract class PermissionMapperImp<PermissionType, Mapper> 
 	implements PermissionMapperInterface<PermissionType> {
 
 	protected abstract Mapper getMapper();
@@ -57,7 +58,7 @@ public abstract class PermissionMapperImp<PermissionType, Mapper extends Permiss
      */
 	public Collection<PermissionType> select(EntityModelInterface entity,
             Collection<String> effectiveGroups) {
-    	return getMapper().select((EntityModel) entity, effectiveGroups);
+    	return ((PermissionMapper<PermissionType>) getMapper()).select((EntityModel) entity, effectiveGroups);
     }
 
     /**
@@ -71,7 +72,7 @@ public abstract class PermissionMapperImp<PermissionType, Mapper extends Permiss
      *     The number of rows inserted.
      */
 	public int insert(Collection<PermissionType> permissions) {
-    	return getMapper().insert(permissions);
+    	return ((PermissionMapper<PermissionType>) getMapper()).insert(permissions);
     }
 
     /**
@@ -84,8 +85,8 @@ public abstract class PermissionMapperImp<PermissionType, Mapper extends Permiss
      * @return
      *     The number of rows deleted.
      */
-    public int delete(Collection<PermissionType> permissions) {
-    	return getMapper().delete(permissions);
+	public int delete(Collection<PermissionType> permissions) {
+    	return ((PermissionMapper<PermissionType>) getMapper()).delete(permissions);
     }
 
 }

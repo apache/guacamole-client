@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.common.permission;
 
+import java.util.Map;
+
 import com.google.inject.Inject;
 
 /**
@@ -31,8 +33,12 @@ public class ConnectionPermissionSet extends ObjectPermissionSet {
     /**
      * Service for querying and manipulating connection permissions.
      */
+    private ObjectPermissionService connectionPermissionService;
+    
     @Inject
-    private ConnectionPermissionServiceInterface connectionPermissionService;
+   	public ConnectionPermissionSet(Map<String, ObjectPermissionService> mappers) {
+    	connectionPermissionService = mappers.get("ConnectionPermissionService");
+   	}
     
     @Override
     protected ObjectPermissionService getObjectPermissionService() {

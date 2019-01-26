@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
 import org.apache.guacamole.auth.common.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.common.sharingprofile.SharingProfileModelInterface;
@@ -36,13 +37,20 @@ import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.permission.ObjectPermission.Type;
 
+import com.google.inject.Inject;
+
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating sharing profiles.
  */
 public class SharingProfileService extends SharingProfileServiceAbstract implements SharingProfileServiceInterface {
 
-    @Override
+	@Inject
+    public SharingProfileService(Map<String, ObjectPermissionMapperInterface> mappers) {
+		super(mappers);
+	}
+
+	@Override
     protected SharingProfileModel getModelInstance(ModeledAuthenticatedUser currentUser,
             final SharingProfile object) {
 

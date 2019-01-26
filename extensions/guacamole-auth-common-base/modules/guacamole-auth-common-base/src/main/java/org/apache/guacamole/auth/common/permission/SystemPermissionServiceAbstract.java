@@ -77,7 +77,6 @@ public abstract class SystemPermissionServiceAbstract extends
 
     }
 
-    @SuppressWarnings("unchecked")
 	@Override
     public void createPermissions(ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
@@ -86,7 +85,7 @@ public abstract class SystemPermissionServiceAbstract extends
         // Only an admin can create system permissions
         if (user.getUser().isAdministrator()) {
             Collection<SystemPermissionModelInterface> models = getModelInstances(targetEntity, permissions);
-            ((PermissionMapperInterface<SystemPermissionModelInterface>) systemPermissionMapper).insert(models);
+            systemPermissionMapper.insert(models);
             return;
         }
 
@@ -95,7 +94,6 @@ public abstract class SystemPermissionServiceAbstract extends
 
     }
 
-    @SuppressWarnings("unchecked")
 	@Override
     public void deletePermissions(ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
@@ -109,7 +107,7 @@ public abstract class SystemPermissionServiceAbstract extends
                 throw new GuacamoleUnsupportedException("Removing your own administrative permissions is not allowed.");
 
             Collection<SystemPermissionModelInterface> models = getModelInstances( targetEntity, permissions);
-            ((PermissionMapperInterface<SystemPermissionModelInterface>) systemPermissionMapper).delete(models);
+            systemPermissionMapper.delete(models);
             return;
         }
 

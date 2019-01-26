@@ -20,11 +20,13 @@
 package org.apache.guacamole.auth.jdbc.connectiongroup;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupModelInterface;
 import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupServiceAbstract;
 import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupServiceInterface;
 import org.apache.guacamole.auth.common.connectiongroup.ModeledConnectionGroup;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.common.user.UserModelInterface;
@@ -33,13 +35,20 @@ import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 
+import com.google.inject.Inject;
+
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating connection groups.
  */
 public class ConnectionGroupService extends ConnectionGroupServiceAbstract implements ConnectionGroupServiceInterface {
 
-    @Override
+	@Inject
+    public ConnectionGroupService(Map<String, ObjectPermissionMapperInterface> mappers) {
+		super(mappers);
+	}
+
+	@Override
     protected ConnectionGroupModel getModelInstance(ModeledAuthenticatedUser currentUser,
             final ConnectionGroup object) {
 

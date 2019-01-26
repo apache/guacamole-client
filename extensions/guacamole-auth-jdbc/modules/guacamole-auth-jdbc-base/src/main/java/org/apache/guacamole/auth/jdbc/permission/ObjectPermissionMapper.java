@@ -31,7 +31,7 @@ import org.apache.ibatis.annotations.Param;
  * @param <PermissionType>
  *     The type of permission model object handled by this mapper.
  */
-public interface ObjectPermissionMapper<PermissionType> extends PermissionMapper<PermissionType> {
+public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissionModel> {
 
     /**
      * Retrieve the permission of the given type associated with the given

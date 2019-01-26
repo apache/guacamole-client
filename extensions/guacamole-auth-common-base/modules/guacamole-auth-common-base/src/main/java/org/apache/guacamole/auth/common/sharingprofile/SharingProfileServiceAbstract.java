@@ -28,7 +28,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
 import org.apache.guacamole.auth.common.base.ModeledChildDirectoryObjectServiceAbstract;
 import org.apache.guacamole.auth.common.base.ModeledDirectoryObjectMapperInterface;
-import org.apache.guacamole.auth.common.permission.SharingProfilePermissionMapperInterface;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
@@ -53,12 +53,6 @@ public abstract class SharingProfileServiceAbstract extends
     protected SharingProfileMapperInterface sharingProfileMapper;
 
     /**
-     * Mapper for manipulating sharing profile permissions.
-     */
-    @Inject
-    private SharingProfilePermissionMapperInterface sharingProfilePermissionMapper;
-
-    /**
      * Mapper for accessing sharing profile parameters.
      */
     @Inject
@@ -69,6 +63,16 @@ public abstract class SharingProfileServiceAbstract extends
      */
     @Inject
     private Provider<ModeledSharingProfile> sharingProfileProvider;
+    
+    /**
+     * Mapper for manipulating sharing profile permissions.
+     */
+    private ObjectPermissionMapperInterface sharingProfilePermissionMapper;
+
+    @Inject
+   	public SharingProfileServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
+    	sharingProfilePermissionMapper = mappers.get("SharingProfilePermissionMapper");
+   	}
 
     @SuppressWarnings("unchecked")
 	@Override
@@ -77,7 +81,7 @@ public abstract class SharingProfileServiceAbstract extends
     }
 
     @Override
-    protected SharingProfilePermissionMapperInterface getPermissionMapper() {
+    protected ObjectPermissionMapperInterface getPermissionMapper() {
         return sharingProfilePermissionMapper;
     }
 

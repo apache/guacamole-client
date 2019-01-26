@@ -19,18 +19,27 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
+import java.util.Map;
+
 import org.apache.guacamole.auth.common.base.EntityModelInterface;
 import org.apache.guacamole.auth.common.base.ModeledPermissions;
 import org.apache.guacamole.auth.common.permission.ConnectionPermissionServiceAbstract;
-import org.apache.guacamole.auth.common.permission.ConnectionPermissionServiceInterface;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
+
+import com.google.inject.Inject;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * deleting connection permissions. This service will automatically enforce the
  * permissions of the current user.
  */
-public class ConnectionPermissionService extends ConnectionPermissionServiceAbstract implements ConnectionPermissionServiceInterface {
+public class ConnectionPermissionService extends ConnectionPermissionServiceAbstract {
+
+	@Inject
+	public ConnectionPermissionService(Map<String, ObjectPermissionMapperInterface> mappers) {
+		super(mappers);
+	}
 
 	@Override
 	public ObjectPermissionModel getModelInstance(

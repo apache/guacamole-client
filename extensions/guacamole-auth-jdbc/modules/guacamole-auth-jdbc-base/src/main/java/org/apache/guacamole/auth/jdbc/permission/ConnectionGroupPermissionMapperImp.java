@@ -19,15 +19,12 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
-import org.apache.guacamole.auth.common.permission.ConnectionGroupPermissionMapperInterface;
-
 import com.google.inject.Inject;
 
 /**
  * Mapper for connection group permissions.
  */
-public class ConnectionGroupPermissionMapperImp extends ObjectPermissionMapperImp<ObjectPermissionModel, ConnectionGroupPermissionMapper> 
-	implements ConnectionGroupPermissionMapperInterface {
+public class ConnectionGroupPermissionMapperImp extends ObjectPermissionMapperImp<ConnectionGroupPermissionMapper> {
 	
 	@Inject 
 	private ConnectionGroupPermissionMapper connectionGroupPermissionMapper;

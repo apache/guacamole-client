@@ -19,16 +19,13 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
-import org.apache.guacamole.auth.common.permission.SharingProfilePermissionMapperInterface;
-
 import com.google.inject.Inject;
 
 /**
  * Mapper for sharing profile permissions.
  */
 public class SharingProfilePermissionMapperImp
-        extends ObjectPermissionMapperImp<ObjectPermissionModel, SharingProfilePermissionMapper> 
-		implements SharingProfilePermissionMapperInterface {
+        extends ObjectPermissionMapperImp<SharingProfilePermissionMapper> {
 	
 	@Inject 
 	private SharingProfilePermissionMapper sharingProfilePermissionMapper;

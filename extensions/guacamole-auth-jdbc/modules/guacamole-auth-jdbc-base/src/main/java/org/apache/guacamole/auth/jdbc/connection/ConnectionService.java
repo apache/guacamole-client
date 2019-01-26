@@ -28,6 +28,7 @@ import org.apache.guacamole.auth.common.connection.ConnectionParameterModelInter
 import org.apache.guacamole.auth.common.connection.ConnectionServiceAbstract;
 import org.apache.guacamole.auth.common.connection.ConnectionServiceInterface;
 import org.apache.guacamole.auth.common.connection.ModeledConnection;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.common.user.UserModelInterface;
@@ -35,13 +36,20 @@ import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.permission.ObjectPermission.Type;
 
+import com.google.inject.Inject;
+
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating connections.
  */
 public class ConnectionService extends ConnectionServiceAbstract implements ConnectionServiceInterface {
 
-    @Override
+	@Inject
+    public ConnectionService(Map<String, ObjectPermissionMapperInterface> mappers) {
+		super(mappers);
+	}
+
+	@Override
     protected ConnectionModelInterface getModelInstance(ModeledAuthenticatedUser currentUser,
             final Connection object) {
 

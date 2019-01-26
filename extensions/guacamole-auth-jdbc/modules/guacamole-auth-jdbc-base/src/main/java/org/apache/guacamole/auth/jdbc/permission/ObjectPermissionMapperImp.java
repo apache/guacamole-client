@@ -36,9 +36,12 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
  * @param <Mapper>
  *     The specific mapper.
  */
-public abstract class ObjectPermissionMapperImp<PermissionType extends ObjectPermissionModelInterface, Mapper extends ObjectPermissionMapper<PermissionType>> extends PermissionMapperImp<PermissionType, Mapper> 
-	implements ObjectPermissionMapperInterface<PermissionType> {
+public abstract class ObjectPermissionMapperImp<Mapper extends ObjectPermissionMapper>
+	extends PermissionMapperImp<ObjectPermissionModelInterface, Mapper> 
+	implements ObjectPermissionMapperInterface {
 
+	protected abstract Mapper getMapper();
+	
     /**
      * Retrieve the permission of the given type associated with the given
      * user and object, if it exists. If no such permission exists, null is
@@ -63,12 +66,11 @@ public abstract class ObjectPermissionMapperImp<PermissionType extends ObjectPer
      *     The requested permission, or null if no such permission is granted
      *     to the given user for the given object.
      */
-    @SuppressWarnings("unchecked")
-	public PermissionType selectOne(EntityModelInterface entity,
+	public ObjectPermissionModelInterface selectOne(EntityModelInterface entity,
             ObjectPermission.Type type,
             String identifier,
             Collection<String> effectiveGroups) {
-    	return (PermissionType) getMapper().selectOne((EntityModel) entity, type, identifier, effectiveGroups);
+    	return getMapper().selectOne((EntityModel) entity, type, identifier, effectiveGroups);
     }
 
     /**

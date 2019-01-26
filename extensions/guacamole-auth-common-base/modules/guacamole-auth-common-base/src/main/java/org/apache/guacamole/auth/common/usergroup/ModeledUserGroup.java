@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.base.ModeledPermissions;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionService;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.form.BooleanField;
 import org.apache.guacamole.form.Field;
@@ -42,7 +43,12 @@ import org.apache.guacamole.net.auth.UserGroup;
 public class ModeledUserGroup extends ModeledPermissions<UserGroupModelInterface>
         implements UserGroup {
 
-    /**
+	@Inject
+    public ModeledUserGroup(Map<String, ObjectPermissionService> mappers) {
+		super(mappers);
+	}
+
+	/**
      * The name of the attribute which controls whether a user group is
      * disabled.
      */

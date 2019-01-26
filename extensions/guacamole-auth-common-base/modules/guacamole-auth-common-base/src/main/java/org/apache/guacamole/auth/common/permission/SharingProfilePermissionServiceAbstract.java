@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.common.permission;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.guacamole.GuacamoleException;
@@ -37,19 +38,23 @@ import com.google.inject.Provider;
 public abstract class SharingProfilePermissionServiceAbstract extends ModeledObjectPermissionServiceAbstract {
 
     /**
-     * Mapper for sharing profile permissions.
-     */
-    @Inject
-    private SharingProfilePermissionMapperInterface sharingProfilePermissionMapper;
-
-    /**
      * Provider for sharing profile permission sets.
      */
     @Inject
     private Provider<SharingProfilePermissionSet> sharingProfilePermissionSetProvider;
 
+    /**
+     * Mapper for sharing profile permissions.
+     */
+    private ObjectPermissionMapperInterface sharingProfilePermissionMapper;
+
+    @Inject
+	public SharingProfilePermissionServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
+    	sharingProfilePermissionMapper = mappers.get("SharingProfilePermissionMapper");
+	}
+    
     @Override
-    protected SharingProfilePermissionMapperInterface getPermissionMapper() {
+    protected ObjectPermissionMapperInterface getPermissionMapper() {
         return sharingProfilePermissionMapper;
     }
 
