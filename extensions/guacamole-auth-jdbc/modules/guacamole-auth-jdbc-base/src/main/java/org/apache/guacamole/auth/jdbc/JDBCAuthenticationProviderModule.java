@@ -213,6 +213,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         objectPermissionServiceMultibinder.addBinding("SharingProfilePermissionService").to(SharingProfilePermissionService.class);
         objectPermissionServiceMultibinder.addBinding("UserGroupPermissionService").to(UserGroupPermissionService.class);
         objectPermissionServiceMultibinder.addBinding("UserPermissionService").to(UserPermissionService.class);
+        
         // Add MyBatis mappers
         addMapperClass(ConnectionMapper.class);
         addMapperClass(ConnectionGroupMapper.class);

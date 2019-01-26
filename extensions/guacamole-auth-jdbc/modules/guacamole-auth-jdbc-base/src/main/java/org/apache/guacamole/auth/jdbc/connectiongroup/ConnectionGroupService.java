@@ -31,7 +31,6 @@ import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterfac
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
-import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 
@@ -101,11 +100,6 @@ public class ConnectionGroupService extends ConnectionGroupServiceAbstract imple
 
 		ModeledDirectoryObjectService.getNewModelPermission(userModel, implicitPermissions, model, permission);
         
-	}
-    
-    @Override
-	protected Class<? extends ObjectPermissionModelInterface> getClassPermissionModel() {
-		return ObjectPermissionModel.class;
 	}
 
 }

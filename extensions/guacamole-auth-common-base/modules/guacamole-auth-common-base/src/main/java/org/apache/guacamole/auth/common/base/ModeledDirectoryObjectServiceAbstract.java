@@ -83,8 +83,6 @@ public abstract class ModeledDirectoryObjectServiceAbstract<InternalType extends
      */
     protected abstract ObjectPermissionMapperInterface getPermissionMapper();
 
-    protected abstract Class<? extends ObjectPermissionModelInterface> getClassPermissionModel();
-
     /**
      * Returns an instance of an object which is backed by the given model
      * object.

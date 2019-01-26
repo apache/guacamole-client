@@ -33,7 +33,6 @@ import org.apache.guacamole.auth.common.sharingprofile.SharingProfileServiceInte
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
-import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.permission.ObjectPermission.Type;
 
@@ -138,11 +137,6 @@ public class SharingProfileService extends SharingProfileServiceAbstract impleme
 		
 		ModeledDirectoryObjectService.getNewModelPermission(userModel, implicitPermissions, model, permission);
 		
-	}
-	
-	@Override
-	protected Class<? extends ObjectPermissionModelInterface> getClassPermissionModel() {
-		return ObjectPermissionModel.class;
 	}
 
 }

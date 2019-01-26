@@ -32,7 +32,6 @@ import org.apache.guacamole.auth.common.usergroup.UserGroupModelInterface;
 import org.apache.guacamole.auth.common.usergroup.UserGroupServiceAbstract;
 import org.apache.guacamole.auth.common.usergroup.UserGroupServiceInterface;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
-import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.net.auth.permission.ObjectPermission.Type;
 
@@ -77,11 +76,6 @@ public class UserGroupService extends UserGroupServiceAbstract implements UserGr
 		
 		ModeledDirectoryObjectService.getNewModelPermission(userModel, implicitPermissions, model, permission);
 		
-	}
-
-	@Override
-	protected Class<? extends ObjectPermissionModelInterface> getClassPermissionModel() {
-		return ObjectPermissionModel.class;
 	}
 
 }

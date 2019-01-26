@@ -31,7 +31,6 @@ import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.common.user.UserServiceAbstract;
 import org.apache.guacamole.auth.common.user.UserServiceInterface;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
-import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.permission.ObjectPermission.Type;
 
@@ -91,10 +90,5 @@ public class UserService extends UserServiceAbstract implements UserServiceInter
 		ModeledDirectoryObjectService.getNewModelPermission(userModel, implicitPermissions, model, permission);
 
 	}  
-	
-    @Override
-	protected Class<? extends ObjectPermissionModelInterface> getClassPermissionModel() {
-		return ObjectPermissionModel.class;
-	}
   
 }

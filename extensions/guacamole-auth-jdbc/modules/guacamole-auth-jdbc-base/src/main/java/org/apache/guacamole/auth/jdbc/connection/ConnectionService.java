@@ -155,9 +155,4 @@ public class ConnectionService extends ConnectionServiceAbstract implements Conn
 		
 	}
 
-	@Override
-	protected Class<? extends ObjectPermissionModelInterface> getClassPermissionModel() {
-		return ObjectPermissionModel.class;
-	}
-
 }
