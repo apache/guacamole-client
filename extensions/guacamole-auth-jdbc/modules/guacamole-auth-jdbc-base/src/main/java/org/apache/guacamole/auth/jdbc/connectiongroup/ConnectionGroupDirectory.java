@@ -25,10 +25,10 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupDirectoryAbstract;
-import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupDirectoryInterface;
+import org.apache.guacamole.auth.common.base.RestrictedObject;
 import org.apache.guacamole.auth.common.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.net.auth.ConnectionGroup;
+import org.apache.guacamole.net.auth.Directory;
 import org.mybatis.guice.transactional.Transactional;
 
 import com.google.inject.Inject;
@@ -37,8 +37,8 @@ import com.google.inject.Inject;
  * Implementation of the ConnectionGroup Directory which is driven by an
  * underlying, arbitrary database.
  */
-public class ConnectionGroupDirectory extends ConnectionGroupDirectoryAbstract
-    implements ConnectionGroupDirectoryInterface {
+public class ConnectionGroupDirectory extends RestrictedObject
+implements Directory<ConnectionGroup> {
 
     /**
      * Service for managing connection group objects.

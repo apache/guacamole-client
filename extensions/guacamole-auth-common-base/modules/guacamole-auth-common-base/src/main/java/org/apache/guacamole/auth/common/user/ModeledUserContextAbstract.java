@@ -30,13 +30,11 @@ import org.apache.guacamole.auth.common.base.RestrictedObject;
 import org.apache.guacamole.auth.common.connection.ConnectionDirectory;
 import org.apache.guacamole.auth.common.connection.ConnectionRecordSet;
 import org.apache.guacamole.auth.common.connection.ModeledConnection;
-import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupDirectoryInterface;
 import org.apache.guacamole.auth.common.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.auth.common.connectiongroup.RootConnectionGroup;
 import org.apache.guacamole.auth.common.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.common.sharingprofile.SharingProfileDirectoryInterface;
 import org.apache.guacamole.auth.common.usergroup.ModeledUserGroup;
-import org.apache.guacamole.auth.common.usergroup.UserGroupDirectoryInterface;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.net.auth.ActivityRecord;
@@ -65,28 +63,28 @@ public abstract class ModeledUserContextAbstract extends RestrictedObject
      * with this context.
      */
     @Inject
-    protected UserDirectoryInterface userDirectory;
+    protected Directory<User> userDirectory;
     
     /**
      * User group directory restricted by the permissions of the user associated
      * with this context.
      */
     @Inject
-    protected UserGroupDirectoryInterface userGroupDirectory;
+    protected Directory<UserGroup> userGroupDirectory;
  
+    /**
+     * Connection group directory restricted by the permissions of the user
+     * associated with this context.
+     */
+    @Inject
+    protected Directory<ConnectionGroup> connectionGroupDirectory;
+    
     /**
      * Connection directory restricted by the permissions of the user
      * associated with this context.
      */
     @Inject
     protected ConnectionDirectory connectionDirectory;
-
-    /**
-     * Connection group directory restricted by the permissions of the user
-     * associated with this context.
-     */
-    @Inject
-    protected ConnectionGroupDirectoryInterface connectionGroupDirectory;
 
     /**
      * Sharing profile directory restricted by the permissions of the user

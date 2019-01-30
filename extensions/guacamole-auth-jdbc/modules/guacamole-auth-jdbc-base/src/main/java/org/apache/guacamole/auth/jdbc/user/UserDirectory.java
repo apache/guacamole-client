@@ -25,9 +25,9 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.common.base.RestrictedObject;
 import org.apache.guacamole.auth.common.user.ModeledUserAbstract;
-import org.apache.guacamole.auth.common.user.UserDirectoryAbstract;
-import org.apache.guacamole.auth.common.user.UserDirectoryInterface;
+import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.User;
 import org.mybatis.guice.transactional.Transactional;
 
@@ -37,7 +37,7 @@ import com.google.inject.Inject;
  * Implementation of the User Directory which is driven by an underlying,
  * arbitrary database.
  */
-public class UserDirectory extends UserDirectoryAbstract implements UserDirectoryInterface {
+public class UserDirectory extends RestrictedObject implements Directory<User> {
 
     /**
      * Service for managing user objects.

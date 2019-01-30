@@ -35,7 +35,6 @@ import org.apache.guacamole.auth.common.connection.ConnectionRecordMapperInterfa
 import org.apache.guacamole.auth.common.connection.ConnectionServiceInterface;
 import org.apache.guacamole.auth.common.connection.ModeledConnection;
 import org.apache.guacamole.auth.common.connection.ModeledGuacamoleConfiguration;
-import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupDirectoryInterface;
 import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupMapperInterface;
 import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupServiceInterface;
 import org.apache.guacamole.auth.common.connectiongroup.ModeledConnectionGroup;
@@ -69,13 +68,11 @@ import org.apache.guacamole.auth.common.sharingprofile.SharingProfileServiceInte
 import org.apache.guacamole.auth.common.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.auth.common.user.ModeledUserAbstract;
 import org.apache.guacamole.auth.common.user.ModeledUserContextAbstract;
-import org.apache.guacamole.auth.common.user.UserDirectoryInterface;
 import org.apache.guacamole.auth.common.user.UserMapperInterface;
 import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.common.user.UserRecordMapperInterface;
 import org.apache.guacamole.auth.common.user.UserServiceInterface;
 import org.apache.guacamole.auth.common.usergroup.ModeledUserGroup;
-import org.apache.guacamole.auth.common.usergroup.UserGroupDirectoryInterface;
 import org.apache.guacamole.auth.common.usergroup.UserGroupMapperInterface;
 import org.apache.guacamole.auth.common.usergroup.UserGroupModelInterface;
 import org.apache.guacamole.auth.common.usergroup.UserGroupServiceInterface;
@@ -140,6 +137,10 @@ import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMemberUserMapperImp;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupParentUserGroupMapper;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupParentUserGroupMapperImp;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupService;
+import org.apache.guacamole.net.auth.ConnectionGroup;
+import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
@@ -242,7 +243,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(ActiveConnectionPermissionSet.class);
         bind(CommonEnvironment.class).toInstance(environment);
         bind(ConnectionDirectory.class);
-        bind(ConnectionGroupDirectoryInterface.class).to(ConnectionGroupDirectory.class);
+        bind(new TypeLiteral<Directory<ConnectionGroup>>(){}).to(ConnectionGroupDirectory.class);
         bind(ConnectionGroupPermissionSet.class);
         bind(ConnectionPermissionSet.class);
         bind(ModeledConnection.class);
@@ -257,8 +258,8 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(SharingProfilePermissionSet.class);
         bind(SystemPermissionSet.class);
         bind(TrackedActiveConnection.class);
-        bind(UserDirectoryInterface.class).to(UserDirectory.class);
-        bind(UserGroupDirectoryInterface.class).to(UserGroupDirectory.class);
+        bind(new TypeLiteral<Directory<User>>(){}).to(UserDirectory.class);
+        bind(new TypeLiteral<Directory<UserGroup>>(){}).to(UserGroupDirectory.class);
         bind(UserGroupPermissionSet.class);
         bind(UserPermissionSet.class);
         

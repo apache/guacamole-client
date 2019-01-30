@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.jdbc.user;
 
 import java.util.Date;
 
+import org.apache.guacamole.auth.common.base.RestrictedObject;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.common.user.ModeledUserContextAbstract;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
@@ -39,10 +40,10 @@ public class ModeledUserContext extends ModeledUserContextAbstract {
         super.init(currentUser);
         
         // Init directories
-        userDirectory.init(currentUser);
-        userGroupDirectory.init(currentUser);
+        ((RestrictedObject) userDirectory).init(currentUser);
+        ((RestrictedObject) userGroupDirectory).init(currentUser);
         connectionDirectory.init(currentUser);
-        connectionGroupDirectory.init(currentUser);
+        ((RestrictedObject) connectionGroupDirectory).init(currentUser);
         sharingProfileDirectory.init(currentUser);
         activeConnectionDirectory.init(currentUser);
 
