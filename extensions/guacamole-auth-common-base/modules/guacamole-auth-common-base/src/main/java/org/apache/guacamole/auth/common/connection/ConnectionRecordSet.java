@@ -31,7 +31,7 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 
 /**
- * A JDBC implementation of ActivityRecordSet for ConnectionRecords. Calls to
+ * A implementation of ActivityRecordSet for ConnectionRecords. Calls to
  * asCollection() will query connection history records from the database. Which
  * records are returned will be determined by the values passed in earlier.
  */

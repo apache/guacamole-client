@@ -27,6 +27,12 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
  */
 public interface ObjectPermissionModelInterface extends PermissionModelInterface<ObjectPermission.Type> {
 
+	/**
+     * Returns the unique identifier of the object affected by this permission.
+     *
+     * @return
+     *     The unique identifier of the object affected by this permission.
+     */
 	public String getObjectIdentifier();
 
 }

@@ -33,9 +33,51 @@ import org.apache.guacamole.protocol.GuacamoleClientInformation;
  */
 public interface ConnectionGroupServiceInterface  {
 
+	/**
+     * Returns the set of all identifiers for all connection groups within the
+     * connection group having the given identifier. Only connection groups that
+     * the user has read access to will be returned.
+     * 
+     * Permission to read the connection group having the given identifier is
+     * NOT checked.
+     *
+     * @param user
+     *            The user retrieving the identifiers.
+     * 
+     * @param identifier
+     *            The identifier of the parent connection group, or null to
+     *            check the root connection group.
+     *
+     * @return The set of all identifiers for all connection groups in the
+     *         connection group having the given identifier that the user has
+     *         read access to.
+     *
+     * @throws GuacamoleException
+     *             If an error occurs while reading identifiers.
+     */
 	public Set<String> getIdentifiersWithin(ModeledAuthenticatedUser user,
             String identifier) throws GuacamoleException;
 
+	/**
+     * Connects to the given connection group as the given user, using the given
+     * client information. If the user does not have permission to read the
+     * connection group, permission will be denied.
+     *
+     * @param user
+     *            The user connecting to the connection group.
+     *
+     * @param connectionGroup
+     *            The connectionGroup being connected to.
+     *
+     * @param info
+     *            Information associated with the connecting client.
+     *
+     * @return A connected GuacamoleTunnel associated with a newly-established
+     *         connection.
+     *
+     * @throws GuacamoleException
+     *             If permission to connect to this connection is denied.
+     */
 	public GuacamoleTunnel connect(ModeledAuthenticatedUser user,
             ModeledConnectionGroup connectionGroup, GuacamoleClientInformation info,
             Map<String, String> tokens) throws GuacamoleException;

@@ -32,7 +32,7 @@ import org.apache.guacamole.GuacamoleException;
  *
  * IMPORTANT: Because the Injector returned by get() is cached statically, only
  * ONE implementation of this class may be used within any individual
- * classloader. Within the context of the JDBC extension, as long as each built
+ * classloader. Within the context of the extension, as long as each built
  * extension only provides one subclass of this class, things should work
  * properly, as each extension is given its own classloader by Guacamole.
  */
@@ -46,7 +46,7 @@ public abstract class CommonInjectorProvider {
 
     /**
      * Creates a new instance of the Guice Injector which should be used
-     * across the entire JDBC authentication extension. This function will
+     * across the entire authentication extension. This function will
      * generally only be called once, but multiple invocations are possible if
      * get() is invoked several times concurrently prior to the Injector being
      * cached.
@@ -58,13 +58,13 @@ public abstract class CommonInjectorProvider {
 
     /**
      * Returns a common, singleton instance of a Guice Injector, configured for
-     * the injections required by the JDBC authentication extension. The result
+     * the injections required by the authentication extension. The result
      * of the first call to this function will be cached statically within this
      * class, and will be returned for all subsequent calls.
      *
      * @return
      *     A singleton instance of the Guice Injector used across the entire
-     *     JDBC authentication extension.
+     *     authentication extension.
      *
      * @throws GuacamoleException
      *     If the Injector cannot be created due to an error.

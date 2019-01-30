@@ -27,20 +27,76 @@ import java.util.Date;
  */
 public interface ActivityRecordModelInterface {
 
+	/**
+     * Returns the ID of this record in the database, if it exists.
+     *
+     * @return
+     *     The ID of this record in the database, or null if this record was
+     *     not retrieved from the database.
+     */
 	public Object getRecordID();
 
+	/**
+     * Returns the time the activity was initiated by the associated user.
+     *
+     * @return
+     *     The time the activity was initiated by the associated user.
+     */
 	public Date getStartDate();
 
+	/**
+     * Returns the time the activity ended, or null if the end time is not
+     * known or the activity is still in progress.
+     *
+     * @return
+     *     The time the activity ended, or null if the end time is not known or
+     *     the activity is still in progress.
+     */
 	public Date getEndDate();
 
+	/**
+     * Returns the remote host associated with the user that performed the
+     * activity.
+     *
+     * @return
+     *     The remote host associated with the user that performed the activity.
+     */
 	public String getRemoteHost();
 
+	/**
+     * Returns the username of the user that performed the activity associated
+     * with this record.
+     * 
+     * @return
+     *     The username of the user that performed the activity associated with
+     *     this record.
+     */
 	public String getUsername();
 
+	/**
+     * Sets the time the activity was initiated by the associated user.
+     *
+     * @param startDate
+     *     The time the activity was initiated by the associated user.
+     */
 	public void setStartDate(Date date);
 
+	/**
+     * Sets the remote host associated with the user that performed the
+     * activity.
+     *
+     * @param remoteHost
+     *     The remote host associated with the user that performed the activity.
+     */
 	public void setRemoteHost(String remoteHostname);
 
+	/**
+     * Sets the time the activity ended, if known.
+     *
+     * @param endDate
+     *     The time the activity ended, or null if the end time is not known or
+     *     the activity is still in progress.
+     */
 	public void setEndDate(Date date);
 
 }

@@ -45,7 +45,7 @@ public class SharedConnection implements Connection {
      * The name of the attribute which contains the username of the user that
      * shared this connection.
      */
-    public static final String CONNECTION_OWNER = "jdbc-shared-by";
+    public static final String CONNECTION_OWNER = "shared-by";
 
     /**
      * Service for establishing tunnels to Guacamole connections.

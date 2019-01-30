@@ -29,8 +29,20 @@ package org.apache.guacamole.auth.common.base;
  */
 public interface ArbitraryAttributeModelInterface {
 
+	/**
+     * Returns the name of this attribute.
+     *
+     * @return
+     *     The name of this attribute.
+     */
 	public String getName();
 
+	/**
+     * Returns the value of this attribute.
+     *
+     * @return
+     *     The value of this attribute.
+     */
 	public String getValue();
 
 }

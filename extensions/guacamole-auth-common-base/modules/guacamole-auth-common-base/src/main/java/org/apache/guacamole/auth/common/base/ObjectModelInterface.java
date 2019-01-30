@@ -27,16 +27,65 @@ import java.util.Collection;
  */
 public interface ObjectModelInterface {
 
+	/**
+     * Returns the identifier that uniquely identifies this object.
+     *
+     * @return
+     *     The identifier that uniquely identifies this object.
+     */
 	public String getIdentifier();
 	
+	/**
+     * Sets the identifier that uniquely identifies this object.
+     *
+     * @param identifier
+     *     The identifier that uniquely identifies this object.
+     */
 	public void setIdentifier(String identifier);
 	
+	/**
+     * Returns a map of attribute name/value pairs for all attributes associated
+     * with this model which do not have explicit mappings to actual model
+     * properties. All other attributes (those which are explicitly supported
+     * by the model) should instead be mapped to properties with corresponding
+     * and properly-typed columns.
+     *
+     * @return
+     *     A map of attribute name/value pairs for all attributes associated
+     *     with this model which do not otherwise have explicit mappings to
+     *     properties.
+     */
 	public ArbitraryAttributeMapInterface getArbitraryAttributeMap();
 	
+	/**
+     * Returns a Collection view of the equivalent attribute model objects
+     * which make up the map of arbitrary attribute name/value pairs returned
+     * by getArbitraryAttributeMap(). Additions and removals on the returned
+     * Collection directly affect the attribute map.
+     *
+     * @return
+     *      A Collection view of the map returned by
+     *      getArbitraryAttributeMap().
+     */
 	public Collection<ArbitraryAttributeModelInterface> getArbitraryAttributes();
 	
+	/**
+     * Returns the ID of this object in the database, if it exists.
+     *
+     * @return
+     *     The ID of this object in the database, or null if this object was
+     *     not retrieved from the database.
+     */
 	public Object getObjectID();
 	
+	/**
+     * Returns whether at least one arbitrary attribute name/value pair has
+     * been associated with this object.
+     *
+     * @return
+     *     true if this object has at least one arbitrary attribute set, false
+     *     otherwise.
+     */
 	public boolean hasArbitraryAttributes();
 	
 }

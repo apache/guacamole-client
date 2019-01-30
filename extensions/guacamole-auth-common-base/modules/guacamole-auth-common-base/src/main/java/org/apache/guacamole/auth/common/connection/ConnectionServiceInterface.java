@@ -35,23 +35,127 @@ import org.apache.guacamole.protocol.GuacamoleClientInformation;
 
 public interface ConnectionServiceInterface {
 
+	/**
+     * Retrieves the connection history of the given connection, including any
+     * active connections.
+     *
+     * @param user
+     *            The user retrieving the connection history.
+     *
+     * @param connection
+     *            The connection whose history is being retrieved.
+     *
+     * @return The connection history of the given connection, including any
+     *         active connections.
+     *
+     * @throws GuacamoleException
+     *             If permission to read the connection history is denied.
+     */
 	public List<ConnectionRecord> retrieveHistory(ModeledAuthenticatedUser user,
             ModeledConnection connection) throws GuacamoleException;
 	
-	public Connection retrieveObject(ModeledAuthenticatedUser currentUser, String identifier) throws GuacamoleException;
-
+	/**
+     * Retrieves the connection history records matching the given criteria.
+     * Retrieves up to <code>limit</code> connection history records matching
+     * the given terms and sorted by the given predicates. Only history records
+     * associated with data that the given user can read are returned.
+     *
+     * @param user
+     *            The user retrieving the connection history.
+     *
+     * @param requiredContents
+     *            The search terms that must be contained somewhere within each
+     *            of the returned records.
+     *
+     * @param sortPredicates
+     *            A list of predicates to sort the returned records by, in order
+     *            of priority.
+     *
+     * @param limit
+     *            The maximum number of records that should be returned.
+     *
+     * @return The connection history of the given connection, including any
+     *         active connections.
+     *
+     * @throws GuacamoleException
+     *             If permission to read the connection history is denied.
+     */
 	public List<ConnectionRecord> retrieveHistory(ModeledAuthenticatedUser user,
             Collection<ActivityRecordSearchTerm> requiredContents,
             List<ActivityRecordSortPredicate> sortPredicates, int limit)
             throws GuacamoleException;
 
+	/**
+     * Connects to the given connection as the given user, using the given
+     * client information. If the user does not have permission to read the
+     * connection, permission will be denied.
+     *
+     * @param user
+     *            The user connecting to the connection.
+     *
+     * @param connection
+     *            The connection being connected to.
+     *
+     * @param info
+     *            Information associated with the connecting client.
+     *
+     * @param tokens
+     *     A Map containing the token names and corresponding values to be
+     *     applied as parameter tokens when establishing the connection.
+     *
+     * @return A connected GuacamoleTunnel associated with a newly-established
+     *         connection.
+     *
+     * @throws GuacamoleException
+     *             If permission to connect to this connection is denied.
+     */
 	public GuacamoleTunnel connect(ModeledAuthenticatedUser user,
             ModeledConnection connection, GuacamoleClientInformation info,
             Map<String, String> tokens) throws GuacamoleException;
 
+	/**
+     * Retrieves all parameters visible to the given user and associated with
+     * the connection having the given identifier. If the given user has no
+     * access to such parameters, or no such connection exists, the returned map
+     * will be empty.
+     *
+     * @param user
+     *            The user retrieving connection parameters.
+     *
+     * @param identifier
+     *            The identifier of the connection whose parameters are being
+     *            retrieved.
+     *
+     * @return A new map of all parameter name/value pairs that the given user
+     *         has access to.
+     */
 	public Map<String, String> retrieveParameters(ModeledAuthenticatedUser currentUser, String identifier);
 
+	/**
+     * Returns the set of all identifiers for all connections within the
+     * connection group having the given identifier. Only connections that the
+     * user has read access to will be returned.
+     * 
+     * Permission to read the connection group having the given identifier is
+     * NOT checked.
+     *
+     * @param user
+     *            The user retrieving the identifiers.
+     * 
+     * @param identifier
+     *            The identifier of the parent connection group, or null to
+     *            check the root connection group.
+     *
+     * @return The set of all identifiers for all connections in the connection
+     *         group having the given identifier that the user has read access
+     *         to.
+     *
+     * @throws GuacamoleException
+     *             If an error occurs while reading identifiers.
+     */
 	public Set<String> getIdentifiersWithin(ModeledAuthenticatedUser currentUser, String identifier) throws GuacamoleException;
+
+	public Connection retrieveObject(ModeledAuthenticatedUser currentUser, String identifier) throws GuacamoleException;
 
 	public Collection<ModeledConnection> retrieveObjects(ModeledAuthenticatedUser currentUser,
 			Collection<String> identifiers) throws GuacamoleException;

@@ -53,6 +53,13 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
  *            The underlying model object used to represent InternalType in the
  *            database.
  */
+/**
+ * @author pirao
+ *
+ * @param <InternalType>
+ * @param <ExternalType>
+ * @param <ModelType>
+ */
 public abstract class ModeledDirectoryObjectServiceAbstract<InternalType extends ModeledDirectoryObject<ModelType>, ExternalType extends Identifiable, ModelType extends ObjectModelInterface>
         implements DirectoryObjectService<InternalType, ExternalType> {
 
@@ -422,6 +429,14 @@ public abstract class ModeledDirectoryObjectServiceAbstract<InternalType extends
 
     }
    	
+   	/**
+   	 * Iterate the received permissions to create specifically the permissions of each type
+   	 * 
+   	 * @param userModel
+   	 * @param model
+   	 * @param implicitPermissionsLoaded
+   	 * @param implicitUserPermissions
+   	 */
    	protected void loadPermissions(UserModelInterface userModel,
    								ModelType model,
 								 Collection<ObjectPermissionModelInterface> implicitPermissionsLoaded,
@@ -435,6 +450,14 @@ public abstract class ModeledDirectoryObjectServiceAbstract<InternalType extends
         }
 	}
 
+    /**
+     * Create the specific permission type
+     * 
+     * @param userModel
+     * @param implicitPermissions
+     * @param model
+     * @param permission
+     */
     protected abstract void createModelPermission(UserModelInterface userModel,
 			Collection<ObjectPermissionModelInterface> implicitPermissions, ModelType model,
 			Type permission);

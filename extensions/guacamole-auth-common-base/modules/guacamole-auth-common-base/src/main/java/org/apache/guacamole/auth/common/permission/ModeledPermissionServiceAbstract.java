@@ -141,7 +141,6 @@ public abstract class ModeledPermissionServiceAbstract<PermissionSetType extends
 
     }
 
-    @SuppressWarnings("unchecked")
 	@Override
     public Set<PermissionType> retrievePermissions(ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,

@@ -436,7 +436,7 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      * guacd when establishing a connection to the remote desktop described by
      * this connection. If no such information is defined for this specific
      * remote desktop connection, the default guacd connection information will
-     * be used instead, as defined by JDBCEnvironment.
+     * be used instead, as defined by Environment.
      *
      * @return
      *     The connection information which should be used to connect to guacd

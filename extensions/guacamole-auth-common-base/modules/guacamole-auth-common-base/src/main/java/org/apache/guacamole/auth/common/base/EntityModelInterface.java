@@ -35,8 +35,25 @@ package org.apache.guacamole.auth.common.base;
  */
 public interface EntityModelInterface {
 
+	/**
+     * Returns the ID of the entity entry which corresponds to this object in
+     * the database, if it exists. Note that this is distinct from the objectID,
+     * inherited from ObjectModel, which is specific to the actual type of
+     * object represented by the entity.
+     *
+     * @return
+     *     The ID of this entity in the database, or null if this entity was
+     *     not retrieved from the database.
+     */
 	public Integer getEntityID();
 	
+	/**
+     * Returns the type of object represented by the entity. Each entity may be
+     * either a user or a user group.
+     *
+     * @return
+     *     The type of object represented by the entity.
+     */
 	public EntityType getEntityType();
 
 }

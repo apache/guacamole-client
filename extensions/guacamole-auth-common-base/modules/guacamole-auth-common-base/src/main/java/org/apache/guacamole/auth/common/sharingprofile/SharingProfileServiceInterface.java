@@ -30,6 +30,22 @@ import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
  */
 public interface SharingProfileServiceInterface {
 
+	/**
+     * Retrieves all parameters visible to the given user and associated with
+     * the sharing profile having the given identifier. If the given user has no
+     * access to such parameters, or no such sharing profile exists, the
+     * returned map will be empty.
+     *
+     * @param user
+     *            The user retrieving sharing profile parameters.
+     *
+     * @param identifier
+     *            The identifier of the sharing profile whose parameters are
+     *            being retrieved.
+     *
+     * @return A new map of all parameter name/value pairs that the given user
+     *         has access to.
+     */
 	public Map<String, String> retrieveParameters(ModeledAuthenticatedUser user,
             String identifier);
 

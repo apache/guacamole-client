@@ -25,13 +25,24 @@ package org.apache.guacamole.auth.common.base;
  * database.
  */
 public interface ChildObjectModelInterface extends ObjectModelInterface {
-
-	public String getName();
 	
-	public void setName(String name);
-	
+	/**
+     * Returns the identifier of the parent connection group, or null if the
+     * parent connection group is the root connection group.
+     *
+     * @return 
+     *     The identifier of the parent connection group, or null if the parent
+     *     connection group is the root connection group.
+     */
 	public String getParentIdentifier();
 
+	/**
+     * Sets the identifier of the parent connection group.
+     *
+     * @param parentIdentifier
+     *     The identifier of the parent connection group, or null if the parent
+     *     connection group is the root connection group.
+     */
 	public void setParentIdentifier(String parentIdentifier);
 
 }

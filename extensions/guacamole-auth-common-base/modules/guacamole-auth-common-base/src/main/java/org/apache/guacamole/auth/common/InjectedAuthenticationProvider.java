@@ -47,10 +47,10 @@ public abstract class InjectedAuthenticationProvider extends AbstractAuthenticat
      * underlying AuthenticationProviderService. The behavior of the
      * AuthenticationProvider is defined by the given
      * AuthenticationProviderService implementation, which will be injected by
-     * the Guice Injector provided by the given JDBCInjectorProvider.
+     * the Guice Injector provided by the given InjectorProvider.
      *
      * @param injectorProvider
-     *     A JDBCInjectorProvider instance which provides singleton instances
+     *     A InjectorProvider instance which provides singleton instances
      *     of a Guice Injector, pre-configured to set up all injections and
      *     access to the underlying database via MyBatis.
      *

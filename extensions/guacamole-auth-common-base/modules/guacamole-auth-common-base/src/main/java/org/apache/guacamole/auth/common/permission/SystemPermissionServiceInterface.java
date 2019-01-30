@@ -35,14 +35,33 @@ import org.apache.guacamole.net.auth.permission.SystemPermission;
  */
 public interface SystemPermissionServiceInterface {
 
-	public SystemPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModelInterface> targetEntity,
-            Set<String> effectiveGroups) throws GuacamoleException;
-	
-	public Set<SystemPermission> retrievePermissions(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModelInterface> targetEntity,
-            Set<String> effectiveGroups) throws GuacamoleException;
-
+	/**
+     * Retrieves whether the permission of the given type has been granted to
+     * the given entity. Permission inheritance through group membership is
+     * taken into account.
+     *
+     * @param user
+     *     The user retrieving the permission.
+     *
+     * @param targetEntity
+     *     The entity associated with the permission to be retrieved.
+     * 
+     * @param type
+     *     The type of permission to retrieve.
+     *
+     * @param effectiveGroups
+     *     The identifiers of all groups that should be taken into account
+     *     when determining the permissions effectively granted to the entity.
+     *     If no groups are given, only permissions directly granted to the
+     *     entity will be used.
+     *
+     * @return
+     *     true if permission of the given type has been granted to the given
+     *     entity, false otherwise.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the requested permission.
+     */
 	public boolean hasPermission(ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
             SystemPermission.Type type, Set<String> effectiveGroups)
@@ -57,5 +76,13 @@ public interface SystemPermissionServiceInterface {
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
             Collection<SystemPermission> permissions)
             throws GuacamoleException;
+
+	public SystemPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
+            ModeledPermissions<? extends EntityModelInterface> targetEntity,
+            Set<String> effectiveGroups) throws GuacamoleException;
+	
+	public Set<SystemPermission> retrievePermissions(ModeledAuthenticatedUser user,
+            ModeledPermissions<? extends EntityModelInterface> targetEntity,
+            Set<String> effectiveGroups) throws GuacamoleException;
 
 }

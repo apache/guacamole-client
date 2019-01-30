@@ -18,7 +18,7 @@
  */
 
 /* Label/tag denoting the user that shared a connection */
-.jdbc-share-tag {
+.share-tag {
 
     background: #0095ff;
     padding: 0.25em;

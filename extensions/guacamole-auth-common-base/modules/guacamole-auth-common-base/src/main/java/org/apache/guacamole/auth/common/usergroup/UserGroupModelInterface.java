@@ -28,8 +28,24 @@ import org.apache.guacamole.auth.common.base.ObjectModelInterface;
  */
 public interface UserGroupModelInterface extends ObjectModelInterface, EntityModelInterface {
 
+	/**
+     * Sets whether this user group has been disabled. Memberships of disabled
+     * user groups are treated as non-existent, effectively disabling
+     * membership in that group.
+     *
+     * @param disabled
+     *     true if this user group should be disabled, false otherwise.
+     */
 	public void setDisabled(boolean equals);
 
+	/**
+     * Returns whether this user group has been disabled. Memberships of
+     * disabled user groups are treated as non-existent, effectively disabling
+     * membership in that group.
+     *
+     * @return
+     *     true if this user group is disabled, false otherwise.
+     */
 	public boolean isDisabled();
 
 }

@@ -31,7 +31,7 @@ import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 
 /**
- * A JDBC implementation of ActivityRecordSet for retrieving user login history.
+ * A implementation of ActivityRecordSet for retrieving user login history.
  * Calls to asCollection() will query user login records from the database.
  * Which records are returned will be determined by the values passed in
  * earlier.

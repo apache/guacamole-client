@@ -22,11 +22,18 @@ package org.apache.guacamole.auth.common.connectiongroup;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 
 /**
- * Implementation of the ConnectionGroup Directory which is driven by an
+ * Interface of the ConnectionGroup Directory which is driven by an
  * underlying, arbitrary database.
  */
 public interface ConnectionGroupDirectoryInterface {
 
+	/**
+     * Initializes this object, associating it with the current authenticated
+     * user and populating it with data from the given model object
+     *
+     * @param currentUser
+     *     The user that created or retrieved this object.
+     */
 	public void init(ModeledAuthenticatedUser currentUser);
 
 }

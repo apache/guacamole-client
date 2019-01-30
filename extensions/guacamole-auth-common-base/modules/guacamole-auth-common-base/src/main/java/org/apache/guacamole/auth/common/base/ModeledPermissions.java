@@ -88,6 +88,11 @@ public abstract class ModeledPermissions<ModelType extends ObjectModelInterface 
      */
     private ObjectPermissionService userPermissionService;
     
+    /**
+     * Inject Mappers
+     * 
+     * @param mappers
+     */
     @Inject
 	public ModeledPermissions(Map<String, ObjectPermissionService> mappers) {
     	connectionGroupPermissionService = mappers.get("ConnectionGroupPermissionService");

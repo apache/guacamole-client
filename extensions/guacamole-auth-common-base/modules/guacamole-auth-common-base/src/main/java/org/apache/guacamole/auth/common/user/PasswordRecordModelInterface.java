@@ -29,12 +29,38 @@ import java.util.Date;
  */
 public interface PasswordRecordModelInterface {
 
+	/**
+     * Returns the hash of the password and password salt.
+     *
+     * @return
+     *     The hash of the password and password salt.
+     */
 	public byte[] getPasswordHash();
 
+	/**
+     * Returns the random salt that was used when generating the password hash.
+     *
+     * @return
+     *     The random salt that was used when generating the password hash.
+     */
 	public byte[] getPasswordSalt();
 
+	/**
+     * Returns the date that this password was first set for the associated
+     * user.
+     *
+     * @return
+     *     The date that this password was first set for the associated user.
+     */
 	public Date getPasswordDate();
 
+	/**
+     * Returns the database ID of the user associated with this password
+     * record.
+     *
+     * @return
+     *     The database ID of the user associated with this password record.
+     */
 	public Integer getUserID();
 
 }

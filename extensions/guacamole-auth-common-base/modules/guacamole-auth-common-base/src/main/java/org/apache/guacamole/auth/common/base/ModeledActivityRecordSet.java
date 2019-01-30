@@ -31,7 +31,7 @@ import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 
 /**
- * A JDBC implementation of ActivityRecordSet. Calls to asCollection() will
+ * A implementation of ActivityRecordSet. Calls to asCollection() will
  * query history records using an implementation-specific mechanism. Which
  * records are returned will be determined by the values passed in earlier.
  *

@@ -23,7 +23,7 @@ import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 
 /**
  * Common base class for objects have an underlying model. For the purposes of
- * JDBC-driven authentication providers, all modeled objects are also
+ * driven authentication providers, all modeled objects are also
  * restricted.
  *
  * @param <ModelType>
