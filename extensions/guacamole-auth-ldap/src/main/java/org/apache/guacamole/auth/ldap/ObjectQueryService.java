@@ -221,6 +221,11 @@ public class ObjectQueryService {
                         logger.debug("Got a referral, but configured to not follow them.", e);
                     }
                 }
+                
+                catch (LDAPException e) {
+                  logger.warn("Failed to process an LDAP search result. Error was: {}", e.resultCodeToString());
+                  logger.debug("Error processing LDAPEntry search result.", e);
+                }
 
             }
 
