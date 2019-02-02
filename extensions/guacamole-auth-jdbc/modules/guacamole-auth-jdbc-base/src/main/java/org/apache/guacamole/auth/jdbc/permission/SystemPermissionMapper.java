@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
-
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.ibatis.annotations.Param;
@@ -28,27 +27,27 @@ import org.apache.ibatis.annotations.Param;
 /**
  * Mapper for system-level permissions.
  */
-public interface SystemPermissionMapper extends PermissionMapper<SystemPermissionModel> {
+public interface SystemPermissionMapper
+        extends PermissionMapper<SystemPermissionModel> {
 
-	/**
+    /**
      * Retrieve the permission of the given type associated with the given
      * entity, if it exists. If no such permission exists, null is returned.
      *
      * @param entity
-     *     The entity to retrieve permissions for.
+     *            The entity to retrieve permissions for.
      *
      * @param type
-     *     The type of permission to return.
+     *            The type of permission to return.
      *
      * @param effectiveGroups
-     *     The identifiers of all groups that should be taken into account
-     *     when determining the permissions effectively granted to the user. If
-     *     no groups are given, only permissions directly granted to the user
-     *     will be used.
+     *            The identifiers of all groups that should be taken into
+     *            account when determining the permissions effectively granted
+     *            to the user. If no groups are given, only permissions directly
+     *            granted to the user will be used.
      *
-     * @return
-     *     The requested permission, or null if no such permission is granted
-     *     to the given entity.
+     * @return The requested permission, or null if no such permission is
+     *         granted to the given entity.
      */
     SystemPermissionModel selectOne(@Param("entity") EntityModel entity,
             @Param("type") SystemPermission.Type type,

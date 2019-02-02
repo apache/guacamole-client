@@ -20,36 +20,34 @@
 package org.apache.guacamole.auth.jdbc.sharingprofile;
 
 import java.util.Collection;
-
 import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
 import org.apache.guacamole.auth.common.sharingprofile.SharingProfileParameterMapperInterface;
-
 import com.google.inject.Inject;
 
 /**
  * Mapper for sharing profile parameter objects.
  */
-public class SharingProfileParameterMapperImp 
-		implements SharingProfileParameterMapperInterface {
+public class SharingProfileParameterMapperImp
+        implements SharingProfileParameterMapperInterface {
 
-	@Inject 
-	private SharingProfileParameterMapper sharingProfileParameterMapper;
-	
+    @Inject
+    private SharingProfileParameterMapper sharingProfileParameterMapper;
+
     /**
      * Returns a collection of all parameters associated with the sharing
      * profile having the given identifier.
      *
      * @param identifier
-     *     The identifier of the sharing profile whose parameters are to be
-     *     retrieved.
+     *            The identifier of the sharing profile whose parameters are to
+     *            be retrieved.
      *
-     * @return
-     *     A collection of all parameters associated with the sharing profile
-     *     having the given identifier. This collection will be empty if no
-     *     such sharing profile exists.
+     * @return A collection of all parameters associated with the sharing
+     *         profile having the given identifier. This collection will be
+     *         empty if no such sharing profile exists.
      */
-    public Collection<ArbitraryAttributeModelInterface> select(String identifier) {
-    	return sharingProfileParameterMapper.select(identifier);
+    public Collection<ArbitraryAttributeModelInterface> select(
+            String identifier) {
+        return sharingProfileParameterMapper.select(identifier);
     }
 
     /**
@@ -57,13 +55,12 @@ public class SharingProfileParameterMapperImp
      * new sharing profile parameters.
      *
      * @param parameters
-     *     The sharing profile parameters to insert.
+     *            The sharing profile parameters to insert.
      *
-     * @return
-     *     The number of rows inserted.
+     * @return The number of rows inserted.
      */
     public int insert(Collection<ArbitraryAttributeModelInterface> parameters) {
-    	return sharingProfileParameterMapper.insert(parameters);
+        return sharingProfileParameterMapper.insert(parameters);
     }
 
     /**
@@ -71,14 +68,13 @@ public class SharingProfileParameterMapperImp
      * given identifier.
      *
      * @param identifier
-     *     The identifier of the sharing profile whose parameters should be
-     *     deleted.
+     *            The identifier of the sharing profile whose parameters should
+     *            be deleted.
      *
-     * @return
-     *     The number of rows deleted.
+     * @return The number of rows deleted.
      */
     public int delete(String identifier) {
-    	return sharingProfileParameterMapper.delete(identifier);
+        return sharingProfileParameterMapper.delete(identifier);
     }
-    
+
 }

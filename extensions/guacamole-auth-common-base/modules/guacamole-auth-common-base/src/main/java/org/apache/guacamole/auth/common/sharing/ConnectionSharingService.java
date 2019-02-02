@@ -20,9 +20,7 @@
 package org.apache.guacamole.auth.common.sharing;
 
 import java.util.Collections;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.common.sharing.connection.SharedConnectionDefinition;
@@ -36,7 +34,6 @@ import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.UserCredentials;
-
 import com.google.inject.Inject;
 
 /**
@@ -72,10 +69,9 @@ public class ConnectionSharingService {
      * The credentials expected when a user is authenticating using temporary
      * credentials in order to obtain access to a single connection.
      */
-    public static final CredentialsInfo SHARE_KEY =
-            new CredentialsInfo(Collections.<Field>singletonList(
-                new Field(SHARE_KEY_NAME, Field.Type.QUERY_PARAMETER)
-            ));
+    public static final CredentialsInfo SHARE_KEY = new CredentialsInfo(
+            Collections.<Field>singletonList(
+                    new Field(SHARE_KEY_NAME, Field.Type.QUERY_PARAMETER)));
 
     /**
      * Generates a set of temporary credentials which can be used to connect to
@@ -84,35 +80,36 @@ public class ConnectionSharingService {
      * profile, permission will be denied.
      *
      * @param user
-     *     The user sharing the connection.
+     *            The user sharing the connection.
      *
      * @param activeConnection
-     *     The active connection being shared.
+     *            The active connection being shared.
      *
      * @param sharingProfileIdentifier
-     *     The identifier of the sharing profile dictating the semantics or
-     *     restrictions applying to the shared session.
+     *            The identifier of the sharing profile dictating the semantics
+     *            or restrictions applying to the shared session.
      *
-     * @return
-     *     A newly-generated set of temporary credentials which can be used to
-     *     connect to the given connection.
+     * @return A newly-generated set of temporary credentials which can be used
+     *         to connect to the given connection.
      *
      * @throws GuacamoleException
-     *     If permission to share the given connection is denied.
+     *             If permission to share the given connection is denied.
      */
-    public UserCredentials generateTemporaryCredentials(ModeledAuthenticatedUser user,
+    public UserCredentials generateTemporaryCredentials(
+            ModeledAuthenticatedUser user,
             ActiveConnectionRecord activeConnection,
             String sharingProfileIdentifier) throws GuacamoleException {
 
         // Pull sharing profile (verifying access)
-        ModeledSharingProfile sharingProfile =
-                sharingProfileService.retrieveObject(user,
-                        sharingProfileIdentifier);
+        ModeledSharingProfile sharingProfile = sharingProfileService
+                .retrieveObject(user, sharingProfileIdentifier);
 
         // Verify that this profile is indeed a sharing profile for the
         // requested connection
-        String connectionIdentifier = activeConnection.getConnectionIdentifier();
-        if (sharingProfile == null || !sharingProfile.getPrimaryConnectionIdentifier().equals(connectionIdentifier))
+        String connectionIdentifier = activeConnection
+                .getConnectionIdentifier();
+        if (sharingProfile == null || !sharingProfile
+                .getPrimaryConnectionIdentifier().equals(connectionIdentifier))
             throw new GuacamoleSecurityException("Permission denied.");
 
         // Generate a share key for the requested connection
@@ -135,11 +132,10 @@ public class ConnectionSharingService {
      * no such share key, null is returned.
      *
      * @param credentials
-     *     The credentials from which the share key should be retrieved.
+     *            The credentials from which the share key should be retrieved.
      *
-     * @return
-     *     The share key contained within the given credentials, or null if
-     *     the credentials do not contain a share key.
+     * @return The share key contained within the given credentials, or null if
+     *         the credentials do not contain a share key.
      */
     public String getShareKey(Credentials credentials) {
 
@@ -161,16 +157,15 @@ public class ConnectionSharingService {
      * credentials, null is returned.
      *
      * @param authProvider
-     *     The AuthenticationProvider on behalf of which the user is being
-     *     retrieved.
+     *            The AuthenticationProvider on behalf of which the user is
+     *            being retrieved.
      *
      * @param credentials
-     *     The credentials which are expected to contain the share key.
+     *            The credentials which are expected to contain the share key.
      *
-     * @return
-     *     A SharedAuthenticatedUser with access to a single shared connection,
-     *     if the share key within the given credentials is valid, or null if
-     *     the share key is invalid or absent.
+     * @return A SharedAuthenticatedUser with access to a single shared
+     *         connection, if the share key within the given credentials is
+     *         valid, or null if the share key is invalid or absent.
      */
     public SharedAuthenticatedUser retrieveSharedConnectionUser(
             AuthenticationProvider authProvider, Credentials credentials) {
@@ -184,5 +179,5 @@ public class ConnectionSharingService {
         return new SharedAuthenticatedUser(authProvider, credentials, shareKey);
 
     }
-    
+
 }

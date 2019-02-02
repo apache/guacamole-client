@@ -20,21 +20,19 @@
 package org.apache.guacamole.auth.common.connection;
 
 import java.util.Map;
-
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
-
 import com.google.inject.Inject;
 
 /**
- * Implementation of GuacamoleConfiguration which loads parameter values only
- * if necessary, and only if allowed.
+ * Implementation of GuacamoleConfiguration which loads parameter values only if
+ * necessary, and only if allowed.
  */
 public class ModeledGuacamoleConfiguration extends GuacamoleConfiguration {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
+    /**
      * The user this configuration belongs to. Access is based on his/her
      * permission settings.
      */
@@ -56,7 +54,7 @@ public class ModeledGuacamoleConfiguration extends GuacamoleConfiguration {
      * The manually-set parameter map, if any.
      */
     private Map<String, String> parameters = null;
-    
+
     /**
      * Creates a new, empty ModelGuacamoleConfiguration.
      */
@@ -69,12 +67,13 @@ public class ModeledGuacamoleConfiguration extends GuacamoleConfiguration {
      * object.
      *
      * @param currentUser
-     *     The user that created or retrieved this configuration.
+     *            The user that created or retrieved this configuration.
      *
-     * @param connectionModel 
-     *     The model object backing this configuration.
+     * @param connectionModel
+     *            The model object backing this configuration.
      */
-    public void init(ModeledAuthenticatedUser currentUser, ConnectionModelInterface connectionModel) {
+    public void init(ModeledAuthenticatedUser currentUser,
+            ConnectionModelInterface connectionModel) {
         this.currentUser = currentUser;
         this.connectionModel = connectionModel;
     }
@@ -90,7 +89,6 @@ public class ModeledGuacamoleConfiguration extends GuacamoleConfiguration {
         connectionModel.setProtocol(protocol);
     }
 
-
     @Override
     public void setParameters(Map<String, String> parameters) {
         this.parameters = parameters;
@@ -104,8 +102,9 @@ public class ModeledGuacamoleConfiguration extends GuacamoleConfiguration {
         if (parameters == null) {
 
             // Retrieve all visible parameters
-            Map<String, String> visibleParameters =
-                    connectionService.retrieveParameters(currentUser, connectionModel.getIdentifier());
+            Map<String, String> visibleParameters = connectionService
+                    .retrieveParameters(currentUser,
+                            connectionModel.getIdentifier());
 
             // Use retrieved parameters to back future operations
             super.setParameters(visibleParameters);

@@ -25,15 +25,15 @@ package org.apache.guacamole.auth.common.security;
  */
 public class PasswordContainsUsernameException extends PasswordPolicyException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
+    /**
      * Creates a new PasswordContainsUsernameException with the given
      * human-readable message. The translatable message is already defined.
      *
      * @param message
-     *     A human-readable message describing the password policy violation
-     *     that occurred.
+     *            A human-readable message describing the password policy
+     *            violation that occurred.
      */
     public PasswordContainsUsernameException(String message) {
         super(message, "PASSWORD_POLICY.ERROR_CONTAINS_USERNAME");

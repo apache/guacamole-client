@@ -27,7 +27,8 @@ import org.apache.guacamole.auth.common.CommonAuthenticationProviderService;
  * Provides a MySQL based implementation of the AuthenticationProvider
  * functionality.
  */
-public class MySQLAuthenticationProvider extends InjectedAuthenticationProvider {
+public class MySQLAuthenticationProvider
+        extends InjectedAuthenticationProvider {
 
     /**
      * Creates a new MySQLAuthenticationProvider that reads and writes
@@ -35,11 +36,12 @@ public class MySQLAuthenticationProvider extends InjectedAuthenticationProvider 
      * guacamole.properties.
      *
      * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
+     *             If a required property is missing, or an error occurs while
+     *             parsing a property.
      */
     public MySQLAuthenticationProvider() throws GuacamoleException {
-        super(new MySQLInjectorProvider(), CommonAuthenticationProviderService.class);
+        super(new MySQLInjectorProvider(),
+                CommonAuthenticationProviderService.class);
     }
 
     @Override

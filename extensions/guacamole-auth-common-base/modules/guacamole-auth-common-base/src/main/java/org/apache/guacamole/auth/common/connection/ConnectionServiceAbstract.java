@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
@@ -45,7 +44,6 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -60,7 +58,7 @@ public abstract class ConnectionServiceAbstract extends
      * Mapper for accessing connections.
      */
     @Inject
-	protected ConnectionMapperInterface connectionMapper;
+    protected ConnectionMapperInterface connectionMapper;
 
     /**
      * Mapper for accessing connection parameters.
@@ -85,19 +83,20 @@ public abstract class ConnectionServiceAbstract extends
      */
     @Inject
     private GuacamoleTunnelService tunnelService;
-    
+
     /**
      * Mapper for manipulating connection permissions.
      */
     private ObjectPermissionMapperInterface connectionPermissionMapper;
-    
+
     @Inject
-	public ConnectionServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
-    	connectionPermissionMapper = mappers.get("ConnectionPermissionMapper");
-	}
+    public ConnectionServiceAbstract(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        connectionPermissionMapper = mappers.get("ConnectionPermissionMapper");
+    }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     protected ModeledDirectoryObjectMapperInterface<ConnectionModelInterface> getObjectMapper() {
         return (ModeledDirectoryObjectMapperInterface<ConnectionModelInterface>) connectionMapper;
     }
@@ -109,7 +108,8 @@ public abstract class ConnectionServiceAbstract extends
 
     @Override
     protected ModeledConnection getObjectInstance(
-            ModeledAuthenticatedUser currentUser, ConnectionModelInterface model) {
+            ModeledAuthenticatedUser currentUser,
+            ConnectionModelInterface model) {
         ModeledConnection connection = connectionProvider.get();
         connection.init(currentUser, model);
         return connection;
@@ -120,8 +120,10 @@ public abstract class ConnectionServiceAbstract extends
             throws GuacamoleException {
 
         // Return whether user has explicit connection creation permission
-        SystemPermissionSet permissionSet = user.getUser().getEffectivePermissions().getSystemPermissions();
-        return permissionSet.hasPermission(SystemPermission.Type.CREATE_CONNECTION);
+        SystemPermissionSet permissionSet = user.getUser()
+                .getEffectivePermissions().getSystemPermissions();
+        return permissionSet
+                .hasPermission(SystemPermission.Type.CREATE_CONNECTION);
 
     }
 
@@ -130,7 +132,8 @@ public abstract class ConnectionServiceAbstract extends
             ModeledAuthenticatedUser user) throws GuacamoleException {
 
         // Return permissions related to connections
-        return user.getUser().getEffectivePermissions().getConnectionPermissions();
+        return user.getUser().getEffectivePermissions()
+                .getConnectionPermissions();
 
     }
 
@@ -139,7 +142,8 @@ public abstract class ConnectionServiceAbstract extends
             ModeledAuthenticatedUser user) throws GuacamoleException {
 
         // Connections are contained by connection groups
-        return user.getUser().getEffectivePermissions().getConnectionGroupPermissions();
+        return user.getUser().getEffectivePermissions()
+                .getConnectionGroupPermissions();
 
     }
 
@@ -330,7 +334,8 @@ public abstract class ConnectionServiceAbstract extends
      *
      * @return A connection record object which is backed by the given model.
      */
-    protected ConnectionRecord getObjectInstance(ConnectionRecordModelInterface model) {
+    protected ConnectionRecord getObjectInstance(
+            ConnectionRecordModelInterface model) {
         return new ModeledConnectionRecord(model);
     }
 
@@ -468,8 +473,9 @@ public abstract class ConnectionServiceAbstract extends
      *            Information associated with the connecting client.
      *
      * @param tokens
-     *     A Map containing the token names and corresponding values to be
-     *     applied as parameter tokens when establishing the connection.
+     *            A Map containing the token names and corresponding values to
+     *            be applied as parameter tokens when establishing the
+     *            connection.
      *
      * @return A connected GuacamoleTunnel associated with a newly-established
      *         connection.
@@ -479,13 +485,13 @@ public abstract class ConnectionServiceAbstract extends
      */
     public GuacamoleTunnel connect(ModeledAuthenticatedUser user,
             ModeledConnection connection, GuacamoleClientInformation info,
-            Map<String, String> tokens)
-            throws GuacamoleException {
+            Map<String, String> tokens) throws GuacamoleException {
 
         // Connect only if READ permission is granted
         if (hasObjectPermission(user, connection.getIdentifier(),
                 ObjectPermission.Type.READ))
-            return tunnelService.getGuacamoleTunnel(user, connection, info, tokens);
+            return tunnelService.getGuacamoleTunnel(user, connection, info,
+                    tokens);
 
         // The user does not have permission to connect
         throw new GuacamoleSecurityException("Permission denied.");

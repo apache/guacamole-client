@@ -20,53 +20,53 @@
 package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
-
 import org.apache.guacamole.auth.common.base.EntityModelInterface;
 import org.apache.guacamole.auth.common.permission.SystemPermissionMapperInterface;
 import org.apache.guacamole.auth.common.permission.SystemPermissionModelInterface;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.ibatis.annotations.Param;
-
 import com.google.inject.Inject;
 
 /**
  * Mapper for system-level permissions.
  */
-public class SystemPermissionMapperImp extends PermissionMapperImp<SystemPermissionModelInterface, SystemPermissionMapper> implements SystemPermissionMapperInterface {
+public class SystemPermissionMapperImp extends
+        PermissionMapperImp<SystemPermissionModelInterface, SystemPermissionMapper>
+        implements SystemPermissionMapperInterface {
 
-	@Inject 
-	private SystemPermissionMapper systemPermissionMapper;
-	
-	/**
+    @Inject
+    private SystemPermissionMapper systemPermissionMapper;
+
+    /**
      * Retrieve the permission of the given type associated with the given
      * entity, if it exists. If no such permission exists, null is returned.
      *
      * @param entity
-     *     The entity to retrieve permissions for.
+     *            The entity to retrieve permissions for.
      *
      * @param type
-     *     The type of permission to return.
+     *            The type of permission to return.
      *
      * @param effectiveGroups
-     *     The identifiers of all groups that should be taken into account
-     *     when determining the permissions effectively granted to the user. If
-     *     no groups are given, only permissions directly granted to the user
-     *     will be used.
+     *            The identifiers of all groups that should be taken into
+     *            account when determining the permissions effectively granted
+     *            to the user. If no groups are given, only permissions directly
+     *            granted to the user will be used.
      *
-     * @return
-     *     The requested permission, or null if no such permission is granted
-     *     to the given entity.
+     * @return The requested permission, or null if no such permission is
+     *         granted to the given entity.
      */
     public SystemPermissionModel selectOne(EntityModelInterface entity,
             @Param("type") SystemPermission.Type type,
             @Param("effectiveGroups") Collection<String> effectiveGroup) {
-    	return systemPermissionMapper.selectOne((EntityModel) entity, type, effectiveGroup);
+        return systemPermissionMapper.selectOne((EntityModel) entity, type,
+                effectiveGroup);
     }
 
-	@Override
-	protected SystemPermissionMapper getMapper() {
-		return systemPermissionMapper;
-	}
+    @Override
+    protected SystemPermissionMapper getMapper() {
+        return systemPermissionMapper;
+    }
 
 }

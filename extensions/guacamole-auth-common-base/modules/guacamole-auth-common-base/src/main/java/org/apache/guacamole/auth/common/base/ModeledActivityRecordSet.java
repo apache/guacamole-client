@@ -24,45 +24,42 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 
 /**
- * A implementation of ActivityRecordSet. Calls to asCollection() will
- * query history records using an implementation-specific mechanism. Which
- * records are returned will be determined by the values passed in earlier.
+ * A implementation of ActivityRecordSet. Calls to asCollection() will query
+ * history records using an implementation-specific mechanism. Which records are
+ * returned will be determined by the values passed in earlier.
  *
  * @param <RecordType>
- *     The type of ActivityRecord contained within this set.
+ *            The type of ActivityRecord contained within this set.
  */
 public abstract class ModeledActivityRecordSet<RecordType extends ActivityRecord>
         extends RestrictedObject implements ActivityRecordSet<RecordType> {
 
     /**
-     * The set of strings that each must occur somewhere within the returned 
+     * The set of strings that each must occur somewhere within the returned
      * records, whether within the associated username, an associated date, or
      * other related data. If non-empty, any record not matching each of the
      * strings within the collection will be excluded from the results.
      */
-    private final Set<ActivityRecordSearchTerm> requiredContents =
-            new HashSet<ActivityRecordSearchTerm>();
-    
+    private final Set<ActivityRecordSearchTerm> requiredContents = new HashSet<ActivityRecordSearchTerm>();
+
     /**
      * The maximum number of history records that should be returned by a call
      * to asCollection().
      */
     private int limit = Integer.MAX_VALUE;
-    
+
     /**
      * A list of predicates to apply while sorting the resulting records,
      * describing the properties involved and the sort order for those
      * properties.
      */
-    private final List<ActivityRecordSortPredicate> sortPredicates =
-            new ArrayList<ActivityRecordSortPredicate>();
+    private final List<ActivityRecordSortPredicate> sortPredicates = new ArrayList<ActivityRecordSortPredicate>();
 
     /**
      * Retrieves the history records matching the given criteria. Retrieves up
@@ -71,34 +68,32 @@ public abstract class ModeledActivityRecordSet<RecordType extends ActivityRecord
      * the given user can read are returned.
      *
      * @param user
-     *     The user retrieving the history.
+     *            The user retrieving the history.
      *
      * @param requiredContents
-     *     The search terms that must be contained somewhere within each of the
-     *     returned records.
+     *            The search terms that must be contained somewhere within each
+     *            of the returned records.
      *
      * @param sortPredicates
-     *     A list of predicates to sort the returned records by, in order of
-     *     priority.
+     *            A list of predicates to sort the returned records by, in order
+     *            of priority.
      *
      * @param limit
-     *     The maximum number of records that should be returned.
+     *            The maximum number of records that should be returned.
      *
-     * @return
-     *     A collection of all history records matching the given criteria.
+     * @return A collection of all history records matching the given criteria.
      *
      * @throws GuacamoleException
-     *     If permission to read the history records is denied.
+     *             If permission to read the history records is denied.
      */
     protected abstract Collection<RecordType> retrieveHistory(
             AuthenticatedUser user,
             Set<ActivityRecordSearchTerm> requiredContents,
-            List<ActivityRecordSortPredicate> sortPredicates,
-            int limit) throws GuacamoleException;
+            List<ActivityRecordSortPredicate> sortPredicates, int limit)
+            throws GuacamoleException;
 
     @Override
-    public Collection<RecordType> asCollection()
-            throws GuacamoleException {
+    public Collection<RecordType> asCollection() throws GuacamoleException {
         return retrieveHistory(getCurrentUser(), requiredContents,
                 sortPredicates, limit);
     }
@@ -111,20 +106,18 @@ public abstract class ModeledActivityRecordSet<RecordType extends ActivityRecord
     }
 
     @Override
-    public ModeledActivityRecordSet<RecordType> limit(int limit) throws GuacamoleException {
+    public ModeledActivityRecordSet<RecordType> limit(int limit)
+            throws GuacamoleException {
         this.limit = Math.min(this.limit, limit);
         return this;
     }
 
     @Override
-    public ModeledActivityRecordSet<RecordType> sort(SortableProperty property, boolean desc)
-            throws GuacamoleException {
-        
-        sortPredicates.add(new ActivityRecordSortPredicate(
-            property,
-            desc
-        ));
-        
+    public ModeledActivityRecordSet<RecordType> sort(SortableProperty property,
+            boolean desc) throws GuacamoleException {
+
+        sortPredicates.add(new ActivityRecordSortPredicate(property, desc));
+
         return this;
 
     }

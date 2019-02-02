@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.common.permission;
 
 import java.util.Collection;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.base.EntityModelInterface;
 import org.apache.guacamole.auth.common.base.ModeledPermissions;
@@ -35,53 +34,51 @@ import org.apache.guacamole.net.auth.permission.SystemPermission;
  */
 public interface SystemPermissionServiceInterface {
 
-	/**
+    /**
      * Retrieves whether the permission of the given type has been granted to
      * the given entity. Permission inheritance through group membership is
      * taken into account.
      *
      * @param user
-     *     The user retrieving the permission.
+     *            The user retrieving the permission.
      *
      * @param targetEntity
-     *     The entity associated with the permission to be retrieved.
+     *            The entity associated with the permission to be retrieved.
      * 
      * @param type
-     *     The type of permission to retrieve.
+     *            The type of permission to retrieve.
      *
      * @param effectiveGroups
-     *     The identifiers of all groups that should be taken into account
-     *     when determining the permissions effectively granted to the entity.
-     *     If no groups are given, only permissions directly granted to the
-     *     entity will be used.
+     *            The identifiers of all groups that should be taken into
+     *            account when determining the permissions effectively granted
+     *            to the entity. If no groups are given, only permissions
+     *            directly granted to the entity will be used.
      *
-     * @return
-     *     true if permission of the given type has been granted to the given
-     *     entity, false otherwise.
+     * @return true if permission of the given type has been granted to the
+     *         given entity, false otherwise.
      *
      * @throws GuacamoleException
-     *     If an error occurs while retrieving the requested permission.
+     *             If an error occurs while retrieving the requested permission.
      */
-	public boolean hasPermission(ModeledAuthenticatedUser user,
+    public boolean hasPermission(ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
             SystemPermission.Type type, Set<String> effectiveGroups)
             throws GuacamoleException;
 
-	public void createPermissions(ModeledAuthenticatedUser user,
+    public void createPermissions(ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
-            Collection<SystemPermission> permissions)
-            throws GuacamoleException;
+            Collection<SystemPermission> permissions) throws GuacamoleException;
 
-	public void deletePermissions(ModeledAuthenticatedUser user,
+    public void deletePermissions(ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
-            Collection<SystemPermission> permissions)
-            throws GuacamoleException;
+            Collection<SystemPermission> permissions) throws GuacamoleException;
 
-	public SystemPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
+    public SystemPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
             Set<String> effectiveGroups) throws GuacamoleException;
-	
-	public Set<SystemPermission> retrievePermissions(ModeledAuthenticatedUser user,
+
+    public Set<SystemPermission> retrievePermissions(
+            ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
             Set<String> effectiveGroups) throws GuacamoleException;
 

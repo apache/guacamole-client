@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
-
 import org.apache.guacamole.auth.common.base.EntityModelInterface;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.ibatis.annotations.Param;
@@ -29,9 +28,10 @@ import org.apache.ibatis.annotations.Param;
  * Mapper for object-related permissions.
  * 
  * @param <PermissionType>
- *     The type of permission model object handled by this mapper.
+ *            The type of permission model object handled by this mapper.
  */
-public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissionModel> {
+public interface ObjectPermissionMapper
+        extends PermissionMapper<ObjectPermissionModel> {
 
     /**
      * Retrieve the permission of the given type associated with the given
@@ -39,25 +39,26 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
      * returned.
      *
      * @param entity
-     *     The entity to retrieve permissions for.
+     *            The entity to retrieve permissions for.
      *
      * @param type
-     *     The type of permission to return.
+     *            The type of permission to return.
      *
      * @param identifier
-     *     The identifier of the object affected by the permission to return.
+     *            The identifier of the object affected by the permission to
+     *            return.
      *
      * @param effectiveGroups
-     *     The identifiers of all groups that should be taken into account
-     *     when determining the permissions effectively granted to the user. If
-     *     no groups are given, only permissions directly granted to the user
-     *     will be used.
+     *            The identifiers of all groups that should be taken into
+     *            account when determining the permissions effectively granted
+     *            to the user. If no groups are given, only permissions directly
+     *            granted to the user will be used.
      *
-     * @return
-     *     The requested permission, or null if no such permission is granted
-     *     to the given entity for the given object.
+     * @return The requested permission, or null if no such permission is
+     *         granted to the given entity for the given object.
      */
-    ObjectPermissionModel selectOne(@Param("entity") EntityModelInterface entity,
+    ObjectPermissionModel selectOne(
+            @Param("entity") EntityModelInterface entity,
             @Param("type") ObjectPermission.Type type,
             @Param("identifier") String identifier,
             @Param("effectiveGroups") Collection<String> effectiveGroups);
@@ -67,28 +68,28 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
      * has at least one of the given permissions.
      *
      * @param entity
-     *     The entity to check permissions of.
+     *            The entity to check permissions of.
      *
      * @param permissions
-     *     The permissions to check. An identifier will be included in the
-     *     resulting collection if at least one of these permissions is granted
-     *     for the associated object
+     *            The permissions to check. An identifier will be included in
+     *            the resulting collection if at least one of these permissions
+     *            is granted for the associated object
      *
      * @param identifiers
-     *     The identifiers of the objects affected by the permissions being
-     *     checked.
+     *            The identifiers of the objects affected by the permissions
+     *            being checked.
      *
      * @param effectiveGroups
-     *     The identifiers of all groups that should be taken into account
-     *     when determining the permissions effectively granted to the user. If
-     *     no groups are given, only permissions directly granted to the user
-     *     will be used.
+     *            The identifiers of all groups that should be taken into
+     *            account when determining the permissions effectively granted
+     *            to the user. If no groups are given, only permissions directly
+     *            granted to the user will be used.
      *
-     * @return
-     *     A collection containing the subset of identifiers for which at least
-     *     one of the specified permissions is granted.
+     * @return A collection containing the subset of identifiers for which at
+     *         least one of the specified permissions is granted.
      */
-    Collection<String> selectAccessibleIdentifiers(@Param("entity") EntityModelInterface entity,
+    Collection<String> selectAccessibleIdentifiers(
+            @Param("entity") EntityModelInterface entity,
             @Param("permissions") Collection<ObjectPermission.Type> permissions,
             @Param("identifiers") Collection<String> identifiers,
             @Param("effectiveGroups") Collection<String> effectiveGroups);

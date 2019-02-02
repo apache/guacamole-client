@@ -26,26 +26,26 @@ import org.apache.guacamole.auth.common.base.ObjectModelInterface;
  * Object representation of a Guacamole user group, as represented in the
  * database.
  */
-public interface UserGroupModelInterface extends ObjectModelInterface, EntityModelInterface {
+public interface UserGroupModelInterface
+        extends ObjectModelInterface, EntityModelInterface {
 
-	/**
+    /**
      * Sets whether this user group has been disabled. Memberships of disabled
-     * user groups are treated as non-existent, effectively disabling
-     * membership in that group.
+     * user groups are treated as non-existent, effectively disabling membership
+     * in that group.
      *
      * @param disabled
-     *     true if this user group should be disabled, false otherwise.
+     *            true if this user group should be disabled, false otherwise.
      */
-	public void setDisabled(boolean equals);
+    public void setDisabled(boolean equals);
 
-	/**
+    /**
      * Returns whether this user group has been disabled. Memberships of
      * disabled user groups are treated as non-existent, effectively disabling
      * membership in that group.
      *
-     * @return
-     *     true if this user group is disabled, false otherwise.
+     * @return true if this user group is disabled, false otherwise.
      */
-	public boolean isDisabled();
+    public boolean isDisabled();
 
 }

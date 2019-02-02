@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.common.sharingprofile;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
@@ -35,7 +34,6 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -63,19 +61,21 @@ public abstract class SharingProfileServiceAbstract extends
      */
     @Inject
     private Provider<ModeledSharingProfile> sharingProfileProvider;
-    
+
     /**
      * Mapper for manipulating sharing profile permissions.
      */
     private ObjectPermissionMapperInterface sharingProfilePermissionMapper;
 
     @Inject
-   	public SharingProfileServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
-    	sharingProfilePermissionMapper = mappers.get("SharingProfilePermissionMapper");
-   	}
+    public SharingProfileServiceAbstract(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        sharingProfilePermissionMapper = mappers
+                .get("SharingProfilePermissionMapper");
+    }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     protected ModeledDirectoryObjectMapperInterface<SharingProfileModelInterface> getObjectMapper() {
         return (ModeledDirectoryObjectMapperInterface<SharingProfileModelInterface>) sharingProfileMapper;
     }
@@ -87,7 +87,8 @@ public abstract class SharingProfileServiceAbstract extends
 
     @Override
     protected ModeledSharingProfile getObjectInstance(
-            ModeledAuthenticatedUser currentUser, SharingProfileModelInterface model) {
+            ModeledAuthenticatedUser currentUser,
+            SharingProfileModelInterface model) {
         ModeledSharingProfile sharingProfile = sharingProfileProvider.get();
         sharingProfile.init(currentUser, model);
         return sharingProfile;
@@ -98,7 +99,8 @@ public abstract class SharingProfileServiceAbstract extends
             throws GuacamoleException {
 
         // Return whether user has explicit sharing profile creation permission
-        SystemPermissionSet permissionSet = user.getUser().getEffectivePermissions().getSystemPermissions();
+        SystemPermissionSet permissionSet = user.getUser()
+                .getEffectivePermissions().getSystemPermissions();
         return permissionSet
                 .hasPermission(SystemPermission.Type.CREATE_SHARING_PROFILE);
 
@@ -109,7 +111,8 @@ public abstract class SharingProfileServiceAbstract extends
             ModeledAuthenticatedUser user) throws GuacamoleException {
 
         // Return permissions related to sharing profiles
-        return user.getUser().getEffectivePermissions().getSharingProfilePermissions();
+        return user.getUser().getEffectivePermissions()
+                .getSharingProfilePermissions();
 
     }
 
@@ -118,7 +121,8 @@ public abstract class SharingProfileServiceAbstract extends
             ModeledAuthenticatedUser user) throws GuacamoleException {
 
         // Sharing profiles are children of connections
-        return user.getUser().getEffectivePermissions().getConnectionPermissions();
+        return user.getUser().getEffectivePermissions()
+                .getConnectionPermissions();
 
     }
 

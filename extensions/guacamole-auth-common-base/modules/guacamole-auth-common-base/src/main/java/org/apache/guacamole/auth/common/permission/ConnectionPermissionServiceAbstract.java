@@ -21,12 +21,10 @@ package org.apache.guacamole.auth.common.permission;
 
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.base.EntityModelInterface;
 import org.apache.guacamole.auth.common.base.ModeledPermissions;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -48,12 +46,13 @@ public abstract class ConnectionPermissionServiceAbstract
      * Mapper for connection permissions.
      */
     private ObjectPermissionMapperInterface connectionPermissionMapper;
-    
+
     @Inject
-	public ConnectionPermissionServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
-    	connectionPermissionMapper = mappers.get("ConnectionPermissionMapper");
-	}
-    
+    public ConnectionPermissionServiceAbstract(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        connectionPermissionMapper = mappers.get("ConnectionPermissionMapper");
+    }
+
     @Override
     protected ObjectPermissionMapperInterface getPermissionMapper() {
         return connectionPermissionMapper;
@@ -61,7 +60,7 @@ public abstract class ConnectionPermissionServiceAbstract
 
     @Override
     public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-    		ModeledPermissions<? extends EntityModelInterface> targetEntity,
+            ModeledPermissions<? extends EntityModelInterface> targetEntity,
             Set<String> effectiveGroups) throws GuacamoleException {
 
         // Create permission set for requested user

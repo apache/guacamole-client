@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.common.user;
 
 import java.util.Collection;
 import java.util.List;
-
 import org.apache.guacamole.auth.common.base.ActivityRecordModelInterface;
 import org.apache.guacamole.auth.common.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.common.base.ActivityRecordSortPredicate;
@@ -85,7 +84,8 @@ public interface UserRecordMapperInterface {
      *
      * @return The results of the search performed with the given parameters.
      */
-    List<ActivityRecordModelInterface> search(Collection<ActivityRecordSearchTerm> terms,
+    List<ActivityRecordModelInterface> search(
+            Collection<ActivityRecordSearchTerm> terms,
             List<ActivityRecordSortPredicate> sortPredicates, int limit);
 
     /**
@@ -107,10 +107,10 @@ public interface UserRecordMapperInterface {
      *            of priority.
      *
      * @param effectiveGroups
-     *     The identifiers of all groups that should be taken into account
-     *     when determining the permissions effectively granted to the user. If
-     *     no groups are given, only permissions directly granted to the user
-     *     will be used.
+     *            The identifiers of all groups that should be taken into
+     *            account when determining the permissions effectively granted
+     *            to the user. If no groups are given, only permissions directly
+     *            granted to the user will be used.
      *
      * @param limit
      *            The maximum number of records that should be returned.
@@ -119,8 +119,7 @@ public interface UserRecordMapperInterface {
      */
     List<ActivityRecordModelInterface> searchReadable(UserModelInterface user,
             Collection<ActivityRecordSearchTerm> terms,
-            List<ActivityRecordSortPredicate> sortPredicates,
-            int limit,
+            List<ActivityRecordSortPredicate> sortPredicates, int limit,
             Collection<String> effectiveGroups);
 
 }

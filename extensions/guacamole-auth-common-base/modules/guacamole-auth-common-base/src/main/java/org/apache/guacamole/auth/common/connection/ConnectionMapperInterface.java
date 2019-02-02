@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.common.connection;
 
 import java.util.Collection;
 import java.util.Set;
-
 import org.apache.guacamole.auth.common.user.UserModelInterface;
 
 /**
@@ -78,6 +77,7 @@ public interface ConnectionMapperInterface {
      * @return The connection having the given name within the given parent
      *         group, or null if no such connection exists.
      */
-    ConnectionModelInterface selectOneByName(String parentIdentifier, String name);
+    ConnectionModelInterface selectOneByName(String parentIdentifier,
+            String name);
 
 }

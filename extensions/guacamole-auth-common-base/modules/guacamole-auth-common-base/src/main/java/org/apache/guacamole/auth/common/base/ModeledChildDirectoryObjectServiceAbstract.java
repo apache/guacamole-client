@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.common.base;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
@@ -30,44 +29,44 @@ import org.apache.guacamole.net.auth.Identifiable;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 
-	/**
-	 * Service which provides convenience methods for creating, retrieving, and
-	 * manipulating objects that can be children of other objects. This service will
-	 * automatically enforce the permissions of the current user.
-	 *
-	 * @param <InternalType>
-	 *            The specific internal implementation of the type of object this
-	 *            service provides access to.
-	 *
-	 * @param <ExternalType>
-	 *            The external interface or implementation of the type of object
-	 *            this service provides access to, as defined by the guacamole-ext
-	 *            API.
-	 *
-	 * @param <ModelType>
-	 *            The underlying model object used to represent InternalType in the
-	 *            database.
-	 */
+/**
+ * Service which provides convenience methods for creating, retrieving, and
+ * manipulating objects that can be children of other objects. This service will
+ * automatically enforce the permissions of the current user.
+ *
+ * @param <InternalType>
+ *            The specific internal implementation of the type of object this
+ *            service provides access to.
+ *
+ * @param <ExternalType>
+ *            The external interface or implementation of the type of object
+ *            this service provides access to, as defined by the guacamole-ext
+ *            API.
+ *
+ * @param <ModelType>
+ *            The underlying model object used to represent InternalType in the
+ *            database.
+ */
 public abstract class ModeledChildDirectoryObjectServiceAbstract<InternalType extends ModeledChildDirectoryObject<ModelType>, ExternalType extends Identifiable, ModelType extends ChildObjectModelInterface>
-	        extends
-	        ModeledDirectoryObjectServiceAbstract<InternalType, ExternalType, ModelType> {
+        extends
+        ModeledDirectoryObjectServiceAbstract<InternalType, ExternalType, ModelType> {
 
-	/**
-     * Returns the permission set associated with the given user and related
-     * to the type of objects which can be parents of the child objects handled
-     * by this directory object service, taking into account permission
-     * inheritance via user groups.
+    /**
+     * Returns the permission set associated with the given user and related to
+     * the type of objects which can be parents of the child objects handled by
+     * this directory object service, taking into account permission inheritance
+     * via user groups.
      *
      * @param user
-     *     The user whose permissions are being retrieved.
+     *            The user whose permissions are being retrieved.
      *
-     * @return
-     *     A permission set which contains the permissions associated with the
-     *     given user and related to the type of objects which can be parents
-     *     of the child objects handled by this directory object service.
+     * @return A permission set which contains the permissions associated with
+     *         the given user and related to the type of objects which can be
+     *         parents of the child objects handled by this directory object
+     *         service.
      *
      * @throws GuacamoleException
-     *     If permission to read the user's permissions is denied.
+     *             If permission to read the user's permissions is denied.
      */
     protected abstract ObjectPermissionSet getParentEffectivePermissionSet(
             ModeledAuthenticatedUser user) throws GuacamoleException;
@@ -163,7 +162,8 @@ public abstract class ModeledChildDirectoryObjectServiceAbstract<InternalType ex
                 identifier, model);
         if (!modifiedParents.isEmpty()) {
 
-            ObjectPermissionSet permissionSet = getParentEffectivePermissionSet(user);
+            ObjectPermissionSet permissionSet = getParentEffectivePermissionSet(
+                    user);
             Collection<String> updateableParents = permissionSet
                     .getAccessibleObjects(
                             Collections.singleton(ObjectPermission.Type.UPDATE),

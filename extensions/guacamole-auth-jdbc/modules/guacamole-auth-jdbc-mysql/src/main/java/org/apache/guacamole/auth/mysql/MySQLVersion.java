@@ -32,14 +32,16 @@ public class MySQLVersion {
      * Pattern which matches the version string returned by a MariaDB server,
      * extracting the major, minor, and patch numbers.
      */
-    private final Pattern MARIADB_VERSION = Pattern.compile("^.*-([0-9]+)\\.([0-9]+)\\.([0-9]+)-MariaDB$");
+    private final Pattern MARIADB_VERSION = Pattern
+            .compile("^.*-([0-9]+)\\.([0-9]+)\\.([0-9]+)-MariaDB$");
 
     /**
-     * Pattern which matches the version string returned by a non-MariaDB
-     * server (including MySQL and Aurora), extracting the major, minor, and
-     * patch numbers. All non-MariaDB servers use normal MySQL version numbers.
+     * Pattern which matches the version string returned by a non-MariaDB server
+     * (including MySQL and Aurora), extracting the major, minor, and patch
+     * numbers. All non-MariaDB servers use normal MySQL version numbers.
      */
-    private final Pattern MYSQL_VERSION = Pattern.compile("^([0-9]+)\\.([0-9]+)\\.([0-9]+).*$");
+    private final Pattern MYSQL_VERSION = Pattern
+            .compile("^([0-9]+)\\.([0-9]+)\\.([0-9]+).*$");
 
     /**
      * Whether the associated server is a MariaDB server. All non-MariaDB
@@ -68,19 +70,19 @@ public class MySQLVersion {
      * components.
      *
      * @param major
-     *     The major component of the MAJOR.MINOR.PATCH version number of the
-     *     MariaDB / MySQL server.
+     *            The major component of the MAJOR.MINOR.PATCH version number of
+     *            the MariaDB / MySQL server.
      *
      * @param minor
-     *     The minor component of the MAJOR.MINOR.PATCH version number of the
-     *     MariaDB / MySQL server.
+     *            The minor component of the MAJOR.MINOR.PATCH version number of
+     *            the MariaDB / MySQL server.
      *
      * @param patch
-     *     The patch component of the MAJOR.MINOR.PATCH version number of the
-     *     MariaDB / MySQL server.
+     *            The patch component of the MAJOR.MINOR.PATCH version number of
+     *            the MariaDB / MySQL server.
      *
      * @param isMariaDB
-     *     Whether the associated server is a MariaDB server.
+     *            Whether the associated server is a MariaDB server.
      */
     public MySQLVersion(int major, int minor, int patch, boolean isMariaDB) {
         this.major = major;
@@ -113,7 +115,8 @@ public class MySQLVersion {
             return;
         }
 
-        throw new IllegalArgumentException("Unrecognized MySQL / MariaDB version string.");
+        throw new IllegalArgumentException(
+                "Unrecognized MySQL / MariaDB version string.");
 
     }
 
@@ -121,12 +124,11 @@ public class MySQLVersion {
      * Returns whether this version is at least as recent as the given version.
      *
      * @param version
-     *     The version to compare against.
+     *            The version to compare against.
      *
-     * @return
-     *     true if the versions are associated with the same database server
-     *     type (MariaDB vs. MySQL) and this version is at least as recent as
-     *     the given version, false otherwise.
+     * @return true if the versions are associated with the same database server
+     *         type (MariaDB vs. MySQL) and this version is at least as recent
+     *         as the given version, false otherwise.
      */
     public boolean isAtLeast(MySQLVersion version) {
 
@@ -136,10 +138,8 @@ public class MySQLVersion {
             return false;
 
         // Compare major, minor, and patch number in order of precedence
-        return ComparisonChain.start()
-                .compare(major, version.major)
-                .compare(minor, version.minor)
-                .compare(patch, version.patch)
+        return ComparisonChain.start().compare(major, version.major)
+                .compare(minor, version.minor).compare(patch, version.patch)
                 .result() >= 0;
 
     }

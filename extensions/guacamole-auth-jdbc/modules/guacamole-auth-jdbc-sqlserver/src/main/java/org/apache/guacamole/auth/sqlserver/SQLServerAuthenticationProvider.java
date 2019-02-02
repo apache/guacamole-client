@@ -27,7 +27,8 @@ import org.apache.guacamole.auth.common.CommonAuthenticationProviderService;
  * Provides a SQLServer-based implementation of the AuthenticationProvider
  * functionality.
  */
-public class SQLServerAuthenticationProvider extends InjectedAuthenticationProvider {
+public class SQLServerAuthenticationProvider
+        extends InjectedAuthenticationProvider {
 
     /**
      * Creates a new SQLServerAuthenticationProvider that reads and writes
@@ -35,11 +36,12 @@ public class SQLServerAuthenticationProvider extends InjectedAuthenticationProvi
      * guacamole.properties.
      *
      * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
+     *             If a required property is missing, or an error occurs while
+     *             parsing a property.
      */
     public SQLServerAuthenticationProvider() throws GuacamoleException {
-        super(new SQLServerInjectorProvider(), CommonAuthenticationProviderService.class);
+        super(new SQLServerInjectorProvider(),
+                CommonAuthenticationProviderService.class);
     }
 
     @Override

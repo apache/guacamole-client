@@ -22,34 +22,34 @@ package org.apache.guacamole.auth.jdbc.usergroup;
 import org.apache.guacamole.auth.common.usergroup.UserGroupMapperInterface;
 import org.apache.guacamole.auth.common.usergroup.UserGroupModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapperImp;
-
 import com.google.inject.Inject;
 
 /**
  * Mapper for user group objects.
  */
-public class UserGroupMapperImp extends ModeledDirectoryObjectMapperImp<UserGroupModelInterface, UserGroupMapper> implements UserGroupMapperInterface<UserGroupModelInterface> {
+public class UserGroupMapperImp extends
+        ModeledDirectoryObjectMapperImp<UserGroupModelInterface, UserGroupMapper>
+        implements UserGroupMapperInterface<UserGroupModelInterface> {
 
-	@Inject 
-	private UserGroupMapper userGroupMapper;
-	
+    @Inject
+    private UserGroupMapper userGroupMapper;
+
     /**
-     * Returns the group having the given name, if any. If no such group
-     * exists, null is returned.
+     * Returns the group having the given name, if any. If no such group exists,
+     * null is returned.
      *
      * @param name
-     *     The name of the group to return.
+     *            The name of the group to return.
      *
-     * @return
-     *     The group having the given name, or null if no such group exists.
+     * @return The group having the given name, or null if no such group exists.
      */
     public UserGroupModelInterface selectOne(String name) {
-    	return (UserGroupModelInterface) userGroupMapper.selectOne(name);
+        return (UserGroupModelInterface) userGroupMapper.selectOne(name);
     }
 
-	@Override
-	protected UserGroupMapper getMapper() {
-		return userGroupMapper;
-	}
+    @Override
+    protected UserGroupMapper getMapper() {
+        return userGroupMapper;
+    }
 
 }

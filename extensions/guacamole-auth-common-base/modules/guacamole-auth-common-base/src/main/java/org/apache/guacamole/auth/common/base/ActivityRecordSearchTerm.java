@@ -30,13 +30,13 @@ import java.util.regex.Pattern;
  * be a date. a corresponding date range.
  */
 public class ActivityRecordSearchTerm {
-    
+
     /**
      * A pattern that can match a year, year and month, or year and month and
      * day.
      */
-    private static final Pattern DATE_PATTERN = 
-            Pattern.compile("(\\d+)(?:-(\\d+)?(?:-(\\d+)?)?)?");
+    private static final Pattern DATE_PATTERN = Pattern
+            .compile("(\\d+)(?:-(\\d+)?(?:-(\\d+)?)?)?");
 
     /**
      * The index of the group within <code>DATE_PATTERN</code> containing the
@@ -61,52 +61,50 @@ public class ActivityRecordSearchTerm {
      * provided search term appears to be a date.
      */
     private final Date startDate;
-    
+
     /**
      * The end of the date range for records that should be retrieved, if the
      * provided search term appears to be a date.
      */
     private final Date endDate;
-    
+
     /**
      * The string that should be searched for.
      */
     private final String term;
-    
+
     /**
      * Parse the given string as an integer, returning the provided default
      * value if the string is null.
      * 
      * @param str
-     *     The string to parse as an integer.
+     *            The string to parse as an integer.
      *
      * @param defaultValue
-     *     The value to return if <code>str</code> is null.
+     *            The value to return if <code>str</code> is null.
      * 
-     * @return
-     *     The parsed value, or the provided default value if <code>str</code>
-     *     is null.
+     * @return The parsed value, or the provided default value if
+     *         <code>str</code> is null.
      */
     private static int parseInt(String str, int defaultValue) {
-        
+
         if (str == null)
             return defaultValue;
-        
+
         return Integer.parseInt(str);
 
     }
-    
+
     /**
-     * Returns a new calendar representing the last millisecond of the same
-     * year as <code>calendar</code>.
+     * Returns a new calendar representing the last millisecond of the same year
+     * as <code>calendar</code>.
      * 
      * @param calendar
-     *     The calendar defining the year whose end (last millisecond) is to be
-     *     returned.
+     *            The calendar defining the year whose end (last millisecond) is
+     *            to be returned.
      *
-     * @return
-     *     A new calendar representing the last millisecond of the same year as
-     *     <code>calendar</code>.
+     * @return A new calendar representing the last millisecond of the same year
+     *         as <code>calendar</code>.
      */
     private static Calendar getEndOfYear(Calendar calendar) {
 
@@ -121,55 +119,54 @@ public class ActivityRecordSearchTerm {
         return endOfYear;
 
     }
-    
+
     /**
      * Returns a new calendar representing the last millisecond of the same
      * month and year as <code>calendar</code>.
      * 
      * @param calendar
-     *     The calendar defining the month and year whose end (last millisecond) 
-     *     is to be returned.
+     *            The calendar defining the month and year whose end (last
+     *            millisecond) is to be returned.
      *
-     * @return
-     *     A new calendar representing the last millisecond of the same month 
-     *     and year as <code>calendar</code>.
+     * @return A new calendar representing the last millisecond of the same
+     *         month and year as <code>calendar</code>.
      */
     private static Calendar getEndOfMonth(Calendar calendar) {
 
         // Copy given calender only up to given month
         Calendar endOfMonth = Calendar.getInstance();
         endOfMonth.clear();
-        endOfMonth.set(Calendar.YEAR,  calendar.get(Calendar.YEAR));
+        endOfMonth.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
         endOfMonth.set(Calendar.MONTH, calendar.get(Calendar.MONTH));
 
         // Advance to the last millisecond of the given month
-        endOfMonth.add(Calendar.MONTH,        1);
+        endOfMonth.add(Calendar.MONTH, 1);
         endOfMonth.add(Calendar.MILLISECOND, -1);
 
         return endOfMonth;
 
     }
-    
+
     /**
      * Returns a new calendar representing the last millisecond of the same
      * year, month, and day as <code>calendar</code>.
      * 
      * @param calendar
-     *     The calendar defining the year, month, and day whose end 
-     *     (last millisecond) is to be returned.
+     *            The calendar defining the year, month, and day whose end (last
+     *            millisecond) is to be returned.
      *
-     * @return
-     *     A new calendar representing the last millisecond of the same year, 
-     *     month, and day as <code>calendar</code>.
+     * @return A new calendar representing the last millisecond of the same
+     *         year, month, and day as <code>calendar</code>.
      */
     private static Calendar getEndOfDay(Calendar calendar) {
 
         // Copy given calender only up to given month
         Calendar endOfMonth = Calendar.getInstance();
         endOfMonth.clear();
-        endOfMonth.set(Calendar.YEAR,         calendar.get(Calendar.YEAR));
-        endOfMonth.set(Calendar.MONTH,        calendar.get(Calendar.MONTH));
-        endOfMonth.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
+        endOfMonth.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
+        endOfMonth.set(Calendar.MONTH, calendar.get(Calendar.MONTH));
+        endOfMonth.set(Calendar.DAY_OF_MONTH,
+                calendar.get(Calendar.DAY_OF_MONTH));
 
         // Advance to the last millisecond of the given day
         endOfMonth.add(Calendar.DAY_OF_MONTH, 1);
@@ -180,13 +177,13 @@ public class ActivityRecordSearchTerm {
     }
 
     /**
-     * Creates a new ActivityRecordSearchTerm representing the given string.
-     * If the given string appears to be a date, the start and end dates of the
+     * Creates a new ActivityRecordSearchTerm representing the given string. If
+     * the given string appears to be a date, the start and end dates of the
      * implied date range will be automatically determined and made available
      * via getStartDate() and getEndDate() respectively.
      *
      * @param term
-     *     The string that should be searched for.
+     *            The string that should be searched for.
      */
     public ActivityRecordSearchTerm(String term) {
 
@@ -201,18 +198,15 @@ public class ActivityRecordSearchTerm {
         if (matcher.matches()) {
 
             // Retrieve date components from term
-            String year  = matcher.group(YEAR_GROUP);
+            String year = matcher.group(YEAR_GROUP);
             String month = matcher.group(MONTH_GROUP);
-            String day   = matcher.group(DAY_GROUP);
-            
+            String day = matcher.group(DAY_GROUP);
+
             // Parse start date from term
             Calendar startCalendar = Calendar.getInstance();
             startCalendar.clear();
-            startCalendar.set(
-                Integer.parseInt(year),
-                parseInt(month, 1) - 1,
-                parseInt(day,   1)
-            );
+            startCalendar.set(Integer.parseInt(year), parseInt(month, 1) - 1,
+                    parseInt(day, 1));
 
             Calendar endCalendar;
 
@@ -229,35 +223,33 @@ public class ActivityRecordSearchTerm {
 
             // Convert results back into dates
             this.startDate = startCalendar.getTime();
-            this.endDate   = endCalendar.getTime();
-            
+            this.endDate = endCalendar.getTime();
+
         }
 
         // The search term doesn't look like a date
         else {
             this.startDate = null;
-            this.endDate   = null;
+            this.endDate = null;
         }
 
     }
 
     /**
-     * Returns the start of the date range for records that should be retrieved, 
+     * Returns the start of the date range for records that should be retrieved,
      * if the provided search term appears to be a date.
      * 
-     * @return
-     *     The start of the date range.
+     * @return The start of the date range.
      */
     public Date getStartDate() {
         return startDate;
     }
 
     /**
-     * Returns the end of the date range for records that should be retrieved, 
+     * Returns the end of the date range for records that should be retrieved,
      * if the provided search term appears to be a date.
      * 
-     * @return
-     *     The end of the date range.
+     * @return The end of the date range.
      */
     public Date getEndDate() {
         return endDate;
@@ -266,8 +258,7 @@ public class ActivityRecordSearchTerm {
     /**
      * Returns the string that should be searched for.
      * 
-     * @return
-     *     The search term.
+     * @return The search term.
      */
     public String getTerm() {
         return term;

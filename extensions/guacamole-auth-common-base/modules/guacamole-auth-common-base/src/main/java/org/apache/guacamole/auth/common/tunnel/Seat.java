@@ -39,11 +39,11 @@ public class Seat {
      * connection or connection group.
      *
      * @param username
-     *     The username of the user using this seat.
+     *            The username of the user using this seat.
      *
      * @param identifier
-     *     The identifier of the connection or connection group associated with
-     *     this seat.
+     *            The identifier of the connection or connection group
+     *            associated with this seat.
      */
     public Seat(String username, String identifier) {
         this.username = username;
@@ -54,8 +54,8 @@ public class Seat {
     public int hashCode() {
 
         // The various properties will never be null
-        assert(username != null);
-        assert(identifier != null);
+        assert (username != null);
+        assert (identifier != null);
 
         // Derive hashcode from username and connection identifier
         int hash = 5;
@@ -69,16 +69,16 @@ public class Seat {
     public boolean equals(Object object) {
 
         // We are only comparing against other seats here
-        assert(object instanceof Seat);
+        assert (object instanceof Seat);
         Seat seat = (Seat) object;
 
         // The various properties will never be null
-        assert(seat.username != null);
-        assert(seat.identifier != null);
+        assert (seat.username != null);
+        assert (seat.identifier != null);
 
         return username.equals(seat.username)
-            && identifier.equals(seat.identifier);
+                && identifier.equals(seat.identifier);
 
     }
-  
+
 }

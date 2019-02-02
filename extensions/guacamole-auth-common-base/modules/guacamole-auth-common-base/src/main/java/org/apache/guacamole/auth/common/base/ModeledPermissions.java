@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.common.base;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.activeconnection.ActiveConnectionPermissionService;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionService;
@@ -32,7 +31,6 @@ import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
-
 import com.google.inject.Inject;
 
 /**
@@ -40,7 +38,7 @@ import com.google.inject.Inject;
  * Users and UserGroups, backed by a database model.
  *
  * @param <ModelType>
- *     The type of model object that corresponds to this object.
+ *            The type of model object that corresponds to this object.
  */
 public abstract class ModeledPermissions<ModelType extends ObjectModelInterface & EntityModelInterface>
         extends ModeledDirectoryObject<ModelType> implements Permissions {
@@ -67,7 +65,7 @@ public abstract class ModeledPermissions<ModelType extends ObjectModelInterface 
      * Service for retrieving connection group permissions.
      */
     private ObjectPermissionService connectionGroupPermissionService;
-    
+
     /**
      * Service for retrieving connection permissions.
      */
@@ -77,7 +75,7 @@ public abstract class ModeledPermissions<ModelType extends ObjectModelInterface 
      * Service for retrieving sharing profile permissions.
      */
     private ObjectPermissionService sharingProfilePermissionService;
-    
+
     /**
      * Service for retrieving user group permissions.
      */
@@ -87,27 +85,29 @@ public abstract class ModeledPermissions<ModelType extends ObjectModelInterface 
      * Service for retrieving user permissions.
      */
     private ObjectPermissionService userPermissionService;
-    
+
     /**
      * Inject Mappers
      * 
      * @param mappers
      */
     @Inject
-	public ModeledPermissions(Map<String, ObjectPermissionService> mappers) {
-    	connectionGroupPermissionService = mappers.get("ConnectionGroupPermissionService");
-    	connectionPermissionService = mappers.get("ConnectionPermissionService");
-    	sharingProfilePermissionService = mappers.get("SharingProfilePermissionService");
-    	userGroupPermissionService = mappers.get("UserGroupPermissionService");
-    	userPermissionService = mappers.get("UserPermissionService");
+    public ModeledPermissions(Map<String, ObjectPermissionService> mappers) {
+        connectionGroupPermissionService = mappers
+                .get("ConnectionGroupPermissionService");
+        connectionPermissionService = mappers
+                .get("ConnectionPermissionService");
+        sharingProfilePermissionService = mappers
+                .get("SharingProfilePermissionService");
+        userGroupPermissionService = mappers.get("UserGroupPermissionService");
+        userPermissionService = mappers.get("UserPermissionService");
     }
-    
+
     /**
      * Returns whether the underlying entity is a user. Entities may be either
      * users or user groups.
      *
-     * @return
-     *     true if the underlying entity is a user, false otherwise.
+     * @return true if the underlying entity is a user, false otherwise.
      */
     public boolean isUser() {
         return getModel().getEntityType() == EntityType.USER;
@@ -118,11 +118,10 @@ public abstract class ModeledPermissions<ModelType extends ObjectModelInterface 
      * the given username.
      *
      * @param username
-     *     The username of a user.
+     *            The username of a user.
      *
-     * @return
-     *     true if the underlying entity is a user that has the given username,
-     *     false otherwise.
+     * @return true if the underlying entity is a user that has the given
+     *         username, false otherwise.
      */
     public boolean isUser(String username) {
         return isUser() && getIdentifier().equals(username);
@@ -132,8 +131,7 @@ public abstract class ModeledPermissions<ModelType extends ObjectModelInterface 
      * Returns whether the underlying entity is a user group. Entities may be
      * either users or user groups.
      *
-     * @return
-     *     true if the underlying entity is a user group, false otherwise.
+     * @return true if the underlying entity is a user group, false otherwise.
      */
     public boolean isUserGroup() {
         return getModel().getEntityType() == EntityType.USER_GROUP;
@@ -141,19 +139,20 @@ public abstract class ModeledPermissions<ModelType extends ObjectModelInterface 
 
     /**
      * Returns whether this entity is a system administrator, and thus is not
-     * restricted by permissions, taking into account permission inheritance
-     * via user groups.
+     * restricted by permissions, taking into account permission inheritance via
+     * user groups.
      *
-     * @return
-     *    true if this entity is a system administrator, false otherwise.
+     * @return true if this entity is a system administrator, false otherwise.
      *
      * @throws GuacamoleException
-     *    If an error occurs while determining the entity's system administrator
-     *    status.
+     *             If an error occurs while determining the entity's system
+     *             administrator status.
      */
     public boolean isAdministrator() throws GuacamoleException {
-        SystemPermissionSet systemPermissionSet = getEffective().getSystemPermissions();
-        return systemPermissionSet.hasPermission(SystemPermission.Type.ADMINISTER);
+        SystemPermissionSet systemPermissionSet = getEffective()
+                .getSystemPermissions();
+        return systemPermissionSet
+                .hasPermission(SystemPermission.Type.ADMINISTER);
     }
 
     @Override
@@ -192,14 +191,14 @@ public abstract class ModeledPermissions<ModelType extends ObjectModelInterface 
     }
 
     @Override
-    public ObjectPermissionSet getUserPermissions()
-            throws GuacamoleException {
+    public ObjectPermissionSet getUserPermissions() throws GuacamoleException {
         return userPermissionService.getPermissionSet(getCurrentUser(), this,
                 Collections.<String>emptySet());
     }
 
     @Override
-    public ObjectPermissionSet getUserGroupPermissions() throws GuacamoleException {
+    public ObjectPermissionSet getUserGroupPermissions()
+            throws GuacamoleException {
         return userGroupPermissionService.getPermissionSet(getCurrentUser(),
                 this, Collections.<String>emptySet());
     }
@@ -209,9 +208,8 @@ public abstract class ModeledPermissions<ModelType extends ObjectModelInterface 
      * which apply to this user, including any groups inherited through
      * membership in yet more groups.
      *
-     * @return
-     *     The identifiers of all user groups defined within the database which
-     *     apply to this user.
+     * @return The identifiers of all user groups defined within the database
+     *         which apply to this user.
      */
     public Set<String> getEffectiveUserGroups() {
         return entityService.retrieveEffectiveGroups(this,
@@ -223,9 +221,8 @@ public abstract class ModeledPermissions<ModelType extends ObjectModelInterface 
      * this entity, including any permissions inherited through group
      * membership.
      *
-     * @return
-     *     A Permissions object which represents all permissions granted to
-     *     this entity.
+     * @return A Permissions object which represents all permissions granted to
+     *         this entity.
      */
     public Permissions getEffective() {
 
@@ -249,43 +246,56 @@ public abstract class ModeledPermissions<ModelType extends ObjectModelInterface 
             @Override
             public ObjectPermissionSet getActiveConnectionPermissions()
                     throws GuacamoleException {
-                return activeConnectionPermissionService.getPermissionSet(authenticatedUser, ModeledPermissions.this, effectiveGroups);
+                return activeConnectionPermissionService.getPermissionSet(
+                        authenticatedUser, ModeledPermissions.this,
+                        effectiveGroups);
             }
 
             @Override
             public ObjectPermissionSet getConnectionGroupPermissions()
                     throws GuacamoleException {
-                return connectionGroupPermissionService.getPermissionSet(authenticatedUser, ModeledPermissions.this, effectiveGroups);
+                return connectionGroupPermissionService.getPermissionSet(
+                        authenticatedUser, ModeledPermissions.this,
+                        effectiveGroups);
             }
 
             @Override
             public ObjectPermissionSet getConnectionPermissions()
                     throws GuacamoleException {
-                return connectionPermissionService.getPermissionSet(authenticatedUser, ModeledPermissions.this, effectiveGroups);
+                return connectionPermissionService.getPermissionSet(
+                        authenticatedUser, ModeledPermissions.this,
+                        effectiveGroups);
             }
 
             @Override
             public ObjectPermissionSet getSharingProfilePermissions()
                     throws GuacamoleException {
-                return sharingProfilePermissionService.getPermissionSet(authenticatedUser, ModeledPermissions.this, effectiveGroups);
+                return sharingProfilePermissionService.getPermissionSet(
+                        authenticatedUser, ModeledPermissions.this,
+                        effectiveGroups);
             }
 
             @Override
             public SystemPermissionSet getSystemPermissions()
                     throws GuacamoleException {
-                return systemPermissionService.getPermissionSet(authenticatedUser, ModeledPermissions.this, effectiveGroups);
+                return systemPermissionService.getPermissionSet(
+                        authenticatedUser, ModeledPermissions.this,
+                        effectiveGroups);
             }
 
             @Override
             public ObjectPermissionSet getUserPermissions()
                     throws GuacamoleException {
-                return userPermissionService.getPermissionSet(authenticatedUser, ModeledPermissions.this, effectiveGroups);
+                return userPermissionService.getPermissionSet(authenticatedUser,
+                        ModeledPermissions.this, effectiveGroups);
             }
 
             @Override
             public ObjectPermissionSet getUserGroupPermissions()
                     throws GuacamoleException {
-                return userGroupPermissionService.getPermissionSet(getCurrentUser(), ModeledPermissions.this, effectiveGroups);
+                return userGroupPermissionService.getPermissionSet(
+                        getCurrentUser(), ModeledPermissions.this,
+                        effectiveGroups);
             }
 
         };

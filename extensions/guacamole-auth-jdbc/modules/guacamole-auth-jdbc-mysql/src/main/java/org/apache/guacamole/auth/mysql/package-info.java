@@ -18,7 +18,7 @@
  */
 
 /**
- * The MySQL authentication provider. This package exists outside of
- * org.apache for backwards-compatibility.
+ * The MySQL authentication provider. This package exists outside of org.apache
+ * for backwards-compatibility.
  */
 package org.apache.guacamole.auth.mysql;

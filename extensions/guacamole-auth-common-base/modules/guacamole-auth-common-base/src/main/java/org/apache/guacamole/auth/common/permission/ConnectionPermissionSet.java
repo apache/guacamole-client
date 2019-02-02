@@ -20,13 +20,12 @@
 package org.apache.guacamole.auth.common.permission;
 
 import java.util.Map;
-
 import com.google.inject.Inject;
 
 /**
  * A database implementation of ObjectPermissionSet which uses an injected
- * service to query and manipulate the connection permissions associated with
- * a particular user.
+ * service to query and manipulate the connection permissions associated with a
+ * particular user.
  */
 public class ConnectionPermissionSet extends ObjectPermissionSet {
 
@@ -34,15 +33,17 @@ public class ConnectionPermissionSet extends ObjectPermissionSet {
      * Service for querying and manipulating connection permissions.
      */
     private ObjectPermissionService connectionPermissionService;
-    
+
     @Inject
-   	public ConnectionPermissionSet(Map<String, ObjectPermissionService> mappers) {
-    	connectionPermissionService = mappers.get("ConnectionPermissionService");
-   	}
-    
+    public ConnectionPermissionSet(
+            Map<String, ObjectPermissionService> mappers) {
+        connectionPermissionService = mappers
+                .get("ConnectionPermissionService");
+    }
+
     @Override
     protected ObjectPermissionService getObjectPermissionService() {
         return connectionPermissionService;
     }
- 
+
 }

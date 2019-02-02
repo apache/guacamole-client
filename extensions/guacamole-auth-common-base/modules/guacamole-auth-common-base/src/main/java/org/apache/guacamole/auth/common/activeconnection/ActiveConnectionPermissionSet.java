@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.common.activeconnection;
 
 import org.apache.guacamole.auth.common.permission.ObjectPermissionService;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionSet;
-
 import com.google.inject.Inject;
 
 /**
@@ -35,10 +34,10 @@ public class ActiveConnectionPermissionSet extends ObjectPermissionSet {
      */
     @Inject
     private ActiveConnectionPermissionService activeConnectionPermissionService;
-    
+
     @Override
     protected ObjectPermissionService getObjectPermissionService() {
         return activeConnectionPermissionService;
     }
- 
+
 }

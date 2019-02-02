@@ -22,18 +22,18 @@ package org.apache.guacamole.auth.common.sharingprofile;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 
 /**
- * Interface of the SharingProfile Directory which is driven by an
- * underlying, arbitrary database.
+ * Interface of the SharingProfile Directory which is driven by an underlying,
+ * arbitrary database.
  */
 public interface SharingProfileDirectoryInterface {
 
-	/**
+    /**
      * Initializes this object, associating it with the current authenticated
      * user and populating it with data from the given model object
      *
      * @param currentUser
-     *     The user that created or retrieved this object.
+     *            The user that created or retrieved this object.
      */
-	public void init(ModeledAuthenticatedUser currentUser);
+    public void init(ModeledAuthenticatedUser currentUser);
 
 }

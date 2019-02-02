@@ -34,22 +34,23 @@ public class ManagedSSLGuacamoleSocket extends SSLGuacamoleSocket {
     private final Runnable socketClosedTask;
 
     /**
-     * Creates a new socket which connects via SSL to a given hostname and
-     * port. If the socket is closed for any reason, the given task is run.
+     * Creates a new socket which connects via SSL to a given hostname and port.
+     * If the socket is closed for any reason, the given task is run.
      * 
      * @param hostname
-     *     The hostname of the Guacamole proxy server to connect to.
+     *            The hostname of the Guacamole proxy server to connect to.
      *
      * @param port
-     *     The port of the Guacamole proxy server to connect to.
+     *            The port of the Guacamole proxy server to connect to.
      *
      * @param socketClosedTask
-     *     The task to run when the socket is closed. This task will NOT be
-     *     run if an exception occurs during connection, and this
-     *     ManagedInetGuacamoleSocket instance is ultimately not created.
+     *            The task to run when the socket is closed. This task will NOT
+     *            be run if an exception occurs during connection, and this
+     *            ManagedInetGuacamoleSocket instance is ultimately not created.
      *
      * @throws GuacamoleException
-     *     If an error occurs while connecting to the Guacamole proxy server.
+     *             If an error occurs while connecting to the Guacamole proxy
+     *             server.
      */
     public ManagedSSLGuacamoleSocket(String hostname, int port,
             Runnable socketClosedTask) throws GuacamoleException {
@@ -62,5 +63,5 @@ public class ManagedSSLGuacamoleSocket extends SSLGuacamoleSocket {
         super.close();
         socketClosedTask.run();
     }
-    
+
 }

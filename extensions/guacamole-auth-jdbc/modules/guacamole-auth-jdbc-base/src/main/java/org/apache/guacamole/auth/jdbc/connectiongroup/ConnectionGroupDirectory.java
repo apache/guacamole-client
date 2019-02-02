@@ -19,18 +19,15 @@
 
 package org.apache.guacamole.auth.jdbc.connectiongroup;
 
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.base.RestrictedObject;
 import org.apache.guacamole.auth.common.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
 import org.mybatis.guice.transactional.Transactional;
-
 import com.google.inject.Inject;
 
 /**
@@ -38,7 +35,7 @@ import com.google.inject.Inject;
  * underlying, arbitrary database.
  */
 public class ConnectionGroupDirectory extends RestrictedObject
-implements Directory<ConnectionGroup> {
+        implements Directory<ConnectionGroup> {
 
     /**
      * Service for managing connection group objects.
@@ -48,13 +45,16 @@ implements Directory<ConnectionGroup> {
 
     @Override
     public ConnectionGroup get(String identifier) throws GuacamoleException {
-        return connectionGroupService.retrieveObject(getCurrentUser(), identifier);
+        return connectionGroupService.retrieveObject(getCurrentUser(),
+                identifier);
     }
 
     @Override
     @Transactional
-    public Collection<ConnectionGroup> getAll(Collection<String> identifiers) throws GuacamoleException {
-        Collection<ModeledConnectionGroup> objects = connectionGroupService.retrieveObjects(getCurrentUser(), identifiers);
+    public Collection<ConnectionGroup> getAll(Collection<String> identifiers)
+            throws GuacamoleException {
+        Collection<ModeledConnectionGroup> objects = connectionGroupService
+                .retrieveObjects(getCurrentUser(), identifiers);
         return Collections.<ConnectionGroup>unmodifiableCollection(objects);
     }
 
@@ -82,7 +82,5 @@ implements Directory<ConnectionGroup> {
     public void remove(String identifier) throws GuacamoleException {
         connectionGroupService.deleteObject(getCurrentUser(), identifier);
     }
-
-
 
 }

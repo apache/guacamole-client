@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.common.user;
 
 import java.util.Collection;
 import java.util.List;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.common.base.ActivityRecordSortPredicate;
@@ -36,7 +35,7 @@ import org.apache.guacamole.net.auth.Credentials;
  */
 public interface UserServiceInterface {
 
-	/**
+    /**
      * Retrieves the user corresponding to the given credentials from the
      * database. Note that this function will not enforce any additional account
      * restrictions, including explicitly disabled accounts, scheduling, and
@@ -56,11 +55,11 @@ public interface UserServiceInterface {
      * @throws GuacamoleException
      *             If the provided credentials to not conform to expectations.
      */
-	public ModeledAuthenticatedUser retrieveAuthenticatedUser(
+    public ModeledAuthenticatedUser retrieveAuthenticatedUser(
             AuthenticationProvider authenticationProvider,
             Credentials credentials) throws GuacamoleException;
 
-	/**
+    /**
      * Retrieves the user corresponding to the given AuthenticatedUser from the
      * database.
      *
@@ -79,11 +78,11 @@ public interface UserServiceInterface {
      *             If a ModeledUser object for the user corresponding to the
      *             given AuthenticatedUser cannot be created.
      */
-	public ModeledUserAbstract retrieveUser(
+    public ModeledUserAbstract retrieveUser(
             AuthenticationProvider authenticationProvider,
             AuthenticatedUser authenticatedUser) throws GuacamoleException;
 
-	/**
+    /**
      * Resets the password of the given user to the new password specified via
      * the "new-password" and "confirm-new-password" parameters from the
      * provided credentials. If these parameters are missing or invalid,
@@ -100,10 +99,10 @@ public interface UserServiceInterface {
      *             If the password reset parameters within the given credentials
      *             are invalid or missing.
      */
-	public void resetExpiredPassword(ModeledUserAbstract user, Credentials credentials)
-            throws GuacamoleException;
+    public void resetExpiredPassword(ModeledUserAbstract user,
+            Credentials credentials) throws GuacamoleException;
 
-	/**
+    /**
      * Retrieves the login history of the given user, including any active
      * sessions.
      *
@@ -119,11 +118,11 @@ public interface UserServiceInterface {
      * @throws GuacamoleException
      *             If permission to read the login history is denied.
      */
-	public List<ActivityRecord> retrieveHistory(
-            ModeledAuthenticatedUser authenticatedUser, ModeledUserAbstract user)
-            throws GuacamoleException;
+    public List<ActivityRecord> retrieveHistory(
+            ModeledAuthenticatedUser authenticatedUser,
+            ModeledUserAbstract user) throws GuacamoleException;
 
-	/**
+    /**
      * Retrieves user login history records matching the given criteria.
      * Retrieves up to <code>limit</code> user history records matching the
      * given terms and sorted by the given predicates. Only history records
@@ -149,7 +148,7 @@ public interface UserServiceInterface {
      * @throws GuacamoleException
      *             If permission to read the user login history is denied.
      */
-	public List<ActivityRecord> retrieveHistory(ModeledAuthenticatedUser user,
+    public List<ActivityRecord> retrieveHistory(ModeledAuthenticatedUser user,
             Collection<ActivityRecordSearchTerm> requiredContents,
             List<ActivityRecordSortPredicate> sortPredicates, int limit)
             throws GuacamoleException;

@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceConflictException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
@@ -61,7 +60,6 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.TokenFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -284,7 +282,7 @@ public abstract class AbstractGuacamoleTunnelService
      *            The record to save.
      */
     protected abstract void saveConnectionRecord(ActiveConnectionRecord record);
-    
+
     /**
      * Returns an unconfigured GuacamoleSocket that is already connected to
      * guacd as specified in guacamole.properties, using SSL if necessary.
@@ -429,7 +427,8 @@ public abstract class AbstractGuacamoleTunnelService
      *             or while connection configuration information is being
      *             retrieved.
      */
-    private GuacamoleTunnel assignGuacamoleTunnel(ActiveConnectionRecord activeConnection,
+    private GuacamoleTunnel assignGuacamoleTunnel(
+            ActiveConnectionRecord activeConnection,
             GuacamoleClientInformation info, Map<String, String> tokens,
             boolean interceptErrors) throws GuacamoleException {
 
@@ -449,9 +448,12 @@ public abstract class AbstractGuacamoleTunnelService
             // Pull configuration directly from the connection if we are not
             // joining an active connection
             if (activeConnection.isPrimaryConnection()) {
-                activeConnections.put(connection.getIdentifier(), activeConnection);
-                activeConnectionGroups.put(connection.getParentIdentifier(), activeConnection);
-                config = getGuacamoleConfiguration(activeConnection.getUser(), connection);
+                activeConnections.put(connection.getIdentifier(),
+                        activeConnection);
+                activeConnectionGroups.put(connection.getParentIdentifier(),
+                        activeConnection);
+                config = getGuacamoleConfiguration(activeConnection.getUser(),
+                        connection);
             }
 
             // If we ARE joining an active connection, generate a configuration
@@ -477,11 +479,13 @@ public abstract class AbstractGuacamoleTunnelService
 
             // Filter the configuration
             tokenFilter.filterValues(config.getParameters());
-            
+
             // Obtain socket which will automatically run the cleanup task
             ConfiguredGuacamoleSocket socket = new ConfiguredGuacamoleSocket(
-                    getUnconfiguredGuacamoleSocket(connection.getGuacamoleProxyConfiguration(),
-                    		cleanupTask), config, info);
+                    getUnconfiguredGuacamoleSocket(
+                            connection.getGuacamoleProxyConfiguration(),
+                            cleanupTask),
+                    config, info);
 
             // Assign and return new tunnel
             if (interceptErrors)
@@ -555,7 +559,7 @@ public abstract class AbstractGuacamoleTunnelService
      *         group, or an empty list if there are no such connections.
      */
     @SuppressWarnings("unchecked")
-	private List<ModeledConnection> getBalancedConnections(
+    private List<ModeledConnection> getBalancedConnections(
             ModeledAuthenticatedUser user,
             ModeledConnectionGroup connectionGroup) {
 
@@ -591,7 +595,7 @@ public abstract class AbstractGuacamoleTunnelService
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public Collection<ActiveConnectionRecord> getActiveConnections(
             ModeledAuthenticatedUser user) throws GuacamoleException {
 
@@ -612,8 +616,8 @@ public abstract class AbstractGuacamoleTunnelService
 
         // Produce collection of readable connection identifiers
         Collection<ConnectionModelInterface> connections = ((ModeledDirectoryObjectMapperInterface<ConnectionModelInterface>) connectionMapper)
-                .selectReadable(user.getUser().getModel(),
-                        identifiers, user.getEffectiveUserGroups());
+                .selectReadable(user.getUser().getModel(), identifiers,
+                        user.getEffectiveUserGroups());
 
         // Ensure set contains only identifiers of readable connections
         identifiers.clear();
@@ -633,7 +637,8 @@ public abstract class AbstractGuacamoleTunnelService
     }
 
     @Override
-    public GuacamoleTunnel getGuacamoleTunnel(final ModeledAuthenticatedUser user,
+    public GuacamoleTunnel getGuacamoleTunnel(
+            final ModeledAuthenticatedUser user,
             final ModeledConnection connection, GuacamoleClientInformation info,
             Map<String, String> tokens) throws GuacamoleException {
 
@@ -657,7 +662,8 @@ public abstract class AbstractGuacamoleTunnelService
     @Override
     public GuacamoleTunnel getGuacamoleTunnel(ModeledAuthenticatedUser user,
             ModeledConnectionGroup connectionGroup,
-            GuacamoleClientInformation info, Map<String, String> tokens) throws GuacamoleException {
+            GuacamoleClientInformation info, Map<String, String> tokens)
+            throws GuacamoleException {
 
         // Track failures in upstream (remote desktop) connections
         boolean upstreamHasFailed = false;
@@ -748,7 +754,8 @@ public abstract class AbstractGuacamoleTunnelService
     @Override
     public GuacamoleTunnel getGuacamoleTunnel(RemoteAuthenticatedUser user,
             SharedConnectionDefinition definition,
-            GuacamoleClientInformation info, Map<String, String> tokens) throws GuacamoleException {
+            GuacamoleClientInformation info, Map<String, String> tokens)
+            throws GuacamoleException {
 
         // Create a connection record which describes the shared connection
         ActiveConnectionRecord connectionRecord = activeConnectionRecordProvider
@@ -757,8 +764,8 @@ public abstract class AbstractGuacamoleTunnelService
                 definition.getSharingProfile());
 
         // Connect to shared connection described by the created record
-        GuacamoleTunnel tunnel = assignGuacamoleTunnel(connectionRecord, info, tokens,
-                false);
+        GuacamoleTunnel tunnel = assignGuacamoleTunnel(connectionRecord, info,
+                tokens, false);
 
         // Register tunnel, such that it is closed when the
         // SharedConnectionDefinition is invalidated

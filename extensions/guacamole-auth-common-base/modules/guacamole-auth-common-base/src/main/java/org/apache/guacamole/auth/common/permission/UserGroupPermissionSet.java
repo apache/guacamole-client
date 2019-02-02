@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.common.permission;
 
 import java.util.Map;
-
 import com.google.inject.Inject;
 
 /**
@@ -34,15 +33,16 @@ public class UserGroupPermissionSet extends ObjectPermissionSet {
      * Service for querying and manipulating user group permissions.
      */
     private ObjectPermissionService userGroupPermissionService;
-    
+
     @Inject
-	public UserGroupPermissionSet(Map<String, ObjectPermissionService> mappers) {
-    	userGroupPermissionService = mappers.get("UserGroupPermissionService");
-	}
-    
+    public UserGroupPermissionSet(
+            Map<String, ObjectPermissionService> mappers) {
+        userGroupPermissionService = mappers.get("UserGroupPermissionService");
+    }
+
     @Override
     protected ObjectPermissionService getObjectPermissionService() {
         return userGroupPermissionService;
     }
- 
+
 }

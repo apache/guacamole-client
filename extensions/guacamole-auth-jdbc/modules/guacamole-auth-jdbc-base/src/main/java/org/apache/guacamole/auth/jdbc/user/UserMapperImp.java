@@ -22,34 +22,35 @@ package org.apache.guacamole.auth.jdbc.user;
 import org.apache.guacamole.auth.common.user.UserMapperInterface;
 import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapperImp;
-
 import com.google.inject.Inject;
 
 /**
  * Mapper for user objects.
  */
-public class UserMapperImp extends ModeledDirectoryObjectMapperImp<UserModelInterface, UserMapper> implements UserMapperInterface<UserModelInterface> {
+public class UserMapperImp
+        extends ModeledDirectoryObjectMapperImp<UserModelInterface, UserMapper>
+        implements UserMapperInterface<UserModelInterface> {
 
-	@Inject 
-	private UserMapper userMapper;
-	
+    @Inject
+    private UserMapper userMapper;
+
     /**
      * Returns the user having the given username, if any. If no such user
      * exists, null is returned.
      *
      * @param username
-     *     The username of the user to return.
+     *            The username of the user to return.
      *
-     * @return
-     *     The user having the given username, or null if no such user exists.
+     * @return The user having the given username, or null if no such user
+     *         exists.
      */
     public UserModelInterface selectOne(String username) {
-    	return userMapper.selectOne(username);
+        return userMapper.selectOne(username);
     }
 
-	@Override
-	protected UserMapper getMapper() {
-		return userMapper;
-	}
+    @Override
+    protected UserMapper getMapper() {
+        return userMapper;
+    }
 
 }

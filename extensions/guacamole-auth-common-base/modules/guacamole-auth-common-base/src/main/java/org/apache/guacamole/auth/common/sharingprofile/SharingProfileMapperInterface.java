@@ -39,6 +39,7 @@ public interface SharingProfileMapperInterface {
      *         given primary connection, or null if no such sharing profile
      *         exists.
      */
-    SharingProfileModelInterface selectOneByName(String parentIdentifier, String name);
+    SharingProfileModelInterface selectOneByName(String parentIdentifier,
+            String name);
 
 }

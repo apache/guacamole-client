@@ -34,35 +34,35 @@ import org.apache.guacamole.net.auth.permission.PermissionSet;
  * convenience methods for enforcing the permission model.
  *
  * @param <PermissionSetType>
- *     The type of permission sets this service provides access to.
+ *            The type of permission sets this service provides access to.
  *
  * @param <PermissionType>
- *     The type of permission this service provides access to.
+ *            The type of permission this service provides access to.
  */
-public abstract class AbstractPermissionService<PermissionSetType extends PermissionSet<PermissionType>,
-        PermissionType extends Permission>
-    implements PermissionService<PermissionSetType, PermissionType> {
+public abstract class AbstractPermissionService<PermissionSetType extends PermissionSet<PermissionType>, PermissionType extends Permission>
+        implements PermissionService<PermissionSetType, PermissionType> {
 
-	/**
+    /**
      * Returns the ObjectPermissionSet related to the type of the given entity.
      * If the given entity represents a user, then the ObjectPermissionSet
-     * containing user permissions is returned. If the given entity represents
-     * a user group, then the ObjectPermissionSet containing user group
+     * containing user permissions is returned. If the given entity represents a
+     * user group, then the ObjectPermissionSet containing user group
      * permissions is returned.
      *
      * @param user
-     *     The user to retrieve the ObjectPermissionSet from.
+     *            The user to retrieve the ObjectPermissionSet from.
      *
      * @param targetEntity
-     *     The entity whose type dictates the ObjectPermissionSet returned.
+     *            The entity whose type dictates the ObjectPermissionSet
+     *            returned.
      *
-     * @return
-     *     The ObjectPermissionSet related to the type of the given entity.
+     * @return The ObjectPermissionSet related to the type of the given entity.
      *
      * @throws GuacamoleException
-     *     If the relevant ObjectPermissionSet cannot be retrieved.
+     *             If the relevant ObjectPermissionSet cannot be retrieved.
      */
-    protected ObjectPermissionSet getRelevantPermissionSet(ModeledUserAbstract user,
+    protected ObjectPermissionSet getRelevantPermissionSet(
+            ModeledUserAbstract user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity)
             throws GuacamoleException {
 
@@ -74,42 +74,44 @@ public abstract class AbstractPermissionService<PermissionSetType extends Permis
 
         // Entities should be only users or groups
         throw new UnsupportedOperationException("Unexpected entity type.");
-        
+
     }
-    
+
     /**
      * Determines whether the given user can read the permissions currently
-     * granted to the given target user. If the reading user and the target
-     * user are not the same, then explicit READ or SYSTEM_ADMINISTER access is
+     * granted to the given target user. If the reading user and the target user
+     * are not the same, then explicit READ or SYSTEM_ADMINISTER access is
      * required. Permission inheritance via user groups is taken into account.
      *
      * @param user
-     *     The user attempting to read permissions.
+     *            The user attempting to read permissions.
      *
      * @param targetEntity
-     *     The entity whose permissions are being read.
+     *            The entity whose permissions are being read.
      *
-     * @return
-     *     true if permission is granted, false otherwise.
+     * @return true if permission is granted, false otherwise.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while checking permission status, or if
-     *     permission is denied to read the current user's permissions.
+     * @throws GuacamoleException
+     *             If an error occurs while checking permission status, or if
+     *             permission is denied to read the current user's permissions.
      */
     protected boolean canReadPermissions(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModelInterface> targetEntity) throws GuacamoleException {
+            ModeledPermissions<? extends EntityModelInterface> targetEntity)
+            throws GuacamoleException {
 
         // A user can always read their own permissions
         if (user.getUser().getIdentifier().equals(targetEntity.getIdentifier()))
             return true;
-        
+
         // A system adminstrator can do anything
         if (user.getUser().isAdministrator())
             return true;
 
         // Can read permissions on target user if explicit READ is granted
-        ObjectPermissionSet userPermissionSet = getRelevantPermissionSet(user.getUser(), targetEntity);
-        return userPermissionSet.hasPermission(ObjectPermission.Type.READ, targetEntity.getIdentifier());
+        ObjectPermissionSet userPermissionSet = getRelevantPermissionSet(
+                user.getUser(), targetEntity);
+        return userPermissionSet.hasPermission(ObjectPermission.Type.READ,
+                targetEntity.getIdentifier());
 
     }
 

@@ -28,11 +28,11 @@ import org.apache.guacamole.language.TranslatableMessage;
  * of password complexity policies.
  */
 public class PasswordPolicyException extends GuacamoleClientException
-    implements Translatable {
+        implements Translatable {
 
-	private static final long serialVersionUID = 1L;
-	
-	/**
+    private static final long serialVersionUID = 1L;
+
+    /**
      * A translatable message which, after being passed through the translation
      * system, describes the policy violation that occurred.
      */
@@ -46,12 +46,12 @@ public class PasswordPolicyException extends GuacamoleClientException
      * occurred.
      *
      * @param message
-     *     A human-readable message describing the policy violation that
-     *     occurred.
+     *            A human-readable message describing the policy violation that
+     *            occurred.
      *
      * @param translationKey
-     *     The key of a translation string known to the translation system
-     *     which describes the policy violation that occurred.
+     *            The key of a translation string known to the translation
+     *            system which describes the policy violation that occurred.
      */
     public PasswordPolicyException(String message, String translationKey) {
         super(message);
@@ -66,14 +66,16 @@ public class PasswordPolicyException extends GuacamoleClientException
      * occurred.
      *
      * @param message
-     *     A human-readable message describing the policy violation that
-     *     occurred.
+     *            A human-readable message describing the policy violation that
+     *            occurred.
      *
      * @param translatableMessage
-     *     A translatable message which, after being passed through the
-     *     translation system, describes the policy violation that occurred.
+     *            A translatable message which, after being passed through the
+     *            translation system, describes the policy violation that
+     *            occurred.
      */
-    public PasswordPolicyException(String message, TranslatableMessage translatableMessage) {
+    public PasswordPolicyException(String message,
+            TranslatableMessage translatableMessage) {
         super(message);
         this.translatableMessage = translatableMessage;
     }

@@ -42,14 +42,14 @@ public abstract class CommonInjectorProvider {
      * An AtomicReference wrapping the cached Guice Injector. If the Injector
      * has not yet been created, null will be wrapped instead.
      */
-    private static final AtomicReference<Injector> injector = new AtomicReference<Injector>(null);
+    private static final AtomicReference<Injector> injector = new AtomicReference<Injector>(
+            null);
 
     /**
-     * Creates a new instance of the Guice Injector which should be used
-     * across the entire authentication extension. This function will
-     * generally only be called once, but multiple invocations are possible if
-     * get() is invoked several times concurrently prior to the Injector being
-     * cached.
+     * Creates a new instance of the Guice Injector which should be used across
+     * the entire authentication extension. This function will generally only be
+     * called once, but multiple invocations are possible if get() is invoked
+     * several times concurrently prior to the Injector being cached.
      *
      * @return
      * @throws GuacamoleException
@@ -58,16 +58,15 @@ public abstract class CommonInjectorProvider {
 
     /**
      * Returns a common, singleton instance of a Guice Injector, configured for
-     * the injections required by the authentication extension. The result
-     * of the first call to this function will be cached statically within this
+     * the injections required by the authentication extension. The result of
+     * the first call to this function will be cached statically within this
      * class, and will be returned for all subsequent calls.
      *
-     * @return
-     *     A singleton instance of the Guice Injector used across the entire
-     *     authentication extension.
+     * @return A singleton instance of the Guice Injector used across the entire
+     *         authentication extension.
      *
      * @throws GuacamoleException
-     *     If the Injector cannot be created due to an error.
+     *             If the Injector cannot be created due to an error.
      */
     public Injector get() throws GuacamoleException {
 

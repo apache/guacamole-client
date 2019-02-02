@@ -21,12 +21,10 @@ package org.apache.guacamole.auth.common.permission;
 
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.base.EntityModelInterface;
 import org.apache.guacamole.auth.common.base.ModeledPermissions;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -35,7 +33,8 @@ import com.google.inject.Provider;
  * deleting sharing profile permissions. This service will automatically enforce
  * the permissions of the current user.
  */
-public abstract class SharingProfilePermissionServiceAbstract extends ModeledObjectPermissionServiceAbstract {
+public abstract class SharingProfilePermissionServiceAbstract
+        extends ModeledObjectPermissionServiceAbstract {
 
     /**
      * Provider for sharing profile permission sets.
@@ -49,10 +48,12 @@ public abstract class SharingProfilePermissionServiceAbstract extends ModeledObj
     private ObjectPermissionMapperInterface sharingProfilePermissionMapper;
 
     @Inject
-	public SharingProfilePermissionServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
-    	sharingProfilePermissionMapper = mappers.get("SharingProfilePermissionMapper");
-	}
-    
+    public SharingProfilePermissionServiceAbstract(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        sharingProfilePermissionMapper = mappers
+                .get("SharingProfilePermissionMapper");
+    }
+
     @Override
     protected ObjectPermissionMapperInterface getPermissionMapper() {
         return sharingProfilePermissionMapper;
@@ -60,11 +61,12 @@ public abstract class SharingProfilePermissionServiceAbstract extends ModeledObj
 
     @Override
     public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-    		ModeledPermissions<? extends EntityModelInterface> targetEntity,
+            ModeledPermissions<? extends EntityModelInterface> targetEntity,
             Set<String> effectiveGroups) throws GuacamoleException {
 
         // Create permission set for requested user
-        ObjectPermissionSet permissionSet = sharingProfilePermissionSetProvider.get();
+        ObjectPermissionSet permissionSet = sharingProfilePermissionSetProvider
+                .get();
         permissionSet.init(user, targetEntity, effectiveGroups);
 
         return permissionSet;

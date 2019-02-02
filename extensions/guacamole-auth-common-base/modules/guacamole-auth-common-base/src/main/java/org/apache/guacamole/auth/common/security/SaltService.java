@@ -25,6 +25,7 @@ package org.apache.guacamole.auth.common.security;
 public interface SaltService {
     /**
      * Generates a new String that can be used as a password salt.
+     * 
      * @return a new salt for password encryption.
      */
     public byte[] generateSalt();

@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.mysql;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.CommonInjectorProvider;
 import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProviderModule;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
@@ -41,9 +40,8 @@ public class MySQLInjectorProvider extends CommonInjectorProvider {
 
         // Set up Guice injector
         return Guice.createInjector(
-            new JDBCAuthenticationProviderModule(environment),
-            new MySQLAuthenticationProviderModule(environment)
-        );
+                new JDBCAuthenticationProviderModule(environment),
+                new MySQLAuthenticationProviderModule(environment));
 
     }
 

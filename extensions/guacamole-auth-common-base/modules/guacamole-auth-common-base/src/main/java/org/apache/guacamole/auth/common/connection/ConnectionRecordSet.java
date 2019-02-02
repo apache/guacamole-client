@@ -35,17 +35,19 @@ import org.apache.guacamole.net.auth.ConnectionRecord;
  * asCollection() will query connection history records from the database. Which
  * records are returned will be determined by the values passed in earlier.
  */
-public class ConnectionRecordSet extends ModeledActivityRecordSet<ConnectionRecord> {
+public class ConnectionRecordSet
+        extends ModeledActivityRecordSet<ConnectionRecord> {
 
     /**
      * Service for managing connection objects.
      */
     @Inject
     private ConnectionServiceInterface connectionService;
-    
+
     @Override
     protected Collection<ConnectionRecord> retrieveHistory(
-            AuthenticatedUser user, Set<ActivityRecordSearchTerm> requiredContents,
+            AuthenticatedUser user,
+            Set<ActivityRecordSearchTerm> requiredContents,
             List<ActivityRecordSortPredicate> sortPredicates, int limit)
             throws GuacamoleException {
 

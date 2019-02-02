@@ -24,17 +24,18 @@ package org.apache.guacamole.auth.common.security;
  * does not contain both uppercase and lowercase characters, in violation of the
  * defined password policy.
  */
-public class PasswordRequiresMultipleCaseException extends PasswordPolicyException {
+public class PasswordRequiresMultipleCaseException
+        extends PasswordPolicyException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
+    /**
      * Creates a new PasswordRequiresMultipleCaseException with the given
      * human-readable message. The translatable message is already defined.
      *
      * @param message
-     *     A human-readable message describing the password policy violation
-     *     that occurred.
+     *            A human-readable message describing the password policy
+     *            violation that occurred.
      */
     public PasswordRequiresMultipleCaseException(String message) {
         super(message, "PASSWORD_POLICY.ERROR_REQUIRES_MULTIPLE_CASE");

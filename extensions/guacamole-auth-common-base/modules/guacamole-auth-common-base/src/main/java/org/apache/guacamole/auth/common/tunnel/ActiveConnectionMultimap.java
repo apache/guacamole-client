@@ -37,18 +37,17 @@ public class ActiveConnectionMultimap {
     /**
      * All active connections to a connection having a given identifier.
      */
-    private final Map<String, Set<ActiveConnectionRecord>> records =
-            new HashMap<String, Set<ActiveConnectionRecord>>();
+    private final Map<String, Set<ActiveConnectionRecord>> records = new HashMap<String, Set<ActiveConnectionRecord>>();
 
     /**
      * Stores the given connection record in the list of active connections
      * associated with the object having the given identifier.
      *
      * @param identifier
-     *     The identifier of the object being connected to.
+     *            The identifier of the object being connected to.
      *
      * @param record
-     *     The record associated with the active connection.
+     *            The record associated with the active connection.
      */
     public void put(String identifier, ActiveConnectionRecord record) {
         synchronized (records) {
@@ -56,7 +55,9 @@ public class ActiveConnectionMultimap {
             // Get set of active connection records, creating if necessary
             Set<ActiveConnectionRecord> connections = records.get(identifier);
             if (connections == null) {
-                connections = Collections.synchronizedSet(Collections.newSetFromMap(new LinkedHashMap<ActiveConnectionRecord, Boolean>()));
+                connections = Collections
+                        .synchronizedSet(Collections.newSetFromMap(
+                                new LinkedHashMap<ActiveConnectionRecord, Boolean>()));
                 records.put(identifier, connections);
             }
 
@@ -71,17 +72,17 @@ public class ActiveConnectionMultimap {
      * associated with the object having the given identifier.
      *
      * @param identifier
-     *     The identifier of the object being disconnected from.
+     *            The identifier of the object being disconnected from.
      *
      * @param record
-     *     The record associated with the active connection.
+     *            The record associated with the active connection.
      */
     public void remove(String identifier, ActiveConnectionRecord record) {
         synchronized (records) {
 
             // Get set of active connection records
             Set<ActiveConnectionRecord> connections = records.get(identifier);
-            assert(connections != null);
+            assert (connections != null);
 
             // Remove old record
             connections.remove(record);
@@ -100,18 +101,18 @@ public class ActiveConnectionMultimap {
      * returned.
      *
      * @param identifier
-     *     The identifier of the object to check.
+     *            The identifier of the object to check.
      *
-     * @return
-     *     An immutable collection of records associated with the object having
-     *     the given identifier, or an empty collection if there are no such
-     *     records.
+     * @return An immutable collection of records associated with the object
+     *         having the given identifier, or an empty collection if there are
+     *         no such records.
      */
     public Collection<ActiveConnectionRecord> get(String identifier) {
         synchronized (records) {
 
             // Get set of active connection records
-            Collection<ActiveConnectionRecord> connections = records.get(identifier);
+            Collection<ActiveConnectionRecord> connections = records
+                    .get(identifier);
             if (connections != null)
                 return Collections.unmodifiableCollection(connections);
 

@@ -33,16 +33,16 @@ import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 /**
- * AuthenticationProviderService implementation which authenticates users with
- * a username/password pair, producing new UserContext objects which are backed
- * by an underlying, arbitrary database.
+ * AuthenticationProviderService implementation which authenticates users with a
+ * username/password pair, producing new UserContext objects which are backed by
+ * an underlying, arbitrary database.
  */
-public class CommonAuthenticationProviderService implements AuthenticationProviderService  {
+public class CommonAuthenticationProviderService
+        implements AuthenticationProviderService {
 
     /**
      * The environment of the Guacamole server.
@@ -69,21 +69,25 @@ public class CommonAuthenticationProviderService implements AuthenticationProvid
     private Provider<ModeledUserContextAbstract> userContextProvider;
 
     @Override
-    public AuthenticatedUser authenticateUser(AuthenticationProvider authenticationProvider,
+    public AuthenticatedUser authenticateUser(
+            AuthenticationProvider authenticationProvider,
             Credentials credentials) throws GuacamoleException {
 
         // Authenticate user
-        AuthenticatedUser user = userService.retrieveAuthenticatedUser(authenticationProvider, credentials);
+        AuthenticatedUser user = userService
+                .retrieveAuthenticatedUser(authenticationProvider, credentials);
         if (user != null)
             return user;
 
         // Otherwise, unauthorized
-        throw new GuacamoleInvalidCredentialsException("Invalid login", CredentialsInfo.USERNAME_PASSWORD);
+        throw new GuacamoleInvalidCredentialsException("Invalid login",
+                CredentialsInfo.USERNAME_PASSWORD);
 
     }
 
     @Override
-    public ModeledUserContextAbstract getUserContext(AuthenticationProvider authenticationProvider,
+    public ModeledUserContextAbstract getUserContext(
+            AuthenticationProvider authenticationProvider,
             AuthenticatedUser authenticatedUser) throws GuacamoleException {
 
         // Always allow but provide no data for users authenticated via our own
@@ -93,10 +97,12 @@ public class CommonAuthenticationProviderService implements AuthenticationProvid
 
         // Set semantic flags based on context
         boolean databaseCredentialsUsed = (authenticatedUser instanceof ModeledAuthenticatedUser);
-        boolean databaseRestrictionsApplicable = (databaseCredentialsUsed || environment.isUserRequired());
+        boolean databaseRestrictionsApplicable = (databaseCredentialsUsed
+                || environment.isUserRequired());
 
         // Retrieve user account for already-authenticated user
-        ModeledUserAbstract user = userService.retrieveUser(authenticationProvider, authenticatedUser);
+        ModeledUserAbstract user = userService
+                .retrieveUser(authenticationProvider, authenticatedUser);
         if (user != null && !user.isDisabled()) {
 
             // Enforce applicable account restrictions
@@ -108,19 +114,23 @@ public class CommonAuthenticationProviderService implements AuthenticationProvid
 
                 // Verify user account is allowed to be used at the current time
                 if (!user.isAccountAccessible())
-                    throw new GuacamoleClientException("LOGIN.ERROR_NOT_ACCESSIBLE");
+                    throw new GuacamoleClientException(
+                            "LOGIN.ERROR_NOT_ACCESSIBLE");
 
             }
 
             // Update password if password is expired AND the password was
             // actually involved in the authentication process
             if (databaseCredentialsUsed) {
-                if (user.isExpired() || passwordPolicyService.isPasswordExpired(user))
-                    userService.resetExpiredPassword(user, authenticatedUser.getCredentials());
+                if (user.isExpired()
+                        || passwordPolicyService.isPasswordExpired(user))
+                    userService.resetExpiredPassword(user,
+                            authenticatedUser.getCredentials());
             }
 
             // Return all data associated with the authenticated user
-            ModeledUserContextAbstract context = (ModeledUserContextAbstract) userContextProvider.get();
+            ModeledUserContextAbstract context = (ModeledUserContextAbstract) userContextProvider
+                    .get();
             context.init(user.getCurrentUser());
             return context;
 
@@ -141,9 +151,10 @@ public class CommonAuthenticationProviderService implements AuthenticationProvid
     }
 
     @Override
-    public UserContext updateUserContext(AuthenticationProvider authenticationProvider,
-            UserContext context, AuthenticatedUser authenticatedUser,
-            Credentials credentials) throws GuacamoleException {
+    public UserContext updateUserContext(
+            AuthenticationProvider authenticationProvider, UserContext context,
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
 
         // No need to update the context
         return context;

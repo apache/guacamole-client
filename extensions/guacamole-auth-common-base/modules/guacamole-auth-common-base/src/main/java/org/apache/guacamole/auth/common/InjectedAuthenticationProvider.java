@@ -34,7 +34,8 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
  * AuthenticationProvider, even though it is the AuthenticationProvider that
  * serves as the entry point.
  */
-public abstract class InjectedAuthenticationProvider extends AbstractAuthenticationProvider {
+public abstract class InjectedAuthenticationProvider
+        extends AbstractAuthenticationProvider {
 
     /**
      * The AuthenticationProviderService to which all AuthenticationProvider
@@ -50,20 +51,21 @@ public abstract class InjectedAuthenticationProvider extends AbstractAuthenticat
      * the Guice Injector provided by the given InjectorProvider.
      *
      * @param injectorProvider
-     *     A InjectorProvider instance which provides singleton instances
-     *     of a Guice Injector, pre-configured to set up all injections and
-     *     access to the underlying database via MyBatis.
+     *            A InjectorProvider instance which provides singleton instances
+     *            of a Guice Injector, pre-configured to set up all injections
+     *            and access to the underlying database via MyBatis.
      *
      * @param authProviderServiceClass
-     *    The AuthenticationProviderService implementation which defines the
-     *    behavior of this AuthenticationProvider.
+     *            The AuthenticationProviderService implementation which defines
+     *            the behavior of this AuthenticationProvider.
      *
      * @throws GuacamoleException
-     *     If the Injector cannot be created due to an error.
+     *             If the Injector cannot be created due to an error.
      */
-    public InjectedAuthenticationProvider(CommonInjectorProvider injectorProvider,
+    public InjectedAuthenticationProvider(
+            CommonInjectorProvider injectorProvider,
             Class<? extends AuthenticationProviderService> authProviderServiceClass)
-        throws GuacamoleException {
+            throws GuacamoleException {
 
         Injector injector = injectorProvider.get();
         authProviderService = injector.getInstance(authProviderServiceClass);

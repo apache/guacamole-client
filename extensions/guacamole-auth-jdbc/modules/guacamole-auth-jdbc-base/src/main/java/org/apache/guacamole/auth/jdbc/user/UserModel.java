@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.jdbc.user;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
-
 import org.apache.guacamole.auth.common.base.EntityType;
 import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
@@ -38,8 +37,8 @@ public class UserModel extends EntityModel implements UserModelInterface {
     private byte[] passwordHash;
 
     /**
-     * The 32-byte random binary password salt that was appended to the
-     * password prior to hashing.
+     * The 32-byte random binary password salt that was appended to the password
+     * prior to hashing.
      */
     private byte[] passwordSalt;
 
@@ -49,15 +48,15 @@ public class UserModel extends EntityModel implements UserModelInterface {
     private Timestamp passwordDate;
 
     /**
-     * Whether the user account is disabled. Disabled accounts exist and can
-     * be modified, but cannot be used.
+     * Whether the user account is disabled. Disabled accounts exist and can be
+     * modified, but cannot be used.
      */
     private boolean disabled;
 
     /**
      * Whether the user's password is expired. If a user's password is expired,
-     * it must be changed immediately upon login, and the account cannot be
-     * used until this occurs.
+     * it must be changed immediately upon login, and the account cannot be used
+     * until this occurs.
      */
     private boolean expired;
 
@@ -75,8 +74,8 @@ public class UserModel extends EntityModel implements UserModelInterface {
 
     /**
      * The day after which this account becomes valid and usable. Account
-     * validity begins at midnight of this day. Time information within the
-     * Date object is ignored.
+     * validity begins at midnight of this day. Time information within the Date
+     * object is ignored.
      */
     private Date validFrom;
 
@@ -88,10 +87,10 @@ public class UserModel extends EntityModel implements UserModelInterface {
     private Date validUntil;
 
     /**
-     * The ID of the time zone used for all time comparisons for this user.
-     * Both accessWindowStart and accessWindowEnd values will use this time
-     * zone, as will checks for whether account validity dates have passed. If
-     * unset, the server's local time zone is used.
+     * The ID of the time zone used for all time comparisons for this user. Both
+     * accessWindowStart and accessWindowEnd values will use this time zone, as
+     * will checks for whether account validity dates have passed. If unset, the
+     * server's local time zone is used.
      */
     private String timeZone;
 
@@ -112,8 +111,8 @@ public class UserModel extends EntityModel implements UserModelInterface {
     private String organization;
 
     /**
-     * The role that the user has at the organization, company, group, etc.
-     * they belong to, or null if this is not known.
+     * The role that the user has at the organization, company, group, etc. they
+     * belong to, or null if this is not known.
      */
     private String organizationalRole;
 
@@ -135,20 +134,19 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * null if the user was not retrieved from the database, and setPassword()
      * has not yet been called.
      *
-     * @return
-     *     The hash of this user's password and password salt.
+     * @return The hash of this user's password and password salt.
      */
     public byte[] getPasswordHash() {
         return passwordHash;
     }
 
     /**
-     * Sets the hash of this user's password and password salt. This is
-     * normally only set upon retrieval from the database, or through a call
-     * to the higher-level setPassword() function.
+     * Sets the hash of this user's password and password salt. This is normally
+     * only set upon retrieval from the database, or through a call to the
+     * higher-level setPassword() function.
      *
      * @param passwordHash
-     *     The hash of this user's password and password salt.
+     *            The hash of this user's password and password salt.
      */
     public void setPasswordHash(byte[] passwordHash) {
         this.passwordHash = passwordHash;
@@ -159,9 +157,8 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * password hash. This may be null if the user was not retrieved from the
      * database, and setPassword() has not yet been called.
      *
-     * @return
-     *     The random salt that was used when generating this user's password
-     *     hash.
+     * @return The random salt that was used when generating this user's
+     *         password hash.
      */
     public byte[] getPasswordSalt() {
         return passwordSalt;
@@ -173,31 +170,31 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * through a call to the higher-level setPassword() function.
      *
      * @param passwordSalt
-     *     The random salt used when generating this user's password hash.
+     *            The random salt used when generating this user's password
+     *            hash.
      */
     public void setPasswordSalt(byte[] passwordSalt) {
         this.passwordSalt = passwordSalt;
     }
 
     /**
-     * Returns the date that this user's password was last set/reset. This
-     * value is required to be manually updated whenever the user's password is
+     * Returns the date that this user's password was last set/reset. This value
+     * is required to be manually updated whenever the user's password is
      * changed; it will not be automatically updated by the database.
      *
-     * @return
-     *     The date that this user's password was last set/reset.
+     * @return The date that this user's password was last set/reset.
      */
     public Timestamp getPasswordDate() {
         return passwordDate;
     }
 
     /**
-     * Sets the date that this user's password was last set/reset. This
-     * value is required to be manually updated whenever the user's password is
-     * changed; it will not be automatically updated by the database.
+     * Sets the date that this user's password was last set/reset. This value is
+     * required to be manually updated whenever the user's password is changed;
+     * it will not be automatically updated by the database.
      *
      * @param passwordDate
-     *     The date that this user's password was last set/reset.
+     *            The date that this user's password was last set/reset.
      */
     public void setPasswordDate(Timestamp passwordDate) {
         this.passwordDate = passwordDate;
@@ -205,12 +202,10 @@ public class UserModel extends EntityModel implements UserModelInterface {
 
     /**
      * Returns whether this user account has been disabled. The credentials of
-     * disabled user accounts are treated as invalid, effectively disabling
-     * that user's access to data for which they would otherwise have
-     * permission.
+     * disabled user accounts are treated as invalid, effectively disabling that
+     * user's access to data for which they would otherwise have permission.
      *
-     * @return
-     *     true if this user account is disabled, false otherwise.
+     * @return true if this user account is disabled, false otherwise.
      */
     public boolean isDisabled() {
         return disabled;
@@ -218,25 +213,22 @@ public class UserModel extends EntityModel implements UserModelInterface {
 
     /**
      * Sets whether this user account has been disabled. The credentials of
-     * disabled user accounts are treated as invalid, effectively disabling
-     * that user's access to data for which they would otherwise have
-     * permission.
+     * disabled user accounts are treated as invalid, effectively disabling that
+     * user's access to data for which they would otherwise have permission.
      *
      * @param disabled
-     *     true if this user account should be disabled, false otherwise.
+     *            true if this user account should be disabled, false otherwise.
      */
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
     }
 
     /**
-     * Returns whether this user's password has expired. If a user's password
-     * is expired, it must be immediately changed upon login. A user account
-     * with an expired password cannot be used until the password has been
-     * changed.
+     * Returns whether this user's password has expired. If a user's password is
+     * expired, it must be immediately changed upon login. A user account with
+     * an expired password cannot be used until the password has been changed.
      *
-     * @return
-     *     true if this user's password has expired, false otherwise.
+     * @return true if this user's password has expired, false otherwise.
      */
     public boolean isExpired() {
         return expired;
@@ -248,7 +240,7 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * an expired password cannot be used until the password has been changed.
      *
      * @param expired
-     *     true if this user's password has expired, false otherwise.
+     *            true if this user's password has expired, false otherwise.
      */
     public void setExpired(boolean expired) {
         this.expired = expired;
@@ -259,9 +251,8 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * time returned will be local time according to the time zone set with
      * setTimeZone().
      *
-     * @return
-     *     The time each day after which this user account may be used, or null
-     *     if this restriction does not apply.
+     * @return The time each day after which this user account may be used, or
+     *         null if this restriction does not apply.
      */
     public Time getAccessWindowStart() {
         return accessWindowStart;
@@ -273,8 +264,8 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * setTimeZone().
      *
      * @param accessWindowStart
-     *     The time each day after which this user account may be used, or null
-     *     if this restriction does not apply.
+     *            The time each day after which this user account may be used,
+     *            or null if this restriction does not apply.
      */
     public void setAccessWindowStart(Time accessWindowStart) {
         this.accessWindowStart = accessWindowStart;
@@ -285,22 +276,21 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * The time returned will be local time according to the time zone set with
      * setTimeZone().
      *
-     * @return
-     *     The time each day after which this user account may NOT be used, or
-     *     null if this restriction does not apply.
+     * @return The time each day after which this user account may NOT be used,
+     *         or null if this restriction does not apply.
      */
     public Time getAccessWindowEnd() {
         return accessWindowEnd;
     }
 
     /**
-     * Sets the time each day after which this user account may NOT be used.
-     * The time given must be in local time according to the time zone set with
+     * Sets the time each day after which this user account may NOT be used. The
+     * time given must be in local time according to the time zone set with
      * setTimeZone().
      *
      * @param accessWindowEnd
-     *     The time each day after which this user account may NOT be used, or
-     *     null if this restriction does not apply.
+     *            The time each day after which this user account may NOT be
+     *            used, or null if this restriction does not apply.
      */
     public void setAccessWindowEnd(Time accessWindowEnd) {
         this.accessWindowEnd = accessWindowEnd;
@@ -311,9 +301,8 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * Account validity begins at midnight of this day. Any time information
      * within the returned Date object must be ignored.
      *
-     * @return
-     *     The day after which this account becomes valid and usable, or null
-     *     if this restriction does not apply.
+     * @return The day after which this account becomes valid and usable, or
+     *         null if this restriction does not apply.
      */
     public Date getValidFrom() {
         return validFrom;
@@ -321,12 +310,12 @@ public class UserModel extends EntityModel implements UserModelInterface {
 
     /**
      * Sets the day after which this account becomes valid and usable. Account
-     * validity begins at midnight of this day. Any time information within
-     * the provided Date object will be ignored.
+     * validity begins at midnight of this day. Any time information within the
+     * provided Date object will be ignored.
      *
      * @param validFrom
-     *     The day after which this account becomes valid and usable, or null
-     *     if this restriction does not apply.
+     *            The day after which this account becomes valid and usable, or
+     *            null if this restriction does not apply.
      */
     public void setValidFrom(Date validFrom) {
         this.validFrom = validFrom;
@@ -337,9 +326,8 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * validity ends at midnight of the day following this day. Any time
      * information within the returned Date object must be ignored.
      *
-     * @return
-     *     The day after which this account can no longer be used, or null if
-     *     this restriction does not apply.
+     * @return The day after which this account can no longer be used, or null
+     *         if this restriction does not apply.
      */
     public Date getValidUntil() {
         return validUntil;
@@ -351,8 +339,8 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * information within the provided Date object will be ignored.
      *
      * @param validUntil
-     *     The day after which this account can no longer be used, or null if
-     *     this restriction does not apply.
+     *            The day after which this account can no longer be used, or
+     *            null if this restriction does not apply.
      */
     public void setValidUntil(Date validUntil) {
         this.validUntil = validUntil;
@@ -364,23 +352,24 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * TimeZone.getAvailableIDs(). If unset or invalid, the server's local time
      * zone must be used.
      *
-     * @return
-     *     The ID of the time zone to be used for all time comparisons, which
-     *     should correspond to a value returned by TimeZone.getAvailableIDs().
+     * @return The ID of the time zone to be used for all time comparisons,
+     *         which should correspond to a value returned by
+     *         TimeZone.getAvailableIDs().
      */
     public String getTimeZone() {
         return timeZone;
     }
 
     /**
-     * Sets the Java ID of the time zone to be used for all time comparisons
-     * for this user. This ID should correspond to a value returned by
+     * Sets the Java ID of the time zone to be used for all time comparisons for
+     * this user. This ID should correspond to a value returned by
      * TimeZone.getAvailableIDs(). If unset or invalid, the server's local time
      * zone will be used.
      *
      * @param timeZone
-     *     The ID of the time zone to be used for all time comparisons, which
-     *     should correspond to a value returned by TimeZone.getAvailableIDs().
+     *            The ID of the time zone to be used for all time comparisons,
+     *            which should correspond to a value returned by
+     *            TimeZone.getAvailableIDs().
      */
     public void setTimeZone(String timeZone) {
         this.timeZone = timeZone;
@@ -390,8 +379,7 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * Returns the user's full name, if known. If not available, null is
      * returned.
      *
-     * @return
-     *     The user's full name, or null if this is not known.
+     * @return The user's full name, or null if this is not known.
      */
     public String getFullName() {
         return fullName;
@@ -401,7 +389,7 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * Sets the user's full name.
      *
      * @param fullName
-     *     The user's full name, or null if this is not known.
+     *            The user's full name, or null if this is not known.
      */
     public void setFullName(String fullName) {
         this.fullName = fullName;
@@ -411,8 +399,7 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * Returns the email address of the user, if known. If not available, null
      * is returned.
      *
-     * @return
-     *     The email address of the user, or null if this is not known.
+     * @return The email address of the user, or null if this is not known.
      */
     public String getEmailAddress() {
         return emailAddress;
@@ -422,7 +409,7 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * Sets the email address of the user.
      *
      * @param emailAddress
-     *     The email address of the user, or null if this is not known.
+     *            The email address of the user, or null if this is not known.
      */
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
@@ -432,9 +419,8 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * Returns the organization, company, group, etc. that the user belongs to,
      * if known. If not available, null is returned.
      *
-     * @return
-     *     The organization, company, group, etc. that the user belongs to, or
-     *     null if this is not known.
+     * @return The organization, company, group, etc. that the user belongs to,
+     *         or null if this is not known.
      */
     public String getOrganization() {
         return organization;
@@ -444,8 +430,8 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * Sets the organization, company, group, etc. that the user belongs to.
      *
      * @param organization
-     *     The organization, company, group, etc. that the user belongs to, or
-     *     null if this is not known.
+     *            The organization, company, group, etc. that the user belongs
+     *            to, or null if this is not known.
      */
     public void setOrganization(String organization) {
         this.organization = organization;
@@ -455,33 +441,31 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * Returns the role that the user has at the organization, company, group,
      * etc. they belong to. If not available, null is returned.
      *
-     * @return
-     *     The role that the user has at the organization, company, group, etc.
-     *     they belong to, or null if this is not known.
+     * @return The role that the user has at the organization, company, group,
+     *         etc. they belong to, or null if this is not known.
      */
     public String getOrganizationalRole() {
         return organizationalRole;
     }
 
     /**
-     * Sets the role that the user has at the organization, company, group,
-     * etc. they belong to.
+     * Sets the role that the user has at the organization, company, group, etc.
+     * they belong to.
      *
      * @param organizationalRole
-     *     The role that the user has at the organization, company, group, etc.
-     *     they belong to, or null if this is not known.
+     *            The role that the user has at the organization, company,
+     *            group, etc. they belong to, or null if this is not known.
      */
     public void setOrganizationalRole(String organizationalRole) {
         this.organizationalRole = organizationalRole;
     }
 
     /**
-     * Returns the date and time that this user was last active, or null if
-     * this user has never logged in.
+     * Returns the date and time that this user was last active, or null if this
+     * user has never logged in.
      *
-     * @return
-     *     The date and time that this user was last active, or null if this
-     *     user has never logged in.
+     * @return The date and time that this user was last active, or null if this
+     *         user has never logged in.
      */
     public Timestamp getLastActive() {
         return lastActive;
@@ -494,20 +478,22 @@ public class UserModel extends EntityModel implements UserModelInterface {
      * manually through invoking this function will not persist.
      *
      * @param lastActive
-     *     The date and time that this user was last active, or null if this
-     *     user has never logged in.
+     *            The date and time that this user was last active, or null if
+     *            this user has never logged in.
      */
     public void setLastActive(Timestamp lastActive) {
         this.lastActive = lastActive;
     }
 
-	public void setValidUntil(java.util.Date validUntil) {
-		this.validUntil = validUntil != null? new Date(validUntil.getTime()): null;
-		
-	}
+    public void setValidUntil(java.util.Date validUntil) {
+        this.validUntil = validUntil != null ? new Date(validUntil.getTime())
+                : null;
 
-	public void setValidFrom(java.util.Date validFrom) {
-		this.validFrom = validFrom != null? new Date(validFrom.getTime()): null;		
-	}
+    }
+
+    public void setValidFrom(java.util.Date validFrom) {
+        this.validFrom = validFrom != null ? new Date(validFrom.getTime())
+                : null;
+    }
 
 }

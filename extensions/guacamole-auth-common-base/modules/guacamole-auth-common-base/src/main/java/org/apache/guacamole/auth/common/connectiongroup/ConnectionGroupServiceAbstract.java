@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.common.connectiongroup;
 
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
@@ -38,7 +37,6 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -61,10 +59,12 @@ public abstract class ConnectionGroupServiceAbstract extends
     private ObjectPermissionMapperInterface connectionGroupPermissionMapper;
 
     @Inject
-	public ConnectionGroupServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
-    	connectionGroupPermissionMapper = mappers.get("ConnectionGroupPermissionMapper");
-	}
-    
+    public ConnectionGroupServiceAbstract(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        connectionGroupPermissionMapper = mappers
+                .get("ConnectionGroupPermissionMapper");
+    }
+
     /**
      * Provider for creating connection groups.
      */
@@ -78,7 +78,7 @@ public abstract class ConnectionGroupServiceAbstract extends
     private GuacamoleTunnelService tunnelService;
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     protected ModeledDirectoryObjectMapperInterface<ConnectionGroupModelInterface> getObjectMapper() {
         return (ModeledDirectoryObjectMapperInterface<ConnectionGroupModelInterface>) connectionGroupMapper;
     }
@@ -90,7 +90,8 @@ public abstract class ConnectionGroupServiceAbstract extends
 
     @Override
     protected ModeledConnectionGroup getObjectInstance(
-            ModeledAuthenticatedUser currentUser, ConnectionGroupModelInterface model) {
+            ModeledAuthenticatedUser currentUser,
+            ConnectionGroupModelInterface model) {
         ModeledConnectionGroup connectionGroup = connectionGroupProvider.get();
         connectionGroup.init(currentUser, model);
         return connectionGroup;
@@ -249,13 +250,15 @@ public abstract class ConnectionGroupServiceAbstract extends
      *             If permission to connect to this connection is denied.
      */
     public GuacamoleTunnel connect(ModeledAuthenticatedUser user,
-            ModeledConnectionGroup connectionGroup, GuacamoleClientInformation info,
-            Map<String, String> tokens) throws GuacamoleException {
+            ModeledConnectionGroup connectionGroup,
+            GuacamoleClientInformation info, Map<String, String> tokens)
+            throws GuacamoleException {
 
         // Connect only if READ permission is granted
         if (hasObjectPermission(user, connectionGroup.getIdentifier(),
                 ObjectPermission.Type.READ))
-            return tunnelService.getGuacamoleTunnel(user, connectionGroup, info, tokens);
+            return tunnelService.getGuacamoleTunnel(user, connectionGroup, info,
+                    tokens);
 
         // The user does not have permission to connect
         throw new GuacamoleSecurityException("Permission denied.");

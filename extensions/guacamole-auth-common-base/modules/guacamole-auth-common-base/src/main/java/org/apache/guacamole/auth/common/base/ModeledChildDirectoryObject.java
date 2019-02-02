@@ -27,18 +27,17 @@ import org.apache.guacamole.auth.common.connectiongroup.RootConnectionGroup;
  * to fulfill the needs of the Directory class.
  *
  * @param <ModelType>
- *     The type of model object that corresponds to this object.
+ *            The type of model object that corresponds to this object.
  */
 public abstract class ModeledChildDirectoryObject<ModelType extends ChildObjectModelInterface>
-    extends ModeledDirectoryObject<ModelType> {
+        extends ModeledDirectoryObject<ModelType> {
 
     /**
      * Returns the identifier of the parent connection group, which cannot be
      * null. If the parent is the root connection group, this will be
      * RootConnectionGroup.IDENTIFIER.
      *
-     * @return
-     *     The identifier of the parent connection group.
+     * @return The identifier of the parent connection group.
      */
     public String getParentIdentifier() {
 
@@ -48,7 +47,7 @@ public abstract class ModeledChildDirectoryObject<ModelType extends ChildObjectM
             return RootConnectionGroup.IDENTIFIER;
 
         return parentIdentifier;
-        
+
     }
 
     /**
@@ -57,8 +56,8 @@ public abstract class ModeledChildDirectoryObject<ModelType extends ChildObjectM
      * RootConnectionGroup.IDENTIFIER.
      * 
      * @param parentIdentifier
-     *     The identifier of the connection group to associate as this object's
-     *     parent.
+     *            The identifier of the connection group to associate as this
+     *            object's parent.
      */
     public void setParentIdentifier(String parentIdentifier) {
 

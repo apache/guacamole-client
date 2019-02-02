@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.common.connection;
 
 import java.util.Collection;
 import java.util.List;
-
 import org.apache.guacamole.auth.common.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.common.base.ActivityRecordSortPredicate;
 import org.apache.guacamole.auth.common.user.UserModelInterface;

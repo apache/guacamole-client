@@ -38,7 +38,8 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsExce
  * restricted to the connections associated with those share keys via a common
  * ConnectionSharingService.
  */
-public class SharedAuthenticationProviderService implements AuthenticationProviderService {
+public class SharedAuthenticationProviderService
+        implements AuthenticationProviderService {
 
     /**
      * Provider for retrieving SharedUserContext instances.
@@ -53,16 +54,19 @@ public class SharedAuthenticationProviderService implements AuthenticationProvid
     private ConnectionSharingService sharingService;
 
     @Override
-    public AuthenticatedUser authenticateUser(AuthenticationProvider authenticationProvider,
+    public AuthenticatedUser authenticateUser(
+            AuthenticationProvider authenticationProvider,
             Credentials credentials) throws GuacamoleException {
 
         // Check whether user is authenticating with a valid sharing key
-        AuthenticatedUser user = sharingService.retrieveSharedConnectionUser(authenticationProvider, credentials);
+        AuthenticatedUser user = sharingService.retrieveSharedConnectionUser(
+                authenticationProvider, credentials);
         if (user != null)
             return user;
 
         // Otherwise, unauthorized
-        throw new GuacamoleInvalidCredentialsException("Invalid login", CredentialsInfo.USERNAME_PASSWORD);
+        throw new GuacamoleInvalidCredentialsException("Invalid login",
+                CredentialsInfo.USERNAME_PASSWORD);
 
     }
 
@@ -77,7 +81,8 @@ public class SharedAuthenticationProviderService implements AuthenticationProvid
         if (authenticatedUser instanceof SharedAuthenticatedUser)
             sharedAuthenticatedUser = (SharedAuthenticatedUser) authenticatedUser;
         else
-            sharedAuthenticatedUser = new SharedAuthenticatedUser(authenticatedUser);
+            sharedAuthenticatedUser = new SharedAuthenticatedUser(
+                    authenticatedUser);
 
         // Produce empty user context for known-authenticated user
         SharedUserContext context = sharedUserContextProvider.get();
@@ -94,9 +99,10 @@ public class SharedAuthenticationProviderService implements AuthenticationProvid
     }
 
     @Override
-    public UserContext updateUserContext(AuthenticationProvider authenticationProvider,
-            UserContext context, AuthenticatedUser authenticatedUser,
-            Credentials credentials) throws GuacamoleException {
+    public UserContext updateUserContext(
+            AuthenticationProvider authenticationProvider, UserContext context,
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
 
         // Retrieve the share key from the request
         String shareKey = sharingService.getShareKey(credentials);

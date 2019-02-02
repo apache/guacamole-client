@@ -24,7 +24,8 @@ import org.apache.guacamole.auth.common.base.ModeledDirectoryObjectMapperInterfa
 /**
  * Mapper for user objects.
  */
-public interface UserMapperInterface<ModelType> extends ModeledDirectoryObjectMapperInterface<ModelType> {
+public interface UserMapperInterface<ModelType>
+        extends ModeledDirectoryObjectMapperInterface<ModelType> {
 
     /**
      * Returns the user having the given username, if any. If no such user

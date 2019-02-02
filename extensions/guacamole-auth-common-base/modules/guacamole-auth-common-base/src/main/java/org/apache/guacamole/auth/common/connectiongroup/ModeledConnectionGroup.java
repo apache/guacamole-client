@@ -41,26 +41,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An implementation of the ConnectionGroup object which is backed by a
- * database model.
+ * An implementation of the ConnectionGroup object which is backed by a database
+ * model.
  */
-public class ModeledConnectionGroup extends ModeledChildDirectoryObject<ConnectionGroupModelInterface>
-    implements ConnectionGroup {
+public class ModeledConnectionGroup
+        extends ModeledChildDirectoryObject<ConnectionGroupModelInterface>
+        implements ConnectionGroup {
 
     /**
      * Logger for this class.
      */
-    private static final Logger logger = LoggerFactory.getLogger(ModeledConnectionGroup.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(ModeledConnectionGroup.class);
 
     /**
-     * The name of the attribute which controls the maximum number of
-     * concurrent connections.
+     * The name of the attribute which controls the maximum number of concurrent
+     * connections.
      */
     public static final String MAX_CONNECTIONS_NAME = "max-connections";
 
     /**
-     * The name of the attribute which controls the maximum number of
-     * concurrent connections per user.
+     * The name of the attribute which controls the maximum number of concurrent
+     * connections per user.
      */
     public static final String MAX_CONNECTIONS_PER_USER_NAME = "max-connections-per-user";
 
@@ -75,30 +77,26 @@ public class ModeledConnectionGroup extends ModeledChildDirectoryObject<Connecti
      * All attributes related to restricting user accounts, within a logical
      * form.
      */
-    public static final Form CONCURRENCY_LIMITS = new Form("concurrency", Arrays.<Field>asList(
-        new NumericField(MAX_CONNECTIONS_NAME),
-        new NumericField(MAX_CONNECTIONS_PER_USER_NAME),
-        new BooleanField(ENABLE_SESSION_AFFINITY, "true")
-    ));
+    public static final Form CONCURRENCY_LIMITS = new Form("concurrency",
+            Arrays.<Field>asList(new NumericField(MAX_CONNECTIONS_NAME),
+                    new NumericField(MAX_CONNECTIONS_PER_USER_NAME),
+                    new BooleanField(ENABLE_SESSION_AFFINITY, "true")));
 
     /**
      * All possible attributes of connection group objects organized as
      * individual, logical forms.
      */
-    public static final Collection<Form> ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(
-        CONCURRENCY_LIMITS
-    ));
+    public static final Collection<Form> ATTRIBUTES = Collections
+            .unmodifiableCollection(Arrays.asList(CONCURRENCY_LIMITS));
 
     /**
      * The names of all attributes which are explicitly supported by this
      * extension's ConnectionGroup objects.
      */
-    public static final Set<String> ATTRIBUTE_NAMES =
-            Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
-                MAX_CONNECTIONS_NAME,
-                MAX_CONNECTIONS_PER_USER_NAME,
-                ENABLE_SESSION_AFFINITY
-            )));
+    public static final Set<String> ATTRIBUTE_NAMES = Collections
+            .unmodifiableSet(new HashSet<String>(Arrays.asList(
+                    MAX_CONNECTIONS_NAME, MAX_CONNECTIONS_PER_USER_NAME,
+                    ENABLE_SESSION_AFFINITY)));
 
     /**
      * The environment of the Guacamole server.
@@ -137,7 +135,8 @@ public class ModeledConnectionGroup extends ModeledChildDirectoryObject<Connecti
     @Override
     public GuacamoleTunnel connect(GuacamoleClientInformation info,
             Map<String, String> tokens) throws GuacamoleException {
-        return connectionGroupService.connect(getCurrentUser(), this, info, tokens);
+        return connectionGroupService.connect(getCurrentUser(), this, info,
+                tokens);
     }
 
     @Override
@@ -156,8 +155,7 @@ public class ModeledConnectionGroup extends ModeledChildDirectoryObject<Connecti
     }
 
     @Override
-    public Set<String> getConnectionIdentifiers()
-            throws GuacamoleException {
+    public Set<String> getConnectionIdentifiers() throws GuacamoleException {
         return getModel().getConnectionIdentifiers();
     }
 
@@ -179,10 +177,12 @@ public class ModeledConnectionGroup extends ModeledChildDirectoryObject<Connecti
         Map<String, String> attributes = super.getAttributes();
 
         // Set connection limit attribute
-        attributes.put(MAX_CONNECTIONS_NAME, NumericField.format(getModel().getMaxConnections()));
+        attributes.put(MAX_CONNECTIONS_NAME,
+                NumericField.format(getModel().getMaxConnections()));
 
         // Set per-user connection limit attribute
-        attributes.put(MAX_CONNECTIONS_PER_USER_NAME, NumericField.format(getModel().getMaxConnectionsPerUser()));
+        attributes.put(MAX_CONNECTIONS_PER_USER_NAME,
+                NumericField.format(getModel().getMaxConnectionsPerUser()));
 
         // Set session affinity attribute
         attributes.put(ENABLE_SESSION_AFFINITY,
@@ -198,16 +198,21 @@ public class ModeledConnectionGroup extends ModeledChildDirectoryObject<Connecti
         super.setAttributes(attributes);
 
         // Translate connection limit attribute
-        try { getModel().setMaxConnections(NumericField.parse(attributes.get(MAX_CONNECTIONS_NAME))); }
-        catch (NumberFormatException e) {
+        try {
+            getModel().setMaxConnections(
+                    NumericField.parse(attributes.get(MAX_CONNECTIONS_NAME)));
+        } catch (NumberFormatException e) {
             logger.warn("Not setting maximum connections: {}", e.getMessage());
             logger.debug("Unable to parse numeric attribute.", e);
         }
 
         // Translate per-user connection limit attribute
-        try { getModel().setMaxConnectionsPerUser(NumericField.parse(attributes.get(MAX_CONNECTIONS_PER_USER_NAME))); }
-        catch (NumberFormatException e) {
-            logger.warn("Not setting maximum connections per user: {}", e.getMessage());
+        try {
+            getModel().setMaxConnectionsPerUser(NumericField
+                    .parse(attributes.get(MAX_CONNECTIONS_PER_USER_NAME)));
+        } catch (NumberFormatException e) {
+            logger.warn("Not setting maximum connections per user: {}",
+                    e.getMessage());
             logger.debug("Unable to parse numeric attribute.", e);
         }
 
@@ -221,13 +226,12 @@ public class ModeledConnectionGroup extends ModeledChildDirectoryObject<Connecti
      * Returns the maximum number of connections that should be allowed to this
      * connection group overall. If no limit applies, zero is returned.
      *
-     * @return
-     *     The maximum number of connections that should be allowed to this
-     *     connection group overall, or zero if no limit applies.
+     * @return The maximum number of connections that should be allowed to this
+     *         connection group overall, or zero if no limit applies.
      *
      * @throws GuacamoleException
-     *     If an error occurs while parsing the concurrency limit properties
-     *     specified within guacamole.properties.
+     *             If an error occurs while parsing the concurrency limit
+     *             properties specified within guacamole.properties.
      */
     public int getMaxConnections() throws GuacamoleException {
 
@@ -246,14 +250,13 @@ public class ModeledConnectionGroup extends ModeledChildDirectoryObject<Connecti
      * connection group for any individual user. If no limit applies, zero is
      * returned.
      *
-     * @return
-     *     The maximum number of connections that should be allowed to this
-     *     connection group for any individual user, or zero if no limit
-     *     applies.
+     * @return The maximum number of connections that should be allowed to this
+     *         connection group for any individual user, or zero if no limit
+     *         applies.
      *
      * @throws GuacamoleException
-     *     If an error occurs while parsing the concurrency limit properties
-     *     specified within guacamole.properties.
+     *             If an error occurs while parsing the concurrency limit
+     *             properties specified within guacamole.properties.
      */
     public int getMaxConnectionsPerUser() throws GuacamoleException {
 
@@ -271,9 +274,8 @@ public class ModeledConnectionGroup extends ModeledChildDirectoryObject<Connecti
      * Returns whether individual users should be consistently assigned the same
      * connection within a balancing group until they log out.
      *
-     * @return
-     *     Whether individual users should be consistently assigned the same
-     *     connection within a balancing group until they log out.
+     * @return Whether individual users should be consistently assigned the same
+     *         connection within a balancing group until they log out.
      */
     public boolean isSessionAffinityEnabled() {
         return getModel().isSessionAffinityEnabled();

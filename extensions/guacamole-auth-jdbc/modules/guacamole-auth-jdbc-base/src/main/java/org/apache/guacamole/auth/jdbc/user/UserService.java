@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.jdbc.user;
 
 import java.util.Collection;
 import java.util.Map;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
@@ -33,21 +32,21 @@ import org.apache.guacamole.auth.common.user.UserServiceInterface;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.permission.ObjectPermission.Type;
-
 import com.google.inject.Inject;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating users.
  */
-public class UserService extends UserServiceAbstract implements UserServiceInterface {
-    
-	@Inject
-    public UserService(Map<String, ObjectPermissionMapperInterface> mappers) {
-		super(mappers);
-	}
+public class UserService extends UserServiceAbstract
+        implements UserServiceInterface {
 
-	@Override
+    @Inject
+    public UserService(Map<String, ObjectPermissionMapperInterface> mappers) {
+        super(mappers);
+    }
+
+    @Override
     protected UserModel getModelInstance(ModeledAuthenticatedUser currentUser,
             final User object) throws GuacamoleException {
 
@@ -61,34 +60,37 @@ public class UserService extends UserServiceAbstract implements UserServiceInter
         user.setAttributes(object.getAttributes());
 
         return model;
-        
+
     }
-    
+
     @Override
-	protected void createBaseEntity(UserModelInterface model) {
-		entityMapper.insert(model);
-	}
-    
+    protected void createBaseEntity(UserModelInterface model) {
+        entityMapper.insert(model);
+    }
+
     @Override
     protected Collection<ObjectPermissionModelInterface> getImplicitPermissions(
             ModeledAuthenticatedUser user, UserModelInterface model) {
 
         // Get original set of implicit permissions
-    	// Build list of implicit permissions
-        Collection<ObjectPermissionModelInterface> implicitPermissions = super.getImplicitPermissions(user, model);
+        // Build list of implicit permissions
+        Collection<ObjectPermissionModelInterface> implicitPermissions = super.getImplicitPermissions(
+                user, model);
 
-        loadPermissions(model, model, implicitPermissions, IMPLICIT_USER_PERMISSIONS);
+        loadPermissions(model, model, implicitPermissions,
+                IMPLICIT_USER_PERMISSIONS);
 
         return implicitPermissions;
     }
-  
-	@Override
-	protected void createModelPermission(UserModelInterface model,
-			Collection<ObjectPermissionModelInterface> implicitPermissions, UserModelInterface userModel,
-			Type permission) {
-		
-		ModeledDirectoryObjectService.getNewModelPermission(userModel, implicitPermissions, model, permission);
 
-	}  
-  
+    @Override
+    protected void createModelPermission(UserModelInterface model,
+            Collection<ObjectPermissionModelInterface> implicitPermissions,
+            UserModelInterface userModel, Type permission) {
+
+        ModeledDirectoryObjectService.getNewModelPermission(userModel,
+                implicitPermissions, model, permission);
+
+    }
+
 }

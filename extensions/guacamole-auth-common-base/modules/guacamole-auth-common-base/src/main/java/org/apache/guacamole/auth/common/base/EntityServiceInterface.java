@@ -39,18 +39,19 @@ public interface EntityServiceInterface {
      * user lacks "READ" permission for that group.
      *
      * @param entity
-     *     The entity whose effective groups should be returned.
+     *            The entity whose effective groups should be returned.
      *
      * @param effectiveGroups
-     *     The identifiers of any known effective groups that should be taken
-     *     into account, such as those defined externally to the database.
+     *            The identifiers of any known effective groups that should be
+     *            taken into account, such as those defined externally to the
+     *            database.
      *
-     * @return
-     *     The set of identifiers of all groups that the given entity is a
-     *     member of, including those where membership is inherited through
-     *     membership in other groups.
+     * @return The set of identifiers of all groups that the given entity is a
+     *         member of, including those where membership is inherited through
+     *         membership in other groups.
      */
-    public Set<String> retrieveEffectiveGroups(ModeledPermissions<? extends EntityModelInterface> entity,
+    public Set<String> retrieveEffectiveGroups(
+            ModeledPermissions<? extends EntityModelInterface> entity,
             Collection<String> effectiveGroups);
 
 }

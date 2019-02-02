@@ -27,13 +27,14 @@ import org.apache.guacamole.net.auth.permission.SystemPermission;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
- * deleting system permissions. This service will automatically enforce
- * the permissions of the current user.
+ * deleting system permissions. This service will automatically enforce the
+ * permissions of the current user.
  */
-public class SystemPermissionService extends SystemPermissionServiceAbstract implements SystemPermissionServiceInterface {
+public class SystemPermissionService extends SystemPermissionServiceAbstract
+        implements SystemPermissionServiceInterface {
 
-	@Override
-	public SystemPermissionModel getModelInstance(
+    @Override
+    public SystemPermissionModel getModelInstance(
             final ModeledPermissions<? extends EntityModelInterface> targetEntity,
             final SystemPermission permission) {
 
@@ -44,7 +45,7 @@ public class SystemPermissionService extends SystemPermissionServiceAbstract imp
         model.setType(permission.getType());
 
         return model;
-        
+
     }
 
 }

@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.common.usergroup;
 
 import java.util.Map;
-
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.base.EntityMapperInterface;
@@ -33,7 +32,6 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -41,19 +39,20 @@ import com.google.inject.Provider;
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating user groups.
  */
-public abstract class UserGroupServiceAbstract extends ModeledDirectoryObjectServiceAbstract<ModeledUserGroup, UserGroup, UserGroupModelInterface> {
-    
+public abstract class UserGroupServiceAbstract extends
+        ModeledDirectoryObjectServiceAbstract<ModeledUserGroup, UserGroup, UserGroupModelInterface> {
+
     /**
      * Mapper for creating/deleting entities.
      */
     @Inject
-	protected EntityMapperInterface entityMapper;
+    protected EntityMapperInterface entityMapper;
 
     /**
      * Mapper for accessing user groups.
      */
     @Inject
-	protected UserGroupMapperInterface<UserGroupModelInterface> userGroupMapper;
+    protected UserGroupMapperInterface<UserGroupModelInterface> userGroupMapper;
 
     /**
      * Provider for creating user groups.
@@ -64,12 +63,13 @@ public abstract class UserGroupServiceAbstract extends ModeledDirectoryObjectSer
     /**
      * Mapper for manipulating user group permissions.
      */
-	protected ObjectPermissionMapperInterface userGroupPermissionMapper;
+    protected ObjectPermissionMapperInterface userGroupPermissionMapper;
 
     @Inject
-	public UserGroupServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
-    	userGroupPermissionMapper = mappers.get("UserGroupPermissionMapper");
-	}
+    public UserGroupServiceAbstract(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        userGroupPermissionMapper = mappers.get("UserGroupPermissionMapper");
+    }
 
     @Override
     protected ModeledDirectoryObjectMapperInterface<UserGroupModelInterface> getObjectMapper() {
@@ -82,8 +82,9 @@ public abstract class UserGroupServiceAbstract extends ModeledDirectoryObjectSer
     }
 
     @Override
-    protected ModeledUserGroup getObjectInstance(ModeledAuthenticatedUser currentUser,
-            UserGroupModelInterface model) throws GuacamoleException {
+    protected ModeledUserGroup getObjectInstance(
+            ModeledAuthenticatedUser currentUser, UserGroupModelInterface model)
+            throws GuacamoleException {
 
         boolean exposeRestrictedAttributes;
 
@@ -110,17 +111,19 @@ public abstract class UserGroupServiceAbstract extends ModeledDirectoryObjectSer
             throws GuacamoleException {
 
         // Return whether user has explicit user group creation permission
-        SystemPermissionSet permissionSet = user.getUser().getEffectivePermissions().getSystemPermissions();
+        SystemPermissionSet permissionSet = user.getUser()
+                .getEffectivePermissions().getSystemPermissions();
         return permissionSet.hasPermission(SystemPermission.Type.CREATE_USER);
 
     }
 
     @Override
-    protected ObjectPermissionSet getEffectivePermissionSet(ModeledAuthenticatedUser user)
-            throws GuacamoleException {
+    protected ObjectPermissionSet getEffectivePermissionSet(
+            ModeledAuthenticatedUser user) throws GuacamoleException {
 
         // Return permissions related to user groups
-        return user.getUser().getEffectivePermissions().getUserGroupPermissions();
+        return user.getUser().getEffectivePermissions()
+                .getUserGroupPermissions();
 
     }
 
@@ -129,15 +132,19 @@ public abstract class UserGroupServiceAbstract extends ModeledDirectoryObjectSer
             UserGroupModelInterface model) throws GuacamoleException {
 
         super.beforeCreate(user, object, model);
-        
+
         // Group name must not be blank
-        if (model.getIdentifier() == null || model.getIdentifier().trim().isEmpty())
-            throw new GuacamoleClientException("The group name must not be blank.");
-        
+        if (model.getIdentifier() == null
+                || model.getIdentifier().trim().isEmpty())
+            throw new GuacamoleClientException(
+                    "The group name must not be blank.");
+
         // Do not create duplicate user groups
-        UserGroupModelInterface existing = userGroupMapper.selectOne(model.getIdentifier());
+        UserGroupModelInterface existing = userGroupMapper
+                .selectOne(model.getIdentifier());
         if (existing != null)
-            throw new GuacamoleClientException("Group \"" + model.getIdentifier() + "\" already exists.");
+            throw new GuacamoleClientException(
+                    "Group \"" + model.getIdentifier() + "\" already exists.");
 
         // Create base entity object, implicitly populating underlying entity ID
         createBaseEntity(model);
@@ -146,21 +153,27 @@ public abstract class UserGroupServiceAbstract extends ModeledDirectoryObjectSer
 
     protected abstract void createBaseEntity(UserGroupModelInterface model);
 
-	@Override
+    @Override
     protected void beforeUpdate(ModeledAuthenticatedUser user,
-            ModeledUserGroup object, UserGroupModelInterface model) throws GuacamoleException {
+            ModeledUserGroup object, UserGroupModelInterface model)
+            throws GuacamoleException {
 
         super.beforeUpdate(user, object, model);
-        
+
         // Group names must not be blank
-        if (model.getIdentifier() == null || model.getIdentifier().trim().isEmpty())
-            throw new GuacamoleClientException("The group name must not be blank.");
-        
+        if (model.getIdentifier() == null
+                || model.getIdentifier().trim().isEmpty())
+            throw new GuacamoleClientException(
+                    "The group name must not be blank.");
+
         // Do not allow groups to be renamed if the name collides with that of
         // another, existing group
-        UserGroupModelInterface existing = userGroupMapper.selectOne(model.getIdentifier());
-        if (existing != null && !existing.getObjectID().equals(model.getObjectID()))
-            throw new GuacamoleClientException("Group \"" + model.getIdentifier() + "\" already exists.");
+        UserGroupModelInterface existing = userGroupMapper
+                .selectOne(model.getIdentifier());
+        if (existing != null
+                && !existing.getObjectID().equals(model.getObjectID()))
+            throw new GuacamoleClientException(
+                    "Group \"" + model.getIdentifier() + "\" already exists.");
 
     }
 

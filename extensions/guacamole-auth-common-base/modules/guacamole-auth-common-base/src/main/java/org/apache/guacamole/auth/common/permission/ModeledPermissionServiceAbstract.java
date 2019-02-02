@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.common.base.EntityModelInterface;
@@ -118,16 +117,16 @@ public abstract class ModeledPermissionServiceAbstract<PermissionSetType extends
      * permissions and target entity.
      *
      * @param targetEntity
-     *     The entity to whom this permission is granted.
+     *            The entity to whom this permission is granted.
      *
      * @param permissions
-     *     The permissions to use to produce the returned model objects.
+     *            The permissions to use to produce the returned model objects.
      *
-     * @return
-     *     A collection of model objects which are based on the given
-     *     permissions and target entity.
+     * @return A collection of model objects which are based on the given
+     *         permissions and target entity.
      */
-    protected Collection<ModelType> getModelInstances(ModeledPermissions<? extends EntityModelInterface> targetEntity,
+    protected Collection<ModelType> getModelInstances(
+            ModeledPermissions<? extends EntityModelInterface> targetEntity,
             Collection<PermissionType> permissions) {
 
         // Create new collection of models by manually converting each
@@ -141,15 +140,17 @@ public abstract class ModeledPermissionServiceAbstract<PermissionSetType extends
 
     }
 
-	@Override
-    public Set<PermissionType> retrievePermissions(ModeledAuthenticatedUser user,
+    @Override
+    public Set<PermissionType> retrievePermissions(
+            ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
             Set<String> effectiveGroups) throws GuacamoleException {
 
         // Retrieve permissions only if allowed
         if (canReadPermissions(user, targetEntity))
             return getPermissionInstances(
-                    (Collection<ModelType>) ((PermissionMapperInterface<ModelType>) getPermissionMapper()).select(targetEntity.getModel(), effectiveGroups));
+                    (Collection<ModelType>) ((PermissionMapperInterface<ModelType>) getPermissionMapper())
+                            .select(targetEntity.getModel(), effectiveGroups));
 
         // User cannot read this user's permissions
         throw new GuacamoleSecurityException("Permission denied.");

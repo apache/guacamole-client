@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * will cause the provided object to be immediately cleaned up.
  *
  * @param <T>
- *     The type of object managed by this SharedObjectManager.
+ *            The type of object managed by this SharedObjectManager.
  */
 public abstract class SharedObjectManager<T> {
 
@@ -52,7 +52,7 @@ public abstract class SharedObjectManager<T> {
      * call to register() which occurs after invalidate() was called.
      *
      * @param object
-     *     The object to cleanup.
+     *            The object to cleanup.
      */
     protected abstract void cleanup(T object);
 
@@ -81,7 +81,7 @@ public abstract class SharedObjectManager<T> {
      * cleaned up immediately.
      *
      * @param object
-     *     The object to register with this SharedObjectManager.
+     *            The object to register with this SharedObjectManager.
      */
     public void register(T object) {
 

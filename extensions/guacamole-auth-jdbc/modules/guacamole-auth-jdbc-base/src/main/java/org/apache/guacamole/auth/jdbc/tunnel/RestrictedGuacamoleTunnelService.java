@@ -20,11 +20,9 @@
 package org.apache.guacamole.auth.jdbc.tunnel;
 
 import java.util.Date;
-
 import org.apache.guacamole.auth.common.tunnel.ActiveConnectionRecord;
 import org.apache.guacamole.auth.common.tunnel.RestrictedGuacamoleTunnelServiceAbstract;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel;
-
 import com.google.inject.Singleton;
 
 /**
@@ -33,17 +31,18 @@ import com.google.inject.Singleton;
  * implementation of concurrency rules is up to policy-specific subclasses.
  */
 @Singleton
-public class RestrictedGuacamoleTunnelService extends RestrictedGuacamoleTunnelServiceAbstract {
+public class RestrictedGuacamoleTunnelService
+        extends RestrictedGuacamoleTunnelServiceAbstract {
 
     /**
      * Saves the given ActiveConnectionRecord to the database. The end date of
      * the saved record will be populated with the current time.
      *
      * @param record
-     *     The record to save.
+     *            The record to save.
      */
-	@Override
-	protected void saveConnectionRecord(ActiveConnectionRecord record) {
+    @Override
+    protected void saveConnectionRecord(ActiveConnectionRecord record) {
 
         // Get associated models
         ConnectionRecordModel recordModel = new ConnectionRecordModel();
@@ -53,7 +52,8 @@ public class RestrictedGuacamoleTunnelService extends RestrictedGuacamoleTunnelS
         recordModel.setConnectionIdentifier(record.getConnectionIdentifier());
         recordModel.setConnectionName(record.getConnectionName());
         recordModel.setRemoteHost(record.getRemoteHost());
-        recordModel.setSharingProfileIdentifier(record.getSharingProfileIdentifier());
+        recordModel.setSharingProfileIdentifier(
+                record.getSharingProfileIdentifier());
         recordModel.setSharingProfileName(record.getSharingProfileName());
         recordModel.setStartDate(record.getStartDate());
         recordModel.setEndDate(new Date());

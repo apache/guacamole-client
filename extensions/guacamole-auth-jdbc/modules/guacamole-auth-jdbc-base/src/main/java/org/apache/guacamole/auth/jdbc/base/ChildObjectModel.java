@@ -26,13 +26,14 @@ import org.apache.guacamole.auth.common.base.ChildObjectModelInterface;
  * object, such as a connection or sharing profile, as represented in the
  * database.
  */
-public abstract class ChildObjectModel extends ObjectModel implements ChildObjectModelInterface {
+public abstract class ChildObjectModel extends ObjectModel
+        implements ChildObjectModelInterface {
 
     /**
      * The unique identifier which identifies the parent of this object.
      */
     private String parentIdentifier;
-    
+
     /**
      * Creates a new, empty object.
      */
@@ -43,9 +44,8 @@ public abstract class ChildObjectModel extends ObjectModel implements ChildObjec
      * Returns the identifier of the parent connection group, or null if the
      * parent connection group is the root connection group.
      *
-     * @return 
-     *     The identifier of the parent connection group, or null if the parent
-     *     connection group is the root connection group.
+     * @return The identifier of the parent connection group, or null if the
+     *         parent connection group is the root connection group.
      */
     public String getParentIdentifier() {
         return parentIdentifier;
@@ -55,8 +55,8 @@ public abstract class ChildObjectModel extends ObjectModel implements ChildObjec
      * Sets the identifier of the parent connection group.
      *
      * @param parentIdentifier
-     *     The identifier of the parent connection group, or null if the parent
-     *     connection group is the root connection group.
+     *            The identifier of the parent connection group, or null if the
+     *            parent connection group is the root connection group.
      */
     public void setParentIdentifier(String parentIdentifier) {
         this.parentIdentifier = parentIdentifier;

@@ -31,14 +31,13 @@ import org.apache.ibatis.annotations.Param;
 public interface EntityMapper {
 
     /**
-     * Inserts the given entity into the database. If the entity already
-     * exists, this will result in an error.
+     * Inserts the given entity into the database. If the entity already exists,
+     * this will result in an error.
      *
      * @param entity
-     *     The entity to insert.
+     *            The entity to insert.
      *
-     * @return
-     *     The number of rows inserted.
+     * @return The number of rows inserted.
      */
     int insert(@Param("entity") EntityModel entity);
 
@@ -54,26 +53,28 @@ public interface EntityMapper {
      * groups given and will need to be invoked multiple times.
      *
      * @param entity
-     *     The entity whose effective groups should be returned.
+     *            The entity whose effective groups should be returned.
      *
      * @param effectiveGroups
-     *     The identifiers of any known effective groups that should be taken
-     *     into account, such as those defined externally to the database.
+     *            The identifiers of any known effective groups that should be
+     *            taken into account, such as those defined externally to the
+     *            database.
      *
      * @param recursive
-     *     Whether the query should leverage database engine features to return
-     *     absolutely all effective groups, including those inherited through
-     *     group membership. If false, this query will return only one level of
-     *     depth and may need to be executed multiple times. If it is known
-     *     that the database engine in question will always support (or always
-     *     not support) recursive queries, this parameter may be ignored.
+     *            Whether the query should leverage database engine features to
+     *            return absolutely all effective groups, including those
+     *            inherited through group membership. If false, this query will
+     *            return only one level of depth and may need to be executed
+     *            multiple times. If it is known that the database engine in
+     *            question will always support (or always not support) recursive
+     *            queries, this parameter may be ignored.
      *
-     * @return
-     *     The set of identifiers of all groups that the given entity is a
-     *     member of, including those where membership is inherited through
-     *     membership in other groups.
+     * @return The set of identifiers of all groups that the given entity is a
+     *         member of, including those where membership is inherited through
+     *         membership in other groups.
      */
-    Set<String> selectEffectiveGroupIdentifiers(@Param("entity") EntityModel entity,
+    Set<String> selectEffectiveGroupIdentifiers(
+            @Param("entity") EntityModel entity,
             @Param("effectiveGroups") Collection<String> effectiveGroups,
             @Param("recursive") boolean recursive);
 

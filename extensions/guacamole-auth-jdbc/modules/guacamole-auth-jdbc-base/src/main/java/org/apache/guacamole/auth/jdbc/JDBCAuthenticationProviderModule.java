@@ -144,7 +144,6 @@ import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
-
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.MapBinder;
@@ -167,7 +166,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
      * connections using the given socket service.
      *
      * @param environment
-     *     The environment to use to configure injected classes.
+     *            The environment to use to configure injected classes.
      */
     public JDBCAuthenticationProviderModule(CommonEnvironment environment) {
         this.environment = environment;
@@ -175,46 +174,86 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
 
     @Override
     protected void initialize() {
-        
+
         // Datasource
         bindDataSourceProviderType(PooledDataSourceProvider.class);
-        
+
         // Transaction factory
         bindTransactionFactoryType(JdbcTransactionFactory.class);
-        
+
         bind(ConnectionMapperInterface.class).to(ConnectionMapperImp.class);
-        bind(ConnectionGroupMapperInterface.class).to(ConnectionGroupMapperImp.class);
-        bind(ConnectionRecordMapperInterface.class).to(ConnectionRecordMapperImp.class);
-        bind(ConnectionParameterMapperInterface.class).to(ConnectionParameterMapperImp.class);
+        bind(ConnectionGroupMapperInterface.class)
+                .to(ConnectionGroupMapperImp.class);
+        bind(ConnectionRecordMapperInterface.class)
+                .to(ConnectionRecordMapperImp.class);
+        bind(ConnectionParameterMapperInterface.class)
+                .to(ConnectionParameterMapperImp.class);
         bind(EntityMapperInterface.class).to(EntityMapperImp.class);
-        bind(PasswordRecordMapperInterface.class).to(PasswordRecordMapperImp.class);
-        bind(SharingProfileMapperInterface.class).to(SharingProfileMapperImp.class);
-        bind(SharingProfileParameterMapperInterface.class).to(SharingProfileParameterMapperImp.class);
-        bind(SystemPermissionMapperInterface.class).to(SystemPermissionMapperImp.class);
-        bind(new TypeLiteral<UserMapperInterface<UserModelInterface>>(){}).to(UserMapperImp.class);
+        bind(PasswordRecordMapperInterface.class)
+                .to(PasswordRecordMapperImp.class);
+        bind(SharingProfileMapperInterface.class)
+                .to(SharingProfileMapperImp.class);
+        bind(SharingProfileParameterMapperInterface.class)
+                .to(SharingProfileParameterMapperImp.class);
+        bind(SystemPermissionMapperInterface.class)
+                .to(SystemPermissionMapperImp.class);
+        bind(new TypeLiteral<UserMapperInterface<UserModelInterface>>() {
+        }).to(UserMapperImp.class);
         bind(UserRecordMapperInterface.class).to(UserRecordMapperImp.class);
-        bind(new TypeLiteral<UserGroupMapperInterface<UserGroupModelInterface>>(){}).to(UserGroupMapperImp.class);
-        bind(new TypeLiteral<ObjectRelationMapperInterface<UserModelInterface>>(){}).to(UserParentUserGroupMapperImp.class);
+        bind(new TypeLiteral<UserGroupMapperInterface<UserGroupModelInterface>>() {
+        }).to(UserGroupMapperImp.class);
+        bind(new TypeLiteral<ObjectRelationMapperInterface<UserModelInterface>>() {
+        }).to(UserParentUserGroupMapperImp.class);
 
-        MapBinder<String, ObjectRelationMapperInterface<UserGroupModelInterface>> objectRelationMapperMultibinder = MapBinder.newMapBinder(binder(), new TypeLiteral<String>(){}, new TypeLiteral<ObjectRelationMapperInterface<UserGroupModelInterface>>(){});
-        objectRelationMapperMultibinder.addBinding("UserGroupMemberUserMapper").to(UserGroupMemberUserMapperImp.class);
-        objectRelationMapperMultibinder.addBinding("UserGroupMemberUserGroupMapper").to(UserGroupMemberUserGroupMapperImp.class);
-        objectRelationMapperMultibinder.addBinding("UserGroupParentUserGroupMapper").to(UserGroupParentUserGroupMapperImp.class);
+        MapBinder<String, ObjectRelationMapperInterface<UserGroupModelInterface>> objectRelationMapperMultibinder = MapBinder
+                .newMapBinder(binder(), new TypeLiteral<String>() {
+                }, new TypeLiteral<ObjectRelationMapperInterface<UserGroupModelInterface>>() {
+                });
+        objectRelationMapperMultibinder.addBinding("UserGroupMemberUserMapper")
+                .to(UserGroupMemberUserMapperImp.class);
+        objectRelationMapperMultibinder
+                .addBinding("UserGroupMemberUserGroupMapper")
+                .to(UserGroupMemberUserGroupMapperImp.class);
+        objectRelationMapperMultibinder
+                .addBinding("UserGroupParentUserGroupMapper")
+                .to(UserGroupParentUserGroupMapperImp.class);
 
-        MapBinder<String, ObjectPermissionMapperInterface> objectPermissionMapperMultibinder = MapBinder.newMapBinder(binder(), String.class, ObjectPermissionMapperInterface.class);
-        objectPermissionMapperMultibinder.addBinding("ConnectionGroupPermissionMapper").to(ConnectionGroupPermissionMapperImp.class);
-        objectPermissionMapperMultibinder.addBinding("ConnectionPermissionMapper").to(ConnectionPermissionMapperImp.class);
-        objectPermissionMapperMultibinder.addBinding("SharingProfilePermissionMapper").to(SharingProfilePermissionMapperImp.class);
-        objectPermissionMapperMultibinder.addBinding("UserPermissionMapper").to(UserPermissionMapperImp.class);
-        objectPermissionMapperMultibinder.addBinding("UserGroupPermissionMapper").to(UserGroupPermissionMapperImp.class);
+        MapBinder<String, ObjectPermissionMapperInterface> objectPermissionMapperMultibinder = MapBinder
+                .newMapBinder(binder(), String.class,
+                        ObjectPermissionMapperInterface.class);
+        objectPermissionMapperMultibinder
+                .addBinding("ConnectionGroupPermissionMapper")
+                .to(ConnectionGroupPermissionMapperImp.class);
+        objectPermissionMapperMultibinder
+                .addBinding("ConnectionPermissionMapper")
+                .to(ConnectionPermissionMapperImp.class);
+        objectPermissionMapperMultibinder
+                .addBinding("SharingProfilePermissionMapper")
+                .to(SharingProfilePermissionMapperImp.class);
+        objectPermissionMapperMultibinder.addBinding("UserPermissionMapper")
+                .to(UserPermissionMapperImp.class);
+        objectPermissionMapperMultibinder
+                .addBinding("UserGroupPermissionMapper")
+                .to(UserGroupPermissionMapperImp.class);
 
-        MapBinder<String, ObjectPermissionService> objectPermissionServiceMultibinder = MapBinder.newMapBinder(binder(), String.class, ObjectPermissionService.class);
-        objectPermissionServiceMultibinder.addBinding("ConnectionGroupPermissionService").to(ConnectionGroupPermissionService.class);
-        objectPermissionServiceMultibinder.addBinding("ConnectionPermissionService").to(ConnectionPermissionService.class);
-        objectPermissionServiceMultibinder.addBinding("SharingProfilePermissionService").to(SharingProfilePermissionService.class);
-        objectPermissionServiceMultibinder.addBinding("UserGroupPermissionService").to(UserGroupPermissionService.class);
-        objectPermissionServiceMultibinder.addBinding("UserPermissionService").to(UserPermissionService.class);
-        
+        MapBinder<String, ObjectPermissionService> objectPermissionServiceMultibinder = MapBinder
+                .newMapBinder(binder(), String.class,
+                        ObjectPermissionService.class);
+        objectPermissionServiceMultibinder
+                .addBinding("ConnectionGroupPermissionService")
+                .to(ConnectionGroupPermissionService.class);
+        objectPermissionServiceMultibinder
+                .addBinding("ConnectionPermissionService")
+                .to(ConnectionPermissionService.class);
+        objectPermissionServiceMultibinder
+                .addBinding("SharingProfilePermissionService")
+                .to(SharingProfilePermissionService.class);
+        objectPermissionServiceMultibinder
+                .addBinding("UserGroupPermissionService")
+                .to(UserGroupPermissionService.class);
+        objectPermissionServiceMultibinder.addBinding("UserPermissionService")
+                .to(UserPermissionService.class);
+
         // Add MyBatis mappers
         addMapperClass(ConnectionMapper.class);
         addMapperClass(ConnectionGroupMapper.class);
@@ -237,13 +276,14 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         addMapperClass(UserParentUserGroupMapper.class);
         addMapperClass(UserPermissionMapper.class);
         addMapperClass(UserRecordMapper.class);
-        
+
         // Bind core implementations of guacamole-ext classes
         bind(ActiveConnectionDirectory.class);
         bind(ActiveConnectionPermissionSet.class);
         bind(CommonEnvironment.class).toInstance(environment);
         bind(ConnectionDirectory.class);
-        bind(new TypeLiteral<Directory<ConnectionGroup>>(){}).to(ConnectionGroupDirectory.class);
+        bind(new TypeLiteral<Directory<ConnectionGroup>>() {
+        }).to(ConnectionGroupDirectory.class);
         bind(ConnectionGroupPermissionSet.class);
         bind(ConnectionPermissionSet.class);
         bind(ModeledConnection.class);
@@ -254,33 +294,43 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(ModeledUserContextAbstract.class).to(ModeledUserContext.class);
         bind(ModeledUserGroup.class);
         bind(RootConnectionGroup.class);
-        bind(SharingProfileDirectoryInterface.class).to(SharingProfileDirectory.class);
+        bind(SharingProfileDirectoryInterface.class)
+                .to(SharingProfileDirectory.class);
         bind(SharingProfilePermissionSet.class);
         bind(SystemPermissionSet.class);
         bind(TrackedActiveConnection.class);
-        bind(new TypeLiteral<Directory<User>>(){}).to(UserDirectory.class);
-        bind(new TypeLiteral<Directory<UserGroup>>(){}).to(UserGroupDirectory.class);
+        bind(new TypeLiteral<Directory<User>>() {
+        }).to(UserDirectory.class);
+        bind(new TypeLiteral<Directory<UserGroup>>() {
+        }).to(UserGroupDirectory.class);
         bind(UserGroupPermissionSet.class);
         bind(UserPermissionSet.class);
-        
+
         // Bind services
         bind(ActiveConnectionService.class);
         bind(ActiveConnectionPermissionService.class);
-        bind(ConnectionGroupServiceInterface.class).to(ConnectionGroupService.class);
+        bind(ConnectionGroupServiceInterface.class)
+                .to(ConnectionGroupService.class);
         bind(ConnectionSharingService.class);
         bind(ConnectionServiceInterface.class).to(ConnectionService.class);
         bind(EntityServiceInterface.class).to(EntityService.class);
-        bind(GuacamoleTunnelService.class).to(RestrictedGuacamoleTunnelService.class);
-        bind(PasswordEncryptionService.class).to(SHA256PasswordEncryptionService.class);
+        bind(GuacamoleTunnelService.class)
+                .to(RestrictedGuacamoleTunnelService.class);
+        bind(PasswordEncryptionService.class)
+                .to(SHA256PasswordEncryptionService.class);
         bind(PasswordPolicyService.class);
         bind(SaltService.class).to(SecureRandomSaltService.class);
-        bind(SharedConnectionMap.class).to(HashSharedConnectionMap.class).in(Scopes.SINGLETON);
-        bind(ShareKeyGenerator.class).to(SecureRandomShareKeyGenerator.class).in(Scopes.SINGLETON);
-        bind(SharingProfileServiceInterface.class).to(SharingProfileService.class);
-        bind(SystemPermissionServiceInterface.class).to(SystemPermissionService.class);
+        bind(SharedConnectionMap.class).to(HashSharedConnectionMap.class)
+                .in(Scopes.SINGLETON);
+        bind(ShareKeyGenerator.class).to(SecureRandomShareKeyGenerator.class)
+                .in(Scopes.SINGLETON);
+        bind(SharingProfileServiceInterface.class)
+                .to(SharingProfileService.class);
+        bind(SystemPermissionServiceInterface.class)
+                .to(SystemPermissionService.class);
         bind(UserGroupServiceInterface.class).to(UserGroupService.class);
         bind(UserServiceInterface.class).to(UserService.class);
-        
+
     }
 
 }

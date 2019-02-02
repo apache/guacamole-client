@@ -26,20 +26,18 @@ package org.apache.guacamole.auth.common.connection;
  */
 public interface ConnectionParameterModelInterface {
 
-	/**
+    /**
      * Returns the name of this parameter.
      *
-     * @return
-     *     The name of this parameter.
+     * @return The name of this parameter.
      */
-	public String getName();
+    public String getName();
 
-	/**
+    /**
      * Returns the value of this parameter.
      *
-     * @return
-     *     The value of this parameter.
+     * @return The value of this parameter.
      */
-	public String getValue();
+    public String getValue();
 
 }

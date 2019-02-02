@@ -23,7 +23,6 @@ import java.io.Closeable;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.CommonEnvironment;
 import org.apache.guacamole.auth.common.security.PasswordPolicy;
@@ -41,17 +40,20 @@ public class MySQLEnvironment extends CommonEnvironment {
     /**
      * Logger for this class.
      */
-    private static final Logger logger = LoggerFactory.getLogger(MySQLEnvironment.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(MySQLEnvironment.class);
 
     /**
      * The earliest version of MariaDB that supported recursive CTEs.
      */
-    private static final MySQLVersion MARIADB_SUPPORTS_CTE = new MySQLVersion(10, 2, 2, true);
+    private static final MySQLVersion MARIADB_SUPPORTS_CTE = new MySQLVersion(
+            10, 2, 2, true);
 
     /**
      * The earliest version of MySQL that supported recursive CTEs.
      */
-    private static final MySQLVersion MYSQL_SUPPORTS_CTE = new MySQLVersion(8, 0, 1, false);
+    private static final MySQLVersion MYSQL_SUPPORTS_CTE = new MySQLVersion(8,
+            0, 1, false);
 
     /**
      * The default host to connect to, if MYSQL_HOSTNAME is not specified.
@@ -70,8 +72,8 @@ public class MySQLEnvironment extends CommonEnvironment {
     private static final boolean DEFAULT_USER_REQUIRED = false;
 
     /**
-     * The default value for the maximum number of connections to be
-     * allowed to the Guacamole server overall.
+     * The default value for the maximum number of connections to be allowed to
+     * the Guacamole server overall.
      */
     private final int DEFAULT_ABSOLUTE_MAX_CONNECTIONS = 0;
 
@@ -103,9 +105,10 @@ public class MySQLEnvironment extends CommonEnvironment {
      * Constructs a new MySQLEnvironment, providing access to MySQL-specific
      * configuration options.
      * 
-     * @throws GuacamoleException 
-     *     If an error occurs while setting up the underlying JDBCEnvironment
-     *     or while parsing legacy MySQL configuration options.
+     * @throws GuacamoleException
+     *             If an error occurs while setting up the underlying
+     *             JDBCEnvironment or while parsing legacy MySQL configuration
+     *             options.
      */
     public MySQLEnvironment() throws GuacamoleException {
 
@@ -116,49 +119,44 @@ public class MySQLEnvironment extends CommonEnvironment {
 
     @Override
     public boolean isUserRequired() throws GuacamoleException {
-        return getProperty(
-            MySQLGuacamoleProperties.MYSQL_USER_REQUIRED,
-            DEFAULT_USER_REQUIRED
-        );
+        return getProperty(MySQLGuacamoleProperties.MYSQL_USER_REQUIRED,
+                DEFAULT_USER_REQUIRED);
     }
 
     @Override
     public int getAbsoluteMaxConnections() throws GuacamoleException {
-        return getProperty(MySQLGuacamoleProperties.MYSQL_ABSOLUTE_MAX_CONNECTIONS,
-            DEFAULT_ABSOLUTE_MAX_CONNECTIONS
-        );
+        return getProperty(
+                MySQLGuacamoleProperties.MYSQL_ABSOLUTE_MAX_CONNECTIONS,
+                DEFAULT_ABSOLUTE_MAX_CONNECTIONS);
     }
 
     @Override
     public int getDefaultMaxConnections() throws GuacamoleException {
         return getProperty(
-            MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_CONNECTIONS,
-            DEFAULT_MAX_CONNECTIONS
-        );
+                MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_CONNECTIONS,
+                DEFAULT_MAX_CONNECTIONS);
     }
 
     @Override
     public int getDefaultMaxGroupConnections() throws GuacamoleException {
         return getProperty(
-            MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS,
-            DEFAULT_MAX_GROUP_CONNECTIONS
-        );
+                MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS,
+                DEFAULT_MAX_GROUP_CONNECTIONS);
     }
 
     @Override
     public int getDefaultMaxConnectionsPerUser() throws GuacamoleException {
         return getProperty(
-            MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_CONNECTIONS_PER_USER,
-            DEFAULT_MAX_CONNECTIONS_PER_USER
-        );
+                MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_CONNECTIONS_PER_USER,
+                DEFAULT_MAX_CONNECTIONS_PER_USER);
     }
 
     @Override
-    public int getDefaultMaxGroupConnectionsPerUser() throws GuacamoleException {
+    public int getDefaultMaxGroupConnectionsPerUser()
+            throws GuacamoleException {
         return getProperty(
-            MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER,
-            DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER
-        );
+                MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER,
+                DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER);
     }
 
     @Override
@@ -170,79 +168,72 @@ public class MySQLEnvironment extends CommonEnvironment {
      * Returns the hostname of the MySQL server hosting the Guacamole
      * authentication tables. If unspecified, this will be "localhost".
      * 
-     * @return
-     *     The URL of the MySQL server.
+     * @return The URL of the MySQL server.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value.
+     * @throws GuacamoleException
+     *             If an error occurs while retrieving the property value.
      */
     public String getMySQLHostname() throws GuacamoleException {
-        return getProperty(
-            MySQLGuacamoleProperties.MYSQL_HOSTNAME,
-            DEFAULT_HOSTNAME
-        );
+        return getProperty(MySQLGuacamoleProperties.MYSQL_HOSTNAME,
+                DEFAULT_HOSTNAME);
     }
-    
+
     /**
      * Returns the port number of the MySQL server hosting the Guacamole
      * authentication tables. If unspecified, this will be the default MySQL
      * port of 3306.
      * 
-     * @return
-     *     The port number of the MySQL server.
+     * @return The port number of the MySQL server.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value.
+     * @throws GuacamoleException
+     *             If an error occurs while retrieving the property value.
      */
     public int getMySQLPort() throws GuacamoleException {
         return getProperty(MySQLGuacamoleProperties.MYSQL_PORT, DEFAULT_PORT);
     }
-    
+
     /**
-     * Returns the name of the MySQL database containing the Guacamole 
+     * Returns the name of the MySQL database containing the Guacamole
      * authentication tables.
      * 
-     * @return
-     *     The name of the MySQL database.
+     * @return The name of the MySQL database.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value, or if the
-     *     value was not set, as this property is required.
+     * @throws GuacamoleException
+     *             If an error occurs while retrieving the property value, or if
+     *             the value was not set, as this property is required.
      */
     public String getMySQLDatabase() throws GuacamoleException {
         return getRequiredProperty(MySQLGuacamoleProperties.MYSQL_DATABASE);
     }
-    
+
     /**
      * Returns the username that should be used when authenticating with the
      * MySQL database containing the Guacamole authentication tables.
      * 
-     * @return
-     *     The username for the MySQL database.
+     * @return The username for the MySQL database.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value, or if the
-     *     value was not set, as this property is required.
+     * @throws GuacamoleException
+     *             If an error occurs while retrieving the property value, or if
+     *             the value was not set, as this property is required.
      */
     public String getMySQLUsername() throws GuacamoleException {
         return getRequiredProperty(MySQLGuacamoleProperties.MYSQL_USERNAME);
     }
-    
+
     /**
      * Returns the password that should be used when authenticating with the
      * MySQL database containing the Guacamole authentication tables.
      * 
-     * @return
-     *     The password for the MySQL database.
+     * @return The password for the MySQL database.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value, or if the
-     *     value was not set, as this property is required.
+     * @throws GuacamoleException
+     *             If an error occurs while retrieving the property value, or if
+     *             the value was not set, as this property is required.
      */
     public String getMySQLPassword() throws GuacamoleException {
         return getRequiredProperty(MySQLGuacamoleProperties.MYSQL_PASSWORD);
     }
-    
+
     @Override
     public boolean isRecursiveQuerySupported(Closeable session) {
 
@@ -252,8 +243,7 @@ public class MySQLEnvironment extends CommonEnvironment {
             Connection connection = ((SqlSession) session).getConnection();
             DatabaseMetaData metaData = connection.getMetaData();
             versionString = metaData.getDatabaseProductVersion();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new PersistenceException("Cannot determine whether "
                     + "MySQL / MariaDB supports recursive queries.", e);
         }
@@ -267,10 +257,9 @@ public class MySQLEnvironment extends CommonEnvironment {
             // Recursive queries are supported for MariaDB 10.2.2+ and
             // MySQL 8.0.1+
             return version.isAtLeast(MARIADB_SUPPORTS_CTE)
-                || version.isAtLeast(MYSQL_SUPPORTS_CTE);
+                    || version.isAtLeast(MYSQL_SUPPORTS_CTE);
 
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             logger.debug("Unrecognized MySQL / MariaDB version string: "
                     + "\"{}\". Assuming database engine does not support "
                     + "recursive queries.", session);
@@ -278,5 +267,5 @@ public class MySQLEnvironment extends CommonEnvironment {
         }
 
     }
-    
+
 }

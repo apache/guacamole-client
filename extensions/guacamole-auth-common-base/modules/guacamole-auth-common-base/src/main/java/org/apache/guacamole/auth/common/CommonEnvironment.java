@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.common;
 
 import java.io.Closeable;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.security.PasswordPolicy;
 import org.apache.guacamole.environment.LocalEnvironment;
@@ -30,13 +29,14 @@ import org.apache.guacamole.environment.LocalEnvironment;
  * intended for use within authentication providers.
  */
 public abstract class CommonEnvironment extends LocalEnvironment {
-    
+
     /**
      * Constructs a new CommonEnvironment using an underlying LocalEnviroment to
      * read properties from the file system.
      * 
      * @throws GuacamoleException
-     *     If an error occurs while setting up the underlying LocalEnvironment.
+     *             If an error occurs while setting up the underlying
+     *             LocalEnvironment.
      */
     public CommonEnvironment() throws GuacamoleException {
         super();
@@ -47,84 +47,78 @@ public abstract class CommonEnvironment extends LocalEnvironment {
      * succeed, even if another authentication provider has already
      * authenticated the user.
      *
-     * @return
-     *     true if database user accounts are required for absolutely all
-     *     authentication attempts, false otherwise.
+     * @return true if database user accounts are required for absolutely all
+     *         authentication attempts, false otherwise.
      *
      * @throws GuacamoleException
-     *     If an error occurs while retrieving the property.
+     *             If an error occurs while retrieving the property.
      */
     public abstract boolean isUserRequired() throws GuacamoleException;
 
     /**
-     * Returns the maximum number of concurrent connections to allow overall.
-     * As this limit applies globally (independent of which connection is in
-     * use or which user is using it), this setting cannot be overridden at the
+     * Returns the maximum number of concurrent connections to allow overall. As
+     * this limit applies globally (independent of which connection is in use or
+     * which user is using it), this setting cannot be overridden at the
      * connection level. Zero denotes unlimited.
      *
-     * @return
-     *     The maximum allowable number of concurrent connections.
+     * @return The maximum allowable number of concurrent connections.
      *
      * @throws GuacamoleException
-     *     If an error occurs while retrieving the property.
+     *             If an error occurs while retrieving the property.
      */
     public abstract int getAbsoluteMaxConnections() throws GuacamoleException;
 
     /**
-     * Returns the default maximum number of concurrent connections to allow to 
-     * any one connection, unless specified differently on an individual 
+     * Returns the default maximum number of concurrent connections to allow to
+     * any one connection, unless specified differently on an individual
      * connection. Zero denotes unlimited.
      * 
-     * @return
-     *     The default maximum allowable number of concurrent connections 
-     *     to any connection.
+     * @return The default maximum allowable number of concurrent connections to
+     *         any connection.
      *
      * @throws GuacamoleException
-     *     If an error occurs while retrieving the property.
+     *             If an error occurs while retrieving the property.
      */
     public abstract int getDefaultMaxConnections() throws GuacamoleException;
 
     /**
-     * Returns the default maximum number of concurrent connections to allow to 
-     * any one connection group, unless specified differently on an individual 
+     * Returns the default maximum number of concurrent connections to allow to
+     * any one connection group, unless specified differently on an individual
      * connection group. Zero denotes unlimited.
      * 
-     * @return
-     *     The default maximum allowable number of concurrent connections
-     *     to any connection group.
+     * @return The default maximum allowable number of concurrent connections to
+     *         any connection group.
      *
      * @throws GuacamoleException
-     *     If an error occurs while retrieving the property.
+     *             If an error occurs while retrieving the property.
      */
     public abstract int getDefaultMaxGroupConnections()
             throws GuacamoleException;
-    
+
     /**
-     * Returns the default maximum number of concurrent connections to allow to 
+     * Returns the default maximum number of concurrent connections to allow to
      * any one connection by an individual user, unless specified differently on
      * an individual connection. Zero denotes unlimited.
      * 
-     * @return
-     *     The default maximum allowable number of concurrent connections to
-     *     any connection by an individual user.
+     * @return The default maximum allowable number of concurrent connections to
+     *         any connection by an individual user.
      *
      * @throws GuacamoleException
-     *     If an error occurs while retrieving the property.
+     *             If an error occurs while retrieving the property.
      */
     public abstract int getDefaultMaxConnectionsPerUser()
             throws GuacamoleException;
-    
+
     /**
-     * Returns the default maximum number of concurrent connections to allow to 
-     * any one connection group by an individual user, unless specified 
+     * Returns the default maximum number of concurrent connections to allow to
+     * any one connection group by an individual user, unless specified
      * differently on an individual connection group. Zero denotes unlimited.
      * 
-     * @return
-     *     The default maximum allowable number of concurrent connections to
-     *     any connection group by an individual user.
+     * @return The default maximum allowable number of concurrent connections to
+     *         any connection group by an individual user.
      *
      * @throws GuacamoleException
-     *     If an error occurs while retrieving the property.
+     *             If an error occurs while retrieving the property.
      */
     public abstract int getDefaultMaxGroupConnectionsPerUser()
             throws GuacamoleException;
@@ -134,8 +128,7 @@ public abstract class CommonEnvironment extends LocalEnvironment {
      * apply to Guacamole user accounts will be required to conform to this
      * policy.
      *
-     * @return
-     *     The password policy which applies to Guacamole user accounts.
+     * @return The password policy which applies to Guacamole user accounts.
      */
     public abstract PasswordPolicy getPasswordPolicy();
 
@@ -146,11 +139,11 @@ public abstract class CommonEnvironment extends LocalEnvironment {
      * invoked multiple times to retrieve the same data.
      *
      * @param session
-     *     The SqlSession provided by MyBatis for the current transaction.
+     *            The SqlSession provided by MyBatis for the current
+     *            transaction.
      *
-     * @return
-     *     true if the database supports recursive queries, false otherwise.
+     * @return true if the database supports recursive queries, false otherwise.
      */
-    public abstract boolean isRecursiveQuerySupported(Closeable	 session);
+    public abstract boolean isRecursiveQuerySupported(Closeable session);
 
 }

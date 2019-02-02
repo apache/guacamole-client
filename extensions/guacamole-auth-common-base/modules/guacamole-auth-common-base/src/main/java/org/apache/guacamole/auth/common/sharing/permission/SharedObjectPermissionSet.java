@@ -36,19 +36,20 @@ public class SharedObjectPermissionSet extends SimpleObjectPermissionSet {
      * the given identifiers.
      *
      * @param identifiers
-     *     The identifiers of the objects for which READ permission should be
-     *     granted.
+     *            The identifiers of the objects for which READ permission
+     *            should be granted.
      *
-     * @return
-     *     A new Set of ObjectPermissions granting READ access for each of the
-     *     given identifiers.
+     * @return A new Set of ObjectPermissions granting READ access for each of
+     *         the given identifiers.
      */
-    private static Set<ObjectPermission> getPermissions(Collection<String> identifiers) {
+    private static Set<ObjectPermission> getPermissions(
+            Collection<String> identifiers) {
 
         // Include one READ permission for each of the given identifiers
         Set<ObjectPermission> permissions = new HashSet<ObjectPermission>();
         for (String identifier : identifiers)
-            permissions.add(new ObjectPermission(ObjectPermission.Type.READ, identifier));
+            permissions.add(new ObjectPermission(ObjectPermission.Type.READ,
+                    identifier));
 
         return permissions;
 
@@ -60,8 +61,8 @@ public class SharedObjectPermissionSet extends SimpleObjectPermissionSet {
      * granted.
      *
      * @param identifiers
-     *     The identifiers of the objects for which READ access should be
-     *     granted.
+     *            The identifiers of the objects for which READ access should be
+     *            granted.
      */
     public SharedObjectPermissionSet(Collection<String> identifiers) {
         super(getPermissions(identifiers));

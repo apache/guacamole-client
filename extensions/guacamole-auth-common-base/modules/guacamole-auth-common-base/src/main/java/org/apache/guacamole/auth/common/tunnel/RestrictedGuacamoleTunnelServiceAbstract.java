@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.guacamole.GuacamoleClientTooManyException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceConflictException;
@@ -33,23 +32,22 @@ import org.apache.guacamole.auth.common.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.auth.common.user.RemoteAuthenticatedUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.inject.Inject;
 
-
 /**
  * GuacamoleTunnelService implementation which restricts concurrency for each
- * connection and group according to a maximum number of connections and
- * maximum number of connections per user.
+ * connection and group according to a maximum number of connections and maximum
+ * number of connections per user.
  */
 public abstract class RestrictedGuacamoleTunnelServiceAbstract
-    extends AbstractGuacamoleTunnelService {
+        extends AbstractGuacamoleTunnelService {
 
     /**
      * Logger for this class.
      */
-    private static final Logger logger = LoggerFactory.getLogger(RestrictedGuacamoleTunnelServiceAbstract.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(RestrictedGuacamoleTunnelServiceAbstract.class);
 
     /**
      * The environment of the Guacamole server.
@@ -60,53 +58,55 @@ public abstract class RestrictedGuacamoleTunnelServiceAbstract
     /**
      * Set of all currently-active user/connection pairs (seats).
      */
-    private final ConcurrentHashMultiset<Seat> activeSeats = ConcurrentHashMultiset.<Seat>create();
+    private final ConcurrentHashMultiset<Seat> activeSeats = ConcurrentHashMultiset
+            .<Seat>create();
 
     /**
      * Set of all currently-active connections.
      */
-    private final ConcurrentHashMultiset<String> activeConnections = ConcurrentHashMultiset.<String>create();
+    private final ConcurrentHashMultiset<String> activeConnections = ConcurrentHashMultiset
+            .<String>create();
 
     /**
      * Set of all currently-active user/connection group pairs (seats).
      */
-    private final ConcurrentHashMultiset<Seat> activeGroupSeats = ConcurrentHashMultiset.<Seat>create();
+    private final ConcurrentHashMultiset<Seat> activeGroupSeats = ConcurrentHashMultiset
+            .<Seat>create();
 
     /**
      * Set of all currently-active connection groups.
      */
-    private final ConcurrentHashMultiset<String> activeGroups = ConcurrentHashMultiset.<String>create();
+    private final ConcurrentHashMultiset<String> activeGroups = ConcurrentHashMultiset
+            .<String>create();
 
     /**
-     * The total number of active connections within this instance of
-     * Guacamole.
+     * The total number of active connections within this instance of Guacamole.
      */
     private final AtomicInteger totalActiveConnections = new AtomicInteger(0);
 
     /**
      * Attempts to add a single instance of the given value to the given
-     * multiset without exceeding the specified maximum number of values. If
-     * the value cannot be added without exceeding the maximum, false is
-     * returned.
+     * multiset without exceeding the specified maximum number of values. If the
+     * value cannot be added without exceeding the maximum, false is returned.
      *
      * @param <T>
-     *     The type of values contained within the multiset.
+     *            The type of values contained within the multiset.
      *
      * @param multiset
-     *     The multiset to attempt to add a value to.
+     *            The multiset to attempt to add a value to.
      *
      * @param value
-     *     The value to attempt to add.
+     *            The value to attempt to add.
      *
      * @param max
-     *     The maximum number of each distinct value that the given multiset
-     *     should hold, or zero if no limit applies.
+     *            The maximum number of each distinct value that the given
+     *            multiset should hold, or zero if no limit applies.
      *
-     * @return
-     *     true if the value was successfully added without exceeding the
-     *     specified maximum, false if the value could not be added.
+     * @return true if the value was successfully added without exceeding the
+     *         specified maximum, false if the value could not be added.
      */
-    private <T> boolean tryAdd(ConcurrentHashMultiset<T> multiset, T value, int max) {
+    private <T> boolean tryAdd(ConcurrentHashMultiset<T> multiset, T value,
+            int max) {
 
         // Repeatedly attempt to add a new value to the given multiset until we
         // explicitly succeed or explicitly fail
@@ -120,7 +120,7 @@ public abstract class RestrictedGuacamoleTunnelServiceAbstract
                 return false;
 
             // Attempt to add one more value
-            if (multiset.setCount(value, count, count+1))
+            if (multiset.setCount(value, count, count + 1))
                 return true;
 
             // Try again if unsuccessful
@@ -135,16 +135,15 @@ public abstract class RestrictedGuacamoleTunnelServiceAbstract
      * without exceeding the maximum, false is returned.
      *
      * @param counter
-     *     The AtomicInteger to attempt to increment.
+     *            The AtomicInteger to attempt to increment.
      *
      * @param max
-     *     The maximum value that the given AtomicInteger should contain, or
-     *     zero if no limit applies.
+     *            The maximum value that the given AtomicInteger should contain,
+     *            or zero if no limit applies.
      *
-     * @return
-     *     true if the AtomicInteger was successfully incremented without
-     *     exceeding the specified maximum, false if the AtomicInteger could
-     *     not be incremented.
+     * @return true if the AtomicInteger was successfully incremented without
+     *         exceeding the specified maximum, false if the AtomicInteger could
+     *         not be incremented.
      */
     private boolean tryIncrement(AtomicInteger counter, int max) {
 
@@ -160,7 +159,7 @@ public abstract class RestrictedGuacamoleTunnelServiceAbstract
                 return false;
 
             // Attempt to increment
-            if (counter.compareAndSet(count, count+1))
+            if (counter.compareAndSet(count, count + 1))
                 return true;
 
             // Try again if unsuccessful
@@ -175,14 +174,17 @@ public abstract class RestrictedGuacamoleTunnelServiceAbstract
             throws GuacamoleException {
 
         // Do not acquire connection unless within overall limits
-        if (!tryIncrement(totalActiveConnections, environment.getAbsoluteMaxConnections()))
-            throw new GuacamoleResourceConflictException("Cannot connect. Overall maximum connections reached.");
+        if (!tryIncrement(totalActiveConnections,
+                environment.getAbsoluteMaxConnections()))
+            throw new GuacamoleResourceConflictException(
+                    "Cannot connect. Overall maximum connections reached.");
 
         // Get username
         String username = user.getIdentifier();
 
         // Sort connections in ascending order of usage
-        ModeledConnection[] sortedConnections = connections.toArray(new ModeledConnection[connections.size()]);
+        ModeledConnection[] sortedConnections = connections
+                .toArray(new ModeledConnection[connections.size()]);
         Arrays.sort(sortedConnections, new Comparator<ModeledConnection>() {
 
             @Override
@@ -200,7 +202,8 @@ public abstract class RestrictedGuacamoleTunnelServiceAbstract
                 int calcWeightA = connA * weightB;
                 int calcWeightB = connB * weightA;
 
-                // If calculated weights are equal, return difference in assigned weight
+                // If calculated weights are equal, return difference in
+                // assigned weight
                 if (calcWeightA == calcWeightB)
                     return (weightA - weightB);
 
@@ -217,9 +220,12 @@ public abstract class RestrictedGuacamoleTunnelServiceAbstract
         // Return the first unreserved connection
         for (ModeledConnection connection : sortedConnections) {
 
-            // If connection weight is less than 1 this host is disabled and should not be used.
+            // If connection weight is less than 1 this host is disabled and
+            // should not be used.
             if (connection.getConnectionWeight() < 1) {
-                logger.debug("Weight for {} is < 1, connection will be skipped.", connection.getName());
+                logger.debug(
+                        "Weight for {} is < 1, connection will be skipped.",
+                        connection.getName());
                 continue;
             }
 
@@ -253,17 +259,21 @@ public abstract class RestrictedGuacamoleTunnelServiceAbstract
 
         // Too many connections by this user
         if (userSpecificFailure)
-            throw new GuacamoleClientTooManyException("Cannot connect. Connection already in use by this user.");
+            throw new GuacamoleClientTooManyException(
+                    "Cannot connect. Connection already in use by this user.");
 
         // Too many connections, but not necessarily due purely to this user
         else
-            throw new GuacamoleResourceConflictException("Cannot connect. This connection is in use.");
+            throw new GuacamoleResourceConflictException(
+                    "Cannot connect. This connection is in use.");
 
     }
 
     @Override
-    protected void release(RemoteAuthenticatedUser user, ModeledConnection connection) {
-        activeSeats.remove(new Seat(user.getIdentifier(), connection.getIdentifier()));
+    protected void release(RemoteAuthenticatedUser user,
+            ModeledConnection connection) {
+        activeSeats.remove(
+                new Seat(user.getIdentifier(), connection.getIdentifier()));
         activeConnections.remove(connection.getIdentifier());
         totalActiveConnections.decrementAndGet();
     }
@@ -289,19 +299,22 @@ public abstract class RestrictedGuacamoleTunnelServiceAbstract
             activeGroupSeats.remove(seat);
 
             // Failure to acquire is not user-specific
-            throw new GuacamoleResourceConflictException("Cannot connect. This connection group is in use.");
+            throw new GuacamoleResourceConflictException(
+                    "Cannot connect. This connection group is in use.");
 
         }
 
         // Already in use by this user
-        throw new GuacamoleClientTooManyException("Cannot connect. Connection group already in use by this user.");
+        throw new GuacamoleClientTooManyException(
+                "Cannot connect. Connection group already in use by this user.");
 
     }
 
     @Override
     protected void release(RemoteAuthenticatedUser user,
             ModeledConnectionGroup connectionGroup) {
-        activeGroupSeats.remove(new Seat(user.getIdentifier(), connectionGroup.getIdentifier()));
+        activeGroupSeats.remove(new Seat(user.getIdentifier(),
+                connectionGroup.getIdentifier()));
         activeGroups.remove(connectionGroup.getIdentifier());
     }
 

@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.jdbc.sharingprofile;
 
 import java.util.Collection;
-
 import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
 import org.apache.guacamole.auth.common.sharingprofile.SharingProfileParameterMapperInterface;
 import org.apache.ibatis.annotations.Param;
@@ -28,46 +27,46 @@ import org.apache.ibatis.annotations.Param;
 /**
  * Mapper for sharing profile parameter objects.
  */
-public interface SharingProfileParameterMapper extends SharingProfileParameterMapperInterface {
+public interface SharingProfileParameterMapper
+        extends SharingProfileParameterMapperInterface {
 
     /**
      * Returns a collection of all parameters associated with the sharing
      * profile having the given identifier.
      *
      * @param identifier
-     *     The identifier of the sharing profile whose parameters are to be
-     *     retrieved.
+     *            The identifier of the sharing profile whose parameters are to
+     *            be retrieved.
      *
-     * @return
-     *     A collection of all parameters associated with the sharing profile
-     *     having the given identifier. This collection will be empty if no
-     *     such sharing profile exists.
+     * @return A collection of all parameters associated with the sharing
+     *         profile having the given identifier. This collection will be
+     *         empty if no such sharing profile exists.
      */
-    Collection<ArbitraryAttributeModelInterface> select(@Param("identifier") String identifier);
+    Collection<ArbitraryAttributeModelInterface> select(
+            @Param("identifier") String identifier);
 
     /**
      * Inserts each of the parameter model objects in the given collection as
      * new sharing profile parameters.
      *
      * @param parameters
-     *     The sharing profile parameters to insert.
+     *            The sharing profile parameters to insert.
      *
-     * @return
-     *     The number of rows inserted.
+     * @return The number of rows inserted.
      */
-    int insert(@Param("parameters") Collection<ArbitraryAttributeModelInterface> parameters);
+    int insert(
+            @Param("parameters") Collection<ArbitraryAttributeModelInterface> parameters);
 
     /**
      * Deletes all parameters associated with the sharing profile having the
      * given identifier.
      *
      * @param identifier
-     *     The identifier of the sharing profile whose parameters should be
-     *     deleted.
+     *            The identifier of the sharing profile whose parameters should
+     *            be deleted.
      *
-     * @return
-     *     The number of rows deleted.
+     * @return The number of rows deleted.
      */
     int delete(@Param("identifier") String identifier);
-    
+
 }

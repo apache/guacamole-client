@@ -24,17 +24,17 @@ import org.apache.guacamole.auth.common.base.ModeledDirectoryObjectMapperInterfa
 /**
  * Mapper for user group objects.
  */
-public interface UserGroupMapperInterface<ModelType> extends ModeledDirectoryObjectMapperInterface<ModelType> {
+public interface UserGroupMapperInterface<ModelType>
+        extends ModeledDirectoryObjectMapperInterface<ModelType> {
 
     /**
-     * Returns the group having the given name, if any. If no such group
-     * exists, null is returned.
+     * Returns the group having the given name, if any. If no such group exists,
+     * null is returned.
      *
      * @param name
-     *     The name of the group to return.
+     *            The name of the group to return.
      *
-     * @return
-     *     The group having the given name, or null if no such group exists.
+     * @return The group having the given name, or null if no such group exists.
      */
     UserGroupModelInterface selectOne(String name);
 

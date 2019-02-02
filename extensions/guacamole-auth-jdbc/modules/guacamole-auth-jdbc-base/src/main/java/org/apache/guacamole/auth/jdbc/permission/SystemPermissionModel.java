@@ -23,10 +23,12 @@ import org.apache.guacamole.auth.common.permission.SystemPermissionModelInterfac
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 
 /**
- * Object representation of an system-level Guacamole permission, as
- * represented in the database.
+ * Object representation of an system-level Guacamole permission, as represented
+ * in the database.
  */
-public class SystemPermissionModel extends PermissionModel<SystemPermission.Type> implements SystemPermissionModelInterface {
+public class SystemPermissionModel
+        extends PermissionModel<SystemPermission.Type>
+        implements SystemPermissionModelInterface {
 
     /**
      * Creates a new, empty System permission.

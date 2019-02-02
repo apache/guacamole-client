@@ -19,10 +19,8 @@
 
 package org.apache.guacamole.auth.common.user;
 
-
 import java.util.Collection;
 import java.util.Date;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.activeconnection.ActiveConnectionDirectory;
 import org.apache.guacamole.auth.common.base.ActivityRecordModelInterface;
@@ -46,7 +44,6 @@ import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserGroup;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -56,32 +53,32 @@ import com.google.inject.Provider;
  */
 @SuppressWarnings("unchecked")
 public abstract class ModeledUserContextAbstract extends RestrictedObject
-    implements org.apache.guacamole.net.auth.UserContext {
+        implements org.apache.guacamole.net.auth.UserContext {
 
     /**
-     * User directory restricted by the permissions of the user associated
-     * with this context.
+     * User directory restricted by the permissions of the user associated with
+     * this context.
      */
     @Inject
     protected Directory<User> userDirectory;
-    
+
     /**
      * User group directory restricted by the permissions of the user associated
      * with this context.
      */
     @Inject
     protected Directory<UserGroup> userGroupDirectory;
- 
+
     /**
      * Connection group directory restricted by the permissions of the user
      * associated with this context.
      */
     @Inject
     protected Directory<ConnectionGroup> connectionGroupDirectory;
-    
+
     /**
-     * Connection directory restricted by the permissions of the user
-     * associated with this context.
+     * Connection directory restricted by the permissions of the user associated
+     * with this context.
      */
     @Inject
     protected ConnectionDirectory connectionDirectory;
@@ -150,17 +147,20 @@ public abstract class ModeledUserContextAbstract extends RestrictedObject
     }
 
     @Override
-    public Directory<UserGroup> getUserGroupDirectory() throws GuacamoleException {
+    public Directory<UserGroup> getUserGroupDirectory()
+            throws GuacamoleException {
         return (Directory<UserGroup>) userGroupDirectory;
     }
 
     @Override
-    public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
+    public Directory<Connection> getConnectionDirectory()
+            throws GuacamoleException {
         return connectionDirectory;
     }
 
-	@Override
-    public Directory<ConnectionGroup> getConnectionGroupDirectory() throws GuacamoleException {
+    @Override
+    public Directory<ConnectionGroup> getConnectionGroupDirectory()
+            throws GuacamoleException {
         return (Directory<ConnectionGroup>) connectionGroupDirectory;
     }
 
@@ -179,7 +179,8 @@ public abstract class ModeledUserContextAbstract extends RestrictedObject
     @Override
     public ConnectionRecordSet getConnectionHistory()
             throws GuacamoleException {
-        ConnectionRecordSet connectionRecordSet = connectionRecordSetProvider.get();
+        ConnectionRecordSet connectionRecordSet = connectionRecordSetProvider
+                .get();
         connectionRecordSet.init(getCurrentUser());
         return connectionRecordSet;
     }

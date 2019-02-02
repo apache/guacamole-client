@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.common.sharing;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
 import org.apache.guacamole.auth.common.sharing.connection.SharedConnectionDefinition;
 
 /**
@@ -32,12 +31,11 @@ public class HashSharedConnectionMap implements SharedConnectionMap {
     /**
      * Keeps track of the share key to SharedConnectionDefinition mapping.
      */
-    private final ConcurrentMap<String, SharedConnectionDefinition> connectionMap =
-            new ConcurrentHashMap<String, SharedConnectionDefinition>();
+    private final ConcurrentMap<String, SharedConnectionDefinition> connectionMap = new ConcurrentHashMap<String, SharedConnectionDefinition>();
 
     @Override
     public SharedConnectionDefinition get(String key) {
-        
+
         // There are no null share keys
         if (key == null)
             return null;

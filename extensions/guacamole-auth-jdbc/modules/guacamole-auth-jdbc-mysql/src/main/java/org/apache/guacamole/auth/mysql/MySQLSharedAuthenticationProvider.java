@@ -28,18 +28,20 @@ import org.apache.guacamole.auth.common.sharing.SharedAuthenticationProviderServ
  * MySQL AuthenticationProvider, accepting share keys as credentials and
  * providing access to the shared connections.
  */
-public class MySQLSharedAuthenticationProvider extends InjectedAuthenticationProvider {
+public class MySQLSharedAuthenticationProvider
+        extends InjectedAuthenticationProvider {
 
     /**
      * Creates a new MySQLSharedAuthenticationProvider that provides access to
      * shared connections exposed by the MySQLAuthenticationProvider.
      *
      * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
+     *             If a required property is missing, or an error occurs while
+     *             parsing a property.
      */
     public MySQLSharedAuthenticationProvider() throws GuacamoleException {
-        super(new MySQLInjectorProvider(), SharedAuthenticationProviderService.class);
+        super(new MySQLInjectorProvider(),
+                SharedAuthenticationProviderService.class);
     }
 
     @Override

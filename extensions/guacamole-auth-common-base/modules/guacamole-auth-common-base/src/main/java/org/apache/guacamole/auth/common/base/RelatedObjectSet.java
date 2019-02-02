@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.common.base;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
@@ -37,13 +36,15 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
  * parameters, as child objects are represented by identifiers only.
  *
  * @param <ParentObjectType>
- *     The type of object that represents the parent side of the relation.
+ *            The type of object that represents the parent side of the
+ *            relation.
  *
  * @param <ParentModelType>
- *     The underlying database model of the parent object.
+ *            The underlying database model of the parent object.
  */
 public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectoryObject<ParentModelType>, ParentModelType extends ObjectModelInterface>
-        extends RestrictedObject implements org.apache.guacamole.net.auth.RelatedObjectSet {
+        extends RestrictedObject
+        implements org.apache.guacamole.net.auth.RelatedObjectSet {
 
     /**
      * The parent object which shares some arbitrary relation with the objects
@@ -64,14 +65,16 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
      * set.
      *
      * @param currentUser
-     *     The user who queried this RelatedObjectSet, and whose permissions
-     *     dictate the access level of all operations performed on this set.
+     *            The user who queried this RelatedObjectSet, and whose
+     *            permissions dictate the access level of all operations
+     *            performed on this set.
      *
      * @param parent
-     *     The parent object which shares some arbitrary relation with the
-     *     objects within this set.
+     *            The parent object which shares some arbitrary relation with
+     *            the objects within this set.
      */
-    public void init(ModeledAuthenticatedUser currentUser, ParentObjectType parent) {
+    public void init(ModeledAuthenticatedUser currentUser,
+            ParentObjectType parent) {
         super.init(currentUser);
         this.parent = parent;
     }
@@ -80,45 +83,42 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
      * Returns the mapper which provides low-level access to the the database
      * models which drive the relation represented by this RelatedObjectSet.
      *
-     * @return
-     *     The mapper which provides low-level access to the the database
-     *     models which drive the relation represented by this
-     *     RelatedObjectSet.
+     * @return The mapper which provides low-level access to the the database
+     *         models which drive the relation represented by this
+     *         RelatedObjectSet.
      */
     protected abstract ObjectRelationMapperInterface<ParentModelType> getObjectRelationMapper();
 
     /**
      * Returns the permission set which exposes the effective permissions
-     * available to the current user regarding the objects on the parent side
-     * of the one-to-many relationship represented by this RelatedObjectSet.
+     * available to the current user regarding the objects on the parent side of
+     * the one-to-many relationship represented by this RelatedObjectSet.
      * Permission inheritance through user groups is taken into account.
      *
-     * @return
-     *     The permission set which exposes the effective permissions
-     *     available to the current user regarding the objects on the parent
-     *     side of the one-to-many relationship represented by this
-     *     RelatedObjectSet.
+     * @return The permission set which exposes the effective permissions
+     *         available to the current user regarding the objects on the parent
+     *         side of the one-to-many relationship represented by this
+     *         RelatedObjectSet.
      *
      * @throws GuacamoleException
-     *     If permission to query permission status is denied.
+     *             If permission to query permission status is denied.
      */
     protected abstract ObjectPermissionSet getParentObjectEffectivePermissionSet()
             throws GuacamoleException;
 
     /**
      * Returns the permission set which exposes the effective permissions
-     * available to the current user regarding the objects on the child side
-     * of the one-to-many relationship represented by this RelatedObjectSet.
+     * available to the current user regarding the objects on the child side of
+     * the one-to-many relationship represented by this RelatedObjectSet.
      * Permission inheritance through user groups is taken into account.
      *
-     * @return
-     *     The permission set which exposes the effective permissions
-     *     available to the current user regarding the objects on the child
-     *     side of the one-to-many relationship represented by this
-     *     RelatedObjectSet.
+     * @return The permission set which exposes the effective permissions
+     *         available to the current user regarding the objects on the child
+     *         side of the one-to-many relationship represented by this
+     *         RelatedObjectSet.
      *
      * @throws GuacamoleException
-     *     If permission to query permission status is denied.
+     *             If permission to query permission status is denied.
      */
     protected abstract ObjectPermissionSet getChildObjectEffectivePermissionSet()
             throws GuacamoleException;
@@ -128,15 +128,14 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
      * the relation between the parent object and the given child objects.
      *
      * @param identifiers
-     *     The identifiers of all objects on the child side of the one-to-many
-     *     relation being changed.
+     *            The identifiers of all objects on the child side of the
+     *            one-to-many relation being changed.
      *
-     * @return
-     *     true if the user has permission to make the described changes,
-     *     false otherwise.
+     * @return true if the user has permission to make the described changes,
+     *         false otherwise.
      *
      * @throws GuacamoleException
-     *     If permission to query permission status is denied.
+     *             If permission to query permission status is denied.
      */
     private boolean canAlterRelation(Collection<String> identifiers)
             throws GuacamoleException {
@@ -151,8 +150,8 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
             return false;
 
         // ... as well as UPDATE permission on all child objects being changed
-        Collection<String> accessibleIdentifiers =
-                getChildObjectEffectivePermissionSet().getAccessibleObjects(
+        Collection<String> accessibleIdentifiers = getChildObjectEffectivePermissionSet()
+                .getAccessibleObjects(
                         Collections.singleton(ObjectPermission.Type.UPDATE),
                         identifiers);
 
@@ -166,7 +165,8 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
         // Bypass permission checks if the user is a system admin
         ModeledAuthenticatedUser user = getCurrentUser();
         if (user.getUser().isAdministrator())
-            return getObjectRelationMapper().selectChildIdentifiers(parent.getModel());
+            return getObjectRelationMapper()
+                    .selectChildIdentifiers(parent.getModel());
 
         // Otherwise only return explicitly readable identifiers
         return getObjectRelationMapper().selectReadableChildIdentifiers(
@@ -193,7 +193,8 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
     }
 
     @Override
-    public void removeObjects(Set<String> identifiers) throws GuacamoleException {
+    public void removeObjects(Set<String> identifiers)
+            throws GuacamoleException {
 
         // Nothing to do if nothing provided
         if (identifiers.isEmpty())

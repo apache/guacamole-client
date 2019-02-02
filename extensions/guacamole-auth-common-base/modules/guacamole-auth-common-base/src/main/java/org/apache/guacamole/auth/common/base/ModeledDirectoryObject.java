@@ -33,10 +33,10 @@ import org.apache.guacamole.net.auth.Identifiable;
  * the Directory class.
  *
  * @param <ModelType>
- *     The type of model object that corresponds to this object.
+ *            The type of model object that corresponds to this object.
  */
 public abstract class ModeledDirectoryObject<ModelType extends ObjectModelInterface>
-    extends ModeledObject<ModelType> implements Identifiable, Attributes {
+        extends ModeledObject<ModelType> implements Identifiable, Attributes {
 
     @Override
     public String getIdentifier() {
@@ -55,9 +55,9 @@ public abstract class ModeledDirectoryObject<ModelType extends ObjectModelInterf
      * storage. Any attributes set which do not match these names, such as those
      * set via other extensions, will be added to arbitrary attribute storage.
      *
-     * @return
-     *     A read-only Set of the names of all attributes explicitly supported
-     *     (mapped to a property of the backing model) by this object.
+     * @return A read-only Set of the names of all attributes explicitly
+     *         supported (mapped to a property of the backing model) by this
+     *         object.
      */
     public Set<String> getSupportedAttributeNames() {
         return Collections.<String>emptySet();
@@ -65,13 +65,15 @@ public abstract class ModeledDirectoryObject<ModelType extends ObjectModelInterf
 
     @Override
     public Map<String, String> getAttributes() {
-        return new HashMap<String, String>(getModel().getArbitraryAttributeMap());
+        return new HashMap<String, String>(
+                getModel().getArbitraryAttributeMap());
     }
 
     @Override
     public void setAttributes(Map<String, String> attributes) {
 
-        ArbitraryAttributeMapInterface arbitraryAttributes = getModel().getArbitraryAttributeMap();
+        ArbitraryAttributeMapInterface arbitraryAttributes = getModel()
+                .getArbitraryAttributeMap();
 
         // Get set of all supported attribute names
         Set<String> supportedAttributes = getSupportedAttributeNames();

@@ -22,20 +22,21 @@ package org.apache.guacamole.auth.jdbc.usergroup;
 import org.apache.guacamole.auth.common.base.ObjectRelationMapperInterface;
 import org.apache.guacamole.auth.common.usergroup.UserGroupModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ObjectRelationMapperImp;
-
 import com.google.inject.Inject;
 
 /**
  * Mapper for the one-to-many relationship between a user group and its
  * containing user groups.
  */
-public class UserGroupParentUserGroupMapperImp extends ObjectRelationMapperImp<UserGroupModelInterface, UserGroupParentUserGroupMapper> implements ObjectRelationMapperInterface<UserGroupModelInterface> {
-		
-	@Inject 
-	private UserGroupParentUserGroupMapper userGroupParentUserGroupMapper;
-	
-	@Override
-	protected UserGroupParentUserGroupMapper getMapper() {
-		return userGroupParentUserGroupMapper;
-	}
+public class UserGroupParentUserGroupMapperImp extends
+        ObjectRelationMapperImp<UserGroupModelInterface, UserGroupParentUserGroupMapper>
+        implements ObjectRelationMapperInterface<UserGroupModelInterface> {
+
+    @Inject
+    private UserGroupParentUserGroupMapper userGroupParentUserGroupMapper;
+
+    @Override
+    protected UserGroupParentUserGroupMapper getMapper() {
+        return userGroupParentUserGroupMapper;
+    }
 }

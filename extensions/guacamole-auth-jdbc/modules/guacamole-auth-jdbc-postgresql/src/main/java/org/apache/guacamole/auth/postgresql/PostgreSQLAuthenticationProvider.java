@@ -27,7 +27,8 @@ import org.apache.guacamole.auth.common.CommonAuthenticationProviderService;
  * Provides a PostgreSQL-based implementation of the AuthenticationProvider
  * functionality.
  */
-public class PostgreSQLAuthenticationProvider extends InjectedAuthenticationProvider {
+public class PostgreSQLAuthenticationProvider
+        extends InjectedAuthenticationProvider {
 
     /**
      * Creates a new PostgreSQLAuthenticationProvider that reads and writes
@@ -35,11 +36,12 @@ public class PostgreSQLAuthenticationProvider extends InjectedAuthenticationProv
      * guacamole.properties.
      *
      * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
+     *             If a required property is missing, or an error occurs while
+     *             parsing a property.
      */
     public PostgreSQLAuthenticationProvider() throws GuacamoleException {
-        super(new PostgreSQLInjectorProvider(), CommonAuthenticationProviderService.class);
+        super(new PostgreSQLInjectorProvider(),
+                CommonAuthenticationProviderService.class);
     }
 
     @Override

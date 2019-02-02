@@ -20,14 +20,12 @@
 package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Map;
-
 import org.apache.guacamole.auth.common.base.EntityModelInterface;
 import org.apache.guacamole.auth.common.base.ModeledPermissions;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
 import org.apache.guacamole.auth.common.permission.UserGroupPermissionServiceAbstract;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
-
 import com.google.inject.Inject;
 
 /**
@@ -35,17 +33,20 @@ import com.google.inject.Inject;
  * deleting user group permissions. This service will automatically enforce the
  * permissions of the current user.
  */
-public class UserGroupPermissionService extends UserGroupPermissionServiceAbstract {
+public class UserGroupPermissionService
+        extends UserGroupPermissionServiceAbstract {
 
-	@Inject
-	public UserGroupPermissionService(Map<String, ObjectPermissionMapperInterface> mappers) {
-		super(mappers);
-	}
+    @Inject
+    public UserGroupPermissionService(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        super(mappers);
+    }
 
-	@Override
-	public ObjectPermissionModelInterface getModelInstance(
-			ModeledPermissions<? extends EntityModelInterface> targetEntity, ObjectPermission permission) {
-		ObjectPermissionModel model = new ObjectPermissionModel();
+    @Override
+    public ObjectPermissionModelInterface getModelInstance(
+            ModeledPermissions<? extends EntityModelInterface> targetEntity,
+            ObjectPermission permission) {
+        ObjectPermissionModel model = new ObjectPermissionModel();
 
         // Populate model object with data from entity and permission
         model.setEntityID(targetEntity.getModel().getEntityID());
@@ -53,6 +54,6 @@ public class UserGroupPermissionService extends UserGroupPermissionServiceAbstra
         model.setObjectIdentifier(permission.getObjectIdentifier());
 
         return model;
-	}
+    }
 
 }

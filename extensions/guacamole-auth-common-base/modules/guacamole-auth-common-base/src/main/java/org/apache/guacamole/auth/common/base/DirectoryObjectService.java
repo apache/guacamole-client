@@ -21,23 +21,23 @@ package org.apache.guacamole.auth.common.base;
 
 import java.util.Collection;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
- * manipulating objects that have unique identifiers, such as the objects
- * within directories. This service will automatically enforce the permissions
- * of the current user.
+ * manipulating objects that have unique identifiers, such as the objects within
+ * directories. This service will automatically enforce the permissions of the
+ * current user.
  *
  * @param <InternalType>
- *     The specific internal implementation of the type of object this service
- *     provides access to.
+ *            The specific internal implementation of the type of object this
+ *            service provides access to.
  *
  * @param <ExternalType>
- *     The external interface or implementation of the type of object this
- *     service provides access to, as defined by the guacamole-ext API.
+ *            The external interface or implementation of the type of object
+ *            this service provides access to, as defined by the guacamole-ext
+ *            API.
  */
 public interface DirectoryObjectService<InternalType, ExternalType> {
 
@@ -46,36 +46,34 @@ public interface DirectoryObjectService<InternalType, ExternalType> {
      * and the user has permission to read it.
      *
      * @param user
-     *     The user retrieving the object.
+     *            The user retrieving the object.
      *
      * @param identifier
-     *     The identifier of the object to retrieve.
+     *            The identifier of the object to retrieve.
      *
-     * @return
-     *     The object having the given identifier, or null if no such object
-     *     exists.
+     * @return The object having the given identifier, or null if no such object
+     *         exists.
      *
      * @throws GuacamoleException
-     *     If an error occurs while retrieving the requested object.
+     *             If an error occurs while retrieving the requested object.
      */
-    InternalType retrieveObject(ModeledAuthenticatedUser user, String identifier)
-            throws GuacamoleException;
-    
+    InternalType retrieveObject(ModeledAuthenticatedUser user,
+            String identifier) throws GuacamoleException;
+
     /**
      * Retrieves all objects that have the identifiers in the given collection.
      * Only objects that the user has permission to read will be returned.
      *
      * @param user
-     *     The user retrieving the objects.
+     *            The user retrieving the objects.
      *
      * @param identifiers
-     *     The identifiers of the objects to retrieve.
+     *            The identifiers of the objects to retrieve.
      *
-     * @return
-     *     The objects having the given identifiers.
+     * @return The objects having the given identifiers.
      *
      * @throws GuacamoleException
-     *     If an error occurs while retrieving the requested objects.
+     *             If an error occurs while retrieving the requested objects.
      */
     Collection<InternalType> retrieveObjects(ModeledAuthenticatedUser user,
             Collection<String> identifiers) throws GuacamoleException;
@@ -85,68 +83,67 @@ public interface DirectoryObjectService<InternalType, ExternalType> {
      * thrown.
      *
      * @param user
-     *     The user creating the object.
+     *            The user creating the object.
      *
      * @param object
-     *     The object to create.
+     *            The object to create.
      *
-     * @return
-     *     The newly-created object.
+     * @return The newly-created object.
      *
      * @throws GuacamoleException
-     *     If the user lacks permission to create the object, or an error
-     *     occurs while creating the object.
+     *             If the user lacks permission to create the object, or an
+     *             error occurs while creating the object.
      */
-    InternalType createObject(ModeledAuthenticatedUser user, ExternalType object)
+    InternalType createObject(ModeledAuthenticatedUser user,
+            ExternalType object) throws GuacamoleException;
+
+    /**
+     * Deletes the object having the given identifier. If no such object exists,
+     * this function has no effect.
+     *
+     * @param user
+     *            The user deleting the object.
+     *
+     * @param identifier
+     *            The identifier of the object to delete.
+     *
+     * @throws GuacamoleException
+     *             If the user lacks permission to delete the object, or an
+     *             error occurs while deleting the object.
+     */
+    void deleteObject(ModeledAuthenticatedUser user, String identifier)
             throws GuacamoleException;
 
     /**
-     * Deletes the object having the given identifier. If no such object
-     * exists, this function has no effect.
+     * Updates the given object, applying any changes that have been made. If no
+     * such object exists, this function has no effect.
      *
      * @param user
-     *     The user deleting the object.
-     *
-     * @param identifier
-     *     The identifier of the object to delete.
-     *
-     * @throws GuacamoleException
-     *     If the user lacks permission to delete the object, or an error
-     *     occurs while deleting the object.
-     */
-    void deleteObject(ModeledAuthenticatedUser user, String identifier)
-        throws GuacamoleException;
-
-    /**
-     * Updates the given object, applying any changes that have been made. If
-     * no such object exists, this function has no effect.
-     *
-     * @param user
-     *     The user updating the object.
+     *            The user updating the object.
      *
      * @param object
-     *     The object to update.
+     *            The object to update.
      *
      * @throws GuacamoleException
-     *     If the user lacks permission to update the object, or an error
-     *     occurs while updating the object.
+     *             If the user lacks permission to update the object, or an
+     *             error occurs while updating the object.
      */
     void updateObject(ModeledAuthenticatedUser user, InternalType object)
             throws GuacamoleException;
 
     /**
-     * Returns the set of all identifiers for all objects that the user has
-     * read access to.
+     * Returns the set of all identifiers for all objects that the user has read
+     * access to.
      *
      * @param user
-     *     The user retrieving the identifiers.
+     *            The user retrieving the identifiers.
      *
-     * @return
-     *     The set of all identifiers for all objects.
+     * @return The set of all identifiers for all objects.
      *
      * @throws GuacamoleException
-     *     If an error occurs while reading identifiers.
+     *             If an error occurs while reading identifiers.
      */
-    Set<String> getIdentifiers(ModeledAuthenticatedUser user) throws GuacamoleException;
+    Set<String> getIdentifiers(ModeledAuthenticatedUser user)
+            throws GuacamoleException;
 
 }

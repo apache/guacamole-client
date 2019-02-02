@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.common.base;
 
-
 import java.util.Date;
 import org.apache.guacamole.net.auth.ActivityRecord;
 
@@ -39,7 +38,7 @@ public class ModeledActivityRecord implements ActivityRecord {
      * to the backing model object will affect this record.
      * 
      * @param model
-     *     The model object to use to back this activity record.
+     *            The model object to use to back this activity record.
      */
     public ModeledActivityRecord(ActivityRecordModelInterface model) {
         this.model = model;

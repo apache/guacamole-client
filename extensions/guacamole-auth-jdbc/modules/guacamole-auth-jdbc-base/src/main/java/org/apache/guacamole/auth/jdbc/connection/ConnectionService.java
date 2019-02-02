@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.jdbc.connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-
 import org.apache.guacamole.auth.common.connection.ConnectionModelInterface;
 import org.apache.guacamole.auth.common.connection.ConnectionParameterModelInterface;
 import org.apache.guacamole.auth.common.connection.ConnectionServiceAbstract;
@@ -35,57 +34,61 @@ import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.permission.ObjectPermission.Type;
-
 import com.google.inject.Inject;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating connections.
  */
-public class ConnectionService extends ConnectionServiceAbstract implements ConnectionServiceInterface {
+public class ConnectionService extends ConnectionServiceAbstract
+        implements ConnectionServiceInterface {
 
-	@Inject
-    public ConnectionService(Map<String, ObjectPermissionMapperInterface> mappers) {
-		super(mappers);
-	}
+    @Inject
+    public ConnectionService(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        super(mappers);
+    }
 
-	@Override
-    protected ConnectionModelInterface getModelInstance(ModeledAuthenticatedUser currentUser,
-            final Connection object) {
+    @Override
+    protected ConnectionModelInterface getModelInstance(
+            ModeledAuthenticatedUser currentUser, final Connection object) {
 
         // Create new ModeledConnection backed by blank model
         ConnectionModel model = new ConnectionModel();
         ModeledConnection connection = getObjectInstance(currentUser, model);
 
-        // Set model contents through ModeledConnection, copying the provided connection
+        // Set model contents through ModeledConnection, copying the provided
+        // connection
         connection.setParentIdentifier(object.getParentIdentifier());
         connection.setName(object.getName());
         connection.setConfiguration(object.getConfiguration());
         connection.setAttributes(object.getAttributes());
 
         return model;
-        
+
     }
-    
+
     /**
      * Given an arbitrary Guacamole connection, produces a collection of
      * parameter model objects containing the name/value pairs of that
      * connection's parameters.
      *
      * @param connection
-     *     The connection whose configuration should be used to produce the
-     *     collection of parameter models.
+     *            The connection whose configuration should be used to produce
+     *            the collection of parameter models.
      *
-     * @return
-     *     A collection of parameter models containing the name/value pairs
-     *     of the given connection's parameters.
+     * @return A collection of parameter models containing the name/value pairs
+     *         of the given connection's parameters.
      */
-    protected Collection<ConnectionParameterModelInterface> getParameterModels(ModeledConnection connection) {
+    protected Collection<ConnectionParameterModelInterface> getParameterModels(
+            ModeledConnection connection) {
 
-        Map<String, String> parameters = connection.getConfiguration().getParameters();
-        
+        Map<String, String> parameters = connection.getConfiguration()
+                .getParameters();
+
         // Convert parameters to model objects
-        Collection<ConnectionParameterModelInterface> parameterModels = new ArrayList<ConnectionParameterModelInterface>(parameters.size());
+        Collection<ConnectionParameterModelInterface> parameterModels = new ArrayList<ConnectionParameterModelInterface>(
+                parameters.size());
         for (Map.Entry<String, String> parameterEntry : parameters.entrySet()) {
 
             // Get parameter name and value
@@ -95,7 +98,7 @@ public class ConnectionService extends ConnectionServiceAbstract implements Conn
             // There is no need to insert empty parameters
             if (value == null || value.isEmpty())
                 continue;
-            
+
             // Produce model object from parameter
             ConnectionParameterModel model = new ConnectionParameterModel();
             model.setConnectionIdentifier(connection.getIdentifier());
@@ -104,23 +107,22 @@ public class ConnectionService extends ConnectionServiceAbstract implements Conn
 
             // Add model to list
             parameterModels.add(model);
-            
+
         }
 
         return parameterModels;
 
     }
-    
+
     /**
      * Returns whether the given string is a valid identifier within the JDBC
      * authentication extension. Invalid identifiers may result in SQL errors
      * from the underlying database when used in queries.
      *
      * @param identifier
-     *     The string to check for validity.
+     *            The string to check for validity.
      *
-     * @return
-     *     true if the given string is a valid identifier, false otherwise.
+     * @return true if the given string is a valid identifier, false otherwise.
      */
     protected boolean isValidIdentifier(String identifier) {
 
@@ -139,20 +141,20 @@ public class ConnectionService extends ConnectionServiceAbstract implements Conn
 
     }
 
-	@Override
-	protected void createModelPermission(UserModelInterface userModel,
-			Collection<ObjectPermissionModelInterface> implicitPermissions, ConnectionModelInterface model,
-			Type permission) {
-			
-		// Create model which grants this permission to the current user
-		ObjectPermissionModel permissionModel = new ObjectPermissionModel();
+    @Override
+    protected void createModelPermission(UserModelInterface userModel,
+            Collection<ObjectPermissionModelInterface> implicitPermissions,
+            ConnectionModelInterface model, Type permission) {
+
+        // Create model which grants this permission to the current user
+        ObjectPermissionModel permissionModel = new ObjectPermissionModel();
         permissionModel.setEntityID(userModel.getEntityID());
         permissionModel.setType(permission);
         permissionModel.setObjectIdentifier(model.getIdentifier());
 
         // Add permission
         implicitPermissions.add(permissionModel);
-		
-	}
+
+    }
 
 }

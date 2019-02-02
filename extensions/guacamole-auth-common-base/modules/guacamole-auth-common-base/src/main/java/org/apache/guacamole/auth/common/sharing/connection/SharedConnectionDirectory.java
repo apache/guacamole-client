@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.common.sharing.connection;
 
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.ArrayList;
@@ -63,8 +62,8 @@ public class SharedConnectionDirectory implements Directory<Connection> {
      * only valid share keys will be present here, but invalid keys are only
      * removed after an attempt to retrieve those keys has been made.
      */
-    private final Set<String> shareKeys =
-            Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    private final Set<String> shareKeys = Collections
+            .newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
     /**
      * Creates a new SharedConnectionDirectory which exposes share keys as
@@ -72,8 +71,8 @@ public class SharedConnectionDirectory implements Directory<Connection> {
      * accessible.
      *
      * @param currentUser
-     *     The user associated with the UserContext that will contain this
-     *     directory.
+     *            The user associated with the UserContext that will contain
+     *            this directory.
      */
     public void init(RemoteAuthenticatedUser currentUser) {
         this.currentUser = currentUser;
@@ -85,7 +84,7 @@ public class SharedConnectionDirectory implements Directory<Connection> {
      * automatically de-registered when it is no longer valid.
      *
      * @param shareKey
-     *     The share key to register.
+     *            The share key to register.
      */
     public void registerShareKey(String shareKey) {
         shareKeys.add(shareKey);
@@ -100,7 +99,8 @@ public class SharedConnectionDirectory implements Directory<Connection> {
 
         // Retrieve the connection definition associated with that share key,
         // cleaning up the internally-stored share key if it's no longer valid
-        SharedConnectionDefinition connectionDefinition = connectionMap.get(identifier);
+        SharedConnectionDefinition connectionDefinition = connectionMap
+                .get(identifier);
         if (connectionDefinition == null) {
             shareKeys.remove(identifier);
             return null;
@@ -119,8 +119,8 @@ public class SharedConnectionDirectory implements Directory<Connection> {
 
         // Create collection with enough backing space to contain one
         // connection per identifier given
-        Collection<Connection> matchingConnections =
-                new ArrayList<Connection>(identifiers.size());
+        Collection<Connection> matchingConnections = new ArrayList<Connection>(
+                identifiers.size());
 
         // Add all connnections which exist according to get()
         for (String identifier : identifiers) {

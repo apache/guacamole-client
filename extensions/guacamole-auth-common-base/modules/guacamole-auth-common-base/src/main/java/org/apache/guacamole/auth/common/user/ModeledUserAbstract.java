@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.base.ModeledPermissions;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionService;
@@ -52,19 +51,20 @@ import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 /**
  * An implementation of the User object which is backed by a database model.
  */
-public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelInterface> implements User {
+public abstract class ModeledUserAbstract
+        extends ModeledPermissions<UserModelInterface> implements User {
 
-	/**	
+    /**
      * Logger for this class.
      */
-    private static final Logger logger = LoggerFactory.getLogger(ModeledUserAbstract.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(ModeledUserAbstract.class);
 
     /**
      * The name of the attribute which controls whether a user account is
@@ -103,8 +103,8 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
     public static final String VALID_UNTIL_ATTRIBUTE_NAME = "valid-until";
 
     /**
-     * The name of the attribute which defines the time zone used for all
-     * time and date attributes related to this user.
+     * The name of the attribute which defines the time zone used for all time
+     * and date attributes related to this user.
      */
     public static final String TIMEZONE_ATTRIBUTE_NAME = "timezone";
 
@@ -112,54 +112,46 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
      * All attributes related to user profile information, within a logical
      * form.
      */
-    public static final Form PROFILE = new Form("profile", Arrays.<Field>asList(
-        new TextField(User.Attribute.FULL_NAME),
-        new EmailField(User.Attribute.EMAIL_ADDRESS),
-        new TextField(User.Attribute.ORGANIZATION),
-        new TextField(User.Attribute.ORGANIZATIONAL_ROLE)
-    ));
+    public static final Form PROFILE = new Form("profile",
+            Arrays.<Field>asList(new TextField(User.Attribute.FULL_NAME),
+                    new EmailField(User.Attribute.EMAIL_ADDRESS),
+                    new TextField(User.Attribute.ORGANIZATION),
+                    new TextField(User.Attribute.ORGANIZATIONAL_ROLE)));
 
     /**
      * All attributes related to restricting user accounts, within a logical
      * form.
      */
-    public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions", Arrays.<Field>asList(
-        new BooleanField(DISABLED_ATTRIBUTE_NAME, "true"),
-        new BooleanField(EXPIRED_ATTRIBUTE_NAME, "true"),
-        new TimeField(ACCESS_WINDOW_START_ATTRIBUTE_NAME),
-        new TimeField(ACCESS_WINDOW_END_ATTRIBUTE_NAME),
-        new DateField(VALID_FROM_ATTRIBUTE_NAME),
-        new DateField(VALID_UNTIL_ATTRIBUTE_NAME),
-        new TimeZoneField(TIMEZONE_ATTRIBUTE_NAME)
-    ));
+    public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions",
+            Arrays.<Field>asList(
+                    new BooleanField(DISABLED_ATTRIBUTE_NAME, "true"),
+                    new BooleanField(EXPIRED_ATTRIBUTE_NAME, "true"),
+                    new TimeField(ACCESS_WINDOW_START_ATTRIBUTE_NAME),
+                    new TimeField(ACCESS_WINDOW_END_ATTRIBUTE_NAME),
+                    new DateField(VALID_FROM_ATTRIBUTE_NAME),
+                    new DateField(VALID_UNTIL_ATTRIBUTE_NAME),
+                    new TimeZoneField(TIMEZONE_ATTRIBUTE_NAME)));
 
     /**
-     * All possible attributes of user objects organized as individual,
-     * logical forms.
+     * All possible attributes of user objects organized as individual, logical
+     * forms.
      */
-    public static final Collection<Form> ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(
-        PROFILE,
-        ACCOUNT_RESTRICTIONS
-    ));
+    public static final Collection<Form> ATTRIBUTES = Collections
+            .unmodifiableCollection(
+                    Arrays.asList(PROFILE, ACCOUNT_RESTRICTIONS));
 
     /**
      * The names of all attributes which are explicitly supported by this
      * extension's User objects.
      */
-    public static final Set<String> ATTRIBUTE_NAMES =
-            Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
-                User.Attribute.FULL_NAME,
-                User.Attribute.EMAIL_ADDRESS,
-                User.Attribute.ORGANIZATION,
-                User.Attribute.ORGANIZATIONAL_ROLE,
-                DISABLED_ATTRIBUTE_NAME,
-                EXPIRED_ATTRIBUTE_NAME,
-                ACCESS_WINDOW_START_ATTRIBUTE_NAME,
-                ACCESS_WINDOW_END_ATTRIBUTE_NAME,
-                VALID_FROM_ATTRIBUTE_NAME,
-                VALID_UNTIL_ATTRIBUTE_NAME,
-                TIMEZONE_ATTRIBUTE_NAME
-            )));
+    public static final Set<String> ATTRIBUTE_NAMES = Collections
+            .unmodifiableSet(new HashSet<String>(Arrays.asList(
+                    User.Attribute.FULL_NAME, User.Attribute.EMAIL_ADDRESS,
+                    User.Attribute.ORGANIZATION,
+                    User.Attribute.ORGANIZATIONAL_ROLE, DISABLED_ATTRIBUTE_NAME,
+                    EXPIRED_ATTRIBUTE_NAME, ACCESS_WINDOW_START_ATTRIBUTE_NAME,
+                    ACCESS_WINDOW_END_ATTRIBUTE_NAME, VALID_FROM_ATTRIBUTE_NAME,
+                    VALID_UNTIL_ATTRIBUTE_NAME, TIMEZONE_ATTRIBUTE_NAME)));
 
     /**
      * Service for managing users.
@@ -171,13 +163,13 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
      * Service for hashing passwords.
      */
     @Inject
-	protected PasswordEncryptionService encryptionService;
+    protected PasswordEncryptionService encryptionService;
 
     /**
      * Service for providing secure, random salts.
      */
     @Inject
-	protected SaltService saltService;
+    protected SaltService saltService;
 
     /**
      * Provider for RelatedObjectSets containing the user groups of which this
@@ -194,32 +186,31 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
 
     /**
      * Initializes this ModeledUser, associating it with the current
-     * authenticated user and populating it with data from the given user
-     * model.
+     * authenticated user and populating it with data from the given user model.
      *
      * @param currentUser
-     *     The user that created or retrieved this object.
+     *            The user that created or retrieved this object.
      *
      * @param model
-     *     The backing model object.
+     *            The backing model object.
      *
      * @param exposeRestrictedAttributes
-     *     Whether attributes which control access restrictions should be
-     *     exposed via getAttributes() or allowed to be set via
-     *     setAttributes().
+     *            Whether attributes which control access restrictions should be
+     *            exposed via getAttributes() or allowed to be set via
+     *            setAttributes().
      */
-    public void init(ModeledAuthenticatedUser currentUser, UserModelInterface model,
-            boolean exposeRestrictedAttributes) {
+    public void init(ModeledAuthenticatedUser currentUser,
+            UserModelInterface model, boolean exposeRestrictedAttributes) {
         super.init(currentUser, model);
         this.exposeRestrictedAttributes = exposeRestrictedAttributes;
     }
 
     /**
-     * The plaintext password previously set by a call to setPassword(), if
-     * any. The password of a user cannot be retrieved once saved into the
-     * database, so this serves to ensure getPassword() returns a reasonable
-     * value if setPassword() is called. If no password has been set, or the
-     * user was retrieved from the database, this will be null.
+     * The plaintext password previously set by a call to setPassword(), if any.
+     * The password of a user cannot be retrieved once saved into the database,
+     * so this serves to ensure getPassword() returns a reasonable value if
+     * setPassword() is called. If no password has been set, or the user was
+     * retrieved from the database, this will be null.
      */
     protected String password = null;
 
@@ -228,13 +219,13 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
      * queried. If the user is new, this will be null.
      */
     protected PasswordRecordModelInterface passwordRecord = null;
-    
+
     /**
      * Creates a new, empty ModeledUser.
      */
     public ModeledUserAbstract(Map<String, ObjectPermissionService> mappers) {
-		super(mappers);
-	}
+        super(mappers);
+    }
 
     @Override
     public String getPassword() {
@@ -245,7 +236,7 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
     public void setPassword(String password) {
 
         UserModelInterface userModel = getModel();
-        
+
         // Store plaintext password internally
         this.password = password;
 
@@ -255,7 +246,8 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
             userModel.setPasswordHash(saltService.generateSalt());
         }
 
-        // Otherwise generate new salt and hash given password using newly-generated salt
+        // Otherwise generate new salt and hash given password using
+        // newly-generated salt
         else {
             byte[] salt = saltService.generateSalt();
             byte[] hash = encryptionService.createPasswordHash(password, salt);
@@ -268,7 +260,7 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
         userModel.setPasswordDate(new Timestamp(System.currentTimeMillis()));
 
     }
-    
+
     /**
      * Returns the this user's current password record. If the user is new, this
      * will be null. Note that this may represent a different password than what
@@ -277,9 +269,8 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
      * unaffected by calls to setPassword(). It will always return the values
      * stored in the database at the time this user was queried.
      *
-     * @return
-     *     The historical data associated with this user's password, or null if
-     *     the user is new.
+     * @return The historical data associated with this user's password, or null
+     *         if the user is new.
      */
     public PasswordRecordModelInterface getPasswordRecord() {
         return passwordRecord;
@@ -287,32 +278,38 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
 
     /**
      * Stores all restricted (privileged) attributes within the given Map,
-     * pulling the values of those attributes from the underlying user model.
-     * If no value is yet defined for an attribute, that attribute will be set
-     * to null.
+     * pulling the values of those attributes from the underlying user model. If
+     * no value is yet defined for an attribute, that attribute will be set to
+     * null.
      *
      * @param attributes
-     *     The Map to store all restricted attributes within.
+     *            The Map to store all restricted attributes within.
      */
     private void putRestrictedAttributes(Map<String, String> attributes) {
 
         // Set disabled attribute
-        attributes.put(DISABLED_ATTRIBUTE_NAME, getModel().isDisabled() ? "true" : null);
+        attributes.put(DISABLED_ATTRIBUTE_NAME,
+                getModel().isDisabled() ? "true" : null);
 
         // Set password expired attribute
-        attributes.put(EXPIRED_ATTRIBUTE_NAME, getModel().isExpired() ? "true" : null);
+        attributes.put(EXPIRED_ATTRIBUTE_NAME,
+                getModel().isExpired() ? "true" : null);
 
         // Set access window start time
-        attributes.put(ACCESS_WINDOW_START_ATTRIBUTE_NAME, TimeField.format(getModel().getAccessWindowStart()));
+        attributes.put(ACCESS_WINDOW_START_ATTRIBUTE_NAME,
+                TimeField.format(getModel().getAccessWindowStart()));
 
         // Set access window end time
-        attributes.put(ACCESS_WINDOW_END_ATTRIBUTE_NAME, TimeField.format(getModel().getAccessWindowEnd()));
+        attributes.put(ACCESS_WINDOW_END_ATTRIBUTE_NAME,
+                TimeField.format(getModel().getAccessWindowEnd()));
 
         // Set account validity start date
-        attributes.put(VALID_FROM_ATTRIBUTE_NAME, DateField.format(getModel().getValidFrom()));
+        attributes.put(VALID_FROM_ATTRIBUTE_NAME,
+                DateField.format(getModel().getValidFrom()));
 
         // Set account validity end date
-        attributes.put(VALID_UNTIL_ATTRIBUTE_NAME, DateField.format(getModel().getValidUntil()));
+        attributes.put(VALID_UNTIL_ATTRIBUTE_NAME,
+                DateField.format(getModel().getValidUntil()));
 
         // Set timezone attribute
         attributes.put(TIMEZONE_ATTRIBUTE_NAME, getModel().getTimeZone());
@@ -321,12 +318,12 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
 
     /**
      * Stores all unrestricted (unprivileged) attributes within the given Map,
-     * pulling the values of those attributes from the underlying user model.
-     * If no value is yet defined for an attribute, that attribute will be set
-     * to null.
+     * pulling the values of those attributes from the underlying user model. If
+     * no value is yet defined for an attribute, that attribute will be set to
+     * null.
      *
      * @param attributes
-     *     The Map to store all unrestricted attributes within.
+     *            The Map to store all unrestricted attributes within.
      */
     private void putUnrestrictedAttributes(Map<String, String> attributes) {
 
@@ -334,34 +331,35 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
         attributes.put(User.Attribute.FULL_NAME, getModel().getFullName());
 
         // Set email address attribute
-        attributes.put(User.Attribute.EMAIL_ADDRESS, getModel().getEmailAddress());
+        attributes.put(User.Attribute.EMAIL_ADDRESS,
+                getModel().getEmailAddress());
 
         // Set organization attribute
-        attributes.put(User.Attribute.ORGANIZATION, getModel().getOrganization());
+        attributes.put(User.Attribute.ORGANIZATION,
+                getModel().getOrganization());
 
         // Set role attribute
-        attributes.put(User.Attribute.ORGANIZATIONAL_ROLE, getModel().getOrganizationalRole());
+        attributes.put(User.Attribute.ORGANIZATIONAL_ROLE,
+                getModel().getOrganizationalRole());
 
     }
 
     /**
-     * Parses the given string into a corresponding date. The string must
-     * follow the standard format used by date attributes, as defined by
+     * Parses the given string into a corresponding date. The string must follow
+     * the standard format used by date attributes, as defined by
      * DateField.FORMAT and as would be produced by DateField.format().
      *
      * @param dateString
-     *     The date string to parse, which may be null.
+     *            The date string to parse, which may be null.
      *
-     * @return
-     *     The date corresponding to the given date string, or null if the
-     *     provided date string was null or blank.
+     * @return The date corresponding to the given date string, or null if the
+     *         provided date string was null or blank.
      *
      * @throws ParseException
-     *     If the given date string does not conform to the standard format
-     *     used by date attributes.
+     *             If the given date string does not conform to the standard
+     *             format used by date attributes.
      */
-    private Date parseDate(String dateString)
-    throws ParseException {
+    private Date parseDate(String dateString) throws ParseException {
 
         // Return null if no date provided
         java.util.Date parsedDate = DateField.parse(dateString);
@@ -374,30 +372,28 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
     }
 
     /**
-     * Parses the given string into a corresponding time. The string must
-     * follow the standard format used by time attributes, as defined by
+     * Parses the given string into a corresponding time. The string must follow
+     * the standard format used by time attributes, as defined by
      * TimeField.FORMAT and as would be produced by TimeField.format().
      *
      * @param timeString
-     *     The time string to parse, which may be null.
+     *            The time string to parse, which may be null.
      *
-     * @return
-     *     The time corresponding to the given time string, or null if the
-     *     provided time string was null or blank.
+     * @return The time corresponding to the given time string, or null if the
+     *         provided time string was null or blank.
      *
      * @throws ParseException
-     *     If the given time string does not conform to the standard format
-     *     used by time attributes.
+     *             If the given time string does not conform to the standard
+     *             format used by time attributes.
      */
-    private Time parseTime(String timeString)
-    throws ParseException {
+    private Time parseTime(String timeString) throws ParseException {
 
         // Return null if no time provided
         java.util.Date parsedDate = TimeField.parse(timeString);
         if (parsedDate == null)
             return null;
 
-        // Convert to SQL Time 
+        // Convert to SQL Time
         return new Time(parsedDate.getTime());
 
     }
@@ -407,46 +403,61 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
      * model, pulling the values of those attributes from the given Map.
      *
      * @param attributes
-     *     The Map to pull all restricted attributes from.
+     *            The Map to pull all restricted attributes from.
      */
     private void setRestrictedAttributes(Map<String, String> attributes) {
 
         // Translate disabled attribute
-        getModel().setDisabled("true".equals(attributes.get(DISABLED_ATTRIBUTE_NAME)));
+        getModel().setDisabled(
+                "true".equals(attributes.get(DISABLED_ATTRIBUTE_NAME)));
 
         // Translate password expired attribute
-        getModel().setExpired("true".equals(attributes.get(EXPIRED_ATTRIBUTE_NAME)));
+        getModel().setExpired(
+                "true".equals(attributes.get(EXPIRED_ATTRIBUTE_NAME)));
 
         // Translate access window start time
-        try { getModel().setAccessWindowStart(parseTime(attributes.get(ACCESS_WINDOW_START_ATTRIBUTE_NAME))); }
-        catch (ParseException e) {
-            logger.warn("Not setting start time of user access window: {}", e.getMessage());
+        try {
+            getModel().setAccessWindowStart(parseTime(
+                    attributes.get(ACCESS_WINDOW_START_ATTRIBUTE_NAME)));
+        } catch (ParseException e) {
+            logger.warn("Not setting start time of user access window: {}",
+                    e.getMessage());
             logger.debug("Unable to parse time attribute.", e);
         }
 
         // Translate access window end time
-        try { getModel().setAccessWindowEnd(parseTime(attributes.get(ACCESS_WINDOW_END_ATTRIBUTE_NAME))); }
-        catch (ParseException e) {
-            logger.warn("Not setting end time of user access window: {}", e.getMessage());
+        try {
+            getModel().setAccessWindowEnd(parseTime(
+                    attributes.get(ACCESS_WINDOW_END_ATTRIBUTE_NAME)));
+        } catch (ParseException e) {
+            logger.warn("Not setting end time of user access window: {}",
+                    e.getMessage());
             logger.debug("Unable to parse time attribute.", e);
         }
 
         // Translate account validity start date
-        try { getModel().setValidFrom(parseDate(attributes.get(VALID_FROM_ATTRIBUTE_NAME))); }
-        catch (ParseException e) {
-            logger.warn("Not setting user validity start date: {}", e.getMessage());
+        try {
+            getModel().setValidFrom(
+                    parseDate(attributes.get(VALID_FROM_ATTRIBUTE_NAME)));
+        } catch (ParseException e) {
+            logger.warn("Not setting user validity start date: {}",
+                    e.getMessage());
             logger.debug("Unable to parse date attribute.", e);
         }
 
         // Translate account validity end date
-        try { getModel().setValidUntil(parseDate(attributes.get(VALID_UNTIL_ATTRIBUTE_NAME))); }
-        catch (ParseException e) {
-            logger.warn("Not setting user validity end date: {}", e.getMessage());
+        try {
+            getModel().setValidUntil(
+                    parseDate(attributes.get(VALID_UNTIL_ATTRIBUTE_NAME)));
+        } catch (ParseException e) {
+            logger.warn("Not setting user validity end date: {}",
+                    e.getMessage());
             logger.debug("Unable to parse date attribute.", e);
         }
 
         // Translate timezone attribute
-        getModel().setTimeZone(TimeZoneField.parse(attributes.get(TIMEZONE_ATTRIBUTE_NAME)));
+        getModel().setTimeZone(
+                TimeZoneField.parse(attributes.get(TIMEZONE_ATTRIBUTE_NAME)));
 
     }
 
@@ -455,21 +466,25 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
      * user model, pulling the values of those attributes from the given Map.
      *
      * @param attributes
-     *     The Map to pull all unrestricted attributes from.
+     *            The Map to pull all unrestricted attributes from.
      */
     private void setUnrestrictedAttributes(Map<String, String> attributes) {
 
         // Translate full name attribute
-        getModel().setFullName(TextField.parse(attributes.get(User.Attribute.FULL_NAME)));
+        getModel().setFullName(
+                TextField.parse(attributes.get(User.Attribute.FULL_NAME)));
 
         // Translate email address attribute
-        getModel().setEmailAddress(TextField.parse(attributes.get(User.Attribute.EMAIL_ADDRESS)));
+        getModel().setEmailAddress(
+                TextField.parse(attributes.get(User.Attribute.EMAIL_ADDRESS)));
 
         // Translate organization attribute
-        getModel().setOrganization(TextField.parse(attributes.get(User.Attribute.ORGANIZATION)));
+        getModel().setOrganization(
+                TextField.parse(attributes.get(User.Attribute.ORGANIZATION)));
 
         // Translate role attribute
-        getModel().setOrganizationalRole(TextField.parse(attributes.get(User.Attribute.ORGANIZATIONAL_ROLE)));
+        getModel().setOrganizationalRole(TextField
+                .parse(attributes.get(User.Attribute.ORGANIZATIONAL_ROLE)));
 
     }
 
@@ -513,8 +528,7 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
      * Returns the time zone associated with this user. This time zone must be
      * used when interpreting all date/time restrictions related to this user.
      *
-     * @return
-     *     The time zone associated with this user.
+     * @return The time zone associated with this user.
      */
     private TimeZone getTimeZone() {
 
@@ -530,19 +544,18 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
 
     /**
      * Converts a SQL Time to a Calendar, independently of time zone, using the
-     * given Calendar as a base. The time components will be copied to the
-     * given Calendar verbatim, leaving the date and time zone components of
-     * the given Calendar otherwise intact.
+     * given Calendar as a base. The time components will be copied to the given
+     * Calendar verbatim, leaving the date and time zone components of the given
+     * Calendar otherwise intact.
      *
      * @param base
-     *     The Calendar object to use as a base for the conversion.
+     *            The Calendar object to use as a base for the conversion.
      *
      * @param time
-     *     The SQL Time object containing the time components to be applied to
-     *     the given Calendar.
+     *            The SQL Time object containing the time components to be
+     *            applied to the given Calendar.
      *
-     * @return
-     *     The given Calendar, now modified to represent the given time.
+     * @return The given Calendar, now modified to represent the given time.
      */
     private Calendar asCalendar(Calendar base, Time time) {
 
@@ -552,21 +565,20 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
 
         // Apply given time to base calendar
         base.set(Calendar.HOUR_OF_DAY, timeCalendar.get(Calendar.HOUR_OF_DAY));
-        base.set(Calendar.MINUTE,      timeCalendar.get(Calendar.MINUTE));
-        base.set(Calendar.SECOND,      timeCalendar.get(Calendar.SECOND));
+        base.set(Calendar.MINUTE, timeCalendar.get(Calendar.MINUTE));
+        base.set(Calendar.SECOND, timeCalendar.get(Calendar.SECOND));
         base.set(Calendar.MILLISECOND, timeCalendar.get(Calendar.MILLISECOND));
 
         return base;
-        
+
     }
 
     /**
      * Returns the time during the current day when this user account can start
      * being used.
      *
-     * @return
-     *     The time during the current day when this user account can start
-     *     being used.
+     * @return The time during the current day when this user account can start
+     *         being used.
      */
     private Calendar getAccessWindowStart() {
 
@@ -584,9 +596,8 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
      * Returns the time during the current day when this user account can no
      * longer be used.
      *
-     * @return
-     *     The time during the current day when this user account can no longer
-     *     be used.
+     * @return The time during the current day when this user account can no
+     *         longer be used.
      */
     private Calendar getAccessWindowEnd() {
 
@@ -605,8 +616,7 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
      * components of the resulting Calendar object will be set to midnight of
      * the date in question.
      *
-     * @return
-     *     The date after which this account becomes valid.
+     * @return The date after which this account becomes valid.
      */
     private Calendar getValidFrom() {
 
@@ -619,8 +629,8 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
         Calendar validFromCalendar = Calendar.getInstance(getTimeZone());
         validFromCalendar.setTime(validFrom);
         validFromCalendar.set(Calendar.HOUR_OF_DAY, 0);
-        validFromCalendar.set(Calendar.MINUTE,      0);
-        validFromCalendar.set(Calendar.SECOND,      0);
+        validFromCalendar.set(Calendar.MINUTE, 0);
+        validFromCalendar.set(Calendar.SECOND, 0);
         validFromCalendar.set(Calendar.MILLISECOND, 0);
         return validFromCalendar;
 
@@ -631,8 +641,7 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
      * components of the resulting Calendar object will be set to the last
      * millisecond of the day in question (23:59:59.999).
      *
-     * @return
-     *     The date after which this account becomes invalid.
+     * @return The date after which this account becomes invalid.
      */
     private Calendar getValidUntil() {
 
@@ -644,33 +653,33 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
         // Convert to end-of-day within defined time zone
         Calendar validUntilCalendar = Calendar.getInstance(getTimeZone());
         validUntilCalendar.setTime(validUntil);
-        validUntilCalendar.set(Calendar.HOUR_OF_DAY,  23);
-        validUntilCalendar.set(Calendar.MINUTE,       59);
-        validUntilCalendar.set(Calendar.SECOND,       59);
+        validUntilCalendar.set(Calendar.HOUR_OF_DAY, 23);
+        validUntilCalendar.set(Calendar.MINUTE, 59);
+        validUntilCalendar.set(Calendar.SECOND, 59);
         validUntilCalendar.set(Calendar.MILLISECOND, 999);
         return validUntilCalendar;
 
     }
 
     /**
-     * Given a time when a particular state changes from inactive to active,
-     * and a time when a particular state changes from active to inactive,
+     * Given a time when a particular state changes from inactive to active, and
+     * a time when a particular state changes from active to inactive,
      * determines whether that state is currently active.
      *
      * @param activeStart
-     *     The time at which the state changes from inactive to active.
+     *            The time at which the state changes from inactive to active.
      *
      * @param inactiveStart
-     *     The time at which the state changes from active to inactive.
+     *            The time at which the state changes from active to inactive.
      *
-     * @return
-     *     true if the state is currently active, false otherwise.
+     * @return true if the state is currently active, false otherwise.
      */
     private boolean isActive(Calendar activeStart, Calendar inactiveStart) {
 
         // If end occurs before start, convert to equivalent case where start
         // start is before end
-        if (inactiveStart != null && activeStart != null && inactiveStart.before(activeStart))
+        if (inactiveStart != null && activeStart != null
+                && inactiveStart.before(activeStart))
             return !isActive(inactiveStart, activeStart);
 
         // Get current time
@@ -678,18 +687,16 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
 
         // State is active iff the current time is between the start and end
         return !(activeStart != null && current.before(activeStart))
-            && !(inactiveStart != null && current.after(inactiveStart));
+                && !(inactiveStart != null && current.after(inactiveStart));
 
     }
 
     /**
-     * Returns whether this user account is currently valid as of today.
-     * Account validity depends on optional date-driven restrictions which
-     * define when an account becomes valid, and when an account ceases being
-     * valid.
+     * Returns whether this user account is currently valid as of today. Account
+     * validity depends on optional date-driven restrictions which define when
+     * an account becomes valid, and when an account ceases being valid.
      *
-     * @return
-     *     true if the account is valid as of today, false otherwise.
+     * @return true if the account is valid as of today, false otherwise.
      */
     public boolean isAccountValid() {
         return isActive(getValidFrom(), getValidUntil());
@@ -700,10 +707,9 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
      * window. If the login times for this user are not limited, this will
      * return true.
      *
-     * @return
-     *     true if the current time is within this user's allowed access
-     *     window, or if this user has no restrictions on login time, false
-     *     otherwise.
+     * @return true if the current time is within this user's allowed access
+     *         window, or if this user has no restrictions on login time, false
+     *         otherwise.
      */
     public boolean isAccountAccessible() {
         return isActive(getAccessWindowStart(), getAccessWindowEnd());
@@ -711,25 +717,21 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
 
     /**
      * Returns whether this user account has been disabled. The credentials of
-     * disabled user accounts are treated as invalid, effectively disabling
-     * that user's access to data for which they would otherwise have
-     * permission.
+     * disabled user accounts are treated as invalid, effectively disabling that
+     * user's access to data for which they would otherwise have permission.
      *
-     * @return
-     *     true if this user account has been disabled, false otherwise.
+     * @return true if this user account has been disabled, false otherwise.
      */
     public boolean isDisabled() {
         return getModel().isDisabled();
     }
 
     /**
-     * Returns whether this user's password has expired. If a user's password
-     * is expired, it must be immediately changed upon login. A user account
-     * with an expired password cannot be used until the password has been
-     * changed.
+     * Returns whether this user's password has expired. If a user's password is
+     * expired, it must be immediately changed upon login. A user account with
+     * an expired password cannot be used until the password has been changed.
      *
-     * @return
-     *     true if this user's password has expired, false otherwise.
+     * @return true if this user's password has expired, false otherwise.
      */
     public boolean isExpired() {
         return getModel().isExpired();
@@ -747,7 +749,8 @@ public abstract class ModeledUserAbstract extends ModeledPermissions<UserModelIn
 
     @Override
     public RelatedObjectSet getUserGroups() throws GuacamoleException {
-        UserParentUserGroupSet parentUserGroupSet = parentUserGroupSetProvider.get();
+        UserParentUserGroupSet parentUserGroupSet = parentUserGroupSetProvider
+                .get();
         parentUserGroupSet.init(getCurrentUser(), this);
         return parentUserGroupSet;
     }

@@ -28,7 +28,8 @@ import javax.xml.bind.DatatypeConverter;
  * Provides a SHA-256 based implementation of the password encryption
  * functionality.
  */
-public class SHA256PasswordEncryptionService implements PasswordEncryptionService {
+public class SHA256PasswordEncryptionService
+        implements PasswordEncryptionService {
 
     @Override
     public byte[] createPasswordHash(String password, byte[] salt) {
@@ -51,10 +52,11 @@ public class SHA256PasswordEncryptionService implements PasswordEncryptionServic
 
         // Throw hard errors if standard pieces of Java are missing
         catch (UnsupportedEncodingException e) {
-            throw new UnsupportedOperationException("Unexpected lack of UTF-8 support.", e);
-        }
-        catch (NoSuchAlgorithmException e) {
-            throw new UnsupportedOperationException("Unexpected lack of SHA-256 support.", e);
+            throw new UnsupportedOperationException(
+                    "Unexpected lack of UTF-8 support.", e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new UnsupportedOperationException(
+                    "Unexpected lack of SHA-256 support.", e);
         }
 
     }

@@ -21,10 +21,8 @@ package org.apache.guacamole.auth.jdbc.base;
 
 import java.util.Collection;
 import java.util.Set;
-
 import org.apache.guacamole.auth.common.base.EntityMapperInterface;
 import org.apache.guacamole.auth.common.base.EntityModelInterface;
-
 import com.google.inject.Inject;
 
 /**
@@ -34,22 +32,21 @@ import com.google.inject.Inject;
  */
 public class EntityMapperImp implements EntityMapperInterface {
 
-	@Inject 
-	private EntityMapper entityMapper;
-	
+    @Inject
+    private EntityMapper entityMapper;
+
     /**
-     * Inserts the given entity into the database. If the entity already
-     * exists, this will result in an error.
+     * Inserts the given entity into the database. If the entity already exists,
+     * this will result in an error.
      *
      * @param entity
-     *     The entity to insert.
+     *            The entity to insert.
      *
-     * @return
-     *     The number of rows inserted.
+     * @return The number of rows inserted.
      */
-	public int insert(EntityModelInterface entity) {
-		return entityMapper.insert((EntityModel) entity);
-	}
+    public int insert(EntityModelInterface entity) {
+        return entityMapper.insert((EntityModel) entity);
+    }
 
     /**
      * Returns the set of all group identifiers of which the given entity is a
@@ -63,29 +60,31 @@ public class EntityMapperImp implements EntityMapperInterface {
      * groups given and will need to be invoked multiple times.
      *
      * @param entity
-     *     The entity whose effective groups should be returned.
+     *            The entity whose effective groups should be returned.
      *
      * @param effectiveGroups
-     *     The identifiers of any known effective groups that should be taken
-     *     into account, such as those defined externally to the database.
+     *            The identifiers of any known effective groups that should be
+     *            taken into account, such as those defined externally to the
+     *            database.
      *
      * @param recursive
-     *     Whether the query should leverage database engine features to return
-     *     absolutely all effective groups, including those inherited through
-     *     group membership. If false, this query will return only one level of
-     *     depth and may need to be executed multiple times. If it is known
-     *     that the database engine in question will always support (or always
-     *     not support) recursive queries, this parameter may be ignored.
+     *            Whether the query should leverage database engine features to
+     *            return absolutely all effective groups, including those
+     *            inherited through group membership. If false, this query will
+     *            return only one level of depth and may need to be executed
+     *            multiple times. If it is known that the database engine in
+     *            question will always support (or always not support) recursive
+     *            queries, this parameter may be ignored.
      *
-     * @return
-     *     The set of identifiers of all groups that the given entity is a
-     *     member of, including those where membership is inherited through
-     *     membership in other groups.
+     * @return The set of identifiers of all groups that the given entity is a
+     *         member of, including those where membership is inherited through
+     *         membership in other groups.
      */
-	public Set<String> selectEffectiveGroupIdentifiers(EntityModelInterface entity,
-            Collection<String> effectiveGroups,
+    public Set<String> selectEffectiveGroupIdentifiers(
+            EntityModelInterface entity, Collection<String> effectiveGroups,
             boolean recursive) {
-		return entityMapper.selectEffectiveGroupIdentifiers((EntityModel) entity, effectiveGroups, recursive);
-	}
+        return entityMapper.selectEffectiveGroupIdentifiers(
+                (EntityModel) entity, effectiveGroups, recursive);
+    }
 
 }

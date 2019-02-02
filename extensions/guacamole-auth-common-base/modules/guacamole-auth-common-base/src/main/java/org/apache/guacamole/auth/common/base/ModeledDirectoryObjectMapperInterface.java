@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.common.base;
 
 import java.util.Collection;
 import java.util.Set;
-
 import org.apache.guacamole.auth.common.user.UserModelInterface;
 
 /**
@@ -58,7 +57,8 @@ public interface ModeledDirectoryObjectMapperInterface<ModelType> {
      *
      * @return A Set containing all identifiers of all readable objects.
      */
-    Set<String> selectReadableIdentifiers(UserModelInterface user, Collection<String> effectiveGroups);
+    Set<String> selectReadableIdentifiers(UserModelInterface user,
+            Collection<String> effectiveGroups);
 
     /**
      * Selects all objects which have the given identifiers. If an identifier
@@ -91,8 +91,7 @@ public interface ModeledDirectoryObjectMapperInterface<ModelType> {
      * @return A Collection of all objects having the given identifiers.
      */
     Collection<ModelType> selectReadable(UserModelInterface user,
-            Collection<String> identifiers,
-            Collection<String> effectiveGroups);
+            Collection<String> identifiers, Collection<String> effectiveGroups);
 
     /**
      * Inserts the given object into the database. If the object already exists,

@@ -43,16 +43,16 @@ public class UserRecordSet extends ModeledActivityRecordSet<ActivityRecord> {
      */
     @Inject
     private UserServiceInterface userService;
-    
+
     @Override
-    protected Collection<ActivityRecord> retrieveHistory(
-            AuthenticatedUser user, Set<ActivityRecordSearchTerm> requiredContents,
+    protected Collection<ActivityRecord> retrieveHistory(AuthenticatedUser user,
+            Set<ActivityRecordSearchTerm> requiredContents,
             List<ActivityRecordSortPredicate> sortPredicates, int limit)
             throws GuacamoleException {
 
         // Retrieve history from database
-        return userService.retrieveHistory(getCurrentUser(),
-                requiredContents, sortPredicates, limit);
+        return userService.retrieveHistory(getCurrentUser(), requiredContents,
+                sortPredicates, limit);
 
     }
 

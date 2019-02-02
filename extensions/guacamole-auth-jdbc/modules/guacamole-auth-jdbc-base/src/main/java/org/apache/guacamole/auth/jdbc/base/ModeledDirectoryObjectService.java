@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.jdbc.base;
 
 import java.util.Collection;
-
 import org.apache.guacamole.auth.common.base.ModeledDirectoryObject;
 import org.apache.guacamole.auth.common.base.ModeledDirectoryObjectServiceAbstract;
 import org.apache.guacamole.auth.common.base.ObjectModelInterface;
@@ -36,20 +35,21 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission.Type;
  * enforce the permissions of the current user.
  *
  * @param <InternalType>
- *     The specific internal implementation of the type of object this service
- *     provides access to.
+ *            The specific internal implementation of the type of object this
+ *            service provides access to.
  *
  * @param <ExternalType>
- *     The external interface or implementation of the type of object this
- *     service provides access to, as defined by the guacamole-ext API.
+ *            The external interface or implementation of the type of object
+ *            this service provides access to, as defined by the guacamole-ext
+ *            API.
  *
  * @param <ModelType>
- *     The underlying model object used to represent InternalType in the
- *     database.
+ *            The underlying model object used to represent InternalType in the
+ *            database.
  */
-public abstract class ModeledDirectoryObjectService<InternalType extends ModeledDirectoryObject<ModelType>,
-        ExternalType extends Identifiable, ModelType extends ObjectModel>
-	extends ModeledDirectoryObjectServiceAbstract<InternalType, ExternalType, ModelType> {
+public abstract class ModeledDirectoryObjectService<InternalType extends ModeledDirectoryObject<ModelType>, ExternalType extends Identifiable, ModelType extends ObjectModel>
+        extends
+        ModeledDirectoryObjectServiceAbstract<InternalType, ExternalType, ModelType> {
 
     /**
      * Returns whether the given string is a valid identifier within the JDBC
@@ -57,12 +57,11 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      * from the underlying database when used in queries.
      *
      * @param identifier
-     *     The string to check for validity.
+     *            The string to check for validity.
      *
-     * @return
-     *     true if the given string is a valid identifier, false otherwise.
+     * @return true if the given string is a valid identifier, false otherwise.
      */
-	@Override
+    @Override
     protected boolean isValidIdentifier(String identifier) {
 
         // Empty identifiers are invalid
@@ -79,20 +78,20 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
         return true;
 
     }
-        
-	public static void getNewModelPermission(UserModelInterface userModel,
-			Collection<ObjectPermissionModelInterface> implicitPermissions, ObjectModelInterface model,
-			Type permission) {
-			
-		// Create model which grants this permission to the current user
-		ObjectPermissionModel permissionModel = new ObjectPermissionModel();
+
+    public static void getNewModelPermission(UserModelInterface userModel,
+            Collection<ObjectPermissionModelInterface> implicitPermissions,
+            ObjectModelInterface model, Type permission) {
+
+        // Create model which grants this permission to the current user
+        ObjectPermissionModel permissionModel = new ObjectPermissionModel();
         permissionModel.setEntityID(userModel.getEntityID());
         permissionModel.setType(permission);
         permissionModel.setObjectIdentifier(model.getIdentifier());
 
         // Add permission
         implicitPermissions.add(permissionModel);
-		
-	}
+
+    }
 
 }

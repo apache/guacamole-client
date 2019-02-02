@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.common.sharing.user;
 
 import java.util.Collections;
-
 import org.apache.guacamole.auth.common.user.RemoteAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -45,15 +44,16 @@ public class SharedAuthenticatedUser extends RemoteAuthenticatedUser {
 
     /**
      * Creates a new SharedAuthenticatedUser which copies the details of the
-     * given AuthenticatedUser, including that user's identifier (username).
-     * The new SharedAuthenticatedUser will not have any associated share key.
+     * given AuthenticatedUser, including that user's identifier (username). The
+     * new SharedAuthenticatedUser will not have any associated share key.
      *
      * @param authenticatedUser
-     *     The AuthenticatedUser to copy.
+     *            The AuthenticatedUser to copy.
      */
     public SharedAuthenticatedUser(AuthenticatedUser authenticatedUser) {
         super(authenticatedUser.getAuthenticationProvider(),
-        		authenticatedUser.getCredentials(), Collections.<String>emptySet());
+                authenticatedUser.getCredentials(),
+                Collections.<String>emptySet());
         this.shareKey = null;
         this.identifier = authenticatedUser.getIdentifier();
     }
@@ -65,18 +65,21 @@ public class SharedAuthenticatedUser extends RemoteAuthenticatedUser {
      * defined by the Guacamole extension API.
      *
      * @param authenticationProvider
-     *     The AuthenticationProvider that has authenticated the given user.
+     *            The AuthenticationProvider that has authenticated the given
+     *            user.
      *
      * @param credentials
-     *     The credentials given by the user when they authenticated.
+     *            The credentials given by the user when they authenticated.
      *
      * @param shareKey
-     *     The share key which was provided by this user when they
-     *     authenticated, or null if no share key was provided.
+     *            The share key which was provided by this user when they
+     *            authenticated, or null if no share key was provided.
      */
-    public SharedAuthenticatedUser(AuthenticationProvider authenticationProvider,
+    public SharedAuthenticatedUser(
+            AuthenticationProvider authenticationProvider,
             Credentials credentials, String shareKey) {
-        super(authenticationProvider, credentials, Collections.<String>emptySet());
+        super(authenticationProvider, credentials,
+                Collections.<String>emptySet());
         this.shareKey = shareKey;
         this.identifier = AuthenticatedUser.ANONYMOUS_IDENTIFIER;
     }
@@ -85,9 +88,8 @@ public class SharedAuthenticatedUser extends RemoteAuthenticatedUser {
      * Returns the share key which was provided by this user when they
      * authenticated. If there is no such share key, null is returned.
      *
-     * @return
-     *     The share key which was provided by this user when they
-     *     authenticated, or null if no share key was provided.
+     * @return The share key which was provided by this user when they
+     *         authenticated, or null if no share key was provided.
      */
     public String getShareKey() {
         return shareKey;
@@ -100,7 +102,8 @@ public class SharedAuthenticatedUser extends RemoteAuthenticatedUser {
 
     @Override
     public void setIdentifier(String identifier) {
-        throw new UnsupportedOperationException("Users authenticated via share keys are immutable.");
+        throw new UnsupportedOperationException(
+                "Users authenticated via share keys are immutable.");
     }
 
 }

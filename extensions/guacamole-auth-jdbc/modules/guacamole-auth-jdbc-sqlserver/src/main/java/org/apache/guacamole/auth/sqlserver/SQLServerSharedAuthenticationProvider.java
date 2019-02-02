@@ -28,18 +28,20 @@ import org.apache.guacamole.auth.common.sharing.SharedAuthenticationProviderServ
  * SQLServer AuthenticationProvider, accepting share keys as credentials and
  * providing access to the shared connections.
  */
-public class SQLServerSharedAuthenticationProvider extends InjectedAuthenticationProvider {
+public class SQLServerSharedAuthenticationProvider
+        extends InjectedAuthenticationProvider {
 
     /**
      * Creates a new SQLServerSharedAuthenticationProvider that provides access
      * to shared connections exposed by the SQLServerAuthenticationProvider.
      *
      * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
+     *             If a required property is missing, or an error occurs while
+     *             parsing a property.
      */
     public SQLServerSharedAuthenticationProvider() throws GuacamoleException {
-        super(new SQLServerInjectorProvider(), SharedAuthenticationProviderService.class);
+        super(new SQLServerInjectorProvider(),
+                SharedAuthenticationProviderService.class);
     }
 
     @Override

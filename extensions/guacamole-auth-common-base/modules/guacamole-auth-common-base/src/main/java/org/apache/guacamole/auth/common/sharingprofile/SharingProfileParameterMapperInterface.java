@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.common.sharingprofile;
 
 import java.util.Collection;
-
 import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
 
 /**

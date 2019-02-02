@@ -25,9 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
@@ -57,7 +55,6 @@ import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -66,8 +63,8 @@ import com.google.inject.Provider;
  * manipulating users.
  */
 @SuppressWarnings("unchecked")
-public abstract class UserServiceAbstract
-        extends ModeledDirectoryObjectServiceAbstract<ModeledUserAbstract, User, UserModelInterface> {
+public abstract class UserServiceAbstract extends
+        ModeledDirectoryObjectServiceAbstract<ModeledUserAbstract, User, UserModelInterface> {
 
     /**
      * Logger for this class.
@@ -113,23 +110,21 @@ public abstract class UserServiceAbstract
      * expired. If a user's password is expired, it must be changed during the
      * login process.
      */
-    private static final CredentialsInfo EXPIRED_PASSWORD = new CredentialsInfo(Arrays.asList(
-    		CredentialsInfo.USERNAME,
-    		CredentialsInfo.PASSWORD,
-            NEW_PASSWORD,
-            CONFIRM_NEW_PASSWORD));
+    private static final CredentialsInfo EXPIRED_PASSWORD = new CredentialsInfo(
+            Arrays.asList(CredentialsInfo.USERNAME, CredentialsInfo.PASSWORD,
+                    NEW_PASSWORD, CONFIRM_NEW_PASSWORD));
 
     /**
      * Mapper for creating/deleting entities.
      */
     @Inject
-	protected EntityMapperInterface entityMapper;
-    
+    protected EntityMapperInterface entityMapper;
+
     /**
      * Mapper for accessing users.
      */
     @Inject
-	protected UserMapperInterface<UserModelInterface> userMapper;
+    protected UserMapperInterface<UserModelInterface> userMapper;
 
     /**
      * Mapper for accessing user login history.
@@ -154,18 +149,19 @@ public abstract class UserServiceAbstract
      */
     @Inject
     private PasswordPolicyService passwordPolicyService;
-    
+
     /**
      * Mapper for manipulating user permissions.
      */
     private ObjectPermissionMapperInterface userPermissionMapper;
-    
-    @Inject
-	public UserServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
-    	userPermissionMapper = mappers.get("UserPermissionMapper");
-	}
 
-	@Override
+    @Inject
+    public UserServiceAbstract(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        userPermissionMapper = mappers.get("UserPermissionMapper");
+    }
+
+    @Override
     protected ModeledDirectoryObjectMapperInterface<UserModelInterface> getObjectMapper() {
         return (ModeledDirectoryObjectMapperInterface<UserModelInterface>) userMapper;
     }
@@ -209,7 +205,8 @@ public abstract class UserServiceAbstract
             throws GuacamoleException {
 
         // Return whether user has explicit user creation permission
-        SystemPermissionSet permissionSet = user.getUser().getEffectivePermissions().getSystemPermissions();
+        SystemPermissionSet permissionSet = user.getUser()
+                .getEffectivePermissions().getSystemPermissions();
         return permissionSet.hasPermission(SystemPermission.Type.CREATE_USER);
 
     }
@@ -230,7 +227,8 @@ public abstract class UserServiceAbstract
         super.beforeCreate(user, object, model);
 
         // Username must not be blank
-        if (model.getIdentifier() == null || model.getIdentifier().trim().isEmpty())
+        if (model.getIdentifier() == null
+                || model.getIdentifier().trim().isEmpty())
             throw new GuacamoleClientException(
                     "The username must not be blank.");
 
@@ -241,37 +239,40 @@ public abstract class UserServiceAbstract
             throw new GuacamoleClientException(
                     "User \"" + model.getIdentifier() + "\" already exists.");
 
-     // Verify new password does not violate defined policies (if specified)
+        // Verify new password does not violate defined policies (if specified)
         if (object.getPassword() != null)
-            passwordPolicyService.verifyPassword(object.getIdentifier(), object.getPassword());
+            passwordPolicyService.verifyPassword(object.getIdentifier(),
+                    object.getPassword());
 
         // Create base entity object, implicitly populating underlying entity ID
         createBaseEntity(model);
 
     }
-    
-    protected abstract void createBaseEntity(UserModelInterface model);
 
+    protected abstract void createBaseEntity(UserModelInterface model);
 
     @Override
     protected void beforeUpdate(ModeledAuthenticatedUser user,
-            ModeledUserAbstract object, UserModelInterface model) throws GuacamoleException {
+            ModeledUserAbstract object, UserModelInterface model)
+            throws GuacamoleException {
 
         super.beforeUpdate(user, object, model);
 
         // Username must not be blank
-        if (model.getIdentifier() == null || model.getIdentifier().trim().isEmpty())
+        if (model.getIdentifier() == null
+                || model.getIdentifier().trim().isEmpty())
             throw new GuacamoleClientException(
                     "The username must not be blank.");
 
         // Check whether such a user is already present
-        UserModelInterface existing = userMapper.selectOne(model.getIdentifier());
+        UserModelInterface existing = userMapper
+                .selectOne(model.getIdentifier());
         if (existing != null) {
 
             // Do not rename to existing user
             if (!existing.getObjectID().equals(model.getObjectID()))
-                throw new GuacamoleClientException(
-                        "User \"" + model.getIdentifier() + "\" already exists.");
+                throw new GuacamoleClientException("User \""
+                        + model.getIdentifier() + "\" already exists.");
 
         }
 
@@ -426,9 +427,9 @@ public abstract class UserServiceAbstract
      *             If the password reset parameters within the given credentials
      *             are invalid or missing.
      */
-	@SuppressWarnings("rawtypes")
-	public void resetExpiredPassword(ModeledUserAbstract user, Credentials credentials)
-            throws GuacamoleException {
+    @SuppressWarnings("rawtypes")
+    public void resetExpiredPassword(ModeledUserAbstract user,
+            Credentials credentials) throws GuacamoleException {
 
         UserModelInterface userModel = user.getModel();
 
@@ -483,7 +484,8 @@ public abstract class UserServiceAbstract
      *
      * @return A connection record object which is backed by the given model.
      */
-    protected ActivityRecord getObjectInstance(ActivityRecordModelInterface model) {
+    protected ActivityRecord getObjectInstance(
+            ActivityRecordModelInterface model) {
         return new ModeledActivityRecord(model);
     }
 
@@ -528,8 +530,8 @@ public abstract class UserServiceAbstract
      *             If permission to read the login history is denied.
      */
     public List<ActivityRecord> retrieveHistory(
-            ModeledAuthenticatedUser authenticatedUser, ModeledUserAbstract user)
-            throws GuacamoleException {
+            ModeledAuthenticatedUser authenticatedUser,
+            ModeledUserAbstract user) throws GuacamoleException {
 
         String username = user.getIdentifier();
 

@@ -23,38 +23,39 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.base.ObjectRelationMapperInterface;
 import org.apache.guacamole.auth.common.base.RelatedObjectSet;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
-
 import com.google.inject.Inject;
 
 /**
- * RelatedObjectSet implementation which represents the one-to-many
- * relationship between a particular user and the user groups of which it is a
- * member.
+ * RelatedObjectSet implementation which represents the one-to-many relationship
+ * between a particular user and the user groups of which it is a member.
  */
-public class UserParentUserGroupSet extends RelatedObjectSet<ModeledUserAbstract, UserModelInterface> {
+public class UserParentUserGroupSet
+        extends RelatedObjectSet<ModeledUserAbstract, UserModelInterface> {
 
     /**
      * Mapper for the relations between users and the user groups of which they
      * are members.
      */
     @Inject
-	private ObjectRelationMapperInterface<UserModelInterface> userParentUserGroupMapper;
+    private ObjectRelationMapperInterface<UserModelInterface> userParentUserGroupMapper;
 
-	@Override
+    @Override
     protected ObjectRelationMapperInterface<UserModelInterface> getObjectRelationMapper() {
         return userParentUserGroupMapper;
     }
 
     @Override
-    protected ObjectPermissionSet
-        getParentObjectEffectivePermissionSet() throws GuacamoleException {
-           return getCurrentUser().getUser().getEffectivePermissions().getUserPermissions();
+    protected ObjectPermissionSet getParentObjectEffectivePermissionSet()
+            throws GuacamoleException {
+        return getCurrentUser().getUser().getEffectivePermissions()
+                .getUserPermissions();
     }
 
     @Override
     protected ObjectPermissionSet getChildObjectEffectivePermissionSet()
             throws GuacamoleException {
-        return getCurrentUser().getUser().getEffectivePermissions().getUserGroupPermissions();
+        return getCurrentUser().getUser().getEffectivePermissions()
+                .getUserGroupPermissions();
     }
 
 }

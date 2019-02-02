@@ -27,11 +27,12 @@ import org.apache.guacamole.auth.jdbc.base.EntityModel;
  * Object representation of a Guacamole user group, as represented in the
  * database.
  */
-public class UserGroupModel extends EntityModel implements UserGroupModelInterface {
+public class UserGroupModel extends EntityModel
+        implements UserGroupModelInterface {
 
     /**
-     * Whether the user group is disabled. Disabled accounts exist and can
-     * be modified, but cannot be used.
+     * Whether the user group is disabled. Disabled accounts exist and can be
+     * modified, but cannot be used.
      */
     private boolean disabled;
 
@@ -47,8 +48,7 @@ public class UserGroupModel extends EntityModel implements UserGroupModelInterfa
      * disabled user groups are treated as non-existent, effectively disabling
      * membership in that group.
      *
-     * @return
-     *     true if this user group is disabled, false otherwise.
+     * @return true if this user group is disabled, false otherwise.
      */
     public boolean isDisabled() {
         return disabled;
@@ -56,11 +56,11 @@ public class UserGroupModel extends EntityModel implements UserGroupModelInterfa
 
     /**
      * Sets whether this user group has been disabled. Memberships of disabled
-     * user groups are treated as non-existent, effectively disabling
-     * membership in that group.
+     * user groups are treated as non-existent, effectively disabling membership
+     * in that group.
      *
      * @param disabled
-     *     true if this user group should be disabled, false otherwise.
+     *            true if this user group should be disabled, false otherwise.
      */
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;

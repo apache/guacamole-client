@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.common.connectiongroup;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.common.base.RestrictedObject;
@@ -30,7 +29,6 @@ import org.apache.guacamole.auth.common.connection.ConnectionServiceInterface;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
-
 import com.google.inject.Inject;
 
 /**
@@ -38,7 +36,7 @@ import com.google.inject.Inject;
  * the database does not contain an actual root group.
  */
 public class RootConnectionGroup extends RestrictedObject
-    implements ConnectionGroup {
+        implements ConnectionGroup {
 
     /**
      * The identifier used to represent the root connection group. There is no
@@ -65,7 +63,7 @@ public class RootConnectionGroup extends RestrictedObject
      */
     @Inject
     private ConnectionGroupServiceInterface connectionGroupService;
-    
+
     /**
      * Creates a new, empty RootConnectionGroup.
      */
@@ -79,7 +77,8 @@ public class RootConnectionGroup extends RestrictedObject
 
     @Override
     public void setName(String name) {
-        throw new UnsupportedOperationException("The root connection group cannot be modified.");
+        throw new UnsupportedOperationException(
+                "The root connection group cannot be modified.");
     }
 
     @Override
@@ -89,7 +88,8 @@ public class RootConnectionGroup extends RestrictedObject
 
     @Override
     public void setParentIdentifier(String parentIdentifier) {
-        throw new UnsupportedOperationException("The root connection group cannot be modified.");
+        throw new UnsupportedOperationException(
+                "The root connection group cannot be modified.");
     }
 
     @Override
@@ -99,7 +99,8 @@ public class RootConnectionGroup extends RestrictedObject
 
     @Override
     public void setType(Type type) {
-        throw new UnsupportedOperationException("The root connection group cannot be modified.");
+        throw new UnsupportedOperationException(
+                "The root connection group cannot be modified.");
     }
 
     @Override
@@ -110,7 +111,8 @@ public class RootConnectionGroup extends RestrictedObject
     @Override
     public Set<String> getConnectionGroupIdentifiers()
             throws GuacamoleException {
-        return connectionGroupService.getIdentifiersWithin(getCurrentUser(), null);
+        return connectionGroupService.getIdentifiersWithin(getCurrentUser(),
+                null);
     }
 
     @Override
@@ -120,7 +122,8 @@ public class RootConnectionGroup extends RestrictedObject
 
     @Override
     public void setIdentifier(String identifier) {
-        throw new UnsupportedOperationException("The root connection group cannot be modified.");
+        throw new UnsupportedOperationException(
+                "The root connection group cannot be modified.");
     }
 
     @Override
@@ -141,7 +144,8 @@ public class RootConnectionGroup extends RestrictedObject
 
     @Override
     public void setAttributes(Map<String, String> attributes) {
-        throw new UnsupportedOperationException("The root connection group cannot be modified.");
+        throw new UnsupportedOperationException(
+                "The root connection group cannot be modified.");
     }
 
 }

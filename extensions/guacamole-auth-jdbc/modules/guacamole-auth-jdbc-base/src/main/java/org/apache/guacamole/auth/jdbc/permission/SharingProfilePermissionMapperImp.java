@@ -26,13 +26,13 @@ import com.google.inject.Inject;
  */
 public class SharingProfilePermissionMapperImp
         extends ObjectPermissionMapperImp<SharingProfilePermissionMapper> {
-	
-	@Inject 
-	private SharingProfilePermissionMapper sharingProfilePermissionMapper;
-	
-	@Override
-	protected SharingProfilePermissionMapper getMapper() {
-		return sharingProfilePermissionMapper;
-	}
-	
+
+    @Inject
+    private SharingProfilePermissionMapper sharingProfilePermissionMapper;
+
+    @Override
+    protected SharingProfilePermissionMapper getMapper() {
+        return sharingProfilePermissionMapper;
+    }
+
 }

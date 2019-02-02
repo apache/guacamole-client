@@ -24,13 +24,12 @@ package org.apache.guacamole.auth.common.sharing;
  * "sharing credentials" associated with a shared connection.
  */
 public interface ShareKeyGenerator {
-    
+
     /**
      * Returns a new share key, guaranteed to be unique from all previously-
      * returned share keys.
      * 
-     * @return
-     *     The new share key.
+     * @return The new share key.
      */
     public String getShareKey();
 

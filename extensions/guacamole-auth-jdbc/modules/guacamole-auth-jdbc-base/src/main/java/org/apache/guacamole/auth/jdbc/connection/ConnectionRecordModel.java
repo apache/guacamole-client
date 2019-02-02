@@ -27,7 +27,8 @@ import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
  * connection. If the connection was being shared, the sharing profile used to
  * join the connection is included in the record.
  */
-public class ConnectionRecordModel extends ActivityRecordModel implements ConnectionRecordModelInterface {
+public class ConnectionRecordModel extends ActivityRecordModel
+        implements ConnectionRecordModelInterface {
 
     /**
      * The identifier of the connection associated with this connection record.
@@ -58,9 +59,8 @@ public class ConnectionRecordModel extends ActivityRecordModel implements Connec
      * Returns the identifier of the connection associated with this connection
      * record.
      *
-     * @return
-     *     The identifier of the connection associated with this connection
-     *     record.
+     * @return The identifier of the connection associated with this connection
+     *         record.
      */
     public String getConnectionIdentifier() {
         return connectionIdentifier;
@@ -71,34 +71,30 @@ public class ConnectionRecordModel extends ActivityRecordModel implements Connec
      * record.
      *
      * @param connectionIdentifier
-     *     The identifier of the connection to associate with this connection
-     *     record.
+     *            The identifier of the connection to associate with this
+     *            connection record.
      */
     public void setConnectionIdentifier(String connectionIdentifier) {
         this.connectionIdentifier = connectionIdentifier;
     }
 
-
     /**
      * Returns the name of the connection associated with this connection
      * record.
      *
-     * @return
-     *     The name of the connection associated with this connection
-     *     record.
+     * @return The name of the connection associated with this connection
+     *         record.
      */
     public String getConnectionName() {
         return connectionName;
     }
 
-
     /**
-     * Sets the name of the connection associated with this connection
-     * record.
+     * Sets the name of the connection associated with this connection record.
      *
      * @param connectionName
-     *     The name of the connection to associate with this connection
-     *     record.
+     *            The name of the connection to associate with this connection
+     *            record.
      */
     public void setConnectionName(String connectionName) {
         this.connectionName = connectionName;
@@ -109,10 +105,9 @@ public class ConnectionRecordModel extends ActivityRecordModel implements Connec
      * connection record. If no sharing profile was used, or the sharing profile
      * that was used was deleted, this will be null.
      *
-     * @return
-     *     The identifier of the sharing profile associated with this connection
-     *     record, or null if no sharing profile was used or if the sharing
-     *     profile that was used was deleted.
+     * @return The identifier of the sharing profile associated with this
+     *         connection record, or null if no sharing profile was used or if
+     *         the sharing profile that was used was deleted.
      */
     public String getSharingProfileIdentifier() {
         return sharingProfileIdentifier;
@@ -123,20 +118,20 @@ public class ConnectionRecordModel extends ActivityRecordModel implements Connec
      * connection record. If no sharing profile was used, this should be null.
      *
      * @param sharingProfileIdentifier
-     *     The identifier of the sharing profile associated with this
-     *     connection record, or null if no sharing profile was used.
+     *            The identifier of the sharing profile associated with this
+     *            connection record, or null if no sharing profile was used.
      */
     public void setSharingProfileIdentifier(String sharingProfileIdentifier) {
         this.sharingProfileIdentifier = sharingProfileIdentifier;
     }
 
     /**
-     * Returns the human-readable name of the sharing profile associated with this
-     * connection record. If no sharing profile was used, this will be null.
+     * Returns the human-readable name of the sharing profile associated with
+     * this connection record. If no sharing profile was used, this will be
+     * null.
      *
-     * @return
-     *     The human-readable name of the sharing profile associated with this
-     *     connection record, or null if no sharing profile was used.
+     * @return The human-readable name of the sharing profile associated with
+     *         this connection record, or null if no sharing profile was used.
      */
     public String getSharingProfileName() {
         return sharingProfileName;
@@ -147,8 +142,9 @@ public class ConnectionRecordModel extends ActivityRecordModel implements Connec
      * connection record. If no sharing profile was used, this should be null.
      *
      * @param sharingProfileName
-     *     The human-readable name of the sharing profile associated with this
-     *     connection record, or null if no sharing profile was used.
+     *            The human-readable name of the sharing profile associated with
+     *            this connection record, or null if no sharing profile was
+     *            used.
      */
     public void setSharingProfileName(String sharingProfileName) {
         this.sharingProfileName = sharingProfileName;

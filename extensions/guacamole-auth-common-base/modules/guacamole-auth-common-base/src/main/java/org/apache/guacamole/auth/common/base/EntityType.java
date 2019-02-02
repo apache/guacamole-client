@@ -20,8 +20,8 @@
 package org.apache.guacamole.auth.common.base;
 
 /**
- * The type of object represented by an entity. Each entity may represent
- * either a user or a user group.
+ * The type of object represented by an entity. Each entity may represent either
+ * a user or a user group.
  */
 public enum EntityType {
 

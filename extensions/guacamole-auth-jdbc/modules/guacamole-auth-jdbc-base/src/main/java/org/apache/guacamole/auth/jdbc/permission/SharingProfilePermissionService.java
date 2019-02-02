@@ -20,13 +20,11 @@
 package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Map;
-
 import org.apache.guacamole.auth.common.base.EntityModelInterface;
 import org.apache.guacamole.auth.common.base.ModeledPermissions;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.auth.common.permission.SharingProfilePermissionServiceAbstract;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
-
 import com.google.inject.Inject;
 
 /**
@@ -34,15 +32,17 @@ import com.google.inject.Inject;
  * deleting sharing profile permissions. This service will automatically enforce
  * the permissions of the current user.
  */
-public class SharingProfilePermissionService extends SharingProfilePermissionServiceAbstract {
+public class SharingProfilePermissionService
+        extends SharingProfilePermissionServiceAbstract {
 
-	@Inject
-	public SharingProfilePermissionService(Map<String, ObjectPermissionMapperInterface> mappers) {
-		super(mappers);
-	}
+    @Inject
+    public SharingProfilePermissionService(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        super(mappers);
+    }
 
-	@Override
-	public ObjectPermissionModel getModelInstance(
+    @Override
+    public ObjectPermissionModel getModelInstance(
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
             ObjectPermission permission) {
 
@@ -54,7 +54,7 @@ public class SharingProfilePermissionService extends SharingProfilePermissionSer
         model.setObjectIdentifier(permission.getObjectIdentifier());
 
         return model;
-        
+
     }
-	
+
 }

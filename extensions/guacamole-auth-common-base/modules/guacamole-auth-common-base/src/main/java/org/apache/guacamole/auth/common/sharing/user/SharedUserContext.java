@@ -57,8 +57,8 @@ public class SharedUserContext extends AbstractUserContext {
     private SharedConnectionDirectory connectionDirectory;
 
     /**
-     * The root connection group of the hierarchy containing all connections
-     * and connection groups visible to the user for whom this user context was
+     * The root connection group of the hierarchy containing all connections and
+     * connection groups visible to the user for whom this user context was
      * created.
      */
     private ConnectionGroup rootGroup;
@@ -70,14 +70,15 @@ public class SharedUserContext extends AbstractUserContext {
      * SharedConnections.
      *
      * @param authProvider
-     *     The AuthenticationProvider that created this
-     *     SharedUserContext;
+     *            The AuthenticationProvider that created this
+     *            SharedUserContext;
      *
      * @param user
-     *     The RemoteAuthenticatedUser for whom this SharedUserContext is being
-     *     created.
+     *            The RemoteAuthenticatedUser for whom this SharedUserContext is
+     *            being created.
      */
-    public void init(AuthenticationProvider authProvider, RemoteAuthenticatedUser user) {
+    public void init(AuthenticationProvider authProvider,
+            RemoteAuthenticatedUser user) {
 
         // Associate the originating authentication provider
         this.authProvider = authProvider;
@@ -99,7 +100,7 @@ public class SharedUserContext extends AbstractUserContext {
      * share key will be automatically de-registered when it is no longer valid.
      *
      * @param shareKey
-     *     The share key to register.
+     *            The share key to register.
      */
     public void registerShareKey(String shareKey) {
         connectionDirectory.registerShareKey(shareKey);

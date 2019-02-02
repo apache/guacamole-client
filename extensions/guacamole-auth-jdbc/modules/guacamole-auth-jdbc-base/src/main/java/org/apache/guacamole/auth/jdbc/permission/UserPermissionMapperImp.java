@@ -24,15 +24,15 @@ import com.google.inject.Inject;
 /**
  * Mapper for user permissions.
  */
-public class UserPermissionMapperImp 
-	extends ObjectPermissionMapperImp<UserPermissionMapper> {
+public class UserPermissionMapperImp
+        extends ObjectPermissionMapperImp<UserPermissionMapper> {
 
-	@Inject 
-	private UserPermissionMapper userPermissionMapper;
-	
-	@Override
-	protected UserPermissionMapper getMapper() {
-		return userPermissionMapper;
-	}
-	
+    @Inject
+    private UserPermissionMapper userPermissionMapper;
+
+    @Override
+    protected UserPermissionMapper getMapper() {
+        return userPermissionMapper;
+    }
+
 }

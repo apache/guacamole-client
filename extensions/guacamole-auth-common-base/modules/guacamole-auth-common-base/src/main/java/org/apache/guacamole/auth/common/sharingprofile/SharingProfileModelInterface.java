@@ -27,22 +27,22 @@ import org.apache.guacamole.auth.common.base.ChildObjectModelInterface;
  * database.
  *
  */
-public interface SharingProfileModelInterface extends ChildObjectModelInterface {
+public interface SharingProfileModelInterface
+        extends ChildObjectModelInterface {
 
-	/**
+    /**
      * Returns the name associated with this sharing profile.
      *
-     * @return
-     *     The name associated with this sharing profile.
+     * @return The name associated with this sharing profile.
      */
-	public String getName();
+    public String getName();
 
-	/**
+    /**
      * Sets the name associated with this sharing profile.
      *
      * @param name
-     *     The name to associate with this sharing profile.
+     *            The name to associate with this sharing profile.
      */
-	public void setName(String name);
+    public void setName(String name);
 
 }

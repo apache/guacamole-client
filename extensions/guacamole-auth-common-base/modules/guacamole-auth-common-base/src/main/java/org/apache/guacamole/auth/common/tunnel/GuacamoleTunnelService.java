@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.common.tunnel;
 
 import java.util.Collection;
 import java.util.Map;
-
 import org.apache.guacamole.auth.common.connection.ModeledConnection;
 import org.apache.guacamole.auth.common.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.auth.common.sharing.connection.SharedConnectionDefinition;
@@ -32,7 +31,6 @@ import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
-
 
 /**
  * Service which creates pre-configured GuacamoleSocket instances for
@@ -45,47 +43,45 @@ public interface GuacamoleTunnelService {
      * currently-active connections visible by the given user.
      *
      * @param user
-     *     The user retrieving active connections.
+     *            The user retrieving active connections.
      *
-     * @return
-     *     A collection containing connection records representing all
-     *     currently-active connections.
+     * @return A collection containing connection records representing all
+     *         currently-active connections.
      *
      * @throws GuacamoleException
-     *     If an error occurs while retrieving all active connections, or if
-     *     permission is denied.
+     *             If an error occurs while retrieving all active connections,
+     *             or if permission is denied.
      */
-    public Collection<ActiveConnectionRecord> getActiveConnections(ModeledAuthenticatedUser user)
-            throws GuacamoleException;
+    public Collection<ActiveConnectionRecord> getActiveConnections(
+            ModeledAuthenticatedUser user) throws GuacamoleException;
 
     /**
      * Creates a socket for the given user which connects to the given
-     * connection. The given client information will be passed to guacd when
-     * the connection is established. This function will apply any concurrent
-     * usage rules in effect, but will NOT test object- or system-level
-     * permissions.
+     * connection. The given client information will be passed to guacd when the
+     * connection is established. This function will apply any concurrent usage
+     * rules in effect, but will NOT test object- or system-level permissions.
      *
      * @param user
-     *     The user for whom the connection is being established.
+     *            The user for whom the connection is being established.
      *
      * @param connection
-     *     The connection the user is connecting to.
+     *            The connection the user is connecting to.
      *
      * @param info
-     *     Information describing the Guacamole client connecting to the given
-     *     connection.
-     *     
+     *            Information describing the Guacamole client connecting to the
+     *            given connection.
+     * 
      * @param tokens
-     *     A Map containing the token names and corresponding values to be
-     *     applied as parameter tokens when establishing the connection.
+     *            A Map containing the token names and corresponding values to
+     *            be applied as parameter tokens when establishing the
+     *            connection.
      *
-     * @return
-     *     A new GuacamoleTunnel which is configured and connected to the given
-     *     connection.
+     * @return A new GuacamoleTunnel which is configured and connected to the
+     *         given connection.
      *
      * @throws GuacamoleException
-     *     If the connection cannot be established due to concurrent usage
-     *     rules.
+     *             If the connection cannot be established due to concurrent
+     *             usage rules.
      */
     GuacamoleTunnel getGuacamoleTunnel(ModeledAuthenticatedUser user,
             ModeledConnection connection, GuacamoleClientInformation info,
@@ -94,17 +90,17 @@ public interface GuacamoleTunnelService {
     /**
      * Returns a collection containing connection records representing all
      * currently-active connections using the given connection. These records
-     * will have usernames and start dates, but no end date, and will be
-     * sorted in ascending order by start date.
+     * will have usernames and start dates, but no end date, and will be sorted
+     * in ascending order by start date.
      *
      * @param connection
-     *     The connection to check.
+     *            The connection to check.
      *
-     * @return
-     *     A collection containing connection records representing all
-     *     currently-active connections.
+     * @return A collection containing connection records representing all
+     *         currently-active connections.
      */
-    public Collection<ActiveConnectionRecord> getActiveConnections(Connection connection);
+    public Collection<ActiveConnectionRecord> getActiveConnections(
+            Connection connection);
 
     /**
      * Creates a socket for the given user which connects to the given
@@ -114,26 +110,26 @@ public interface GuacamoleTunnelService {
      * system-level permissions.
      *
      * @param user
-     *     The user for whom the connection is being established.
+     *            The user for whom the connection is being established.
      *
      * @param connectionGroup
-     *     The connection group the user is connecting to.
+     *            The connection group the user is connecting to.
      *
      * @param info
-     *     Information describing the Guacamole client connecting to the given
-     *     connection group.
+     *            Information describing the Guacamole client connecting to the
+     *            given connection group.
      *
      * @param tokens
-     *     A Map containing the token names and corresponding values to be
-     *     applied as parameter tokens when establishing the connection.
+     *            A Map containing the token names and corresponding values to
+     *            be applied as parameter tokens when establishing the
+     *            connection.
      *
-     * @return
-     *     A new GuacamoleTunnel which is configured and connected to the given
-     *     connection group.
+     * @return A new GuacamoleTunnel which is configured and connected to the
+     *         given connection group.
      *
      * @throws GuacamoleException
-     *     If the connection cannot be established due to concurrent usage
-     *     rules, or if the connection group is not balancing.
+     *             If the connection cannot be established due to concurrent
+     *             usage rules, or if the connection group is not balancing.
      */
     GuacamoleTunnel getGuacamoleTunnel(ModeledAuthenticatedUser user,
             ModeledConnectionGroup connectionGroup,
@@ -143,47 +139,46 @@ public interface GuacamoleTunnelService {
     /**
      * Returns a collection containing connection records representing all
      * currently-active connections using the given connection group. These
-     * records will have usernames and start dates, but no end date, and will
-     * be sorted in ascending order by start date.
+     * records will have usernames and start dates, but no end date, and will be
+     * sorted in ascending order by start date.
      *
      * @param connectionGroup
-     *     The connection group to check.
+     *            The connection group to check.
      *
-     * @return
-     *     A collection containing connection records representing all
-     *     currently-active connections.
+     * @return A collection containing connection records representing all
+     *         currently-active connections.
      */
-    public Collection<ActiveConnectionRecord> getActiveConnections(ConnectionGroup connectionGroup);
+    public Collection<ActiveConnectionRecord> getActiveConnections(
+            ConnectionGroup connectionGroup);
 
     /**
      * Creates a socket for the given user which joins the given active
-     * connection. The given client information will be passed to guacd when
-     * the connection is established. This function will apply any concurrent
-     * usage rules in effect, but will NOT test object- or system-level
-     * permissions.
+     * connection. The given client information will be passed to guacd when the
+     * connection is established. This function will apply any concurrent usage
+     * rules in effect, but will NOT test object- or system-level permissions.
      *
      * @param user
-     *     The user for whom the connection is being established.
+     *            The user for whom the connection is being established.
      *
      * @param definition
-     *     The SharedConnectionDefinition dictating the connection being shared
-     *     and any associated restrictions.
+     *            The SharedConnectionDefinition dictating the connection being
+     *            shared and any associated restrictions.
      *
      * @param info
-     *     Information describing the Guacamole client connecting to the given
-     *     connection.
+     *            Information describing the Guacamole client connecting to the
+     *            given connection.
      *
      * @param tokens
-     *     A Map containing the token names and corresponding values to be
-     *     applied as parameter tokens when establishing the connection.
+     *            A Map containing the token names and corresponding values to
+     *            be applied as parameter tokens when establishing the
+     *            connection.
      *
-     * @return
-     *     A new GuacamoleTunnel which is configured and connected to the given
-     *     active connection.
+     * @return A new GuacamoleTunnel which is configured and connected to the
+     *         given active connection.
      *
      * @throws GuacamoleException
-     *     If the connection cannot be established due to concurrent usage
-     *     rules.
+     *             If the connection cannot be established due to concurrent
+     *             usage rules.
      */
     GuacamoleTunnel getGuacamoleTunnel(RemoteAuthenticatedUser user,
             SharedConnectionDefinition definition,

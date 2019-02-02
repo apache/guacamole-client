@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.jdbc.connectiongroup;
 
 import java.util.Collection;
 import java.util.Map;
-
 import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupModelInterface;
 import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupServiceAbstract;
 import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupServiceInterface;
@@ -33,36 +32,40 @@ import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
-
 import com.google.inject.Inject;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating connection groups.
  */
-public class ConnectionGroupService extends ConnectionGroupServiceAbstract implements ConnectionGroupServiceInterface {
+public class ConnectionGroupService extends ConnectionGroupServiceAbstract
+        implements ConnectionGroupServiceInterface {
 
-	@Inject
-    public ConnectionGroupService(Map<String, ObjectPermissionMapperInterface> mappers) {
-		super(mappers);
-	}
+    @Inject
+    public ConnectionGroupService(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        super(mappers);
+    }
 
-	@Override
-    protected ConnectionGroupModel getModelInstance(ModeledAuthenticatedUser currentUser,
+    @Override
+    protected ConnectionGroupModel getModelInstance(
+            ModeledAuthenticatedUser currentUser,
             final ConnectionGroup object) {
 
         // Create new ModeledConnectionGroup backed by blank model
         ConnectionGroupModel model = new ConnectionGroupModel();
-        ModeledConnectionGroup connectionGroup = getObjectInstance(currentUser, model);
+        ModeledConnectionGroup connectionGroup = getObjectInstance(currentUser,
+                model);
 
-        // Set model contents through ModeledConnectionGroup, copying the provided connection group
+        // Set model contents through ModeledConnectionGroup, copying the
+        // provided connection group
         connectionGroup.setParentIdentifier(object.getParentIdentifier());
         connectionGroup.setName(object.getName());
         connectionGroup.setType(object.getType());
         connectionGroup.setAttributes(object.getAttributes());
 
         return model;
-        
+
     }
 
     /**
@@ -71,10 +74,9 @@ public class ConnectionGroupService extends ConnectionGroupServiceAbstract imple
      * from the underlying database when used in queries.
      *
      * @param identifier
-     *     The string to check for validity.
+     *            The string to check for validity.
      *
-     * @return
-     *     true if the given string is a valid identifier, false otherwise.
+     * @return true if the given string is a valid identifier, false otherwise.
      */
     protected boolean isValidIdentifier(String identifier) {
 
@@ -95,11 +97,13 @@ public class ConnectionGroupService extends ConnectionGroupServiceAbstract imple
 
     @Override
     protected void createModelPermission(UserModelInterface userModel,
-			Collection<ObjectPermissionModelInterface> implicitPermissions, ConnectionGroupModelInterface model,
-			ObjectPermission.Type permission) {
+            Collection<ObjectPermissionModelInterface> implicitPermissions,
+            ConnectionGroupModelInterface model,
+            ObjectPermission.Type permission) {
 
-		ModeledDirectoryObjectService.getNewModelPermission(userModel, implicitPermissions, model, permission);
-        
-	}
+        ModeledDirectoryObjectService.getNewModelPermission(userModel,
+                implicitPermissions, model, permission);
+
+    }
 
 }

@@ -21,10 +21,8 @@ package org.apache.guacamole.auth.jdbc.security;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.guacamole.auth.common.security.PasswordRecordMapperInterface;
 import org.apache.guacamole.auth.common.user.PasswordRecordModelInterface;
-
 import com.google.inject.Inject;
 
 /**
@@ -33,27 +31,28 @@ import com.google.inject.Inject;
  */
 public class PasswordRecordMapperImp implements PasswordRecordMapperInterface {
 
-	@Inject 
-	private PasswordRecordMapper passwordRecordMapper;
-	
+    @Inject
+    private PasswordRecordMapper passwordRecordMapper;
+
     /**
      * Returns a collection of all password records associated with the user
      * having the given username.
      *
      * @param username
-     *     The username of the user whose password records are to be retrieved.
+     *            The username of the user whose password records are to be
+     *            retrieved.
      *
      * @param maxHistorySize
-     *     The maximum number of records to maintain for each user.
+     *            The maximum number of records to maintain for each user.
      *
-     * @return
-     *     A collection of all password records associated with the user having
-     *     the given username. This collection will be empty if no such user
-     *     exists.
+     * @return A collection of all password records associated with the user
+     *         having the given username. This collection will be empty if no
+     *         such user exists.
      */
     public List<PasswordRecordModelInterface> select(String username,
             int maxHistorySize) {
-    	return new ArrayList<PasswordRecordModelInterface>(passwordRecordMapper.select(username, maxHistorySize));
+        return new ArrayList<PasswordRecordModelInterface>(
+                passwordRecordMapper.select(username, maxHistorySize));
     }
 
     /**
@@ -61,17 +60,16 @@ public class PasswordRecordMapperImp implements PasswordRecordMapperInterface {
      * history size will be automatically deleted.
      *
      * @param record
-     *     The password record to insert.
+     *            The password record to insert.
      *
      * @param maxHistorySize
-     *     The maximum number of records to maintain for each user.
+     *            The maximum number of records to maintain for each user.
      *
-     * @return
-     *     The number of rows inserted.
+     * @return The number of rows inserted.
      */
-    public int insert(PasswordRecordModelInterface record,
-            int maxHistorySize) {
-    	return passwordRecordMapper.insert((PasswordRecordModel) record, maxHistorySize);
+    public int insert(PasswordRecordModelInterface record, int maxHistorySize) {
+        return passwordRecordMapper.insert((PasswordRecordModel) record,
+                maxHistorySize);
     }
 
 }

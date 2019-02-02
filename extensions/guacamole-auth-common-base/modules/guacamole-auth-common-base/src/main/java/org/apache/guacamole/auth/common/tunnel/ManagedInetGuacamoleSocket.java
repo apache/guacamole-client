@@ -34,22 +34,23 @@ public class ManagedInetGuacamoleSocket extends InetGuacamoleSocket {
     private final Runnable socketClosedTask;
 
     /**
-     * Creates a new socket which connects via TCP to a given hostname and
-     * port. If the socket is closed for any reason, the given task is run.
+     * Creates a new socket which connects via TCP to a given hostname and port.
+     * If the socket is closed for any reason, the given task is run.
      * 
      * @param hostname
-     *     The hostname of the Guacamole proxy server to connect to.
+     *            The hostname of the Guacamole proxy server to connect to.
      *
      * @param port
-     *     The port of the Guacamole proxy server to connect to.
+     *            The port of the Guacamole proxy server to connect to.
      *
      * @param socketClosedTask
-     *     The task to run when the socket is closed. This task will NOT be
-     *     run if an exception occurs during connection, and this
-     *     ManagedInetGuacamoleSocket instance is ultimately not created.
+     *            The task to run when the socket is closed. This task will NOT
+     *            be run if an exception occurs during connection, and this
+     *            ManagedInetGuacamoleSocket instance is ultimately not created.
      *
      * @throws GuacamoleException
-     *     If an error occurs while connecting to the Guacamole proxy server.
+     *             If an error occurs while connecting to the Guacamole proxy
+     *             server.
      */
     public ManagedInetGuacamoleSocket(String hostname, int port,
             Runnable socketClosedTask) throws GuacamoleException {
@@ -62,5 +63,5 @@ public class ManagedInetGuacamoleSocket extends InetGuacamoleSocket {
         super.close();
         socketClosedTask.run();
     }
-    
+
 }

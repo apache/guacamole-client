@@ -20,13 +20,11 @@
 package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Map;
-
 import org.apache.guacamole.auth.common.base.EntityModelInterface;
 import org.apache.guacamole.auth.common.base.ModeledPermissions;
 import org.apache.guacamole.auth.common.permission.ConnectionGroupPermissionServiceAbstract;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
-
 import com.google.inject.Inject;
 
 /**
@@ -34,19 +32,21 @@ import com.google.inject.Inject;
  * deleting connection group permissions. This service will automatically
  * enforce the permissions of the current user.
  */
-public class ConnectionGroupPermissionService extends ConnectionGroupPermissionServiceAbstract {
+public class ConnectionGroupPermissionService
+        extends ConnectionGroupPermissionServiceAbstract {
 
-	@Inject
-	public ConnectionGroupPermissionService(Map<String, ObjectPermissionMapperInterface> mappers) {
-		super(mappers);
-	}
+    @Inject
+    public ConnectionGroupPermissionService(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        super(mappers);
+    }
 
-	@Override
-	public ObjectPermissionModel getModelInstance(
-			ModeledPermissions<? extends EntityModelInterface> targetEntity,
-			ObjectPermission permission) {
-		
-		ObjectPermissionModel model = new ObjectPermissionModel();
+    @Override
+    public ObjectPermissionModel getModelInstance(
+            ModeledPermissions<? extends EntityModelInterface> targetEntity,
+            ObjectPermission permission) {
+
+        ObjectPermissionModel model = new ObjectPermissionModel();
 
         // Populate model object with data from user and permission
         model.setEntityID(targetEntity.getModel().getEntityID());
@@ -54,6 +54,6 @@ public class ConnectionGroupPermissionService extends ConnectionGroupPermissionS
         model.setObjectIdentifier(permission.getObjectIdentifier());
 
         return model;
-	}
+    }
 
 }

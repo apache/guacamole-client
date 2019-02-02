@@ -26,15 +26,15 @@ package org.apache.guacamole.auth.common.security;
  */
 public class PasswordRequiresSymbolException extends PasswordPolicyException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
+    /**
      * Creates a new PasswordRequiresSymbolException with the given
      * human-readable message. The translatable message is already defined.
      *
      * @param message
-     *     A human-readable message describing the password policy violation
-     *     that occurred.
+     *            A human-readable message describing the password policy
+     *            violation that occurred.
      */
     public PasswordRequiresSymbolException(String message) {
         super(message, "PASSWORD_POLICY.ERROR_REQUIRES_NON_ALNUM");

@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
@@ -146,8 +145,8 @@ public abstract class ModeledDirectoryObjectServiceAbstract<InternalType extends
 
     /**
      * Returns whether the given user has permission to perform a certain action
-     * on a specific object managed by this directory object service,
-     * taking into account permission inheritance through user groups.
+     * on a specific object managed by this directory object service, taking
+     * into account permission inheritance through user groups.
      *
      * @param user
      *            The user being checked.
@@ -179,8 +178,8 @@ public abstract class ModeledDirectoryObjectServiceAbstract<InternalType extends
 
     /**
      * Returns the permission set associated with the given user and related to
-     * the type of objects handled by this directory object service, taking
-     * into account permission inheritance via user groups.
+     * the type of objects handled by this directory object service, taking into
+     * account permission inheritance via user groups.
      *
      * @param user
      *            The user whose permissions are being retrieved.
@@ -391,9 +390,9 @@ public abstract class ModeledDirectoryObjectServiceAbstract<InternalType extends
 
         // Otherwise only return explicitly readable identifiers
         else
-            objects = getObjectMapper()
-                    .selectReadable(user.getUser().getModel(),
-                    		identifiers, user.getEffectiveUserGroups());
+            objects = getObjectMapper().selectReadable(
+                    user.getUser().getModel(), identifiers,
+                    user.getEffectiveUserGroups());
 
         // Return collection of requested objects
         return getObjectInstances(user, objects);
@@ -414,41 +413,44 @@ public abstract class ModeledDirectoryObjectServiceAbstract<InternalType extends
      * @return The collection of implicit permissions that should be granted due
      *         to the creation of the given object.
      */
-   	protected Collection<ObjectPermissionModelInterface> getImplicitPermissions(
-               ModeledAuthenticatedUser user, ModelType model) {
+    protected Collection<ObjectPermissionModelInterface> getImplicitPermissions(
+            ModeledAuthenticatedUser user, ModelType model) {
 
-           // Build list of implicit permissions
-           Collection<ObjectPermissionModelInterface> implicitPermissions = new ArrayList<ObjectPermissionModelInterface>(
-                   IMPLICIT_OBJECT_PERMISSIONS.length);
-           
-           UserModelInterface userModel = user.getUser().getModel();
-           
-           loadPermissions(userModel, model, implicitPermissions, IMPLICIT_OBJECT_PERMISSIONS);
+        // Build list of implicit permissions
+        Collection<ObjectPermissionModelInterface> implicitPermissions = new ArrayList<ObjectPermissionModelInterface>(
+                IMPLICIT_OBJECT_PERMISSIONS.length);
 
-           return implicitPermissions;
+        UserModelInterface userModel = user.getUser().getModel();
+
+        loadPermissions(userModel, model, implicitPermissions,
+                IMPLICIT_OBJECT_PERMISSIONS);
+
+        return implicitPermissions;
 
     }
-   	
-   	/**
-   	 * Iterate the received permissions to create specifically the permissions of each type
-   	 * 
-   	 * @param userModel
-   	 * @param model
-   	 * @param implicitPermissionsLoaded
-   	 * @param implicitUserPermissions
-   	 */
-   	protected void loadPermissions(UserModelInterface userModel,
-   								ModelType model,
-								 Collection<ObjectPermissionModelInterface> implicitPermissionsLoaded,
-								 Type[] implicitUserPermissions) {
-   		
-		// Grant implicit permissions
+
+    /**
+     * Iterate the received permissions to create specifically the permissions
+     * of each type
+     * 
+     * @param userModel
+     * @param model
+     * @param implicitPermissionsLoaded
+     * @param implicitUserPermissions
+     */
+    protected void loadPermissions(UserModelInterface userModel,
+            ModelType model,
+            Collection<ObjectPermissionModelInterface> implicitPermissionsLoaded,
+            Type[] implicitUserPermissions) {
+
+        // Grant implicit permissions
         for (ObjectPermission.Type permission : implicitUserPermissions) {
 
-        	createModelPermission(userModel, implicitPermissionsLoaded, model, permission);
-        	
+            createModelPermission(userModel, implicitPermissionsLoaded, model,
+                    permission);
+
         }
-	}
+    }
 
     /**
      * Create the specific permission type
@@ -459,10 +461,10 @@ public abstract class ModeledDirectoryObjectServiceAbstract<InternalType extends
      * @param permission
      */
     protected abstract void createModelPermission(UserModelInterface userModel,
-			Collection<ObjectPermissionModelInterface> implicitPermissions, ModelType model,
-			Type permission);
+            Collection<ObjectPermissionModelInterface> implicitPermissions,
+            ModelType model, Type permission);
 
-	@Override
+    @Override
     public InternalType createObject(ModeledAuthenticatedUser user,
             ExternalType object) throws GuacamoleException {
 
@@ -481,12 +483,12 @@ public abstract class ModeledDirectoryObjectServiceAbstract<InternalType extends
         // Add any arbitrary attributes
         if (model.hasArbitraryAttributes())
             getObjectMapper().insertAttributes(model);
-        
+
         return getObjectInstance(user, model);
 
     }
 
-	@Override
+    @Override
     public void deleteObject(ModeledAuthenticatedUser user, String identifier)
             throws GuacamoleException {
 
@@ -511,7 +513,7 @@ public abstract class ModeledDirectoryObjectServiceAbstract<InternalType extends
         getObjectMapper().deleteAttributes(model);
         if (model.hasArbitraryAttributes())
             getObjectMapper().insertAttributes(model);
-        
+
     }
 
     @Override
@@ -524,9 +526,8 @@ public abstract class ModeledDirectoryObjectServiceAbstract<InternalType extends
 
         // Otherwise only return explicitly readable identifiers
         else
-            return getObjectMapper()
-                    .selectReadableIdentifiers(user.getUser().getModel(),
-                            user.getEffectiveUserGroups());
+            return getObjectMapper().selectReadableIdentifiers(
+                    user.getUser().getModel(), user.getEffectiveUserGroups());
 
     }
 

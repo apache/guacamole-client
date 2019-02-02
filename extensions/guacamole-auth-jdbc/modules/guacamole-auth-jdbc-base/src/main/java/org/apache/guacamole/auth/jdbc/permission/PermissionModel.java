@@ -26,26 +26,25 @@ import org.apache.guacamole.auth.common.permission.PermissionModelInterface;
  * to a specific entity (user or user group).
  *
  * @param <PermissionType>
- *     The type of permissions allowed within this model.
+ *            The type of permissions allowed within this model.
  */
-public abstract class PermissionModel<PermissionType> implements PermissionModelInterface<PermissionType> {
+public abstract class PermissionModel<PermissionType>
+        implements PermissionModelInterface<PermissionType> {
 
-	/**
-    * The database ID of the entity to whom this permission is granted.
-    */
-   private Integer entityID;
+    /**
+     * The database ID of the entity to whom this permission is granted.
+     */
+    private Integer entityID;
 
     /**
      * The type of action granted by this permission.
      */
     private PermissionType type;
-    
+
     /**
-     * Returns the database ID of the entity to whom this permission is
-     * granted.
+     * Returns the database ID of the entity to whom this permission is granted.
      * 
-     * @return
-     *     The database ID of the entity to whom this permission is granted.
+     * @return The database ID of the entity to whom this permission is granted.
      */
     public Integer getEntityID() {
         return entityID;
@@ -55,7 +54,8 @@ public abstract class PermissionModel<PermissionType> implements PermissionModel
      * Sets the database ID of the entity to whom this permission is granted.
      *
      * @param entityID
-     *     The database ID of the entity to whom this permission is granted.
+     *            The database ID of the entity to whom this permission is
+     *            granted.
      */
     public void setEntityID(Integer entityID) {
         this.entityID = entityID;
@@ -64,8 +64,7 @@ public abstract class PermissionModel<PermissionType> implements PermissionModel
     /**
      * Returns the type of action granted by this permission.
      *
-     * @return
-     *     The type of action granted by this permission.
+     * @return The type of action granted by this permission.
      */
     public PermissionType getType() {
         return type;
@@ -75,7 +74,7 @@ public abstract class PermissionModel<PermissionType> implements PermissionModel
      * Sets the type of action granted by this permission.
      *
      * @param type
-     *     The type of action granted by this permission.
+     *            The type of action granted by this permission.
      */
     public void setType(PermissionType type) {
         this.type = type;

@@ -70,14 +70,15 @@ public class SharedConnection implements Connection {
      * described by the given SharedConnectionDefinition.
      *
      * @param user
-     *     The user that successfully authenticated to obtain access to this
-     *     SharedConnection.
+     *            The user that successfully authenticated to obtain access to
+     *            this SharedConnection.
      *
      * @param definition
-     *     The SharedConnectionDefinition dictating the connection being shared
-     *     and any associated restrictions.
+     *            The SharedConnectionDefinition dictating the connection being
+     *            shared and any associated restrictions.
      */
-    public void init(RemoteAuthenticatedUser user, SharedConnectionDefinition definition) {
+    public void init(RemoteAuthenticatedUser user,
+            SharedConnectionDefinition definition) {
         this.user = user;
         this.definition = definition;
     }
@@ -89,7 +90,8 @@ public class SharedConnection implements Connection {
 
     @Override
     public void setIdentifier(String identifier) {
-        throw new UnsupportedOperationException("Shared connections are immutable.");
+        throw new UnsupportedOperationException(
+                "Shared connections are immutable.");
     }
 
     @Override
@@ -99,7 +101,8 @@ public class SharedConnection implements Connection {
 
     @Override
     public void setName(String name) {
-        throw new UnsupportedOperationException("Shared connections are immutable.");
+        throw new UnsupportedOperationException(
+                "Shared connections are immutable.");
     }
 
     @Override
@@ -109,16 +112,19 @@ public class SharedConnection implements Connection {
 
     @Override
     public void setParentIdentifier(String parentIdentifier) {
-        throw new UnsupportedOperationException("Shared connections are immutable.");
+        throw new UnsupportedOperationException(
+                "Shared connections are immutable.");
     }
 
     @Override
     public GuacamoleConfiguration getConfiguration() {
 
         // Pull the connection being shared
-        Connection primaryConnection = definition.getActiveConnection().getConnection();
+        Connection primaryConnection = definition.getActiveConnection()
+                .getConnection();
 
-        // Construct a skeletal configuration that exposes only the protocol in use
+        // Construct a skeletal configuration that exposes only the protocol in
+        // use
         GuacamoleConfiguration config = new GuacamoleConfiguration();
         config.setProtocol(primaryConnection.getConfiguration().getProtocol());
         return config;
@@ -127,7 +133,8 @@ public class SharedConnection implements Connection {
 
     @Override
     public void setConfiguration(GuacamoleConfiguration config) {
-        throw new UnsupportedOperationException("Shared connections are immutable.");
+        throw new UnsupportedOperationException(
+                "Shared connections are immutable.");
     }
 
     @Override
@@ -138,8 +145,10 @@ public class SharedConnection implements Connection {
 
     @Override
     public Map<String, String> getAttributes() {
-        String sharedBy = definition.getActiveConnection().getUser().getIdentifier();
-        return Collections.<String, String>singletonMap(CONNECTION_OWNER, sharedBy);
+        String sharedBy = definition.getActiveConnection().getUser()
+                .getIdentifier();
+        return Collections.<String, String>singletonMap(CONNECTION_OWNER,
+                sharedBy);
     }
 
     @Override

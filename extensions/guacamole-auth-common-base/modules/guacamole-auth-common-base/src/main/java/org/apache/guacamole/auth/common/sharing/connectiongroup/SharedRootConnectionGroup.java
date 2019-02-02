@@ -60,8 +60,8 @@ public class SharedRootConnectionGroup implements ConnectionGroup {
      * SharedRootConnectionGroup.
      *
      * @param userContext
-     *     The SharedUserContext which should back the new
-     *     SharedRootConnectionGroup.
+     *            The SharedUserContext which should back the new
+     *            SharedRootConnectionGroup.
      */
     public SharedRootConnectionGroup(SharedUserContext userContext) {
         this.userContext = userContext;
@@ -130,12 +130,14 @@ public class SharedRootConnectionGroup implements ConnectionGroup {
 
     @Override
     public Set<String> getConnectionIdentifiers() throws GuacamoleException {
-        Directory<Connection> connectionDirectory = userContext.getConnectionDirectory();
+        Directory<Connection> connectionDirectory = userContext
+                .getConnectionDirectory();
         return connectionDirectory.getIdentifiers();
     }
 
     @Override
-    public Set<String> getConnectionGroupIdentifiers() throws GuacamoleException {
+    public Set<String> getConnectionGroupIdentifiers()
+            throws GuacamoleException {
         return Collections.<String>emptySet();
     }
 

@@ -28,20 +28,19 @@ package org.apache.guacamole.auth.common.permission;
  */
 public interface PermissionModelInterface<PermissionType> {
 
-	/**
+    /**
      * Returns the type of action granted by this permission.
      *
-     * @return
-     *     The type of action granted by this permission.
+     * @return The type of action granted by this permission.
      */
-	public PermissionType getType();
-	
-	/**
+    public PermissionType getType();
+
+    /**
      * Sets the type of action granted by this permission.
      *
      * @param type
-     *     The type of action granted by this permission.
+     *            The type of action granted by this permission.
      */
-	public void setType(PermissionType type);
-		
+    public void setType(PermissionType type);
+
 }

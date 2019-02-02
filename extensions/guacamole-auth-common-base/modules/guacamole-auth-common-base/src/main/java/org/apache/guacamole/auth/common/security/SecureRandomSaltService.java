@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.common.security;
 
-
 import java.security.SecureRandom;
 
 /**

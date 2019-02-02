@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
-
 import org.apache.guacamole.auth.common.base.EntityModelInterface;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
@@ -31,46 +30,45 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
  * Mapper for object-related permissions.
  * 
  * @param <PermissionType>
- *     The type of permission model object handled by this mapper.
- *     
+ *            The type of permission model object handled by this mapper.
+ * 
  * @param <Mapper>
- *     The specific mapper.
+ *            The specific mapper.
  */
 public abstract class ObjectPermissionMapperImp<Mapper extends ObjectPermissionMapper>
-	extends PermissionMapperImp<ObjectPermissionModelInterface, Mapper> 
-	implements ObjectPermissionMapperInterface {
+        extends PermissionMapperImp<ObjectPermissionModelInterface, Mapper>
+        implements ObjectPermissionMapperInterface {
 
-	protected abstract Mapper getMapper();
-	
+    protected abstract Mapper getMapper();
+
     /**
-     * Retrieve the permission of the given type associated with the given
-     * user and object, if it exists. If no such permission exists, null is
-     * returned.
+     * Retrieve the permission of the given type associated with the given user
+     * and object, if it exists. If no such permission exists, null is returned.
      *
      * @param user
-     *     The user to retrieve permissions for.
+     *            The user to retrieve permissions for.
      * 
      * @param type
-     *     The type of permission to return.
+     *            The type of permission to return.
      * 
      * @param identifier
-     *     The identifier of the object affected by the permission to return.
+     *            The identifier of the object affected by the permission to
+     *            return.
      *
      * @param effectiveGroups
-     *     The identifiers of all groups that should be taken into account
-     *     when determining the permissions effectively granted to the user. If
-     *     no groups are given, only permissions directly granted to the user
-     *     will be used.
-     *     
-     * @return
-     *     The requested permission, or null if no such permission is granted
-     *     to the given user for the given object.
+     *            The identifiers of all groups that should be taken into
+     *            account when determining the permissions effectively granted
+     *            to the user. If no groups are given, only permissions directly
+     *            granted to the user will be used.
+     * 
+     * @return The requested permission, or null if no such permission is
+     *         granted to the given user for the given object.
      */
-	public ObjectPermissionModelInterface selectOne(EntityModelInterface entity,
-            ObjectPermission.Type type,
-            String identifier,
+    public ObjectPermissionModelInterface selectOne(EntityModelInterface entity,
+            ObjectPermission.Type type, String identifier,
             Collection<String> effectiveGroups) {
-    	return getMapper().selectOne((EntityModel) entity, type, identifier, effectiveGroups);
+        return getMapper().selectOne((EntityModel) entity, type, identifier,
+                effectiveGroups);
     }
 
     /**
@@ -78,32 +76,33 @@ public abstract class ObjectPermissionMapperImp<Mapper extends ObjectPermissionM
      * has at least one of the given permissions.
      *
      * @param user
-     *     The user to check permissions of.
+     *            The user to check permissions of.
      *
      * @param permissions
-     *     The permissions to check. An identifier will be included in the
-     *     resulting collection if at least one of these permissions is granted
-     *     for the associated object
+     *            The permissions to check. An identifier will be included in
+     *            the resulting collection if at least one of these permissions
+     *            is granted for the associated object
      *
      * @param identifiers
-     *     The identifiers of the objects affected by the permissions being
-     *     checked.
+     *            The identifiers of the objects affected by the permissions
+     *            being checked.
      *
      * @param effectiveGroups
-     *     The identifiers of all groups that should be taken into account
-     *     when determining the permissions effectively granted to the user. If
-     *     no groups are given, only permissions directly granted to the user
-     *     will be used.
-     *     
-     * @return
-     *     A collection containing the subset of identifiers for which at least
-     *     one of the specified permissions is granted.
+     *            The identifiers of all groups that should be taken into
+     *            account when determining the permissions effectively granted
+     *            to the user. If no groups are given, only permissions directly
+     *            granted to the user will be used.
+     * 
+     * @return A collection containing the subset of identifiers for which at
+     *         least one of the specified permissions is granted.
      */
-    public Collection<String> selectAccessibleIdentifiers(EntityModelInterface entity,
-			            Collection<ObjectPermission.Type> permissions,
-			            Collection<String> identifiers,
-			            Collection<String> effectiveGroups) {
-    	return getMapper().selectAccessibleIdentifiers((EntityModel) entity, permissions, identifiers, effectiveGroups);
+    public Collection<String> selectAccessibleIdentifiers(
+            EntityModelInterface entity,
+            Collection<ObjectPermission.Type> permissions,
+            Collection<String> identifiers,
+            Collection<String> effectiveGroups) {
+        return getMapper().selectAccessibleIdentifiers((EntityModel) entity,
+                permissions, identifiers, effectiveGroups);
     }
 
 }

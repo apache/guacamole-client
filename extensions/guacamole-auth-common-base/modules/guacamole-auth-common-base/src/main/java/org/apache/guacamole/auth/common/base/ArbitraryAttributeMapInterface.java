@@ -26,7 +26,7 @@ import java.util.Map;
  * Map of arbitrary attribute name/value pairs which can alternatively be
  * exposed as a collection of model objects.
  */
-public interface ArbitraryAttributeMapInterface extends Map<String, String>{
+public interface ArbitraryAttributeMapInterface extends Map<String, String> {
 
     /**
      * Returns a collection of model objects which mirrors the contents of this
@@ -37,9 +37,8 @@ public interface ArbitraryAttributeMapInterface extends Map<String, String>{
      * corresponding name/value pair to the map. Changes to a model object
      * within the collection are NOT reflected on the map, however.
      *
-     * @return
-     *     A collection of model objects which mirrors the contents of this
-     *     ArbitraryAttributeMap.
+     * @return A collection of model objects which mirrors the contents of this
+     *         ArbitraryAttributeMap.
      */
     public Collection<ArbitraryAttributeModelInterface> toModelCollection();
 

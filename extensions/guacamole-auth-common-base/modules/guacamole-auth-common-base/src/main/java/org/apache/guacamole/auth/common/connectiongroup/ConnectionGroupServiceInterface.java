@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.common.connectiongroup;
 
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -31,9 +30,9 @@ import org.apache.guacamole.protocol.GuacamoleClientInformation;
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating connection groups.
  */
-public interface ConnectionGroupServiceInterface  {
+public interface ConnectionGroupServiceInterface {
 
-	/**
+    /**
      * Returns the set of all identifiers for all connection groups within the
      * connection group having the given identifier. Only connection groups that
      * the user has read access to will be returned.
@@ -55,10 +54,10 @@ public interface ConnectionGroupServiceInterface  {
      * @throws GuacamoleException
      *             If an error occurs while reading identifiers.
      */
-	public Set<String> getIdentifiersWithin(ModeledAuthenticatedUser user,
+    public Set<String> getIdentifiersWithin(ModeledAuthenticatedUser user,
             String identifier) throws GuacamoleException;
 
-	/**
+    /**
      * Connects to the given connection group as the given user, using the given
      * client information. If the user does not have permission to read the
      * connection group, permission will be denied.
@@ -78,8 +77,9 @@ public interface ConnectionGroupServiceInterface  {
      * @throws GuacamoleException
      *             If permission to connect to this connection is denied.
      */
-	public GuacamoleTunnel connect(ModeledAuthenticatedUser user,
-            ModeledConnectionGroup connectionGroup, GuacamoleClientInformation info,
-            Map<String, String> tokens) throws GuacamoleException;
+    public GuacamoleTunnel connect(ModeledAuthenticatedUser user,
+            ModeledConnectionGroup connectionGroup,
+            GuacamoleClientInformation info, Map<String, String> tokens)
+            throws GuacamoleException;
 
 }

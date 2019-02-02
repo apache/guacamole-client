@@ -26,4 +26,6 @@ import org.apache.guacamole.auth.jdbc.base.ObjectRelationMapper;
  * Mapper for the one-to-many relationship between a user group and its user
  * members.
  */
-public interface UserGroupMemberUserMapper extends ObjectRelationMapper<UserGroupModelInterface> {}
+public interface UserGroupMemberUserMapper
+        extends ObjectRelationMapper<UserGroupModelInterface> {
+}

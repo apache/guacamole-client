@@ -28,8 +28,8 @@ import org.apache.guacamole.net.auth.Credentials;
 
 /**
  * Associates a user with the credentials they used to authenticate, their
- * corresponding ModeledUser, and the AuthenticationProvider which produced
- * that ModeledUser.
+ * corresponding ModeledUser, and the AuthenticationProvider which produced that
+ * ModeledUser.
  */
 public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
 
@@ -47,14 +47,14 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
 
     /**
      * The connections which have been committed for use by this user in the
-     * context of a balancing connection group. Balancing connection groups
-     * will preferentially choose connections within this set, unless those
+     * context of a balancing connection group. Balancing connection groups will
+     * preferentially choose connections within this set, unless those
      * connections are not children of the group in question. If a group DOES
      * have at least one child connection within this set, no connections that
      * are not in this set will be used.
      */
-    private final Set<String> preferredConnections =
-            Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    private final Set<String> preferredConnections = Collections
+            .newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
     /**
      * Creates a copy of the given AuthenticatedUser which is associated with
@@ -63,20 +63,23 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
      * given ModeledUser.
      *
      * @param authenticatedUser
-     *     An existing AuthenticatedUser representing the user that
-     *     authenticated.
+     *            An existing AuthenticatedUser representing the user that
+     *            authenticated.
      *
      * @param modelAuthenticationProvider
-     *     The AuthenticationProvider that is associated with the given user's
-     *     corresponding ModeledUser.
+     *            The AuthenticationProvider that is associated with the given
+     *            user's corresponding ModeledUser.
      *
      * @param user
-     *     A ModeledUser object which is backed by the data associated with
-     *     this user in the database.
+     *            A ModeledUser object which is backed by the data associated
+     *            with this user in the database.
      */
     public ModeledAuthenticatedUser(AuthenticatedUser authenticatedUser,
-            AuthenticationProvider modelAuthenticationProvider, ModeledUserAbstract user) {
-        super(authenticatedUser.getAuthenticationProvider(), authenticatedUser.getCredentials(), authenticatedUser.getEffectiveUserGroups());
+            AuthenticationProvider modelAuthenticationProvider,
+            ModeledUserAbstract user) {
+        super(authenticatedUser.getAuthenticationProvider(),
+                authenticatedUser.getCredentials(),
+                authenticatedUser.getEffectiveUserGroups());
         this.modelAuthenticationProvider = modelAuthenticationProvider;
         this.user = user;
     }
@@ -86,19 +89,21 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
      * corresponding credentials.
      *
      * @param authenticationProvider
-     *     The AuthenticationProvider that has authenticated the given user
-     *     and which produced the given ModeledUser.
+     *            The AuthenticationProvider that has authenticated the given
+     *            user and which produced the given ModeledUser.
      *
      * @param user
-     *     A ModeledUser object which is backed by the data associated with
-     *     this user in the database.
+     *            A ModeledUser object which is backed by the data associated
+     *            with this user in the database.
      *
      * @param credentials
-     *     The credentials given by the user when they authenticated.
+     *            The credentials given by the user when they authenticated.
      */
-    public ModeledAuthenticatedUser(AuthenticationProvider authenticationProvider,
+    public ModeledAuthenticatedUser(
+            AuthenticationProvider authenticationProvider,
             ModeledUserAbstract user, Credentials credentials) {
-        super(authenticationProvider, credentials, user.getEffectiveUserGroups());
+        super(authenticationProvider, credentials,
+                user.getEffectiveUserGroups());
         this.modelAuthenticationProvider = authenticationProvider;
         this.user = user;
     }
@@ -107,9 +112,8 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
      * Returns a ModeledUser object which is backed by the data associated with
      * this user within the database.
      *
-     * @return 
-     *     A ModeledUser object which is backed by the data associated with
-     *     this user in the database.
+     * @return A ModeledUser object which is backed by the data associated with
+     *         this user in the database.
      */
     public ModeledUserAbstract getUser() {
         return user;
@@ -121,9 +125,8 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
      * AuthenticationProvider which authenticated that user, which can be
      * retrieved with getAuthenticationProvider().
      *
-     * @return
-     *     The AuthenticationProvider which produced the ModeledUser
-     *     retrievable via getUser().
+     * @return The AuthenticationProvider which produced the ModeledUser
+     *         retrievable via getUser().
      */
     public AuthenticationProvider getModelAuthenticationProvider() {
         return modelAuthenticationProvider;
@@ -136,11 +139,10 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
      * it is a child of a balancing connection group.
      *
      * @param identifier
-     *     The identifier of the connection to test.
+     *            The identifier of the connection to test.
      *
-     * @return
-     *     true if the connection having the given identifier has been marked
-     *     as preferred, false otherwise.
+     * @return true if the connection having the given identifier has been
+     *         marked as preferred, false otherwise.
      */
     public boolean isPreferredConnection(String identifier) {
         return preferredConnections.contains(identifier);
@@ -153,7 +155,7 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
      * connection group.
      *
      * @param identifier
-     *     The identifier of the connection to prefer.
+     *            The identifier of the connection to prefer.
      */
     public void preferConnection(String identifier) {
         preferredConnections.add(identifier);

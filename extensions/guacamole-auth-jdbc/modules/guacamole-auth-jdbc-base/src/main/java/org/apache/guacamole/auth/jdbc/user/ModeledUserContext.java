@@ -19,9 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.user;
 
-
 import java.util.Date;
-
 import org.apache.guacamole.auth.common.base.RestrictedObject;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.common.user.ModeledUserContextAbstract;
@@ -33,12 +31,11 @@ import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
  */
 public class ModeledUserContext extends ModeledUserContextAbstract {
 
-    
     @Override
     public void init(ModeledAuthenticatedUser currentUser) {
 
         super.init(currentUser);
-        
+
         // Init directories
         ((RestrictedObject) userDirectory).init(currentUser);
         ((RestrictedObject) userGroupDirectory).init(currentUser);
@@ -49,9 +46,11 @@ public class ModeledUserContext extends ModeledUserContextAbstract {
 
         // Create login record for user
         userRecord = new ActivityRecordModel();
-        ((ActivityRecordModel) userRecord).setUsername(currentUser.getIdentifier());
+        ((ActivityRecordModel) userRecord)
+                .setUsername(currentUser.getIdentifier());
         userRecord.setStartDate(new Date());
-        userRecord.setRemoteHost(currentUser.getCredentials().getRemoteHostname());
+        userRecord.setRemoteHost(
+                currentUser.getCredentials().getRemoteHostname());
 
         // Insert record representing login
         userRecordMapper.insert(userRecord);

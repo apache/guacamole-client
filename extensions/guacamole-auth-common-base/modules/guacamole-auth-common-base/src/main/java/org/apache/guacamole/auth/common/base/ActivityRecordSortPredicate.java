@@ -36,28 +36,28 @@ public class ActivityRecordSortPredicate {
      * Whether the sort order is descending (true) or ascending (false).
      */
     private final boolean descending;
-    
+
     /**
      * Creates a new ActivityRecordSortPredicate with the given sort property
      * and sort order.
      * 
-     * @param property 
-     *     The property to use when sorting ActivityRecords.
+     * @param property
+     *            The property to use when sorting ActivityRecords.
      * 
-     * @param descending 
-     *     Whether the sort order is descending (true) or ascending (false).
+     * @param descending
+     *            Whether the sort order is descending (true) or ascending
+     *            (false).
      */
-    public ActivityRecordSortPredicate(ActivityRecordSet.SortableProperty property,
-            boolean descending) {
-        this.property   = property;
+    public ActivityRecordSortPredicate(
+            ActivityRecordSet.SortableProperty property, boolean descending) {
+        this.property = property;
         this.descending = descending;
     }
-    
+
     /**
      * Returns the property that should be used when sorting ActivityRecords.
      *
-     * @return
-     *     The property that should be used when sorting ActivityRecords.
+     * @return The property that should be used when sorting ActivityRecords.
      */
     public ActivityRecordSet.SortableProperty getProperty() {
         return property;
@@ -66,12 +66,11 @@ public class ActivityRecordSortPredicate {
     /**
      * Returns whether the sort order is descending.
      *
-     * @return
-     *     true if the sort order is descending, false if the sort order is
-     *     ascending.
+     * @return true if the sort order is descending, false if the sort order is
+     *         ascending.
      */
     public boolean isDescending() {
         return descending;
     }
-    
+
 }

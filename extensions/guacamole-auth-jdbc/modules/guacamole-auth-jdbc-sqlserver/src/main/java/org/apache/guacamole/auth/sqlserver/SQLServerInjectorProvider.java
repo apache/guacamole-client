@@ -40,9 +40,8 @@ public class SQLServerInjectorProvider extends CommonInjectorProvider {
 
         // Set up Guice injector
         return Guice.createInjector(
-            new JDBCAuthenticationProviderModule(environment),
-            new SQLServerAuthenticationProviderModule(environment)
-        );
+                new JDBCAuthenticationProviderModule(environment),
+                new SQLServerAuthenticationProviderModule(environment));
 
     }
 

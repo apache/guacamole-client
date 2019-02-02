@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.common.user;
 
 import java.util.Collections;
 import java.util.Set;
-
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -45,28 +44,30 @@ public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
      * The host from which this user authenticated.
      */
     private final String remoteHost;
-    
+
     /**
      * The identifiers of any groups of which this user is a member, including
      * groups inherited through membership in other groups.
      */
     private final Set<String> effectiveGroups;
-   
+
     /**
      * Creates a new RemoteAuthenticatedUser, deriving the associated remote
      * host from the given credentials.
      *
      * @param authenticationProvider
-     *     The AuthenticationProvider that has authenticated the given user.
+     *            The AuthenticationProvider that has authenticated the given
+     *            user.
      *
      * @param credentials
-     *     The credentials given by the user when they authenticated.
+     *            The credentials given by the user when they authenticated.
      *
      * @param effectiveGroups
-     *     The identifiers of any groups of which this user is a member,
-     *     including groups inherited through membership in other groups.
+     *            The identifiers of any groups of which this user is a member,
+     *            including groups inherited through membership in other groups.
      */
-    public RemoteAuthenticatedUser(AuthenticationProvider authenticationProvider,
+    public RemoteAuthenticatedUser(
+            AuthenticationProvider authenticationProvider,
             Credentials credentials, Set<String> effectiveGroups) {
         this.authenticationProvider = authenticationProvider;
         this.credentials = credentials;
@@ -82,13 +83,12 @@ public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
     /**
      * Returns the host from which this user authenticated.
      *
-     * @return
-     *     The host from which this user authenticated.
+     * @return The host from which this user authenticated.
      */
     public String getRemoteHost() {
         return remoteHost;
     }
-    
+
     @Override
     public Set<String> getEffectiveUserGroups() {
         return effectiveGroups;

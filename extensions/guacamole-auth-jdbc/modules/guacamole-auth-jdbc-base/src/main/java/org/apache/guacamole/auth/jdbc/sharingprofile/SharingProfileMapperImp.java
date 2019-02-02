@@ -21,41 +21,41 @@ package org.apache.guacamole.auth.jdbc.sharingprofile;
 
 import org.apache.guacamole.auth.common.sharingprofile.SharingProfileMapperInterface;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapperImp;
-
 import com.google.inject.Inject;
 
 /**
  * Mapper for sharing profile objects.
  */
-public class SharingProfileMapperImp
-		extends ModeledDirectoryObjectMapperImp<SharingProfileModel, SharingProfileMapper>
+public class SharingProfileMapperImp extends
+        ModeledDirectoryObjectMapperImp<SharingProfileModel, SharingProfileMapper>
         implements SharingProfileMapperInterface {
 
-	@Inject 
-	private SharingProfileMapper sharingProfileMapper;
-	
+    @Inject
+    private SharingProfileMapper sharingProfileMapper;
+
     /**
      * Selects the sharing profile associated with the given primary connection
      * and having the given name. If no such sharing profile exists, null is
      * returned.
      *
      * @param parentIdentifier
-     *     The identifier of the primary connection to search against.
+     *            The identifier of the primary connection to search against.
      *
      * @param name
-     *     The name of the sharing profile to find.
+     *            The name of the sharing profile to find.
      *
-     * @return
-     *     The sharing profile having the given name and associated with the
-     *     given primary connection, or null if no such sharing profile exists.
+     * @return The sharing profile having the given name and associated with the
+     *         given primary connection, or null if no such sharing profile
+     *         exists.
      */
-    public SharingProfileModel selectOneByName(String parentIdentifier, String name) {
-    	return sharingProfileMapper.selectOneByName(parentIdentifier, name);
+    public SharingProfileModel selectOneByName(String parentIdentifier,
+            String name) {
+        return sharingProfileMapper.selectOneByName(parentIdentifier, name);
     }
 
-	@Override
-	protected SharingProfileMapper getMapper() {
-		return sharingProfileMapper;
-	}
-    
+    @Override
+    protected SharingProfileMapper getMapper() {
+        return sharingProfileMapper;
+    }
+
 }

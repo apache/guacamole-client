@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.common.activeconnection;
 
-
 import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,7 +33,7 @@ import org.apache.guacamole.net.auth.Directory;
  * connections.
  */
 public class ActiveConnectionDirectory extends RestrictedObject
-    implements Directory<ActiveConnection> {
+        implements Directory<ActiveConnection> {
 
     /**
      * Service for retrieving and manipulating active connections.
@@ -44,13 +43,15 @@ public class ActiveConnectionDirectory extends RestrictedObject
 
     @Override
     public ActiveConnection get(String identifier) throws GuacamoleException {
-        return activeConnectionService.retrieveObject(getCurrentUser(), identifier);
+        return activeConnectionService.retrieveObject(getCurrentUser(),
+                identifier);
     }
 
     @Override
     public Collection<ActiveConnection> getAll(Collection<String> identifiers)
             throws GuacamoleException {
-        Collection<TrackedActiveConnection> objects = activeConnectionService.retrieveObjects(getCurrentUser(), identifiers);
+        Collection<TrackedActiveConnection> objects = activeConnectionService
+                .retrieveObjects(getCurrentUser(), identifiers);
         return Collections.<ActiveConnection>unmodifiableCollection(objects);
     }
 

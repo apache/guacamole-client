@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.common.connectiongroup;
 
 import java.util.Collection;
 import java.util.Set;
-
 import org.apache.guacamole.auth.common.user.UserModelInterface;
 
 /**
@@ -63,8 +62,7 @@ public interface ConnectionGroupMapperInterface {
      * @return A Set containing all identifiers of all readable objects.
      */
     Set<String> selectReadableIdentifiersWithin(UserModelInterface user,
-            String parentIdentifier,
-            Collection<String> effectiveGroups);
+            String parentIdentifier, Collection<String> effectiveGroups);
 
     /**
      * Selects the connection group within the given parent group and having the
@@ -79,6 +77,7 @@ public interface ConnectionGroupMapperInterface {
      * @return The connection group having the given name within the given
      *         parent group, or null if no such connection group exists.
      */
-    ConnectionGroupModelInterface selectOneByName(String parentIdentifier, String name);
+    ConnectionGroupModelInterface selectOneByName(String parentIdentifier,
+            String name);
 
 }

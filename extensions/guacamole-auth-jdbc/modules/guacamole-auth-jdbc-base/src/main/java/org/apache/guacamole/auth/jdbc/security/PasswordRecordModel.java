@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.jdbc.security;
 
 import java.sql.Timestamp;
-
 import org.apache.guacamole.auth.common.user.PasswordRecordModelInterface;
 import org.apache.guacamole.auth.common.user.UserModelInterface;
 
@@ -62,7 +61,7 @@ public class PasswordRecordModel implements PasswordRecordModelInterface {
      * populated with that user's password hash and salt.
      *
      * @param user
-     *     The user to associate with this PasswordRecordModel.
+     *            The user to associate with this PasswordRecordModel.
      */
     public PasswordRecordModel(UserModelInterface user) {
         this.userID = (Integer) user.getObjectID();
@@ -72,11 +71,9 @@ public class PasswordRecordModel implements PasswordRecordModelInterface {
     }
 
     /**
-     * Returns the database ID of the user associated with this password
-     * record.
+     * Returns the database ID of the user associated with this password record.
      *
-     * @return
-     *     The database ID of the user associated with this password record.
+     * @return The database ID of the user associated with this password record.
      */
     public Integer getUserID() {
         return userID;
@@ -86,8 +83,8 @@ public class PasswordRecordModel implements PasswordRecordModelInterface {
      * Sets the database ID of the user associated with this password record.
      *
      * @param userID
-     *     The database ID of the user to associate with this password
-     *     record.
+     *            The database ID of the user to associate with this password
+     *            record.
      */
     public void setUserID(Integer userID) {
         this.userID = userID;
@@ -96,8 +93,7 @@ public class PasswordRecordModel implements PasswordRecordModelInterface {
     /**
      * Returns the hash of the password and password salt.
      *
-     * @return
-     *     The hash of the password and password salt.
+     * @return The hash of the password and password salt.
      */
     public byte[] getPasswordHash() {
         return passwordHash;
@@ -107,7 +103,7 @@ public class PasswordRecordModel implements PasswordRecordModelInterface {
      * Sets the hash of the password and password salt.
      *
      * @param passwordHash
-     *     The hash of the password and password salt.
+     *            The hash of the password and password salt.
      */
     public void setPasswordHash(byte[] passwordHash) {
         this.passwordHash = passwordHash;
@@ -116,8 +112,7 @@ public class PasswordRecordModel implements PasswordRecordModelInterface {
     /**
      * Returns the random salt that was used when generating the password hash.
      *
-     * @return
-     *     The random salt that was used when generating the password hash.
+     * @return The random salt that was used when generating the password hash.
      */
     public byte[] getPasswordSalt() {
         return passwordSalt;
@@ -127,7 +122,7 @@ public class PasswordRecordModel implements PasswordRecordModelInterface {
      * Sets the random salt that was used when generating the password hash.
      *
      * @param passwordSalt
-     *     The random salt used when generating the password hash.
+     *            The random salt used when generating the password hash.
      */
     public void setPasswordSalt(byte[] passwordSalt) {
         this.passwordSalt = passwordSalt;
@@ -137,8 +132,8 @@ public class PasswordRecordModel implements PasswordRecordModelInterface {
      * Returns the date that this password was first set for the associated
      * user.
      *
-     * @return
-     *     The date that this password was first set for the associated user.
+     * @return The date that this password was first set for the associated
+     *         user.
      */
     public Timestamp getPasswordDate() {
         return passwordDate;
@@ -148,7 +143,8 @@ public class PasswordRecordModel implements PasswordRecordModelInterface {
      * Sets the date that this password was first set for the associated user.
      *
      * @param passwordDate
-     *     The date that this password was first set for the associated user.
+     *            The date that this password was first set for the associated
+     *            user.
      */
     public void setPasswordDate(Timestamp passwordDate) {
         this.passwordDate = passwordDate;

@@ -22,12 +22,10 @@ package org.apache.guacamole.auth.common.connection;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.base.RestrictedObject;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.Directory;
-
 import com.google.inject.Inject;
 
 /**

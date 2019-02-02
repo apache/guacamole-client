@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.sharing.permission.SharedObjectPermissionSet;
 import org.apache.guacamole.net.auth.ActivityRecord;
@@ -61,11 +60,11 @@ public class SharedUser implements User {
      * accessible via the various directories of the given SharedUserContext.
      *
      * @param user
-     *     The AuthenticatedUser that the SharedUser should represent.
+     *            The AuthenticatedUser that the SharedUser should represent.
      *
      * @param userContext
-     *     The SharedUserContext which should be used to define which objects
-     *     the SharedUser has READ permission for.
+     *            The SharedUserContext which should be used to define which
+     *            objects the SharedUser has READ permission for.
      */
     public SharedUser(AuthenticatedUser user, SharedUserContext userContext) {
         this.user = user;
@@ -79,7 +78,8 @@ public class SharedUser implements User {
 
     @Override
     public void setIdentifier(String identifier) {
-        throw new UnsupportedOperationException("Users authenticated via share keys are immutable.");
+        throw new UnsupportedOperationException(
+                "Users authenticated via share keys are immutable.");
     }
 
     @Override
@@ -115,24 +115,32 @@ public class SharedUser implements User {
 
     @Override
     public void setPassword(String password) {
-        throw new UnsupportedOperationException("Users authenticated via share keys are immutable.");
+        throw new UnsupportedOperationException(
+                "Users authenticated via share keys are immutable.");
     }
 
     @Override
-    public SystemPermissionSet getSystemPermissions() throws GuacamoleException {
+    public SystemPermissionSet getSystemPermissions()
+            throws GuacamoleException {
         return SystemPermissionSet.EMPTY_SET;
     }
 
     @Override
-    public ObjectPermissionSet getConnectionPermissions() throws GuacamoleException {
-        Directory<Connection> connectionDirectory = userContext.getConnectionDirectory();
-        return new SharedObjectPermissionSet(connectionDirectory.getIdentifiers());
+    public ObjectPermissionSet getConnectionPermissions()
+            throws GuacamoleException {
+        Directory<Connection> connectionDirectory = userContext
+                .getConnectionDirectory();
+        return new SharedObjectPermissionSet(
+                connectionDirectory.getIdentifiers());
     }
 
     @Override
-    public ObjectPermissionSet getConnectionGroupPermissions() throws GuacamoleException {
-        Directory<ConnectionGroup> connectionGroupDirectory = userContext.getConnectionGroupDirectory();
-        return new SharedObjectPermissionSet(connectionGroupDirectory.getIdentifiers());
+    public ObjectPermissionSet getConnectionGroupPermissions()
+            throws GuacamoleException {
+        Directory<ConnectionGroup> connectionGroupDirectory = userContext
+                .getConnectionGroupDirectory();
+        return new SharedObjectPermissionSet(
+                connectionGroupDirectory.getIdentifiers());
     }
 
     @Override
@@ -142,17 +150,20 @@ public class SharedUser implements User {
     }
 
     @Override
-    public ObjectPermissionSet getUserGroupPermissions() throws GuacamoleException {
+    public ObjectPermissionSet getUserGroupPermissions()
+            throws GuacamoleException {
         return ObjectPermissionSet.EMPTY_SET;
     }
 
     @Override
-    public ObjectPermissionSet getSharingProfilePermissions() throws GuacamoleException {
+    public ObjectPermissionSet getSharingProfilePermissions()
+            throws GuacamoleException {
         return ObjectPermissionSet.EMPTY_SET;
     }
 
     @Override
-    public ObjectPermissionSet getActiveConnectionPermissions() throws GuacamoleException {
+    public ObjectPermissionSet getActiveConnectionPermissions()
+            throws GuacamoleException {
         return ObjectPermissionSet.EMPTY_SET;
     }
 

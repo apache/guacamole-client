@@ -24,12 +24,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.CommonEnvironment;
 import org.apache.guacamole.auth.common.user.ModeledUserAbstract;
 import org.apache.guacamole.auth.common.user.PasswordRecordModelInterface;
-
 import com.google.inject.Inject;
 
 /**
@@ -60,13 +58,15 @@ public class PasswordPolicyService {
      * Regular expression which matches only if the string contains at least one
      * lowercase character.
      */
-    private final Pattern CONTAINS_LOWERCASE = Pattern.compile("\\p{javaLowerCase}");
+    private final Pattern CONTAINS_LOWERCASE = Pattern
+            .compile("\\p{javaLowerCase}");
 
     /**
      * Regular expression which matches only if the string contains at least one
      * uppercase character.
      */
-    private final Pattern CONTAINS_UPPERCASE = Pattern.compile("\\p{javaUpperCase}");
+    private final Pattern CONTAINS_UPPERCASE = Pattern
+            .compile("\\p{javaUpperCase}");
 
     /**
      * Regular expression which matches only if the string contains at least one
@@ -78,22 +78,21 @@ public class PasswordPolicyService {
      * Regular expression which matches only if the string contains at least one
      * non-alphanumeric character.
      */
-    private final Pattern CONTAINS_NON_ALPHANUMERIC =
-            Pattern.compile("[^\\p{javaLowerCase}\\p{javaUpperCase}\\p{Digit}]");
+    private final Pattern CONTAINS_NON_ALPHANUMERIC = Pattern
+            .compile("[^\\p{javaLowerCase}\\p{javaUpperCase}\\p{Digit}]");
 
     /**
      * Returns whether the given string matches all of the provided regular
      * expressions.
      *
      * @param str
-     *     The string to test against all provided regular expressions.
+     *            The string to test against all provided regular expressions.
      *
      * @param patterns
-     *     The regular expressions to match against the given string.
+     *            The regular expressions to match against the given string.
      *
-     * @return
-     *     true if the given string matches all provided regular expressions,
-     *     false otherwise.
+     * @return true if the given string matches all provided regular
+     *         expressions, false otherwise.
      */
     private boolean matches(String str, Pattern... patterns) {
 
@@ -119,19 +118,18 @@ public class PasswordPolicyService {
      * were actually recorded, which depends on the password policy.
      *
      * @param password
-     *     The password to check.
+     *            The password to check.
      *
      * @param username
-     *     The username of the user whose history should be compared against
-     *     the given password.
+     *            The username of the user whose history should be compared
+     *            against the given password.
      *
      * @param historySize
-     *     The maximum number of history records to compare the password
-     *     against.
+     *            The maximum number of history records to compare the password
+     *            against.
      *
-     * @return
-     *     true if the given password matches any of the user's previous
-     *     passwords, up to the specified limit, false otherwise.
+     * @return true if the given password matches any of the user's previous
+     *         passwords, up to the specified limit, false otherwise.
      */
     private boolean matchesPreviousPasswords(String password, String username,
             int historySize) {
@@ -141,18 +139,20 @@ public class PasswordPolicyService {
             return false;
 
         // Check password against all recorded hashes
-        List<PasswordRecordModelInterface> history = passwordRecordMapper.select(username, historySize);
+        List<PasswordRecordModelInterface> history = passwordRecordMapper
+                .select(username, historySize);
         for (PasswordRecordModelInterface record : history) {
 
-            byte[] hash = encryptionService.createPasswordHash(password, record.getPasswordSalt());
+            byte[] hash = encryptionService.createPasswordHash(password,
+                    record.getPasswordSalt());
             if (Arrays.equals(hash, record.getPasswordHash()))
                 return true;
-            
+
         }
 
         // No passwords match
         return false;
-        
+
     }
 
     /**
@@ -161,14 +161,14 @@ public class PasswordPolicyService {
      * the policy is violated in any way.
      *
      * @param username
-     *     The username of the user whose password is being changed.
+     *            The username of the user whose password is being changed.
      *
      * @param password
-     *     The proposed new password.
+     *            The proposed new password.
      *
      * @throws GuacamoleException
-     *     If the password policy cannot be parsed, or if the proposed password
-     *     violates the password policy.
+     *             If the password policy cannot be parsed, or if the proposed
+     *             password violates the password policy.
      */
     public void verifyPassword(String username, String password)
             throws GuacamoleException {
@@ -183,12 +183,14 @@ public class PasswordPolicyService {
                     policy.getMinimumLength());
 
         // Disallow passwords containing the username
-        if (policy.isUsernameProhibited() && password.toLowerCase().contains(username.toLowerCase()))
+        if (policy.isUsernameProhibited()
+                && password.toLowerCase().contains(username.toLowerCase()))
             throw new PasswordContainsUsernameException(
                     "Password must not contain username.");
 
         // Require both uppercase and lowercase characters
-        if (policy.isMultipleCaseRequired() && !matches(password, CONTAINS_LOWERCASE, CONTAINS_UPPERCASE))
+        if (policy.isMultipleCaseRequired()
+                && !matches(password, CONTAINS_LOWERCASE, CONTAINS_UPPERCASE))
             throw new PasswordRequiresMultipleCaseException(
                     "Password must contain both uppercase and lowercase.");
 
@@ -198,7 +200,8 @@ public class PasswordPolicyService {
                     "Passwords must contain at least one digit.");
 
         // Require non-alphanumeric symbols
-        if (policy.isNonAlphanumericRequired() && !matches(password, CONTAINS_NON_ALPHANUMERIC))
+        if (policy.isNonAlphanumericRequired()
+                && !matches(password, CONTAINS_NON_ALPHANUMERIC))
             throw new PasswordRequiresSymbolException(
                     "Passwords must contain at least one non-alphanumeric character.");
 
@@ -206,7 +209,8 @@ public class PasswordPolicyService {
         int historySize = policy.getHistorySize();
         if (matchesPreviousPasswords(password, username, historySize))
             throw new PasswordReusedException(
-                    "Password matches a previously-used password.", historySize);
+                    "Password matches a previously-used password.",
+                    historySize);
 
         // Password passes all defined restrictions
 
@@ -218,10 +222,9 @@ public class PasswordPolicyService {
      * changed or reset.
      *
      * @param user
-     *     The user to calculate the password age of.
+     *            The user to calculate the password age of.
      *
-     * @return
-     *     The age of the given user's password, in days.
+     * @return The age of the given user's password, in days.
      */
     private long getPasswordAge(ModeledUserAbstract user) {
 
@@ -234,9 +237,11 @@ public class PasswordPolicyService {
         long currentTime = System.currentTimeMillis();
         long lastResetTime = passwordRecord.getPasswordDate().getTime();
 
-        // Calculate the number of days elapsed since the password was last reset
-        return TimeUnit.DAYS.convert(currentTime - lastResetTime, TimeUnit.MILLISECONDS);
-        
+        // Calculate the number of days elapsed since the password was last
+        // reset
+        return TimeUnit.DAYS.convert(currentTime - lastResetTime,
+                TimeUnit.MILLISECONDS);
+
     }
 
     /**
@@ -245,14 +250,15 @@ public class PasswordPolicyService {
      * aging policy, a GuacamoleException will be thrown.
      *
      * @param user
-     *     The user whose password is changing.
+     *            The user whose password is changing.
      *
      * @throws GuacamoleException
-     *     If the user's password cannot be changed due to the password aging
-     *     policy, or of the password policy cannot be parsed from
-     *     guacamole.properties.
+     *             If the user's password cannot be changed due to the password
+     *             aging policy, or of the password policy cannot be parsed from
+     *             guacamole.properties.
      */
-    public void verifyPasswordAge(ModeledUserAbstract user) throws GuacamoleException {
+    public void verifyPasswordAge(ModeledUserAbstract user)
+            throws GuacamoleException {
 
         // Retrieve password policy from environment
         PasswordPolicy policy = environment.getPasswordPolicy();
@@ -263,7 +269,8 @@ public class PasswordPolicyService {
         // Require that sufficient time has elapsed before allowing the password
         // to be changed
         if (passwordAge < minimumAge)
-            throw new PasswordTooYoungException("Password was already recently changed.",
+            throw new PasswordTooYoungException(
+                    "Password was already recently changed.",
                     minimumAge - passwordAge);
 
     }
@@ -273,14 +280,13 @@ public class PasswordPolicyService {
      * aging policy.
      *
      * @param user
-     *     The user to check.
+     *            The user to check.
      *
-     * @return
-     *     true if the user needs to change their password to comply with the
-     *     password aging policy, false otherwise.
+     * @return true if the user needs to change their password to comply with
+     *         the password aging policy, false otherwise.
      *
      * @throws GuacamoleException
-     *     If the password policy cannot be parsed.
+     *             If the password policy cannot be parsed.
      */
     public boolean isPasswordExpired(ModeledUserAbstract user)
             throws GuacamoleException {
@@ -305,11 +311,11 @@ public class PasswordPolicyService {
      * user is limited by the password policy.
      *
      * @param user
-     *     The user whose password should be recorded within the password
-     *     history.
+     *            The user whose password should be recorded within the password
+     *            history.
      *
      * @throws GuacamoleException
-     *     If the password policy cannot be parsed.
+     *             If the password policy cannot be parsed.
      */
     public void recordPassword(ModeledUserAbstract user)
             throws GuacamoleException {
@@ -321,7 +327,7 @@ public class PasswordPolicyService {
         int historySize = policy.getHistorySize();
         if (historySize <= 0)
             return;
-        
+
         // Store previous password in history
         passwordRecordMapper.insert(user.getPasswordRecord(), historySize);
 

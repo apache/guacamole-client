@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.jdbc.connection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.guacamole.auth.common.connection.ConnectionModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ChildObjectModel;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration.EncryptionMethod;
@@ -31,7 +30,8 @@ import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration.EncryptionMetho
  * Object representation of a Guacamole connection, as represented in the
  * database.
  */
-public class ConnectionModel extends ChildObjectModel implements ConnectionModelInterface {
+public class ConnectionModel extends ChildObjectModel
+        implements ConnectionModelInterface {
 
     /**
      * The human-readable name associated with this connection.
@@ -58,9 +58,9 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
     private Integer maxConnectionsPerUser;
 
     /**
-     * The weight of the connection for the purposes of calculating
-     * WLC algorithm.  null indicates nothing has been set, and anything less
-     * than 1 eliminates the system from being used for connections.
+     * The weight of the connection for the purposes of calculating WLC
+     * algorithm. null indicates nothing has been set, and anything less than 1
+     * eliminates the system from being used for connections.
      */
     private Integer connectionWeight;
 
@@ -110,8 +110,7 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
     /**
      * Returns the name associated with this connection.
      *
-     * @return
-     *     The name associated with this connection.
+     * @return The name associated with this connection.
      */
     public String getName() {
         return name;
@@ -121,7 +120,7 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
      * Sets the name associated with this connection.
      *
      * @param name
-     *     The name to associate with this connection.
+     *            The name to associate with this connection.
      */
     public void setName(String name) {
         this.name = name;
@@ -131,8 +130,8 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
      * Returns the name of the protocol to use when connecting to this
      * connection.
      *
-     * @return
-     *     The name of the protocol to use when connecting to this connection.
+     * @return The name of the protocol to use when connecting to this
+     *         connection.
      */
     public String getProtocol() {
         return protocol;
@@ -142,20 +141,20 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
      * Sets the name of the protocol to use when connecting to this connection.
      *
      * @param protocol
-     *     The name of the protocol to use when connecting to this connection.
+     *            The name of the protocol to use when connecting to this
+     *            connection.
      */
     public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
 
     /**
-     * Returns the maximum number of connections that can be established to
-     * this connection concurrently.
+     * Returns the maximum number of connections that can be established to this
+     * connection concurrently.
      *
-     * @return
-     *     The maximum number of connections that can be established to this
-     *     connection concurrently, zero if no restriction applies, or null if
-     *     the default restrictions should be applied.
+     * @return The maximum number of connections that can be established to this
+     *         connection concurrently, zero if no restriction applies, or null
+     *         if the default restrictions should be applied.
      */
     public Integer getMaxConnections() {
         return maxConnections;
@@ -166,22 +165,21 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
      * connection concurrently.
      *
      * @param maxConnections
-     *     The maximum number of connections that can be established to this
-     *     connection concurrently, zero if no restriction applies, or null if
-     *     the default restrictions should be applied.
+     *            The maximum number of connections that can be established to
+     *            this connection concurrently, zero if no restriction applies,
+     *            or null if the default restrictions should be applied.
      */
     public void setMaxConnections(Integer maxConnections) {
         this.maxConnections = maxConnections;
     }
 
     /**
-     * Returns the maximum number of connections that can be established to
-     * this connection concurrently by any one user.
+     * Returns the maximum number of connections that can be established to this
+     * connection concurrently by any one user.
      *
-     * @return
-     *     The maximum number of connections that can be established to this
-     *     connection concurrently by any one user, zero if no restriction
-     *     applies, or null if the default restrictions should be applied.
+     * @return The maximum number of connections that can be established to this
+     *         connection concurrently by any one user, zero if no restriction
+     *         applies, or null if the default restrictions should be applied.
      */
     public Integer getMaxConnectionsPerUser() {
         return maxConnectionsPerUser;
@@ -191,22 +189,20 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
      * Sets the connection weight for load balancing.
      *
      * @param connectionWeight
-     *     The weight of the connection used in load balancing. 
-     *     The value is not required for the connection (null), and
-     *     values less than 1 will prevent the connection from being
-     *     used.
+     *            The weight of the connection used in load balancing. The value
+     *            is not required for the connection (null), and values less
+     *            than 1 will prevent the connection from being used.
      */
     public void setConnectionWeight(Integer connectionWeight) {
         this.connectionWeight = connectionWeight;
     }
 
     /**
-     * Returns the connection weight used in applying weighted
-     * load balancing algorithms.
+     * Returns the connection weight used in applying weighted load balancing
+     * algorithms.
      *
-     * @return
-     *     The connection weight used in applying weighted
-     *     load balancing aglorithms.
+     * @return The connection weight used in applying weighted load balancing
+     *         aglorithms.
      */
     public Integer getConnectionWeight() {
         return connectionWeight;
@@ -214,12 +210,11 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
 
     /**
      * Returns whether this connection should be reserved for failover.
-     * Failover-only connections within a balancing group are only used when
-     * all non-failover connections are unavailable.
+     * Failover-only connections within a balancing group are only used when all
+     * non-failover connections are unavailable.
      *
-     * @return
-     *     true if this connection should be reserved for failover, false
-     *     otherwise.
+     * @return true if this connection should be reserved for failover, false
+     *         otherwise.
      */
     public boolean isFailoverOnly() {
         return failoverOnly;
@@ -227,12 +222,12 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
 
     /**
      * Sets whether this connection should be reserved for failover.
-     * Failover-only connections within a balancing group are only used when
-     * all non-failover connections are unavailable.
+     * Failover-only connections within a balancing group are only used when all
+     * non-failover connections are unavailable.
      *
      * @param failoverOnly
-     *     true if this connection should be reserved for failover, false
-     *     otherwise.
+     *            true if this connection should be reserved for failover, false
+     *            otherwise.
      */
     public void setFailoverOnly(boolean failoverOnly) {
         this.failoverOnly = failoverOnly;
@@ -243,9 +238,10 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
      * connection concurrently by any one user.
      *
      * @param maxConnectionsPerUser
-     *     The maximum number of connections that can be established to this
-     *     connection concurrently by any one user, zero if no restriction
-     *     applies, or null if the default restrictions should be applied.
+     *            The maximum number of connections that can be established to
+     *            this connection concurrently by any one user, zero if no
+     *            restriction applies, or null if the default restrictions
+     *            should be applied.
      */
     public void setMaxConnectionsPerUser(Integer maxConnectionsPerUser) {
         this.maxConnectionsPerUser = maxConnectionsPerUser;
@@ -255,9 +251,8 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
      * Returns the hostname of the guacd instance to use. If the hostname of the
      * default guacd instance should be used instead, null is returned.
      *
-     * @return
-     *     The hostname of the guacd instance to use, or null if the hostname
-     *     of the default guacd instance should be used.
+     * @return The hostname of the guacd instance to use, or null if the
+     *         hostname of the default guacd instance should be used.
      */
     public String getProxyHostname() {
         return proxyHostname;
@@ -267,8 +262,8 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
      * Sets the hostname of the guacd instance to use.
      *
      * @param proxyHostname
-     *     The hostname of the guacd instance to use, or null if the hostname
-     *     of the default guacd instance should be used.
+     *            The hostname of the guacd instance to use, or null if the
+     *            hostname of the default guacd instance should be used.
      */
     public void setProxyHostname(String proxyHostname) {
         this.proxyHostname = proxyHostname;
@@ -278,9 +273,8 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
      * Returns the port of the guacd instance to use. If the port of the default
      * guacd instance should be used instead, null is returned.
      *
-     * @return
-     *     The port of the guacd instance to use, or null if the port of the
-     *     default guacd instance should be used.
+     * @return The port of the guacd instance to use, or null if the port of the
+     *         default guacd instance should be used.
      */
     public Integer getProxyPort() {
         return proxyPort;
@@ -290,22 +284,21 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
      * Sets the port of the guacd instance to use.
      *
      * @param proxyPort
-     *     The port of the guacd instance to use, or null if the port of the
-     *     default guacd instance should be used.
+     *            The port of the guacd instance to use, or null if the port of
+     *            the default guacd instance should be used.
      */
     public void setProxyPort(Integer proxyPort) {
         this.proxyPort = proxyPort;
     }
 
     /**
-     * Returns the type of encryption required by the desired guacd instance.
-     * If the encryption method of the default guacd instance should be used
+     * Returns the type of encryption required by the desired guacd instance. If
+     * the encryption method of the default guacd instance should be used
      * instead, null is returned.
      *
-     * @return
-     *     The type of encryption required by the desired guacd instance, or
-     *     null if the encryption method of the default guacd instance should
-     *     be used.
+     * @return The type of encryption required by the desired guacd instance, or
+     *         null if the encryption method of the default guacd instance
+     *         should be used.
      */
     public EncryptionMethod getProxyEncryptionMethod() {
         return proxyEncryptionMethod;
@@ -316,11 +309,12 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
      * guacd, if any.
      *
      * @param proxyEncryptionMethod
-     *     The type of encryption required by the desired guacd instance, or
-     *     null if the encryption method of the default guacd instance should
-     *     be used.
+     *            The type of encryption required by the desired guacd instance,
+     *            or null if the encryption method of the default guacd instance
+     *            should be used.
      */
-    public void setProxyEncryptionMethod(EncryptionMethod proxyEncryptionMethod) {
+    public void setProxyEncryptionMethod(
+            EncryptionMethod proxyEncryptionMethod) {
         this.proxyEncryptionMethod = proxyEncryptionMethod;
     }
 
@@ -329,9 +323,8 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
      * this connection. This is set only when the connection is queried, and has
      * no effect when a connection is inserted, updated, or deleted.
      *
-     * @return
-     *     The identifiers of all readable sharing profiles associated with
-     *     this connection.
+     * @return The identifiers of all readable sharing profiles associated with
+     *         this connection.
      */
     public Set<String> getSharingProfileIdentifiers() {
         return sharingProfileIdentifiers;
@@ -343,10 +336,11 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
      * as it has no effect when a connection is inserted, updated, or deleted.
      *
      * @param sharingProfileIdentifiers
-     *     The identifiers of all readable sharing profiles associated with
-     *     this connection.
+     *            The identifiers of all readable sharing profiles associated
+     *            with this connection.
      */
-    public void setSharingProfileIdentifiers(Set<String> sharingProfileIdentifiers) {
+    public void setSharingProfileIdentifiers(
+            Set<String> sharingProfileIdentifiers) {
         this.sharingProfileIdentifiers = sharingProfileIdentifiers;
     }
 
@@ -354,9 +348,8 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
      * Returns the date and time that this connection was last used, or null if
      * this connection has never been used.
      *
-     * @return
-     *     The date and time that this connection was last used, or null if this
-     *     connection has never been used.
+     * @return The date and time that this connection was last used, or null if
+     *         this connection has never been used.
      */
     public Date getLastActive() {
         return lastActive;
@@ -369,8 +362,8 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
      * set manually through invoking this function will not persist.
      *
      * @param lastActive
-     *     The date and time that this connection was last used, or null if this
-     *     connection has never been used.
+     *            The date and time that this connection was last used, or null
+     *            if this connection has never been used.
      */
     public void setLastActive(Date lastActive) {
         this.lastActive = lastActive;
@@ -391,7 +384,8 @@ public class ConnectionModel extends ChildObjectModel implements ConnectionModel
 
     @Override
     public void setIdentifier(String identifier) {
-        throw new UnsupportedOperationException("Connection identifiers are derived from IDs. They cannot be set.");
+        throw new UnsupportedOperationException(
+                "Connection identifiers are derived from IDs. They cannot be set.");
     }
 
 }

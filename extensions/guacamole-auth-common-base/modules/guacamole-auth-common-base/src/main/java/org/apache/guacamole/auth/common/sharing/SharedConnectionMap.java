@@ -33,8 +33,8 @@ public interface SharedConnectionMap {
      * share key.
      *
      * @param definition
-     *     The SharedConnectionDefinition describing the connection being
-     *     shared.
+     *            The SharedConnectionDefinition describing the connection being
+     *            shared.
      */
     public void add(SharedConnectionDefinition definition);
 
@@ -43,12 +43,11 @@ public interface SharedConnectionMap {
      * If no such share key exists, null is returned.
      *
      * @param key
-     *     The share key associated with the connection definition to be
-     *     returned.
+     *            The share key associated with the connection definition to be
+     *            returned.
      *
-     * @return
-     *     The connection definition associated with the given share key, or
-     *     null if no such share key exists.
+     * @return The connection definition associated with the given share key, or
+     *         null if no such share key exists.
      */
     public SharedConnectionDefinition get(String key);
 
@@ -58,13 +57,12 @@ public interface SharedConnectionMap {
      * exists, this function has no effect, and null is returned.
      *
      * @param key
-     *     The share key associated with the connection definition to be
-     *     removed.
+     *            The share key associated with the connection definition to be
+     *            removed.
      *
-     * @return
-     *     The connection definition previously associated with the given
-     *     share key, or null if no such share key exists and no connection was
-     *     removed.
+     * @return The connection definition previously associated with the given
+     *         share key, or null if no such share key exists and no connection
+     *         was removed.
      */
     public SharedConnectionDefinition remove(String key);
 

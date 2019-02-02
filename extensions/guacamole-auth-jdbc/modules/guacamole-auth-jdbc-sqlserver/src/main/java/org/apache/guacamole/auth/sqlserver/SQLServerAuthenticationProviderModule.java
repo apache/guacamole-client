@@ -52,23 +52,28 @@ public class SQLServerAuthenticationProviderModule implements Module {
      * driver and MyBatis properties using the given environment.
      *
      * @param environment
-     *     The environment to use when configuring MyBatis and the underlying
-     *     JDBC driver.
+     *            The environment to use when configuring MyBatis and the
+     *            underlying JDBC driver.
      *
      * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
+     *             If a required property is missing, or an error occurs while
+     *             parsing a property.
      */
-    public SQLServerAuthenticationProviderModule(SQLServerEnvironment environment)
-            throws GuacamoleException {
+    public SQLServerAuthenticationProviderModule(
+            SQLServerEnvironment environment) throws GuacamoleException {
 
         // Set the SQLServer-specific properties for MyBatis.
         myBatisProperties.setProperty("mybatis.environment.id", "guacamole");
-        myBatisProperties.setProperty("JDBC.host", environment.getSQLServerHostname());
-        myBatisProperties.setProperty("JDBC.port", String.valueOf(environment.getSQLServerPort()));
-        myBatisProperties.setProperty("JDBC.schema", environment.getSQLServerDatabase());
-        myBatisProperties.setProperty("JDBC.username", environment.getSQLServerUsername());
-        myBatisProperties.setProperty("JDBC.password", environment.getSQLServerPassword());
+        myBatisProperties.setProperty("JDBC.host",
+                environment.getSQLServerHostname());
+        myBatisProperties.setProperty("JDBC.port",
+                String.valueOf(environment.getSQLServerPort()));
+        myBatisProperties.setProperty("JDBC.schema",
+                environment.getSQLServerDatabase());
+        myBatisProperties.setProperty("JDBC.username",
+                environment.getSQLServerUsername());
+        myBatisProperties.setProperty("JDBC.password",
+                environment.getSQLServerPassword());
         myBatisProperties.setProperty("JDBC.autoCommit", "false");
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
@@ -85,36 +90,35 @@ public class SQLServerAuthenticationProviderModule implements Module {
     public void configure(Binder binder) {
 
         // Bind SQLServer-specific properties with the configured driver.
-        switch(sqlServerDriver) {
-            case JTDS:
-                JdbcHelper.SQL_Server_jTDS.configure(binder);
-                break;
+        switch (sqlServerDriver) {
+        case JTDS:
+            JdbcHelper.SQL_Server_jTDS.configure(binder);
+            break;
 
-            case DATA_DIRECT:
-                JdbcHelper.SQL_Server_DataDirect.configure(binder);
-                break;
+        case DATA_DIRECT:
+            JdbcHelper.SQL_Server_DataDirect.configure(binder);
+            break;
 
-            case MICROSOFT_LEGACY:
-                JdbcHelper.SQL_Server_MS_Driver.configure(binder);
-                break;
+        case MICROSOFT_LEGACY:
+            JdbcHelper.SQL_Server_MS_Driver.configure(binder);
+            break;
 
-            case MICROSOFT_2005:
-                JdbcHelper.SQL_Server_2005_MS_Driver.configure(binder);
-                break;
+        case MICROSOFT_2005:
+            JdbcHelper.SQL_Server_2005_MS_Driver.configure(binder);
+            break;
 
-            default:
-                throw new UnsupportedOperationException(
-                    "A driver has been specified that is not supported by this module."
-                );
+        default:
+            throw new UnsupportedOperationException(
+                    "A driver has been specified that is not supported by this module.");
         }
-        
+
         // Bind MyBatis properties
         Names.bindProperties(binder, myBatisProperties);
 
         // Bind JDBC driver properties
         binder.bind(Properties.class)
-            .annotatedWith(Names.named("JDBC.driverProperties"))
-            .toInstance(driverProperties);
+                .annotatedWith(Names.named("JDBC.driverProperties"))
+                .toInstance(driverProperties);
 
     }
 

@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.common.base.EntityModelInterface;
@@ -35,7 +34,6 @@ import org.apache.guacamole.auth.common.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -44,8 +42,8 @@ import com.google.inject.Provider;
  * manipulating active connections.
  */
 public class ActiveConnectionPermissionService
-    extends AbstractPermissionService<ObjectPermissionSet, ObjectPermission>
-    implements ObjectPermissionService {
+        extends AbstractPermissionService<ObjectPermissionSet, ObjectPermission>
+        implements ObjectPermissionService {
 
     /**
      * Service for creating and tracking tunnels.
@@ -71,13 +69,14 @@ public class ActiveConnectionPermissionService
 
         // Permission is granted if retrieved permissions contains the
         // requested permission
-        ObjectPermission permission = new ObjectPermission(type, identifier); 
+        ObjectPermission permission = new ObjectPermission(type, identifier);
         return permissions.contains(permission);
 
     }
 
     @Override
-    public Set<ObjectPermission> retrievePermissions(ModeledAuthenticatedUser user,
+    public Set<ObjectPermission> retrievePermissions(
+            ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
             Set<String> effectiveGroups) throws GuacamoleException {
 
@@ -88,7 +87,8 @@ public class ActiveConnectionPermissionService
             boolean isAdmin = targetEntity.isAdministrator();
 
             // Get all active connections
-            Collection<ActiveConnectionRecord> records = tunnelService.getActiveConnections(user);
+            Collection<ActiveConnectionRecord> records = tunnelService
+                    .getActiveConnections(user);
 
             // We have READ, and possibly DELETE, on all active connections
             Set<ObjectPermission> permissions = new HashSet<ObjectPermission>();
@@ -96,38 +96,46 @@ public class ActiveConnectionPermissionService
 
                 // Add implicit READ
                 String identifier = record.getUUID().toString();
-                permissions.add(new ObjectPermission(ObjectPermission.Type.READ, identifier));
+                permissions.add(new ObjectPermission(ObjectPermission.Type.READ,
+                        identifier));
 
-             // If we're an admin, or the connection is ours, then we can DELETE
-             if (isAdmin || targetEntity.isUser(record.getUsername()))
-                permissions.add(new ObjectPermission(ObjectPermission.Type.DELETE, identifier));
+                // If we're an admin, or the connection is ours, then we can
+                // DELETE
+                if (isAdmin || targetEntity.isUser(record.getUsername()))
+                    permissions.add(new ObjectPermission(
+                            ObjectPermission.Type.DELETE, identifier));
 
             }
 
             return permissions;
-            
+
         }
 
         throw new GuacamoleSecurityException("Permission denied.");
-        
+
     }
 
     @Override
-    public Collection<String> retrieveAccessibleIdentifiers(ModeledAuthenticatedUser user,
+    public Collection<String> retrieveAccessibleIdentifiers(
+            ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
             Collection<ObjectPermission.Type> permissionTypes,
             Collection<String> identifiers, Set<String> effectiveGroups)
             throws GuacamoleException {
 
-        Set<ObjectPermission> permissions = retrievePermissions(user, targetEntity, effectiveGroups);
-        Collection<String> accessibleObjects = new ArrayList<String>(permissions.size());
+        Set<ObjectPermission> permissions = retrievePermissions(user,
+                targetEntity, effectiveGroups);
+        Collection<String> accessibleObjects = new ArrayList<String>(
+                permissions.size());
 
         // For each identifier/permission combination
         for (String identifier : identifiers) {
             for (ObjectPermission.Type permissionType : permissionTypes) {
 
-                // Add identifier if at least one requested permission is granted
-                ObjectPermission permission = new ObjectPermission(permissionType, identifier);
+                // Add identifier if at least one requested permission is
+                // granted
+                ObjectPermission permission = new ObjectPermission(
+                        permissionType, identifier);
                 if (permissions.contains(permission)) {
                     accessibleObjects.add(identifier);
                     break;
@@ -144,13 +152,14 @@ public class ActiveConnectionPermissionService
     public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
             ModeledPermissions<? extends EntityModelInterface> targetEntity,
             Set<String> effectiveGroups) throws GuacamoleException {
-    
+
         // Create permission set for requested entity
-        ActiveConnectionPermissionSet permissionSet = activeConnectionPermissionSetProvider.get();
+        ActiveConnectionPermissionSet permissionSet = activeConnectionPermissionSetProvider
+                .get();
         permissionSet.init(user, targetEntity, effectiveGroups);
 
         return permissionSet;
- 
+
     }
 
     @Override

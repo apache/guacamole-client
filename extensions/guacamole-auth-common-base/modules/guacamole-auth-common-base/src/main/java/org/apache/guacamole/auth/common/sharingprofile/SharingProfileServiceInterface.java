@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.common.sharingprofile;
 
 import java.util.Map;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 
@@ -30,7 +29,7 @@ import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
  */
 public interface SharingProfileServiceInterface {
 
-	/**
+    /**
      * Retrieves all parameters visible to the given user and associated with
      * the sharing profile having the given identifier. If the given user has no
      * access to such parameters, or no such sharing profile exists, the
@@ -46,9 +45,9 @@ public interface SharingProfileServiceInterface {
      * @return A new map of all parameter name/value pairs that the given user
      *         has access to.
      */
-	public Map<String, String> retrieveParameters(ModeledAuthenticatedUser user,
+    public Map<String, String> retrieveParameters(ModeledAuthenticatedUser user,
             String identifier);
 
-	public ModeledSharingProfile retrieveObject(ModeledAuthenticatedUser user,
+    public ModeledSharingProfile retrieveObject(ModeledAuthenticatedUser user,
             String identifier) throws GuacamoleException;
 }

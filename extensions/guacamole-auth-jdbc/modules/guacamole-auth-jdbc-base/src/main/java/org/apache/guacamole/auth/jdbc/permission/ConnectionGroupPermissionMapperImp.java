@@ -24,14 +24,15 @@ import com.google.inject.Inject;
 /**
  * Mapper for connection group permissions.
  */
-public class ConnectionGroupPermissionMapperImp extends ObjectPermissionMapperImp<ConnectionGroupPermissionMapper> {
-	
-	@Inject 
-	private ConnectionGroupPermissionMapper connectionGroupPermissionMapper;
-	
-	@Override
-	protected ConnectionGroupPermissionMapper getMapper() {
-		return connectionGroupPermissionMapper;
-	}
-	
+public class ConnectionGroupPermissionMapperImp
+        extends ObjectPermissionMapperImp<ConnectionGroupPermissionMapper> {
+
+    @Inject
+    private ConnectionGroupPermissionMapper connectionGroupPermissionMapper;
+
+    @Override
+    protected ConnectionGroupPermissionMapper getMapper() {
+        return connectionGroupPermissionMapper;
+    }
+
 }

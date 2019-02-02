@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.CommonEnvironment;
 import org.apache.guacamole.auth.common.base.ModeledChildDirectoryObject;
@@ -54,17 +53,19 @@ import org.slf4j.LoggerFactory;
  * An implementation of the Connection object which is backed by a database
  * model.
  */
-public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionModelInterface>
-    implements Connection {
+public class ModeledConnection
+        extends ModeledChildDirectoryObject<ConnectionModelInterface>
+        implements Connection {
 
     /**
      * Logger for this class.
      */
-    private static final Logger logger = LoggerFactory.getLogger(ModeledConnection.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(ModeledConnection.class);
 
     /**
-     * The name of the attribute which overrides the hostname used to connect
-     * to guacd for this connection.
+     * The name of the attribute which overrides the hostname used to connect to
+     * guacd for this connection.
      */
     public static final String GUACD_HOSTNAME_NAME = "guacd-hostname";
 
@@ -97,36 +98,34 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      * which will be used to connect to the remote desktop described by this
      * connection.
      */
-    public static final Form GUACD_PARAMETERS = new Form("guacd", Arrays.<Field>asList(
-        new TextField(GUACD_HOSTNAME_NAME),
-        new NumericField(GUACD_PORT_NAME),
-        new EnumField(GUACD_ENCRYPTION_NAME, Arrays.asList(
-            "",
-            GUACD_ENCRYPTION_VALUE_NONE,
-            GUACD_ENCRYPTION_VALUE_SSL
-        ))
-    ));
+    public static final Form GUACD_PARAMETERS = new Form("guacd",
+            Arrays.<Field>asList(new TextField(GUACD_HOSTNAME_NAME),
+                    new NumericField(GUACD_PORT_NAME),
+                    new EnumField(GUACD_ENCRYPTION_NAME,
+                            Arrays.asList("", GUACD_ENCRYPTION_VALUE_NONE,
+                                    GUACD_ENCRYPTION_VALUE_SSL))));
 
     /**
-     * The name of the attribute which controls the maximum number of
-     * concurrent connections.
+     * The name of the attribute which controls the maximum number of concurrent
+     * connections.
      */
     public static final String MAX_CONNECTIONS_NAME = "max-connections";
 
     /**
-     * The name of the attribute which controls the maximum number of
-     * concurrent connections per user.
+     * The name of the attribute which controls the maximum number of concurrent
+     * connections per user.
      */
     public static final String MAX_CONNECTIONS_PER_USER_NAME = "max-connections-per-user";
 
     /**
-     * The connection weight attribute used for weighted load balancing algorithms.
+     * The connection weight attribute used for weighted load balancing
+     * algorithms.
      */
     public static final String CONNECTION_WEIGHT = "weight";
 
     /**
-     * The name of the attribute which controls whether the connection should
-     * be used as a spare only (all other non-spare connections within the same
+     * The name of the attribute which controls whether the connection should be
+     * used as a spare only (all other non-spare connections within the same
      * balancing group should be preferred).
      */
     public static final String FAILOVER_ONLY_NAME = "failover-only";
@@ -135,43 +134,34 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      * All attributes related to restricting user accounts, within a logical
      * form.
      */
-    public static final Form CONCURRENCY_LIMITS = new Form("concurrency", Arrays.<Field>asList(
-        new NumericField(MAX_CONNECTIONS_NAME),
-        new NumericField(MAX_CONNECTIONS_PER_USER_NAME)
-    ));
+    public static final Form CONCURRENCY_LIMITS = new Form("concurrency",
+            Arrays.<Field>asList(new NumericField(MAX_CONNECTIONS_NAME),
+                    new NumericField(MAX_CONNECTIONS_PER_USER_NAME)));
 
     /**
      * All attributes related to load balancing in a logical form.
      */
-    public static final Form LOAD_BALANCING = new Form("load-balancing", Arrays.<Field>asList(
-        new NumericField(CONNECTION_WEIGHT),
-        new BooleanField(FAILOVER_ONLY_NAME, "true")
-    ));
+    public static final Form LOAD_BALANCING = new Form("load-balancing",
+            Arrays.<Field>asList(new NumericField(CONNECTION_WEIGHT),
+                    new BooleanField(FAILOVER_ONLY_NAME, "true")));
 
     /**
      * All possible attributes of connection objects organized as individual,
      * logical forms.
      */
-    public static final Collection<Form> ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(
-        CONCURRENCY_LIMITS,
-        LOAD_BALANCING,
-        GUACD_PARAMETERS
-    ));
+    public static final Collection<Form> ATTRIBUTES = Collections
+            .unmodifiableCollection(Arrays.asList(CONCURRENCY_LIMITS,
+                    LOAD_BALANCING, GUACD_PARAMETERS));
 
     /**
      * The names of all attributes which are explicitly supported by this
      * extension's Connection objects.
      */
-    public static final Set<String> ATTRIBUTE_NAMES =
-            Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
-                GUACD_HOSTNAME_NAME,
-                GUACD_PORT_NAME,
-                GUACD_ENCRYPTION_NAME,
-                MAX_CONNECTIONS_NAME,
-                MAX_CONNECTIONS_PER_USER_NAME,
-                CONNECTION_WEIGHT,
-                FAILOVER_ONLY_NAME
-            )));
+    public static final Set<String> ATTRIBUTE_NAMES = Collections
+            .unmodifiableSet(new HashSet<String>(Arrays.asList(
+                    GUACD_HOSTNAME_NAME, GUACD_PORT_NAME, GUACD_ENCRYPTION_NAME,
+                    MAX_CONNECTIONS_NAME, MAX_CONNECTIONS_PER_USER_NAME,
+                    CONNECTION_WEIGHT, FAILOVER_ONLY_NAME)));
 
     /**
      * The environment of the Guacamole server.
@@ -196,7 +186,7 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      */
     @Inject
     private Provider<ModeledGuacamoleConfiguration> configProvider;
-    
+
     /**
      * The manually-set GuacamoleConfiguration, if any.
      */
@@ -240,7 +230,7 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
 
         // Update model
         getModel().setProtocol(config.getProtocol());
-        
+
     }
 
     @Override
@@ -255,7 +245,8 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
     }
 
     @Override
-    public List<? extends ConnectionRecord> getHistory() throws GuacamoleException {
+    public List<? extends ConnectionRecord> getHistory()
+            throws GuacamoleException {
         return connectionService.retrieveHistory(getCurrentUser(), this);
     }
 
@@ -282,45 +273,53 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
         Map<String, String> attributes = super.getAttributes();
 
         // Set connection limit attribute
-        attributes.put(MAX_CONNECTIONS_NAME, NumericField.format(getModel().getMaxConnections()));
+        attributes.put(MAX_CONNECTIONS_NAME,
+                NumericField.format(getModel().getMaxConnections()));
 
         // Set per-user connection limit attribute
-        attributes.put(MAX_CONNECTIONS_PER_USER_NAME, NumericField.format(getModel().getMaxConnectionsPerUser()));
+        attributes.put(MAX_CONNECTIONS_PER_USER_NAME,
+                NumericField.format(getModel().getMaxConnectionsPerUser()));
 
         // Set guacd (proxy) hostname and port
         attributes.put(GUACD_HOSTNAME_NAME, getModel().getProxyHostname());
-        attributes.put(GUACD_PORT_NAME, NumericField.format(getModel().getProxyPort()));
+        attributes.put(GUACD_PORT_NAME,
+                NumericField.format(getModel().getProxyPort()));
 
         // Set guacd (proxy) encryption method
-        EncryptionMethod encryptionMethod = getModel().getProxyEncryptionMethod();
+        EncryptionMethod encryptionMethod = getModel()
+                .getProxyEncryptionMethod();
         if (encryptionMethod == null)
             attributes.put(GUACD_ENCRYPTION_NAME, null);
 
         else {
             switch (encryptionMethod) {
 
-                // Unencrypted
-                case NONE:
-                    attributes.put(GUACD_ENCRYPTION_NAME, GUACD_ENCRYPTION_VALUE_NONE);
-                    break;
+            // Unencrypted
+            case NONE:
+                attributes.put(GUACD_ENCRYPTION_NAME,
+                        GUACD_ENCRYPTION_VALUE_NONE);
+                break;
 
-                // SSL / TLS encryption
-                case SSL:
-                    attributes.put(GUACD_ENCRYPTION_NAME, GUACD_ENCRYPTION_VALUE_SSL);
-                    break;
+            // SSL / TLS encryption
+            case SSL:
+                attributes.put(GUACD_ENCRYPTION_NAME,
+                        GUACD_ENCRYPTION_VALUE_SSL);
+                break;
 
-                // Unimplemented / unspecified
-                default:
-                    attributes.put(GUACD_ENCRYPTION_NAME, null);
+            // Unimplemented / unspecified
+            default:
+                attributes.put(GUACD_ENCRYPTION_NAME, null);
 
             }
         }
 
         // Set connection weight
-        attributes.put(CONNECTION_WEIGHT, NumericField.format(getModel().getConnectionWeight()));
+        attributes.put(CONNECTION_WEIGHT,
+                NumericField.format(getModel().getConnectionWeight()));
 
         // Set whether connection is failover-only
-        attributes.put(FAILOVER_ONLY_NAME, getModel().isFailoverOnly() ? "true" : null);
+        attributes.put(FAILOVER_ONLY_NAME,
+                getModel().isFailoverOnly() ? "true" : null);
 
         return attributes;
     }
@@ -332,25 +331,33 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
         super.setAttributes(attributes);
 
         // Translate connection limit attribute
-        try { getModel().setMaxConnections(NumericField.parse(attributes.get(MAX_CONNECTIONS_NAME))); }
-        catch (NumberFormatException e) {
+        try {
+            getModel().setMaxConnections(
+                    NumericField.parse(attributes.get(MAX_CONNECTIONS_NAME)));
+        } catch (NumberFormatException e) {
             logger.warn("Not setting maximum connections: {}", e.getMessage());
             logger.debug("Unable to parse numeric attribute.", e);
         }
 
         // Translate per-user connection limit attribute
-        try { getModel().setMaxConnectionsPerUser(NumericField.parse(attributes.get(MAX_CONNECTIONS_PER_USER_NAME))); }
-        catch (NumberFormatException e) {
-            logger.warn("Not setting maximum connections per user: {}", e.getMessage());
+        try {
+            getModel().setMaxConnectionsPerUser(NumericField
+                    .parse(attributes.get(MAX_CONNECTIONS_PER_USER_NAME)));
+        } catch (NumberFormatException e) {
+            logger.warn("Not setting maximum connections per user: {}",
+                    e.getMessage());
             logger.debug("Unable to parse numeric attribute.", e);
         }
 
         // Translate guacd hostname
-        getModel().setProxyHostname(TextField.parse(attributes.get(GUACD_HOSTNAME_NAME)));
+        getModel().setProxyHostname(
+                TextField.parse(attributes.get(GUACD_HOSTNAME_NAME)));
 
         // Translate guacd port
-        try { getModel().setProxyPort(NumericField.parse(attributes.get(GUACD_PORT_NAME))); }
-        catch (NumberFormatException e) {
+        try {
+            getModel().setProxyPort(
+                    NumericField.parse(attributes.get(GUACD_PORT_NAME)));
+        } catch (NumberFormatException e) {
             logger.warn("Not setting guacd port: {}", e.getMessage());
             logger.debug("Unable to parse numeric attribute.", e);
         }
@@ -371,14 +378,18 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
             getModel().setProxyEncryptionMethod(null);
 
         // Translate connection weight attribute
-        try { getModel().setConnectionWeight(NumericField.parse(attributes.get(CONNECTION_WEIGHT))); }
-        catch (NumberFormatException e) {
-            logger.warn("Not setting the connection weight: {}", e.getMessage());
+        try {
+            getModel().setConnectionWeight(
+                    NumericField.parse(attributes.get(CONNECTION_WEIGHT)));
+        } catch (NumberFormatException e) {
+            logger.warn("Not setting the connection weight: {}",
+                    e.getMessage());
             logger.debug("Unable to parse numeric attribute.", e);
         }
 
         // Translate failover-only attribute
-        getModel().setFailoverOnly("true".equals(attributes.get(FAILOVER_ONLY_NAME)));
+        getModel().setFailoverOnly(
+                "true".equals(attributes.get(FAILOVER_ONLY_NAME)));
 
     }
 
@@ -386,13 +397,12 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      * Returns the maximum number of connections that should be allowed to this
      * connection overall. If no limit applies, zero is returned.
      *
-     * @return
-     *     The maximum number of connections that should be allowed to this
-     *     connection overall, or zero if no limit applies.
+     * @return The maximum number of connections that should be allowed to this
+     *         connection overall, or zero if no limit applies.
      *
      * @throws GuacamoleException
-     *     If an error occurs while parsing the concurrency limit properties
-     *     specified within guacamole.properties.
+     *             If an error occurs while parsing the concurrency limit
+     *             properties specified within guacamole.properties.
      */
     public int getMaxConnections() throws GuacamoleException {
 
@@ -411,13 +421,12 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      * connection for any individual user. If no limit applies, zero is
      * returned.
      *
-     * @return
-     *     The maximum number of connections that should be allowed to this
-     *     connection for any individual user, or zero if no limit applies.
+     * @return The maximum number of connections that should be allowed to this
+     *         connection for any individual user, or zero if no limit applies.
      *
      * @throws GuacamoleException
-     *     If an error occurs while parsing the concurrency limit properties
-     *     specified within guacamole.properties.
+     *             If an error occurs while parsing the concurrency limit
+     *             properties specified within guacamole.properties.
      */
     public int getMaxConnectionsPerUser() throws GuacamoleException {
 
@@ -438,41 +447,41 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      * remote desktop connection, the default guacd connection information will
      * be used instead, as defined by Environment.
      *
-     * @return
-     *     The connection information which should be used to connect to guacd
-     *     when establishing a connection to the remote desktop described by
-     *     this connection.
+     * @return The connection information which should be used to connect to
+     *         guacd when establishing a connection to the remote desktop
+     *         described by this connection.
      *
      * @throws GuacamoleException
-     *     If the connection information for guacd cannot be parsed.
+     *             If the connection information for guacd cannot be parsed.
      */
     public GuacamoleProxyConfiguration getGuacamoleProxyConfiguration()
             throws GuacamoleException {
 
         // Retrieve default proxy configuration from environment
-        GuacamoleProxyConfiguration defaultConfig = environment.getDefaultGuacamoleProxyConfiguration();
+        GuacamoleProxyConfiguration defaultConfig = environment
+                .getDefaultGuacamoleProxyConfiguration();
 
         // Retrieve proxy configuration overrides from model
         String hostname = getModel().getProxyHostname();
         Integer port = getModel().getProxyPort();
-        EncryptionMethod encryptionMethod = getModel().getProxyEncryptionMethod();
+        EncryptionMethod encryptionMethod = getModel()
+                .getProxyEncryptionMethod();
 
-        // Produce new proxy configuration from model, using defaults where unspecified
+        // Produce new proxy configuration from model, using defaults where
+        // unspecified
         return new GuacamoleProxyConfiguration(
-            hostname         != null ? hostname         : defaultConfig.getHostname(),
-            port             != null ? port             : defaultConfig.getPort(),
-            encryptionMethod != null ? encryptionMethod : defaultConfig.getEncryptionMethod()
-        );
+                hostname != null ? hostname : defaultConfig.getHostname(),
+                port != null ? port : defaultConfig.getPort(),
+                encryptionMethod != null ? encryptionMethod
+                        : defaultConfig.getEncryptionMethod());
     }
 
-    /** 
-     * Returns the weight of the connection used in applying weighted
-     * load balancing algorithms, or a default of 1 if the 
-     * attribute is undefined.
-     *  
-     * @return
-     *     The weight of the connection used in applying weighted
-     *     load balancing algorithms.
+    /**
+     * Returns the weight of the connection used in applying weighted load
+     * balancing algorithms, or a default of 1 if the attribute is undefined.
+     * 
+     * @return The weight of the connection used in applying weighted load
+     *         balancing algorithms.
      */
     public int getConnectionWeight() {
 
@@ -485,12 +494,11 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
 
     /**
      * Returns whether this connection should be reserved for failover.
-     * Failover-only connections within a balancing group are only used when
-     * all non-failover connections are unavailable.
+     * Failover-only connections within a balancing group are only used when all
+     * non-failover connections are unavailable.
      *
-     * @return
-     *     true if this connection should be reserved for failover, false
-     *     otherwise.
+     * @return true if this connection should be reserved for failover, false
+     *         otherwise.
      */
     public boolean isFailoverOnly() {
         return getModel().isFailoverOnly();

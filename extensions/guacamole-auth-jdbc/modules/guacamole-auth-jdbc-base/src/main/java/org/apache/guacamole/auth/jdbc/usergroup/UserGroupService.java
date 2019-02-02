@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.jdbc.usergroup;
 
 import java.util.Collection;
 import java.util.Map;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
 import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
@@ -34,23 +33,25 @@ import org.apache.guacamole.auth.common.usergroup.UserGroupServiceInterface;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
 import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.net.auth.permission.ObjectPermission.Type;
-
 import com.google.inject.Inject;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating user groups.
  */
-public class UserGroupService extends UserGroupServiceAbstract implements UserGroupServiceInterface {
-    
-	@Inject
-    public UserGroupService(Map<String, ObjectPermissionMapperInterface> mappers) {
-		super(mappers);
-	}
+public class UserGroupService extends UserGroupServiceAbstract
+        implements UserGroupServiceInterface {
 
-	@Override
-    protected UserGroupModel getModelInstance(ModeledAuthenticatedUser currentUser,
-            final UserGroup object) throws GuacamoleException {
+    @Inject
+    public UserGroupService(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        super(mappers);
+    }
+
+    @Override
+    protected UserGroupModel getModelInstance(
+            ModeledAuthenticatedUser currentUser, final UserGroup object)
+            throws GuacamoleException {
 
         // Create new ModeledUserGroup backed by blank model
         UserGroupModel model = new UserGroupModel();
@@ -61,21 +62,22 @@ public class UserGroupService extends UserGroupServiceAbstract implements UserGr
         group.setAttributes(object.getAttributes());
 
         return model;
-        
+
     }
 
-	@Override
-	protected void createBaseEntity(UserGroupModelInterface model) {
-		entityMapper.insert(model);
-	}
+    @Override
+    protected void createBaseEntity(UserGroupModelInterface model) {
+        entityMapper.insert(model);
+    }
 
-	@Override
-	protected void createModelPermission(UserModelInterface userModel,
-			Collection<ObjectPermissionModelInterface> implicitPermissions, UserGroupModelInterface model,
-			Type permission) {
-		
-		ModeledDirectoryObjectService.getNewModelPermission(userModel, implicitPermissions, model, permission);
-		
-	}
+    @Override
+    protected void createModelPermission(UserModelInterface userModel,
+            Collection<ObjectPermissionModelInterface> implicitPermissions,
+            UserGroupModelInterface model, Type permission) {
+
+        ModeledDirectoryObjectService.getNewModelPermission(userModel,
+                implicitPermissions, model, permission);
+
+    }
 
 }

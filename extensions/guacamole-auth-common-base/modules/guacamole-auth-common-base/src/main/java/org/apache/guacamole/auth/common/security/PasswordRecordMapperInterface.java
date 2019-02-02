@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.common.security;
 
 import java.util.List;
-
 import org.apache.guacamole.auth.common.user.PasswordRecordModelInterface;
 
 /**
@@ -44,7 +43,8 @@ public interface PasswordRecordMapperInterface {
      *         having the given username. This collection will be empty if no
      *         such user exists.
      */
-    public List<PasswordRecordModelInterface> select(String username, int maxHistorySize);
+    public List<PasswordRecordModelInterface> select(String username,
+            int maxHistorySize);
 
     /**
      * Inserts the given password record. Old records exceeding the maximum

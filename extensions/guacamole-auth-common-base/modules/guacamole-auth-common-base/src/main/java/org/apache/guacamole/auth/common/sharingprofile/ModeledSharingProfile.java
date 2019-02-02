@@ -22,11 +22,9 @@ package org.apache.guacamole.auth.common.sharingprofile;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-
 import org.apache.guacamole.auth.common.base.ModeledChildDirectoryObject;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.SharingProfile;
-
 import com.google.inject.Inject;
 
 /**
@@ -41,7 +39,8 @@ public class ModeledSharingProfile
      * All possible attributes of sharing profile objects organized as
      * individual, logical forms. Currently, there are no such attributes.
      */
-    public static final Collection<Form> ATTRIBUTES = Collections.<Form>emptyList();
+    public static final Collection<Form> ATTRIBUTES = Collections
+            .<Form>emptyList();
 
     /**
      * The manually-set parameter map, if any.

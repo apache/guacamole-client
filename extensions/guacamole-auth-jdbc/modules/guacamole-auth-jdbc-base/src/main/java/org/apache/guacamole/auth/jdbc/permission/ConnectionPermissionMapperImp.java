@@ -24,15 +24,15 @@ import com.google.inject.Inject;
 /**
  * Mapper for connection permissions.
  */
-public class ConnectionPermissionMapperImp 
-		extends ObjectPermissionMapperImp<ConnectionPermissionMapper> {
+public class ConnectionPermissionMapperImp
+        extends ObjectPermissionMapperImp<ConnectionPermissionMapper> {
 
-	@Inject 
-	private ConnectionPermissionMapper connectionPermissionMapper;
-	
-	@Override
-	protected ConnectionPermissionMapper getMapper() {
-		return connectionPermissionMapper;
-	}
-	
+    @Inject
+    private ConnectionPermissionMapper connectionPermissionMapper;
+
+    @Override
+    protected ConnectionPermissionMapper getMapper() {
+        return connectionPermissionMapper;
+    }
+
 }

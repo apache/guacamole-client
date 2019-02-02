@@ -23,11 +23,10 @@ import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 
 /**
  * Common base class for objects have an underlying model. For the purposes of
- * driven authentication providers, all modeled objects are also
- * restricted.
+ * driven authentication providers, all modeled objects are also restricted.
  *
  * @param <ModelType>
- *     The type of model object which corresponds to this object.
+ *            The type of model object which corresponds to this object.
  */
 public abstract class ModeledObject<ModelType> extends RestrictedObject {
 
@@ -42,10 +41,10 @@ public abstract class ModeledObject<ModelType> extends RestrictedObject {
      * user and populating it with data from the given model object
      *
      * @param currentUser
-     *     The user that created or retrieved this object.
+     *            The user that created or retrieved this object.
      *
-     * @param model 
-     *     The backing model object.
+     * @param model
+     *            The backing model object.
      */
     public void init(ModeledAuthenticatedUser currentUser, ModelType model) {
         super.init(currentUser);
@@ -53,12 +52,10 @@ public abstract class ModeledObject<ModelType> extends RestrictedObject {
     }
 
     /**
-     * Returns the backing model object. Changes to the model object will
-     * affect this object, and changes to this object will affect the model
-     * object.
+     * Returns the backing model object. Changes to the model object will affect
+     * this object, and changes to this object will affect the model object.
      *
-     * @return
-     *     The backing model object.
+     * @return The backing model object.
      */
     public ModelType getModel() {
         return model;
@@ -69,7 +66,7 @@ public abstract class ModeledObject<ModelType> extends RestrictedObject {
      * contained within this object.
      *
      * @param model
-     *     The backing model object.
+     *            The backing model object.
      */
     public void setModel(ModelType model) {
         this.model = model;

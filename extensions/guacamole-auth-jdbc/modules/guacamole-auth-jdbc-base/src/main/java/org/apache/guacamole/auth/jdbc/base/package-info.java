@@ -18,8 +18,8 @@
  */
 
 /**
- * Base classes supporting JDBC-driven authentication providers and defining
- * the relationships between the model and the implementations of guacamole-ext
+ * Base classes supporting JDBC-driven authentication providers and defining the
+ * relationships between the model and the implementations of guacamole-ext
  * classes.
  */
 package org.apache.guacamole.auth.jdbc.base;

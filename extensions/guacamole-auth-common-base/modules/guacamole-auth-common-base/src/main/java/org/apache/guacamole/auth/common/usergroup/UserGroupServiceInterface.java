@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.common.usergroup;
 
 import java.util.Collection;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.auth.UserGroup;
@@ -32,17 +31,23 @@ import org.apache.guacamole.net.auth.UserGroup;
  */
 public interface UserGroupServiceInterface {
 
-	public ModeledUserGroup retrieveObject(ModeledAuthenticatedUser currentUser, String identifier) throws GuacamoleException;
+    public ModeledUserGroup retrieveObject(ModeledAuthenticatedUser currentUser,
+            String identifier) throws GuacamoleException;
 
-	public Collection<ModeledUserGroup> retrieveObjects(ModeledAuthenticatedUser currentUser,
-			Collection<String> identifiers) throws GuacamoleException;
+    public Collection<ModeledUserGroup> retrieveObjects(
+            ModeledAuthenticatedUser currentUser,
+            Collection<String> identifiers) throws GuacamoleException;
 
-	public Set<String> getIdentifiers(ModeledAuthenticatedUser currentUser) throws GuacamoleException;
+    public Set<String> getIdentifiers(ModeledAuthenticatedUser currentUser)
+            throws GuacamoleException;
 
-	public ModeledUserGroup createObject(ModeledAuthenticatedUser currentUser, UserGroup object) throws GuacamoleException;
+    public ModeledUserGroup createObject(ModeledAuthenticatedUser currentUser,
+            UserGroup object) throws GuacamoleException;
 
-	public void updateObject(ModeledAuthenticatedUser currentUser, ModeledUserGroup group) throws GuacamoleException;
+    public void updateObject(ModeledAuthenticatedUser currentUser,
+            ModeledUserGroup group) throws GuacamoleException;
 
-	public void deleteObject(ModeledAuthenticatedUser currentUser, String identifier) throws GuacamoleException;
-    
+    public void deleteObject(ModeledAuthenticatedUser currentUser,
+            String identifier) throws GuacamoleException;
+
 }

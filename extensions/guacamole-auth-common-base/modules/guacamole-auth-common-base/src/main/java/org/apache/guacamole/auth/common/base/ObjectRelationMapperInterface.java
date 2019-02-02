@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.common.base;
 
 import java.util.Collection;
 import java.util.Set;
-
 import org.apache.guacamole.auth.common.user.UserModelInterface;
 
 /**
@@ -29,9 +28,9 @@ import org.apache.guacamole.auth.common.user.UserModelInterface;
  * implementation.
  *
  * @param <ParentModelType>
- *     The underlying database model of the object on the parent side of the
- *     one-to-many relationship represented by the RelatedObjectSet mapped by
- *     this ObjectRelationMapper.
+ *            The underlying database model of the object on the parent side of
+ *            the one-to-many relationship represented by the RelatedObjectSet
+ *            mapped by this ObjectRelationMapper.
  */
 public interface ObjectRelationMapperInterface<ParentModelType> {
 
@@ -42,39 +41,35 @@ public interface ObjectRelationMapperInterface<ParentModelType> {
      * no attempt is made to insert a new row for that relation.
      *
      * @param parent
-     *     The model of the object on the parent side of the one-to-many
-     *     relationship represented by the RelatedObjectSet.
+     *            The model of the object on the parent side of the one-to-many
+     *            relationship represented by the RelatedObjectSet.
      *
      * @param children
-     *     The identifiers of the objects on the child side of the one-to-many
-     *     relationship represented by the RelatedObjectSet.
+     *            The identifiers of the objects on the child side of the
+     *            one-to-many relationship represented by the RelatedObjectSet.
      *
-     * @return
-     *     The number of rows inserted.
+     * @return The number of rows inserted.
      */
-    int insert(ParentModelType parent,
-            Collection<String> children);
+    int insert(ParentModelType parent, Collection<String> children);
 
     /**
      * Deletes rows as necessary to modify the one-to-many relationship
      * represented by the RelatedObjectSet between the given parent and
-     * children. If the relation for any parent/child pair does not exist,
-     * that specific relation is ignored, and deletion proceeds with the
-     * remaining relations.
+     * children. If the relation for any parent/child pair does not exist, that
+     * specific relation is ignored, and deletion proceeds with the remaining
+     * relations.
      *
      * @param parent
-     *     The model of the object on the parent side of the one-to-many
-     *     relationship represented by the RelatedObjectSet.
+     *            The model of the object on the parent side of the one-to-many
+     *            relationship represented by the RelatedObjectSet.
      *
      * @param children
-     *     The identifiers of the objects on the child side of the one-to-many
-     *     relationship represented by the RelatedObjectSet.
+     *            The identifiers of the objects on the child side of the
+     *            one-to-many relationship represented by the RelatedObjectSet.
      *
-     * @return
-     *     The number of rows deleted.
+     * @return The number of rows deleted.
      */
-    int delete(ParentModelType parent,
-            Collection<String> children);
+    int delete(ParentModelType parent, Collection<String> children);
 
     /**
      * Retrieves the identifiers of all objects on the child side of the
@@ -85,12 +80,11 @@ public interface ObjectRelationMapperInterface<ParentModelType> {
      * selectReadableChildIdentifiers() instead.
      *
      * @param parent
-     *     The model of the object on the parent side of the one-to-many
-     *     relationship represented by the RelatedObjectSet.
+     *            The model of the object on the parent side of the one-to-many
+     *            relationship represented by the RelatedObjectSet.
      *
-     * @return
-     *     A Set containing the identifiers of all objects on the child side
-     *     of the one-to-many relationship.
+     * @return A Set containing the identifiers of all objects on the child side
+     *         of the one-to-many relationship.
      */
     Set<String> selectChildIdentifiers(ParentModelType parent);
 
@@ -101,26 +95,25 @@ public interface ObjectRelationMapperInterface<ParentModelType> {
      * explicitly readable by the given user. If identifiers are needed by a
      * system administrator (who, by definition, does not need explicit read
      * rights), use selectChildIdentifiers() instead.
-
      *
+     * 
      * @param user
-     *    The user whose permissions should determine whether an identifier
-     *    is returned.
+     *            The user whose permissions should determine whether an
+     *            identifier is returned.
      *
      * @param effectiveGroups
-     *     The identifiers of any known effective groups that should be taken
-     *     into account, such as those defined externally to the database.
+     *            The identifiers of any known effective groups that should be
+     *            taken into account, such as those defined externally to the
+     *            database.
      *
      * @param parent
-     *     The model of the object on the parent side of the one-to-many
-     *     relationship represented by the RelatedObjectSet.
+     *            The model of the object on the parent side of the one-to-many
+     *            relationship represented by the RelatedObjectSet.
      *
-     * @return
-     *     A Set containing the identifiers of all readable objects on the
-     *     child side of the one-to-many relationship.
+     * @return A Set containing the identifiers of all readable objects on the
+     *         child side of the one-to-many relationship.
      */
     Set<String> selectReadableChildIdentifiers(UserModelInterface user,
-            Collection<String> effectiveGroups,
-            ParentModelType parent);
+            Collection<String> effectiveGroups, ParentModelType parent);
 
 }

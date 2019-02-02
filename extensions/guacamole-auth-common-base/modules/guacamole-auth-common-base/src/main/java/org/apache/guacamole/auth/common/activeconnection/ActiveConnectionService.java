@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.common.base.DirectoryObjectService;
@@ -42,8 +41,8 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating active connections.
  */
-public class ActiveConnectionService
-    implements DirectoryObjectService<TrackedActiveConnection, ActiveConnection> { 
+public class ActiveConnectionService implements
+        DirectoryObjectService<TrackedActiveConnection, ActiveConnection> {
 
     /**
      * Service for creating and tracking tunnels.
@@ -56,13 +55,14 @@ public class ActiveConnectionService
      */
     @Inject
     private Provider<TrackedActiveConnection> trackedActiveConnectionProvider;
-    
+
     @Override
     public TrackedActiveConnection retrieveObject(ModeledAuthenticatedUser user,
             String identifier) throws GuacamoleException {
 
         // Pull objects having given identifier
-        Collection<TrackedActiveConnection> objects = retrieveObjects(user, Collections.singleton(identifier));
+        Collection<TrackedActiveConnection> objects = retrieveObjects(user,
+                Collections.singleton(identifier));
 
         // If no such object, return null
         if (objects.isEmpty())
@@ -70,56 +70,63 @@ public class ActiveConnectionService
 
         // The object collection will have exactly one element unless the
         // database has seriously lost integrity
-        assert(objects.size() == 1);
+        assert (objects.size() == 1);
 
         // Return first and only object
         return objects.iterator().next();
 
     }
-    
+
     @Override
-    public Collection<TrackedActiveConnection> retrieveObjects(ModeledAuthenticatedUser user,
-            Collection<String> identifiers) throws GuacamoleException {
+    public Collection<TrackedActiveConnection> retrieveObjects(
+            ModeledAuthenticatedUser user, Collection<String> identifiers)
+            throws GuacamoleException {
 
         String username = user.getIdentifier();
         boolean isAdmin = user.getUser().isAdministrator();
         Set<String> identifierSet = new HashSet<String>(identifiers);
 
-        // Retrieve all visible connections (permissions enforced by tunnel service)
-        Collection<ActiveConnectionRecord> records = tunnelService.getActiveConnections(user);
+        // Retrieve all visible connections (permissions enforced by tunnel
+        // service)
+        Collection<ActiveConnectionRecord> records = tunnelService
+                .getActiveConnections(user);
 
         // Restrict to subset of records which match given identifiers
-        Collection<TrackedActiveConnection> activeConnections = new ArrayList<TrackedActiveConnection>(identifiers.size());
+        Collection<TrackedActiveConnection> activeConnections = new ArrayList<TrackedActiveConnection>(
+                identifiers.size());
         for (ActiveConnectionRecord record : records) {
 
             // Sensitive information should be included if the connection was
             // started by the current user OR the user is an admin
-            boolean includeSensitiveInformation =
-                    isAdmin || username.equals(record.getUsername());
+            boolean includeSensitiveInformation = isAdmin
+                    || username.equals(record.getUsername());
 
             // Add connection if within requested identifiers
             if (identifierSet.contains(record.getUUID().toString())) {
-                TrackedActiveConnection activeConnection = trackedActiveConnectionProvider.get();
-                activeConnection.init(user, record, includeSensitiveInformation);
+                TrackedActiveConnection activeConnection = trackedActiveConnectionProvider
+                        .get();
+                activeConnection.init(user, record,
+                        includeSensitiveInformation);
                 activeConnections.add(activeConnection);
             }
 
         }
 
         return activeConnections;
-        
+
     }
 
     @Override
     public void deleteObject(ModeledAuthenticatedUser user, String identifier)
-        throws GuacamoleException {
+            throws GuacamoleException {
 
-    	// Close connection, if it exists and we have permission
+        // Close connection, if it exists and we have permission
         ActiveConnection activeConnection = retrieveObject(user, identifier);
         if (activeConnection == null)
             return;
-        
-        if (hasObjectPermissions(user, identifier, ObjectPermission.Type.DELETE)) {
+
+        if (hasObjectPermissions(user, identifier,
+                ObjectPermission.Type.DELETE)) {
 
             // Close connection if not already closed
             GuacamoleTunnel tunnel = activeConnection.getTunnel();
@@ -129,15 +136,17 @@ public class ActiveConnectionService
         }
         else
             throw new GuacamoleSecurityException("Permission denied.");
-        
+
     }
 
     @Override
     public Set<String> getIdentifiers(ModeledAuthenticatedUser user)
-        throws GuacamoleException {
+            throws GuacamoleException {
 
-        // Retrieve all visible connections (permissions enforced by tunnel service)
-        Collection<ActiveConnectionRecord> records = tunnelService.getActiveConnections(user);
+        // Retrieve all visible connections (permissions enforced by tunnel
+        // service)
+        Collection<ActiveConnectionRecord> records = tunnelService
+                .getActiveConnections(user);
 
         // Build list of identifiers
         Set<String> identifiers = new HashSet<String>(records.size());
@@ -145,7 +154,7 @@ public class ActiveConnectionService
             identifiers.add(record.getUUID().toString());
 
         return identifiers;
-        
+
     }
 
     @Override
@@ -158,29 +167,28 @@ public class ActiveConnectionService
     }
 
     @Override
-    public void updateObject(ModeledAuthenticatedUser user, TrackedActiveConnection object)
-            throws GuacamoleException {
+    public void updateObject(ModeledAuthenticatedUser user,
+            TrackedActiveConnection object) throws GuacamoleException {
 
         // Updating active connections is not implemented
         throw new GuacamoleSecurityException("Permission denied.");
 
     }
-    
+
     /**
-     * Retrieve the permission set for the specified user that relates
-     * to access to active connections.
+     * Retrieve the permission set for the specified user that relates to access
+     * to active connections.
      * 
      * @param user
-     *     The user for which to retrieve the permission set.
+     *            The user for which to retrieve the permission set.
      * 
-     * @return
-     *     A permission set associated with the given user that specifies
-     *     the permissions available for active connection objects.
+     * @return A permission set associated with the given user that specifies
+     *         the permissions available for active connection objects.
      * 
      * @throws GuacamoleException
-     *     If permission to read permissions for the user is denied.
+     *             If permission to read permissions for the user is denied.
      */
-    private ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user) 
+    private ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user)
             throws GuacamoleException {
         return user.getUser().getActiveConnectionPermissions();
     }
@@ -191,29 +199,29 @@ public class ActiveConnectionService
      * identifier.
      * 
      * @param user
-     *     The user for which the permissions are being queried.
+     *            The user for which the permissions are being queried.
      * 
      * @param identifier
-     *     The identifier of the active connection we are wondering about.
+     *            The identifier of the active connection we are wondering
+     *            about.
      * 
      * @param type
-     *     The type of permission being requested.
+     *            The type of permission being requested.
      * 
-     * @return
-     *     True if the user has the necessary permission; otherwise false.
+     * @return True if the user has the necessary permission; otherwise false.
      * 
-     * @throws GuacamoleException 
-     *     If the user does not have access to read permissions.
+     * @throws GuacamoleException
+     *             If the user does not have access to read permissions.
      */
     private boolean hasObjectPermissions(ModeledAuthenticatedUser user,
             String identifier, ObjectPermission.Type type)
             throws GuacamoleException {
-        
+
         ObjectPermissionSet permissionSet = getPermissionSet(user);
-        
-        return user.getUser().isAdministrator() 
+
+        return user.getUser().isAdministrator()
                 || permissionSet.hasPermission(type, identifier);
-        
+
     }
 
 }

@@ -21,12 +21,10 @@ package org.apache.guacamole.auth.common.permission;
 
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.common.base.EntityModelInterface;
 import org.apache.guacamole.auth.common.base.ModeledPermissions;
 import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -35,24 +33,26 @@ import com.google.inject.Provider;
  * deleting user group permissions. This service will automatically enforce the
  * permissions of the current user.
  */
-public abstract class UserGroupPermissionServiceAbstract extends ModeledObjectPermissionServiceAbstract {
+public abstract class UserGroupPermissionServiceAbstract
+        extends ModeledObjectPermissionServiceAbstract {
 
     /**
      * Provider for user group permission sets.
      */
     @Inject
     private Provider<UserGroupPermissionSet> userGroupPermissionSetProvider;
-    
+
     /**
      * Mapper for user group permissions.
      */
     private ObjectPermissionMapperInterface userGroupPermissionMapper;
-    
+
     @Inject
-	public UserGroupPermissionServiceAbstract(Map<String, ObjectPermissionMapperInterface> mappers) {
-    	userGroupPermissionMapper = mappers.get("UserGroupPermissionMapper");
-	}
-    
+    public UserGroupPermissionServiceAbstract(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        userGroupPermissionMapper = mappers.get("UserGroupPermissionMapper");
+    }
+
     @Override
     protected ObjectPermissionMapperInterface getPermissionMapper() {
         return userGroupPermissionMapper;
@@ -64,11 +64,12 @@ public abstract class UserGroupPermissionServiceAbstract extends ModeledObjectPe
             Set<String> effectiveGroups) throws GuacamoleException {
 
         // Create permission set for requested entity
-        ObjectPermissionSet permissionSet = userGroupPermissionSetProvider.get();
+        ObjectPermissionSet permissionSet = userGroupPermissionSetProvider
+                .get();
         permissionSet.init(user, targetEntity, effectiveGroups);
 
         return permissionSet;
-        
+
     }
 
 }
