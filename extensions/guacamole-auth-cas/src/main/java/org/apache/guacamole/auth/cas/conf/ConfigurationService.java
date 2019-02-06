@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.cas.conf;
 
 import com.google.inject.Inject;
-import java.io.File;
 import java.security.PrivateKey;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;

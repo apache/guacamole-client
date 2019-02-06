@@ -49,6 +49,16 @@ public class DelegatingDirectory<ObjectType extends Identifiable>
         this.directory = directory;
     }
 
+    /**
+     * Returns the underlying Directory wrapped by this DelegatingDirectory.
+     *
+     * @return
+     *     The Directory wrapped by this DelegatingDirectory.
+     */
+    protected Directory<ObjectType> getDelegateDirectory() {
+        return directory;
+    }
+
     @Override
     public ObjectType get(String identifier) throws GuacamoleException {
         return directory.get(identifier);

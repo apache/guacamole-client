@@ -305,6 +305,7 @@ END
     set_optional_property "ldap-encryption-method"  "$LDAP_ENCRYPTION_METHOD"
     set_property          "ldap-user-base-dn"       "$LDAP_USER_BASE_DN"
     set_optional_property "ldap-username-attribute" "$LDAP_USERNAME_ATTRIBUTE"
+    set_optional_property "ldap-member-attribute"   "$LDAP_MEMBER_ATTRIBUTE"
     set_optional_property "ldap-group-base-dn"      "$LDAP_GROUP_BASE_DN"
     set_optional_property "ldap-config-base-dn"     "$LDAP_CONFIG_BASE_DN"
 
@@ -316,9 +317,190 @@ END
         "ldap-search-bind-password" \
         "$LDAP_SEARCH_BIND_PASSWORD"
 
+    set_optional_property         \
+        "ldap-user-search-filter" \
+        "$LDAP_USER_SEARCH_FILTER"
+
     # Add required .jar files to GUACAMOLE_EXT
     ln -s /opt/guacamole/ldap/guacamole-auth-*.jar "$GUACAMOLE_EXT"
 
+}
+
+##
+## Adds properties to guacamole.properties which select the LDAP
+## authentication provider, and configure it to connect to the specified LDAP
+## directory.
+##
+associate_radius() {
+
+    # Verify required parameters are present
+    if [ -z "$RADIUS_SHARED_SECRET" -o -z "$RADIUS_AUTH_PROTOCOL" ]; then
+        cat <<END
+FATAL: Missing required environment variables
+-------------------------------------------------------------------------------
+If using RADIUS server, you must provide each of the following environment
+variables:
+
+    RADIUS_SHARED_SECRET   The shared secret to use when talking to the 
+                           RADIUS server.
+
+    RADIUS_AUTH_PROTOCOL   The authentication protocol to use when talking 
+                           to the RADIUS server.
+                           Supported values are: 
+                             pap, chap, mschapv1, mschapv2, eap-md5, 
+                             eap-tls and eap-ttls.
+END
+        exit 1;
+    fi
+
+    # Verify provided files do exist and are readable
+    if [ -n "$RADIUS_KEY_FILE" -a ! -r "$RADIUS_KEY_FILE" ]; then
+       cat <<END
+FATAL: Provided file RADIUS_KEY_FILE=$RADIUS_KEY_FILE does not exist 
+       or is not readable!
+-------------------------------------------------------------------------------
+If you provide key or CA files you need to mount those into the container and
+make sure they are readable for the user in the container.
+END
+        exit 1;
+    fi
+    if [ -n "$RADIUS_CA_FILE" -a ! -r "$RADIUS_CA_FILE" ]; then
+       cat <<END
+FATAL: Provided file RADIUS_CA_FILE=$RADIUS_CA_FILE does not exist 
+       or is not readable!
+-------------------------------------------------------------------------------
+If you provide key or CA files you need to mount those into the container and
+make sure they are readable for the user in the container.
+END
+        exit 1;
+    fi
+    if [ "$RADIUS_AUTH_PROTOCOL" = "eap-ttls" -a -z "$RADIUS_EAP_TTLS_INNER_PROTOCOL" ]; then
+       cat <<END
+FATAL: Authentication protocol "eap-ttls" specified but
+       RADIUS_EAP_TTLS_INNER_PROTOCOL is not set!
+-------------------------------------------------------------------------------
+When EAP-TTLS is used, this parameter specifies the inner (tunneled)
+protocol to use talking to the RADIUS server.
+END
+        exit 1;
+    fi
+
+    # Update config file
+    set_optional_property "radius-hostname"         "$RADIUS_HOSTNAME"
+    set_optional_property "radius-auth-port"        "$RADIUS_AUTH_PORT"
+    set_property          "radius-shared-secret"    "$RADIUS_SHARED_SECRET"
+    set_property          "radius-auth-protocol"    "$RADIUS_AUTH_PROTOCOL"
+    set_optional_property "radius-key-file"         "$RADIUS_KEY_FILE"
+    set_optional_property "radius-key-type"         "$RADIUS_KEY_TYPE"
+    set_optional_property "radius-key-password"     "$RADIUS_KEY_PASSWORD"
+    set_optional_property "radius-ca-file"          "$RADIUS_CA_FILE"
+    set_optional_property "radius-ca-type"          "$RADIUS_CA_TYPE"
+    set_optional_property "radius-ca-password"      "$RADIUS_CA_PASSWORD"
+    set_optional_property "radius-trust-all"        "$RADIUS_TRUST_ALL"
+    set_optional_property "radius-retries"          "$RADIUS_RETRIES"
+    set_optional_property "radius-timeout"          "$RADIUS_TIMEOUT"
+
+    set_optional_property \
+       "radius-eap-ttls-inner-protocol" \
+       "$RADIUS_EAP_TTLS_INNER_PROTOCOL"
+
+    # Add required .jar files to GUACAMOLE_EXT
+    ln -s /opt/guacamole/radius/guacamole-auth-*.jar "$GUACAMOLE_EXT"
+}
+
+## Adds properties to guacamole.properties which select the OPENID
+## authentication provider, and configure it to connect to the specified OPENID
+## provider.
+##
+associate_openid() {
+
+    # Verify required parameters are present
+    if [ -z "$OPENID_AUTHORIZATION_ENDPOINT" ] || \
+       [ -z "$OPENID_JWKS_ENDPOINT" ]          || \
+       [ -z "$OPENID_ISSUER" ]                 || \
+       [ -z "$OPENID_CLIENT_ID" ]              || \          
+       [ -z "$OPENID_REDIRECT_URI" ]
+    then
+        cat <<END
+FATAL: Missing required environment variables
+-------------------------------------------------------------------------------
+If using an openid authentication, you must provide each of the following
+environment variables:
+
+    OPENID_AUTHORIZATION_ENDPOINT   The authorization endpoint (URI) of the OpenID service.
+
+    OPENID_JWKS_ENDPOINT            The endpoint (URI) of the JWKS service which defines
+                                    how received ID tokens (JSON Web Tokens or JWTs) 
+                                    shall be validated.
+
+    OPENID_ISSUER                   The issuer to expect for all received ID tokens.
+
+    OPENID_CLIENT_ID                The OpenID client ID which should be submitted 
+                                    to the OpenID service when necessary. 
+                                    This value is typically provided to you by the OpenID 
+                                    service when OpenID credentials are generated for your application.
+
+    OPENID_REDIRECT_URI             The URI that should be submitted to the OpenID service such that 
+                                    they can redirect the authenticated user back to Guacamole after 
+                                    the authentication process is complete. This must be the full URL 
+                                    that a user would enter into their browser to access Guacamole.
+END
+        exit 1;
+    fi
+
+    # Update config file
+    set_property          "openid-authorization-endpoint"    "$OPENID_AUTHORIZATION_ENDPOINT"
+    set_property          "openid-jwks-endpoint"             "$OPENID_JWKS_ENDPOINT"
+    set_property          "openid-issuer"                    "$OPENID_ISSUER"
+    set_property          "openid-client-id"                 "$OPENID_CLIENT_ID"
+    set_property          "openid-redirect-uri"              "$OPENID_REDIRECT_URI"
+    set_optional_property "openid-username-claim-type"       "$OPENID_USERNAME_CLAIM_TYPE"
+
+    # Add required .jar files to GUACAMOLE_EXT
+    # "1-{}" make it sorted as a first provider (only authentication)
+    # so it can work together with the database providers (authorization)
+    find /opt/guacamole/openid/ -name "*.jar" | awk -F/ '{print $NF}' | \
+    xargs -I '{}' ln -s "/opt/guacamole/openid/{}" "${GUACAMOLE_EXT}/1-{}"
+
+}
+
+##
+## Adds properties to guacamole.properties which configure the Duo two-factor
+## authentication service. Checks to see if all variables are defined and makes sure
+## DUO_APPLICATION_KEY is >= 40 characters.
+##
+associate_duo() {
+    # Verify required parameters are present
+    if [ -z "$DUO_INTEGRATION_KEY" ]      || \
+       [ -z "$DUO_SECRET_KEY" ]           || \
+       [ ${#DUO_APPLICATION_KEY} -lt 40 ]
+    then
+        cat <<END
+FATAL: Missing required environment variables
+-------------------------------------------------------------------------------
+If using the Duo authentication extension, you must provide each of the 
+following environment variables:
+
+    DUO_API_HOSTNAME        The hostname of the Duo API endpoint.
+
+    DUO_INTEGRATION_KEY     The integration key provided for Guacamole by Duo.
+
+    DUO_SECRET_KEY          The secret key provided for Guacamole by Duo. 
+
+    DUO_APPLICATION_KEY     An arbitrary, random key.
+                            This value must be at least 40 characters.
+END
+        exit 1;
+    fi
+
+    # Update config file
+    set_property "duo-api-hostname"                 "$DUO_API_HOSTNAME"
+    set_property "duo-integration-key"              "$DUO_INTEGRATION_KEY"
+    set_property "duo-secret-key"                   "$DUO_SECRET_KEY"
+    set_property "duo-application-key"              "$DUO_APPLICATION_KEY"
+
+    # Add required .jar files to GUACAMOLE_EXT
+    ln -s /opt/guacamole/duo/guacamole-auth-*.jar   "$GUACAMOLE_EXT"
 }
 
 ##
@@ -423,6 +605,18 @@ if [ -n "$LDAP_HOSTNAME" ]; then
     INSTALLED_AUTH="$INSTALLED_AUTH ldap"
 fi
 
+# Use RADIUS server if specified
+if [ -n "$RADIUS_SHARED_SECRET" ]; then
+    associate_radius
+    INSTALLED_AUTH="$INSTALLED_AUTH radius"
+fi
+
+# Use OPENID if specified
+if [ -n "$OPENID_AUTHORIZATION_ENDPOINT" ]; then
+    associate_openid
+    INSTALLED_AUTH="$INSTALLED_AUTH openid"
+fi
+
 #
 # Validate that at least one authentication backend is installed
 #
@@ -432,12 +626,17 @@ if [ -z "$INSTALLED_AUTH" -a -z "$GUACAMOLE_HOME_TEMPLATE" ]; then
 FATAL: No authentication configured
 -------------------------------------------------------------------------------
 The Guacamole Docker container needs at least one authentication mechanism in
-order to function, such as a MySQL database, PostgreSQL database, or LDAP
-directory.  Please specify at least the MYSQL_DATABASE or POSTGRES_DATABASE
-environment variables, or check Guacamole's Docker documentation regarding
-configuring LDAP and/or custom extensions.
+order to function, such as a MySQL database, PostgreSQL database, LDAP
+directory or RADIUS server. Please specify at least the MYSQL_DATABASE or 
+POSTGRES_DATABASE environment variables, or check Guacamole's Docker 
+documentation regarding configuring LDAP and/or custom extensions.
 END
     exit 1;
+fi
+
+# Use Duo if specified.
+if [ -n "$DUO_API_HOSTNAME" ]; then
+    associate_duo
 fi
 
 #

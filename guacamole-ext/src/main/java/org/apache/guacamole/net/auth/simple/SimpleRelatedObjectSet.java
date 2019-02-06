@@ -34,10 +34,13 @@ public class SimpleRelatedObjectSet implements RelatedObjectSet {
     /**
      * A set containing the identifiers of all objects currently present.
      */
-    private Set<String> identifiers = Collections.<String>emptySet();
+    private Set<String> identifiers = Collections.emptySet();
 
     /**
-     * Creates a new empty SimpleObjectPermissionSet.
+     * Creates a new empty SimpleRelatedObjectSet. If you are not extending
+     * SimpleRelatedObjectSet and only need an immutable, empty
+     * RelatedObjectSet, consider using {@link RelatedObjectSet#EMPTY_SET}
+     * instead.
      */
     public SimpleRelatedObjectSet() {
     }

@@ -53,7 +53,8 @@ public abstract class ModeledChildDirectoryObjectService<InternalType extends Mo
     /**
      * Returns the permission set associated with the given user and related
      * to the type of objects which can be parents of the child objects handled
-     * by this directory object service.
+     * by this directory object service, taking into account permission
+     * inheritance via user groups.
      *
      * @param user
      *     The user whose permissions are being retrieved.
@@ -66,7 +67,7 @@ public abstract class ModeledChildDirectoryObjectService<InternalType extends Mo
      * @throws GuacamoleException
      *     If permission to read the user's permissions is denied.
      */
-    protected abstract ObjectPermissionSet getParentPermissionSet(
+    protected abstract ObjectPermissionSet getParentEffectivePermissionSet(
             ModeledAuthenticatedUser user) throws GuacamoleException;
 
     /**
@@ -155,7 +156,7 @@ public abstract class ModeledChildDirectoryObjectService<InternalType extends Mo
         Collection<String> modifiedParents = getModifiedParents(user, identifier, model);
         if (!modifiedParents.isEmpty()) {
 
-            ObjectPermissionSet permissionSet = getParentPermissionSet(user);
+            ObjectPermissionSet permissionSet = getParentEffectivePermissionSet(user);
             Collection<String> updateableParents = permissionSet.getAccessibleObjects(
                 Collections.singleton(ObjectPermission.Type.UPDATE),
                 modifiedParents

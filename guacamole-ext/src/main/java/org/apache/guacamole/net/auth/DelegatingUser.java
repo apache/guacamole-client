@@ -48,6 +48,16 @@ public class DelegatingUser implements User {
         this.user = user;
     }
 
+    /**
+     * Returns the underlying User wrapped by this DelegatingUser.
+     *
+     * @return
+     *     The User wrapped by this DelegatingUser.
+     */
+    protected User getDelegateUser() {
+        return user;
+    }
+
     @Override
     public String getIdentifier() {
         return user.getIdentifier();

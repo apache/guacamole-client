@@ -20,43 +20,34 @@
 package org.apache.guacamole.net.auth.simple;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AbstractUser;
-import org.apache.guacamole.net.auth.ActivityRecord;
-import org.apache.guacamole.net.auth.Permissions;
-import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
-import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
- * An extremely basic User implementation.
+ * A read-only User implementation which has no permissions. Implementations
+ * that need to define permissions should extend this class and override the
+ * associated getters.
  */
 public class SimpleUser extends AbstractUser {
 
     /**
-     * All connection permissions granted to this user.
+     * All user permissions granted to this user.
      */
-    private final Set<ObjectPermission> userPermissions =
-            new HashSet<ObjectPermission>();
+    private final Set<ObjectPermission> userPermissions = new HashSet<>();
 
     /**
      * All connection permissions granted to this user.
      */
-    private final Set<ObjectPermission> connectionPermissions =
-            new HashSet<ObjectPermission>();
+    private final Set<ObjectPermission> connectionPermissions = new HashSet<>();
     
     /**
      * All connection group permissions granted to this user.
      */
-    private final Set<ObjectPermission> connectionGroupPermissions =
-            new HashSet<ObjectPermission>();
+    private final Set<ObjectPermission> connectionGroupPermissions = new HashSet<>();
 
     /**
      * Creates a completely uninitialized SimpleUser.
@@ -65,16 +56,13 @@ public class SimpleUser extends AbstractUser {
     }
 
     /**
-     * Creates a new SimpleUser having the given username and no permissions.
+     * Creates a new SimpleUser having the given username.
      *
      * @param username
      *     The username to assign to this SimpleUser.
      */
     public SimpleUser(String username) {
-
-        // Set username
-        setIdentifier(username);
-
+        super.setIdentifier(username);
     }
 
     /**
@@ -92,18 +80,17 @@ public class SimpleUser extends AbstractUser {
             Collection<String> identifiers) {
 
         // Add a READ permission to the set for each identifier given
-        for (String identifier : identifiers) {
-            permissions.add(new ObjectPermission (
+        identifiers.forEach(identifier ->
+            permissions.add(new ObjectPermission(
                 ObjectPermission.Type.READ,
-                identifier
+                identifier)
             ));
-        }
 
     }
-    
+
     /**
      * Creates a new SimpleUser having the given username and READ access to
-     * the connections and groups having the given identifiers.
+     * the connections and connection groups having the given identifiers.
      *
      * @param username
      *     The username to assign to this SimpleUser.
@@ -114,7 +101,15 @@ public class SimpleUser extends AbstractUser {
      * @param connectionGroupIdentifiers
      *     The identifiers of all connection groups this user has READ access
      *     to.
+     *
+     * @deprecated
+     *     Extend and override the applicable permission set getters instead,
+     *     relying on SimpleUser to expose no permissions by default for all
+     *     permission sets that aren't overridden. See {@link SimpleObjectPermissionSet}
+     *     for convenient methods of providing a read-only permission set with
+     *     specific permissions.
      */
+    @Deprecated
     public SimpleUser(String username,
             Collection<String> connectionIdentifiers,
             Collection<String> connectionGroupIdentifiers) {
@@ -143,7 +138,15 @@ public class SimpleUser extends AbstractUser {
      * @param connectionGroupIdentifiers
      *     The identifiers of all connection groups this user has READ access
      *     to.
+     *
+     * @deprecated
+     *     Extend and override the applicable permission set getters instead,
+     *     relying on SimpleUser to expose no permissions by default for all
+     *     permission sets that aren't overridden. See {@link SimpleObjectPermissionSet}
+     *     for convenient methods of providing a read-only permission set with
+     *     specific permissions.
      */
+    @Deprecated
     public SimpleUser(String username,
             Collection<String> userIdentifiers,
             Collection<String> connectionIdentifiers,
@@ -156,32 +159,6 @@ public class SimpleUser extends AbstractUser {
         addReadPermissions(connectionPermissions,      connectionIdentifiers);
         addReadPermissions(connectionGroupPermissions, connectionGroupIdentifiers);
 
-    }
-
-    @Override
-    public Map<String, String> getAttributes() {
-        return Collections.<String, String>emptyMap();
-    }
-
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        // Do nothing - there are no attributes
-    }
-
-    @Override
-    public Date getLastActive() {
-        return null;
-    }
-
-    @Override
-    public List<ActivityRecord> getHistory() throws GuacamoleException {
-        return Collections.<ActivityRecord>emptyList();
-    }
-
-    @Override
-    public SystemPermissionSet getSystemPermissions()
-            throws GuacamoleException {
-        return new SimpleSystemPermissionSet();
     }
 
     @Override
@@ -200,33 +177,6 @@ public class SimpleUser extends AbstractUser {
     public ObjectPermissionSet getUserPermissions()
             throws GuacamoleException {
         return new SimpleObjectPermissionSet(userPermissions);
-    }
-
-    @Override
-    public ObjectPermissionSet getUserGroupPermissions()
-            throws GuacamoleException {
-        return new SimpleObjectPermissionSet();
-    }
-
-    @Override
-    public ObjectPermissionSet getActiveConnectionPermissions()
-            throws GuacamoleException {
-        return new SimpleObjectPermissionSet();
-    }
-
-    @Override
-    public ObjectPermissionSet getSharingProfilePermissions() {
-        return new SimpleObjectPermissionSet();
-    }
-
-    @Override
-    public RelatedObjectSet getUserGroups() throws GuacamoleException {
-        return new SimpleRelatedObjectSet();
-    }
-
-    @Override
-    public Permissions getEffectivePermissions() throws GuacamoleException {
-        return this;
     }
 
 }

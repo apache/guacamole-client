@@ -100,6 +100,14 @@
         "SECTION_HEADER_RESTRICTIONS" : "Account Restrictions",
         "SECTION_HEADER_PROFILE"      : "Profile"
 
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_DISABLED" : "Disabled:",
+
+        "SECTION_HEADER_RESTRICTIONS" : "Group Restrictions"
+
     }
 
 }

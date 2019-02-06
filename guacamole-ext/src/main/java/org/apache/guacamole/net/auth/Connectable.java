@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
@@ -31,10 +32,20 @@ public interface Connectable {
     /**
      * Establishes a connection to guacd using the information associated with
      * this object. The connection will be provided the given client
-     * information.
+     * information. Implementations which support parameter tokens should
+     * apply the given tokens when configuring the connection, such as with a
+     * {@link org.apache.guacamole.token.TokenFilter}.
+     *
+     * @see <a href="http://guacamole.apache.org/doc/gug/configuring-guacamole.html#parameter-tokens">Parameter Tokens</a>
      *
      * @param info
      *     Information associated with the connecting client.
+     *
+     * @param tokens
+     *     A Map containing the token names and corresponding values to be
+     *     applied as parameter tokens when establishing the connection. If the
+     *     implementation does not support parameter tokens, this Map may be
+     *     ignored.
      *
      * @return
      *     A fully-established GuacamoleTunnel.
@@ -43,8 +54,8 @@ public interface Connectable {
      *     If an error occurs while connecting to guacd, or if permission to
      *     connect is denied.
      */
-    public GuacamoleTunnel connect(GuacamoleClientInformation info)
-            throws GuacamoleException;
+    public GuacamoleTunnel connect(GuacamoleClientInformation info,
+            Map<String, String> tokens) throws GuacamoleException;
 
     /**
      * Returns the number of active connections associated with this object.

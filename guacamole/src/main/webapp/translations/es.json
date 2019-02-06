@@ -678,7 +678,11 @@
 
         "HELP_USERS" : "Haga Clic o toque un usuario abajo para gestionar dicho usuario. Dependiendo de su nivel de acceso, podrá añadir/borrar usuarios y cambiar sus contraseñas.",
 
-        "SECTION_HEADER_USERS"       : "Usuarios"
+        "SECTION_HEADER_USERS"       : "Usuarios",
+
+        "TABLE_HEADER_FULL_NAME"   : "Nombre completo",
+        "TABLE_HEADER_ORGANIZATION" : "Organización",
+        "TABLE_HEADER_USERNAME"    : "Usuario"
 
     },
     

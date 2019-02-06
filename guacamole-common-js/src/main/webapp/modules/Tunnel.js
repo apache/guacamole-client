@@ -284,7 +284,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
      *
      * @private
      */
-    var extraHeaders = extraTunnelHeaders || {};
+    var extraHeaders = extraTunnelHeaders || {};
 
     /**
      * Adds the configured additional headers to the given request.
@@ -1277,7 +1277,7 @@ Guacamole.StaticHTTPTunnel = function StaticHTTPTunnel(url, crossDomain, extraTu
      *
      * @private
      */
-    var extraHeaders = extraTunnelHeaders || {};
+    var extraHeaders = extraTunnelHeaders || {};
 
     /**
      * Adds the configured additional headers to the given request.

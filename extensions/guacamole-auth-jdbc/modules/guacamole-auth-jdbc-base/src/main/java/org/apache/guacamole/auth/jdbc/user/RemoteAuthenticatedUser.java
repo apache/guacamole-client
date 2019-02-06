@@ -19,8 +19,8 @@
 
 package org.apache.guacamole.auth.jdbc.user;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.Set;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -46,19 +46,10 @@ public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
     private final String remoteHost;
 
     /**
-     * Arbitrary attributes associated with this RemoteAuthenticatedUser object.
+     * The identifiers of any groups of which this user is a member, including
+     * groups inherited through membership in other groups.
      */
-    private Map<String, String> attributes = new HashMap<String, String>();
-
-    @Override
-    public Map<String, String> getAttributes() {
-        return attributes;
-    }
-
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        this.attributes = attributes;
-    }
+    private final Set<String> effectiveGroups;
 
     /**
      * Creates a new RemoteAuthenticatedUser, deriving the associated remote
@@ -69,12 +60,17 @@ public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
      *
      * @param credentials
      *     The credentials given by the user when they authenticated.
+     *
+     * @param effectiveGroups
+     *     The identifiers of any groups of which this user is a member,
+     *     including groups inherited through membership in other groups.
      */
     public RemoteAuthenticatedUser(AuthenticationProvider authenticationProvider,
-            Credentials credentials) {
+            Credentials credentials, Set<String> effectiveGroups) {
         this.authenticationProvider = authenticationProvider;
         this.credentials = credentials;
         this.remoteHost = credentials.getRemoteAddress();
+        this.effectiveGroups = Collections.unmodifiableSet(effectiveGroups);
     }
 
     @Override
@@ -90,6 +86,11 @@ public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
      */
     public String getRemoteHost() {
         return remoteHost;
+    }
+
+    @Override
+    public Set<String> getEffectiveUserGroups() {
+        return effectiveGroups;
     }
 
     @Override

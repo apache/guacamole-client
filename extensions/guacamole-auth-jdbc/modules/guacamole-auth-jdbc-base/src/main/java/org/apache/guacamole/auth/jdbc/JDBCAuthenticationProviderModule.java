@@ -59,10 +59,15 @@ import org.apache.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermissio
 import org.apache.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermissionSet;
 import org.apache.guacamole.auth.jdbc.activeconnection.ActiveConnectionService;
 import org.apache.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
+import org.apache.guacamole.auth.jdbc.base.EntityMapper;
+import org.apache.guacamole.auth.jdbc.base.EntityService;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionParameterMapper;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionService;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionSet;
+import org.apache.guacamole.auth.jdbc.permission.UserGroupPermissionMapper;
+import org.apache.guacamole.auth.jdbc.permission.UserGroupPermissionService;
+import org.apache.guacamole.auth.jdbc.permission.UserGroupPermissionSet;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicyService;
 import org.apache.guacamole.auth.jdbc.sharing.ConnectionSharingService;
 import org.apache.guacamole.auth.jdbc.sharing.HashSharedConnectionMap;
@@ -77,8 +82,16 @@ import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileService;
 import org.apache.guacamole.auth.jdbc.tunnel.RestrictedGuacamoleTunnelService;
 import org.apache.guacamole.auth.jdbc.user.PasswordRecordMapper;
 import org.apache.guacamole.auth.jdbc.user.UserRecordMapper;
+import org.apache.guacamole.auth.jdbc.usergroup.ModeledUserGroup;
+import org.apache.guacamole.auth.jdbc.usergroup.UserGroupDirectory;
+import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMapper;
+import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMemberUserGroupMapper;
+import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMemberUserMapper;
+import org.apache.guacamole.auth.jdbc.usergroup.UserGroupParentUserGroupMapper;
+import org.apache.guacamole.auth.jdbc.usergroup.UserGroupService;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
+import org.apache.guacamole.auth.jdbc.user.UserParentUserGroupMapper;
 
 /**
  * Guice module which configures the injections used by the JDBC authentication
@@ -120,12 +133,19 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         addMapperClass(ConnectionPermissionMapper.class);
         addMapperClass(ConnectionRecordMapper.class);
         addMapperClass(ConnectionParameterMapper.class);
+        addMapperClass(EntityMapper.class);
         addMapperClass(PasswordRecordMapper.class);
         addMapperClass(SystemPermissionMapper.class);
         addMapperClass(SharingProfileMapper.class);
         addMapperClass(SharingProfileParameterMapper.class);
         addMapperClass(SharingProfilePermissionMapper.class);
+        addMapperClass(UserGroupMapper.class);
+        addMapperClass(UserGroupMemberUserGroupMapper.class);
+        addMapperClass(UserGroupMemberUserMapper.class);
+        addMapperClass(UserGroupParentUserGroupMapper.class);
+        addMapperClass(UserGroupPermissionMapper.class);
         addMapperClass(UserMapper.class);
+        addMapperClass(UserParentUserGroupMapper.class);
         addMapperClass(UserPermissionMapper.class);
         addMapperClass(UserRecordMapper.class);
         
@@ -143,12 +163,15 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(ModeledSharingProfile.class);
         bind(ModeledUser.class);
         bind(ModeledUserContext.class);
+        bind(ModeledUserGroup.class);
         bind(RootConnectionGroup.class);
         bind(SharingProfileDirectory.class);
         bind(SharingProfilePermissionSet.class);
         bind(SystemPermissionSet.class);
         bind(TrackedActiveConnection.class);
         bind(UserDirectory.class);
+        bind(UserGroupDirectory.class);
+        bind(UserGroupPermissionSet.class);
         bind(UserPermissionSet.class);
         
         // Bind services
@@ -159,6 +182,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(ConnectionPermissionService.class);
         bind(ConnectionSharingService.class);
         bind(ConnectionService.class);
+        bind(EntityService.class);
         bind(GuacamoleTunnelService.class).to(RestrictedGuacamoleTunnelService.class);
         bind(PasswordEncryptionService.class).to(SHA256PasswordEncryptionService.class);
         bind(PasswordPolicyService.class);
@@ -168,6 +192,8 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(SharingProfilePermissionService.class);
         bind(SharingProfileService.class);
         bind(SystemPermissionService.class);
+        bind(UserGroupService.class);
+        bind(UserGroupPermissionService.class);
         bind(UserPermissionService.class);
         bind(UserService.class);
         

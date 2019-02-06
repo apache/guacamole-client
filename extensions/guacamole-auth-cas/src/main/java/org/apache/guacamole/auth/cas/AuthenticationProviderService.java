@@ -23,12 +23,11 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
+import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.apache.guacamole.auth.cas.conf.ConfigurationService;
 import org.apache.guacamole.auth.cas.form.CASTicketField;
 import org.apache.guacamole.auth.cas.ticket.TicketValidationService;
@@ -45,12 +44,6 @@ public class AuthenticationProviderService {
      */
     @Inject
     private ConfigurationService confService;
-
-    /**
-     * The Guacamole server environment.
-     */
-    @Inject
-    private Environment environment;
 
     /**
      * Service for validating received ID tickets.
@@ -97,8 +90,7 @@ public class AuthenticationProviderService {
         }
 
         // Request CAS ticket
-        throw new GuacamoleInsufficientCredentialsException(
-            "LOGIN.INFO_CAS_REDIRECT_PENDING",
+        throw new GuacamoleInvalidCredentialsException("Invalid login.",
             new CredentialsInfo(Arrays.asList(new Field[] {
 
                 // CAS-specific ticket (will automatically redirect the user

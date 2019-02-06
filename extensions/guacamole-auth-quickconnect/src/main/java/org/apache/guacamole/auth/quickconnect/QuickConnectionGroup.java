@@ -108,8 +108,8 @@ public class QuickConnectionGroup extends AbstractConnectionGroup {
     }
 
     @Override
-    public GuacamoleTunnel connect(GuacamoleClientInformation info) 
-            throws GuacamoleException {
+    public GuacamoleTunnel connect(GuacamoleClientInformation info,
+            Map<String, String> tokens) throws GuacamoleException {
         // This group does not support connections
         throw new GuacamoleSecurityException("Permission denied.");
     }

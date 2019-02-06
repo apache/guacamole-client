@@ -88,6 +88,8 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
              * @type String[]
              */
             $scope.filteredUserProperties = [
+                'user.attributes["guac-full-name"]',
+                'user.attributes["guac-organization"]',
                 'user.lastActive',
                 'user.username'
             ];
@@ -107,7 +109,9 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
              */
             $scope.order = new SortOrder([
                 'user.username',
-                '-user.lastActive'
+                '-user.lastActive',
+                'user.attributes["guac-organization"]',
+                'user.attributes["guac-full-name"]'
             ]);
 
             // Get session date format

@@ -22,12 +22,13 @@ package org.apache.guacamole.auth.jdbc.user;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
-import org.apache.guacamole.auth.jdbc.base.ObjectModel;
+import org.apache.guacamole.auth.jdbc.base.EntityModel;
+import org.apache.guacamole.auth.jdbc.base.EntityType;
 
 /**
  * Object representation of a Guacamole user, as represented in the database.
  */
-public class UserModel extends ObjectModel {
+public class UserModel extends EntityModel {
 
     /**
      * The SHA-256 hash of the password and salt.
@@ -124,6 +125,7 @@ public class UserModel extends ObjectModel {
      * Creates a new, empty user.
      */
     public UserModel() {
+        super(EntityType.USER);
     }
 
     /**

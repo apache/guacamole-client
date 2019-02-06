@@ -29,6 +29,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.auth.totp.conf.ConfigurationService;
 import org.apache.guacamole.auth.totp.form.AuthenticationCodeField;
@@ -181,6 +182,15 @@ public class UserVerificationService {
         // Update user object
         try {
             context.getUserDirectory().update(self);
+        }
+        catch (GuacamoleSecurityException e) {
+            logger.info("User \"{}\" cannot store their TOTP key as they "
+                    + "lack permission to update their own account. TOTP "
+                    + "will be disabled for this user.",
+                    self.getIdentifier());
+            logger.debug("Permission denied to set TOTP key of user "
+                    + "account.", e);
+            return false;
         }
         catch (GuacamoleUnsupportedException e) {
             logger.debug("Extension storage for user is explicitly read-only. "

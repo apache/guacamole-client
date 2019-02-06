@@ -47,6 +47,17 @@ public class DelegatingConnectionGroup implements ConnectionGroup {
         this.connectionGroup = connectionGroup;
     }
 
+    /**
+     * Returns the underlying ConnectionGroup wrapped by this
+     * DelegatingConnectionGroup.
+     *
+     * @return
+     *     The ConnectionGroup wrapped by this DelegatingConnectionGroup.
+     */
+    protected ConnectionGroup getDelegateConnectionGroup() {
+        return connectionGroup;
+    }
+
     @Override
     public String getIdentifier() {
         return connectionGroup.getIdentifier();
@@ -108,8 +119,9 @@ public class DelegatingConnectionGroup implements ConnectionGroup {
     }
 
     @Override
-    public GuacamoleTunnel connect(GuacamoleClientInformation info) throws GuacamoleException {
-        return connectionGroup.connect(info);
+    public GuacamoleTunnel connect(GuacamoleClientInformation info,
+            Map<String, String> tokens) throws GuacamoleException {
+        return connectionGroup.connect(info, tokens);
     }
 
     @Override

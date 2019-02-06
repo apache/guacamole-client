@@ -18,43 +18,46 @@
 --
 
 -- Create default user "guacadmin" with password "guacadmin"
+INSERT INTO [guacamole_entity] ([name], [type]) VALUES ('guacadmin', 'USER');
 INSERT INTO [guacamole_user] (
-    [username],
+    [entity_id],
     [password_hash],
     [password_salt],
     [password_date]
 )
-VALUES (
-    'guacadmin',
+SELECT
+    [entity_id],
     0xCA458A7D494E3BE824F5E1E175A1556C0F8EEF2C2D7DF3633BEC4A29C4411960,
     0xFE24ADC5E11E2B25288D1704ABE67A79E342ECC26064CE69C5B3177795A82264,
     getdate()
-);
+FROM [guacamole_entity] WHERE [name] = 'guacadmin';
 
 -- Grant this user all system permissions
 INSERT INTO [guacamole_system_permission]
 SELECT
-    [user_id],
+    [entity_id],
     [permission]
 FROM (
           SELECT 'guacadmin', 'CREATE_CONNECTION'
     UNION SELECT 'guacadmin', 'CREATE_CONNECTION_GROUP'
     UNION SELECT 'guacadmin', 'CREATE_SHARING_PROFILE'
     UNION SELECT 'guacadmin', 'CREATE_USER'
+    UNION SELECT 'guacadmin', 'CREATE_USER_GROUP'
     UNION SELECT 'guacadmin', 'ADMINISTER'
 ) [permissions] ([username], [permission])
-JOIN [guacamole_user] ON [permissions].[username] = [guacamole_user].[username];
+JOIN [guacamole_entity] ON [permissions].[username] = [guacamole_entity].[name] AND [guacamole_entity].[type] = 'USER';
 
 INSERT INTO [guacamole_user_permission]
 SELECT
+    [guacamole_entity].[entity_id],
     [guacamole_user].[user_id],
-    [affected].[user_id],
     [permission]
 FROM (
           SELECT 'guacadmin', 'guacadmin', 'READ'
     UNION SELECT 'guacadmin', 'guacadmin', 'UPDATE'
     UNION SELECT 'guacadmin', 'guacadmin', 'ADMINISTER'
 ) [permissions] ([username], [affected_username], [permission])
-JOIN [guacamole_user]          ON permissions.username = [guacamole_user].[username]
-JOIN [guacamole_user] [affected] ON permissions.affected_username = affected.username;
+JOIN [guacamole_entity]            ON [permissions].[username] = [guacamole_entity].[name] AND [guacamole_entity].[type] = 'USER'
+JOIN [guacamole_entity] [affected] ON [permissions].[affected_username] = [affected].[name] AND [guacamole_entity].[type] = 'USER'
+JOIN [guacamole_user]              ON [guacamole_user].[entity_id] = [affected].[entity_id];
 GO

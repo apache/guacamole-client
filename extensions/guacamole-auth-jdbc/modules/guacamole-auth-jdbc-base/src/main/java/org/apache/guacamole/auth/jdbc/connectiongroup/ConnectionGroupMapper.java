@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.connectiongroup;
 
+import java.util.Collection;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.guacamole.auth.jdbc.user.UserModel;
@@ -61,11 +62,18 @@ public interface ConnectionGroupMapper extends ModeledDirectoryObjectMapper<Conn
      *     The identifier of the parent connection group, or null if the root
      *     connection group is to be queried.
      *
+     * @param effectiveGroups
+     *     The identifiers of all groups that should be taken into account
+     *     when determining the permissions effectively granted to the user. If
+     *     no groups are given, only permissions directly granted to the user
+     *     will be used.
+     *
      * @return
      *     A Set containing all identifiers of all readable objects.
      */
     Set<String> selectReadableIdentifiersWithin(@Param("user") UserModel user,
-            @Param("parentIdentifier") String parentIdentifier);
+            @Param("parentIdentifier") String parentIdentifier,
+            @Param("effectiveGroups") Collection<String> effectiveGroups);
 
     /**
      * Selects the connection group within the given parent group and having

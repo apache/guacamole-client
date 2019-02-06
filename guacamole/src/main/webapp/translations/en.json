@@ -563,7 +563,10 @@
         "FIELD_HEADER_FONT_NAME"      : "Font name:",
         "FIELD_HEADER_FONT_SIZE"      : "Font size:",
         "FIELD_HEADER_HOSTNAME"       : "Hostname:",
+        "FIELD_HEADER_LOGIN_FAILURE_REGEX" : "Login failure regular expression:",
+        "FIELD_HEADER_LOGIN_SUCCESS_REGEX" : "Login success regular expression:",
         "FIELD_HEADER_USERNAME"       : "Username:",
+        "FIELD_HEADER_USERNAME_REGEX" : "Username regular expression:",
         "FIELD_HEADER_PASSWORD"       : "Password:",
         "FIELD_HEADER_PASSWORD_REGEX" : "Password regular expression:",
         "FIELD_HEADER_PORT"           : "Port:",
@@ -789,7 +792,9 @@
 
         "SECTION_HEADER_USERS"       : "Users",
 
+        "TABLE_HEADER_FULL_NAME"   : "Full name",
         "TABLE_HEADER_LAST_ACTIVE" : "Last active",
+        "TABLE_HEADER_ORGANIZATION" : "Organization",
         "TABLE_HEADER_USERNAME"    : "Username"
 
     },

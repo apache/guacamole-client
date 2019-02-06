@@ -24,6 +24,7 @@ import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
+import org.apache.ibatis.session.SqlSession;
 
 /**
  * A PostgreSQL-specific implementation of JDBCEnvironment provides database
@@ -241,6 +242,11 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
      */
     public String getPostgreSQLPassword() throws GuacamoleException {
         return getRequiredProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_PASSWORD);
+    }
+
+    @Override
+    public boolean isRecursiveQuerySupported(SqlSession session) {
+        return true; // All versions of PostgreSQL support recursive queries through CTEs
     }
     
 }
