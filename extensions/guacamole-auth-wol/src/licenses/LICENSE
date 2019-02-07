@@ -220,29 +220,3 @@ AOP Alliance (http://aopalliance.sourceforge.net/)
         Public Domain (bundled/aopalliance-1.0/LICENSE)
 
 
-Google Guice (https://github.com/google/guice)
-----------------------------------------------
-
-    Version: 3.0
-    From: 'Google Inc.' (http://www.google.com/)
-    License(s):
-        Apache v2.0 (bundled/guice-3.0/COPYING)
-
-
-Guava: Google Core Libraries for Java (https://github.com/google/guava)
------------------------------------------------------------------------
-
-    Version: 18.0
-    From: 'Google Inc.' (http://www.google.com/)
-    License(s):
-        Apache v2.0 (bundled/guava-18.0/COPYING)
-
-
-JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
-----------------------------------------------------------------------------
-
-    Version: 1
-    From: 'JSR-330 Expert Group' (https://jcp.org/en/jsr/detail?id=330)
-    License(s):
-        Apache v2.0 (bundled/javax.inject-1/LICENSE-2.0.txt)
-
