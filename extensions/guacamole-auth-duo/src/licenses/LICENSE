@@ -272,3 +272,12 @@ JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
     License(s):
         Apache v2.0 (bundled/javax.inject-1/LICENSE-2.0.txt)
 
+
+JAXB API / XML Processing (https://projects.eclipse.org/projects/ee4j.jaxb)
+---------------------------------------------------------------------------
+
+    Version: 2.3.1
+    From: 'Oracle' (http://www.oracle.com)
+    License(s):
+        CDDL 1.1 (bundled/jaxb-api-2.3.1/license.txt)
+

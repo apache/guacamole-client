@@ -247,6 +247,15 @@ JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
         Apache v2.0 (bundled/javax.inject-1/LICENSE-2.0.txt)
 
 
+JAXB API / XML Processing (https://projects.eclipse.org/projects/ee4j.jaxb)
+---------------------------------------------------------------------------
+
+    Version: 2.3.1
+    From: 'Oracle' (http://www.oracle.com)
+    License(s):
+        CDDL 1.1 (bundled/jaxb-api-2.3.1/license.txt)
+
+
 MyBatis (http://www.mybatis.org/mybatis-3/)
 -------------------------------------------
 
@@ -263,4 +272,3 @@ MyBatis-Guice (http://www.mybatis.org/guice/)
     From: 'MyBatis' (http://www.mybatis.org/)
     License(s):
         Apache v2.0 (bundled/mybatis-guice-3.6/LICENSE)
-
