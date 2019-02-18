@@ -254,4 +254,16 @@ public abstract class AbstractUserContext implements UserContext {
     public void invalidate() {
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>This implementation simply returns <code>this</code>. Implementations
+     * that wish to provide additional privileges to extensions requesting
+     * privileged access should override this function.
+     */
+    @Override
+    public UserContext getPrivileged() {
+        return this;
+    }
+
 }

@@ -152,4 +152,9 @@ public class DelegatingUserContext implements UserContext {
         userContext.invalidate();
     }
 
+    @Override
+    public UserContext getPrivileged() {
+        return userContext.getPrivileged();
+    }
+
 }
