@@ -219,6 +219,7 @@ AOP Alliance (http://aopalliance.sourceforge.net/)
     License(s):
         Public Domain (bundled/aopalliance-1.0/LICENSE)
 
+
 Google Guice (https://github.com/google/guice)
 ----------------------------------------------
 
@@ -226,14 +227,6 @@ Google Guice (https://github.com/google/guice)
     From: 'Google Inc.' (http://www.google.com/)
     License(s):
         Apache v2.0 (bundled/guice-3.0/COPYING)
-
-JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
-----------------------------------------------------------------------------
-
-    Version: 1
-    From: 'JSR-330 Expert Group' (https://jcp.org/en/jsr/detail?id=330)
-    License(s):
-        Apache v2.0 (bundled/javax.inject-1/LICENSE-2.0.txt)
 
 
 JAXB API / XML Processing (https://projects.eclipse.org/projects/ee4j.jaxb)
@@ -243,4 +236,13 @@ JAXB API / XML Processing (https://projects.eclipse.org/projects/ee4j.jaxb)
     From: 'Oracle' (http://www.oracle.com)
     License(s):
         CDDL 1.1 (bundled/jaxb-api-2.3.1/license.txt)
+
+
+JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
+----------------------------------------------------------------------------
+
+    Version: 1
+    From: 'JSR-330 Expert Group' (https://jcp.org/en/jsr/detail?id=330)
+    License(s):
+        Apache v2.0 (bundled/javax.inject-1/LICENSE-2.0.txt)
 

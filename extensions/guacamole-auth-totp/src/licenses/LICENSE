@@ -284,15 +284,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-ZXing Barcode Scanning Library (https://github.com/zxing/zxing/)
-----------------------------------------------------------------
-
-    Version: 3.3.1
-    From: 'ZXing authors' (https://github.com/zxing/zxing/blob/zxing-3.3.1/AUTHORS)
-    License(s):
-        Apache v2.0 (bundled/zxing-3.3.1/LICENSE)
-
-
 JAXB API / XML Processing (https://projects.eclipse.org/projects/ee4j.jaxb)
 ---------------------------------------------------------------------------
 
@@ -300,4 +291,13 @@ JAXB API / XML Processing (https://projects.eclipse.org/projects/ee4j.jaxb)
     From: 'Oracle' (http://www.oracle.com)
     License(s):
         CDDL 1.1 (bundled/jaxb-api-2.3.1/license.txt)
+
+
+ZXing Barcode Scanning Library (https://github.com/zxing/zxing/)
+----------------------------------------------------------------
+
+    Version: 3.3.1
+    From: 'ZXing authors' (https://github.com/zxing/zxing/blob/zxing-3.3.1/AUTHORS)
+    License(s):
+        Apache v2.0 (bundled/zxing-3.3.1/LICENSE)
 
