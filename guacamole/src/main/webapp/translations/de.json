@@ -354,6 +354,7 @@
 
         "SECTION_HEADER_AUTHENTICATION"     : "Authentifizierung",
         "SECTION_HEADER_BASIC_PARAMETERS"   : "Basiseinstellungen",
+        "SECTION_HEADER_CLIPBOARD"          : "Zwischenablage",
         "SECTION_HEADER_DEVICE_REDIRECTION" : "Geräteumleitung",
         "SECTION_HEADER_DISPLAY"            : "Bildschirm",
         "SECTION_HEADER_NETWORK"            : "Netzwerk",
@@ -403,6 +404,7 @@
         "NAME" : "SSH",
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentifizierung",
+        "SECTION_HEADER_CLIPBOARD"      : "Zwischenablage",
         "SECTION_HEADER_DISPLAY"        : "Bildschirm",
         "SECTION_HEADER_NETWORK"        : "Netzwerk",
         "SECTION_HEADER_SESSION"        : "Sitzung / Umgebung",
@@ -447,6 +449,7 @@
         "NAME" : "Telnet",
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentifizierung",
+        "SECTION_HEADER_CLIPBOARD"      : "Zwischenablage",
         "SECTION_HEADER_DISPLAY"        : "Bildschirm",
         "SECTION_HEADER_NETWORK"        : "Netzwerk"
 

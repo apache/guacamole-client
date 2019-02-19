@@ -399,6 +399,7 @@
 
         "SECTION_HEADER_AUTHENTICATION"     : "Autenticación",
         "SECTION_HEADER_BASIC_PARAMETERS"   : "Configuración básica",
+        "SECTION_HEADER_CLIPBOARD"          : "Portapapeles",
         "SECTION_HEADER_DEVICE_REDIRECTION" : "Redirección dispositivo",
         "SECTION_HEADER_DISPLAY"            : "Visualización",
         "SECTION_HEADER_GATEWAY"            : "Puerta de enlace remota",
@@ -460,6 +461,7 @@
         "NAME" : "SSH",
 
         "SECTION_HEADER_AUTHENTICATION" : "Autenticación",
+        "SECTION_HEADER_CLIPBOARD"      : "Portapapeles",
         "SECTION_HEADER_DISPLAY"        : "Mostrar",
         "SECTION_HEADER_NETWORK"        : "Red",
         "SECTION_HEADER_RECORDING"      : "Grabación de pantalla",
@@ -512,6 +514,7 @@
         "NAME" : "Telnet",
 
         "SECTION_HEADER_AUTHENTICATION" : "Autenticación",
+        "SECTION_HEADER_CLIPBOARD"      : "Portapapeles",
         "SECTION_HEADER_DISPLAY"        : "Mostrar",
         "SECTION_HEADER_RECORDING"      : "Grabación pantalla",
         "SECTION_HEADER_TYPESCRIPT"     : "Script de escritura (Próxima sesión de grabación)",

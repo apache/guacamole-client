@@ -68,6 +68,22 @@
         },
 
         {
+            "name"  : "clipboard",
+            "fields" : [
+                {
+                    "name"    : "disable-copy",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-paste",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
             "name" : "session",
             "fields" : [
                 {
@@ -80,6 +96,7 @@
                 }
             ]
         },
+
         {
             "name" : "behavior",
             "fields" : [
