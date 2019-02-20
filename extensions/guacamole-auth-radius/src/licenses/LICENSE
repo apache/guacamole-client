@@ -238,6 +238,15 @@ Google Guice (https://github.com/google/guice)
         Apache v2.0 (bundled/guice-3.0/COPYING)
 
 
+JAXB API / XML Processing (https://projects.eclipse.org/projects/ee4j.jaxb)
+---------------------------------------------------------------------------
+
+    Version: 2.3.1
+    From: 'Oracle' (http://www.oracle.com)
+    License(s):
+        CDDL 1.1 (bundled/jaxb-api-2.3.1/license.txt)
+
+
 JRadius (https://github.com/coova/jradius)
 ------------------------------------------
 

@@ -210,6 +210,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Java XML -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+
         <!-- JRadius Core Library -->
         <dependency>
             <groupId>net.jradius</groupId>
