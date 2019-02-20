@@ -238,6 +238,15 @@ Guava: Google Core Libraries for Java (https://github.com/google/guava)
         Apache v2.0 (bundled/guava-18.0/COPYING)
 
 
+JAXB API / XML Processing (https://projects.eclipse.org/projects/ee4j.jaxb)
+---------------------------------------------------------------------------
+
+    Version: 2.3.1
+    From: 'Oracle' (http://www.oracle.com)
+    License(s):
+        CDDL 1.1 (bundled/jaxb-api-2.3.1/license.txt)
+
+
 JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
 ----------------------------------------------------------------------------
 
@@ -263,4 +272,3 @@ MyBatis-Guice (http://www.mybatis.org/guice/)
     From: 'MyBatis' (http://www.mybatis.org/)
     License(s):
         Apache v2.0 (bundled/mybatis-guice-3.6/LICENSE)
-
