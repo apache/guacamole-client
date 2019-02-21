@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.jdbc.user;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
@@ -167,6 +168,13 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
     @Override
     public void setIdentifier(String identifier) {
         user.setIdentifier(identifier);
+    }
+    
+    @Override
+    public Set<String> getEffectiveUserGroups() {
+        Set<String> allGroups = new HashSet<>(user.getEffectiveUserGroups());
+        allGroups.addAll(super.getEffectiveUserGroups());
+        return Collections.unmodifiableSet(allGroups);
     }
 
 }
