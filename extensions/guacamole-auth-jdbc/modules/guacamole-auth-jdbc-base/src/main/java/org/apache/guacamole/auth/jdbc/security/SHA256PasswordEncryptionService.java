@@ -19,10 +19,10 @@
 
 package org.apache.guacamole.auth.jdbc.security;
 
+import com.google.common.io.BaseEncoding;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import javax.xml.bind.DatatypeConverter;
 
 /**
  * Provides a SHA-256 based implementation of the password encryption
@@ -40,7 +40,7 @@ public class SHA256PasswordEncryptionService implements PasswordEncryptionServic
             builder.append(password);
 
             if (salt != null)
-                builder.append(DatatypeConverter.printHexBinary(salt));
+                builder.append(BaseEncoding.base16().encode(salt));
 
             // Hash UTF-8 bytes of possibly-salted password
             MessageDigest md = MessageDigest.getInstance("SHA-256");

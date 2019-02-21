@@ -19,10 +19,10 @@
 
 package org.apache.guacamole.auth.duo.api;
 
+import com.google.common.io.BaseEncoding;
 import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 
@@ -171,7 +171,7 @@ public class DuoCookie {
         // Attempt to decode data as base64
         String data;
         try {
-            data = new String(DatatypeConverter.parseBase64Binary(str), "UTF-8");
+            data = new String(BaseEncoding.base64().decode(str), "UTF-8");
         }
 
         // Bail if invalid base64 is provided
@@ -231,7 +231,7 @@ public class DuoCookie {
             String data = username + "|" + integrationKey + "|" + expires;
 
             // Encode resulting cookie string with base64
-            return DatatypeConverter.printBase64Binary(data.getBytes("UTF-8"));
+            return BaseEncoding.base64().encode(data.getBytes("UTF-8"));
 
         }
 

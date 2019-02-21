@@ -19,8 +19,8 @@
 
 package org.apache.guacamole.rest.auth;
 
+import com.google.common.io.BaseEncoding;
 import java.security.SecureRandom;
-import javax.xml.bind.DatatypeConverter;
 
 /**
  * An implementation of the AuthTokenGenerator based around SecureRandom.
@@ -37,7 +37,7 @@ public class SecureRandomAuthTokenGenerator implements AuthTokenGenerator {
         byte[] bytes = new byte[32];
         secureRandom.nextBytes(bytes);
         
-        return DatatypeConverter.printHexBinary(bytes);
+        return BaseEncoding.base16().encode(bytes);
     }
     
 }

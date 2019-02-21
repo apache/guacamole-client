@@ -19,10 +19,10 @@
 
 package org.apache.guacamole.tunnel;
 
+import com.google.common.io.BaseEncoding;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.protocol.GuacamoleInstruction;
@@ -127,7 +127,7 @@ public class OutputStreamInterceptingFilter
         byte[] blob;
         try {
             String data = args.get(1);
-            blob = DatatypeConverter.parseBase64Binary(data);
+            blob = BaseEncoding.base64().decode(data);
         }
         catch (IllegalArgumentException e) {
             logger.warn("Received base64 data for intercepted stream was invalid.");
