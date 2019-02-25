@@ -4,8 +4,6 @@
     
     "APP" : {
 
-        "NAME"    : "Apache Guacamole",
-
         "ACTION_ACKNOWLEDGE"        : "OK",
         "ACTION_CANCEL"             : "Cancelar",
         "ACTION_CLONE"              : "Clonar",
