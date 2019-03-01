@@ -34,17 +34,17 @@ public interface SharingProfileMapper
      * returned.
      *
      * @param parentIdentifier
-     *     The identifier of the primary connection to search against.
+     *            The identifier of the primary connection to search against.
      *
      * @param name
-     *     The name of the sharing profile to find.
+     *            The name of the sharing profile to find.
      *
-     * @return
-     *     The sharing profile having the given name and associated with the
-     *     given primary connection, or null if no such sharing profile exists.
+     * @return The sharing profile having the given name and associated with the
+     *         given primary connection, or null if no such sharing profile
+     *         exists.
      */
     SharingProfileModel selectOneByName(
             @Param("parentIdentifier") String parentIdentifier,
             @Param("name") String name);
-    
+
 }

@@ -19,23 +19,24 @@
 
 package org.apache.guacamole.auth.sqlserver;
 
+import java.io.Closeable;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
+import org.apache.guacamole.auth.common.CommonEnvironment;
+import org.apache.guacamole.auth.common.security.PasswordPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
-import org.apache.ibatis.session.SqlSession;
 
 /**
  * A SQLServer-specific implementation of JDBCEnvironment provides database
  * properties specifically for SQLServer.
  */
-public class SQLServerEnvironment extends JDBCEnvironment {
+public class SQLServerEnvironment extends CommonEnvironment {
 
     /**
      * Logger for this class.
      */
-    private static final Logger logger = LoggerFactory.getLogger(SQLServerEnvironment.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(SQLServerEnvironment.class);
 
     /**
      * The default host to connect to, if SQLSERVER_HOSTNAME is not specified.
@@ -54,8 +55,8 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     private static final boolean DEFAULT_USER_REQUIRED = false;
 
     /**
-     * The default value for the maximum number of connections to be
-     * allowed to the Guacamole server overall.
+     * The default value for the maximum number of connections to be allowed to
+     * the Guacamole server overall.
      */
     private static final int DEFAULT_ABSOLUTE_MAX_CONNECTIONS = 0;
 
@@ -89,12 +90,13 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     public static final SQLServerDriver SQLSERVER_DEFAULT_DRIVER = SQLServerDriver.MICROSOFT_2005;
 
     /**
-     * Constructs a new SQLServerEnvironment, providing access to SQLServer-specific
-     * configuration options.
+     * Constructs a new SQLServerEnvironment, providing access to
+     * SQLServer-specific configuration options.
      * 
-     * @throws GuacamoleException 
-     *     If an error occurs while setting up the underlying JDBCEnvironment
-     *     or while parsing legacy SQLServer configuration options.
+     * @throws GuacamoleException
+     *             If an error occurs while setting up the underlying
+     *             JDBCEnvironment or while parsing legacy SQLServer
+     *             configuration options.
      */
     public SQLServerEnvironment() throws GuacamoleException {
 
@@ -105,49 +107,44 @@ public class SQLServerEnvironment extends JDBCEnvironment {
 
     @Override
     public boolean isUserRequired() throws GuacamoleException {
-        return getProperty(
-            SQLServerGuacamoleProperties.SQLSERVER_USER_REQUIRED,
-            DEFAULT_USER_REQUIRED
-        );
+        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_USER_REQUIRED,
+                DEFAULT_USER_REQUIRED);
     }
 
     @Override
     public int getAbsoluteMaxConnections() throws GuacamoleException {
-        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_ABSOLUTE_MAX_CONNECTIONS,
-            DEFAULT_ABSOLUTE_MAX_CONNECTIONS
-        );
+        return getProperty(
+                SQLServerGuacamoleProperties.SQLSERVER_ABSOLUTE_MAX_CONNECTIONS,
+                DEFAULT_ABSOLUTE_MAX_CONNECTIONS);
     }
 
     @Override
     public int getDefaultMaxConnections() throws GuacamoleException {
         return getProperty(
-            SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_CONNECTIONS,
-            DEFAULT_MAX_CONNECTIONS
-        );
+                SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_CONNECTIONS,
+                DEFAULT_MAX_CONNECTIONS);
     }
 
     @Override
     public int getDefaultMaxGroupConnections() throws GuacamoleException {
         return getProperty(
-            SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS,
-            DEFAULT_MAX_GROUP_CONNECTIONS
-        );
+                SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS,
+                DEFAULT_MAX_GROUP_CONNECTIONS);
     }
 
     @Override
     public int getDefaultMaxConnectionsPerUser() throws GuacamoleException {
         return getProperty(
-            SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_CONNECTIONS_PER_USER,
-            DEFAULT_MAX_CONNECTIONS_PER_USER
-        );
+                SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_CONNECTIONS_PER_USER,
+                DEFAULT_MAX_CONNECTIONS_PER_USER);
     }
 
     @Override
-    public int getDefaultMaxGroupConnectionsPerUser() throws GuacamoleException {
+    public int getDefaultMaxGroupConnectionsPerUser()
+            throws GuacamoleException {
         return getProperty(
-            SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER,
-            DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER
-        );
+                SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER,
+                DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER);
     }
 
     @Override
@@ -159,102 +156,95 @@ public class SQLServerEnvironment extends JDBCEnvironment {
      * Returns the hostname of the SQLServer server hosting the Guacamole
      * authentication tables. If unspecified, this will be "localhost".
      * 
-     * @return
-     *     The URL of the SQLServer server.
+     * @return The URL of the SQLServer server.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value.
+     * @throws GuacamoleException
+     *             If an error occurs while retrieving the property value.
      */
     public String getSQLServerHostname() throws GuacamoleException {
-        return getProperty(
-            SQLServerGuacamoleProperties.SQLSERVER_HOSTNAME,
-            DEFAULT_HOSTNAME
-        );
+        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_HOSTNAME,
+                DEFAULT_HOSTNAME);
     }
-    
+
     /**
      * Returns the port number of the SQLServer server hosting the Guacamole
-     * authentication tables. If unspecified, this will be the default
-     * SQLServer port of 5432.
+     * authentication tables. If unspecified, this will be the default SQLServer
+     * port of 5432.
      * 
-     * @return
-     *     The port number of the SQLServer server.
+     * @return The port number of the SQLServer server.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value.
+     * @throws GuacamoleException
+     *             If an error occurs while retrieving the property value.
      */
     public int getSQLServerPort() throws GuacamoleException {
-        return getProperty(
-            SQLServerGuacamoleProperties.SQLSERVER_PORT,
-            DEFAULT_PORT
-        );
+        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_PORT,
+                DEFAULT_PORT);
     }
-    
+
     /**
      * Returns the name of the SQLServer database containing the Guacamole
      * authentication tables.
      * 
-     * @return
-     *     The name of the SQLServer database.
+     * @return The name of the SQLServer database.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value, or if the
-     *     value was not set, as this property is required.
+     * @throws GuacamoleException
+     *             If an error occurs while retrieving the property value, or if
+     *             the value was not set, as this property is required.
      */
     public String getSQLServerDatabase() throws GuacamoleException {
-        return getRequiredProperty(SQLServerGuacamoleProperties.SQLSERVER_DATABASE);
+        return getRequiredProperty(
+                SQLServerGuacamoleProperties.SQLSERVER_DATABASE);
     }
 
     /**
      * Returns the username that should be used when authenticating with the
      * SQLServer database containing the Guacamole authentication tables.
      * 
-     * @return
-     *     The username for the SQLServer database.
+     * @return The username for the SQLServer database.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value, or if the
-     *     value was not set, as this property is required.
+     * @throws GuacamoleException
+     *             If an error occurs while retrieving the property value, or if
+     *             the value was not set, as this property is required.
      */
     public String getSQLServerUsername() throws GuacamoleException {
-        return getRequiredProperty(SQLServerGuacamoleProperties.SQLSERVER_USERNAME);
+        return getRequiredProperty(
+                SQLServerGuacamoleProperties.SQLSERVER_USERNAME);
     }
-    
+
     /**
      * Returns the password that should be used when authenticating with the
      * SQLServer database containing the Guacamole authentication tables.
      * 
-     * @return
-     *     The password for the SQLServer database.
+     * @return The password for the SQLServer database.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value, or if the
-     *     value was not set, as this property is required.
+     * @throws GuacamoleException
+     *             If an error occurs while retrieving the property value, or if
+     *             the value was not set, as this property is required.
      */
     public String getSQLServerPassword() throws GuacamoleException {
-        return getRequiredProperty(SQLServerGuacamoleProperties.SQLSERVER_PASSWORD);
+        return getRequiredProperty(
+                SQLServerGuacamoleProperties.SQLSERVER_PASSWORD);
     }
 
     /**
-     * Returns which JDBC driver should be used to make the SQLServer/TDS connection.
+     * Returns which JDBC driver should be used to make the SQLServer/TDS
+     * connection.
      *
-     * @return
-     *     Which TDS-compatible JDBC driver should be used.
+     * @return Which TDS-compatible JDBC driver should be used.
      *
      * @throws GuacamoleException
-     *     If an error occurs while retrieving the property value, or if the
-     *     value was not set, as this property is required.
+     *             If an error occurs while retrieving the property value, or if
+     *             the value was not set, as this property is required.
      */
     public SQLServerDriver getSQLServerDriver() throws GuacamoleException {
-        return getProperty(
-            SQLServerGuacamoleProperties.SQLSERVER_DRIVER,
-            SQLSERVER_DEFAULT_DRIVER
-        );
+        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_DRIVER,
+                SQLSERVER_DEFAULT_DRIVER);
     }
 
     @Override
-    public boolean isRecursiveQuerySupported(SqlSession session) {
-        return true; // All versions of SQL Server support recursive queries through CTEs
+    public boolean isRecursiveQuerySupported(Closeable session) {
+        return true; // All versions of SQL Server support recursive queries
+                     // through CTEs
     }
 
 }

@@ -40,29 +40,34 @@ public class MySQLAuthenticationProviderModule implements Module {
      * MySQL-specific driver configuration properties.
      */
     private final Properties driverProperties = new Properties();
-    
+
     /**
-     * Creates a new MySQL authentication provider module that configures
-     * driver and MyBatis properties using the given environment.
+     * Creates a new MySQL authentication provider module that configures driver
+     * and MyBatis properties using the given environment.
      *
      * @param environment
-     *     The environment to use when configuring MyBatis and the underlying
-     *     JDBC driver.
+     *            The environment to use when configuring MyBatis and the
+     *            underlying JDBC driver.
      *
      * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
+     *             If a required property is missing, or an error occurs while
+     *             parsing a property.
      */
     public MySQLAuthenticationProviderModule(MySQLEnvironment environment)
             throws GuacamoleException {
 
         // Set the MySQL-specific properties for MyBatis.
         myBatisProperties.setProperty("mybatis.environment.id", "guacamole");
-        myBatisProperties.setProperty("JDBC.host", environment.getMySQLHostname());
-        myBatisProperties.setProperty("JDBC.port", String.valueOf(environment.getMySQLPort()));
-        myBatisProperties.setProperty("JDBC.schema", environment.getMySQLDatabase());
-        myBatisProperties.setProperty("JDBC.username", environment.getMySQLUsername());
-        myBatisProperties.setProperty("JDBC.password", environment.getMySQLPassword());
+        myBatisProperties.setProperty("JDBC.host",
+                environment.getMySQLHostname());
+        myBatisProperties.setProperty("JDBC.port",
+                String.valueOf(environment.getMySQLPort()));
+        myBatisProperties.setProperty("JDBC.schema",
+                environment.getMySQLDatabase());
+        myBatisProperties.setProperty("JDBC.username",
+                environment.getMySQLUsername());
+        myBatisProperties.setProperty("JDBC.password",
+                environment.getMySQLPassword());
         myBatisProperties.setProperty("JDBC.autoCommit", "false");
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
@@ -80,14 +85,14 @@ public class MySQLAuthenticationProviderModule implements Module {
 
         // Bind MySQL-specific properties
         JdbcHelper.MySQL.configure(binder);
-        
+
         // Bind MyBatis properties
         Names.bindProperties(binder, myBatisProperties);
 
         // Bind JDBC driver properties
         binder.bind(Properties.class)
-            .annotatedWith(Names.named("JDBC.driverProperties"))
-            .toInstance(driverProperties);
+                .annotatedWith(Names.named("JDBC.driverProperties"))
+                .toInstance(driverProperties);
 
     }
 

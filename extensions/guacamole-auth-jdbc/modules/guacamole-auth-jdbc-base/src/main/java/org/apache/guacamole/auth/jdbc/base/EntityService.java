@@ -19,30 +19,22 @@
 
 package org.apache.guacamole.auth.jdbc.base;
 
-import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
+import org.apache.guacamole.auth.common.base.EntityModelInterface;
+import org.apache.guacamole.auth.common.base.EntityServiceAbstract;
+import org.apache.guacamole.auth.common.base.EntityServiceInterface;
+import org.apache.guacamole.auth.common.base.ModeledPermissions;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.guice.transactional.Transactional;
+import com.google.inject.Inject;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating entities.
  */
-public class EntityService {
-
-    /**
-     * The Guacamole server environment.
-     */
-    @Inject
-    private JDBCEnvironment environment;
-
-    /**
-     * Mapper for Entity model objects.
-     */
-    @Inject
-    private EntityMapper entityMapper;
+public class EntityService extends EntityServiceAbstract
+        implements EntityServiceInterface {
 
     /**
      * The current SQL session used by MyBatis.
@@ -61,24 +53,27 @@ public class EntityService {
      * user lacks "READ" permission for that group.
      *
      * @param entity
-     *     The entity whose effective groups should be returned.
+     *            The entity whose effective groups should be returned.
      *
      * @param effectiveGroups
-     *     The identifiers of any known effective groups that should be taken
-     *     into account, such as those defined externally to the database.
+     *            The identifiers of any known effective groups that should be
+     *            taken into account, such as those defined externally to the
+     *            database.
      *
-     * @return
-     *     The set of identifiers of all groups that the given entity is a
-     *     member of, including those where membership is inherited through
-     *     membership in other groups.
+     * @return The set of identifiers of all groups that the given entity is a
+     *         member of, including those where membership is inherited through
+     *         membership in other groups.
      */
     @Transactional
-    public Set<String> retrieveEffectiveGroups(ModeledPermissions<? extends EntityModel> entity,
+    public Set<String> retrieveEffectiveGroups(
+            ModeledPermissions<? extends EntityModelInterface> entity,
             Collection<String> effectiveGroups) {
 
-        // Retrieve the effective user groups of the given entity, recursively if possible
+        // Retrieve the effective user groups of the given entity, recursively
+        // if possible
         boolean recursive = environment.isRecursiveQuerySupported(sqlSession);
-        Set<String> identifiers = entityMapper.selectEffectiveGroupIdentifiers(entity.getModel(), effectiveGroups, recursive);
+        Set<String> identifiers = entityMapper.selectEffectiveGroupIdentifiers(
+                entity.getModel(), effectiveGroups, recursive);
 
         // If the set of user groups retrieved was not produced recursively,
         // manually repeat the query to expand the set until all effective
@@ -87,7 +82,8 @@ public class EntityService {
             Set<String> previousIdentifiers;
             do {
                 previousIdentifiers = identifiers;
-                identifiers = entityMapper.selectEffectiveGroupIdentifiers(entity.getModel(), previousIdentifiers, false);
+                identifiers = entityMapper.selectEffectiveGroupIdentifiers(
+                        entity.getModel(), previousIdentifiers, false);
             } while (identifiers.size() > previousIdentifiers.size());
         }
 

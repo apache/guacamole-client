@@ -19,13 +19,15 @@
 
 package org.apache.guacamole.auth.jdbc.sharingprofile;
 
+import org.apache.guacamole.auth.common.sharingprofile.SharingProfileModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ChildObjectModel;
 
 /**
  * Object representation of a Guacamole sharing profile, as represented in the
  * database.
  */
-public class SharingProfileModel extends ChildObjectModel {
+public class SharingProfileModel extends ChildObjectModel
+        implements SharingProfileModelInterface {
 
     /**
      * The human-readable name associated with this sharing profile.
@@ -41,8 +43,7 @@ public class SharingProfileModel extends ChildObjectModel {
     /**
      * Returns the name associated with this sharing profile.
      *
-     * @return
-     *     The name associated with this sharing profile.
+     * @return The name associated with this sharing profile.
      */
     public String getName() {
         return name;
@@ -52,7 +53,7 @@ public class SharingProfileModel extends ChildObjectModel {
      * Sets the name associated with this sharing profile.
      *
      * @param name
-     *     The name to associate with this sharing profile.
+     *            The name to associate with this sharing profile.
      */
     public void setName(String name) {
         this.name = name;

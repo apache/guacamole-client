@@ -19,23 +19,24 @@
 
 package org.apache.guacamole.auth.jdbc.usergroup;
 
+import org.apache.guacamole.auth.common.usergroup.UserGroupModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
  * Mapper for user group objects.
  */
-public interface UserGroupMapper extends ModeledDirectoryObjectMapper<UserGroupModel> {
+public interface UserGroupMapper
+        extends ModeledDirectoryObjectMapper<UserGroupModelInterface> {
 
     /**
-     * Returns the group having the given name, if any. If no such group
-     * exists, null is returned.
+     * Returns the group having the given name, if any. If no such group exists,
+     * null is returned.
      *
      * @param name
-     *     The name of the group to return.
+     *            The name of the group to return.
      *
-     * @return
-     *     The group having the given name, or null if no such group exists.
+     * @return The group having the given name, or null if no such group exists.
      */
     UserGroupModel selectOne(@Param("name") String name);
 

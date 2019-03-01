@@ -24,11 +24,13 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.properties.GuacamoleProperty;
 
 /**
- * A property whose value is a SQLServerDriver.  The incoming string values of "jtds", "datadirect",
- * "microsoft", and "microsoft2005" into the corresponding SQLServerDriver enum value.  Any
- * values that are not valid result in a parse error.
+ * A property whose value is a SQLServerDriver. The incoming string values of
+ * "jtds", "datadirect", "microsoft", and "microsoft2005" into the corresponding
+ * SQLServerDriver enum value. Any values that are not valid result in a parse
+ * error.
  */
-public abstract class SQLServerDriverProperty implements GuacamoleProperty<SQLServerDriver> {
+public abstract class SQLServerDriverProperty
+        implements GuacamoleProperty<SQLServerDriver> {
 
     @Override
     public SQLServerDriver parseValue(String value) throws GuacamoleException {
@@ -53,7 +55,8 @@ public abstract class SQLServerDriverProperty implements GuacamoleProperty<SQLSe
         if (value.equals("microsoft2005"))
             return SQLServerDriver.MICROSOFT_2005;
 
-        throw new GuacamoleServerException("SQLServer driver must be one of \"jtds\", \"datadirect\", \"microsoft\", \"microsoft2005\".");
+        throw new GuacamoleServerException(
+                "SQLServer driver must be one of \"jtds\", \"datadirect\", \"microsoft\", \"microsoft2005\".");
 
     }
 

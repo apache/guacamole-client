@@ -31,38 +31,45 @@ public class MySQLGuacamoleProperties {
     /**
      * This class should not be instantiated.
      */
-    private MySQLGuacamoleProperties() {}
+    private MySQLGuacamoleProperties() {
+    }
 
     /**
-     * The hostname of the MySQL server hosting the Guacamole authentication 
+     * The hostname of the MySQL server hosting the Guacamole authentication
      * tables.
      */
     public static final StringGuacamoleProperty MYSQL_HOSTNAME = new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "mysql-hostname"; }
+        public String getName() {
+            return "mysql-hostname";
+        }
 
     };
 
     /**
-     * The port number of the MySQL server hosting the Guacamole authentication 
+     * The port number of the MySQL server hosting the Guacamole authentication
      * tables.
      */
     public static final IntegerGuacamoleProperty MYSQL_PORT = new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "mysql-port"; }
+        public String getName() {
+            return "mysql-port";
+        }
 
     };
 
     /**
-     * The name of the MySQL database containing the Guacamole authentication 
+     * The name of the MySQL database containing the Guacamole authentication
      * tables.
      */
     public static final StringGuacamoleProperty MYSQL_DATABASE = new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "mysql-database"; }
+        public String getName() {
+            return "mysql-database";
+        }
 
     };
 
@@ -73,7 +80,9 @@ public class MySQLGuacamoleProperties {
     public static final StringGuacamoleProperty MYSQL_USERNAME = new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "mysql-username"; }
+        public String getName() {
+            return "mysql-username";
+        }
 
     };
 
@@ -84,7 +93,9 @@ public class MySQLGuacamoleProperties {
     public static final StringGuacamoleProperty MYSQL_PASSWORD = new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "mysql-password"; }
+        public String getName() {
+            return "mysql-password";
+        }
 
     };
 
@@ -96,7 +107,9 @@ public class MySQLGuacamoleProperties {
     public static final BooleanGuacamoleProperty MYSQL_USER_REQUIRED = new BooleanGuacamoleProperty() {
 
         @Override
-        public String getName() { return "mysql-user-required"; }
+        public String getName() {
+            return "mysql-user-required";
+        }
 
     };
 
@@ -104,12 +117,12 @@ public class MySQLGuacamoleProperties {
      * The maximum number of concurrent connections to allow overall. Zero
      * denotes unlimited.
      */
-    public static final IntegerGuacamoleProperty
-            MYSQL_ABSOLUTE_MAX_CONNECTIONS =
-            new IntegerGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty MYSQL_ABSOLUTE_MAX_CONNECTIONS = new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "mysql-absolute-max-connections"; }
+        public String getName() {
+            return "mysql-absolute-max-connections";
+        }
 
     };
 
@@ -117,12 +130,12 @@ public class MySQLGuacamoleProperties {
      * The maximum number of concurrent connections to allow to any one
      * connection. Zero denotes unlimited.
      */
-    public static final IntegerGuacamoleProperty
-            MYSQL_DEFAULT_MAX_CONNECTIONS =
-            new IntegerGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty MYSQL_DEFAULT_MAX_CONNECTIONS = new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "mysql-default-max-connections"; }
+        public String getName() {
+            return "mysql-default-max-connections";
+        }
 
     };
 
@@ -130,12 +143,12 @@ public class MySQLGuacamoleProperties {
      * The maximum number of concurrent connections to allow to any one
      * connection group. Zero denotes unlimited.
      */
-    public static final IntegerGuacamoleProperty
-            MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS =
-            new IntegerGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS = new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "mysql-default-max-group-connections"; }
+        public String getName() {
+            return "mysql-default-max-group-connections";
+        }
 
     };
 
@@ -143,26 +156,25 @@ public class MySQLGuacamoleProperties {
      * The maximum number of concurrent connections to allow to any one
      * connection by an individual user. Zero denotes unlimited.
      */
-    public static final IntegerGuacamoleProperty
-            MYSQL_DEFAULT_MAX_CONNECTIONS_PER_USER =
-            new IntegerGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty MYSQL_DEFAULT_MAX_CONNECTIONS_PER_USER = new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "mysql-default-max-connections-per-user"; }
+        public String getName() {
+            return "mysql-default-max-connections-per-user";
+        }
 
     };
 
     /**
      * The maximum number of concurrent connections to allow to any one
-     * connection group by an individual user. Zero denotes
-     * unlimited.
+     * connection group by an individual user. Zero denotes unlimited.
      */
-    public static final IntegerGuacamoleProperty
-            MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER =
-            new IntegerGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER = new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "mysql-default-max-group-connections-per-user"; }
+        public String getName() {
+            return "mysql-default-max-group-connections-per-user";
+        }
 
     };
 

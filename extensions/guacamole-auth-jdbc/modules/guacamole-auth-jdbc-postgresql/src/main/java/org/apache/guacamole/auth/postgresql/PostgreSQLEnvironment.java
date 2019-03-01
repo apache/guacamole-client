@@ -19,23 +19,24 @@
 
 package org.apache.guacamole.auth.postgresql;
 
+import java.io.Closeable;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
+import org.apache.guacamole.auth.common.CommonEnvironment;
+import org.apache.guacamole.auth.common.security.PasswordPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
-import org.apache.ibatis.session.SqlSession;
 
 /**
  * A PostgreSQL-specific implementation of JDBCEnvironment provides database
  * properties specifically for PostgreSQL.
  */
-public class PostgreSQLEnvironment extends JDBCEnvironment {
+public class PostgreSQLEnvironment extends CommonEnvironment {
 
     /**
      * Logger for this class.
      */
-    private static final Logger logger = LoggerFactory.getLogger(PostgreSQLEnvironment.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(PostgreSQLEnvironment.class);
 
     /**
      * The default host to connect to, if POSTGRESQL_HOSTNAME is not specified.
@@ -54,18 +55,17 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     private static final boolean DEFAULT_USER_REQUIRED = false;
 
     /**
-     * The default value for the maximum number of connections to be
-     * allowed to the Guacamole server overall.
+     * The default value for the maximum number of connections to be allowed to
+     * the Guacamole server overall.
      */
     private final int DEFAULT_ABSOLUTE_MAX_CONNECTIONS = 0;
 
     /**
      * The default value for the default maximum number of connections to be
-     * allowed per user to any one connection. Note that, as long as the
-     * legacy "disallow duplicate" and "disallow simultaneous" properties are
-     * still supported, these cannot be constants, as the legacy properties
-     * dictate the values that should be used in the absence of the correct
-     * properties.
+     * allowed per user to any one connection. Note that, as long as the legacy
+     * "disallow duplicate" and "disallow simultaneous" properties are still
+     * supported, these cannot be constants, as the legacy properties dictate
+     * the values that should be used in the absence of the correct properties.
      */
     private final int DEFAULT_MAX_CONNECTIONS_PER_USER = 1;
 
@@ -81,10 +81,10 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
 
     /**
      * The default value for the default maximum number of connections to be
-     * allowed to any one connection. Note that, as long as the legacy
-     * "disallow duplicate" and "disallow simultaneous" properties are still
-     * supported, these cannot be constants, as the legacy properties dictate
-     * the values that should be used in the absence of the correct properties.
+     * allowed to any one connection. Note that, as long as the legacy "disallow
+     * duplicate" and "disallow simultaneous" properties are still supported,
+     * these cannot be constants, as the legacy properties dictate the values
+     * that should be used in the absence of the correct properties.
      */
     private final int DEFAULT_MAX_CONNECTIONS = 0;
 
@@ -98,12 +98,13 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     private final int DEFAULT_MAX_GROUP_CONNECTIONS = 0;
 
     /**
-     * Constructs a new PostgreSQLEnvironment, providing access to PostgreSQL-specific
-     * configuration options.
+     * Constructs a new PostgreSQLEnvironment, providing access to
+     * PostgreSQL-specific configuration options.
      * 
-     * @throws GuacamoleException 
-     *     If an error occurs while setting up the underlying JDBCEnvironment
-     *     or while parsing legacy PostgreSQL configuration options.
+     * @throws GuacamoleException
+     *             If an error occurs while setting up the underlying
+     *             JDBCEnvironment or while parsing legacy PostgreSQL
+     *             configuration options.
      */
     public PostgreSQLEnvironment() throws GuacamoleException {
 
@@ -115,48 +116,44 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     @Override
     public boolean isUserRequired() throws GuacamoleException {
         return getProperty(
-            PostgreSQLGuacamoleProperties.POSTGRESQL_USER_REQUIRED,
-            DEFAULT_USER_REQUIRED
-        );
+                PostgreSQLGuacamoleProperties.POSTGRESQL_USER_REQUIRED,
+                DEFAULT_USER_REQUIRED);
     }
 
     @Override
     public int getAbsoluteMaxConnections() throws GuacamoleException {
-        return getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_ABSOLUTE_MAX_CONNECTIONS,
-            DEFAULT_ABSOLUTE_MAX_CONNECTIONS
-        );
+        return getProperty(
+                PostgreSQLGuacamoleProperties.POSTGRESQL_ABSOLUTE_MAX_CONNECTIONS,
+                DEFAULT_ABSOLUTE_MAX_CONNECTIONS);
     }
 
     @Override
     public int getDefaultMaxConnections() throws GuacamoleException {
         return getProperty(
-            PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_CONNECTIONS,
-            DEFAULT_MAX_CONNECTIONS
-        );
+                PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_CONNECTIONS,
+                DEFAULT_MAX_CONNECTIONS);
     }
 
     @Override
     public int getDefaultMaxGroupConnections() throws GuacamoleException {
         return getProperty(
-            PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS,
-            DEFAULT_MAX_GROUP_CONNECTIONS
-        );
+                PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS,
+                DEFAULT_MAX_GROUP_CONNECTIONS);
     }
 
     @Override
     public int getDefaultMaxConnectionsPerUser() throws GuacamoleException {
         return getProperty(
-            PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_CONNECTIONS_PER_USER,
-            DEFAULT_MAX_CONNECTIONS_PER_USER
-        );
+                PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_CONNECTIONS_PER_USER,
+                DEFAULT_MAX_CONNECTIONS_PER_USER);
     }
 
     @Override
-    public int getDefaultMaxGroupConnectionsPerUser() throws GuacamoleException {
+    public int getDefaultMaxGroupConnectionsPerUser()
+            throws GuacamoleException {
         return getProperty(
-            PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER,
-            DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER
-        );
+                PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER,
+                DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER);
     }
 
     @Override
@@ -168,85 +165,80 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
      * Returns the hostname of the PostgreSQL server hosting the Guacamole
      * authentication tables. If unspecified, this will be "localhost".
      * 
-     * @return
-     *     The URL of the PostgreSQL server.
+     * @return The URL of the PostgreSQL server.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value.
+     * @throws GuacamoleException
+     *             If an error occurs while retrieving the property value.
      */
     public String getPostgreSQLHostname() throws GuacamoleException {
-        return getProperty(
-            PostgreSQLGuacamoleProperties.POSTGRESQL_HOSTNAME,
-            DEFAULT_HOSTNAME
-        );
+        return getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_HOSTNAME,
+                DEFAULT_HOSTNAME);
     }
-    
+
     /**
      * Returns the port number of the PostgreSQL server hosting the Guacamole
      * authentication tables. If unspecified, this will be the default
      * PostgreSQL port of 5432.
      * 
-     * @return
-     *     The port number of the PostgreSQL server.
+     * @return The port number of the PostgreSQL server.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value.
+     * @throws GuacamoleException
+     *             If an error occurs while retrieving the property value.
      */
     public int getPostgreSQLPort() throws GuacamoleException {
-        return getProperty(
-            PostgreSQLGuacamoleProperties.POSTGRESQL_PORT,
-            DEFAULT_PORT
-        );
+        return getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_PORT,
+                DEFAULT_PORT);
     }
-    
+
     /**
      * Returns the name of the PostgreSQL database containing the Guacamole
      * authentication tables.
      * 
-     * @return
-     *     The name of the PostgreSQL database.
+     * @return The name of the PostgreSQL database.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value, or if the
-     *     value was not set, as this property is required.
+     * @throws GuacamoleException
+     *             If an error occurs while retrieving the property value, or if
+     *             the value was not set, as this property is required.
      */
     public String getPostgreSQLDatabase() throws GuacamoleException {
-        return getRequiredProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_DATABASE);
+        return getRequiredProperty(
+                PostgreSQLGuacamoleProperties.POSTGRESQL_DATABASE);
     }
-    
+
     /**
      * Returns the username that should be used when authenticating with the
      * PostgreSQL database containing the Guacamole authentication tables.
      * 
-     * @return
-     *     The username for the PostgreSQL database.
+     * @return The username for the PostgreSQL database.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value, or if the
-     *     value was not set, as this property is required.
+     * @throws GuacamoleException
+     *             If an error occurs while retrieving the property value, or if
+     *             the value was not set, as this property is required.
      */
     public String getPostgreSQLUsername() throws GuacamoleException {
-        return getRequiredProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_USERNAME);
+        return getRequiredProperty(
+                PostgreSQLGuacamoleProperties.POSTGRESQL_USERNAME);
     }
-    
+
     /**
      * Returns the password that should be used when authenticating with the
      * PostgreSQL database containing the Guacamole authentication tables.
      * 
-     * @return
-     *     The password for the PostgreSQL database.
+     * @return The password for the PostgreSQL database.
      *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value, or if the
-     *     value was not set, as this property is required.
+     * @throws GuacamoleException
+     *             If an error occurs while retrieving the property value, or if
+     *             the value was not set, as this property is required.
      */
     public String getPostgreSQLPassword() throws GuacamoleException {
-        return getRequiredProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_PASSWORD);
+        return getRequiredProperty(
+                PostgreSQLGuacamoleProperties.POSTGRESQL_PASSWORD);
     }
 
     @Override
-    public boolean isRecursiveQuerySupported(SqlSession session) {
-        return true; // All versions of PostgreSQL support recursive queries through CTEs
+    public boolean isRecursiveQuerySupported(Closeable session) {
+        return true; // All versions of PostgreSQL support recursive queries
+                     // through CTEs
     }
-    
+
 }

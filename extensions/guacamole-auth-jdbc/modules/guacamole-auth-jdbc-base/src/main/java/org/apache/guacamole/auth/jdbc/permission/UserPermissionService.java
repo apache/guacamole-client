@@ -19,49 +19,41 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
+import java.util.Map;
+import org.apache.guacamole.auth.common.base.EntityModelInterface;
+import org.apache.guacamole.auth.common.base.ModeledPermissions;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
+import org.apache.guacamole.auth.common.permission.UserPermissionServiceAbstract;
+import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
-import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.EntityModel;
-import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * deleting user permissions. This service will automatically enforce the
  * permissions of the current user.
  */
-public class UserPermissionService extends ModeledObjectPermissionService {
+public class UserPermissionService extends UserPermissionServiceAbstract {
 
-    /**
-     * Mapper for user permissions.
-     */
     @Inject
-    private UserPermissionMapper userPermissionMapper;
-    
-    /**
-     * Provider for user permission sets.
-     */
-    @Inject
-    private Provider<UserPermissionSet> userPermissionSetProvider;
-    
-    @Override
-    protected ObjectPermissionMapper getPermissionMapper() {
-        return userPermissionMapper;
+    public UserPermissionService(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        super(mappers);
     }
 
     @Override
-    public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            Set<String> effectiveGroups) throws GuacamoleException {
+    public ObjectPermissionModel getModelInstance(
+            ModeledPermissions<? extends EntityModelInterface> targetEntity,
+            ObjectPermission permission) {
 
-        // Create permission set for requested entity
-        ObjectPermissionSet permissionSet = userPermissionSetProvider.get();
-        permissionSet.init(user, targetEntity, effectiveGroups);
+        ObjectPermissionModel model = new ObjectPermissionModel();
 
-        return permissionSet;
-        
+        // Populate model object with data from entity and permission
+        model.setEntityID(targetEntity.getModel().getEntityID());
+        model.setType(permission.getType());
+        model.setObjectIdentifier(permission.getObjectIdentifier());
+
+        return model;
+
     }
 
 }

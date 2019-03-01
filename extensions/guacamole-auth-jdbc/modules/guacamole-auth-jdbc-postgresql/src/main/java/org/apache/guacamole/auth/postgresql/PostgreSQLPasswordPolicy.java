@@ -20,8 +20,8 @@
 package org.apache.guacamole.auth.postgresql;
 
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
-import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
+import org.apache.guacamole.auth.common.CommonEnvironment;
+import org.apache.guacamole.auth.common.security.PasswordPolicy;
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 
@@ -35,37 +35,40 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
      * The property which specifies the minimum length required of all user
      * passwords. By default, this will be zero.
      */
-    private static final IntegerGuacamoleProperty MIN_LENGTH =
-            new IntegerGuacamoleProperty() {
+    private static final IntegerGuacamoleProperty MIN_LENGTH = new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-user-password-min-length"; }
+        public String getName() {
+            return "postgresql-user-password-min-length";
+        }
 
     };
 
     /**
-     * The property which specifies the minimum number of days which must
-     * elapse before a user may reset their password. If set to zero, the
+     * The property which specifies the minimum number of days which must elapse
+     * before a user may reset their password. If set to zero, the default, then
+     * this restriction does not apply.
+     */
+    private static final IntegerGuacamoleProperty MIN_AGE = new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() {
+            return "postgresql-user-password-min-age";
+        }
+
+    };
+
+    /**
+     * The property which specifies the maximum number of days which may elapse
+     * before a user is required to reset their password. If set to zero, the
      * default, then this restriction does not apply.
      */
-    private static final IntegerGuacamoleProperty MIN_AGE =
-            new IntegerGuacamoleProperty() {
+    private static final IntegerGuacamoleProperty MAX_AGE = new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-user-password-min-age"; }
-
-    };
-
-    /**
-     * The property which specifies the maximum number of days which may
-     * elapse before a user is required to reset their password. If set to zero,
-     * the default, then this restriction does not apply.
-     */
-    private static final IntegerGuacamoleProperty MAX_AGE =
-            new IntegerGuacamoleProperty() {
-
-        @Override
-        public String getName() { return "postgresql-user-password-max-age"; }
+        public String getName() {
+            return "postgresql-user-password-max-age";
+        }
 
     };
 
@@ -74,24 +77,26 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
      * for each user. If set to zero, the default, then this restriction does
      * not apply.
      */
-    private static final IntegerGuacamoleProperty HISTORY_SIZE =
-            new IntegerGuacamoleProperty() {
+    private static final IntegerGuacamoleProperty HISTORY_SIZE = new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-user-password-history-size"; }
+        public String getName() {
+            return "postgresql-user-password-history-size";
+        }
 
     };
 
     /**
      * The property which specifies whether all user passwords must have at
-     * least one lowercase character and one uppercase character. By default,
-     * no such restriction is imposed.
+     * least one lowercase character and one uppercase character. By default, no
+     * such restriction is imposed.
      */
-    private static final BooleanGuacamoleProperty REQUIRE_MULTIPLE_CASE =
-            new BooleanGuacamoleProperty() {
+    private static final BooleanGuacamoleProperty REQUIRE_MULTIPLE_CASE = new BooleanGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-user-password-require-multiple-case"; }
+        public String getName() {
+            return "postgresql-user-password-require-multiple-case";
+        }
 
     };
 
@@ -100,11 +105,12 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
      * least one numeric character (digit). By default, no such restriction is
      * imposed.
      */
-    private static final BooleanGuacamoleProperty REQUIRE_DIGIT =
-            new BooleanGuacamoleProperty() {
+    private static final BooleanGuacamoleProperty REQUIRE_DIGIT = new BooleanGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-user-password-require-digit"; }
+        public String getName() {
+            return "postgresql-user-password-require-digit";
+        }
 
     };
 
@@ -113,11 +119,12 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
      * least one non-alphanumeric character (symbol). By default, no such
      * restriction is imposed.
      */
-    private static final BooleanGuacamoleProperty REQUIRE_SYMBOL =
-            new BooleanGuacamoleProperty() {
+    private static final BooleanGuacamoleProperty REQUIRE_SYMBOL = new BooleanGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-user-password-require-symbol"; }
+        public String getName() {
+            return "postgresql-user-password-require-symbol";
+        }
 
     };
 
@@ -126,28 +133,29 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
      * their own username in their password. By default, no such restriction is
      * imposed.
      */
-    private static final BooleanGuacamoleProperty PROHIBIT_USERNAME =
-            new BooleanGuacamoleProperty() {
+    private static final BooleanGuacamoleProperty PROHIBIT_USERNAME = new BooleanGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-user-password-prohibit-username"; }
+        public String getName() {
+            return "postgresql-user-password-prohibit-username";
+        }
 
     };
 
     /**
      * The Guacamole server environment.
      */
-    private final JDBCEnvironment environment;
+    private final CommonEnvironment environment;
 
     /**
      * Creates a new PostgreSQLPasswordPolicy which reads the details of the
      * policy from the properties exposed by the given environment.
      *
      * @param environment
-     *     The environment from which password policy properties should be
-     *     read.
+     *            The environment from which password policy properties should
+     *            be read.
      */
-    public PostgreSQLPasswordPolicy(JDBCEnvironment environment) {
+    public PostgreSQLPasswordPolicy(CommonEnvironment environment) {
         this.environment = environment;
     }
 

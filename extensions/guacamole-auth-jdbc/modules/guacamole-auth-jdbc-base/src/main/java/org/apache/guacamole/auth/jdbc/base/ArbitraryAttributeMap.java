@@ -24,26 +24,31 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import org.apache.guacamole.auth.common.base.ArbitraryAttributeMapInterface;
+import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
 
 /**
  * Map of arbitrary attribute name/value pairs which can alternatively be
  * exposed as a collection of model objects.
  */
-public class ArbitraryAttributeMap extends HashMap<String, String> {
+public class ArbitraryAttributeMap extends HashMap<String, String>
+        implements ArbitraryAttributeMapInterface {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates a new ArbitraryAttributeMap containing the name/value pairs
      * within the given collection of model objects.
      *
      * @param models
-     *     The model objects of all attributes which should be stored in the
-     *     new map as name/value pairs.
+     *            The model objects of all attributes which should be stored in
+     *            the new map as name/value pairs.
      *
-     * @return
-     *     A new ArbitraryAttributeMap containing the name/value pairs within
-     *     the given collection of model objects.
+     * @return A new ArbitraryAttributeMap containing the name/value pairs
+     *         within the given collection of model objects.
      */
-    public static ArbitraryAttributeMap fromModelCollection(Collection<ArbitraryAttributeModel> models) {
+    public static ArbitraryAttributeMap fromModelCollection(
+            Collection<ArbitraryAttributeModel> models) {
 
         // Add all name/value pairs from the given collection to the map
         ArbitraryAttributeMap map = new ArbitraryAttributeMap();
@@ -63,12 +68,11 @@ public class ArbitraryAttributeMap extends HashMap<String, String> {
      * corresponding name/value pair to the map. Changes to a model object
      * within the collection are NOT reflected on the map, however.
      *
-     * @return
-     *     A collection of model objects which mirrors the contents of this
-     *     ArbitraryAttributeMap.
+     * @return A collection of model objects which mirrors the contents of this
+     *         ArbitraryAttributeMap.
      */
-    public Collection<ArbitraryAttributeModel> toModelCollection() {
-        return new AbstractCollection<ArbitraryAttributeModel>() {
+    public Collection<ArbitraryAttributeModelInterface> toModelCollection() {
+        return new AbstractCollection<ArbitraryAttributeModelInterface>() {
 
             @Override
             public void clear() {
@@ -89,7 +93,8 @@ public class ArbitraryAttributeMap extends HashMap<String, String> {
                     return false;
 
                 // The attribute should be removed only if the value matches
-                String currentValue = ArbitraryAttributeMap.this.get(model.getName());
+                String currentValue = ArbitraryAttributeMap.this
+                        .get(model.getName());
                 if (currentValue == null) {
                     if (model.getValue() != null)
                         return false;
@@ -103,7 +108,7 @@ public class ArbitraryAttributeMap extends HashMap<String, String> {
             }
 
             @Override
-            public boolean add(ArbitraryAttributeModel e) {
+            public boolean add(ArbitraryAttributeModelInterface e) {
 
                 String newValue = e.getValue();
                 String oldValue = put(e.getName(), newValue);
@@ -139,14 +144,15 @@ public class ArbitraryAttributeMap extends HashMap<String, String> {
             }
 
             @Override
-            public Iterator<ArbitraryAttributeModel> iterator() {
+            public Iterator<ArbitraryAttributeModelInterface> iterator() {
 
                 // Get iterator over all string name/value entries
-                final Iterator<Map.Entry<String, String>> iterator = entrySet().iterator();
+                final Iterator<Map.Entry<String, String>> iterator = entrySet()
+                        .iterator();
 
                 // Dynamically translate each string name/value entry into a
                 // corresponding attribute model object as iteration continues
-                return new Iterator<ArbitraryAttributeModel>() {
+                return new Iterator<ArbitraryAttributeModelInterface>() {
 
                     @Override
                     public boolean hasNext() {

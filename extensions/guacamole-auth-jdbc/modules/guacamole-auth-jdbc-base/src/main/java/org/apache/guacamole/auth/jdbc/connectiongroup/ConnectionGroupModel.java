@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.jdbc.connectiongroup;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.guacamole.auth.common.connectiongroup.ConnectionGroupModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ChildObjectModel;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 
@@ -28,7 +29,8 @@ import org.apache.guacamole.net.auth.ConnectionGroup;
  * Object representation of a Guacamole connection group, as represented in the
  * database.
  */
-public class ConnectionGroupModel extends ChildObjectModel {
+public class ConnectionGroupModel extends ChildObjectModel
+        implements ConnectionGroupModelInterface {
 
     /**
      * The human-readable name associated with this connection group.
@@ -42,8 +44,8 @@ public class ConnectionGroupModel extends ChildObjectModel {
 
     /**
      * The maximum number of connections that can be established to this
-     * connection group concurrently, zero if no restriction applies, or
-     * null if the default restrictions should be applied.
+     * connection group concurrently, zero if no restriction applies, or null if
+     * the default restrictions should be applied.
      */
     private Integer maxConnections;
 
@@ -81,8 +83,7 @@ public class ConnectionGroupModel extends ChildObjectModel {
     /**
      * Returns the name associated with this connection group.
      *
-     * @return
-     *     The name associated with this connection group.
+     * @return The name associated with this connection group.
      */
     public String getName() {
         return name;
@@ -92,7 +93,7 @@ public class ConnectionGroupModel extends ChildObjectModel {
      * Sets the name associated with this connection group.
      *
      * @param name
-     *     The name to associate with this connection group.
+     *            The name to associate with this connection group.
      */
     public void setName(String name) {
         this.name = name;
@@ -102,8 +103,7 @@ public class ConnectionGroupModel extends ChildObjectModel {
      * Returns the type of this connection group, such as organizational or
      * balancing.
      *
-     * @return
-     *     The type of this connection group.
+     * @return The type of this connection group.
      */
     public ConnectionGroup.Type getType() {
         return type;
@@ -114,20 +114,19 @@ public class ConnectionGroupModel extends ChildObjectModel {
      * balancing.
      *
      * @param type
-     *     The type of this connection group.
+     *            The type of this connection group.
      */
     public void setType(ConnectionGroup.Type type) {
         this.type = type;
     }
 
     /**
-     * Returns the maximum number of connections that can be established to
-     * this connection group concurrently.
+     * Returns the maximum number of connections that can be established to this
+     * connection group concurrently.
      *
-     * @return
-     *     The maximum number of connections that can be established to this
-     *     connection group concurrently, zero if no restriction applies, or
-     *     null if the default restrictions should be applied.
+     * @return The maximum number of connections that can be established to this
+     *         connection group concurrently, zero if no restriction applies, or
+     *         null if the default restrictions should be applied.
      */
     public Integer getMaxConnections() {
         return maxConnections;
@@ -138,23 +137,23 @@ public class ConnectionGroupModel extends ChildObjectModel {
      * connection group concurrently.
      *
      * @param maxConnections
-     *     The maximum number of connections that can be established to this
-     *     connection group concurrently, zero if no restriction applies, or
-     *     null if the default restrictions should be applied.
+     *            The maximum number of connections that can be established to
+     *            this connection group concurrently, zero if no restriction
+     *            applies, or null if the default restrictions should be
+     *            applied.
      */
     public void setMaxConnections(Integer maxConnections) {
         this.maxConnections = maxConnections;
     }
 
     /**
-     * Returns the maximum number of connections that can be established to
-     * this connection group concurrently by any one user.
+     * Returns the maximum number of connections that can be established to this
+     * connection group concurrently by any one user.
      *
-     * @return
-     *     The maximum number of connections that can be established to this
-     *     connection group concurrently by any one user, zero if no
-     *     restriction applies, or null if the default restrictions should be
-     *     applied.
+     * @return The maximum number of connections that can be established to this
+     *         connection group concurrently by any one user, zero if no
+     *         restriction applies, or null if the default restrictions should
+     *         be applied.
      */
     public Integer getMaxConnectionsPerUser() {
         return maxConnectionsPerUser;
@@ -165,10 +164,10 @@ public class ConnectionGroupModel extends ChildObjectModel {
      * connection group concurrently by any one user.
      *
      * @param maxConnectionsPerUser
-     *     The maximum number of connections that can be established to this
-     *     connection group concurrently by any one user, zero if no
-     *     restriction applies, or null if the default restrictions should be
-     *     applied.
+     *            The maximum number of connections that can be established to
+     *            this connection group concurrently by any one user, zero if no
+     *            restriction applies, or null if the default restrictions
+     *            should be applied.
      */
     public void setMaxConnectionsPerUser(Integer maxConnectionsPerUser) {
         this.maxConnectionsPerUser = maxConnectionsPerUser;
@@ -178,9 +177,8 @@ public class ConnectionGroupModel extends ChildObjectModel {
      * Returns whether individual users should be consistently assigned the same
      * connection within a balancing group until they log out.
      *
-     * @return
-     *     Whether individual users should be consistently assigned the same
-     *     connection within a balancing group until they log out.
+     * @return Whether individual users should be consistently assigned the same
+     *         connection within a balancing group until they log out.
      */
     public boolean isSessionAffinityEnabled() {
         return sessionAffinityEnabled;
@@ -191,8 +189,8 @@ public class ConnectionGroupModel extends ChildObjectModel {
      * connection within a balancing group until they log out.
      *
      * @param sessionAffinityEnabled
-     *     Whether individual users should be consistently assigned the same
-     *     connection within a balancing group until they log out.
+     *            Whether individual users should be consistently assigned the
+     *            same connection within a balancing group until they log out.
      */
     public void setSessionAffinityEnabled(boolean sessionAffinityEnabled) {
         this.sessionAffinityEnabled = sessionAffinityEnabled;
@@ -204,9 +202,8 @@ public class ConnectionGroupModel extends ChildObjectModel {
      * queried, and has no effect when a connection group is inserted, updated,
      * or deleted.
      *
-     * @return
-     *     The identifiers of all readable child connections within this
-     *     connection group.
+     * @return The identifiers of all readable child connections within this
+     *         connection group.
      */
     public Set<String> getConnectionIdentifiers() {
         return connectionIdentifiers;
@@ -219,8 +216,8 @@ public class ConnectionGroupModel extends ChildObjectModel {
      * inserted, updated, or deleted.
      *
      * @param connectionIdentifiers
-     *     The identifiers of all readable child connections within this
-     *     connection group.
+     *            The identifiers of all readable child connections within this
+     *            connection group.
      */
     public void setConnectionIdentifiers(Set<String> connectionIdentifiers) {
         this.connectionIdentifiers = connectionIdentifiers;
@@ -232,9 +229,8 @@ public class ConnectionGroupModel extends ChildObjectModel {
      * is queried, and has no effect when a connection group is inserted,
      * updated, or deleted.
      *
-     * @return
-     *     The identifiers of all readable child connection groups within this
-     *     connection group.
+     * @return The identifiers of all readable child connection groups within
+     *         this connection group.
      */
     public Set<String> getConnectionGroupIdentifiers() {
         return connectionGroupIdentifiers;
@@ -247,10 +243,11 @@ public class ConnectionGroupModel extends ChildObjectModel {
      * inserted, updated, or deleted.
      *
      * @param connectionGroupIdentifiers
-     *     The identifiers of all readable child connection groups within this
-     *     connection group.
+     *            The identifiers of all readable child connection groups within
+     *            this connection group.
      */
-    public void setConnectionGroupIdentifiers(Set<String> connectionGroupIdentifiers) {
+    public void setConnectionGroupIdentifiers(
+            Set<String> connectionGroupIdentifiers) {
         this.connectionGroupIdentifiers = connectionGroupIdentifiers;
     }
 
@@ -269,7 +266,8 @@ public class ConnectionGroupModel extends ChildObjectModel {
 
     @Override
     public void setIdentifier(String identifier) {
-        throw new UnsupportedOperationException("Connection group identifiers are derived from IDs. They cannot be set.");
+        throw new UnsupportedOperationException(
+                "Connection group identifiers are derived from IDs. They cannot be set.");
     }
 
 }

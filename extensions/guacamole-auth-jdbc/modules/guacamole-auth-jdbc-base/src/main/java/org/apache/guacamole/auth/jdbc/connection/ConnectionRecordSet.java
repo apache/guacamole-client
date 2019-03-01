@@ -24,9 +24,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
-import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
-import org.apache.guacamole.auth.jdbc.base.ModeledActivityRecordSet;
+import org.apache.guacamole.auth.common.base.ActivityRecordSearchTerm;
+import org.apache.guacamole.auth.common.base.ActivityRecordSortPredicate;
+import org.apache.guacamole.auth.common.base.ModeledActivityRecordSet;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 
@@ -35,17 +35,19 @@ import org.apache.guacamole.net.auth.ConnectionRecord;
  * asCollection() will query connection history records from the database. Which
  * records are returned will be determined by the values passed in earlier.
  */
-public class ConnectionRecordSet extends ModeledActivityRecordSet<ConnectionRecord> {
+public class ConnectionRecordSet
+        extends ModeledActivityRecordSet<ConnectionRecord> {
 
     /**
      * Service for managing connection objects.
      */
     @Inject
     private ConnectionService connectionService;
-    
+
     @Override
     protected Collection<ConnectionRecord> retrieveHistory(
-            AuthenticatedUser user, Set<ActivityRecordSearchTerm> requiredContents,
+            AuthenticatedUser user,
+            Set<ActivityRecordSearchTerm> requiredContents,
             List<ActivityRecordSortPredicate> sortPredicates, int limit)
             throws GuacamoleException {
 

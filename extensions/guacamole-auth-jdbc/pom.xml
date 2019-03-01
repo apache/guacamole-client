@@ -34,7 +34,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <build>
+	<build>
         <plugins>
 
             <!-- Verify format using Apache RAT -->
@@ -58,7 +58,7 @@
 
         </plugins>
     </build>
-
+    
     <modules>
 
         <!-- Distribution .tar.gz -->

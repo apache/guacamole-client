@@ -19,22 +19,23 @@
 
 package org.apache.guacamole.auth.jdbc.usergroup;
 
-import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
+import org.apache.guacamole.auth.common.base.RestrictedObject;
+import org.apache.guacamole.auth.common.usergroup.ModeledUserGroup;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.UserGroup;
 import org.mybatis.guice.transactional.Transactional;
+import com.google.inject.Inject;
 
 /**
  * Implementation of the UserGroup Directory which is driven by an underlying,
  * arbitrary database.
  */
 public class UserGroupDirectory extends RestrictedObject
-    implements Directory<UserGroup> {
+        implements Directory<UserGroup> {
 
     /**
      * Service for managing user group objects.
@@ -49,8 +50,10 @@ public class UserGroupDirectory extends RestrictedObject
 
     @Override
     @Transactional
-    public Collection<UserGroup> getAll(Collection<String> identifiers) throws GuacamoleException {
-        Collection<ModeledUserGroup> objects = userGroupService.retrieveObjects(getCurrentUser(), identifiers);
+    public Collection<UserGroup> getAll(Collection<String> identifiers)
+            throws GuacamoleException {
+        Collection<ModeledUserGroup> objects = userGroupService
+                .retrieveObjects(getCurrentUser(), identifiers);
         return Collections.<UserGroup>unmodifiableCollection(objects);
     }
 

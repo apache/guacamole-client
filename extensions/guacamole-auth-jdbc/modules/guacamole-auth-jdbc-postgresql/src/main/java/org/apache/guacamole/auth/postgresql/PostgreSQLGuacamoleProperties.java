@@ -31,16 +31,19 @@ public class PostgreSQLGuacamoleProperties {
     /**
      * This class should not be instantiated.
      */
-    private PostgreSQLGuacamoleProperties() {}
+    private PostgreSQLGuacamoleProperties() {
+    }
 
     /**
-     * The URL of the PostgreSQL server hosting the Guacamole authentication tables.
+     * The URL of the PostgreSQL server hosting the Guacamole authentication
+     * tables.
      */
-    public static final StringGuacamoleProperty POSTGRESQL_HOSTNAME =
-            new StringGuacamoleProperty() {
+    public static final StringGuacamoleProperty POSTGRESQL_HOSTNAME = new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-hostname"; }
+        public String getName() {
+            return "postgresql-hostname";
+        }
 
     };
 
@@ -48,11 +51,12 @@ public class PostgreSQLGuacamoleProperties {
      * The port of the PostgreSQL server hosting the Guacamole authentication
      * tables.
      */
-    public static final IntegerGuacamoleProperty POSTGRESQL_PORT =
-            new IntegerGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty POSTGRESQL_PORT = new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-port"; }
+        public String getName() {
+            return "postgresql-port";
+        }
 
     };
 
@@ -60,11 +64,12 @@ public class PostgreSQLGuacamoleProperties {
      * The name of the PostgreSQL database containing the Guacamole
      * authentication tables.
      */
-    public static final StringGuacamoleProperty POSTGRESQL_DATABASE =
-            new StringGuacamoleProperty() {
+    public static final StringGuacamoleProperty POSTGRESQL_DATABASE = new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-database"; }
+        public String getName() {
+            return "postgresql-database";
+        }
 
     };
 
@@ -72,11 +77,12 @@ public class PostgreSQLGuacamoleProperties {
      * The username used to authenticate to the PostgreSQL database containing
      * the Guacamole authentication tables.
      */
-    public static final StringGuacamoleProperty POSTGRESQL_USERNAME =
-            new StringGuacamoleProperty() {
+    public static final StringGuacamoleProperty POSTGRESQL_USERNAME = new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-username"; }
+        public String getName() {
+            return "postgresql-username";
+        }
 
     };
 
@@ -84,11 +90,12 @@ public class PostgreSQLGuacamoleProperties {
      * The password used to authenticate to the PostgreSQL database containing
      * the Guacamole authentication tables.
      */
-    public static final StringGuacamoleProperty POSTGRESQL_PASSWORD =
-            new StringGuacamoleProperty() {
+    public static final StringGuacamoleProperty POSTGRESQL_PASSWORD = new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-password"; }
+        public String getName() {
+            return "postgresql-password";
+        }
 
     };
 
@@ -97,11 +104,12 @@ public class PostgreSQLGuacamoleProperties {
      * to succeed, even if the user has been authenticated via another
      * authentication provider.
      */
-    public static final BooleanGuacamoleProperty
-            POSTGRESQL_USER_REQUIRED = new BooleanGuacamoleProperty() {
+    public static final BooleanGuacamoleProperty POSTGRESQL_USER_REQUIRED = new BooleanGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-user-required"; }
+        public String getName() {
+            return "postgresql-user-required";
+        }
 
     };
 
@@ -109,12 +117,12 @@ public class PostgreSQLGuacamoleProperties {
      * The maximum number of concurrent connections to allow overall. Zero
      * denotes unlimited.
      */
-    public static final IntegerGuacamoleProperty
-            POSTGRESQL_ABSOLUTE_MAX_CONNECTIONS =
-            new IntegerGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty POSTGRESQL_ABSOLUTE_MAX_CONNECTIONS = new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-absolute-max-connections"; }
+        public String getName() {
+            return "postgresql-absolute-max-connections";
+        }
 
     };
 
@@ -122,12 +130,12 @@ public class PostgreSQLGuacamoleProperties {
      * The maximum number of concurrent connections to allow to any one
      * connection. Zero denotes unlimited.
      */
-    public static final IntegerGuacamoleProperty
-            POSTGRESQL_DEFAULT_MAX_CONNECTIONS =
-            new IntegerGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty POSTGRESQL_DEFAULT_MAX_CONNECTIONS = new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-default-max-connections"; }
+        public String getName() {
+            return "postgresql-default-max-connections";
+        }
 
     };
 
@@ -135,12 +143,12 @@ public class PostgreSQLGuacamoleProperties {
      * The maximum number of concurrent connections to allow to any one
      * connection group. Zero denotes unlimited.
      */
-    public static final IntegerGuacamoleProperty
-            POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS =
-            new IntegerGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS = new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-default-max-group-connections"; }
+        public String getName() {
+            return "postgresql-default-max-group-connections";
+        }
 
     };
 
@@ -148,26 +156,25 @@ public class PostgreSQLGuacamoleProperties {
      * The maximum number of concurrent connections to allow to any one
      * connection by an individual user. Zero denotes unlimited.
      */
-    public static final IntegerGuacamoleProperty
-            POSTGRESQL_DEFAULT_MAX_CONNECTIONS_PER_USER =
-            new IntegerGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty POSTGRESQL_DEFAULT_MAX_CONNECTIONS_PER_USER = new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-default-max-connections-per-user"; }
+        public String getName() {
+            return "postgresql-default-max-connections-per-user";
+        }
 
     };
 
     /**
      * The maximum number of concurrent connections to allow to any one
-     * connection group by an individual user. Zero denotes
-     * unlimited.
+     * connection group by an individual user. Zero denotes unlimited.
      */
-    public static final IntegerGuacamoleProperty
-            POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER =
-            new IntegerGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER = new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-default-max-group-connections-per-user"; }
+        public String getName() {
+            return "postgresql-default-max-group-connections-per-user";
+        }
 
     };
 

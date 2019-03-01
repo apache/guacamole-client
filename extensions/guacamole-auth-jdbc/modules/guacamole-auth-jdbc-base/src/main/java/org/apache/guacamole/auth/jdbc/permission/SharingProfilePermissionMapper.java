@@ -22,5 +22,5 @@ package org.apache.guacamole.auth.jdbc.permission;
 /**
  * Mapper for sharing profile permissions.
  */
-public interface SharingProfilePermissionMapper
-        extends ObjectPermissionMapper {}
+public interface SharingProfilePermissionMapper extends ObjectPermissionMapper {
+}

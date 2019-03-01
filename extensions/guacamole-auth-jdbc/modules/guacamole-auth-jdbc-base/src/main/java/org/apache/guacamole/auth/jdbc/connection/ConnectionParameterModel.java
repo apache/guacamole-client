@@ -19,10 +19,13 @@
 
 package org.apache.guacamole.auth.jdbc.connection;
 
+import org.apache.guacamole.auth.common.connection.ConnectionParameterModelInterface;
+
 /**
  * A single parameter name/value pair belonging to a connection.
  */
-public class ConnectionParameterModel {
+public class ConnectionParameterModel
+        implements ConnectionParameterModelInterface {
 
     /**
      * The identifier of the connection associated with this parameter.
@@ -42,8 +45,7 @@ public class ConnectionParameterModel {
     /**
      * Returns the identifier of the connection associated with this parameter.
      *
-     * @return
-     *     The identifier of the connection associated with this parameter.
+     * @return The identifier of the connection associated with this parameter.
      */
     public String getConnectionIdentifier() {
         return connectionIdentifier;
@@ -53,7 +55,8 @@ public class ConnectionParameterModel {
      * Sets the identifier of the connection associated with this parameter.
      *
      * @param connectionIdentifier
-     *     The identifier of the connection to associate with this parameter.
+     *            The identifier of the connection to associate with this
+     *            parameter.
      */
     public void setConnectionIdentifier(String connectionIdentifier) {
         this.connectionIdentifier = connectionIdentifier;
@@ -62,8 +65,7 @@ public class ConnectionParameterModel {
     /**
      * Returns the name of this parameter.
      *
-     * @return
-     *     The name of this parameter.
+     * @return The name of this parameter.
      */
     public String getName() {
         return name;
@@ -73,7 +75,7 @@ public class ConnectionParameterModel {
      * Sets the name of this parameter.
      *
      * @param name
-     *     The name of this parameter.
+     *            The name of this parameter.
      */
     public void setName(String name) {
         this.name = name;
@@ -82,8 +84,7 @@ public class ConnectionParameterModel {
     /**
      * Returns the value of this parameter.
      *
-     * @return
-     *     The value of this parameter.
+     * @return The value of this parameter.
      */
     public String getValue() {
         return value;
@@ -93,7 +94,7 @@ public class ConnectionParameterModel {
      * Sets the value of this parameter.
      *
      * @param value
-     *     The value of this parameter.
+     *            The value of this parameter.
      */
     public void setValue(String value) {
         this.value = value;

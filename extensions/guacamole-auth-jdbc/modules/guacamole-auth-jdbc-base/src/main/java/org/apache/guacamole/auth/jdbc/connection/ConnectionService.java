@@ -19,179 +19,52 @@
 
 package org.apache.guacamole.auth.jdbc.connection;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
-import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
-import org.apache.guacamole.GuacamoleClientException;
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleSecurityException;
-import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
-import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
-import org.apache.guacamole.auth.jdbc.base.ModeledChildDirectoryObjectService;
-import org.apache.guacamole.auth.jdbc.permission.ConnectionPermissionMapper;
-import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
-import org.apache.guacamole.net.GuacamoleTunnel;
+import org.apache.guacamole.auth.common.connection.ConnectionModelInterface;
+import org.apache.guacamole.auth.common.connection.ConnectionParameterModelInterface;
+import org.apache.guacamole.auth.common.connection.ConnectionServiceAbstract;
+import org.apache.guacamole.auth.common.connection.ConnectionServiceInterface;
+import org.apache.guacamole.auth.common.connection.ModeledConnection;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
+import org.apache.guacamole.auth.common.user.ModeledAuthenticatedUser;
+import org.apache.guacamole.auth.common.user.UserModelInterface;
+import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.apache.guacamole.net.auth.Connection;
-import org.apache.guacamole.net.auth.ConnectionRecord;
-import org.apache.guacamole.net.auth.permission.ObjectPermission;
-import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
-import org.apache.guacamole.net.auth.permission.SystemPermission;
-import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
-import org.apache.guacamole.protocol.GuacamoleClientInformation;
+import org.apache.guacamole.net.auth.permission.ObjectPermission.Type;
+import com.google.inject.Inject;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * manipulating connections.
  */
-public class ConnectionService extends ModeledChildDirectoryObjectService<ModeledConnection, Connection, ConnectionModel> {
+public class ConnectionService extends ConnectionServiceAbstract
+        implements ConnectionServiceInterface {
 
-    /**
-     * Mapper for accessing connections.
-     */
     @Inject
-    private ConnectionMapper connectionMapper;
-
-    /**
-     * Mapper for manipulating connection permissions.
-     */
-    @Inject
-    private ConnectionPermissionMapper connectionPermissionMapper;
-    
-    /**
-     * Mapper for accessing connection parameters.
-     */
-    @Inject
-    private ConnectionParameterMapper parameterMapper;
-
-    /**
-     * Mapper for accessing connection history.
-     */
-    @Inject
-    private ConnectionRecordMapper connectionRecordMapper;
-
-    /**
-     * Provider for creating connections.
-     */
-    @Inject
-    private Provider<ModeledConnection> connectionProvider;
-
-    /**
-     * Service for creating and tracking tunnels.
-     */
-    @Inject
-    private GuacamoleTunnelService tunnelService;
-    
-    @Override
-    protected ModeledDirectoryObjectMapper<ConnectionModel> getObjectMapper() {
-        return connectionMapper;
+    public ConnectionService(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        super(mappers);
     }
 
     @Override
-    protected ObjectPermissionMapper getPermissionMapper() {
-        return connectionPermissionMapper;
-    }
-
-    @Override
-    protected ModeledConnection getObjectInstance(ModeledAuthenticatedUser currentUser,
-            ConnectionModel model) {
-        ModeledConnection connection = connectionProvider.get();
-        connection.init(currentUser, model);
-        return connection;
-    }
-
-    @Override
-    protected ConnectionModel getModelInstance(ModeledAuthenticatedUser currentUser,
-            final Connection object) {
+    protected ConnectionModelInterface getModelInstance(
+            ModeledAuthenticatedUser currentUser, final Connection object) {
 
         // Create new ModeledConnection backed by blank model
         ConnectionModel model = new ConnectionModel();
         ModeledConnection connection = getObjectInstance(currentUser, model);
 
-        // Set model contents through ModeledConnection, copying the provided connection
+        // Set model contents through ModeledConnection, copying the provided
+        // connection
         connection.setParentIdentifier(object.getParentIdentifier());
         connection.setName(object.getName());
         connection.setConfiguration(object.getConfiguration());
         connection.setAttributes(object.getAttributes());
 
         return model;
-        
-    }
-
-    @Override
-    protected boolean hasCreatePermission(ModeledAuthenticatedUser user)
-            throws GuacamoleException {
-
-        // Return whether user has explicit connection creation permission
-        SystemPermissionSet permissionSet = user.getUser().getEffectivePermissions().getSystemPermissions();
-        return permissionSet.hasPermission(SystemPermission.Type.CREATE_CONNECTION);
-
-    }
-
-    @Override
-    protected ObjectPermissionSet getEffectivePermissionSet(ModeledAuthenticatedUser user)
-            throws GuacamoleException {
-
-        // Return permissions related to connections 
-        return user.getUser().getEffectivePermissions().getConnectionPermissions();
-
-    }
-
-    @Override
-    protected ObjectPermissionSet getParentEffectivePermissionSet(ModeledAuthenticatedUser user)
-            throws GuacamoleException {
-
-        // Connections are contained by connection groups
-        return user.getUser().getEffectivePermissions().getConnectionGroupPermissions();
-
-    }
-
-    @Override
-    protected void beforeCreate(ModeledAuthenticatedUser user,
-            Connection object, ConnectionModel model)
-            throws GuacamoleException {
-
-        super.beforeCreate(user, object, model);
-        
-        // Name must not be blank
-        if (model.getName() == null || model.getName().trim().isEmpty())
-            throw new GuacamoleClientException("Connection names must not be blank.");
-
-        // Do not attempt to create duplicate connections
-        ConnectionModel existing = connectionMapper.selectOneByName(model.getParentIdentifier(), model.getName());
-        if (existing != null)
-            throw new GuacamoleClientException("The connection \"" + model.getName() + "\" already exists.");
-
-    }
-
-    @Override
-    protected void beforeUpdate(ModeledAuthenticatedUser user,
-            ModeledConnection object, ConnectionModel model)
-            throws GuacamoleException {
-
-        super.beforeUpdate(user, object, model);
-
-        // Name must not be blank
-        if (model.getName() == null || model.getName().trim().isEmpty())
-            throw new GuacamoleClientException("Connection names must not be blank.");
-        
-        // Check whether such a connection is already present
-        ConnectionModel existing = connectionMapper.selectOneByName(model.getParentIdentifier(), model.getName());
-        if (existing != null) {
-
-            // If the specified name matches a DIFFERENT existing connection, the update cannot continue
-            if (!existing.getObjectID().equals(model.getObjectID()))
-                throw new GuacamoleClientException("The connection \"" + model.getName() + "\" already exists.");
-
-        }
 
     }
 
@@ -201,19 +74,21 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
      * connection's parameters.
      *
      * @param connection
-     *     The connection whose configuration should be used to produce the
-     *     collection of parameter models.
+     *            The connection whose configuration should be used to produce
+     *            the collection of parameter models.
      *
-     * @return
-     *     A collection of parameter models containing the name/value pairs
-     *     of the given connection's parameters.
+     * @return A collection of parameter models containing the name/value pairs
+     *         of the given connection's parameters.
      */
-    private Collection<ConnectionParameterModel> getParameterModels(ModeledConnection connection) {
+    protected Collection<ConnectionParameterModelInterface> getParameterModels(
+            ModeledConnection connection) {
 
-        Map<String, String> parameters = connection.getConfiguration().getParameters();
-        
+        Map<String, String> parameters = connection.getConfiguration()
+                .getParameters();
+
         // Convert parameters to model objects
-        Collection<ConnectionParameterModel> parameterModels = new ArrayList<ConnectionParameterModel>(parameters.size());
+        Collection<ConnectionParameterModelInterface> parameterModels = new ArrayList<ConnectionParameterModelInterface>(
+                parameters.size());
         for (Map.Entry<String, String> parameterEntry : parameters.entrySet()) {
 
             // Get parameter name and value
@@ -223,7 +98,7 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
             // There is no need to insert empty parameters
             if (value == null || value.isEmpty())
                 continue;
-            
+
             // Produce model object from parameter
             ConnectionParameterModel model = new ConnectionParameterModel();
             model.setConnectionIdentifier(connection.getIdentifier());
@@ -232,295 +107,54 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
 
             // Add model to list
             parameterModels.add(model);
-            
+
         }
 
         return parameterModels;
 
     }
 
-    @Override
-    public ModeledConnection createObject(ModeledAuthenticatedUser user, Connection object)
-            throws GuacamoleException {
-
-        // Create connection
-        ModeledConnection connection = super.createObject(user, object);
-        connection.setConfiguration(object.getConfiguration());
-
-        // Insert new parameters, if any
-        Collection<ConnectionParameterModel> parameterModels = getParameterModels(connection);
-        if (!parameterModels.isEmpty())
-            parameterMapper.insert(parameterModels);
-
-        return connection;
-
-    }
-    
-    @Override
-    public void updateObject(ModeledAuthenticatedUser user, ModeledConnection object)
-            throws GuacamoleException {
-
-        // Update connection
-        super.updateObject(user, object);
-
-        // Replace existing parameters with new parameters, if any
-        Collection<ConnectionParameterModel> parameterModels = getParameterModels(object);
-        parameterMapper.delete(object.getIdentifier());
-        if (!parameterModels.isEmpty())
-            parameterMapper.insert(parameterModels);
-        
-    }
-
     /**
-     * Returns the set of all identifiers for all connections within the
-     * connection group having the given identifier. Only connections that the
-     * user has read access to will be returned.
-     * 
-     * Permission to read the connection group having the given identifier is
-     * NOT checked.
-     *
-     * @param user
-     *     The user retrieving the identifiers.
-     * 
-     * @param identifier
-     *     The identifier of the parent connection group, or null to check the
-     *     root connection group.
-     *
-     * @return
-     *     The set of all identifiers for all connections in the connection
-     *     group having the given identifier that the user has read access to.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while reading identifiers.
-     */
-    public Set<String> getIdentifiersWithin(ModeledAuthenticatedUser user,
-            String identifier)
-            throws GuacamoleException {
-
-        // Bypass permission checks if the user is a system admin
-        if (user.getUser().isAdministrator())
-            return connectionMapper.selectIdentifiersWithin(identifier);
-
-        // Otherwise only return explicitly readable identifiers
-        else
-            return connectionMapper.selectReadableIdentifiersWithin(
-                    user.getUser().getModel(), identifier,
-                    user.getEffectiveUserGroups());
-
-    }
-
-    /**
-     * Retrieves all parameters visible to the given user and associated with
-     * the connection having the given identifier. If the given user has no
-     * access to such parameters, or no such connection exists, the returned
-     * map will be empty.
-     *
-     * @param user
-     *     The user retrieving connection parameters.
+     * Returns whether the given string is a valid identifier within the JDBC
+     * authentication extension. Invalid identifiers may result in SQL errors
+     * from the underlying database when used in queries.
      *
      * @param identifier
-     *     The identifier of the connection whose parameters are being
-     *     retrieved.
+     *            The string to check for validity.
      *
-     * @return
-     *     A new map of all parameter name/value pairs that the given user has
-     *     access to.
+     * @return true if the given string is a valid identifier, false otherwise.
      */
-    public Map<String, String> retrieveParameters(ModeledAuthenticatedUser user,
-            String identifier) {
+    protected boolean isValidIdentifier(String identifier) {
 
-        Map<String, String> parameterMap = new HashMap<String, String>();
+        // Empty identifiers are invalid
+        if (identifier.isEmpty())
+            return false;
 
-        // Determine whether we have permission to read parameters
-        boolean canRetrieveParameters;
-        try {
-            canRetrieveParameters = hasObjectPermission(user, identifier,
-                    ObjectPermission.Type.UPDATE);
+        // Identifier is invalid if any non-numeric characters are present
+        for (int i = 0; i < identifier.length(); i++) {
+            if (!Character.isDigit(identifier.charAt(i)))
+                return false;
         }
 
-        // Provide empty (but mutable) map if unable to check permissions
-        catch (GuacamoleException e) {
-            return parameterMap;
-        }
-
-        // Populate parameter map if we have permission to do so
-        if (canRetrieveParameters) {
-            for (ConnectionParameterModel parameter : parameterMapper.select(identifier))
-                parameterMap.put(parameter.getName(), parameter.getValue());
-        }
-
-        return parameterMap;
+        // Identifier is valid - contains only numeric characters
+        return true;
 
     }
 
-    /**
-     * Returns a connection records object which is backed by the given model.
-     *
-     * @param model
-     *     The model object to use to back the returned connection record
-     *     object.
-     *
-     * @return
-     *     A connection record object which is backed by the given model.
-     */
-    protected ConnectionRecord getObjectInstance(ConnectionRecordModel model) {
-        return new ModeledConnectionRecord(model);
-    }
+    @Override
+    protected void createModelPermission(UserModelInterface userModel,
+            Collection<ObjectPermissionModelInterface> implicitPermissions,
+            ConnectionModelInterface model, Type permission) {
 
-    /**
-     * Returns a list of connection records objects which are backed by the
-     * models in the given list.
-     *
-     * @param models
-     *     The model objects to use to back the connection record objects
-     *     within the returned list.
-     *
-     * @return
-     *     A list of connection record objects which are backed by the models
-     *     in the given list.
-     */
-    protected List<ConnectionRecord> getObjectInstances(List<ConnectionRecordModel> models) {
+        // Create model which grants this permission to the current user
+        ObjectPermissionModel permissionModel = new ObjectPermissionModel();
+        permissionModel.setEntityID(userModel.getEntityID());
+        permissionModel.setType(permission);
+        permissionModel.setObjectIdentifier(model.getIdentifier());
 
-        // Create new list of records by manually converting each model
-        List<ConnectionRecord> objects = new ArrayList<ConnectionRecord>(models.size());
-        for (ConnectionRecordModel model : models)
-            objects.add(getObjectInstance(model));
-
-        return objects;
- 
-    }
-
-    /**
-     * Retrieves the connection history of the given connection, including any
-     * active connections.
-     *
-     * @param user
-     *     The user retrieving the connection history.
-     *
-     * @param connection
-     *     The connection whose history is being retrieved.
-     *
-     * @return
-     *     The connection history of the given connection, including any
-     *     active connections.
-     *
-     * @throws GuacamoleException
-     *     If permission to read the connection history is denied.
-     */
-    public List<ConnectionRecord> retrieveHistory(ModeledAuthenticatedUser user,
-            ModeledConnection connection) throws GuacamoleException {
-
-        String identifier = connection.getIdentifier();
-
-        // Retrieve history only if READ permission is granted
-        if (hasObjectPermission(user, identifier, ObjectPermission.Type.READ)) {
-
-            // Retrieve history
-            List<ConnectionRecordModel> models = connectionRecordMapper.select(identifier);
-
-            // Get currently-active connections
-            List<ConnectionRecord> records = new ArrayList<ConnectionRecord>(tunnelService.getActiveConnections(connection));
-            Collections.reverse(records);
-
-            // Add past connections from model objects
-            for (ConnectionRecordModel model : models)
-                records.add(getObjectInstance(model));
-
-            // Return converted history list
-            return records;
-
-        }
-
-        // The user does not have permission to read the history
-        throw new GuacamoleSecurityException("Permission denied.");
+        // Add permission
+        implicitPermissions.add(permissionModel);
 
     }
 
-    /**
-     * Retrieves the connection history records matching the given criteria.
-     * Retrieves up to <code>limit</code> connection history records matching
-     * the given terms and sorted by the given predicates. Only history records
-     * associated with data that the given user can read are returned.
-     *
-     * @param user
-     *     The user retrieving the connection history.
-     *
-     * @param requiredContents
-     *     The search terms that must be contained somewhere within each of the
-     *     returned records.
-     *
-     * @param sortPredicates
-     *     A list of predicates to sort the returned records by, in order of
-     *     priority.
-     *
-     * @param limit
-     *     The maximum number of records that should be returned.
-     *
-     * @return
-     *     The connection history of the given connection, including any
-     *     active connections.
-     *
-     * @throws GuacamoleException
-     *     If permission to read the connection history is denied.
-     */
-    public List<ConnectionRecord> retrieveHistory(ModeledAuthenticatedUser user,
-            Collection<ActivityRecordSearchTerm> requiredContents,
-            List<ActivityRecordSortPredicate> sortPredicates, int limit)
-            throws GuacamoleException {
-
-        List<ConnectionRecordModel> searchResults;
-
-        // Bypass permission checks if the user is a system admin
-        if (user.getUser().isAdministrator())
-            searchResults = connectionRecordMapper.search(requiredContents,
-                    sortPredicates, limit);
-
-        // Otherwise only return explicitly readable history records
-        else
-            searchResults = connectionRecordMapper.searchReadable(
-                    user.getUser().getModel(), requiredContents, sortPredicates,
-                    limit, user.getEffectiveUserGroups());
-
-        return getObjectInstances(searchResults);
-
-    }
-
-    /**
-     * Connects to the given connection as the given user, using the given
-     * client information. If the user does not have permission to read the
-     * connection, permission will be denied.
-     *
-     * @param user
-     *     The user connecting to the connection.
-     *
-     * @param connection
-     *     The connection being connected to.
-     *
-     * @param info
-     *     Information associated with the connecting client.
-     *
-     * @param tokens
-     *     A Map containing the token names and corresponding values to be
-     *     applied as parameter tokens when establishing the connection.
-     *
-     * @return
-     *     A connected GuacamoleTunnel associated with a newly-established
-     *     connection.
-     *
-     * @throws GuacamoleException
-     *     If permission to connect to this connection is denied.
-     */
-    public GuacamoleTunnel connect(ModeledAuthenticatedUser user,
-            ModeledConnection connection, GuacamoleClientInformation info,
-            Map<String, String> tokens) throws GuacamoleException {
-
-        // Connect only if READ permission is granted
-        if (hasObjectPermission(user, connection.getIdentifier(), ObjectPermission.Type.READ))
-            return tunnelService.getGuacamoleTunnel(user, connection, info, tokens);
-
-        // The user does not have permission to connect
-        throw new GuacamoleSecurityException("Permission denied.");
-
-    }
-    
 }

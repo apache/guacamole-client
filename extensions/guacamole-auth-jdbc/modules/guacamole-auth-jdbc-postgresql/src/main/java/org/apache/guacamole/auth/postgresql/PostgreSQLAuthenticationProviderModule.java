@@ -40,29 +40,34 @@ public class PostgreSQLAuthenticationProviderModule implements Module {
      * PostgreSQL-specific driver configuration properties.
      */
     private final Properties driverProperties = new Properties();
-    
+
     /**
      * Creates a new PostgreSQL authentication provider module that configures
      * driver and MyBatis properties using the given environment.
      *
      * @param environment
-     *     The environment to use when configuring MyBatis and the underlying
-     *     JDBC driver.
+     *            The environment to use when configuring MyBatis and the
+     *            underlying JDBC driver.
      *
      * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
+     *             If a required property is missing, or an error occurs while
+     *             parsing a property.
      */
-    public PostgreSQLAuthenticationProviderModule(PostgreSQLEnvironment environment)
-            throws GuacamoleException {
+    public PostgreSQLAuthenticationProviderModule(
+            PostgreSQLEnvironment environment) throws GuacamoleException {
 
         // Set the PostgreSQL-specific properties for MyBatis.
         myBatisProperties.setProperty("mybatis.environment.id", "guacamole");
-        myBatisProperties.setProperty("JDBC.host", environment.getPostgreSQLHostname());
-        myBatisProperties.setProperty("JDBC.port", String.valueOf(environment.getPostgreSQLPort()));
-        myBatisProperties.setProperty("JDBC.schema", environment.getPostgreSQLDatabase());
-        myBatisProperties.setProperty("JDBC.username", environment.getPostgreSQLUsername());
-        myBatisProperties.setProperty("JDBC.password", environment.getPostgreSQLPassword());
+        myBatisProperties.setProperty("JDBC.host",
+                environment.getPostgreSQLHostname());
+        myBatisProperties.setProperty("JDBC.port",
+                String.valueOf(environment.getPostgreSQLPort()));
+        myBatisProperties.setProperty("JDBC.schema",
+                environment.getPostgreSQLDatabase());
+        myBatisProperties.setProperty("JDBC.username",
+                environment.getPostgreSQLUsername());
+        myBatisProperties.setProperty("JDBC.password",
+                environment.getPostgreSQLPassword());
         myBatisProperties.setProperty("JDBC.autoCommit", "false");
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
@@ -77,14 +82,14 @@ public class PostgreSQLAuthenticationProviderModule implements Module {
 
         // Bind PostgreSQL-specific properties
         JdbcHelper.PostgreSQL.configure(binder);
-        
+
         // Bind MyBatis properties
         Names.bindProperties(binder, myBatisProperties);
 
         // Bind JDBC driver properties
         binder.bind(Properties.class)
-            .annotatedWith(Names.named("JDBC.driverProperties"))
-            .toInstance(driverProperties);
+                .annotatedWith(Names.named("JDBC.driverProperties"))
+                .toInstance(driverProperties);
 
     }
 

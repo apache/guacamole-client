@@ -19,24 +19,26 @@
 
 package org.apache.guacamole.auth.jdbc.user;
 
+import org.apache.guacamole.auth.common.user.UserModelInterface;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
  * Mapper for user objects.
  */
-public interface UserMapper extends ModeledDirectoryObjectMapper<UserModel> {
+public interface UserMapper
+        extends ModeledDirectoryObjectMapper<UserModelInterface> {
 
     /**
      * Returns the user having the given username, if any. If no such user
      * exists, null is returned.
      *
      * @param username
-     *     The username of the user to return.
+     *            The username of the user to return.
      *
-     * @return
-     *     The user having the given username, or null if no such user exists.
+     * @return The user having the given username, or null if no such user
+     *         exists.
      */
-    UserModel selectOne(@Param("username") String username);
+    UserModelInterface selectOne(@Param("username") String username);
 
 }

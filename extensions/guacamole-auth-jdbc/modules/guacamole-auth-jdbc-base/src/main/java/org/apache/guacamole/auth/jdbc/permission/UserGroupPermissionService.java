@@ -19,49 +19,41 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
+import java.util.Map;
+import org.apache.guacamole.auth.common.base.EntityModelInterface;
+import org.apache.guacamole.auth.common.base.ModeledPermissions;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
+import org.apache.guacamole.auth.common.permission.UserGroupPermissionServiceAbstract;
+import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
-import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.EntityModel;
-import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * deleting user group permissions. This service will automatically enforce the
  * permissions of the current user.
  */
-public class UserGroupPermissionService extends ModeledObjectPermissionService {
+public class UserGroupPermissionService
+        extends UserGroupPermissionServiceAbstract {
 
-    /**
-     * Mapper for user group permissions.
-     */
     @Inject
-    private UserGroupPermissionMapper userGroupPermissionMapper;
-    
-    /**
-     * Provider for user group permission sets.
-     */
-    @Inject
-    private Provider<UserGroupPermissionSet> userGroupPermissionSetProvider;
-    
-    @Override
-    protected ObjectPermissionMapper getPermissionMapper() {
-        return userGroupPermissionMapper;
+    public UserGroupPermissionService(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        super(mappers);
     }
 
     @Override
-    public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            Set<String> effectiveGroups) throws GuacamoleException {
+    public ObjectPermissionModelInterface getModelInstance(
+            ModeledPermissions<? extends EntityModelInterface> targetEntity,
+            ObjectPermission permission) {
+        ObjectPermissionModel model = new ObjectPermissionModel();
 
-        // Create permission set for requested entity
-        ObjectPermissionSet permissionSet = userGroupPermissionSetProvider.get();
-        permissionSet.init(user, targetEntity, effectiveGroups);
+        // Populate model object with data from entity and permission
+        model.setEntityID(targetEntity.getModel().getEntityID());
+        model.setType(permission.getType());
+        model.setObjectIdentifier(permission.getObjectIdentifier());
 
-        return permissionSet;
-        
+        return model;
     }
 
 }

@@ -19,13 +19,16 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
+import org.apache.guacamole.auth.common.permission.ObjectPermissionModelInterface;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 
 /**
  * Object representation of an object-related Guacamole permission, as
  * represented in the database.
  */
-public class ObjectPermissionModel extends PermissionModel<ObjectPermission.Type> {
+public class ObjectPermissionModel
+        extends PermissionModel<ObjectPermission.Type>
+        implements ObjectPermissionModelInterface {
 
     /**
      * The unique identifier of the object affected by this permission.
@@ -41,8 +44,7 @@ public class ObjectPermissionModel extends PermissionModel<ObjectPermission.Type
     /**
      * Returns the unique identifier of the object affected by this permission.
      *
-     * @return
-     *     The unique identifier of the object affected by this permission.
+     * @return The unique identifier of the object affected by this permission.
      */
     public String getObjectIdentifier() {
         return objectIdentifier;
@@ -51,8 +53,9 @@ public class ObjectPermissionModel extends PermissionModel<ObjectPermission.Type
     /**
      * Sets the unique identifier of the object affected by this permission.
      *
-     * @param objectIdentifier 
-     *     The unique identifier of the object affected by this permission.
+     * @param objectIdentifier
+     *            The unique identifier of the object affected by this
+     *            permission.
      */
     public void setObjectIdentifier(String objectIdentifier) {
         this.objectIdentifier = objectIdentifier;

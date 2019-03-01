@@ -19,23 +19,23 @@
 
 package org.apache.guacamole.auth.jdbc.connectiongroup;
 
-
-import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
+import org.apache.guacamole.auth.common.base.RestrictedObject;
+import org.apache.guacamole.auth.common.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
 import org.mybatis.guice.transactional.Transactional;
+import com.google.inject.Inject;
 
 /**
  * Implementation of the ConnectionGroup Directory which is driven by an
  * underlying, arbitrary database.
  */
 public class ConnectionGroupDirectory extends RestrictedObject
-    implements Directory<ConnectionGroup> {
+        implements Directory<ConnectionGroup> {
 
     /**
      * Service for managing connection group objects.
@@ -45,13 +45,16 @@ public class ConnectionGroupDirectory extends RestrictedObject
 
     @Override
     public ConnectionGroup get(String identifier) throws GuacamoleException {
-        return connectionGroupService.retrieveObject(getCurrentUser(), identifier);
+        return connectionGroupService.retrieveObject(getCurrentUser(),
+                identifier);
     }
 
     @Override
     @Transactional
-    public Collection<ConnectionGroup> getAll(Collection<String> identifiers) throws GuacamoleException {
-        Collection<ModeledConnectionGroup> objects = connectionGroupService.retrieveObjects(getCurrentUser(), identifiers);
+    public Collection<ConnectionGroup> getAll(Collection<String> identifiers)
+            throws GuacamoleException {
+        Collection<ModeledConnectionGroup> objects = connectionGroupService
+                .retrieveObjects(getCurrentUser(), identifiers);
         return Collections.<ConnectionGroup>unmodifiableCollection(objects);
     }
 

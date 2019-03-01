@@ -19,10 +19,13 @@
 
 package org.apache.guacamole.auth.jdbc.sharingprofile;
 
+import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
+
 /**
  * A single parameter name/value pair belonging to a sharing profile.
  */
-public class SharingProfileParameterModel {
+public class SharingProfileParameterModel
+        implements ArbitraryAttributeModelInterface {
 
     /**
      * The identifier of the sharing profile associated with this parameter.
@@ -43,9 +46,8 @@ public class SharingProfileParameterModel {
      * Returns the identifier of the sharing profile associated with this
      * parameter.
      *
-     * @return
-     *     The identifier of the sharing profile associated with this
-     *     parameter.
+     * @return The identifier of the sharing profile associated with this
+     *         parameter.
      */
     public String getSharingProfileIdentifier() {
         return sharingProfileIdentifier;
@@ -56,8 +58,8 @@ public class SharingProfileParameterModel {
      * parameter.
      *
      * @param sharingProfileIdentifier
-     *     The identifier of the sharing profile to associate with this
-     *     parameter.
+     *            The identifier of the sharing profile to associate with this
+     *            parameter.
      */
     public void setSharingProfileIdentifier(String sharingProfileIdentifier) {
         this.sharingProfileIdentifier = sharingProfileIdentifier;
@@ -66,8 +68,7 @@ public class SharingProfileParameterModel {
     /**
      * Returns the name of this parameter.
      *
-     * @return
-     *     The name of this parameter.
+     * @return The name of this parameter.
      */
     public String getName() {
         return name;
@@ -77,7 +78,7 @@ public class SharingProfileParameterModel {
      * Sets the name of this parameter.
      *
      * @param name
-     *     The name of this parameter.
+     *            The name of this parameter.
      */
     public void setName(String name) {
         this.name = name;
@@ -86,8 +87,7 @@ public class SharingProfileParameterModel {
     /**
      * Returns the value of this parameter.
      *
-     * @return
-     *     The value of this parameter.
+     * @return The value of this parameter.
      */
     public String getValue() {
         return value;
@@ -97,7 +97,7 @@ public class SharingProfileParameterModel {
      * Sets the value of this parameter.
      *
      * @param value
-     *     The value of this parameter.
+     *            The value of this parameter.
      */
     public void setValue(String value) {
         this.value = value;

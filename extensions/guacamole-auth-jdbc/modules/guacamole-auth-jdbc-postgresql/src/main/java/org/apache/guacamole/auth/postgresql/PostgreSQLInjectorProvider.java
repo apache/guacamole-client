@@ -19,18 +19,18 @@
 
 package org.apache.guacamole.auth.postgresql;
 
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.common.CommonInjectorProvider;
+import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProviderModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProviderModule;
-import org.apache.guacamole.auth.jdbc.JDBCInjectorProvider;
 
 /**
  * JDBCInjectorProvider implementation which configures Guice injections for
  * connecting to a PostgreSQL database based on PostgreSQL-specific options
  * provided via guacamole.properties.
  */
-public class PostgreSQLInjectorProvider extends JDBCInjectorProvider {
+public class PostgreSQLInjectorProvider extends CommonInjectorProvider {
 
     @Override
     protected Injector create() throws GuacamoleException {
@@ -40,9 +40,8 @@ public class PostgreSQLInjectorProvider extends JDBCInjectorProvider {
 
         // Set up Guice injector
         return Guice.createInjector(
-            new JDBCAuthenticationProviderModule(environment),
-            new PostgreSQLAuthenticationProviderModule(environment)
-        );
+                new JDBCAuthenticationProviderModule(environment),
+                new PostgreSQLAuthenticationProviderModule(environment));
 
     }
 

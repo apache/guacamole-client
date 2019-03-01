@@ -19,27 +19,31 @@
 
 package org.apache.guacamole.auth.jdbc.base;
 
+import org.apache.guacamole.auth.common.base.EntityModelInterface;
+import org.apache.guacamole.auth.common.base.EntityType;
+
 /**
- * Base representation of a Guacamole object that can be granted permissions
- * (an "entity"), such as a user or user group, as represented in the database.
- * Each entity has three base properties:
+ * Base representation of a Guacamole object that can be granted permissions (an
+ * "entity"), such as a user or user group, as represented in the database. Each
+ * entity has three base properties:
  *
- *   1. The "entityID", which points to the common entry in the
- *      guacamole_entity table and is common to any type of entity.
+ * 1. The "entityID", which points to the common entry in the guacamole_entity
+ * table and is common to any type of entity.
  *
- *   2. The "objectID", which points to the type-specific entry for the object
- *      in question (ie: an entry in guacamole_user or guacamole_user_group).
+ * 2. The "objectID", which points to the type-specific entry for the object in
+ * question (ie: an entry in guacamole_user or guacamole_user_group).
  *
- *   3. The "identifier", which contains the unique "name" value defined for
- *      the entity within the guacamole_entity table.
+ * 3. The "identifier", which contains the unique "name" value defined for the
+ * entity within the guacamole_entity table.
  */
-public abstract class EntityModel extends ObjectModel {
+public abstract class EntityModel extends ObjectModel
+        implements EntityModelInterface {
 
     /**
      * The ID of the entity entry which corresponds to this object in the
-     * database, if any. Note that this is distinct from the objectID,
-     * inherited from ObjectModel, which is specific to the actual type of
-     * object represented by the entity.
+     * database, if any. Note that this is distinct from the objectID, inherited
+     * from ObjectModel, which is specific to the actual type of object
+     * represented by the entity.
      */
     private Integer entityID;
 
@@ -58,7 +62,7 @@ public abstract class EntityModel extends ObjectModel {
      * Creates a new entity of the given type which is otherwise empty.
      *
      * @param type
-     *     The type to assign to the new entity.
+     *            The type to assign to the new entity.
      */
     public EntityModel(EntityType type) {
         this.type = type;
@@ -70,9 +74,8 @@ public abstract class EntityModel extends ObjectModel {
      * inherited from ObjectModel, which is specific to the actual type of
      * object represented by the entity.
      *
-     * @return
-     *     The ID of this entity in the database, or null if this entity was
-     *     not retrieved from the database.
+     * @return The ID of this entity in the database, or null if this entity was
+     *         not retrieved from the database.
      */
     public Integer getEntityID() {
         return entityID;
@@ -82,7 +85,7 @@ public abstract class EntityModel extends ObjectModel {
      * Sets the ID of this entity to the given value.
      *
      * @param entityID
-     *     The ID to assign to this entity.
+     *            The ID to assign to this entity.
      */
     public void setEntityID(Integer entityID) {
         this.entityID = entityID;
@@ -92,8 +95,7 @@ public abstract class EntityModel extends ObjectModel {
      * Returns the type of object represented by the entity. Each entity may be
      * either a user or a user group.
      *
-     * @return
-     *     The type of object represented by the entity.
+     * @return The type of object represented by the entity.
      */
     public EntityType getEntityType() {
         return type;
@@ -104,7 +106,7 @@ public abstract class EntityModel extends ObjectModel {
      * either a user or a user group.
      *
      * @param type
-     *     The type of object represented by the entity.
+     *            The type of object represented by the entity.
      */
     public void setEntityType(EntityType type) {
         this.type = type;

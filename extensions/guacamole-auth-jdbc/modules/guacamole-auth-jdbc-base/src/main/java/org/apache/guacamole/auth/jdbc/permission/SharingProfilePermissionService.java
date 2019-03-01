@@ -19,49 +19,42 @@
 
 package org.apache.guacamole.auth.jdbc.permission;
 
+import java.util.Map;
+import org.apache.guacamole.auth.common.base.EntityModelInterface;
+import org.apache.guacamole.auth.common.base.ModeledPermissions;
+import org.apache.guacamole.auth.common.permission.ObjectPermissionMapperInterface;
+import org.apache.guacamole.auth.common.permission.SharingProfilePermissionServiceAbstract;
+import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
-import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.EntityModel;
-import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
  * deleting sharing profile permissions. This service will automatically enforce
  * the permissions of the current user.
  */
-public class SharingProfilePermissionService extends ModeledObjectPermissionService {
+public class SharingProfilePermissionService
+        extends SharingProfilePermissionServiceAbstract {
 
-    /**
-     * Mapper for sharing profile permissions.
-     */
     @Inject
-    private SharingProfilePermissionMapper sharingProfilePermissionMapper;
-    
-    /**
-     * Provider for sharing profile permission sets.
-     */
-    @Inject
-    private Provider<SharingProfilePermissionSet> sharingProfilePermissionSetProvider;
-    
-    @Override
-    protected ObjectPermissionMapper getPermissionMapper() {
-        return sharingProfilePermissionMapper;
+    public SharingProfilePermissionService(
+            Map<String, ObjectPermissionMapperInterface> mappers) {
+        super(mappers);
     }
 
     @Override
-    public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            Set<String> effectiveGroups) throws GuacamoleException {
+    public ObjectPermissionModel getModelInstance(
+            ModeledPermissions<? extends EntityModelInterface> targetEntity,
+            ObjectPermission permission) {
 
-        // Create permission set for requested entity
-        ObjectPermissionSet permissionSet = sharingProfilePermissionSetProvider.get();
-        permissionSet.init(user, targetEntity, effectiveGroups);
+        ObjectPermissionModel model = new ObjectPermissionModel();
 
-        return permissionSet;
-        
+        // Populate model object with data from entity and permission
+        model.setEntityID(targetEntity.getModel().getEntityID());
+        model.setType(permission.getType());
+        model.setObjectIdentifier(permission.getObjectIdentifier());
+
+        return model;
+
     }
 
 }

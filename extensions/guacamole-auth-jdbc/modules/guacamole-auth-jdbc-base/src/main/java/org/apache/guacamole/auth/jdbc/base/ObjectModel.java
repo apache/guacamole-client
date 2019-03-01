@@ -20,12 +20,14 @@
 package org.apache.guacamole.auth.jdbc.base;
 
 import java.util.Collection;
+import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
+import org.apache.guacamole.auth.common.base.ObjectModelInterface;
 
 /**
- * Object representation of a Guacamole object, such as a user or connection,
- * as represented in the database.
+ * Object representation of a Guacamole object, such as a user or connection, as
+ * represented in the database.
  */
-public abstract class ObjectModel {
+public abstract class ObjectModel implements ObjectModelInterface {
 
     /**
      * The ID of this object in the database, if any.
@@ -41,8 +43,7 @@ public abstract class ObjectModel {
      * Map of all arbitrary attributes associated with this object but not
      * directly mapped to a particular column.
      */
-    private ArbitraryAttributeMap arbitraryAttributes =
-            new ArbitraryAttributeMap();
+    private ArbitraryAttributeMap arbitraryAttributes = new ArbitraryAttributeMap();
 
     /**
      * Creates a new, empty object.
@@ -53,8 +54,7 @@ public abstract class ObjectModel {
     /**
      * Returns the identifier that uniquely identifies this object.
      *
-     * @return
-     *     The identifier that uniquely identifies this object.
+     * @return The identifier that uniquely identifies this object.
      */
     public String getIdentifier() {
         return identifier;
@@ -64,7 +64,7 @@ public abstract class ObjectModel {
      * Sets the identifier that uniquely identifies this object.
      *
      * @param identifier
-     *     The identifier that uniquely identifies this object.
+     *            The identifier that uniquely identifies this object.
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
@@ -73,9 +73,8 @@ public abstract class ObjectModel {
     /**
      * Returns the ID of this object in the database, if it exists.
      *
-     * @return
-     *     The ID of this object in the database, or null if this object was
-     *     not retrieved from the database.
+     * @return The ID of this object in the database, or null if this object was
+     *         not retrieved from the database.
      */
     public Integer getObjectID() {
         return objectID;
@@ -85,7 +84,7 @@ public abstract class ObjectModel {
      * Sets the ID of this object to the given value.
      *
      * @param objectID
-     *     The ID to assign to this object.
+     *            The ID to assign to this object.
      */
     public void setObjectID(Integer objectID) {
         this.objectID = objectID;
@@ -94,42 +93,39 @@ public abstract class ObjectModel {
     /**
      * Returns a map of attribute name/value pairs for all attributes associated
      * with this model which do not have explicit mappings to actual model
-     * properties. All other attributes (those which are explicitly supported
-     * by the model) should instead be mapped to properties with corresponding
-     * and properly-typed columns.
+     * properties. All other attributes (those which are explicitly supported by
+     * the model) should instead be mapped to properties with corresponding and
+     * properly-typed columns.
      *
-     * @return
-     *     A map of attribute name/value pairs for all attributes associated
-     *     with this model which do not otherwise have explicit mappings to
-     *     properties.
+     * @return A map of attribute name/value pairs for all attributes associated
+     *         with this model which do not otherwise have explicit mappings to
+     *         properties.
      */
     public ArbitraryAttributeMap getArbitraryAttributeMap() {
         return arbitraryAttributes;
     }
 
     /**
-     * Returns whether at least one arbitrary attribute name/value pair has
-     * been associated with this object.
+     * Returns whether at least one arbitrary attribute name/value pair has been
+     * associated with this object.
      *
-     * @return
-     *     true if this object has at least one arbitrary attribute set, false
-     *     otherwise.
+     * @return true if this object has at least one arbitrary attribute set,
+     *         false otherwise.
      */
     public boolean hasArbitraryAttributes() {
         return !arbitraryAttributes.isEmpty();
     }
 
     /**
-     * Returns a Collection view of the equivalent attribute model objects
-     * which make up the map of arbitrary attribute name/value pairs returned
-     * by getArbitraryAttributeMap(). Additions and removals on the returned
+     * Returns a Collection view of the equivalent attribute model objects which
+     * make up the map of arbitrary attribute name/value pairs returned by
+     * getArbitraryAttributeMap(). Additions and removals on the returned
      * Collection directly affect the attribute map.
      *
-     * @return
-     *      A Collection view of the map returned by
-     *      getArbitraryAttributeMap().
+     * @return A Collection view of the map returned by
+     *         getArbitraryAttributeMap().
      */
-    public Collection<ArbitraryAttributeModel> getArbitraryAttributes() {
+    public Collection<ArbitraryAttributeModelInterface> getArbitraryAttributes() {
         return arbitraryAttributes.toModelCollection();
     }
 
@@ -138,12 +134,14 @@ public abstract class ObjectModel {
      * attribute name/value pairs within the given collection of model objects.
      *
      * @param arbitraryAttributes
-     *     The Collection of model objects containing the attribute name/value
-     *     pairs which should replace all currently-stored arbitrary attributes,
-     *     if any.
+     *            The Collection of model objects containing the attribute
+     *            name/value pairs which should replace all currently-stored
+     *            arbitrary attributes, if any.
      */
-    public void setArbitraryAttributes(Collection<ArbitraryAttributeModel> arbitraryAttributes) {
-        this.arbitraryAttributes = ArbitraryAttributeMap.fromModelCollection(arbitraryAttributes);
+    public void setArbitraryAttributes(
+            Collection<ArbitraryAttributeModel> arbitraryAttributes) {
+        this.arbitraryAttributes = ArbitraryAttributeMap
+                .fromModelCollection(arbitraryAttributes);
     }
 
 }

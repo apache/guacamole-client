@@ -19,15 +19,18 @@
 
 package org.apache.guacamole.auth.jdbc.base;
 
+import org.apache.guacamole.auth.common.base.ArbitraryAttributeModelInterface;
+
 /**
- * A single attribute name/value pair belonging to a object which implements
- * the Attributes interface, such as a Connection or User. Attributes stored
- * as raw name/value pairs are the attributes which are given to the database
+ * A single attribute name/value pair belonging to a object which implements the
+ * Attributes interface, such as a Connection or User. Attributes stored as raw
+ * name/value pairs are the attributes which are given to the database
  * authentication extension for storage by other extensions. Attributes which
  * are directly supported by the database authentication extension have defined
  * columns and properties with proper types, constraints, etc.
  */
-public class ArbitraryAttributeModel {
+public class ArbitraryAttributeModel
+        implements ArbitraryAttributeModelInterface {
 
     /**
      * The name of the attribute.
@@ -40,21 +43,21 @@ public class ArbitraryAttributeModel {
     private String value;
 
     /**
-     * Creates a new ArbitraryAttributeModel with its name and value both set
-     * to null.
+     * Creates a new ArbitraryAttributeModel with its name and value both set to
+     * null.
      */
     public ArbitraryAttributeModel() {
     }
 
     /**
-     * Creates a new ArbitraryAttributeModel with its name and value
-     * initialized to the given values.
+     * Creates a new ArbitraryAttributeModel with its name and value initialized
+     * to the given values.
      *
      * @param name
-     *     The name of the attribute.
+     *            The name of the attribute.
      *
      * @param value
-     *     The value the attribute is set to.
+     *            The value the attribute is set to.
      */
     public ArbitraryAttributeModel(String name, String value) {
         this.name = name;
@@ -64,8 +67,7 @@ public class ArbitraryAttributeModel {
     /**
      * Returns the name of this attribute.
      *
-     * @return
-     *     The name of this attribute.
+     * @return The name of this attribute.
      */
     public String getName() {
         return name;
@@ -75,7 +77,7 @@ public class ArbitraryAttributeModel {
      * Sets the name of this attribute.
      *
      * @param name
-     *     The name of this attribute.
+     *            The name of this attribute.
      */
     public void setName(String name) {
         this.name = name;
@@ -84,8 +86,7 @@ public class ArbitraryAttributeModel {
     /**
      * Returns the value of this attribute.
      *
-     * @return
-     *     The value of this attribute.
+     * @return The value of this attribute.
      */
     public String getValue() {
         return value;
@@ -95,7 +96,7 @@ public class ArbitraryAttributeModel {
      * Sets the value of this attribute.
      *
      * @param value
-     *     The value of this attribute.
+     *            The value of this attribute.
      */
     public void setValue(String value) {
         this.value = value;
