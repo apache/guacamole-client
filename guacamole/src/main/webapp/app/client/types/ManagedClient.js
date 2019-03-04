@@ -37,6 +37,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
     // Required services
     var $document               = $injector.get('$document');
+    var $log                    = $injector.get('$log');
     var $q                      = $injector.get('$q');
     var $rootScope              = $injector.get('$rootScope');
     var $window                 = $injector.get('$window');
@@ -51,6 +52,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var guacAudio               = $injector.get('guacAudio');
     var guacHistory             = $injector.get('guacHistory');
     var guacImage               = $injector.get('guacImage');
+    var guacPrompt              = $injector.get('guacPrompt');
     var guacVideo               = $injector.get('guacVideo');
 
     /**
@@ -367,6 +369,9 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             client : client,
             tunnel : tunnel
         });
+        
+        // Parse connection details from ID
+        var clientIdentifier = ClientIdentifier.fromString(id);
 
         // Fire events for tunnel errors
         tunnel.onerror = function tunnelError(status) {
@@ -577,12 +582,27 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                 managedClient.filesystems.push(ManagedFilesystem.getInstance(object, name));
             });
         };
+        
+        // Handle any received prompts
+        client.onrequired = function onrequired(parameters) {
+            
+            guacPrompt.getUserInput(parameters.reduce((a,b)=> (a[b]='',a),{}))
+                    .then(function gotUserInput(data) {
+                        for (var parameter in data) {
+                            var stream = client.createArgumentValueStream("text/plain", parameter);
+                            var writer = new Guacamole.StringWriter(stream);
+                            writer.sendText(data[parameter]);
+                            writer.sendEnd();
+                        }
+
+                }, function errorUserInput() {
+                    $log.error('Error gathering user input.');
+                    client.disconnect();
+                });
+        };
 
         // Manage the client display
         managedClient.managedDisplay = ManagedDisplay.getInstance(client.getDisplay());
-
-        // Parse connection details from ID
-        var clientIdentifier = ClientIdentifier.fromString(id);
 
         // Connect the Guacamole client
         getConnectString(clientIdentifier, connectionParameters)

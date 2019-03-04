@@ -28,6 +28,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     var $window          = $injector.get('$window');
     var clipboardService = $injector.get('clipboardService');
     var guacNotification = $injector.get('guacNotification');
+    var guacPrompt       = $injector.get('guacPrompt');
 
     /**
      * The error that prevents the current page from rendering at all. If no
@@ -41,6 +42,11 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
      * The notification service.
      */
     $scope.guacNotification = guacNotification;
+    
+    /**
+     * The prompt service.
+     */
+    $scope.guacPrompt = guacPrompt;
 
     /**
      * The message to display to the user as instructions for the login

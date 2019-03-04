@@ -1,0 +1,18 @@
+<div class="prompt" ng-class="prompt.className">
+    <div class="body">
+        <!-- Parameters -->
+        <div class="prompt connection-parameters">
+            <guac-form
+                namespace="getProtocolNamespace(client.protocol)"
+                content="client.forms"
+                model="prompt.responses"
+                model-only="true"></guac-form>
+        </div>
+    </div>
+    <!-- Buttons -->
+    <div ng-show="prompt.actions.length" class="buttons">
+        <button ng-repeat="action in prompt.actions"
+                ng-click="action.callback()"
+                ng-class="action.className">{{action.name | translate}}</button>
+    </div>
+</div>

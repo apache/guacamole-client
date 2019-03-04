@@ -45,6 +45,18 @@
     <div id="connection-warning" ng-show="isConnectionUnstable()">
         {{'CLIENT.TEXT_CLIENT_STATUS_UNSTABLE' | translate}}
     </div>
+    
+    <!-- Connection prompt dialog -->
+    <div id="connection-prompt"
+         ng-show="getPrompt()"
+         ng-class="{shown: getPrompt()}"
+         class="status-outer connection-parameters">
+        
+        <div class="status-middle">
+            <guac-prompt prompt="getPrompt()" client="client"></guac-prompt>
+        </div>
+        
+    </div>
 
     <!-- Menu -->
     <div class="menu" ng-class="{open: menu.shown}" id="guac-menu">
