@@ -4,9 +4,6 @@
     
     "APP" : {
 
-        "NAME"    : "Apache Guacamole",
-        "VERSION" : "${project.version}",
-
         "ACTION_ACKNOWLEDGE"        : "确定",
         "ACTION_CANCEL"             : "取消",
         "ACTION_CLONE"              : "克隆",
