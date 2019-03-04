@@ -221,7 +221,7 @@ public class SignedDuoCookie extends DuoCookie {
             mac.init(new SecretKeySpec(key.getBytes("UTF-8"), SIGNATURE_ALGORITHM));
 
             // Return signature as hex
-            return BaseEncoding.base16().encode(mac.doFinal(data.getBytes("UTF-8"))).toLowerCase();
+            return BaseEncoding.base16().lowerCase().encode(mac.doFinal(data.getBytes("UTF-8")));
 
         }
 
