@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.duo.api;
 
+import com.google.common.io.BaseEncoding;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -26,7 +27,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
@@ -221,7 +221,7 @@ public class SignedDuoCookie extends DuoCookie {
             mac.init(new SecretKeySpec(key.getBytes("UTF-8"), SIGNATURE_ALGORITHM));
 
             // Return signature as hex
-            return DatatypeConverter.printHexBinary(mac.doFinal(data.getBytes("UTF-8"))).toLowerCase();
+            return BaseEncoding.base16().lowerCase().encode(mac.doFinal(data.getBytes("UTF-8")));
 
         }
 

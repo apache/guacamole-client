@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.rest.auth;
 
+import com.google.common.io.BaseEncoding;
 import com.google.inject.Inject;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -33,7 +34,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
@@ -94,7 +94,8 @@ public class TokenRESTService {
 
                     // Decode base64 authorization
                     String basicBase64 = authorization.substring(6);
-                    String basicCredentials = new String(DatatypeConverter.parseBase64Binary(basicBase64), "UTF-8");
+                    String basicCredentials = new String(
+                            BaseEncoding.base64().decode(basicBase64), "UTF-8");
 
                     // Pull username/password from auth data
                     int colon = basicCredentials.indexOf(':');

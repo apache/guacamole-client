@@ -30,7 +30,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.totp.user.UserTOTPKey;
 import org.apache.guacamole.auth.totp.conf.ConfigurationService;
@@ -309,7 +308,7 @@ public class AuthenticationCodeField extends Field {
 
         // Return data URI for generated image
         return "data:image/png;base64,"
-                + DatatypeConverter.printBase64Binary(stream.toByteArray());
+                + BaseEncoding.base64().encode(stream.toByteArray());
 
     }
 

@@ -19,13 +19,11 @@
 
 package org.apache.guacamole.auth.radius;
 
+import com.google.common.io.BaseEncoding;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import java.lang.IllegalArgumentException;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.auth.radius.user.AuthenticatedUser;
 import org.apache.guacamole.auth.radius.form.RadiusChallengeResponseField;
 import org.apache.guacamole.auth.radius.form.RadiusStateField;
@@ -100,7 +98,7 @@ public class AuthenticationProviderService {
 
         // We have the required attributes - convert to strings and then generate the additional login box/field
         String replyMsg = replyAttr.toString();
-        String radiusState = DatatypeConverter.printHexBinary(stateAttr.getValue().getBytes());
+        String radiusState = BaseEncoding.base16().encode(stateAttr.getValue().getBytes());
         Field radiusResponseField = new RadiusChallengeResponseField(replyMsg);
         Field radiusStateField = new RadiusStateField(radiusState);
 
@@ -164,7 +162,7 @@ public class AuthenticationProviderService {
                     throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
                 }
 
-                byte[] stateBytes = DatatypeConverter.parseHexBinary(stateString);
+                byte[] stateBytes = BaseEncoding.base16().decode(stateString);
                 radPack = radiusService.sendChallengeResponse(credentials.getUsername(),
                                                               challengeResponse,
                                                               stateBytes);

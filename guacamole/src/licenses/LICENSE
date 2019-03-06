@@ -529,6 +529,15 @@ own licenses; we recommend you read them, as their terms may differ from
 the terms above.
 
 
+Guava: Google Core Libraries for Java (https://github.com/google/guava)
+-----------------------------------------------------------------------
+
+    Version: 27.0.1-jre
+    From: 'Google Inc.' (http://www.google.com/)
+    License(s):
+        Apache v2.0 (bundled/guava-27.0.1-jre/COPYING)
+
+
 JSR-250 Reference Implementation
 (https://jcp.org/aboutJava/communityprocess/final/jsr250/index.html)
 --------------------------------------------------------------------

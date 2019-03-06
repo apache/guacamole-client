@@ -229,13 +229,13 @@ Google Guice (https://github.com/google/guice)
         Apache v2.0 (bundled/guice-3.0/COPYING)
 
 
-JAXB API / XML Processing (https://projects.eclipse.org/projects/ee4j.jaxb)
----------------------------------------------------------------------------
+Guava: Google Core Libraries for Java (https://github.com/google/guava)
+-----------------------------------------------------------------------
 
-    Version: 2.3.1
-    From: 'Oracle' (http://www.oracle.com)
+    Version: 27.0.1-jre
+    From: 'Google Inc.' (http://www.google.com/)
     License(s):
-        CDDL 1.1 (bundled/jaxb-api-2.3.1/license.txt)
+        Apache v2.0 (bundled/guava-27.0.1-jre/COPYING)
 
 
 JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
