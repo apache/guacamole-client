@@ -186,7 +186,7 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
                 angular.forEach(item.children, function flattenChild(child) {
                     if (child.type === GroupListItem.Type.CONNECTION_GROUP) {
 
-                        var flattenedChild = flattenConnectionGroup(child);
+                        var flattenedChild = flattenGroupListItem(child);
 
                         // Merge all children
                         Array.prototype.push.apply(
