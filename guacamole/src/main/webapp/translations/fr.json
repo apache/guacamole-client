@@ -10,6 +10,7 @@
         "ACTION_CONTINUE"           : "Continuer",
         "ACTION_DELETE"             : "Supprimer",
         "ACTION_DELETE_SESSIONS"    : "Fermer les Sessions",
+        "ACTION_DOWNLOAD"           : "Télécharger",
         "ACTION_LOGIN"              : "Se connecter",
         "ACTION_LOGOUT"             : "Se déconnecter",
         "ACTION_MANAGE_CONNECTIONS" : "Connexions",
@@ -17,14 +18,18 @@
         "ACTION_MANAGE_SETTINGS"    : "Paramètres",
         "ACTION_MANAGE_SESSIONS"    : "Sessions Actives",
         "ACTION_MANAGE_USERS"       : "Utilisateurs",
+        "ACTION_MANAGE_USER_GROUPS" : "Groupes",
         "ACTION_NAVIGATE_BACK"      : "Retour",
         "ACTION_NAVIGATE_HOME"      : "Accueil",
         "ACTION_SAVE"               : "Enregistrer",
         "ACTION_SEARCH"             : "Rechercher",
+        "ACTION_SHARE"              : "Partager",
         "ACTION_UPDATE_PASSWORD"    : "Mettre à jour mot de passe",
         "ACTION_VIEW_HISTORY"       : "Historique",
 
         "DIALOG_HEADER_ERROR" : "Erreur",
+        
+        "ERROR_PAGE_UNAVAILABLE"  : "Une erreur est apparue et cette action ne pourra pas être achevé. Si le problème persiste, merci de contacter votre administrateur ou regarder les journaux système.",
 
         "ERROR_PASSWORD_BLANK"    : "Votre mot de passe ne peut pas être vide.",
         "ERROR_PASSWORD_MISMATCH" : "Le mot de passe ne correspond pas.",
@@ -37,6 +42,7 @@
         "FORMAT_DATE_TIME_PRECISE" : "dd-MM-yyyy HH:mm:ss",
 
         "INFO_ACTIVE_USER_COUNT" : "Actuellement utilisé par {USERS} {USERS, plural, one{utilisateur} other{utilisateurs}}.",
+        "TEXT_ANONYMOUS_USER"   : "Anonyme",
 
         "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{seconde} other{secondes}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{heure} other{heures}}} day{{VALUE, plural, one{jour} other{jours}}} other{}}"
 
@@ -52,6 +58,7 @@
         "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
         "ACTION_RECONNECT"                 : "Reconnecter",
         "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
         "ACTION_UPLOAD_FILES"              : "Envoyer Fichiers",
 
         "DIALOG_HEADER_CONNECTING"       : "Connexion",
@@ -61,7 +68,11 @@
         "ERROR_CLIENT_201"     : "Cette connexion a été fermée car le serveur est occupé. Merci d'attendre quelques minutes et de réessayer.",
         "ERROR_CLIENT_202"     : "Le serveur Guacamole a fermé cette connexion car l'ordinateur distant a mis trop de temps à répondre. Merci de réessayer ou de contacter l'administrateur.",
         "ERROR_CLIENT_203"     : "Le serveur distant a rencontré une erreur et a fermé la connexion. Merci de réessayer ou de contacter l'administrateur.",
-        "ERROR_CLIENT_205"     : "Cette connexion a été fermée car elle est en conflit avec une autre. Merci de réessayer plus tard.", 
+        "ERROR_CLIENT_207"     : "Le server distant est inaccessible. Si le problème persiste, merci de notifier l'administrateur ou de regarder les journaux système.",
+        "ERROR_CLIENT_208"     : "Le server distant est indisponible. Si le problème persiste, merci de notifier l'administrateur ou de regarder les journaux système.",
+        "ERROR_CLIENT_209"     : "Le serveur distant a fermé la connexion car elle est en conflit avec une autre. Merci de réessayer plus tard.",
+        "ERROR_CLIENT_20A"     : "Le serveur distant a fermé la connexion car il semblait être inactive. Si cela est inattendu, merci de notifier l'administrateur ou verifier vos paramètres système.",
+        "ERROR_CLIENT_20B"     : "Le serveur distant a forcé la fermeture de la connexion. Si cela est inattendu, merci de notifier l'administrateur ou  de regarder les journaux système.",
         "ERROR_CLIENT_301"     : "Connexion echouée. Merci d'essayer encore.", 
         "ERROR_CLIENT_303"     : "Vous ne disposez pas des permissions pour accéder à cette connexion. Si vous avez besoin de ces droits demandez à l'administrateur qu'il vous ajoute à la lise des utilisateurs autorisés, ou de vérifier les paramètres système.", 
         "ERROR_CLIENT_308"     : "Le serveur Guacamole a fermé la connexion car il n'y avait pas de réponse de votre navigateur Internet et qu'il l'a considéré comme déconnecté. Cela se produit à cause de problèmes réseaux (mauvais signal Wi-Fi ou réseau très lent). Merci de vérifier votre réseau et de réessayer.", 
@@ -72,7 +83,9 @@
         "ERROR_TUNNEL_202"     : "La connexion a été fermée car le serveur met trop de temps à répondre. En général, il s'agit de problème réseau comme un réseau Wi-Fi trop lent ou un réseau très lent. Merci de vérifier votre réseau ou de contacter l'administrateur.", 
         "ERROR_TUNNEL_203"     : "Le serveur a rencontré une erreur et a fermé la connexion. Merci de réessayer ou de contacter l'administrateur.", 
         "ERROR_TUNNEL_204"     : "Le connexion demandée n'existe pas. Merci de vérifier le nom et de réessayer.",
-        "ERROR_TUNNEL_205"     : "Cette connexion est actuellement utilisée et les connexions multiples ne sont pas autorisées. Merci de réeassyer plus tard.", 
+        "ERROR_TUNNEL_205"     : "Cette connexion est actuellement utilisée et les connexions multiples ne sont pas autorisées. Merci de réeassyer plus tard.",
+          "ERROR_TUNNEL_207"     : "Le serveur Guacamole n'est pas actuellement accessible. Veuillez vérifier votre réseau et réessayer..",
+        "ERROR_TUNNEL_208"     : "Le serveur Guacamole n'accepte pas les connexions. Veuillez vérifier votre réseau et réessayer.",
         "ERROR_TUNNEL_301"     : "Vous n'avez pas le droit d'accéder à cette connexion car vous n'êtes pas connecté. Merci de vous connecter et de réessayer.", 
         "ERROR_TUNNEL_303"     : "Vous n'avez pas le droit d'accéder à cette connexion. Si vous souhaitez y avoir accès, merci de demander à l'administrateur de vous ajouter dans la liste des utilisateurs autorisés ou de vérifier les paramètres système.",
         "ERROR_TUNNEL_308"     : "Le serveur Guacamole a fermé la connexion car il n'y avait pas de réponse de votre navigateur Internet et qu'il l'a considéré comme déconnecté. Cela se produit à cause de problèmes réseaux (mauvais signal Wi-Fi ou réseau très lent). Merci de vérifier votre réseau et de réessayer.",
@@ -98,7 +111,8 @@
         "HELP_MOUSE_MODE"          : "Détermine comment la souris distante se comporte selon les événements.", 
         "HELP_MOUSE_MODE_ABSOLUTE" : "Appuyer pour cliquer. Le clique s'effectue à l'endroit de l'appui.",
         "HELP_MOUSE_MODE_RELATIVE" : "Glisser pour déplacer le pointeur de la souris et appuyer opur cliquer. Le clique s'effectue à l'endroit du pointeur.", 
-
+        "HELP_SHARE_LINK"          : "La connexion actuelle est en cours de partage et est accessible à toute personne possédant les caractéristiques suivantes: {LINKS, plusieurs, un{link} autres{links}}:",
+        "INFO_CONNECTION_SHARED" : "Cette connexion est partagée maintenant.",
         "INFO_NO_FILE_TRANSFERS" : "Pas de transfert de fichier.",
 
         "NAME_INPUT_METHOD_NONE"   : "Aucune",
@@ -122,6 +136,7 @@
         "TEXT_CLIENT_STATUS_IDLE"         : "Inactif.",
         "TEXT_CLIENT_STATUS_CONNECTING"   : "Connexion à Guacamole...",
         "TEXT_CLIENT_STATUS_DISCONNECTED" : "Vous avez été deconnecté.",
+        "TEXT_CLIENT_STATUS_UNSTABLE"     : "La connexion réseau au serveur guacamole est instable.",
         "TEXT_CLIENT_STATUS_WAITING"      : "Connecté à Guacamole. En attente de réponse...",
         "TEXT_RECONNECT_COUNTDOWN"        : "Reconnexion dans {REMAINING} {REMAINING, plural, one{seconde} other{secondes}}...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
@@ -158,7 +173,10 @@
         "SECTION_HEADER_RECENT_CONNECTIONS" : "Connexions récentes"
 
     },
-
+    
+    "LIST":{
+         "TEXT_ANONYMOUS_USER" : "Anonyme"
+    },
     "LOGIN": {
 
         "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
@@ -202,6 +220,7 @@
         "TABLE_HEADER_HISTORY_USERNAME" : "Identifiant",
         "TABLE_HEADER_HISTORY_START"    : "Ouverture",
         "TABLE_HEADER_HISTORY_DURATION" : "Durée",
+        "TABLE_HEADER_HISTORY_REMOTEHOST" : "Ordinateur distant",
 
         "TEXT_CONFIRM_DELETE"   : "Les connexions ne pourront être restaurées une fois supprimées. Êtes-vous certains de vouloir supprimer cette connexion ?",
         "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
@@ -212,9 +231,10 @@
 
         "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
         "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
         "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
-
+        
         "DIALOG_HEADER_CONFIRM_DELETE" : "Supprimer Groupe de Connexion",
         "DIALOG_HEADER_ERROR"          : "Erreur",
 
@@ -239,11 +259,16 @@
         "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
         "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
 
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Supprimer le Partgae de Connexion",
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
         "FIELD_HEADER_NAME" : "Nom:",
-
-        "SECTION_HEADER_PARAMETERS" : "Paramètres"
+        "FIELD_HEADER_PRIMARY_CONNECTION" : "Connexion Primaire:",
+        
+        "SECTION_HEADER_EDIT_SHARING_PROFILE" : "Editer Le Profile de Partage",
+        "SECTION_HEADER_PARAMETERS" : "Paramètres",
+        
+        "TEXT_CONFIRM_DELETE" : "Les profiles de partages ne peuvent pas être restaurés une fois supprimés. Êtes-vous certains de vouloir supprimer ce profile de partage ?"
 
     },
 
@@ -263,23 +288,74 @@
         "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Administer system:",
         "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Modifier son propre mot de passe:",
         "FIELD_HEADER_CREATE_NEW_USERS"              : "Créer nouveaux utilisateurs:",
+          "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "Créer nouveaux groupes d'utilisateurs:",
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Créer nouvelles connexions:",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Créer nouveaux groupes de connexion:",
+      "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "Créer nouveaux partage de connexions:",
         "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
         "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
         "FIELD_HEADER_USERNAME"                      : "Identifiant:",
         
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
+        "HELP_NO_USER_GROUPS" : "Cet utilisateur n'appartient à aucun groupe. Devlopper cette section pour ajouter des groupes..",
         "INFO_READ_ONLY" : "Désolé, mais ce compte ne peut pas être édité.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "Pas de groupes disponibles.",
 
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "Toutes les Connexions",
         "SECTION_HEADER_CONNECTIONS" : "Connexions",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "Connexions en cours",
         "SECTION_HEADER_EDIT_USER"   : "Modifier Utilisateur",
         "SECTION_HEADER_PERMISSIONS" : "Permissions",
+        "SECTION_HEADER_USER_GROUPS"         : "Groupes",
 
         "TEXT_CONFIRM_DELETE" : "Les utilisateurs ne pourront être restaurés une fois supprimés. Êtes-vous certains de vouloir supprimer cet utilisateur?"
 
     },
+    
+   "MANAGE_USER_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Supprimer Groupe",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+        "FIELD_HEADER_USER_GROUP_NAME"               : "Nom Groupe:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS"        : "Ce groupe n'appartient actuellement à aucun groupe. Développez cette section pour ajouter des groupes.",
+        "HELP_NO_MEMBER_USER_GROUPS" : "Ce groupe n'appartient actuellement à aucun groupe. Développez cette section pour ajouter des groupes.",
+        "HELP_NO_MEMBER_USERS"       : "Ce groupe ne contient actuellement aucun utilisateur. Développez cette section pour ajouter des utilisateurs.",
+
+        "INFO_READ_ONLY"                : "Désolé, mais ce groupe ne peut pas être édité.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "@:MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE",
+        "INFO_NO_USERS_AVAILABLE"       : "Pas d'utilisateur disponible.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "@:MANAGE_USER.SECTION_HEADER_ALL_CONNECTIONS",
+        "SECTION_HEADER_CONNECTIONS"         : "@:MANAGE_USER.SECTION_HEADER_CONNECTIONS",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "@:MANAGE_USER.SECTION_HEADER_CURRENT_CONNECTIONS",
+        "SECTION_HEADER_EDIT_USER_GROUP"     : "Editer Groupe",
+        "SECTION_HEADER_MEMBER_USERS"        : "Utilisateurs Membre",
+        "SECTION_HEADER_MEMBER_USER_GROUPS"  : "Groupes Membre",
+        "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS",
+        "SECTION_HEADER_USER_GROUPS"         : "Groupe Parent",
+
+        "TEXT_CONFIRM_DELETE" : "Les groupes ne peuvent pas être restaurés après leur suppression. Êtes-vous sûr de vouloir supprimer ce groupe?"
+
+    },
+    
     
     "PROTOCOL_RDP" : {
 
@@ -288,16 +364,24 @@
         "FIELD_HEADER_CONSOLE"         : "Console Administrateur:",
         "FIELD_HEADER_CONSOLE_AUDIO"   : "Support son en console:",
         "FIELD_HEADER_CREATE_DRIVE_PATH" : "Créer automatiquement un lecteur:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Créer automatiquement un chemin d'enregistrement:",
         "FIELD_HEADER_DISABLE_AUDIO"   : "Désactiver son:",
         "FIELD_HEADER_DISABLE_AUTH"    : "Désactiver authentification:",
+         "FIELD_HEADER_DISABLE_COPY"    : "Désactiver la copie depuis l'ordinateur distant:",
+         "FIELD_HEADER_DISABLE_PASTE"   : "Désactiver coller à partir du client:",
         "FIELD_HEADER_DOMAIN"          : "Nom du domaine:",
         "FIELD_HEADER_DPI"             : "Résolution (ppp):",
+        "FIELD_HEADER_DRIVE_NAME"      : "Nom du Lecteur:",
         "FIELD_HEADER_DRIVE_PATH"      : "Chemin du lecteur:",
+        "FIELD_HEADER_ENABLE_AUDIO_INPUT"         : "Activer Entrée Audio  (microphone):",
         "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "Activer la composition du bureau (Aero):",
         "FIELD_HEADER_ENABLE_DRIVE"    : "Activer lecteur réseau:",
         "FIELD_HEADER_ENABLE_FONT_SMOOTHING" : "Enable font smoothing (ClearType):",
         "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG" : "Activer pleine fenêtre de glisser:",
         "FIELD_HEADER_ENABLE_MENU_ANIMATIONS" : "Activer les animations de menu:",
+        "FIELD_HEADER_DISABLE_BITMAP_CACHING"     : "Désactiver le cache bitmap:",
+        "FIELD_HEADER_DISABLE_GLYPH_CACHING"      : "Désactiver le cache glyph:",
+        "FIELD_HEADER_DISABLE_OFFSCREEN_CACHING"  : "Désactiver le cache hors écran :",
         "FIELD_HEADER_ENABLE_PRINTING" : "Activer imprimante:",
         "FIELD_HEADER_ENABLE_SFTP"     : "Activer SFTP:",
         "FIELD_HEADER_ENABLE_THEMING"  : "Activer thématisation:",
@@ -311,24 +395,35 @@
         "FIELD_HEADER_HOSTNAME"        : "Nom d'hôte:",
         "FIELD_HEADER_IGNORE_CERT"     : "Ignorer le certificat du serveur:",
         "FIELD_HEADER_INITIAL_PROGRAM" : "Programme de démarrage:",
+        "FIELD_HEADER_LOAD_BALANCE_INFO" : "Equilibrage de charge info/cookie:",
         "FIELD_HEADER_PASSWORD"        : "Mot de passe:",
         "FIELD_HEADER_PORT"            : "Port:",
+        "FIELD_HEADER_PRINTER_NAME"    : "Nom de l'imprimante redirigée:",
         "FIELD_HEADER_PRECONNECTION_BLOB" : "Pré-connexion BLOB (VM ID):",
         "FIELD_HEADER_PRECONNECTION_ID"   : "Source RDP ID:",
         "FIELD_HEADER_READ_ONLY"       : "Lecture seule:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Exclure la souris:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Exclure graphique/flux:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Inclure événements clés:",
+        "FIELD_HEADER_RECORDING_NAME" : "Nom de l'enregistrement:",
+        "FIELD_HEADER_RECORDING_PATH" : "Chemin de l'enregistrement:",
+        "FIELD_HEADER_RESIZE_METHOD" : "Méthode de redimensionnement:",
         "FIELD_HEADER_REMOTE_APP_ARGS" : "Paramètres:",
         "FIELD_HEADER_REMOTE_APP_DIR"  : "Répertoire de travail:",
         "FIELD_HEADER_REMOTE_APP"      : "Programme:",
         "FIELD_HEADER_SECURITY"        : "Mode de Sécurité:",
         "FIELD_HEADER_SERVER_LAYOUT"   : "Agencement clavier:",
         "FIELD_HEADER_SFTP_DIRECTORY"   : "Répertoire d'upload par défaut:",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "Clé publique du hôte (Base64):",
         "FIELD_HEADER_SFTP_HOSTNAME"    : "Nom d'hôte:",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "Intervale keepalive SFTP:",
         "FIELD_HEADER_SFTP_PASSPHRASE"  : "Phrase secrète:",
         "FIELD_HEADER_SFTP_PASSWORD"    : "Mot de passe:",
         "FIELD_HEADER_SFTP_PORT"        : "Port:",
         "FIELD_HEADER_SFTP_PRIVATE_KEY" : "Clé privée:",
         "FIELD_HEADER_SFTP_USERNAME"    : "Identifiant:",
         "FIELD_HEADER_STATIC_CHANNELS" : "Static channel names:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Dossier racine de explorateur de fichier:",
         "FIELD_HEADER_USERNAME"        : "Identifiant:",
         "FIELD_HEADER_WIDTH"           : "Largeur:",
 
@@ -338,6 +433,12 @@
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 couleurs",
         "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
 
+        "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "\"Afficher Mise à jour\" canal virtuel (RDP 8.1+)",
+        
+        
+        "FIELD_OPTION_RESIZE_METHOD_EMPTY"          : "",
+        "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "Reconnecter",
+        
         "FIELD_OPTION_SECURITY_ANY"   : "Aucune",
         "FIELD_OPTION_SECURITY_EMPTY" : "",
         "FIELD_OPTION_SECURITY_NLA"   : "NLA (Network Level Authentication)",
@@ -346,12 +447,19 @@
 
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "German (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_GB_QWERTY" : "UK English (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "US English (Qwerty)",
+         "FIELD_OPTION_SERVER_LAYOUT_ES_ES_QWERTY" : "Spanish (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_CH_QWERTZ" : "Swiss French (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "French (Azerty)",
         "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italian (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japanese (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Portuguese Brazilian (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Swedish (Qwerty)",
-
+        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Danish (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Turkish-Q (Qwerty)",
+        
         "NAME" : "RDP",
 
         "SECTION_HEADER_AUTHENTICATION"     : "Authentification",
@@ -359,21 +467,29 @@
         "SECTION_HEADER_CLIPBOARD"          : "Presse-papiers",
         "SECTION_HEADER_DEVICE_REDIRECTION" : "Redirection Périphérique",
         "SECTION_HEADER_DISPLAY"            : "Affichage",
+        "SECTION_HEADER_GATEWAY"            : "Passerelle du bureau à distance",
+        "SECTION_HEADER_LOAD_BALANCING"     : "Equilibrage de charge",
         "SECTION_HEADER_NETWORK"            : "Réseau",
         "SECTION_HEADER_PERFORMANCE"        : "Performance",
         "SECTION_HEADER_PRECONNECTION_PDU"  : "Pré-connexion PDU / Hyper-V",
+         "SECTION_HEADER_RECORDING"          : "Enregistrement écran",
         "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
         "SECTION_HEADER_SFTP"               : "SFTP"
 
     },
 
     "PROTOCOL_SSH" : {
-
+        "FIELD_HEADER_BACKSPACE"    : "Touche Retour Arrière envoyé:",
         "FIELD_HEADER_COLOR_SCHEME" : "Palette de couleurs:",
         "FIELD_HEADER_COMMAND"     : "Exécuter une commande:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Créer automatiquement le chemin d'enregistrement:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Créer automatiquement le chemin  manuscrit :",
+        "FIELD_HEADER_DISABLE_COPY"  : "Désactiver  copier depuis le terminal:",
+        "FIELD_HEADER_DISABLE_PASTE" : "Désactiver coller depuis le terminal:",
         "FIELD_HEADER_FONT_NAME"   : "Nom police:",
         "FIELD_HEADER_FONT_SIZE"   : "Taille police:",
         "FIELD_HEADER_ENABLE_SFTP" : "Activer SFTP:",
+        "FIELD_HEADER_HOST_KEY"      : "Clé public du hôte (Base64):",
         "FIELD_HEADER_HOSTNAME"    : "Nom d'hôte:",
         "FIELD_HEADER_USERNAME"    : "Identifiant:",
         "FIELD_HEADER_PASSWORD"    : "Mot de passe:",
@@ -381,6 +497,20 @@
         "FIELD_HEADER_PORT"        : "Port:",
         "FIELD_HEADER_PRIVATE_KEY" : "Clé privée:",
         "FIELD_HEADER_READ_ONLY"   : "Lecture seule:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Exclure la souris:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Exclure graphiques/flux:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Inclure événements clés:",
+        "FIELD_HEADER_RECORDING_NAME" : "Nom de l'enregistrement:",
+        "FIELD_HEADER_RECORDING_PATH" : "Chemin de l'enregistrement:",
+        "FIELD_HEADER_SERVER_ALIVE_INTERVAL" : "Intervalle keepalive Serveur:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "Dossier racine de explorateur de fichier:",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "Type du terminal:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Nom Typescript :",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Chemin Typescript :",
+        
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Retour Arrière (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Suppr. (Ctrl-?)",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Noir sur blanc",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -403,14 +533,25 @@
         "FIELD_OPTION_FONT_SIZE_72"    : "72",
         "FIELD_OPTION_FONT_SIZE_96"    : "96",
         "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+        
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
 
         "NAME" : "SSH",
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentification",
+        "SECTION_HEADER_BEHAVIOR"       : "Comportement Terminal",
         "SECTION_HEADER_CLIPBOARD"      : "Presse-papiers",
         "SECTION_HEADER_DISPLAY"        : "Affichage",
         "SECTION_HEADER_NETWORK"        : "Réseau",
+        "SECTION_HEADER_RECORDING"      : "Enregistrement Ecran",
         "SECTION_HEADER_SESSION"        : "Session / Environnement",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Enregistrement session Texte)",
         "SECTION_HEADER_SFTP"           : "SFTP"
 
     },
@@ -520,7 +661,7 @@
         "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_NEW_CONNECTION"       : "Nouvelle Connexion",
         "ACTION_NEW_CONNECTION_GROUP" : "Nouveau Groupe",
-
+        "ACTION_NEW_SHARING_PROFILE"  : "Nouveau Partage Profile",
         "DIALOG_HEADER_ERROR"          : "Erreur",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
@@ -534,10 +675,12 @@
     },
 
     "SETTINGS_CONNECTION_HISTORY" : {
-
+        "ACTION_DOWNLOAD" : "@:APP.ACTION_DOWNLOAD",
         "ACTION_SEARCH" : "@:APP.ACTION_SEARCH",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        
+        "FILENAME_HISTORY_CSV" : "history.csv",
 
         "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
@@ -548,6 +691,7 @@
 
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Nom de connexion",
         "TABLE_HEADER_SESSION_DURATION"        : "Durée",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Hôte distant",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Ouvert depuis",
         "TABLE_HEADER_SESSION_USERNAME"        : "Identifiant",
 
@@ -609,10 +753,33 @@
         "HELP_USERS" : "Cliquer ou appuyer sur un utilisateur en dessous pour le gérer. Selon vos permissions, les utilisateurs peuvent être ajoutés, supprimés, leur mot de passe changé.",
 
         "SECTION_HEADER_USERS"       : "Utilisateur",
-
+        
+        "TABLE_HEADER_FULL_NAME"   : "Nom",
+        "TABLE_HEADER_LAST_ACTIVE" : "Dernier actif",
+        "TABLE_HEADER_ORGANIZATION" : "Organisation",
         "TABLE_HEADER_USERNAME" : "Identifiant"
 
     },
+    
+    "SETTINGS_USER_GROUPS" : {
+
+        "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER_GROUP" : "Nouveau groupe",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USER_GROUPS" : "Cliquez ou appuyez sur un groupe ci-dessous pour gérer ce groupe. En fonction de votre niveau d'accès, des groupes peuvent être ajoutés et supprimés, ainsi que leurs utilisateurs et groupes membres.",
+
+        "SECTION_HEADER_USER_GROUPS" : "Groupes",
+
+        "TABLE_HEADER_USER_GROUP_NAME" : "Nom Groupe"
+
+    },
+    
     
     "SETTINGS_SESSIONS" : {
         
@@ -641,6 +808,15 @@
         "TEXT_CONFIRM_DELETE" : "Êtes-vous certains de vouloir fermer toutes les connexions sélectionnées ? Les utilisateurs utilisant ces sessions seront immédiatement déconnectés." 
 
     },
+    
+     "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_EMAIL_ADDRESS"       : "Adresse Mail:",
+        "FIELD_HEADER_GUAC_FULL_NAME"           : "Nom:",
+        "FIELD_HEADER_GUAC_ORGANIZATION"        : "Organisation:",
+        "FIELD_HEADER_GUAC_ORGANIZATIONAL_ROLE" : "Rôle:"
+
+    },
 
     "USER_MENU" : {
 
@@ -650,6 +826,7 @@
         "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
         "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
         "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
+        "ACTION_MANAGE_USER_GROUPS" : "@:APP.ACTION_MANAGE_USER_GROUPS",
         "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
         "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
 
