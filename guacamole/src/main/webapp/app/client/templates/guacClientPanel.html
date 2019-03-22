@@ -1,0 +1,13 @@
+<div class="client-panel" ng-class="{ 'hidden' : panelHidden }">
+    <div class="client-panel-handle" ng-click="togglePanel()"></div>
+    <ul class="client-panel-connection-list">
+        <li ng-repeat="client in clients" class="client-panel-connection">
+            <a href="#/client/{{client.id}}">
+                <div class="thumbnail">
+                    <guac-thumbnail client="client"></guac-thumbnail>
+                </div>
+                <div class="name">{{ client.title }}</div>
+            </a>
+        </li>
+    </ul>
+</div>

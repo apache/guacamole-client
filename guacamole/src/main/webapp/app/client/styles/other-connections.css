@@ -19,22 +19,74 @@
 
 #other-connections {
 
-    text-align: right;
-    position: absolute;
-    right: 0;
-    bottom: 0;
-
     /* Render above modal status */
     z-index: 20;
 
 }
 
-#other-connections .connection {
+#other-connections .client-panel {
+
+    position: absolute;
+    right: 0;
+    bottom: 0;
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(0, 0, 0, 0.25);
+    max-width: 100%;
+    white-space: nowrap;
+    transition: max-width 0.125s, width 0.125s;
+
+}
+
+#other-connections .client-panel.hidden {
+    max-width: 16px;
+}
+
+#other-connections .client-panel-handle {
+
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 100%;
+    width: 16px;
+    z-index: 1;
+
+    background-color: white;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    background-image: url(images/arrows/right.png);
+    opacity: 0.5;
+
+}
+
+#other-connections .client-panel-handle:hover {
+    opacity: 0.75;
+}
+
+#other-connections .client-panel.hidden .client-panel-handle {
+    background-image: url(images/arrows/left.png);
+}
+
+#other-connections .client-panel-connection-list {
+
+    text-align: right;
+
+    margin: 0;
+    padding: 0;
+    padding-left: 16px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+}
+
+#other-connections .client-panel-connection {
 
     display: inline-block;
     position: relative;
 
-    margin: 1em;
+    margin: 0.5em;
     border: 1px solid white;
     background: black;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
@@ -47,7 +99,7 @@
 
 }
 
-#other-connections .connection .name {
+#other-connections .client-panel-connection .name {
 
     position: absolute;
     padding: 0.25em 0.5em;
@@ -67,6 +119,6 @@
 
 }
 
-#other-connections .connection:hover {
+#other-connections .client-panel-connection:hover {
     opacity: 1;
 }

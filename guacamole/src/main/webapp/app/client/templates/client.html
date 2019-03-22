@@ -13,14 +13,7 @@
 
                 <!-- All other active connections -->
                 <div id="other-connections">
-                    <div ng-repeat="otherClient in otherClients" class="connection">
-                        <a href="#/client/{{otherClient.id}}">
-                            <div class="thumbnail">
-                                <guac-thumbnail client="otherClient"></guac-thumbnail>
-                            </div>
-                            <div class="name">{{ otherClient.title }}</div>
-                        </a>
-                    </div>
+                    <guac-client-panel clients="otherClients"></guac-client-panel>
                 </div>
 
             </div>
