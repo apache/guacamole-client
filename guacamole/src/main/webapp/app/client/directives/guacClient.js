@@ -282,6 +282,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     return false;
                 };
 
+                // Size of newly-attached client may be different
+                $scope.mainElementResized();
+
             });
 
             // Update actual view scrollLeft when scroll properties change
