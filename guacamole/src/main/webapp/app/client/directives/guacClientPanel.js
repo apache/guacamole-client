@@ -22,7 +22,20 @@
  * panel is fixed to the bottom-right corner of its container and can be
  * manually hidden/exposed by the user.
  */
-angular.module('client').directive('guacClientPanel', [function guacClientPanel() {
+angular.module('client').directive('guacClientPanel', ['$injector', function guacClientPanel($injector) {
+
+    var sessionStorageFactory = $injector.get('sessionStorageFactory');
+
+    /**
+     * Getter/setter for the boolean flag controlling whether the client panel
+     * is currently hidden. This flag is maintained in session-local storage to
+     * allow the state of the panel to persist despite navigation within the
+     * same tab. When hidden, the panel will be collapsed against the right
+     * side of the container. By default, the panel is visible.
+     *
+     * @type Function
+     */
+    var panelHidden = sessionStorageFactory.create(false);
 
     return {
         // Element only
@@ -34,7 +47,7 @@ angular.module('client').directive('guacClientPanel', [function guacClientPanel(
              * The ManagedClient instances associated with the active
              * connections to be displayed within this panel.
              * 
-             * @type ManagedClient[]
+             * @type ManagedClient[]|Object.<String, ManagedClient>
              */
             clients : '='
             
@@ -51,19 +64,28 @@ angular.module('client').directive('guacClientPanel', [function guacClientPanel(
             var scrollableArea = $element.find('.client-panel-connection-list')[0];
 
             /**
-             * Whether the client panel is currently hidden. When hidden, the
-             * panel will be collapsed against the right side of the
-             * containiner.
-             *
-             * @type Boolean
+             * On-scope reference to session-local storage of the flag
+             * controlling whether then panel is hidden.
              */
-            $scope.panelHidden = false;
+            $scope.panelHidden = panelHidden;
+
+            /**
+             * Returns whether this panel currently has any clients associated
+             * with it.
+             *
+             * @return {Boolean}
+             *     true if at least one client is associated with this panel,
+             *     false otherwise.
+             */
+            $scope.hasClients = function hasClients() {
+                return !_.isEmpty($scope.clients);
+            };
 
             /**
              * Toggles whether the client panel is currently hidden.
              */
             $scope.togglePanel = function togglePanel() {
-                $scope.panelHidden = !$scope.panelHidden;
+                panelHidden(!panelHidden());
             };
 
             // Override vertical scrolling, scrolling horizontally instead

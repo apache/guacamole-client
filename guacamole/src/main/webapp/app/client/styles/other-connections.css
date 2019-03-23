@@ -26,6 +26,7 @@
 
 #other-connections .client-panel {
 
+    display: none;
     position: absolute;
     right: 0;
     bottom: 0;
@@ -36,6 +37,10 @@
     white-space: nowrap;
     transition: max-width 0.125s, width 0.125s;
 
+}
+
+#other-connections .client-panel.has-clients {
+    display: block;
 }
 
 #other-connections .client-panel.hidden {

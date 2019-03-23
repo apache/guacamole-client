@@ -1,5 +1,10 @@
-<div class="client-panel" ng-class="{ 'hidden' : panelHidden }">
+<div class="client-panel"
+     ng-class="{ 'has-clients': hasClients(), 'hidden' : panelHidden() }">
+
+    <!-- Toggle panel visibility -->
     <div class="client-panel-handle" ng-click="togglePanel()"></div>
+
+    <!-- List of connection thumbnails -->
     <ul class="client-panel-connection-list">
         <li ng-repeat="client in clients" class="client-panel-connection">
             <a href="#/client/{{client.id}}">
@@ -10,4 +15,5 @@
             </a>
         </li>
     </ul>
+
 </div>
