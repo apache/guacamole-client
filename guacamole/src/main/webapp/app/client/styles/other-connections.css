@@ -17,13 +17,6 @@
  * under the License.
  */
 
-#other-connections {
-
-    /* Render above modal status */
-    z-index: 20;
-
-}
-
 #other-connections .client-panel {
 
     display: none;
@@ -36,6 +29,9 @@
     max-width: 100%;
     white-space: nowrap;
     transition: max-width 0.125s, width 0.125s;
+
+    /* Render above modal status */
+    z-index: 20;
 
 }
 
