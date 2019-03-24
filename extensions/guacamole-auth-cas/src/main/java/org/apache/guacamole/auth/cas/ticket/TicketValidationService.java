@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.cas.ticket;
 
 import com.google.common.io.BaseEncoding;
 import com.google.inject.Inject;
+import java.net.URI;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -83,13 +84,13 @@ public class TicketValidationService {
         // Retrieve the configured CAS URL, establish a ticket validator,
         // and then attempt to validate the supplied ticket.  If that succeeds,
         // grab the principal returned by the validator.
-        String casServerUrl = confService.getAuthorizationEndpoint();
-        Cas20ProxyTicketValidator validator = new Cas20ProxyTicketValidator(casServerUrl);
+        URI casServerUrl = confService.getAuthorizationEndpoint();
+        Cas20ProxyTicketValidator validator = new Cas20ProxyTicketValidator(casServerUrl.toString());
         validator.setAcceptAnyProxy(true);
         validator.setEncoding("UTF-8");
         try {
-            String confRedirectURI = confService.getRedirectURI();
-            Assertion a = validator.validate(ticket, confRedirectURI);
+            URI confRedirectURI = confService.getRedirectURI();
+            Assertion a = validator.validate(ticket, confRedirectURI.toString());
             AttributePrincipal principal =  a.getPrincipal();
 
             // Retrieve username and set the credentials.

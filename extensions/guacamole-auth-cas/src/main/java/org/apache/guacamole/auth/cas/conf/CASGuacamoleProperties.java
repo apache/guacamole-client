@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.auth.cas.conf;
 
-import org.apache.guacamole.properties.StringGuacamoleProperty;
+import org.apache.guacamole.properties.UriGuacamoleProperty;
 
 /**
  * Provides properties required for use of the CAS authentication provider.
@@ -36,8 +36,8 @@ public class CASGuacamoleProperties {
     /**
      * The authorization endpoint (URI) of the CAS service.
      */
-    public static final StringGuacamoleProperty CAS_AUTHORIZATION_ENDPOINT =
-            new StringGuacamoleProperty() {
+    public static final UriGuacamoleProperty CAS_AUTHORIZATION_ENDPOINT =
+            new UriGuacamoleProperty() {
 
         @Override
         public String getName() { return "cas-authorization-endpoint"; }
@@ -49,8 +49,8 @@ public class CASGuacamoleProperties {
      * authentication process is complete. This must be the full URL that a
      * user would enter into their browser to access Guacamole.
      */
-    public static final StringGuacamoleProperty CAS_REDIRECT_URI =
-            new StringGuacamoleProperty() {
+    public static final UriGuacamoleProperty CAS_REDIRECT_URI =
+            new UriGuacamoleProperty() {
 
         @Override
         public String getName() { return "cas-redirect-uri"; }

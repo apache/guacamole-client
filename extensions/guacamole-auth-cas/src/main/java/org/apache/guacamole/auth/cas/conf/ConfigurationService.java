@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.cas.conf;
 
 import com.google.inject.Inject;
+import java.net.URI;
 import java.security.PrivateKey;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
@@ -47,7 +48,7 @@ public class ConfigurationService {
      *     If guacamole.properties cannot be parsed, or if the authorization
      *     endpoint property is missing.
      */
-    public String getAuthorizationEndpoint() throws GuacamoleException {
+    public URI getAuthorizationEndpoint() throws GuacamoleException {
         return environment.getRequiredProperty(CASGuacamoleProperties.CAS_AUTHORIZATION_ENDPOINT);
     }
 
@@ -65,7 +66,7 @@ public class ConfigurationService {
      *     If guacamole.properties cannot be parsed, or if the redirect URI
      *     property is missing.
      */
-    public String getRedirectURI() throws GuacamoleException {
+    public URI getRedirectURI() throws GuacamoleException {
         return environment.getRequiredProperty(CASGuacamoleProperties.CAS_REDIRECT_URI);
     }
 
