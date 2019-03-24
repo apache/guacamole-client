@@ -25,7 +25,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
-import org.apache.guacamole.properties.UriGuacamoleProperty;
+import org.apache.guacamole.properties.URIGuacamoleProperty;
 
 /**
  * Service for retrieving configuration information regarding the OpenID
@@ -65,8 +65,8 @@ public class ConfigurationService {
     /**
      * The authorization endpoint (URI) of the OpenID service.
      */
-    private static final UriGuacamoleProperty OPENID_AUTHORIZATION_ENDPOINT =
-            new UriGuacamoleProperty() {
+    private static final URIGuacamoleProperty OPENID_AUTHORIZATION_ENDPOINT =
+            new URIGuacamoleProperty() {
 
         @Override
         public String getName() { return "openid-authorization-endpoint"; }
@@ -77,8 +77,8 @@ public class ConfigurationService {
      * The endpoint (URI) of the JWKS service which defines how received ID
      * tokens (JWTs) shall be validated.
      */
-    private static final UriGuacamoleProperty OPENID_JWKS_ENDPOINT =
-            new UriGuacamoleProperty() {
+    private static final URIGuacamoleProperty OPENID_JWKS_ENDPOINT =
+            new URIGuacamoleProperty() {
 
         @Override
         public String getName() { return "openid-jwks-endpoint"; }
@@ -176,8 +176,8 @@ public class ConfigurationService {
      * authentication process is complete. This must be the full URL that a
      * user would enter into their browser to access Guacamole.
      */
-    private static final UriGuacamoleProperty OPENID_REDIRECT_URI =
-            new UriGuacamoleProperty() {
+    private static final URIGuacamoleProperty OPENID_REDIRECT_URI =
+            new URIGuacamoleProperty() {
 
         @Override
         public String getName() { return "openid-redirect-uri"; }

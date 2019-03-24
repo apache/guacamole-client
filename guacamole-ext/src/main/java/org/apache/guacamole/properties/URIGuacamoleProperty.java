@@ -27,7 +27,7 @@ import org.apache.guacamole.GuacamoleServerException;
 /**
  * A GuacamoleProperty whose value is a URI.
  */
-public abstract class UriGuacamoleProperty implements GuacamoleProperty<URI> {
+public abstract class URIGuacamoleProperty implements GuacamoleProperty<URI> {
     
     @Override
     public URI parseValue(String value) throws GuacamoleException {
