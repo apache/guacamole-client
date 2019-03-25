@@ -74,7 +74,7 @@ public class TokenValidationService {
     public String processUsername(String token) throws GuacamoleException {
 
         // Validating the token requires a JWKS key resolver
-        HttpsJwks jwks = new HttpsJwks(confService.getJWKSEndpoint());
+        HttpsJwks jwks = new HttpsJwks(confService.getJWKSEndpoint().toString());
         HttpsJwksVerificationKeyResolver resolver = new HttpsJwksVerificationKeyResolver(jwks);
 
         // Create JWT consumer for validating received token

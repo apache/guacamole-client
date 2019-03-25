@@ -19,8 +19,8 @@
 
 package org.apache.guacamole.auth.openid.form;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.net.URI;
+import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.form.Field;
 
 /**
@@ -38,7 +38,7 @@ public class TokenField extends Field {
     /**
      * The full URI which the field should link to.
      */
-    private final String authorizationURI;
+    private final URI authorizationURI;
 
     /**
      * Creates a new field which requests authentication via OpenID connect.
@@ -69,26 +69,19 @@ public class TokenField extends Field {
      *     A random string unique to this request. To defend against replay
      *     attacks, this value must cease being valid after its first use.
      */
-    public TokenField(String authorizationEndpoint, String scope,
-            String clientID, String redirectURI, String nonce) {
+    public TokenField(URI authorizationEndpoint, String scope,
+            String clientID, URI redirectURI, String nonce) {
 
         // Init base field properties
         super(PARAMETER_NAME, "GUAC_OPENID_TOKEN");
 
-        // Build authorization URI from given values
-        try {
-            this.authorizationURI = authorizationEndpoint
-                    + "?scope=" + URLEncoder.encode(scope, "UTF-8")
-                    + "&response_type=id_token"
-                    + "&client_id=" + URLEncoder.encode(clientID, "UTF-8")
-                    + "&redirect_uri=" + URLEncoder.encode(redirectURI, "UTF-8")
-                    + "&nonce=" + nonce;
-        }
-
-        // Java is required to provide UTF-8 support
-        catch (UnsupportedEncodingException e) {
-            throw new UnsupportedOperationException("Unexpected lack of UTF-8 support.", e);
-        }
+        this.authorizationURI = UriBuilder.fromUri(authorizationEndpoint)
+                .queryParam("scope", scope)
+                .queryParam("response_type", "id_token")
+                .queryParam("client_id","clientID")
+                .queryParam("redirect_uri", redirectURI)
+                .queryParam("nonce", nonce)
+                .build();
 
     }
 
@@ -100,7 +93,7 @@ public class TokenField extends Field {
      *     The full URI that this field should link to.
      */
     public String getAuthorizationURI() {
-        return authorizationURI;
+        return authorizationURI.toString();
     }
 
 }

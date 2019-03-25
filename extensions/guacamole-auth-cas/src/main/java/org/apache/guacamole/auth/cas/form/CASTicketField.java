@@ -19,8 +19,8 @@
 
 package org.apache.guacamole.auth.cas.form;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.net.URI;
+import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.form.Field;
 
 
@@ -47,7 +47,7 @@ public class CASTicketField extends Field {
     /**
      * The full URI which the field should link to.
      */
-    private final String authorizationURI;
+    private final URI authorizationURI;
 
     /**
      * Creates a new CAS "ticket" field which links to the given CAS
@@ -65,29 +65,15 @@ public class CASTicketField extends Field {
      *     The URI that the CAS service should redirect to upon successful
      *     authentication.
      */
-    public CASTicketField(String authorizationEndpoint, String redirectURI) {
+    public CASTicketField(URI authorizationEndpoint, URI redirectURI) {
 
         // Init base field properties
         super(PARAMETER_NAME, "GUAC_CAS_TICKET");
-
-        // Build authorization URI from given values
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append(authorizationEndpoint);
-            // user might configure the endpoint with a trailing slash
-            if (sb.charAt(sb.length() - 1) != '/') {
-                sb.append('/');
-            }
-            sb.append(CAS_LOGIN_URI);
-            sb.append("?service=");
-            sb.append(URLEncoder.encode(redirectURI, "UTF-8"));
-            this.authorizationURI = sb.toString();
-        }
-
-        // Java is required to provide UTF-8 support
-        catch (UnsupportedEncodingException e) {
-            throw new UnsupportedOperationException("Unexpected lack of UTF-8 support.", e);
-        }
+        
+        this.authorizationURI = UriBuilder.fromUri(authorizationEndpoint)
+                .path(CAS_LOGIN_URI)
+                .queryParam("service", redirectURI)
+                .build();
 
     }
 
@@ -99,7 +85,7 @@ public class CASTicketField extends Field {
      *     The full URI that this field should link to.
      */
     public String getAuthorizationURI() {
-        return authorizationURI;
+        return authorizationURI.toString();
     }
 
 }
