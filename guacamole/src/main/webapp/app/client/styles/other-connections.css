@@ -100,6 +100,18 @@
 
 }
 
+#other-connections .client-panel.hidden .client-panel-connection-list {
+    /* Hide scrollbar when panel is hidden (will be visible through panel
+     * show/hide button otherwise) */
+    overflow-x: hidden;
+}
+
+#other-connections .client-panel.hidden .client-panel-connection {
+    /* Hide thumbnails when panel is hidden (will be visible through panel
+     * show/hide button otherwise) */
+    visibility: hidden;
+}
+
 #other-connections .client-panel-connection .name {
 
     position: absolute;
