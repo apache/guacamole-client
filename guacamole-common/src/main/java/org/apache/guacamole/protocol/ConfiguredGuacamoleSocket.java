@@ -185,12 +185,15 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
                     info.getImageMimetypes().toArray(new String[0])
                 ));
         
-        // Send client timezone
-        writer.writeInstruction(
-                new GuacamoleInstruction(
-                    "timezone",
-                    info.getTimezone()
-                ));
+        // Send client timezone, if available
+        String timezone = info.getTimezone();
+        if (timezone != null && !timezone.isEmpty()) {
+            writer.writeInstruction(
+                    new GuacamoleInstruction(
+                        "timezone",
+                        info.getTimezone()
+                    ));
+        }
 
         // Send args
         writer.writeInstruction(new GuacamoleInstruction("connect", arg_values));
