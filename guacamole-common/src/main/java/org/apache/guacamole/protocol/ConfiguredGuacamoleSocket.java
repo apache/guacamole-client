@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.protocol;
 
-
 import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
@@ -55,6 +54,15 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
      * by the "ready" instruction received from the Guacamole proxy.
      */
     private String id;
+    
+    /**
+     * The protocol version that will be used to communicate with guacd.  The
+     * default is 1.0.0, and, if the server does not provide a specific version
+     * it will be assumed that it operates at this version and certain features
+     * may be unavailable.
+     */
+    private GuacamoleProtocolVersion protocol =
+            GuacamoleProtocolVersion.VERSION_1_0_0;
     
     /**
      * Waits for the instruction having the given opcode, returning that
@@ -137,6 +145,13 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
 
         // Build args list off provided names and config
         List<String> arg_names = args.getArgs();
+        
+        // Check for protocol version as first argument
+        if (arg_names.get(0).startsWith("VERSION_")) {
+            String protocolArg = arg_names.get(0);
+            protocol = GuacamoleProtocolVersion.valueOf(protocolArg);
+        }
+        
         String[] arg_values = new String[arg_names.size()];
         for (int i=0; i<arg_names.size(); i++) {
 
@@ -185,14 +200,18 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
                     info.getImageMimetypes().toArray(new String[0])
                 ));
         
-        // Send client timezone, if available
-        String timezone = info.getTimezone();
-        if (timezone != null && !timezone.isEmpty()) {
-            writer.writeInstruction(
-                    new GuacamoleInstruction(
-                        "timezone",
-                        info.getTimezone()
-                    ));
+        // Protocol version 1.1.0 and higher options
+        
+        if (protocol.atLeast(GuacamoleProtocolVersion.VERSION_1_1_0)) {
+            // Send client timezone, if available
+            String timezone = info.getTimezone();
+            if (timezone != null && !timezone.isEmpty()) {
+                writer.writeInstruction(
+                        new GuacamoleInstruction(
+                            "timezone",
+                            info.getTimezone()
+                        ));
+            }
         }
 
         // Send args
