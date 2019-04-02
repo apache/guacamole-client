@@ -71,16 +71,11 @@
 
 #guac-menu .header h2 .menu-dropdown {
     border: none;
-    background: transparent;
 }
 
 #guac-menu .header h2 .menu-contents {
     font-weight: normal;
     font-size: 0.8em;
-}
-
-#guac-menu .header h2 .menu-contents .all-connections {
-    margin: 0;
 }
 
 #guac-menu #mouse-settings .choice {
