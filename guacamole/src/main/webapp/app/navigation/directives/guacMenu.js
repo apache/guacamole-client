@@ -53,6 +53,14 @@ angular.module('navigation').directive('guacMenu', [function guacMenu() {
             var element = $element[0];
 
             /**
+             * The element containing the menu contents that display when the
+             * menu is open.
+             *
+             * @type Element
+             */
+            var contents = $element.find('.menu-contents')[0];
+
+            /**
              * The main document object.
              *
              * @type Document
@@ -82,6 +90,11 @@ angular.module('navigation').directive('guacMenu', [function guacMenu() {
 
             // Prevent click within menu from triggering the outside-menu handler
             element.addEventListener('click', function clickInsideMenu(e) {
+                e.stopPropagation();
+            }, false);
+
+            // Prevent click within menu contents from toggling menu visibility
+            contents.addEventListener('click', function clickInsideMenuContents(e) {
                 e.stopPropagation();
             }, false);
 
