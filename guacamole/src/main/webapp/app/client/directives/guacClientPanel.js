@@ -24,7 +24,11 @@
  */
 angular.module('client').directive('guacClientPanel', ['$injector', function guacClientPanel($injector) {
 
+    // Required services
     var sessionStorageFactory = $injector.get('sessionStorageFactory');
+
+    // Required types
+    var ManagedClientState = $injector.get('ManagedClientState');
 
     /**
      * Getter/setter for the boolean flag controlling whether the client panel
@@ -79,6 +83,30 @@ angular.module('client').directive('guacClientPanel', ['$injector', function gua
              */
             $scope.hasClients = function hasClients() {
                 return !_.isEmpty($scope.clients);
+            };
+
+            /**
+             * Returns whether the given client has disconnected due to an
+             * error.
+             *
+             * @param {ManagedClient} client
+             *     The client to test.
+             *
+             * @returns {Boolean}
+             *     true if the given client has disconnected due to an error,
+             *     false otherwise.
+             */
+            $scope.hasError = function hasError(client) {
+
+                // Test whether the client has encountered an error
+                switch (client.clientState.connectionState) {
+                    case ManagedClientState.ConnectionState.CONNECTION_ERROR:
+                    case ManagedClientState.ConnectionState.TUNNEL_ERROR:
+                        return true;
+                }
+
+                return false;
+
             };
 
             /**

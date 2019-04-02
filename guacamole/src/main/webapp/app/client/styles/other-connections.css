@@ -100,6 +100,31 @@
 
 }
 
+#other-connections .client-panel-connection::before {
+
+    display: block;
+    content: ' ';
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+
+    background: url('images/warning-white.png');
+    background-size: 48px;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    opacity: 0;
+    transition: opacity 0.25s;
+
+}
+
+#other-connections .client-panel-connection.error::before {
+    opacity: 0.75;
+}
+
 #other-connections .client-panel.hidden .client-panel-connection-list {
     /* Hide scrollbar when panel is hidden (will be visible through panel
      * show/hide button otherwise) */
