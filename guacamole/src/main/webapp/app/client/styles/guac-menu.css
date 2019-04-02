@@ -78,6 +78,16 @@
     font-size: 0.8em;
 }
 
+#guac-menu .header .filter input {
+    border-bottom: 1px solid rgba(0,0,0,0.125);
+    border-left: none;
+}
+
+#guac-menu .header .filter {
+    margin-bottom: 0.5em;
+    padding: 0;
+}
+
 #guac-menu #mouse-settings .choice {
     text-align: center;
 }

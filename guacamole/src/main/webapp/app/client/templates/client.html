@@ -56,8 +56,13 @@
                 <h2 ng-show="rootConnectionGroups">
                     <guac-menu menu-title="client.name">
                         <div class="all-connections">
+                            <guac-group-list-filter connection-groups="rootConnectionGroups"
+                                filtered-connection-groups="filteredRootConnectionGroups"
+                                placeholder="'CLIENT.FIELD_PLACEHOLDER_FILTER' | translate"
+                                connection-properties="filteredConnectionProperties"
+                                connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>
                             <guac-group-list
-                                connection-groups="rootConnectionGroups"
+                                connection-groups="filteredRootConnectionGroups"
                                 templates="{
                                     'connection'       : 'app/client/templates/connection.html',
                                     'connection-group' : 'app/client/templates/connectionGroup.html'

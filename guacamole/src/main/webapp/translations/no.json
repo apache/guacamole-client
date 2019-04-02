@@ -93,6 +93,8 @@
         "ERROR_UPLOAD_31D"     : "For mange filer blir overført. Vent til aktive overføringer fullfører og prøv igjen.",
         "ERROR_UPLOAD_DEFAULT" : "En intern feil har oppstått i Guacamole og forbindelsen er terminert. Kontakt systemadministrator dersom problemet fortsetter eller sjekk systemloggene dine.",
 
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "HELP_CLIPBOARD"           : "Tekst som er kopiert eller klippet i Guacamole vises her. Endringer i teksten under vil påvirke den eksterne utklippstavlen.",
         "HELP_INPUT_METHOD_NONE"   : "Ingen innenhet er brukt. Tastetrykk fra et fysisk tilkoblet tastatur blir akseptert.",
         "HELP_INPUT_METHOD_OSK"    : "Vis og aksepter tastetrykk fra det innebygde skjermtastaturet i Guacamole. Skjermtastaturet tillater tasting av tastekombinasjoner som ellers kan være umulig (f.eks. Ctrl-Alt-Del).",

@@ -91,6 +91,8 @@
         "ERROR_UPLOAD_31D"     : "Trop de fichiers sont actuellement transférés. Merci d'attendre que les transferts en cours soient terminés et de réessayer plus tard.", 
         "ERROR_UPLOAD_DEFAULT" : "Une erreur interne est apparue dans le serveur Guacamole et la connexion a été fermée. Si le problème persiste, merci de notifier l'administrateur ou de regarder les journaux système.",
 
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "HELP_CLIPBOARD"           : "Texte copié/coupé dans Guacamole apparaîtra ici. Changer le texte ci dessous affectera le presse-papiers distant.",
         "HELP_INPUT_METHOD_NONE"   : "Aucune méthode de saisie utilisée. Clavier accepté depuis un clavier physique connecté.",
         "HELP_INPUT_METHOD_OSK"    : "Affiche et utilise la saisie du clavier virtuel intégré dans Guacamole. Le clavier virtuel permet d'utiliser des combinaisons de touches autrement impossibles (comme Ctrl-Alt-Supp).",

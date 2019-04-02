@@ -288,6 +288,24 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     $scope.rootConnectionGroups = null;
 
+    /**
+     * Array of all connection properties that are filterable.
+     *
+     * @type String[]
+     */
+    $scope.filteredConnectionProperties = [
+        'name'
+    ];
+
+    /**
+     * Array of all connection group properties that are filterable.
+     *
+     * @type String[]
+     */
+    $scope.filteredConnectionGroupProperties = [
+        'name'
+    ];
+
     // Retrieve root groups and all descendants
     dataSourceService.apply(
         connectionGroupService.getConnectionGroupTree,

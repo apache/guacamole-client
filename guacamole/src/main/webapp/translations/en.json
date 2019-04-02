@@ -106,6 +106,8 @@
         "ERROR_UPLOAD_31D"     : "Too many files are currently being transferred. Please wait for existing transfers to complete, and then try again.",
         "ERROR_UPLOAD_DEFAULT" : "An internal error has occurred within the Guacamole server, and the connection has been terminated. If the problem persists, please notify your system administrator, or check your system logs.",
 
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "HELP_CLIPBOARD"           : "Text copied/cut within Guacamole will appear here. Changes to the text below will affect the remote clipboard.",
         "HELP_INPUT_METHOD_NONE"   : "No input method is used. Keyboard input is accepted from a connected, physical keyboard.",
         "HELP_INPUT_METHOD_OSK"    : "Display and accept input from the built-in Guacamole on-screen keyboard. The on-screen keyboard allows typing of key combinations that may otherwise be impossible (such as Ctrl-Alt-Del).",
