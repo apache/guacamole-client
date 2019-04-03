@@ -95,9 +95,14 @@
     opacity: 0.5;
     transition: opacity 0.25s;
 
-    width: 192px;
-    max-width: 30vw;
+    max-height: 128px;
+    vertical-align: middle;
 
+}
+
+#other-connections .client-panel-connection .thumbnail-main img {
+    max-width: none;
+    max-height: 128px;
 }
 
 #other-connections .client-panel-connection a[href]::before {
