@@ -96,6 +96,7 @@
     transition: opacity 0.25s;
 
     max-height: 128px;
+    overflow: hidden;
     vertical-align: middle;
 
 }
