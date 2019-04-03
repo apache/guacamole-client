@@ -100,7 +100,7 @@
 
 }
 
-#other-connections .client-panel-connection::before {
+#other-connections .client-panel-connection a[href]::before {
 
     display: block;
     content: ' ';
@@ -110,19 +110,56 @@
     left: 0;
     height: 100%;
     width: 100%;
+    z-index: 1;
 
     background: url('images/warning-white.png');
     background-size: 48px;
     background-position: center;
     background-repeat: no-repeat;
+    background-color: black;
 
     opacity: 0;
     transition: opacity 0.25s;
 
 }
 
-#other-connections .client-panel-connection.error::before {
+#other-connections .client-panel-connection.needs-attention a[href]::before {
     opacity: 0.75;
+}
+
+#other-connections button.close-other-connection {
+
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+
+    margin: 0;
+    padding: 4px;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    text-shadow: none;
+
+    opacity: 0.5;
+    line-height: 1;
+
+}
+
+#other-connections button.close-other-connection:hover {
+    opacity: 1;
+}
+
+#other-connections button.close-other-connection img {
+    background: #A43;
+    border-radius: 18px;
+    max-width: 18px;
+    padding: 3px;
+}
+
+#other-connections button.close-other-connection:hover img {
+    background: #C54;
 }
 
 #other-connections .client-panel.hidden .client-panel-connection-list {
@@ -144,6 +181,7 @@
     left: 0;
     right: 0;
     bottom: 0;
+    z-index: 2;
 
     text-align: left;
     color: white;

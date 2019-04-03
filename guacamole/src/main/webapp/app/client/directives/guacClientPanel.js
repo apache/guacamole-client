@@ -25,6 +25,7 @@
 angular.module('client').directive('guacClientPanel', ['$injector', function guacClientPanel($injector) {
 
     // Required services
+    var guacClientManager     = $injector.get('guacClientManager');
     var sessionStorageFactory = $injector.get('sessionStorageFactory');
 
     // Required types
@@ -54,7 +55,7 @@ angular.module('client').directive('guacClientPanel', ['$injector', function gua
              * @type ManagedClient[]|Object.<String, ManagedClient>
              */
             clients : '='
-            
+
         },
         templateUrl: 'app/client/templates/guacClientPanel.html',
         controller: ['$scope', '$element', function guacClientPanelController($scope, $element) {
@@ -82,31 +83,63 @@ angular.module('client').directive('guacClientPanel', ['$injector', function gua
              *     false otherwise.
              */
             $scope.hasClients = function hasClients() {
-                return !_.isEmpty($scope.clients);
+                return !!_.find($scope.clients, $scope.isManaged);
             };
 
             /**
-             * Returns whether the given client has disconnected due to an
-             * error.
+             * Returns whether the status of the given client has changed in a
+             * way that requires the user's attention. This may be due to an
+             * error, or due to a server-initiated disconnect.
              *
              * @param {ManagedClient} client
              *     The client to test.
              *
              * @returns {Boolean}
-             *     true if the given client has disconnected due to an error,
+             *     true if the given client requires the user's attention,
              *     false otherwise.
              */
-            $scope.hasError = function hasError(client) {
+            $scope.hasStatusUpdate = function hasStatusUpdate(client) {
 
                 // Test whether the client has encountered an error
                 switch (client.clientState.connectionState) {
                     case ManagedClientState.ConnectionState.CONNECTION_ERROR:
                     case ManagedClientState.ConnectionState.TUNNEL_ERROR:
+                    case ManagedClientState.ConnectionState.DISCONNECTED:
                         return true;
                 }
 
                 return false;
 
+            };
+
+            /**
+             * Returns whether the given client is currently being managed by
+             * the guacClientManager service.
+             *
+             * @param {ManagedClient} client
+             *     The client to test.
+             *
+             * @returns {Boolean}
+             *     true if the given client is being managed by the
+             *     guacClientManager service, false otherwise.
+             */
+            $scope.isManaged = function isManaged(client) {
+                return !!guacClientManager.getManagedClients()[client.id];
+            };
+
+            /**
+             * Initiates an orderly disconnect of the given client. The client
+             * is removed from management such that attempting to connect to
+             * the same connection will result in a new connection being
+             * established, rather than displaying a notification that the
+             * connection has ended.
+             *
+             * @param {type} client
+             * @returns {undefined}
+             */
+            $scope.disconnect = function disconnect(client) {
+                client.client.disconnect();
+                guacClientManager.removeManagedClient(client.id);
             };
 
             /**
