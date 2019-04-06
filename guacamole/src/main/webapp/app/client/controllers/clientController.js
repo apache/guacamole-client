@@ -24,22 +24,25 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         function clientController($scope, $routeParams, $injector) {
 
     // Required types
+    var ConnectionGroup    = $injector.get('ConnectionGroup');
     var ManagedClient      = $injector.get('ManagedClient');
     var ManagedClientState = $injector.get('ManagedClientState');
     var ManagedFilesystem  = $injector.get('ManagedFilesystem');
     var ScrollState        = $injector.get('ScrollState');
 
     // Required services
-    var $location             = $injector.get('$location');
-    var authenticationService = $injector.get('authenticationService');
-    var clipboardService      = $injector.get('clipboardService');
-    var guacClientManager     = $injector.get('guacClientManager');
-    var guacNotification      = $injector.get('guacNotification');
-    var iconService           = $injector.get('iconService');
-    var preferenceService     = $injector.get('preferenceService');
-    var requestService        = $injector.get('requestService');
-    var tunnelService         = $injector.get('tunnelService');
-    var userPageService       = $injector.get('userPageService');
+    var $location              = $injector.get('$location');
+    var authenticationService  = $injector.get('authenticationService');
+    var connectionGroupService = $injector.get('connectionGroupService');
+    var clipboardService       = $injector.get('clipboardService');
+    var dataSourceService      = $injector.get('dataSourceService');
+    var guacClientManager      = $injector.get('guacClientManager');
+    var guacNotification       = $injector.get('guacNotification');
+    var iconService            = $injector.get('iconService');
+    var preferenceService      = $injector.get('preferenceService');
+    var requestService         = $injector.get('requestService');
+    var tunnelService          = $injector.get('tunnelService');
+    var userPageService        = $injector.get('userPageService');
 
     /**
      * The minimum number of pixels a drag gesture must move to result in the
@@ -265,6 +268,55 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.client = guacClientManager.getManagedClient($routeParams.id, $routeParams.params);
 
     /**
+     * All active clients which are not the current client ($scope.client).
+     * Each key is the ID of the connection used by that client.
+     *
+     * @type Object.<String, ManagedClient>
+     */
+    $scope.otherClients = (function getOtherClients(clients) {
+        var otherClients = angular.extend({}, clients);
+        delete otherClients[$scope.client.id];
+        return otherClients;
+    })(guacClientManager.getManagedClients());
+
+    /**
+     * Map of data source identifier to the root connection group of that data
+     * source, or null if the connection group hierarchy has not yet been
+     * loaded.
+     *
+     * @type Object.<String, ConnectionGroup>
+     */
+    $scope.rootConnectionGroups = null;
+
+    /**
+     * Array of all connection properties that are filterable.
+     *
+     * @type String[]
+     */
+    $scope.filteredConnectionProperties = [
+        'name'
+    ];
+
+    /**
+     * Array of all connection group properties that are filterable.
+     *
+     * @type String[]
+     */
+    $scope.filteredConnectionGroupProperties = [
+        'name'
+    ];
+
+    // Retrieve root groups and all descendants
+    dataSourceService.apply(
+        connectionGroupService.getConnectionGroupTree,
+        authenticationService.getAvailableDataSources(),
+        ConnectionGroup.ROOT_IDENTIFIER
+    )
+    .then(function rootGroupsRetrieved(rootConnectionGroups) {
+        $scope.rootConnectionGroups = rootConnectionGroups;
+    }, requestService.WARN);
+
+    /**
      * Map of all available sharing profiles for the current connection by
      * their identifiers. If this information is not yet available, or no such
      * sharing profiles exist, this will be an empty object.
@@ -438,6 +490,12 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Disable client keyboard if the menu is shown
         $scope.client.clientProperties.keyboardEnabled = !menuShown;
 
+    });
+
+    // Update last used timestamp when the active client changes
+    $scope.$watch('client', function clientChanged(client) {
+        if (client)
+            client.lastUsed = new Date().getTime();
     });
 
     // Update page icon when thumbnail changes

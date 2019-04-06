@@ -101,6 +101,8 @@
         "ERROR_UPLOAD_31D"     : "正在同时传输太多文件。请等待当前的传输任务完成后，再重试。",
         "ERROR_UPLOAD_DEFAULT" : "本连接因为Guacamole服务器出现了内部错误而被终止。如果问题持续，请通知您的系统管理员，或检查您的系统日志。",
 
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "HELP_CLIPBOARD"           : "复制/剪切的文本将出现在这里。对下面文本内容所作的修改将会影响远程电脑上的剪贴板。",
         "HELP_INPUT_METHOD_NONE"   : "没有选择任何输入法。将从连接的物理键盘接受键盘输入。",
         "HELP_INPUT_METHOD_OSK"    : "显示并从内建的Guacamole屏幕键盘接受输入。屏幕键盘可以输入平常无法输入的按键组合（如Ctrl-Alt-Del等）。",

@@ -101,6 +101,8 @@
         "ERROR_UPLOAD_31D"     : "Se estan transfiriendo muchos ficheros actualmente. Por favor espere a que finalicen las transferencias de fichero existentes e intente de nuevo.",
         "ERROR_UPLOAD_DEFAULT" : "Ha ocurrido un error interno en el servidor Guacamole y la conexión ha finalizado. Si el problema persiste, por favor notifíquelo al administrador o compruebe los registros del sistema.",
 
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "HELP_CLIPBOARD"           : "Aquí aparecerá el texto copiado/cortado en Guacamole. Los cambios en el texto de abajo afectaran al portapapeles remoto.",
         "HELP_INPUT_METHOD_NONE"   : "No se está usando un método de entrada. La entrada de teclado se acepta desde un teclado físico conectado.",
         "HELP_INPUT_METHOD_OSK"    : "Muestra y acepta entrada desde el teclado en pantalla incorporado de Guacamole. El teclado en pantalla permite escribir combinaciones que serían imposible de otro modo (como Ctrl-Alt-Sup).",

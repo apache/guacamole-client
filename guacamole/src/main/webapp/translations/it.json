@@ -87,6 +87,8 @@
         "ERROR_UPLOAD_31D"     : "Ci sono troppi file in coda per il trasferimento. Attendi che siano completati i trasferimenti in atto e riprova.",
         "ERROR_UPLOAD_DEFAULT" : "Si è verificato un errore sul server e la connessione è stata chiusa. Riprova o contatta il tuo amministratore di sistema.",
 
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "HELP_CLIPBOARD"           : "Il testo copiato/tagliato appare qui. I cambiamenti effettuati al testo qui sotto saranno riportati negli appunti remoti.",
         "HELP_INPUT_METHOD_NONE"   : "Non c'è nessun metodo di immissione. L'input da tastiera è accettato da una tastiera fisica connessa.",
         "HELP_INPUT_METHOD_OSK"    : "Mostra e accetta input dalla tastiera su schermo. La tastiera su schermo ti permette di scrivere combinazioni di tasti altrimenti mipossibli (ad esempio Ctrl-Alt-Canc).",

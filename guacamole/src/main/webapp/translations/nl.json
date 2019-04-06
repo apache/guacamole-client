@@ -91,6 +91,8 @@
         "ERROR_UPLOAD_31D"     : "Er worden momenteel te veel bestanden overdragen. Gelieve te wachten tot de bestaande bestandsoverdracht is voltooid, en probeer het opnieuw.",
         "ERROR_UPLOAD_DEFAULT" : "Er is een interne fout opgetreden op de Guacamole server, en de verbinding is beëindigd. Als het probleem aanhoudt, neem dan contact op met uw systeembeheerder of kijk in uw systeem logs.",
 
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "HELP_CLIPBOARD"           : "Tekst gekopieerd / geknipt binnen Guacamole zal hier verschijnen. Wijzigingen in onderstaande tekst zal externe klembord beïnvloeden.",
         "HELP_INPUT_METHOD_NONE"   : "Geen invoer methode gebruiken. Toetsenbord invoer wordt geaccepteerd van een aangesloten, fysiek toetsenbord.",
         "HELP_INPUT_METHOD_OSK"    : "Weergave en accepteren van invoer via het ingebouwde Guacamole on-screen toetsenbord. Dit toetsenbord op het scherm maakt toetscombinaties mogelijk die anders onmogelijk zijn (zoals Ctrl-Alt-Del).",
