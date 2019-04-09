@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
+import java.security.Security;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.slf4j.Logger;
@@ -41,6 +43,8 @@ import net.jradius.packet.AccessRequest;
 import net.jradius.packet.attribute.AttributeList;
 import net.jradius.client.auth.EAPTLSAuthenticator;
 import net.jradius.client.auth.EAPTTLSAuthenticator;
+import net.jradius.client.auth.MSCHAPv1Authenticator;
+import net.jradius.client.auth.MSCHAPv2Authenticator;
 import net.jradius.client.auth.RadiusAuthenticator;
 import net.jradius.client.auth.PEAPAuthenticator;
 import net.jradius.packet.attribute.AttributeFactory;
@@ -128,6 +132,18 @@ public class RadiusConnectionService {
         RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(confService.getRadiusAuthProtocol());
         if (radAuth == null)
             throw new GuacamoleException("Could not get a valid RadiusAuthenticator for specified protocol: " + confService.getRadiusAuthProtocol());
+
+        // For MSCHAPv1/2, we need MD4 support
+        if (radAuth instanceof MSCHAPv1Authenticator
+                || radAuth instanceof MSCHAPv2Authenticator) {
+            
+            Security.addProvider(new Provider("MD4", 0.00, "MD4 for MSCHAPv1/2 RADIUS") {
+                {
+                    this.put("MessageDigest.MD4", org.bouncycastle.jce.provider.JDKMessageDigest.MD4.class.getName());
+                }
+            });
+    
+        }
 
         // If we're using any of the TLS protocols, we need to configure them
         if (radAuth instanceof PEAPAuthenticator || 
