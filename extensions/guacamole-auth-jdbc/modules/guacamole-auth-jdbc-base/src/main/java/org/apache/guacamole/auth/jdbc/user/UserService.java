@@ -423,6 +423,43 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         return user;
 
     }
+    
+    /**
+     * Generates an empty (skeleton) user corresponding to the given
+     * AuthenticatedUser.  The user will not be stored in the database, and
+     * will only be available in-memory during the time the session is
+     * active.
+     * 
+     * @param authenticationProvider
+     *     The AuthenticationProvider on behalf of which the user is being
+     *     retrieved.
+     *
+     * @param authenticatedUser
+     *     The AuthenticatedUser to generate the skeleton account for.
+     *
+     * @return
+     *     The empty ModeledUser which corresponds to the given
+     *     AuthenticatedUser.
+     *
+     * @throws GuacamoleException
+     *     If a ModeledUser object for the user corresponding to the given
+     *     AuthenticatedUser cannot be created.
+     */
+    public ModeledUser retrieveSkeletonUser(AuthenticationProvider authenticationProvider,
+            AuthenticatedUser authenticatedUser) throws GuacamoleException {
+        
+        // Set up an empty user model
+        ModeledUser user = getObjectInstance(null,
+                new UserModel(authenticatedUser.getIdentifier()));
+        
+        // Create user object, and configure cyclic reference
+        user.setCurrentUser(new ModeledAuthenticatedUser(authenticatedUser,
+                authenticationProvider, user));
+        
+        // Return the new user.
+        return user;
+        
+    }
 
     /**
      * Resets the password of the given user to the new password specified via

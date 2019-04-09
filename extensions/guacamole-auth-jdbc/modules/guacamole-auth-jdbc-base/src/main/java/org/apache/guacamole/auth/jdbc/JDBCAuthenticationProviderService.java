@@ -96,6 +96,7 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
 
         // Retrieve user account for already-authenticated user
         ModeledUser user = userService.retrieveUser(authenticationProvider, authenticatedUser);
+        ModeledUserContext context = userContextProvider.get();
         if (user != null && !user.isDisabled()) {
 
             // Enforce applicable account restrictions
@@ -118,24 +119,23 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
                     userService.resetExpiredPassword(user, authenticatedUser.getCredentials());
             }
 
-            // Return all data associated with the authenticated user
-            ModeledUserContext context = userContextProvider.get();
-            context.init(user.getCurrentUser());
-            return context;
-
+        }
+        
+        // If no user account is found, and database-specific account
+        // restrictions do not apply, get an empty user.
+        else if (!databaseRestrictionsApplicable) {
+            user = userService.retrieveSkeletonUser(authenticationProvider, authenticatedUser);
         }
 
         // Veto authentication result only if database-specific account
         // restrictions apply in this situation
-        if (databaseRestrictionsApplicable)
+        else
             throw new GuacamoleInvalidCredentialsException("Invalid login",
                     CredentialsInfo.USERNAME_PASSWORD);
-
-        // There is no data to be returned for the user, either because they do
-        // not exist or because restrictions prevent their data from being
-        // retrieved, but no restrictions apply which should prevent the user
-        // from authenticating entirely
-        return null;
+        
+        // Initialize the UserContext with the user account and return it.
+        context.init(user.getCurrentUser());
+        return context;
 
     }
 
