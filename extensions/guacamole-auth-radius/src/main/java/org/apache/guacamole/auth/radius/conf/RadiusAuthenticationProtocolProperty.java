@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.radius.conf;
 
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 
 /**
@@ -37,7 +38,7 @@ public abstract class RadiusAuthenticationProtocolProperty
         
         // Attempt to parse the string value
         RadiusAuthenticationProtocol authProtocol = 
-                RadiusAuthenticationProtocol.valueOf(value);
+                RadiusAuthenticationProtocol.getEnum(value);
         
         // Throw an exception if nothing matched.
         if (authProtocol == null)

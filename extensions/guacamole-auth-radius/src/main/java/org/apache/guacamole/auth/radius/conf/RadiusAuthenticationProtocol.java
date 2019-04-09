@@ -56,7 +56,7 @@ public enum RadiusAuthenticationProtocol {
      * @param strValue
      *     The string value of the protocol.
      */
-    public RadiusAuthenticationProtocol(String strValue) {
+    RadiusAuthenticationProtocol(String strValue) {
         this.strValue = strValue;
     }
     
@@ -65,8 +65,7 @@ public enum RadiusAuthenticationProtocol {
         return strValue;
     }
     
-    @Override
-    public static RadiusAuthenticationProtocol valueOf(String value) {
+    public static RadiusAuthenticationProtocol getEnum(String value) {
     
         for (RadiusAuthenticationProtocol v : values())
             if(v.toString().equals(value))
