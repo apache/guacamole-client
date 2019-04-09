@@ -127,6 +127,17 @@ public class UserModel extends EntityModel {
     public UserModel() {
         super(EntityType.USER);
     }
+    
+    /**
+     * Creates a new user having the provided identifier.
+     * 
+     * @param identifier
+     *     The identifier of the new user.
+     */
+    public UserModel(String identifier) {
+        super(EntityType.USER);
+        super.setIdentifier(identifier);
+    }
 
     /**
      * Returns the hash of this user's password and password salt. This may be
