@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.radius;
+package org.apache.guacamole.auth.radius.conf;
 
 import com.google.inject.Inject;
 import java.io.File;
@@ -123,8 +123,9 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public String getRadiusAuthProtocol() throws GuacamoleException {
-        return environment.getProperty(
+    public RadiusAuthenticationProtocol getRadiusAuthProtocol()
+            throws GuacamoleException {
+        return environment.getRequiredProperty(
             RadiusGuacamoleProperties.RADIUS_AUTH_PROTOCOL
         );
     }
@@ -309,12 +310,19 @@ public class ConfigurationService {
      *     an EAP-TTLS RADIUS connection. 
      *     
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
+     *     If guacamole.properties cannot be parsed, or if EAP-TTLS is specified
+     *     as the inner protocol.
      */
-    public String getRadiusEAPTTLSInnerProtocol() throws GuacamoleException {
-        return environment.getProperty(
+    public RadiusAuthenticationProtocol getRadiusEAPTTLSInnerProtocol()
+            throws GuacamoleException {
+        
+        RadiusAuthenticationProtocol authProtocol = environment.getProperty(
             RadiusGuacamoleProperties.RADIUS_EAP_TTLS_INNER_PROTOCOL
         );
+        
+        if (authProtocol == RadiusAuthenticationProtocol.EAP_TTLS)
+            throw new GuacamoleServerException("Invalid inner protocol specified for EAP-TTLS.");
+        
     }
 
 }

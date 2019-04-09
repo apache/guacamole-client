@@ -29,6 +29,8 @@ import java.security.Provider;
 import java.security.Security;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.auth.radius.conf.ConfigurationService;
+import org.apache.guacamole.auth.radius.conf.RadiusAuthenticationProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.jradius.client.RadiusClient;
@@ -68,6 +70,27 @@ public class RadiusConnectionService {
     private ConfigurationService confService;
 
 
+    /**
+     * 
+     */
+    public RadiusConnectionService() {
+        
+        RadiusAuthenticationProtocol authProtocol = confService.getAuthenticationProtocol();
+        
+        // Check for MS-CHAP and add MD4 support
+        if (authProtocol == RadiusAuthenticationProtocol.MSCHAPv1
+                || authProtocol == RadiusAuthenticationProtocol.MSCHAPv2) {
+            
+            Security.addProvider(new Provider("MD4", 0.00, "MD4 for MSCHAPv1/2 RADIUS") {
+                {
+                    this.put("MessageDigest.MD4", org.bouncycastle.jce.provider.JDKMessageDigest.MD4.class.getName());
+                }
+            });
+            
+        }
+        
+    }
+    
     /**
      * Creates a new instance of RadiusClient, configured with parameters
      * from guacamole.properties.
@@ -129,21 +152,9 @@ public class RadiusConnectionService {
             return null;
         }
 
-        RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(confService.getRadiusAuthProtocol());
+        RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(confService.getRadiusAuthProtocol().toString());
         if (radAuth == null)
             throw new GuacamoleException("Could not get a valid RadiusAuthenticator for specified protocol: " + confService.getRadiusAuthProtocol());
-
-        // For MSCHAPv1/2, we need MD4 support
-        if (radAuth instanceof MSCHAPv1Authenticator
-                || radAuth instanceof MSCHAPv2Authenticator) {
-            
-            Security.addProvider(new Provider("MD4", 0.00, "MD4 for MSCHAPv1/2 RADIUS") {
-                {
-                    this.put("MessageDigest.MD4", org.bouncycastle.jce.provider.JDKMessageDigest.MD4.class.getName());
-                }
-            });
-    
-        }
 
         // If we're using any of the TLS protocols, we need to configure them
         if (radAuth instanceof PEAPAuthenticator || 
@@ -173,11 +184,11 @@ public class RadiusConnectionService {
 
         // If we're using EAP-TTLS, we need to define tunneled protocol
         if (radAuth instanceof EAPTTLSAuthenticator) {
-            String innerProtocol = confService.getRadiusEAPTTLSInnerProtocol();
+            RadiusAuthenticationProtocol innerProtocol = confService.getRadiusEAPTTLSInnerProtocol();
             if (innerProtocol == null)
                 throw new GuacamoleException("Trying to use EAP-TTLS, but no inner protocol specified.");
 
-            ((EAPTTLSAuthenticator)radAuth).setInnerProtocol(innerProtocol);
+            ((EAPTTLSAuthenticator)radAuth).setInnerProtocol(innerProtocol.toString());
         }
 
         return radAuth;
