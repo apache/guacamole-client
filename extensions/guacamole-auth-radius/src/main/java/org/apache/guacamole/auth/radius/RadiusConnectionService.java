@@ -72,26 +72,27 @@ public class RadiusConnectionService {
      * Set up a new instance of this class, and check the provided
      * authentication protocol.  If the protocol requires MD4 support,
      * this loads the required security providers.
-     * 
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed or an invalid
-     *     authentication protocol is provided.
      */
-    public RadiusConnectionService() throws GuacamoleException {
+    public RadiusConnectionService() {
         
-        RadiusAuthenticationProtocol authProtocol = confService.getRadiusAuthProtocol();
+        try {
+            RadiusAuthenticationProtocol authProtocol = confService.getRadiusAuthProtocol();
         
-        // Check for MS-CHAP and add MD4 support
-        if (authProtocol == RadiusAuthenticationProtocol.MSCHAPv1
-                || authProtocol == RadiusAuthenticationProtocol.MSCHAPv2) {
-            
-            Security.addProvider(new Provider("MD4", 0.00, "MD4 for MSCHAPv1/2 RADIUS") {
-                {
-                    this.put("MessageDigest.MD4",
-                            org.bouncycastle.jce.provider.JDKMessageDigest.MD4.class.getName());
-                }
-            });
-            
+            // Check for MS-CHAP and add MD4 support
+            if (authProtocol == RadiusAuthenticationProtocol.MSCHAPv1
+                    || authProtocol == RadiusAuthenticationProtocol.MSCHAPv2) {
+
+                Security.addProvider(new Provider("MD4", 0.00, "MD4 for MSCHAPv1/2 RADIUS") {
+                    {
+                        this.put("MessageDigest.MD4",
+                                org.bouncycastle.jce.provider.JDKMessageDigest.MD4.class.getName());
+                    }
+                });
+
+            }
+        } catch(GuacamoleException e) {
+            logger.error("Could not retrieve RADIUS authentication protocol: {}", e.getMessage());
+            logger.debug("Failed to determine authentication protocol", e);
         }
         
     }
