@@ -145,7 +145,6 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
 
         // Build args list off provided names and config
         List<String> arg_names = args.getArgs();
-        
         String[] arg_values = new String[arg_names.size()];
         for (int i=0; i<arg_names.size(); i++) {
 

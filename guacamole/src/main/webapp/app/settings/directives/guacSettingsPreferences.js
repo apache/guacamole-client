@@ -38,7 +38,6 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
             // Required services
             var $translate            = $injector.get('$translate');
             var authenticationService = $injector.get('authenticationService');
-            var formService           = $injector.get('formService');
             var guacNotification      = $injector.get('guacNotification');
             var languageService       = $injector.get('languageService');
             var permissionService     = $injector.get('permissionService');

@@ -60,7 +60,7 @@ public class GuacamoleClientInformation {
     private final List<String> imageMimetypes = new ArrayList<String>();
     
     /**
-     * The timezone report by the client.
+     * The timezone reported by the client.
      */
     private String timezone = "";
 

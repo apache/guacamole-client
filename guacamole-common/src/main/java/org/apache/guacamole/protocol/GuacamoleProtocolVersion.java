@@ -29,12 +29,11 @@ import org.apache.guacamole.GuacamoleUnsupportedException;
  */
 public enum GuacamoleProtocolVersion {
     
-    VERSION_1_0_0("1.0.0", 1, 0, 0),
+    // Version 1.0.0 and older.
+    VERSION_1_0_0(1, 0, 0),
 
-    VERSION_1_1_0("1.1.0", 1, 1, 0);
-
-    // The string representation of the version.
-    private final String version;
+    // Version 1.1.0
+    VERSION_1_1_0(1, 1, 0);
     
     // The major version number.
     private final int major;
@@ -47,10 +46,7 @@ public enum GuacamoleProtocolVersion {
     
     /**
      * Generate a new GuacamoleProtocolVersion object with the given
-     * string version, major version, and minor version.
-     * 
-     * @param version
-     *     The String representation of the version.
+     * major version, minor version, and patch version.
      * 
      * @param major
      *     The integer representation of the major version component.
@@ -61,21 +57,10 @@ public enum GuacamoleProtocolVersion {
      * @param patch 
      *     The integer representation of the patch version component.
      */
-    GuacamoleProtocolVersion(String version, int major, int minor, int patch) {
-        this.version = version;
+    GuacamoleProtocolVersion(int major, int minor, int patch) {
         this.major = major;
         this.minor = minor;
         this.patch = patch;
-    }
-    
-    /**
-     * Return the string representation of the version.
-     * 
-     * @return 
-     *     The string representation of the version.
-     */
-    public String getVersion() {
-        return version;
     }
     
     /**
@@ -151,73 +136,6 @@ public enum GuacamoleProtocolVersion {
         
         // Version is either less than or equal to.
         return false;
-        
-    }
-    
-    /**
-     * Parses the given string version, returning the GuacamoleProtocolVersion
-     * object that matches the string version.  If a matching version is not
-     * found an exception is thrown.
-     * 
-     * @param version
-     *     The String representation of a version to parse.
-     * 
-     * @return
-     *     The GuacamoleProtocolVersion that matches the string version
-     *     that has been provided.
-     * 
-     * @throws GuacamoleException 
-     *     If the string version does not match any known enum values.
-     */
-    public static GuacamoleProtocolVersion parseVersion(String version) 
-            throws GuacamoleException {
-        
-        for (GuacamoleProtocolVersion v : GuacamoleProtocolVersion.values()) {
-            if (v.getVersion().equals(version))
-                return v;
-        }
-        
-        throw new GuacamoleUnsupportedException("Version " + version
-                + " of Guacamole protocol is not valid.");
-        
-    }
-    
-    /**
-     * Parse the version provided as individual version components to the
-     * matching enum version.  If a match is not found an exception is
-     * thrown.
-     * 
-     * @param major
-     *     The integer major version.
-     * 
-     * @param minor
-     *     The integer minor version.
-     * 
-     * @param patch
-     *     The integer patch version.
-     * 
-     * @return
-     *     The GuacamoleProtocolVersion that matches the individual components
-     *     that were provided.
-     * 
-     * @throws GuacamoleException 
-     *     If the provided components do not match any known enum value.
-     */
-    public static GuacamoleProtocolVersion parseVersion(int major, int minor, int patch)
-            throws GuacamoleException {
-        
-        for (GuacamoleProtocolVersion v : GuacamoleProtocolVersion.values()) {
-            if (v.getMajor() == major 
-                    && v.getMinor() == minor
-                    && v.getPatch() == patch)
-                return v;
-        }
-        
-        throw new GuacamoleUnsupportedException("Version " 
-                + Integer.toString(major) + "."
-                + Integer.toString(minor) + "."
-                + Integer.toString(patch)
-                + " is not valid.");
         
     }
     
