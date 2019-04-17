@@ -20,8 +20,12 @@
 package org.apache.guacamole.auth.radius;
 
 import com.google.inject.AbstractModule;
+import java.security.Provider;
+import java.security.Security;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.radius.conf.ConfigurationService;
+import org.apache.guacamole.auth.radius.conf.RadiusAuthenticationProtocol;
+import org.apache.guacamole.auth.radius.conf.RadiusGuacamoleProperties;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -58,6 +62,24 @@ public class RadiusAuthenticationProviderModule extends AbstractModule {
 
         // Get local environment
         this.environment = new LocalEnvironment();
+        
+        // Check for MD4 requirement
+        RadiusAuthenticationProtocol authProtocol = environment.getProperty(RadiusGuacamoleProperties.RADIUS_AUTH_PROTOCOL);
+        RadiusAuthenticationProtocol innerProtocol = environment.getProperty(RadiusGuacamoleProperties.RADIUS_EAP_TTLS_INNER_PROTOCOL);
+        if ((authProtocol != null 
+                    && (authProtocol == RadiusAuthenticationProtocol.MSCHAPv1 
+                    || authProtocol == RadiusAuthenticationProtocol.MSCHAPv2)) 
+                || (innerProtocol != null 
+                    && (innerProtocol == RadiusAuthenticationProtocol.MSCHAPv1 
+                    || innerProtocol == RadiusAuthenticationProtocol.MSCHAPv2))) {
+            
+            Security.addProvider(new Provider("MD4", 0.00, "MD4 for MSCHAPv1/2 Support") {
+                {
+                    this.put("MessageDigest.MD4", org.bouncycastle.jce.provider.JDKMessageDigest.MD4.class.getName());
+                }
+            });
+            
+        }
 
         // Store associated auth provider
         this.authProvider = authProvider;
