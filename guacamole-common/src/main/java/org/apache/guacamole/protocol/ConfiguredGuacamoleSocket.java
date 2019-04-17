@@ -146,17 +146,17 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         // Build args list off provided names and config
         List<String> arg_names = args.getArgs();
         
-        // Check for protocol version as first argument
-        if (arg_names.get(0).startsWith("VERSION_")) {
-            String protocolArg = arg_names.get(0);
-            protocol = GuacamoleProtocolVersion.valueOf(protocolArg);
-        }
-        
         String[] arg_values = new String[arg_names.size()];
         for (int i=0; i<arg_names.size(); i++) {
 
             // Retrieve argument name
             String arg_name = arg_names.get(i);
+            
+            // Check for protocol version as first argument
+            if (i == 0 && arg_name.startsWith("VERSION_")) {
+                protocol = GuacamoleProtocolVersion.valueOf(arg_name);
+                arg_values[i] = protocol.toString();
+            }
 
             // Get defined value for name
             String value = config.getParameter(arg_name);
