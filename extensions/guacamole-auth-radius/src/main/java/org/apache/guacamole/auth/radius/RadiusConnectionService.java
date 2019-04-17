@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Provider;
-import java.security.Security;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.radius.conf.ConfigurationService;
@@ -66,36 +64,6 @@ public class RadiusConnectionService {
      */
     @Inject
     private ConfigurationService confService;
-
-
-    /**
-     * Set up a new instance of this class, and check the provided
-     * authentication protocol.  If the protocol requires MD4 support,
-     * this loads the required security providers.
-     */
-    public RadiusConnectionService() {
-        
-        try {
-            RadiusAuthenticationProtocol authProtocol = confService.getRadiusAuthProtocol();
-        
-            // Check for MS-CHAP and add MD4 support
-            if (authProtocol == RadiusAuthenticationProtocol.MSCHAPv1
-                    || authProtocol == RadiusAuthenticationProtocol.MSCHAPv2) {
-
-                Security.addProvider(new Provider("MD4", 0.00, "MD4 for MSCHAPv1/2 RADIUS") {
-                    {
-                        this.put("MessageDigest.MD4",
-                                org.bouncycastle.jce.provider.JDKMessageDigest.MD4.class.getName());
-                    }
-                });
-
-            }
-        } catch(GuacamoleException e) {
-            logger.error("Could not retrieve RADIUS authentication protocol: {}", e.getMessage());
-            logger.debug("Failed to determine authentication protocol", e);
-        }
-        
-    }
     
     /**
      * Creates a new instance of RadiusClient, configured with parameters
