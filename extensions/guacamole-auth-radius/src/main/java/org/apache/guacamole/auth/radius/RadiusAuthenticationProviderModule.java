@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.radius;
 
 import com.google.inject.AbstractModule;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.radius.conf.ConfigurationService;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;

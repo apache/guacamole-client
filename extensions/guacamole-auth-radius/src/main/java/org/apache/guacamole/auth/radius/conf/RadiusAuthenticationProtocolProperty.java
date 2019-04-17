@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.radius.conf;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.properties.GuacamoleProperty;
 
 /**
  * A GuacamoleProperty whose value is a RadiusAuthenticationProtocol.

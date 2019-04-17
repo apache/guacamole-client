@@ -45,8 +45,6 @@ import net.jradius.packet.AccessRequest;
 import net.jradius.packet.attribute.AttributeList;
 import net.jradius.client.auth.EAPTLSAuthenticator;
 import net.jradius.client.auth.EAPTTLSAuthenticator;
-import net.jradius.client.auth.MSCHAPv1Authenticator;
-import net.jradius.client.auth.MSCHAPv2Authenticator;
 import net.jradius.client.auth.RadiusAuthenticator;
 import net.jradius.client.auth.PEAPAuthenticator;
 import net.jradius.packet.attribute.AttributeFactory;
@@ -71,11 +69,17 @@ public class RadiusConnectionService {
 
 
     /**
+     * Set up a new instance of this class, and check the provided
+     * authentication protocol.  If the protocol requires MD4 support,
+     * this loads the required security providers.
      * 
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed or an invalid
+     *     authentication protocol is provided.
      */
-    public RadiusConnectionService() {
+    public RadiusConnectionService() throws GuacamoleException {
         
-        RadiusAuthenticationProtocol authProtocol = confService.getAuthenticationProtocol();
+        RadiusAuthenticationProtocol authProtocol = confService.getRadiusAuthProtocol();
         
         // Check for MS-CHAP and add MD4 support
         if (authProtocol == RadiusAuthenticationProtocol.MSCHAPv1
@@ -83,7 +87,8 @@ public class RadiusConnectionService {
             
             Security.addProvider(new Provider("MD4", 0.00, "MD4 for MSCHAPv1/2 RADIUS") {
                 {
-                    this.put("MessageDigest.MD4", org.bouncycastle.jce.provider.JDKMessageDigest.MD4.class.getName());
+                    this.put("MessageDigest.MD4",
+                            org.bouncycastle.jce.provider.JDKMessageDigest.MD4.class.getName());
                 }
             });
             
@@ -142,8 +147,8 @@ public class RadiusConnectionService {
      *     not configured when the client is set up for a tunneled
      *     RADIUS connection.
      */
-    private RadiusAuthenticator setupRadiusAuthenticator(RadiusClient radiusClient)
-            throws GuacamoleException {
+    private RadiusAuthenticator setupRadiusAuthenticator(
+            RadiusClient radiusClient) throws GuacamoleException {
 
         // If we don't have a radiusClient object, yet, don't go any further.
         if (radiusClient == null) {
@@ -152,7 +157,9 @@ public class RadiusConnectionService {
             return null;
         }
 
-        RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(confService.getRadiusAuthProtocol().toString());
+        RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(
+                confService.getRadiusAuthProtocol().toString());
+        
         if (radAuth == null)
             throw new GuacamoleException("Could not get a valid RadiusAuthenticator for specified protocol: " + confService.getRadiusAuthProtocol());
 
@@ -184,9 +191,11 @@ public class RadiusConnectionService {
 
         // If we're using EAP-TTLS, we need to define tunneled protocol
         if (radAuth instanceof EAPTTLSAuthenticator) {
-            RadiusAuthenticationProtocol innerProtocol = confService.getRadiusEAPTTLSInnerProtocol();
+            RadiusAuthenticationProtocol innerProtocol =
+                    confService.getRadiusEAPTTLSInnerProtocol();
+            
             if (innerProtocol == null)
-                throw new GuacamoleException("Trying to use EAP-TTLS, but no inner protocol specified.");
+                throw new GuacamoleException("Missing or invalid inner protocol for EAP-TTLS.");
 
             ((EAPTTLSAuthenticator)radAuth).setInnerProtocol(innerProtocol.toString());
         }
@@ -263,14 +272,21 @@ public class RadiusConnectionService {
 
             radAuth.setupRequest(radiusClient, radAcc);
             radAuth.processRequest(radAcc);
-            RadiusResponse reply = radiusClient.sendReceive(radAcc, confService.getRadiusMaxRetries());
+            RadiusResponse reply = radiusClient.sendReceive(radAcc,
+                    confService.getRadiusMaxRetries());
 
             // We receive a Challenge not asking for user input, so silently process the challenge
-            while((reply instanceof AccessChallenge) && (reply.findAttribute(Attr_ReplyMessage.TYPE) == null)) {
+            while((reply instanceof AccessChallenge) 
+                    && (reply.findAttribute(Attr_ReplyMessage.TYPE) == null)) {
+                
                 radAuth.processChallenge(radAcc, reply);
-                reply = radiusClient.sendReceive(radAcc, confService.getRadiusMaxRetries());
+                reply = radiusClient.sendReceive(radAcc,
+                        confService.getRadiusMaxRetries());
+                
             }
+            
             return reply;
+            
         }
         catch (RadiusException e) {
             logger.error("Unable to complete authentication.", e.getMessage());
@@ -309,8 +325,8 @@ public class RadiusConnectionService {
      * @throws GuacamoleException
      *     If an error is encountered trying to talk to the RADIUS server.
      */
-    public RadiusPacket sendChallengeResponse(String username, String response, byte[] state)
-            throws GuacamoleException {
+    public RadiusPacket sendChallengeResponse(String username, String response,
+            byte[] state) throws GuacamoleException {
 
         if (username == null || username.isEmpty()) {
             logger.error("Challenge/response to RADIUS requires a username.");

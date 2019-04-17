@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.radius.conf;
 import com.google.inject.Inject;
 import java.io.File;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 
 /**
@@ -322,6 +323,8 @@ public class ConfigurationService {
         
         if (authProtocol == RadiusAuthenticationProtocol.EAP_TTLS)
             throw new GuacamoleServerException("Invalid inner protocol specified for EAP-TTLS.");
+        
+        return authProtocol;
         
     }
 
