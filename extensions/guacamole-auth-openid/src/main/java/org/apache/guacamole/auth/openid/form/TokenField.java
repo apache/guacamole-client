@@ -78,7 +78,7 @@ public class TokenField extends Field {
         this.authorizationURI = UriBuilder.fromUri(authorizationEndpoint)
                 .queryParam("scope", scope)
                 .queryParam("response_type", "id_token")
-                .queryParam("client_id","clientID")
+                .queryParam("client_id", clientID)
                 .queryParam("redirect_uri", redirectURI)
                 .queryParam("nonce", nonce)
                 .build();
