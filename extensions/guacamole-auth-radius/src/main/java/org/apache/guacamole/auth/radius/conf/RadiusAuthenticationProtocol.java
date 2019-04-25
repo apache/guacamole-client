@@ -25,28 +25,46 @@ package org.apache.guacamole.auth.radius.conf;
  */
 public enum RadiusAuthenticationProtocol {
     
-    // Password authentication protocol
+    /**
+     * Password Authentication Protocol (PAP)
+     */
     PAP("pap"),
     
-    // Challenge-Handshake AUthentication Protocol
+    /**
+     * Challenge-Handshake Authentication Protocol (CHAP)
+     */
     CHAP("chap"),
     
-    // Microsoft CHAP version 1
+    /**
+     * Microsoft implementation of CHAP, Version 1 (MS-CHAPv1)
+     */
     MSCHAPv1("mschapv1"),
     
-    // Microsoft CHAP version 2
+    /**
+     * Microsoft implementation of CHAP, Version 2 (MS-CHAPv2)
+     */
     MSCHAPv2("mschapv2"),
     
-    // Extensible authentication protocol with MD5 hashing.
+    /**
+     * Extensible Authentication Protocol (EAP) with MD5 Hashing (EAP-MD5)
+     */
     EAP_MD5("eap-md5"),
 
-    // Extensible authentication protocol with TLS
+    /**
+     * Extensible Authentication Protocol (EAP) with TLS encryption (EAP-TLS).
+     */
     EAP_TLS("eap-tls"),
 
-    // Extensible authentication protocol with Tunneled TLS
+    /**
+     * Extensible Authentication Protocol (EAP) with Tunneled TLS (EAP-TTLS).
+     */
     EAP_TTLS("eap-ttls");
 
-    // Store the string value used in the configuration file.
+    /**
+     * This variable stores the string value of the protocol, and is also
+     * used within the extension to pass to JRadius for configuring the
+     * library to talk to the RADIUS server.
+     */
     private final String strValue;
     
     /**
@@ -54,17 +72,40 @@ public enum RadiusAuthenticationProtocol {
      * given string value.
      * 
      * @param strValue
-     *     The string value of the protocol.
+     *     The value of the protocol to store as a string, which will be used
+     *     in specifying the protocol within the guacamole.properties file, and
+     *     will also be used by the JRadius library for its configuration.
      */
     RadiusAuthenticationProtocol(String strValue) {
         this.strValue = strValue;
     }
     
+    /**
+    * {@inheritDoc}
+    * <p>
+    * This function returns the stored string values of the selected RADIUS
+    * protocol, which is used both in Guacamole configuration and also to pass
+    * on to the JRadius library for its configuration.
+    * 
+    * @return
+    *     The string value stored for the selected RADIUS protocol.
+    */
     @Override
     public String toString() {
         return strValue;
     }
     
+    /**
+     * For a given String value, return the enum value that matches that string,
+     * or null if no matchi is found.
+     * 
+     * @param value
+     *     The string value to search for in the list of enums.
+     * 
+     * @return
+     *     The RadiusAuthenticationProtocol value that is identified by the
+     *     provided String value.
+     */
     public static RadiusAuthenticationProtocol getEnum(String value) {
     
         for (RadiusAuthenticationProtocol v : values())
