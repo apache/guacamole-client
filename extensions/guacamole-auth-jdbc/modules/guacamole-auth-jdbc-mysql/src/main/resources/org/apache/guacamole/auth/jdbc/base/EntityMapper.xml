@@ -73,27 +73,31 @@
             JOIN guacamole_user_group_member ON guacamole_user_group.user_group_id = guacamole_user_group_member.user_group_id
             WHERE
                 guacamole_user_group.disabled = false
-                AND (
-                    guacamole_user_group_member.member_entity_id = #{entity.entityID}
-                    <if test="!effectiveGroups.isEmpty()">
-                        OR guacamole_user_group_member.member_entity_id IN (
-                            SELECT entity_id FROM guacamole_entity
-                            WHERE type = 'USER_GROUP' AND name IN
-                                <foreach collection="effectiveGroups" item="effectiveGroup"
-                                         open="(" separator="," close=")">
-                                    #{effectiveGroup,jdbcType=VARCHAR}
-                                </foreach>
-                        )
-                        OR guacamole_user_group.entity_id IN (
-                            SELECT entity_id FROM guacamole_entity
-                            WHERE type = 'USER_GROUP' AND name IN
-                                <foreach collection="effectiveGroups" item="effectiveGroup"
-                                         open="(" separator="," close=")">
-                                    #{effectiveGroup,jdbcType=VARCHAR}
-                                </foreach>
-                        )
-                    </if>
-                )
+                AND guacamole_user_group_member.member_entity_id = #{entity.entityID}
+            <if test="!effectiveGroups.isEmpty()">
+                UNION SELECT
+                    guacamole_entity.name
+                FROM guacamole_user_group
+                JOIN guacamole_entity ON guacamole_user_group.entity_id = guacamole_entity.entity_id
+                JOIN guacamole_user_group_member ON guacamole_user_group.user_group_id = guacamole_user_group_member.user_group_id
+                JOIN guacamole_entity member_entity ON guacamole_user_group_member.member_entity_id = member_entity.entity_id
+                WHERE
+                    guacamole_user_group.disabled = false
+                    AND member_entity.type = 'USER_GROUP' AND member_entity.name IN
+                        <foreach collection="effectiveGroups" item="effectiveGroup"
+                                 open="(" separator="," close=")">
+                            #{effectiveGroup,jdbcType=VARCHAR}
+                        </foreach>
+                UNION SELECT
+                    guacamole_entity.name
+                FROM guacamole_user_group
+                JOIN guacamole_entity ON guacamole_user_group.entity_id = guacamole_entity.entity_id
+                WHERE type = 'USER_GROUP' AND name IN
+                    <foreach collection="effectiveGroups" item="effectiveGroup"
+                             open="(" separator="," close=")">
+                        #{effectiveGroup,jdbcType=VARCHAR}
+                    </foreach>
+            </if>
         </if>
 
         <if test="recursive">
