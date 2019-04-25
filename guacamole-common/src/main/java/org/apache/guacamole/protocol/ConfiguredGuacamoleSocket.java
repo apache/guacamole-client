@@ -155,6 +155,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
             if (i == 0 && arg_name.startsWith("VERSION_")) {
                 protocol = GuacamoleProtocolVersion.valueOf(arg_name);
                 arg_values[i] = protocol.toString();
+                continue;
             }
 
             // Get defined value for name
