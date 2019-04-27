@@ -66,6 +66,7 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         var Field = $injector.get('Field');
 
         // Required services
+        var $rootScope            = $injector.get('$rootScope');
         var $route                = $injector.get('$route');
         var authenticationService = $injector.get('authenticationService');
         var requestService        = $injector.get('requestService');
@@ -160,9 +161,9 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
             // Attempt login once existing session is destroyed
             authenticationService.authenticate($scope.enteredValues)
 
-            // Clear and reload upon success
+            // Retry route upon success (entered values will be cleared only
+            // after route change has succeeded as this can take time)
             .then(function loginSuccessful() {
-                $scope.enteredValues = {};
                 $route.reload();
             })
 
@@ -198,6 +199,12 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
             }));
 
         };
+
+        // Reset state after authentication and routing have succeeded
+        $rootScope.$on('$routeChangeSuccess', function routeChanged() {
+            $scope.enteredValues = {};
+            $scope.submitted = false;
+        });
 
     }];
 

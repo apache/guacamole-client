@@ -26,6 +26,12 @@
     -webkit-animation-timing-function: linear;
 }
 
+.login-ui {
+    animation: fadein 0.125s linear;
+    -moz-animation: fadein 0.125s linear;
+    -webkit-animation: fadein 0.125s linear;
+}
+
 .login-ui div.login-dialog-middle {
     width: 100%;
     display: table-cell;
@@ -34,10 +40,6 @@
 }
 
 .login-ui div.login-dialog {
-
-    animation: fadein 0.125s linear;
-    -moz-animation: fadein 0.125s linear;
-    -webkit-animation: fadein 0.125s linear;
 
     width: 100%;
     max-width: 3in;
