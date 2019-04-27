@@ -18,14 +18,19 @@
  */
 
 /**
- * The config block for setting up the HTTP PATCH method.
+ * Defaults for the AngularJS $http service.
  */
-angular.module('index').config(['$httpProvider', 
-        function indexHttpPatchConfig($httpProvider) {
-    
+angular.module('index').config(['$httpProvider', function httpDefaults($httpProvider) {
+
+    // Do not cache the responses of GET requests
+    $httpProvider.defaults.headers.get = {
+        'Cache-Control' : 'no-cache',
+        'Pragma' : 'no-cache'
+    };
+
+    // Use "application/json" content type by default for PATCH requests
     $httpProvider.defaults.headers.patch = {
-        'Content-Type': 'application/json'
-    }
+        'Content-Type' : 'application/json'
+    };
+
 }]);
-
-
