@@ -58,37 +58,37 @@
         "DIALOG_HEADER_CONNECTION_ERROR" : "Verbindungsfehler",
         "DIALOG_HEADER_DISCONNECTED"     : "Verbindung getrennt",
 
-        "ERROR_CLIENT_201"     : "Aufgrund hoher Serverauslastung wurde diese Verbindung zurückgesetzt. Versuche es in wenigen Minuten erneut.",
-        "ERROR_CLIENT_202"     : "Der Verbindungsaufbau wurde durch den Guacamole Server abgebrochen da der Entfernte Computer nicht reagiert. Versuche es noch einmal oder kontaktiere den Systemadministrator.",        
-        "ERROR_CLIENT_203"     : "Der entfernte Computer hat einen Fehler hervorgerufen und die Verbindung geschlossen. Versuche es noch einmal oder kontaktiere den Systemadministrator.",
-        "ERROR_CLIENT_205"     : "Diese Verbindung kollidiert mit einer bestehenen Verbindung. Versuche es später erneut.",
-        "ERROR_CLIENT_301"     : "Anmeldung Fehlgeschlagen. Bitte schließen Sie und versuchen Sie es erneut.",
+        "ERROR_CLIENT_201"     : "Aufgrund hoher Serverauslastung wurde diese Verbindung zurückgesetzt. Versuchen Sie es in wenigen Minuten erneut.",
+        "ERROR_CLIENT_202"     : "Der Verbindungsaufbau wurde durch den Guacamole Server abgebrochen da der Entfernte Computer nicht reagiert. Versuchen Sie es noch einmal oder kontaktieren Sie den Systemadministrator.",        
+        "ERROR_CLIENT_203"     : "Der entfernte Computer hat einen Fehler hervorgerufen und die Verbindung geschlossen. Versuchen Sie es noch einmal oder kontaktieren Sie den Systemadministrator.",
+        "ERROR_CLIENT_205"     : "Diese Verbindung kollidiert mit einer bestehenen Verbindung. Versuchen Sie es später erneut.",
+        "ERROR_CLIENT_301"     : "Anmeldung fehlgeschlagen. Bitte schließen Sie und versuchen Sie es erneut.",
         "ERROR_CLIENT_303"     : "Sie haben keine Berechtigung auf diese Verbindung zuzugreifen. Wenn Sie diese Berechtigung benötigen, bitten Sie den Systemadministrator diese Berechtigung hinzuzufügen oder prüfen Sie Ihre Systemeinstellugen.",
-        "ERROR_CLIENT_308"     : "Die Verbindung wurde durch den Guacamole Server geschlossen da keine aktive Interkommukaion mit dem Browser besteht. Dies wird gewöhnlich durch Netzwerkprobleme verursacht, wie eine schlechte drahtlose Verbindung oder eine sehr langsame Netzwerkverbindung. Bitte überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",
+        "ERROR_CLIENT_308"     : "Die Verbindung wurde durch den Guacamole Server geschlossen da keine aktive Interkommunikaion mit dem Browser besteht. Dies wird gewöhnlich durch Netzwerkprobleme verursacht, wie eine schlechte drahtlose Verbindung oder eine sehr langsame Netzwerkverbindung. Bitte überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",
         "ERROR_CLIENT_31D"     : "Der Zugang zu dieser Verbindung wurde durch den Guacamole Server verweigert, da die maximale Anzahl der gleichzeitigen Zugiffe für diese Verbindung für einen einzelnen Benutzer erreicht wurde.",
         "ERROR_CLIENT_DEFAULT" : "Die Verbindung wurde aufgrund eines interen Fehlers im Guacamole Server beendet. Sollte dieses Problem weiterhin bestehen informieren Sie den Systemadministrator oder überprüfen Sie die Protokolle.",
 
-        "ERROR_TUNNEL_201"     : "Der Verbindungsversuch wurde aufgrund zu vieler bestehenden Verbindungen durch den Guacamole Server zurückgewiesen. Versuche es in wenigen Minuten erneut.",
+        "ERROR_TUNNEL_201"     : "Der Verbindungsversuch wurde aufgrund zu vieler bestehender Verbindungen durch den Guacamole Server zurückgewiesen. Versuchen Sie es in wenigen Minuten erneut.",
         "ERROR_TUNNEL_202"     : "Die Verbindung zum Server wurde aufgrund hoher Latenz geschlossen. Dies wird gewöhnlich durch Netzwerkprobleme verursacht, wie eine schlechte drahtlose Verbindung oder eine sehr langsame Netzwerkverbindung. Bitte überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",
-        "ERROR_TUNNEL_203"     : "Die Verbindung wurde aufgrund eines interen Fehlers beendet. Versuche es noch einmal oder kontaktiere den Systemadministrator.",
-        "ERROR_TUNNEL_204"     : "Die angeforderte Verbindung exisiert nicht. Bitte überprüfe den Verbindungsnamen und versuche es erneut.",
-        "ERROR_TUNNEL_205"     : "Diese Verbindung ist in Verwendung, ein konkurrierender Zugriff ist nicht gestattet. Versuche es später erneut.",
-        "ERROR_TUNNEL_301"     : "Sie haben keine Zugriffsberechtigung für diese Verbindung. Bitte melden Sie sich an und versuchen es erneut.",
+        "ERROR_TUNNEL_203"     : "Die Verbindung wurde aufgrund eines internen Fehlers beendet. Versuchen Sie es noch einmal oder kontaktieren Sie den Systemadministrator.",
+        "ERROR_TUNNEL_204"     : "Die angeforderte Verbindung exisiert nicht. Bitte überprüfen Sie den Verbindungsnamen und versuchen Sie es erneut.",
+        "ERROR_TUNNEL_205"     : "Diese Verbindung ist in Verwendung, ein konkurrierender Zugriff ist nicht gestattet. Versuchen Sie es später erneut.",
+        "ERROR_TUNNEL_301"     : "Sie haben keine Zugriffsberechtigung für diese Verbindung. Bitte melden Sie sich an und versuchen Sie es erneut.",
         "ERROR_TUNNEL_303"     : "Sie haben keine Zugriffsberechtigung für diese Verbindung. Wenn Sie diese Berechtigung benötigen, bitten Sie den Systemadministrator diese Berechtigung hinzuzufügen oder prüfen Sie Ihre Systemeinstellugen.",
         "ERROR_TUNNEL_308"     : "Die Verbindung wurde durch den Guacamole Server geschlossen da keine aktive Interkommunikation mit dem Browser besteht. Dies wird gewöhnlich durch Netzwerkprobleme verursacht, wie eine schlechte drahtlose Verbindung oder eine sehr langsame Netzwerkverbindung. Bitte überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",
-        "ERROR_TUNNEL_31D"     : "Der Zugang zu dieser Verbindung wurde durch den Guacamole Server verweigert, da die maximale Anzahl der gleichzeitigen Zugiffe für einen einzelnen Benutzer erreicht wurde. Bitte schliesse eine oder mehrere Verbindungen und versuche es erneut.",
+        "ERROR_TUNNEL_31D"     : "Der Zugang zu dieser Verbindung wurde durch den Guacamole Server verweigert, da die maximale Anzahl der gleichzeitigen Zugiffe für einen einzelnen Benutzer erreicht wurde. Bitte schliessen Sie eine oder mehrere Verbindungen und versuche Sie es erneut.",
         "ERROR_TUNNEL_DEFAULT" : "Die Verbindung wurde aufgrund eines interen Fehlers im Guacamole Server beendet. Sollte dieses Problem weiterhin bestehen informieren Sie den Systemadministrator oder überprüfen Sie die Protokolle.",
 
-        "ERROR_UPLOAD_100"     : "Dateiübertragungen werden entweder nicht unterstützt oder sind nicht aktiviert. Bitte kontaktiere den Systemadministrator oder überprüfe die Protokolle.",
-        "ERROR_UPLOAD_201"     : "Die maximale Anzahl gleichzeitiger Dateiübertragungen erreicht. Bitte warte bis laufende Dateiübertagungen abgeschlossen sind und versuche es erneut.",
-        "ERROR_UPLOAD_202"     : "Die Dateiübertragung konnte nicht gestartet werden da der Entfernet Computer nicht reagiert. Bitte versuche es erneut oder kontaktiere den Systemadministrator.",
-        "ERROR_UPLOAD_203"     : "Der entfernte Computer hat bei der Übertragungen einen Fehler verursacht. Bitte versuche es erneut oder kontaktiere den Systemadministrator.",
-        "ERROR_UPLOAD_204"     : "Das Übertragungsziel existiert nicht. Bitte überprüfe ob der Zielort exisitert und versuche es erneut.",
-        "ERROR_UPLOAD_205"     : "Das Übertragungsziel ist zur Zeit gesperrt. Bitte warte bis alle laufenden Prozesse beendet wurden und versuche es erneut.",
-        "ERROR_UPLOAD_301"     : "Es besteht ohne Anmeldung keine Berechtigung zur Dateiübertragung. Bitte anmelden und erneut versuchen.",
+        "ERROR_UPLOAD_100"     : "Dateiübertragungen werden entweder nicht unterstützt oder sind nicht aktiviert. Bitte kontaktieren Sie den Systemadministrator oder überprüfen Sie die Protokolle.",
+        "ERROR_UPLOAD_201"     : "Die maximale Anzahl gleichzeitiger Dateiübertragungen erreicht. Bitte warten Sie bis laufende Dateiübertagungen abgeschlossen sind und versuchen Sie es erneut.",
+        "ERROR_UPLOAD_202"     : "Die Dateiübertragung konnte nicht gestartet werden da der Entfernet Computer nicht reagiert. Bitte versuchen Sie es erneut oder kontaktieren Sie den Systemadministrator.",
+        "ERROR_UPLOAD_203"     : "Der entfernte Computer hat bei der Übertragungen einen Fehler verursacht. Bitte versuchen Sie es erneut oder kontaktieren Sie den Systemadministrator.",
+        "ERROR_UPLOAD_204"     : "Das Übertragungsziel existiert nicht. Bitte überprüfen Sie ob der Zielort existiert und versuchen Sie es erneut.",
+        "ERROR_UPLOAD_205"     : "Das Übertragungsziel ist zur Zeit gesperrt. Bitte warten Sie bis alle laufenden Prozesse beendet wurden und versuchen Sie es erneut.",
+        "ERROR_UPLOAD_301"     : "Es besteht ohne Anmeldung keine Berechtigung zur Dateiübertragung. Bitte melden Sie sich an und versuchen Sie es erneut.",
         "ERROR_UPLOAD_303"     : "Es besteht keine Berechtingung zur Dateiübertragung. Wenn Sie diese Berechtigung benötigen überprüfen Sie die Systemeinstellungen oder überprüfen Sie diese gemeinsam mit dem Systemadministrator.",
         "ERROR_UPLOAD_308"     : "Die Dateiübertragung weist keinen Fortschritt auf. Dies wird gewöhnlich durch Netzwerkprobleme verursacht, wie eine schlechte drahtlose Verbindung oder eine sehr langsame Netzwerkverbindung. Bitte überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",
-        "ERROR_UPLOAD_31D"     : "Die maximale Anzahl gleichzeiter Dateiübertragungen erreicht. Bitte warte bis laufende Dateiübertagungen abgeschlossen sind und versuche es erneut.",
+        "ERROR_UPLOAD_31D"     : "Die maximale Anzahl gleichzeiter Dateiübertragungen erreicht. Bitte warten Sie bis laufende Dateiübertagungen abgeschlossen sind und versuchen Sie es erneut.",
         "ERROR_UPLOAD_DEFAULT" : "Die Verbindung wurde aufgrund eines interen Fehlers im Guacamole Server beendet. Sollte dieses Problem weiterhin bestehen informieren Sie den Systemadministrator oder überprüfen Sie die Protokolle.",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
@@ -96,7 +96,7 @@
         "HELP_CLIPBOARD"           : "Kopierter oder ausgeschnittener Text aus Guacamole wird hier angezeigt. Änderungen am Text werden direkt auf die entfernte Zwischenablage angewandt.",
         "HELP_INPUT_METHOD_NONE"   : "Keine Eingabemethode in Verwendung. Tastatureingaben werden von der Hardwaretastatur akzeptiert.",
         "HELP_INPUT_METHOD_OSK"    : "Bildschirmeingaben und die eingebettete Guacamole Bildschrimtastatur werden akzeptiert. Die Bildschirmtastatur gestattet Tastenkombinationen die ansonsten unmöglich sind (z.B.: Strg-Alt-Del).",
-        "HELP_INPUT_METHOD_TEXT"   : "Gestattet Eingaben von Text und emuliert Tastaturkombinationen basierend auf den eingegebenen Text. Dies wird benötigt für Geräte ohne Hardwaretastatur.",
+        "HELP_INPUT_METHOD_TEXT"   : "Gestattet Eingaben von Text und emuliert Tastaturkombinationen basierend auf dem eingegebenen Text. Dies wird benötigt für Geräte ohne Hardwaretastatur.",
         "HELP_MOUSE_MODE"          : "Beeinflusst, wie sich die entfernte Maus bei Touchpadberührungen verhält.",
         "HELP_MOUSE_MODE_ABSOLUTE" : "Tippen Sie auf die Zielposition, der Klick erfolgt am Ort der Berührung des Touchscreen's.",
         "HELP_MOUSE_MODE_RELATIVE" : "Den Mauszeiger zur Zielposition bewegen und klicken. Der Klick erfolgt an der Position des Mauszeigers.",
@@ -189,7 +189,7 @@
 
         "FIELD_HEADER_LOCATION" : "Standort:",
         "FIELD_HEADER_NAME"     : "Name:",
-        "FIELD_HEADER_PROTOCOL" : "Protokol:",
+        "FIELD_HEADER_PROTOCOL" : "Protokoll:",
 
         "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
@@ -289,7 +289,7 @@
         "FIELD_HEADER_COLOR_DEPTH"     : "Farbtiefe:",
         "FIELD_HEADER_CONSOLE"         : "Mit Konsole verbinden (Windows 2003 / 2003 R2):",
         "FIELD_HEADER_CONSOLE_AUDIO"   : "Audiounterstützung Konsole:",
-        "FIELD_HEADER_CREATE_DRIVE_PATH" : "Erstellen Sie automatisch Laufwerk:",
+        "FIELD_HEADER_CREATE_DRIVE_PATH" : "Laufwerk automatisch erstellen:",
         "FIELD_HEADER_DISABLE_AUDIO"   : "Deaktivere Audio:",
         "FIELD_HEADER_DISABLE_AUTH"    : "Deaktivere Authentifizierung:",
         "FIELD_HEADER_DOMAIN"          : "Domäne:",
@@ -524,7 +524,7 @@
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
-        "HELP_CONNECTIONS"   : "Klicke oder Tippe auf eine Verbindung um diese zu verwalten. Abhänig von Ihrer Zugriffsebene können Verbindungen hinzugefügt, gelöscht oder Parameter (Protokol, Hostname, Port, etc.) geändert werden.",
+        "HELP_CONNECTIONS"   : "Klicken oder tippen Sie auf eine Verbindung um diese zu verwalten. Abhänig von Ihrer Zugriffsebene können Verbindungen hinzugefügt, gelöscht oder Parameter (Protokol, Hostname, Port, etc.) geändert werden.",
         
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 
@@ -569,7 +569,7 @@
         "FIELD_HEADER_PASSWORD"           : "Passwort:",
         "FIELD_HEADER_PASSWORD_OLD"       : "Aktuelles Passwort:",
         "FIELD_HEADER_PASSWORD_NEW"       : "Neues Passwort:",
-        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Passwortbestättigung:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Passwortbestätigung:",
         "FIELD_HEADER_USERNAME"           : "Benutzername:",
         
         "HELP_DEFAULT_INPUT_METHOD" : "Die Standardeingabemethode bestimmt wie Tastaturereignisse an Guacamole weitergeleitet werden. Eine Änderung dieser Einstellung kann erforderlich sein, wenn ein mobiles Gerät verwendet wird oder bei der Eingabe durch einen IME. Dieses Verhalten kann im Menü innerhalb der Guacamole Verbindung geändert werden.",
@@ -605,7 +605,7 @@
 
         "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_USERS" : "Klicke oder Tippe auf einen Benutzer um diesen zu verwalten. Abhänig von Ihrer Zugriffsebene können Benutzer hinzugefügt, gelöscht bzw. dessen Passwort geändert werden.",
+        "HELP_USERS" : "Klicken oder tippen Sie auf einen Benutzer um diesen zu verwalten. Abhänig von Ihrer Zugriffsebene können Benutzer hinzugefügt, gelöscht bzw. dessen Passwort geändert werden.",
 
         "SECTION_HEADER_USERS"       : "Benutzer",
 
@@ -633,7 +633,7 @@
         "SECTION_HEADER_SESSIONS" : "Aktive Sitzungen",
         
         "TABLE_HEADER_SESSION_USERNAME"        : "Benutzername",
-        "TABLE_HEADER_SESSION_STARTDATE"       : "Aktive seit",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Aktiv seit",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Entfernter Host",
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Verbindungsname",
         
