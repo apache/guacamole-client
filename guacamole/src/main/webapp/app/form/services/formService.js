@@ -213,6 +213,10 @@ angular.module('form').provider('formService', function formServiceProvider() {
          * model:
          *     The current String value of the field, if any.
          *
+         * disabled:
+         *     A boolean value which is true if the field should be disabled.
+         *     If false or undefined, the field should be enabled.
+         *
          * @param {Element} fieldContainer
          *     The DOM Element whose contents should be replaced with the
          *     compiled field template.

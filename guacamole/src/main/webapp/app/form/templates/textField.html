@@ -1,5 +1,6 @@
 <div class="text-field">
-    <input type="text" ng-model="model" autocorrect="off" autocapitalize="off" ng-attr-list="{{ dataListId }}"/>
+    <input type="text" ng-model="model" autocorrect="off" autocapitalize="off"
+           ng-disabled="disabled" ng-attr-list="{{ dataListId }}"/>
     <datalist ng-if="dataListId" id="{{ dataListId }}">
         <option ng-repeat="option in field.options | orderBy: option"
                 value="{{ option }}">{{ getFieldOption(option) | translate }}</option>
