@@ -23,13 +23,24 @@
 
                 <!-- Login fields -->
                 <div class="login-fields">
-                    <guac-form namespace="'LOGIN'" content="remainingFields" model="enteredValues"></guac-form>
+                    <guac-form
+                        namespace="'LOGIN'"
+                        content="remainingFields"
+                        model="enteredValues"
+                        disabled="submitted"></guac-form>
                 </div>
 
-                <!-- Submit button -->
+                <!-- Login/continue button -->
                 <div class="buttons">
-                    <input type="submit" name="login" class="login" value="{{'LOGIN.ACTION_LOGIN' | translate}}"/>
-                    <input type="submit" name="login" class="continue-login" value="{{'LOGIN.ACTION_CONTINUE' | translate}}"/>
+
+                    <input type="submit" name="login" class="login"
+                           ng-disabled="submitted"
+                           value="{{'LOGIN.ACTION_LOGIN' | translate}}"/>
+
+                    <input type="submit" name="login" class="continue-login"
+                           ng-disabled="submitted"
+                           value="{{'LOGIN.ACTION_CONTINUE' | translate}}"/>
+
                 </div>
 
             </form>

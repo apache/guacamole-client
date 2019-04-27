@@ -92,6 +92,16 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         $scope.remainingFields = [];
 
         /**
+         * Whether an authentication attempt has been submitted. This will be
+         * set to true once credentials have been submitted and will only be
+         * reset to false once the attempt has been fully processed, including
+         * rerouting the user to the requested page if the attempt succeeded.
+         *
+         * @type Boolean
+         */
+        $scope.submitted = false;
+
+        /**
          * Returns whether a previous login attempt is continuing.
          *
          * @return {Boolean}
@@ -141,8 +151,11 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
          */
         $scope.login = function login() {
 
+            // Authentication is now in progress
+            $scope.submitted = true;
+
             // Start with cleared status
-            $scope.loginError  = null;
+            $scope.loginError = null;
 
             // Attempt login once existing session is destroyed
             authenticationService.authenticate($scope.enteredValues)
@@ -155,6 +168,9 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
 
             // Reset upon failure
             ['catch'](requestService.createErrorCallback(function loginFailed(error) {
+
+                // Initial submission is complete and has failed
+                $scope.submitted = false;
 
                 // Clear out passwords if the credentials were rejected for any reason
                 if (error.type !== Error.Type.INSUFFICIENT_CREDENTIALS) {
