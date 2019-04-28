@@ -32,14 +32,14 @@
     -webkit-animation: fadein 0.125s linear;
 }
 
-.login-ui div.login-dialog-middle {
+.login-ui .login-dialog-middle {
     width: 100%;
     display: table-cell;
     vertical-align: middle;
     text-align: center;
 }
 
-.login-ui div.login-dialog {
+.login-ui .login-dialog {
 
     width: 100%;
     max-width: 3in;
@@ -117,7 +117,7 @@
     background-image: url("images/guac-tricolor.png");
 }
 
-.login-ui.continuation div.login-dialog {
+.login-ui.continuation .login-dialog {
     border-right: none;
     border-left: none;
     box-shadow: none;
