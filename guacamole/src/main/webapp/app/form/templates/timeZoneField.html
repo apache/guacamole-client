@@ -2,12 +2,13 @@
 
     <!-- Available time zone regions -->
     <select class="time-zone-region"
+            ng-disabled="disabled"
             ng-model="region"
             ng-options="name for name in regions | orderBy: name"></select>
 
     <!-- Time zones within selected region -->
     <select class="time-zone"
-            ng-disabled="!region"
+            ng-disabled="disabled || !region"
             ng-model="model"
             ng-options="timeZone.value as timeZone.key for timeZone in timeZones[region] | toArray | orderBy: key"></select>
 

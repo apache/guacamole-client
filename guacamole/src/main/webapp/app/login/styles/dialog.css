@@ -17,27 +17,20 @@
  * under the License.
  */
 
-.login-ui.error .login-dialog {
-    animation-name: shake-head;
-    animation-duration: 0.25s;
-    animation-timing-function: linear;
-    -webkit-animation-name: shake-head;
-    -webkit-animation-duration: 0.25s;
-    -webkit-animation-timing-function: linear;
+.login-ui {
+    animation: fadein 0.125s linear;
+    -moz-animation: fadein 0.125s linear;
+    -webkit-animation: fadein 0.125s linear;
 }
 
-.login-ui div.login-dialog-middle {
+.login-ui .login-dialog-middle {
     width: 100%;
     display: table-cell;
     vertical-align: middle;
     text-align: center;
 }
 
-.login-ui div.login-dialog {
-
-    animation: fadein 0.125s linear;
-    -moz-animation: fadein 0.125s linear;
-    -webkit-animation: fadein 0.125s linear;
+.login-ui .login-dialog {
 
     width: 100%;
     max-width: 3in;
@@ -115,7 +108,7 @@
     background-image: url("images/guac-tricolor.png");
 }
 
-.login-ui.continuation div.login-dialog {
+.login-ui.continuation .login-dialog {
     border-right: none;
     border-left: none;
     box-shadow: none;
@@ -125,4 +118,13 @@
 .login-ui.continuation .login-dialog .logo,
 .login-ui.continuation .login-dialog .version {
     display: none;
+}
+
+.login-ui.error .login-dialog {
+    animation-name: shake-head;
+    animation-duration: 0.25s;
+    animation-timing-function: linear;
+    -webkit-animation-name: shake-head;
+    -webkit-animation-duration: 0.25s;
+    -webkit-animation-timing-function: linear;
 }

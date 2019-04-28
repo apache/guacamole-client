@@ -64,7 +64,15 @@ angular.module('form').directive('guacForm', [function form() {
              *
              * @type Boolean
              */
-            modelOnly : '='
+            modelOnly : '=',
+
+            /**
+             * Whether the contents of the form should be rendered as disabled.
+             * By default, form fields are enabled.
+             *
+             * @type Boolean
+             */
+            disabled : '='
 
         },
         templateUrl: 'app/form/templates/form.html',
