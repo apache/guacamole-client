@@ -17,15 +17,6 @@
  * under the License.
  */
 
-.login-ui.error .login-dialog {
-    animation-name: shake-head;
-    animation-duration: 0.25s;
-    animation-timing-function: linear;
-    -webkit-animation-name: shake-head;
-    -webkit-animation-duration: 0.25s;
-    -webkit-animation-timing-function: linear;
-}
-
 .login-ui {
     animation: fadein 0.125s linear;
     -moz-animation: fadein 0.125s linear;
@@ -127,4 +118,13 @@
 .login-ui.continuation .login-dialog .logo,
 .login-ui.continuation .login-dialog .version {
     display: none;
+}
+
+.login-ui.error .login-dialog {
+    animation-name: shake-head;
+    animation-duration: 0.25s;
+    animation-timing-function: linear;
+    -webkit-animation-name: shake-head;
+    -webkit-animation-duration: 0.25s;
+    -webkit-animation-timing-function: linear;
 }
