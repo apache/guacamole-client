@@ -200,9 +200,8 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
                     info.getImageMimetypes().toArray(new String[0])
                 ));
         
-        // Protocol version 1.1.0 and higher options
-        
-        if (protocol.atLeast(GuacamoleProtocolVersion.VERSION_1_1_0)) {
+        // Check for support for timezone handshake
+        if (protocol.isSupported(GuacamoleProtocolCapability.TIMEZONE_HANDSHAKE)) {
             // Send client timezone, if available
             String timezone = info.getTimezone();
             if (timezone != null && !timezone.isEmpty()) {

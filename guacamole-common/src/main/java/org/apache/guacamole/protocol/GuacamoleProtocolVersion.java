@@ -173,4 +173,21 @@ public enum GuacamoleProtocolVersion {
         
     }
     
+    /**
+     * Returns true if the specified capability is supported in the current
+     * protocol version, otherwise false.
+     * 
+     * @param capability
+     *     The protocol capability that is being checked for support.
+     * 
+     * @return
+     *     True if the capability is supported in the current version,
+     *     otherwise false.
+     */
+    public boolean isSupported(GuacamoleProtocolCapability capability) {
+        
+        return atLeast(capability.getVersion());
+        
+    }
+    
 }
