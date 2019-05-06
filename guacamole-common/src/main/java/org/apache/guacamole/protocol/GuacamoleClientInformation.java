@@ -151,7 +151,8 @@ public class GuacamoleClientInformation {
     }
     
     /**
-     * Return the timezone as reported by the client.
+     * Return the timezone as reported by the client, or an empty String if
+     * one is not set.
      * 
      * @return
      *     A string value of the timezone reported by the client.

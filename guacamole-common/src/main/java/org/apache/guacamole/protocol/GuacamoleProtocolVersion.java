@@ -19,9 +19,6 @@
 
 package org.apache.guacamole.protocol;
 
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleUnsupportedException;
-
 /**
  * An enum that defines the available Guacamole protocol versions that can be
  * used between guacd and clients, and provides convenience methods for parsing
@@ -29,19 +26,35 @@ import org.apache.guacamole.GuacamoleUnsupportedException;
  */
 public enum GuacamoleProtocolVersion {
     
-    // Version 1.0.0 and older.
+    /**
+     * Protocol version 1.0.0 and older.  Any client that doesn't explicitly
+     * set the protocol version will negotiate down to this protocol version.
+     * This requires that handshake instructions be ordered correctly, and
+     * lacks support for certain protocol-related features introduced in later
+     * versions.
+     */
     VERSION_1_0_0(1, 0, 0),
 
-    // Version 1.1.0
+    /**
+     * Protocol version 1.1.0, which introduces Client-Server version
+     * detection, arbitrary handshake instruction order, and support
+     * for passing the client timezone to the server during the handshake.
+     */
     VERSION_1_1_0(1, 1, 0);
     
-    // The major version number.
+    /**
+     * The major version component of the protocol version.
+     */
     private final int major;
 
-    // The minor version number.
+    /**
+     * The minor version component of the protocol version.
+     */
     private final int minor;
 
-    // The patch version number.
+    /**
+     * The patch version component of the protocol version.
+     */
     private final int patch;
     
     /**
@@ -136,6 +149,26 @@ public enum GuacamoleProtocolVersion {
         
         // Version is either less than or equal to.
         return false;
+        
+    }
+    
+    /**
+     * Parse the String format of the version provided and return the
+     * the enum value matching that version.  If no value is provided, return
+     * null.
+     * 
+     * @param version
+     *     The String format of the version to parse.
+     * 
+     * @return
+     *     The enum value that matches the specified version.
+     */
+    public static GuacamoleProtocolVersion getVersion(String version) {
+        
+        if (version == null || version.isEmpty())
+            return null;
+        
+        return valueOf(version);
         
     }
     

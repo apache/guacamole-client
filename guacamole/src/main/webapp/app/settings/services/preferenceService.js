@@ -104,7 +104,8 @@ angular.module('settings').provider('preferenceService', ['$injector',
      * by the JSTZ timezone library.
      * 
      * @returns String
-     *     The name of the currently-detected timezone.
+     *     The name of the currently-detected timezone in tz database
+     *     format.
      */
     var getDetectedTimezone = function getDetectedTimezone() {
         return jstz.determine().name();

@@ -372,11 +372,11 @@ public abstract class TunnelRequest {
     }
     
     /**
-     * Returns the value of the timezone parameter declared within the
-     * tunnel request.
+     * Returns the tz database value of the timezone declared by the client
+     * within the tunnel request.
      * 
      * @return 
-     *     The string value of the timezone parameter as reported by
+     *     The tz database value of the timezone parameter as reported by
      *     the client.
      */
     public String getTimezone() {
