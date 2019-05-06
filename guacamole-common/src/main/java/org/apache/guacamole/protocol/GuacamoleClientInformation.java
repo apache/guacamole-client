@@ -62,7 +62,7 @@ public class GuacamoleClientInformation {
     /**
      * The timezone reported by the client.
      */
-    private String timezone = "";
+    private String timezone;
 
     /**
      * Returns the optimal screen width requested by the client, in pixels.
@@ -151,8 +151,8 @@ public class GuacamoleClientInformation {
     }
     
     /**
-     * Return the timezone as reported by the client, or an empty String if
-     * one is not set.
+     * Return the timezone as reported by the client, or null if the timezone
+     * is not set.  Valid timezones are specified in tz database format.
      * 
      * @return
      *     A string value of the timezone reported by the client.
@@ -162,7 +162,9 @@ public class GuacamoleClientInformation {
     }
     
     /**
-     * Set the string value of the timezone.
+     * Set the string value of the timezone, or null if the timezone will not
+     * be provided by the client.  Valid timezones are specified in tz
+     * database format.
      * 
      * @param timezone
      *     The string value of the timezone reported by the client.

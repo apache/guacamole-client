@@ -204,7 +204,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         if (protocol.isSupported(GuacamoleProtocolCapability.TIMEZONE_HANDSHAKE)) {
             // Send client timezone, if available
             String timezone = info.getTimezone();
-            if (timezone != null && !timezone.isEmpty()) {
+            if (timezone != null) {
                 writer.writeInstruction(
                         new GuacamoleInstruction(
                             "timezone",
