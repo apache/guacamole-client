@@ -167,7 +167,9 @@ public class GuacamoleClientInformation {
      * database format.
      * 
      * @param timezone
-     *     The string value of the timezone reported by the client.
+     *     The string value of the timezone reported by the client, in tz
+     *     database format, or null if the timezone is not provided by the
+     *     client.
      */
     public void setTimezone(String timezone) {
         this.timezone = timezone;
