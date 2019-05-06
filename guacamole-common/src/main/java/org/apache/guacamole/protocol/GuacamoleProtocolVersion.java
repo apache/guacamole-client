@@ -77,29 +77,30 @@ public enum GuacamoleProtocolVersion {
     }
     
     /**
-     * Return the major version number.
+     * Return the major version component of the protocol version.
      * 
      * @return 
-     *     The integer major version.
+     *     The integer major version component.
      */
     public int getMajor() {
         return major;
     }
     
     /**
-     * Return the minor version number.
+     * Return the minor version component of the protocol version.
      * 
      * @return 
-     *     The integer minor version.
+     *     The integer minor version component.
      */
     public int getMinor() {
         return minor;
     }
     
     /**
-     * Return the patch version number.
+     * Return the patch version component of the protocol version.
+     * 
      * @return 
-     *     The integer patch version.
+     *     The integer patch version component.
      */
     public int getPatch() {
         return patch;
