@@ -52,7 +52,21 @@ public class CASAuthenticatedUser extends AbstractAuthenticatedUser {
 
     /**
      * Initializes this AuthenticatedUser using the given username and
-     * credentials.
+     * credentials, and an empty map of parameter tokens.
+     *
+     * @param username
+     *     The username of the user that was authenticated.
+     *
+     * @param credentials
+     *     The credentials provided when this user was authenticated.
+     */
+    public void init(String username, Credentials credentials) {
+        this.init(username, credentials, Collections.emptyMap());
+    }
+    
+    /**
+     * Initializes this AuthenticatedUser using the given username,
+     * credentials, and parameter tokens.
      *
      * @param username
      *     The username of the user that was authenticated.
