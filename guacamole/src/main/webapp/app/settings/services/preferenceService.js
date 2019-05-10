@@ -104,8 +104,8 @@ angular.module('settings').provider('preferenceService', ['$injector',
      * by the JSTZ timezone library.
      * 
      * @returns String
-     *     The name of the currently-detected timezone in tz database
-     *     format.
+     *     The name of the currently-detected timezone in IANA zone key
+     *     format (Olson time zone database).
      */
     var getDetectedTimezone = function getDetectedTimezone() {
         return jstz.determine().name();
@@ -143,7 +143,9 @@ angular.module('settings').provider('preferenceService', ['$injector',
         language : getDefaultLanguageKey(),
         
         /**
-         * The timezone set by the uesr.
+         * The timezone set by the user, in IANA zone key format (Olson time
+         * zone database).
+         * 
          * @type String
          */
         timezone : getDetectedTimezone()
