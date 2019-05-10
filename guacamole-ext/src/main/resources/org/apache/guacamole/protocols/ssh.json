@@ -95,6 +95,10 @@
                     "type"  : "TEXT"
                 },
                 {
+                    "name"  : "timezone",
+                    "type"  : "TEXT"
+                },
+                {
                     "name"  : "server-alive-interval",
                     "type"  : "NUMERIC"
                 }
