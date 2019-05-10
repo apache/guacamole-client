@@ -120,36 +120,16 @@ public enum GuacamoleProtocolVersion {
      */
     public boolean atLeast(GuacamoleProtocolVersion otherVersion) {
         
-        // Major version is greater
-        if (major > otherVersion.getMajor())
-            return true;
+        // If major is not the same, compare first
+        if (major != otherVersion.getMajor())
+            return major > otherVersion.getMajor();
         
-        // Major version is less than or equal to.
-        else {
-            
-            // Major version is less than
-            if (major < otherVersion.getMajor())
-                return false;
-            
-            // Major version is equal, minor version is greater
-            if (minor > otherVersion.getMinor())
-                return true;
-            
-            // Minor version is less than or equal to.
-            else {
-                
-                // Minor version is less than
-                if (minor < otherVersion.getMinor())
-                    return false;
-                
-                // Patch version is greater or equal
-                if (patch >= otherVersion.getPatch())
-                    return true;
-            }
-        }
+        // Major is the same, but minor is not, so compare minor versions
+        if (minor != otherVersion.getMinor())
+            return minor > otherVersion.getMinor();
         
-        // Version is either less than or equal to.
-        return false;
+        // Major and minor are identical, so compare and return patch
+        return patch >= otherVersion.getPatch();
         
     }
     
@@ -162,14 +142,21 @@ public enum GuacamoleProtocolVersion {
      *     The String format of the version to parse.
      * 
      * @return
-     *     The enum value that matches the specified version.
+     *     The enum value that matches the specified version, VERSION_1_0_0
+     *     if no match is found, or null if no comparison version is provided.
      */
     public static GuacamoleProtocolVersion getVersion(String version) {
         
         if (version == null || version.isEmpty())
             return null;
         
-        return valueOf(version);
+        try {
+            return valueOf(version);
+        }
+        // If nothing matches, then return the most compatible version.
+        catch (IllegalArgumentException e) {
+            return GuacamoleProtocolVersion.VERSION_1_0_0;
+        }
         
     }
     
