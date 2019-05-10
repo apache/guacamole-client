@@ -91,6 +91,10 @@
                     "type"  : "TEXT"
                 },
                 {
+                    "name"  : "locale",
+                    "type"  : "TEXT"
+                },
+                {
                     "name"  : "server-alive-interval",
                     "type"  : "NUMERIC"
                 }
