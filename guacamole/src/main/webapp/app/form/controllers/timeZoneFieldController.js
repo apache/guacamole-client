@@ -419,7 +419,6 @@ angular.module('form').controller('timeZoneFieldController', ['$scope', '$inject
         "Canada" : {
             "Atlantic"          : "Canada/Atlantic",
             "Central"           : "Canada/Central",
-            "East-Saskatchewan" : "Canada/East-Saskatchewan",
             "Eastern"           : "Canada/Eastern",
             "Mountain"          : "Canada/Mountain",
             "Newfoundland"      : "Canada/Newfoundland",
