@@ -108,7 +108,7 @@
                 },
                 {
                     "name"  : "timezone",
-                    "type"  : "TEXT"
+                    "type"  : "TIMEZONE"
                 },
                 {
                     "name"    : "console",
