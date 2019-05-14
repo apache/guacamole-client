@@ -20,8 +20,9 @@
 package org.apache.guacamole.form;
 
 /**
- * Represents a time zone field. The field may contain only valid time zone IDs,
- * as dictated by TimeZone.getAvailableIDs().
+ * Represents a time zone field. The field may contain only valid time zone
+ * identifiers, as defined by the IANA time zone database. Such identifiers are
+ * also valid Java time zone IDs as dictated by TimeZone.getAvailableIDs().
  */
 public class TimeZoneField extends Field {
 
