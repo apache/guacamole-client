@@ -19,8 +19,9 @@
 
 
 /**
- * Controller for time zone fields. Time zone fields use Java IDs as the
- * standard representation for each supported time zone.
+ * Controller for time zone fields. Time zone fields use IANA time zone
+ * database identifiers as the standard representation for each supported time
+ * zone. These identifiers are also legal Java time zone IDs.
  */
 angular.module('form').controller('timeZoneFieldController', ['$scope', '$injector',
     function timeZoneFieldController($scope, $injector) {
@@ -418,7 +419,6 @@ angular.module('form').controller('timeZoneFieldController', ['$scope', '$inject
         "Canada" : {
             "Atlantic"          : "Canada/Atlantic",
             "Central"           : "Canada/Central",
-            "East-Saskatchewan" : "Canada/East-Saskatchewan",
             "Eastern"           : "Canada/Eastern",
             "Mountain"          : "Canada/Mountain",
             "Newfoundland"      : "Canada/Newfoundland",
