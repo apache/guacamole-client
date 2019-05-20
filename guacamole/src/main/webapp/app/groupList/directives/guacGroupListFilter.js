@@ -190,7 +190,7 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
                 angular.forEach(item.children, function flattenChild(child) {
                     if (child.type === GroupListItem.Type.CONNECTION_GROUP) {
 
-                        var flattenedChild = flattenGroupListItem(child);
+                        var flattenedChild = flattenConnectionGroup(child);
 
                         // Merge all children
                         Array.prototype.push.apply(
@@ -244,8 +244,34 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
              *     The connection group whose children should be filtered.
              */
             var filterConnectionGroup = function filterConnectionGroup(connectionGroup) {
-                connectionGroup.childConnections = connectionGroup.childConnections.filter(connectionFilterPattern.predicate);
-                connectionGroup.childConnectionGroups = connectionGroup.childConnectionGroups.filter(connectionGroupFilterPattern.predicate);
+            	if (connectionGroup.childConnections) {
+            		connectionGroup.childConnections = connectionGroup.childConnections.filter(connectionFilterPattern.predicate);
+            	}
+                
+                if (connectionGroup.childConnectionGroups) {
+                    connectionGroup.childConnectionGroups = connectionGroup.childConnectionGroups.filter(connectionGroupFilterPattern.predicate);
+	                
+                    angular.forEach(connectionGroup.childConnectionGroups, function filterChild(child) {
+                	if (child.attributes.filter == 'false' && !connectionFilterPattern.predicate(child)) {
+                            filterConnectionGroup(child);
+                        }
+                    });
+	                
+                    connectionGroup.childConnectionGroups = connectionGroup.childConnectionGroups.filter(function filterEmptyGroup(child) {
+	                    
+                        if (child.childConnectionGroups) {
+                    	    if (child.childConnectionGroups.length > 0) {
+                                return true;
+	                    }
+                        }
+                        if (child.childConnections) {
+                            if (child.childConnections.length > 0) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    });
+                }
             };
 
             /**
@@ -292,8 +318,8 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
 
             // Recompile and refilter when pattern is changed
             $scope.$watch('searchString', function searchStringChanged(searchString) {
-                connectionFilterPattern.compile(searchString);
-                connectionGroupFilterPattern.compile(searchString);
+                connectionFilterPattern.compileConnectionFilter(searchString);
+                connectionGroupFilterPattern.compileConnectionGroupFilter(searchString);
                 updateFilteredConnectionGroups();
             });
 
