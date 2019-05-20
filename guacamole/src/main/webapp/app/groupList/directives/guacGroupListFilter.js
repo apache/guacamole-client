@@ -136,19 +136,23 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
                 // Flatten all children to the top-level group
                 angular.forEach(connectionGroup.childConnectionGroups, function flattenChild(child) {
 
-                    var flattenedChild = flattenConnectionGroup(child);
+                    if (child.attributes.filter != 'false') {
 
-                    // Merge all child connections
-                    Array.prototype.push.apply(
-                        connectionGroup.childConnections,
-                        flattenedChild.childConnections
-                    );
+                        var flattenedChild = flattenConnectionGroup(child);
 
-                    // Merge all child connection groups
-                    Array.prototype.push.apply(
-                        connectionGroup.childConnectionGroups,
-                        flattenedChild.childConnectionGroups
-                    );
+                        // Merge all child connections
+                        Array.prototype.push.apply(
+	                    connectionGroup.childConnections,
+                            flattenedChild.childConnections
+                        );
+	
+                        // Merge all child connection groups
+                        Array.prototype.push.apply(
+                            connectionGroup.childConnectionGroups,
+                            flattenedChild.childConnectionGroups
+                        );
+                    
+                    }
 
                 });
 
