@@ -18,19 +18,17 @@
  */
 
 /**
- * Before AngularJS routing takes effect, test whether the URL fragment
- * contains an OpenID Connect "id_token" parameter, and reformat the fragment
- * such that the client side of Guacamole's authentication system will
- * automatically forward the "id_token" value for server-side validation.
+ * Before AngularJS routing takes effect, reformat the URL fragment
+ * from the format used by OpenID Connect ("#param1=value1&param2=value2&...")
+ * to the format used by AngularJS ("#/?param1=value1&param2=value2&...") such
+ * that the client side of Guacamole's authentication system will automatically
+ * forward the "id_token" value for server-side validation.
  * 
  * Note that not all OpenID identity providers will include the "id_token"
  * parameter in the first position; it may occur after several other parameters
- * within the hash.
+ * within the fragment.
  */
 (function guacOpenIDTransformToken() {
-
-    // Transform "/#id_token=..." to "/#/?id_token=..."
-    if (/(^#|&)id_token=/.test(location.hash))
+    if (/^#(?![?\/])(.*&)?id_token=/.test(location.hash))
         location.hash = '/?' + location.hash.substring(1);
-
 })();
