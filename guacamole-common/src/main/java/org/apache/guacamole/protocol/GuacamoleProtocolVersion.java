@@ -19,6 +19,9 @@
 
 package org.apache.guacamole.protocol;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * An enum that defines the available Guacamole protocol versions that can be
  * used between guacd and clients, and provides convenience methods for parsing
@@ -41,6 +44,16 @@ public enum GuacamoleProtocolVersion {
      * for passing the client timezone to the server during the handshake.
      */
     VERSION_1_1_0(1, 1, 0);
+    
+    /**
+     * A regular expression that matches the VERSION_X_Y_Z pattern, where
+     * X is the major version component, Y is the minor version component,
+     * and Z is the patch version component.  This expression puts each of
+     * the version components in their own group so that they can be easily
+     * used later.
+     */
+    private static final Pattern VERSION_PATTERN =
+            Pattern.compile("^VERSION_([0-9]+)_([0-9]+)_([0-9]+)$");
     
     /**
      * The major version component of the protocol version.
@@ -118,18 +131,51 @@ public enum GuacamoleProtocolVersion {
      * @return 
      *     True if this object is greater than or equal to the other version.
      */
-    public boolean atLeast(GuacamoleProtocolVersion otherVersion) {
+    private boolean atLeast(GuacamoleProtocolVersion otherVersion) {
         
-        // If major is not the same, compare first
+        // If major is not the same, return inequality
         if (major != otherVersion.getMajor())
-            return major > otherVersion.getMajor();
+            return this.major > major;
         
-        // Major is the same, but minor is not, so compare minor versions
+        // Major is the same, but minor is not, return minor inequality
         if (minor != otherVersion.getMinor())
-            return minor > otherVersion.getMinor();
+            return this.minor > minor;
         
-        // Major and minor are identical, so compare and return patch
+        // Major and minor are equal, so return patch inequality
         return patch >= otherVersion.getPatch();
+        
+    }
+    
+    /**
+     * Compare this version with the major, minor, and patch components
+     * provided to the method, and determine if this version is compatible
+     * with the provided version, returning a boolean true if it is compatible,
+     * otherwise false.  This version is compatible with the version specified
+     * by the provided components if the major, minor, and patch components
+     * are equivalent or less than those provided.
+     * 
+     * @param major
+     *     The major version component to compare for compatibility.
+     * 
+     * @param minor
+     *     The minor version component to compare for compatibility.
+     * 
+     * @param patch
+     *     The patch version component to compare for compatibility.
+     * 
+     * @return 
+     *     True if this version is compatibility with the version components
+     *     provided, otherwise false.
+     */
+    private boolean isCompatible(int major, int minor, int patch) {
+        
+        if (this.major != major)
+            return this.major < major;
+        
+        if (this.minor != minor)
+            return this.minor < minor;
+        
+        return this.patch <= patch;
         
     }
     
@@ -147,15 +193,39 @@ public enum GuacamoleProtocolVersion {
      */
     public static GuacamoleProtocolVersion getVersion(String version) {
         
+        // If nothing is passed in, return null
         if (version == null || version.isEmpty())
             return null;
         
+        // Check the string against the pattern matcher
+        Matcher versionMatcher = VERSION_PATTERN.matcher(version);
+        
+        // If there is no RegEx match, return null
+        if (!versionMatcher.matches())
+            return null;
+        
         try {
+            // Try the valueOf function
             return valueOf(version);
+            
         }
-        // If nothing matches, then return the most compatible version.
+        
+        // If nothing matches, find the closest compatible version.
         catch (IllegalArgumentException e) {
-            return GuacamoleProtocolVersion.VERSION_1_0_0;
+            int myMajor = Integer.parseInt(versionMatcher.group(1));
+            int myMinor = Integer.parseInt(versionMatcher.group(2));
+            int myPatch = Integer.parseInt(versionMatcher.group(3));
+            
+            GuacamoleProtocolVersion myVersion = VERSION_1_0_0;
+            
+            // Loop through possible versions, grabbing the latest compatible
+            for (GuacamoleProtocolVersion v : values()) {
+                if (v.isCompatible(myMajor, myMinor, myPatch))
+                    myVersion = v;
+            }
+            
+            return myVersion;
+
         }
         
     }
