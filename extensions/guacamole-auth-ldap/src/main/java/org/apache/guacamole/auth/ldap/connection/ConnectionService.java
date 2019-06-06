@@ -178,7 +178,7 @@ public class ConnectionService {
 
                 // Store connection using cn for both identifier and name
                 String name = cn.getStringValue();
-                Connection connection = new SimpleConnection(name, name, config);
+                Connection connection = new SimpleConnection(name, name, config, true);
                 connection.setParentIdentifier(LDAPAuthenticationProvider.ROOT_CONNECTION_GROUP);
 
                 // Inject LDAP-specific tokens only if LDAP handled user
