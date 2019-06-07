@@ -58,6 +58,11 @@ public class GuacamoleClientInformation {
      * The list of image mimetypes reported by the client to be supported.
      */
     private final List<String> imageMimetypes = new ArrayList<String>();
+    
+    /**
+     * The timezone reported by the client.
+     */
+    private String timezone;
 
     /**
      * Returns the optimal screen width requested by the client, in pixels.
@@ -143,6 +148,32 @@ public class GuacamoleClientInformation {
      */
     public List<String> getImageMimetypes() {
         return imageMimetypes;
+    }
+    
+    /**
+     * Return the timezone as reported by the client, or null if the timezone
+     * is not set.  Valid timezones are specified in IANA zone key format,
+     * also known as Olson time zone database or TZ Database.
+     * 
+     * @return
+     *     A string value of the timezone reported by the client.
+     */
+    public String getTimezone() {
+        return timezone;
+    }
+    
+    /**
+     * Set the string value of the timezone, or null if the timezone will not
+     * be provided by the client.  Valid timezones are specified in IANA zone
+     * key format (aka Olson time zone database or tz database).
+     * 
+     * @param timezone
+     *     The string value of the timezone reported by the client, in tz
+     *     database format, or null if the timezone is not provided by the
+     *     client.
+     */
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
     }
 
 }

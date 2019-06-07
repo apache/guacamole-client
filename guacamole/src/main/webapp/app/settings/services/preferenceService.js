@@ -98,6 +98,18 @@ angular.module('settings').provider('preferenceService', ['$injector',
         return language.replace(/-/g, '_');
 
     };
+    
+    /**
+     * Return the timezone detected for the current browser session
+     * by the JSTZ timezone library.
+     * 
+     * @returns String
+     *     The name of the currently-detected timezone in IANA zone key
+     *     format (Olson time zone database).
+     */
+    var getDetectedTimezone = function getDetectedTimezone() {
+        return jstz.determine().name();
+    };
 
     /**
      * All currently-set preferences, as name/value pairs. Each property name
@@ -128,7 +140,15 @@ angular.module('settings').provider('preferenceService', ['$injector',
          * 
          * @type String
          */
-        language : getDefaultLanguageKey()
+        language : getDefaultLanguageKey(),
+        
+        /**
+         * The timezone set by the user, in IANA zone key format (Olson time
+         * zone database).
+         * 
+         * @type String
+         */
+        timezone : getDetectedTimezone()
 
     };
 
