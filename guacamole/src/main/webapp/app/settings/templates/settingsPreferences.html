@@ -1,8 +1,8 @@
 <div class="preferences" ng-class="{loading: !isLoaded()}">
 
-    <!-- Language settings -->
-    <div class="settings section language">
-        <p>{{'SETTINGS_PREFERENCES.HELP_LANGUAGE' | translate}}</p>
+    <!-- Locale settings -->
+    <div class="settings section locale">
+        <p>{{'SETTINGS_PREFERENCES.HELP_LOCALE' | translate}}</p>
 
         <!-- Language selection -->
         <div class="form">
@@ -12,6 +12,15 @@
                     <td><select ng-model="preferences.language" ng-change="changeLanguage()" ng-options="language.key as language.value for language in languages | orderBy: key"></select></td>
                 </tr>
             </table>
+        </div>
+        
+        <!-- Timezone selection -->
+        <div class="form">
+            <guac-form-field
+                field="{ 'type' : 'TIMEZONE', 'name' : 'timezone' }"
+                model="preferences.timezone"
+                namespace="'SETTINGS_PREFERENCES'">
+            </guac-form-field>
         </div>
     </div>
     

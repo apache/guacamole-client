@@ -18,7 +18,7 @@
  */
 
 .preferences .update-password .form, 
-.preferences .language .form {
+.preferences .locale .form {
     padding-left: 0.5em;
     border-left: 3px solid rgba(0, 0, 0, 0.125);
 }

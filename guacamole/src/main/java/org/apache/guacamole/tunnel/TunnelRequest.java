@@ -95,6 +95,11 @@ public abstract class TunnelRequest {
      * once for each mimetype.
      */
     public static final String IMAGE_PARAMETER = "GUAC_IMAGE";
+    
+    /**
+     * The name of the parameter specifying the timezone of the client.
+     */
+    public static final String TIMEZONE_PARAMETER = "GUAC_TIMEZONE";
 
     /**
      * All supported object types that can be used as the destination of a
@@ -365,5 +370,16 @@ public abstract class TunnelRequest {
     public List<String> getImageMimetypes() {
         return getParameterValues(IMAGE_PARAMETER);
     }
-
+    
+    /**
+     * Returns the tz database value of the timezone declared by the client
+     * within the tunnel request.
+     * 
+     * @return 
+     *     The tz database value of the timezone parameter as reported by
+     *     the client.
+     */
+    public String getTimezone() {
+        return getParameter(TIMEZONE_PARAMETER);
+    }
 }
