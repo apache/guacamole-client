@@ -72,7 +72,14 @@ angular.module('form').directive('guacForm', [function form() {
              *
              * @type Boolean
              */
-            disabled : '='
+            disabled : '=',
+
+            /**
+             * The name of the field to be focused, if any.
+             *
+             * @type String
+             */
+            focused : '='
 
         },
         templateUrl: 'app/form/templates/form.html',
@@ -179,6 +186,10 @@ angular.module('form').directive('guacForm', [function form() {
                     $scope.values = {};
 
             });
+
+            $scope.isFocused = function isFocused(field) {
+                return field && (field.name === $scope.focused);
+            };
 
             /**
              * Returns whether the given field should be displayed to the

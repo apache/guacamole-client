@@ -10,7 +10,9 @@
             <guac-form-field ng-repeat="field in form.fields" namespace="namespace"
                              ng-if="isVisible(field)"
                              data-disabled="disabled"
-                             field="field" model="values[field.name]"></guac-form-field>
+                             focused="isFocused(field)"
+                             field="field"
+                             model="values[field.name]"></guac-form-field>
         </div>
 
     </div>

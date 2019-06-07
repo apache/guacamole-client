@@ -61,7 +61,14 @@ angular.module('form').directive('guacFormField', [function formField() {
              *
              * @type Boolean
              */
-            disabled : '='
+            disabled : '=',
+
+            /**
+             * Whether this field should be focused.
+             *
+             * @type Boolean
+             */
+            focused : '='
 
         },
         templateUrl: 'app/form/templates/formField.html',

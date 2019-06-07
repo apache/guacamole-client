@@ -151,7 +151,7 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
                     $scope.enteredValues[field.name] = '';
             });
 
-            console.log(mostRelevantField());
+            $scope.relevantField = getRelevantField();
 
         });
 
@@ -203,8 +203,6 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
                             delete $scope.enteredValues[field.name];
 
                     });
-
-                    console.log(mostRelevantField());
                 }
 
             }));
@@ -212,15 +210,14 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         };
 
         /**
-         * Returns the field most relevant field to the user given the current
-         * state of the login process. This will normally be the first empty
-         * field.
+         * Returns the field most relevant to the user given the current state
+         * of the login process. This will normally be the first empty field.
          *
          * @return {Field}
          *     The field most relevant, null if there is no single most relevant
          *     field.
          */
-        var mostRelevantField = function findMostRelevantField() {
+        var getRelevantField = function getRelevantField() {
 
             for (var i = 0; i < $scope.remainingFields.length; i++) {
                 var field = $scope.remainingFields[i];
