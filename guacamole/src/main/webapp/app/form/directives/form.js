@@ -187,6 +187,15 @@ angular.module('form').directive('guacForm', [function form() {
 
             });
 
+            /**
+             * Returns whether the given field should be focused or not.
+             *
+             * @param {Field} field
+             *     The field to check.
+             *
+             * @returns {Boolean}
+             *     true if the given field should be focused, false otherwise.
+             */
             $scope.isFocused = function isFocused(field) {
                 return field && (field.name === $scope.focused);
             };

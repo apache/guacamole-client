@@ -1,5 +1,5 @@
 <div class="text-field">
-    <input type="text" ng-model="model" autocorrect="off" autocapitalize="off"
+    <input type="text" ng-model="model" autocorrect="off" autocapitalize="off" guac-focus="focused"
            ng-disabled="disabled" ng-attr-list="{{ dataListId }}"/>
     <datalist ng-if="dataListId" id="{{ dataListId }}">
         <option ng-repeat="option in field.options | orderBy: option"
