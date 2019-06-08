@@ -20,29 +20,33 @@
 package org.apache.guacamole.protocol;
 
 /**
- * An enum that specifies protocol capabilities that can be used to help
- * detect whether or not a particular protocol version contains a capability.
+ * Capabilities which may not be present in all versions of the Guacamole
+ * protocol.
  */
 public enum GuacamoleProtocolCapability {
     
     /**
-     * Whether or not the protocol supports arbitrary ordering of the
-     * handshake instructions.  This was introduced in VERSION_1_1_0.
+     * The protocol does not require handshake instructions to be sent in a
+     * specific order, nor that all handshake instructions be sent. Arbitrary
+     * handshake order was introduced in
+     * {@link GuacamoleProtocolVersion#VERSION_1_1_0}.
      */
     ARBITRARY_HANDSHAKE_ORDER(GuacamoleProtocolVersion.VERSION_1_1_0),
     
     /**
-     * Whether or not the protocol supports the ability to dynamically
-     * detect the version client and server are running in order to allow
-     * compatibility between differing client and server versions.  This
-     * was introduced in VERSION_1_1_0.
+     * Negotiation of Guacamole protocol version between client and server
+     * during the protocol handshake. The ability to negotiate protocol
+     * versions was introduced in
+     * {@link GuacamoleProtocolVersion#VERSION_1_1_0}.
      */
     PROTOCOL_VERSION_DETECTION(GuacamoleProtocolVersion.VERSION_1_1_0),
     
     /**
-     * Whether or not the protocol supports the timezone instruction during
-     * the Client-Server handshake phase.  This was introduced in
-     * VERSION_1_1_0.
+     * Support for the "timezone" handshake instruction. The "timezone"
+     * instruction allows the client to request that the server forward their
+     * local timezone for use within the remote desktop session. Support for
+     * forwarding the client timezone was introduced in
+     * {@link GuacamoleProtocolVersion#VERSION_1_1_0}.
      */
     TIMEZONE_HANDSHAKE(GuacamoleProtocolVersion.VERSION_1_1_0);
     
