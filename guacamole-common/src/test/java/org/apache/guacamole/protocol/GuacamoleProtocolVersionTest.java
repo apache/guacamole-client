@@ -137,4 +137,15 @@ public class GuacamoleProtocolVersionTest {
 
     }
 
+    /**
+     * Verifies that versions can be converted to their Guacamole protocol
+     * representation through calling toString().
+     */
+    @Test
+    public void testToString() {
+        Assert.assertEquals("VERSION_1_0_0", GuacamoleProtocolVersion.VERSION_1_0_0.toString());
+        Assert.assertEquals("VERSION_1_1_0", GuacamoleProtocolVersion.VERSION_1_1_0.toString());
+        Assert.assertEquals("VERSION_12_103_398", new GuacamoleProtocolVersion(12, 103, 398).toString());
+    }
+
 }

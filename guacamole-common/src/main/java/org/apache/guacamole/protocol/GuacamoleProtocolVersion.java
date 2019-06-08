@@ -202,5 +202,10 @@ public class GuacamoleProtocolVersion {
             && this.patch == otherVersion.getPatch();
 
     }
+
+    @Override
+    public String toString() {
+        return "VERSION_" + getMajor() + "_" + getMinor() + "_" + getPatch();
+    }
     
 }
