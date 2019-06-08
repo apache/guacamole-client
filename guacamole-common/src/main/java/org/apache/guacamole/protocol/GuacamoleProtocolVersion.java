@@ -179,5 +179,28 @@ public class GuacamoleProtocolVersion {
         );
 
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 61 * hash + this.major;
+        hash = 61 * hash + this.minor;
+        hash = 61 * hash + this.patch;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (obj == null || !(obj instanceof GuacamoleProtocolVersion))
+            return false;
+
+        // Versions are equal if all major/minor/patch components are identical
+        final GuacamoleProtocolVersion otherVersion = (GuacamoleProtocolVersion) obj;
+        return this.major == otherVersion.getMajor()
+            && this.minor == otherVersion.getMinor()
+            && this.patch == otherVersion.getPatch();
+
+    }
     
 }
