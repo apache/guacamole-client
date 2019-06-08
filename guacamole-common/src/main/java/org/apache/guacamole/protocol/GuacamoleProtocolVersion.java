@@ -142,11 +142,11 @@ public class GuacamoleProtocolVersion {
         
         // If major is not the same, return inequality
         if (major != otherVersion.getMajor())
-            return this.major > major;
+            return this.major > otherVersion.getMajor();
         
         // Major is the same, but minor is not, return minor inequality
         if (minor != otherVersion.getMinor())
-            return this.minor > minor;
+            return this.minor > otherVersion.getMinor();
         
         // Major and minor are equal, so return patch inequality
         return patch >= otherVersion.getPatch();
