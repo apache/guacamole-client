@@ -23,11 +23,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * An enum that defines the available Guacamole protocol versions that can be
- * used between guacd and clients, and provides convenience methods for parsing
- * and comparing versions.
+ * Representation of a Guacamole protocol version. Convenience methods are
+ * provided for parsing and comparing versions, as is necessary when
+ * determining the version of the Guacamole protocol common to guacd and a
+ * client.
  */
-public enum GuacamoleProtocolVersion {
+public class GuacamoleProtocolVersion {
     
     /**
      * Protocol version 1.0.0 and older.  Any client that doesn't explicitly
@@ -36,14 +37,20 @@ public enum GuacamoleProtocolVersion {
      * lacks support for certain protocol-related features introduced in later
      * versions.
      */
-    VERSION_1_0_0(1, 0, 0),
+    public static final GuacamoleProtocolVersion VERSION_1_0_0 = new GuacamoleProtocolVersion(1, 0, 0);
 
     /**
      * Protocol version 1.1.0, which introduces Client-Server version
      * detection, arbitrary handshake instruction order, and support
      * for passing the client timezone to the server during the handshake.
      */
-    VERSION_1_1_0(1, 1, 0);
+    public static final GuacamoleProtocolVersion VERSION_1_1_0 = new GuacamoleProtocolVersion(1, 1, 0);
+
+    /**
+     * The most recent version of the Guacamole protocol at the time this
+     * version of GuacamoleProtocolVersion was built.
+     */
+    public static final GuacamoleProtocolVersion LATEST = VERSION_1_1_0;
     
     /**
      * A regular expression that matches the VERSION_X_Y_Z pattern, where
@@ -83,7 +90,7 @@ public enum GuacamoleProtocolVersion {
      * @param patch 
      *     The integer representation of the patch version component.
      */
-    GuacamoleProtocolVersion(int major, int minor, int patch) {
+    public GuacamoleProtocolVersion(int major, int minor, int patch) {
         this.major = major;
         this.minor = minor;
         this.patch = patch;
@@ -131,7 +138,7 @@ public enum GuacamoleProtocolVersion {
      * @return 
      *     True if this object is greater than or equal to the other version.
      */
-    private boolean atLeast(GuacamoleProtocolVersion otherVersion) {
+    public boolean atLeast(GuacamoleProtocolVersion otherVersion) {
         
         // If major is not the same, return inequality
         if (major != otherVersion.getMajor())
@@ -147,39 +154,6 @@ public enum GuacamoleProtocolVersion {
     }
     
     /**
-     * Compare this version with the major, minor, and patch components
-     * provided to the method, and determine if this version is compatible
-     * with the provided version, returning a boolean true if it is compatible,
-     * otherwise false.  This version is compatible with the version specified
-     * by the provided components if the major, minor, and patch components
-     * are equivalent or less than those provided.
-     * 
-     * @param major
-     *     The major version component to compare for compatibility.
-     * 
-     * @param minor
-     *     The minor version component to compare for compatibility.
-     * 
-     * @param patch
-     *     The patch version component to compare for compatibility.
-     * 
-     * @return 
-     *     True if this version is compatibility with the version components
-     *     provided, otherwise false.
-     */
-    private boolean isCompatible(int major, int minor, int patch) {
-        
-        if (this.major != major)
-            return this.major < major;
-        
-        if (this.minor != minor)
-            return this.minor < minor;
-        
-        return this.patch <= patch;
-        
-    }
-    
-    /**
      * Parse the String format of the version provided and return the
      * the enum value matching that version.  If no value is provided, return
      * null.
@@ -191,60 +165,20 @@ public enum GuacamoleProtocolVersion {
      *     The enum value that matches the specified version, VERSION_1_0_0
      *     if no match is found, or null if no comparison version is provided.
      */
-    public static GuacamoleProtocolVersion getVersion(String version) {
-        
-        // If nothing is passed in, return null
-        if (version == null || version.isEmpty())
-            return null;
-        
-        // Check the string against the pattern matcher
+    public static GuacamoleProtocolVersion parseVersion(String version) {
+
+        // Validate format of version string
         Matcher versionMatcher = VERSION_PATTERN.matcher(version);
-        
-        // If there is no RegEx match, return null
         if (!versionMatcher.matches())
             return null;
-        
-        try {
-            // Try the valueOf function
-            return valueOf(version);
-            
-        }
-        
-        // If nothing matches, find the closest compatible version.
-        catch (IllegalArgumentException e) {
-            int myMajor = Integer.parseInt(versionMatcher.group(1));
-            int myMinor = Integer.parseInt(versionMatcher.group(2));
-            int myPatch = Integer.parseInt(versionMatcher.group(3));
-            
-            GuacamoleProtocolVersion myVersion = VERSION_1_0_0;
-            
-            // Loop through possible versions, grabbing the latest compatible
-            for (GuacamoleProtocolVersion v : values()) {
-                if (v.isCompatible(myMajor, myMinor, myPatch))
-                    myVersion = v;
-            }
-            
-            return myVersion;
 
-        }
-        
-    }
-    
-    /**
-     * Returns true if the specified capability is supported in the current
-     * protocol version, otherwise false.
-     * 
-     * @param capability
-     *     The protocol capability that is being checked for support.
-     * 
-     * @return
-     *     True if the capability is supported in the current version,
-     *     otherwise false.
-     */
-    public boolean isSupported(GuacamoleProtocolCapability capability) {
-        
-        return atLeast(capability.getVersion());
-        
+        // Parse version number from version string
+        return new GuacamoleProtocolVersion(
+            Integer.parseInt(versionMatcher.group(1)),
+            Integer.parseInt(versionMatcher.group(2)),
+            Integer.parseInt(versionMatcher.group(3))
+        );
+
     }
     
 }

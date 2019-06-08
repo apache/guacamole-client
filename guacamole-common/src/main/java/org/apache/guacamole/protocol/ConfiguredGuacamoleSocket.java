@@ -61,7 +61,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
      * it will be assumed that it operates at this version and certain features
      * may be unavailable.
      */
-    private GuacamoleProtocolVersion protocol =
+    private GuacamoleProtocolVersion protocolVersion =
             GuacamoleProtocolVersion.VERSION_1_0_0;
     
     /**
@@ -151,11 +151,21 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
             // Retrieve argument name
             String arg_name = arg_names.get(i);
             
-            // Check for protocol version as first argument
-            if (i == 0 && arg_name.startsWith("VERSION_")) {
-                protocol = GuacamoleProtocolVersion.getVersion(arg_name);
-                arg_values[i] = protocol.toString();
-                continue;
+            // Check for valid protocol version as first argument
+            if (i == 0) {
+                GuacamoleProtocolVersion version = GuacamoleProtocolVersion.parseVersion(arg_name);
+                if (version != null) {
+
+                    // Use the lowest common version supported
+                    if (version.atLeast(GuacamoleProtocolVersion.LATEST))
+                        version = GuacamoleProtocolVersion.LATEST;
+
+                    // Respond with the version selected
+                    arg_values[i] = version.toString();
+                    protocolVersion = version;
+                    continue;
+
+                }
             }
 
             // Get defined value for name
@@ -200,17 +210,11 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
                     info.getImageMimetypes().toArray(new String[0])
                 ));
         
-        // Check for support for timezone handshake
-        if (protocol.isSupported(GuacamoleProtocolCapability.TIMEZONE_HANDSHAKE)) {
-            // Send client timezone, if available
+        // Send client timezone, if supported and available
+        if (GuacamoleProtocolCapability.TIMEZONE_HANDSHAKE.isSupported(protocolVersion)) {
             String timezone = info.getTimezone();
-            if (timezone != null) {
-                writer.writeInstruction(
-                        new GuacamoleInstruction(
-                            "timezone",
-                            info.getTimezone()
-                        ));
-            }
+            if (timezone != null)
+                writer.writeInstruction(new GuacamoleInstruction("timezone", info.getTimezone()));
         }
 
         // Send args

@@ -59,19 +59,23 @@ public enum GuacamoleProtocolCapability {
      *     The minimum required protocol version for supporting the
      *     capability.
      */
-    GuacamoleProtocolCapability(GuacamoleProtocolVersion version) {
+    private GuacamoleProtocolCapability(GuacamoleProtocolVersion version) {
         this.version = version;
     }
-    
+
     /**
-     * Returns the minimum protocol version required to support this
-     * capability.
-     * 
+     * Returns whether this capability is supported in the given Guacamole
+     * protocol version.
+     *
+     * @param version
+     *     The Guacamole protocol version to check.
+     *
      * @return
-     *     The minimum protocol version required to support this capability.
+     *     true if this capability is supported by the given protocol version,
+     *     false otherwise.
      */
-    public GuacamoleProtocolVersion getVersion() {
-        return version;
+    public boolean isSupported(GuacamoleProtocolVersion version) {
+        return version.atLeast(this.version);
     }
-    
+
 }
