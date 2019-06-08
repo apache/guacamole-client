@@ -253,6 +253,20 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         return id;
     }
 
+    /**
+     * Returns the version of the Guacamole protocol associated with the
+     * Guacamole connection negotiated by this ConfiguredGuacamoleSocket. This
+     * version is the lowest version common to both ConfiguredGuacamoleSocket
+     * and the relevant Guacamole proxy instance (guacd).
+     *
+     * @return
+     *     The protocol version that this ConfiguredGuacamoleSocket will use to
+     *     communicate with guacd.
+     */
+    public GuacamoleProtocolVersion getProtocolVersion() {
+        return protocolVersion;
+    }
+
     @Override
     public GuacamoleWriter getWriter() {
         return socket.getWriter();
