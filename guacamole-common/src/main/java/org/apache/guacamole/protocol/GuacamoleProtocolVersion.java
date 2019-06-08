@@ -127,16 +127,15 @@ public class GuacamoleProtocolVersion {
     }
     
     /**
-     * Determines whether or not this object is greater than or equal to the
-     * the version passed in to the method.  Returns a boolean true if the
-     * version is the same as or greater than the other version, otherwise
-     * false.
-     * 
+     * Returns whether this GuacamoleProtocolVersion is at least as recent as
+     * (greater than or equal to) the given version.
+     *
      * @param otherVersion
-     *     The version to which this object should be compared.
+     *     The version to which this GuacamoleProtocolVersion should be compared.
      * 
      * @return 
-     *     True if this object is greater than or equal to the other version.
+     *     true if this object is at least as recent as the given version,
+     *     false if the given version is newer.
      */
     public boolean atLeast(GuacamoleProtocolVersion otherVersion) {
         
