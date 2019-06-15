@@ -92,6 +92,14 @@ public class Field {
         public static String TIMEZONE = "TIMEZONE";
 
         /**
+         * Field type which allows selection of languages. The languages
+         * displayed are the set of languages supported by the Guacamole web
+         * application. Legal values are valid language IDs, as dictated by
+         * the filenames of Guacamole's available translations.
+         */
+        public static String LANGUAGE = "LANGUAGE";
+
+        /**
          * A date field whose legal values conform to the pattern "YYYY-MM-DD",
          * zero-padded.
          */

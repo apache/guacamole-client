@@ -20,4 +20,7 @@
 /**
  * Module for displaying dynamic forms.
  */
-angular.module('form', ['locale']);
+angular.module('form', [
+    'locale',
+    'rest'
+]);
