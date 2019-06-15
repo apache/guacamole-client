@@ -3,25 +3,7 @@
     <!-- Locale settings -->
     <div class="settings section locale">
         <p>{{'SETTINGS_PREFERENCES.HELP_LOCALE' | translate}}</p>
-
-        <!-- Language selection -->
-        <div class="form">
-            <table class="fields">
-                <tr>
-                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_LANGUAGE' | translate}}</th>
-                    <td><select ng-model="preferences.language" ng-change="changeLanguage()" ng-options="language.key as language.value for language in languages | orderBy: key"></select></td>
-                </tr>
-            </table>
-        </div>
-        
-        <!-- Timezone selection -->
-        <div class="form">
-            <guac-form-field
-                field="{ 'type' : 'TIMEZONE', 'name' : 'timezone' }"
-                model="preferences.timezone"
-                namespace="'SETTINGS_PREFERENCES'">
-            </guac-form-field>
-        </div>
+        <guac-form content="localeFields" model="preferences" namespace="'SETTINGS_PREFERENCES'"></guac-form>
     </div>
     
     <!-- Password update -->

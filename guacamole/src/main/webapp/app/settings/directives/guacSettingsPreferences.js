@@ -39,7 +39,6 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
             var $translate            = $injector.get('$translate');
             var authenticationService = $injector.get('authenticationService');
             var guacNotification      = $injector.get('guacNotification');
-            var languageService       = $injector.get('languageService');
             var permissionService     = $injector.get('permissionService');
             var preferenceService     = $injector.get('preferenceService');
             var requestService        = $injector.get('requestService');
@@ -78,21 +77,23 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
              * @type Object.<String, Object>
              */
             $scope.preferences = preferenceService.preferences;
-            
+
             /**
-             * A map of all available language keys to their human-readable
-             * names.
-             * 
-             * @type Object.<String, String>
+             * The fields which should be displayed for choosing locale
+             * preferences. Each field name must be a property on
+             * $scope.preferences.
+             *
+             * @type Field[]
              */
-            $scope.languages = null;
-            
-            /**
-             * Switches the active display langugae to the chosen language.
-             */
-            $scope.changeLanguage = function changeLanguage() {
-                $translate.use($scope.preferences.language);
-            };
+            $scope.localeFields = [
+                { 'type' : 'LANGUAGE', 'name' : 'language' },
+                { 'type' : 'TIMEZONE', 'name' : 'timezone' }
+            ];
+
+            // Automatically update applied translation when language preference is changed
+            $scope.$watch('preferences.language', function changeLanguage(language) {
+                $translate.use(language);
+            });
 
             /**
              * The new password for the user.
@@ -168,17 +169,6 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                 }, guacNotification.SHOW_REQUEST_ERROR);
                 
             };
-
-            // Retrieve defined languages
-            languageService.getLanguages()
-            .then(function languagesRetrieved(languages) {
-                $scope.languages = Object.keys(languages).map(function(key) {
-                    return {
-                        key: key,
-                        value: languages[key]
-                    };
-                });
-            }, requestService.DIE);
 
             // Retrieve current permissions
             permissionService.getEffectivePermissions(dataSource, username)
