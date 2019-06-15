@@ -17,8 +17,23 @@
  * under the License.
  */
 
-.preferences .update-password .form, 
-.preferences .locale .form {
+.preferences .form .fields {
+    display: table;
     padding-left: 0.5em;
-    border-left: 3px solid rgba(0, 0, 0, 0.125);
+    border-left: 3px solid rgba(0,0,0,0.125);
+}
+
+.preferences .form .fields .labeled-field {
+    display: table-row;
+}
+
+.preferences .form .fields .field-header,
+.preferences .form .fields .form-field {
+    display: table-cell;
+    padding: 0.125em;
+    vertical-align: top;
+}
+
+.preferences .form .fields .field-header {
+    padding-right: 1em;
 }
