@@ -17,21 +17,34 @@
  * under the License.
  */
 
+.connection-select-menu {
+    min-width: 0;
+}
+
 .connection-select-menu .menu-dropdown {
     border: none;
 }
 
-.connection-select-menu .menu-contents {
-    font-weight: normal;
-    font-size: 0.8em;
+.connection-select-menu .menu-dropdown .menu-title {
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    text-overflow: ellipsis;
 }
 
-.connection-select-menu .filter input {
+.connection-select-menu .menu-dropdown .menu-contents {
+    font-weight: normal;
+    font-size: 0.8em;
+    right: auto;
+    left: 0;
+}
+
+.connection-select-menu .menu-dropdown .menu-contents .filter input {
     border-bottom: 1px solid rgba(0,0,0,0.125);
     border-left: none;
 }
 
-.connection-select-menu .filter {
+.connection-select-menu .menu-dropdown .menu-contents .filter {
     margin-bottom: 0.5em;
     padding: 0;
 }
