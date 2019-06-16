@@ -53,7 +53,7 @@
             <!-- Stationary header -->
             <div class="header">
                 <h2 ng-hide="rootConnectionGroups">{{client.name}}</h2>
-                <h2 ng-show="rootConnectionGroups">
+                <h2 class="connection-select-menu" ng-show="rootConnectionGroups">
                     <guac-menu menu-title="client.name">
                         <div class="all-connections">
                             <guac-group-list-filter connection-groups="rootConnectionGroups"
