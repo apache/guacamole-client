@@ -30,13 +30,6 @@
     border: none;
 }
 
-.connection-select-menu .menu-dropdown .menu-title {
-    white-space: nowrap;
-    overflow: hidden;
-    width: 100%;
-    text-overflow: ellipsis;
-}
-
 .connection-select-menu .menu-dropdown .menu-contents {
     font-weight: normal;
     font-size: 0.8em;
