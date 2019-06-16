@@ -17,6 +17,10 @@
  * under the License.
  */
 
+#guac-menu .header h2.connection-select-menu {
+    overflow: visible;
+}
+
 .connection-select-menu {
     padding: 0;
     min-width: 0;

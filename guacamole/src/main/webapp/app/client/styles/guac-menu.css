@@ -65,6 +65,13 @@
     margin-top: 1em;
 }
 
+#guac-menu .header h2 {
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    text-overflow: ellipsis;
+}
+
 #guac-menu #mouse-settings .choice {
     text-align: center;
 }
