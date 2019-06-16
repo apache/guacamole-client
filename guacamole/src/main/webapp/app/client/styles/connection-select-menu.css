@@ -18,6 +18,7 @@
  */
 
 .connection-select-menu {
+    padding: 0;
     min-width: 0;
 }
 
