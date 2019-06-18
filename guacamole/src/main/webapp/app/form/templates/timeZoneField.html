@@ -3,6 +3,7 @@
     <!-- Available time zone regions -->
     <select class="time-zone-region"
             ng-disabled="disabled"
+            guac-focus="focused"
             ng-model="region"
             ng-options="name for name in regions | orderBy: name"></select>
 
