@@ -34,9 +34,9 @@ import java.util.Map.Entry;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
-import org.apache.guacamole.auth.cas.CASTokenName;
 import org.apache.guacamole.auth.cas.conf.ConfigurationService;
 import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.token.TokenName;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
@@ -54,6 +54,11 @@ public class TicketValidationService {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(TicketValidationService.class);
+    
+    /**
+     * The prefix to use when generating token names.
+     */
+    public static final String CAS_ATTRIBUTE_TOKEN_PREFIX = "CAS_";
 
     /**
      * Service for retrieving CAS configuration information.
@@ -96,7 +101,8 @@ public class TicketValidationService {
             String confRedirectURI = confService.getRedirectURI();
             Assertion a = validator.validate(ticket, confRedirectURI);
             AttributePrincipal principal =  a.getPrincipal();
-            Map<String, Object> ticketAttrs = principal.getAttributes();
+            Map<String, Object> ticketAttrs =
+                    new HashMap<>(principal.getAttributes());
 
             // Retrieve username and set the credentials.
             String username = principal.getName();
@@ -112,8 +118,9 @@ public class TicketValidationService {
             }
             
             // Convert remaining attributes that have values to Strings
-            for (Entry attr : ticketAttrs.entrySet()) {
-                String tokenName = CASTokenName.fromAttribute(attr.getKey().toString());
+            for (Entry <String, Object> attr : ticketAttrs.entrySet()) {
+                String tokenName = TokenName.fromAttribute(attr.getKey(),
+                        CAS_ATTRIBUTE_TOKEN_PREFIX);
                 Object value = attr.getValue();
                 if (value != null)
                     tokens.put(tokenName, value.toString());

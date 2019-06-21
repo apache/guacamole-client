@@ -65,7 +65,8 @@ public abstract class TokenName {
      * automatically be transformed from "CamelCase", "headlessCamelCase",
      * "lowercase_with_underscores", and "mixes_ofBoth_Styles" to consistent
      * "UPPERCASE_WITH_UNDERSCORES". Each returned attribute will be prefixed
-     * with "LDAP_".
+     * with value provided in the prefix.  The value provided in prefix will
+     * be prepended to the attribute name, but will itself not be transformed.
      *
      * @param name
      *     The name of the attribute to use to generate the token name.
@@ -98,6 +99,22 @@ public abstract class TokenName {
 
         return builder.toString();
 
+    }
+    
+    /**
+     * Generate the name of a parameter from the value of the given attribute,
+     * and with a blank prefix such that the token name will simply be the
+     * transformed version of the attribute name.
+     * 
+     * @param name
+     *     The name of the attribute to use to generate the token name.
+     * 
+     * @return 
+     *     The name of the parameter token that should be populated with the
+     *     value of the attribute having the given name.
+     */
+    public static String fromAttribute(final String name) {
+        return fromAttribute(name, "");
     }
 
 }
