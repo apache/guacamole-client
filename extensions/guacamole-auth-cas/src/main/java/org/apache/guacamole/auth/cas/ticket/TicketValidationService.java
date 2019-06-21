@@ -119,7 +119,7 @@ public class TicketValidationService {
             
             // Convert remaining attributes that have values to Strings
             for (Entry <String, Object> attr : ticketAttrs.entrySet()) {
-                String tokenName = TokenName.fromAttribute(attr.getKey(),
+                String tokenName = TokenName.canonicalize(attr.getKey(),
                         CAS_ATTRIBUTE_TOKEN_PREFIX);
                 Object value = attr.getValue();
                 if (value != null)

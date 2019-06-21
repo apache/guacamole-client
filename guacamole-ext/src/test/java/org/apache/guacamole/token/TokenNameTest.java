@@ -29,28 +29,28 @@ import org.junit.Test;
 public class TokenNameTest {
 
     /**
-     * Verifies that TokenName.fromAttribute() generates token names as
+     * Verifies that TokenName.canonicalize() generates token names as
      * specified, regardless of the naming convention of the attribute.
      */
     @Test
-    public void testFromAttribute() {
-        assertEquals("A", TokenName.fromAttribute("a"));
-        assertEquals("B", TokenName.fromAttribute("b"));
-        assertEquals("1", TokenName.fromAttribute("1"));
-        assertEquals("SOME_URL", TokenName.fromAttribute("someURL"));
-        assertEquals("LOWERCASE_WITH_DASHES", TokenName.fromAttribute("lowercase-with-dashes"));
-        assertEquals("HEADLESS_CAMEL_CASE", TokenName.fromAttribute("headlessCamelCase"));
-        assertEquals("CAMEL_CASE", TokenName.fromAttribute("CamelCase"));
-        assertEquals("CAMEL_CASE", TokenName.fromAttribute("CamelCase"));
-        assertEquals("LOWERCASE_WITH_UNDERSCORES", TokenName.fromAttribute("lowercase_with_underscores"));
-        assertEquals("UPPERCASE_WITH_UNDERSCORES", TokenName.fromAttribute("UPPERCASE_WITH_UNDERSCORES"));
-        assertEquals("A_VERY_INCONSISTENT_MIX_OF_ALL_STYLES", TokenName.fromAttribute("aVery-INCONSISTENTMix_ofAllStyles"));
-        assertEquals("ABC_123_DEF_456", TokenName.fromAttribute("abc123def456"));
-        assertEquals("ABC_123_DEF_456", TokenName.fromAttribute("ABC123DEF456"));
-        assertEquals("WORD_A_WORD_AB_WORD_ABC_WORD", TokenName.fromAttribute("WordAWordABWordABCWord"));
+    public void testCanonicalize() {
+        assertEquals("A", TokenName.canonicalize("a"));
+        assertEquals("B", TokenName.canonicalize("b"));
+        assertEquals("1", TokenName.canonicalize("1"));
+        assertEquals("SOME_URL", TokenName.canonicalize("someURL"));
+        assertEquals("LOWERCASE_WITH_DASHES", TokenName.canonicalize("lowercase-with-dashes"));
+        assertEquals("HEADLESS_CAMEL_CASE", TokenName.canonicalize("headlessCamelCase"));
+        assertEquals("CAMEL_CASE", TokenName.canonicalize("CamelCase"));
+        assertEquals("CAMEL_CASE", TokenName.canonicalize("CamelCase"));
+        assertEquals("LOWERCASE_WITH_UNDERSCORES", TokenName.canonicalize("lowercase_with_underscores"));
+        assertEquals("UPPERCASE_WITH_UNDERSCORES", TokenName.canonicalize("UPPERCASE_WITH_UNDERSCORES"));
+        assertEquals("A_VERY_INCONSISTENT_MIX_OF_ALL_STYLES", TokenName.canonicalize("aVery-INCONSISTENTMix_ofAllStyles"));
+        assertEquals("ABC_123_DEF_456", TokenName.canonicalize("abc123def456"));
+        assertEquals("ABC_123_DEF_456", TokenName.canonicalize("ABC123DEF456"));
+        assertEquals("WORD_A_WORD_AB_WORD_ABC_WORD", TokenName.canonicalize("WordAWordABWordABCWord"));
         
-        assertEquals("AUTH_ATTRIBUTE", TokenName.fromAttribute("Attribute", "AUTH_"));
-        assertEquals("auth_SOMETHING", TokenName.fromAttribute("Something", "auth_"));
+        assertEquals("AUTH_ATTRIBUTE", TokenName.canonicalize("Attribute", "AUTH_"));
+        assertEquals("auth_SOMETHING", TokenName.canonicalize("Something", "auth_"));
     }
 
 }

@@ -28,13 +28,13 @@ import java.util.regex.Pattern;
 public abstract class TokenName {
 
     /**
-     * Pattern which matches logical groupings of words within an
-     * attribute name. This pattern is intended to match logical groupings
+     * Pattern which matches logical groupings of words within a
+     * string. This pattern is intended to match logical groupings
      * regardless of the naming convention used: "CamelCase",
      * "headlessCamelCase", "lowercase_with_underscores",
      * "lowercase-with-dashes" or even "aVery-INCONSISTENTMix_ofAllStyles".
      */
-    private static final Pattern ATTRIBUTE_NAME_GROUPING = Pattern.compile(
+    private static final Pattern STRING_NAME_GROUPING = Pattern.compile(
 
         // "Camel" word groups
         "\\p{javaUpperCase}\\p{javaLowerCase}+"
@@ -61,29 +61,29 @@ public abstract class TokenName {
 
     /**
      * Generates the name of the parameter token that should be populated with
-     * the value of the given attribute. The name of the attribute will
-     * automatically be transformed from "CamelCase", "headlessCamelCase",
-     * "lowercase_with_underscores", and "mixes_ofBoth_Styles" to consistent
-     * "UPPERCASE_WITH_UNDERSCORES". Each returned attribute will be prefixed
-     * with value provided in the prefix.  The value provided in prefix will
-     * be prepended to the attribute name, but will itself not be transformed.
+     * the given string. The provided string will be automatically transformed
+     * from "CamelCase", "headlessCamelCase", "lowercase_with_underscores",
+     * and "mixes_ofBoth_Styles" to consistent "UPPERCASE_WITH_UNDERSCORES".
+     * Each returned attribute will be prefixed with the string value provided
+     * in the prefix.  The value provided in prefix will be prepended to the
+     * attribute name, but will itself not be transformed.
      *
      * @param name
-     *     The name of the attribute to use to generate the token name.
+     *     The string to be used to generate the token name.
      * 
      * @param prefix
      *     The prefix to prepend to the generated token name.
      *
      * @return
      *     The name of the parameter token that should be populated with the
-     *     value of the attribute having the given name.
+     *     given string.
      */
-    public static String fromAttribute(final String name, final String prefix) {
+    public static String canonicalize(final String name, final String prefix) {
 
         // If even one logical word grouping cannot be found, default to
-        // simply converting the attribute to uppercase and adding the
+        // simply converting the string to uppercase and adding the
         // prefix
-        Matcher groupMatcher = ATTRIBUTE_NAME_GROUPING.matcher(name);
+        Matcher groupMatcher = STRING_NAME_GROUPING.matcher(name);
         if (!groupMatcher.find())
             return prefix + name.toUpperCase();
 
@@ -102,19 +102,19 @@ public abstract class TokenName {
     }
     
     /**
-     * Generate the name of a parameter from the value of the given attribute,
-     * and with a blank prefix such that the token name will simply be the
-     * transformed version of the attribute name.
+     * Generate the name of a parameter from the given string, and with a blank
+     * prefix such that the token name will simply be the transformed version
+     * of the string.
      * 
      * @param name
-     *     The name of the attribute to use to generate the token name.
+     *     The string to use to generate the token name.
      * 
      * @return 
      *     The name of the parameter token that should be populated with the
-     *     value of the attribute having the given name.
+     *     given string.
      */
-    public static String fromAttribute(final String name) {
-        return fromAttribute(name, "");
+    public static String canonicalize(final String name) {
+        return canonicalize(name, "");
     }
 
 }
