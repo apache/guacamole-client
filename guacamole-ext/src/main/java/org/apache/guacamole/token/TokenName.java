@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 /**
  * Utility class for generating parameter token names.
  */
-public abstract class TokenName {
+public class TokenName {
 
     /**
      * Pattern which matches logical groupings of words within a
@@ -57,16 +57,16 @@ public abstract class TokenName {
     /**
      * This utility class should not be instantiated.
      */
-    protected TokenName() {}
+    private TokenName() {}
 
     /**
      * Generates the name of the parameter token that should be populated with
      * the given string. The provided string will be automatically transformed
      * from "CamelCase", "headlessCamelCase", "lowercase_with_underscores",
      * and "mixes_ofBoth_Styles" to consistent "UPPERCASE_WITH_UNDERSCORES".
-     * Each returned attribute will be prefixed with the string value provided
+     * Each returned token name will be prefixed with the string value provided
      * in the prefix.  The value provided in prefix will be prepended to the
-     * attribute name, but will itself not be transformed.
+     * string, but will itself not be transformed.
      *
      * @param name
      *     The string to be used to generate the token name.
@@ -102,9 +102,11 @@ public abstract class TokenName {
     }
     
     /**
-     * Generate the name of a parameter from the given string, and with a blank
-     * prefix such that the token name will simply be the transformed version
-     * of the string.
+     * Generate the name of a parameter token from the given string, with no
+     * added prefix, such that the token name will simply be the transformed
+     * version of the string. See
+     * {@link #canonicalize(java.lang.String, java.lang.String)}
+     * 
      * 
      * @param name
      *     The string to use to generate the token name.

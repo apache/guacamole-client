@@ -23,14 +23,13 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
- * Test which verifies automatic generation of LDAP-specific connection
- * parameter token names.
+ * Test which verifies automatic generation of connection parameter token names.
  */
 public class TokenNameTest {
 
     /**
      * Verifies that TokenName.canonicalize() generates token names as
-     * specified, regardless of the naming convention of the attribute.
+     * specified, regardless of the format of the provided string.
      */
     @Test
     public void testCanonicalize() {
