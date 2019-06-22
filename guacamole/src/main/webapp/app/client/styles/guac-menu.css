@@ -66,26 +66,10 @@
 }
 
 #guac-menu .header h2 {
-    padding: 0;
-}
-
-#guac-menu .header h2 .menu-dropdown {
-    border: none;
-}
-
-#guac-menu .header h2 .menu-contents {
-    font-weight: normal;
-    font-size: 0.8em;
-}
-
-#guac-menu .header .filter input {
-    border-bottom: 1px solid rgba(0,0,0,0.125);
-    border-left: none;
-}
-
-#guac-menu .header .filter {
-    margin-bottom: 0.5em;
-    padding: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    text-overflow: ellipsis;
 }
 
 #guac-menu #mouse-settings .choice {

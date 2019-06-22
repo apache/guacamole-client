@@ -68,6 +68,11 @@
     padding: 0.5em;
     padding-right: 2em;
 
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    text-overflow: ellipsis;
+
     -ms-flex: 0 0 auto;
     -moz-box-flex: 0;
     -webkit-box-flex: 0;
