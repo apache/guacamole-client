@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.cas.conf.ConfigurationService;
 import org.apache.guacamole.net.auth.Credentials;
@@ -106,8 +107,10 @@ public class TicketValidationService {
 
             // Retrieve username and set the credentials.
             String username = principal.getName();
-            if (username != null)
-                credentials.setUsername(username);
+            if (username == null)
+                throw new GuacamoleSecurityException("No username provided by CAS.");
+            
+            credentials.setUsername(username);
 
             // Retrieve password, attempt decryption, and set credentials.
             Object credObj = ticketAttrs.remove("credential");
