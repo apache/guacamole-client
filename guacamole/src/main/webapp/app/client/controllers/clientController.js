@@ -280,9 +280,12 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     })(guacClientManager.getManagedClients());
 
     /**
-     * Map of data source identifier to the root connection group of that data
-     * source, or null if the connection group hierarchy has not yet been
-     * loaded.
+     * The root connection groups of the connection hierarchy that should be
+     * presented to the user for selecting a different connection, as a map of
+     * data source identifier to the root connection group of that data
+     * source. This will be null if the connection group hierarchy has not yet
+     * been loaded or if the hierarchy is inapplicable due to only one
+     * connection or balancing group being available.
      *
      * @type Object.<String, ConnectionGroup>
      */
@@ -313,7 +316,13 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         ConnectionGroup.ROOT_IDENTIFIER
     )
     .then(function rootGroupsRetrieved(rootConnectionGroups) {
-        $scope.rootConnectionGroups = rootConnectionGroups;
+
+        // Store retrieved groups only if there are multiple connections or
+        // balancing groups available
+        var clientPages = userPageService.getClientPages(rootConnectionGroups);
+        if (clientPages.length > 1)
+            $scope.rootConnectionGroups = rootConnectionGroups;
+
     }, requestService.WARN);
 
     /**
