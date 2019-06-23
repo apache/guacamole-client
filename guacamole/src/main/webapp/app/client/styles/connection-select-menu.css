@@ -35,6 +35,8 @@
     font-size: 0.8em;
     right: auto;
     left: 0;
+    max-width: 100vw;
+    width: 400px;
 }
 
 .connection-select-menu .menu-dropdown .menu-contents .filter input {
@@ -45,4 +47,11 @@
 .connection-select-menu .menu-dropdown .menu-contents .filter {
     margin-bottom: 0.5em;
     padding: 0;
+}
+
+.connection-select-menu .menu-dropdown .menu-contents .group-list .caption {
+    display: inline-block;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
