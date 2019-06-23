@@ -35,7 +35,8 @@
     font-size: 0.8em;
     right: auto;
     left: 0;
-    max-width: 100%;
+    max-width: 100vw;
+    width: 400px;
 }
 
 .connection-select-menu .menu-dropdown .menu-contents .filter input {
