@@ -54,7 +54,7 @@
             <div class="header">
                 <h2 ng-hide="rootConnectionGroups">{{client.name}}</h2>
                 <h2 class="connection-select-menu" ng-show="rootConnectionGroups">
-                    <guac-menu menu-title="client.name">
+                    <guac-menu menu-title="client.name" interactive="true">
                         <div class="all-connections">
                             <guac-group-list-filter connection-groups="rootConnectionGroups"
                                 filtered-connection-groups="filteredRootConnectionGroups"
