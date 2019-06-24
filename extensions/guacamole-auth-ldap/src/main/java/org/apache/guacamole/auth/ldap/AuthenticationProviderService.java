@@ -41,6 +41,7 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
+import org.apache.guacamole.token.TokenName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,12 @@ public class AuthenticationProviderService {
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
+    
+    /**
+     * The prefix that will be used when generating tokens.
+     */
+    public static final String LDAP_ATTRIBUTE_TOKEN_PREFIX = "LDAP_";
 
     /**
      * Service for creating and managing connections to LDAP servers.
@@ -294,7 +300,7 @@ public class AuthenticationProviderService {
         String[] attrArray = attrList.toArray(new String[attrList.size()]);
         String userDN = getUserBindDN(username);
 
-        Map<String, String> tokens = new HashMap<String, String>();
+        Map<String, String> tokens = new HashMap<>();
         try {
 
             // Get LDAP attributes by querying LDAP
@@ -309,7 +315,8 @@ public class AuthenticationProviderService {
             // Convert each retrieved attribute into a corresponding token
             for (Object attrObj : attrSet) {
                 LDAPAttribute attr = (LDAPAttribute)attrObj;
-                tokens.put(TokenName.fromAttribute(attr.getName()), attr.getStringValue());
+                tokens.put(TokenName.canonicalize(attr.getName(),
+                        LDAP_ATTRIBUTE_TOKEN_PREFIX), attr.getStringValue());
             }
 
         }

@@ -22,9 +22,12 @@ package org.apache.guacamole.auth.cas;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.cas.user.CASAuthenticatedUser;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.TokenInjectingUserContext;
+import org.apache.guacamole.net.auth.UserContext;
 
 /**
  * Guacamole authentication backend which authenticates users using an
@@ -70,6 +73,18 @@ public class CASAuthenticationProvider extends AbstractAuthenticationProvider {
         AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
         return authProviderService.authenticateUser(credentials);
 
+    }
+    
+    @Override
+    public UserContext decorate(UserContext context,
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
+        
+        if (!(authenticatedUser instanceof CASAuthenticatedUser))
+            return context;
+        
+        return new TokenInjectingUserContext(context,
+                ((CASAuthenticatedUser) authenticatedUser).getTokens());
     }
 
 }

@@ -28,13 +28,16 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.cas.conf.ConfigurationService;
 import org.apache.guacamole.net.auth.Credentials;
-import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
+import org.apache.guacamole.token.TokenName;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
@@ -52,6 +55,11 @@ public class TicketValidationService {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(TicketValidationService.class);
+    
+    /**
+     * The prefix to use when generating token names.
+     */
+    public static final String CAS_ATTRIBUTE_TOKEN_PREFIX = "CAS_";
 
     /**
      * Service for retrieving CAS configuration information.
@@ -60,9 +68,9 @@ public class TicketValidationService {
     private ConfigurationService confService;
 
     /**
-     * Validates and parses the given ID ticket, returning the username
-     * provided by the CAS server in the ticket.  If the
-     * ticket is invalid an exception is thrown.
+     * Validates and parses the given ID ticket, returning a map of all
+     * available tokens for the given user based on attributes provided by the
+     * CAS server.  If the ticket is invalid an exception is thrown.
      *
      * @param ticket
      *     The ID ticket to validate and parse.
@@ -72,13 +80,15 @@ public class TicketValidationService {
      *     password values in.
      *
      * @return
-     *     The username derived from the ticket.
+     *     A Map all of tokens for the user parsed from attributes returned
+     *     by the CAS server.
      *
      * @throws GuacamoleException
      *     If the ID ticket is not valid or guacamole.properties could
      *     not be parsed.
      */
-    public String validateTicket(String ticket, Credentials credentials) throws GuacamoleException {
+    public Map<String, String> validateTicket(String ticket,
+            Credentials credentials) throws GuacamoleException {
 
         // Retrieve the configured CAS URL, establish a ticket validator,
         // and then attempt to validate the supplied ticket.  If that succeeds,
@@ -88,32 +98,42 @@ public class TicketValidationService {
         validator.setAcceptAnyProxy(true);
         validator.setEncoding("UTF-8");
         try {
+            Map<String, String> tokens = new HashMap<>();
             String confRedirectURI = confService.getRedirectURI();
             Assertion a = validator.validate(ticket, confRedirectURI);
             AttributePrincipal principal =  a.getPrincipal();
+            Map<String, Object> ticketAttrs =
+                    new HashMap<>(principal.getAttributes());
 
             // Retrieve username and set the credentials.
             String username = principal.getName();
-            if (username != null)
-                credentials.setUsername(username);
+            if (username == null)
+                throw new GuacamoleSecurityException("No username provided by CAS.");
+            
+            credentials.setUsername(username);
 
             // Retrieve password, attempt decryption, and set credentials.
-            Object credObj = principal.getAttributes().get("credential");
+            Object credObj = ticketAttrs.remove("credential");
             if (credObj != null) {
                 String clearPass = decryptPassword(credObj.toString());
                 if (clearPass != null && !clearPass.isEmpty())
                     credentials.setPassword(clearPass);
             }
+            
+            // Convert remaining attributes that have values to Strings
+            for (Entry <String, Object> attr : ticketAttrs.entrySet()) {
+                String tokenName = TokenName.canonicalize(attr.getKey(),
+                        CAS_ATTRIBUTE_TOKEN_PREFIX);
+                Object value = attr.getValue();
+                if (value != null)
+                    tokens.put(tokenName, value.toString());
+            }
 
-            return username;
+            return tokens;
 
         } 
         catch (TicketValidationException e) {
             throw new GuacamoleException("Ticket validation failed.", e);
-        }
-        catch (Throwable t) {
-            logger.error("Error validating ticket with CAS server: {}", t.getMessage());
-            throw new GuacamoleInvalidCredentialsException("CAS login failed.", CredentialsInfo.USERNAME_PASSWORD);
         }
 
     }
