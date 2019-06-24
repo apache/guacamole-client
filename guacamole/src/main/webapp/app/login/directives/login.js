@@ -103,6 +103,13 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         $scope.submitted = false;
 
         /**
+         * The field that is most relevant to the user.
+         *
+         * @type Field
+         */
+        $scope.relevantField = null;
+
+        /**
          * Returns whether a previous login attempt is continuing.
          *
          * @return {Boolean}
@@ -143,6 +150,8 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
                 if (!$scope.enteredValues[field.name])
                     $scope.enteredValues[field.name] = '';
             });
+
+            $scope.relevantField = getRelevantField();
 
         });
 
@@ -197,6 +206,26 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
                 }
 
             }));
+
+        };
+
+        /**
+         * Returns the field most relevant to the user given the current state
+         * of the login process. This will normally be the first empty field.
+         *
+         * @return {Field}
+         *     The field most relevant, null if there is no single most relevant
+         *     field.
+         */
+        var getRelevantField = function getRelevantField() {
+
+            for (var i = 0; i < $scope.remainingFields.length; i++) {
+                var field = $scope.remainingFields[i];
+                if (!$scope.enteredValues[field.name])
+                    return field;
+            }
+
+            return null;
 
         };
 
