@@ -1,4 +1,4 @@
 <span class="home-connection-group name">
-    <a ng-show="item.balancing" ng-href="#/client/{{ getClientIdentifier() }}">{{item.name}}</a>
+    <a ng-show="item.balancing" ng-href="#/client/{{ item.getClientIdentifier() }}">{{item.name}}</a>
     <span ng-show="!item.balancing">{{item.name}}</span>
 </span>
