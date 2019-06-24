@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.ldap;
+package org.apache.guacamole.token;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,19 +28,13 @@ import java.util.regex.Pattern;
 public class TokenName {
 
     /**
-     * The prefix string to add to each parameter token generated from an LDAP
-     * attribute name.
-     */
-    private static final String LDAP_ATTRIBUTE_TOKEN_PREFIX = "LDAP_";
-
-    /**
-     * Pattern which matches logical groupings of words within an LDAP
-     * attribute name. This pattern is intended to match logical groupings
+     * Pattern which matches logical groupings of words within a
+     * string. This pattern is intended to match logical groupings
      * regardless of the naming convention used: "CamelCase",
      * "headlessCamelCase", "lowercase_with_underscores",
      * "lowercase-with-dashes" or even "aVery-INCONSISTENTMix_ofAllStyles".
      */
-    private static final Pattern LDAP_ATTRIBUTE_NAME_GROUPING = Pattern.compile(
+    private static final Pattern STRING_NAME_GROUPING = Pattern.compile(
 
         // "Camel" word groups
         "\\p{javaUpperCase}\\p{javaLowerCase}+"
@@ -67,31 +61,35 @@ public class TokenName {
 
     /**
      * Generates the name of the parameter token that should be populated with
-     * the value of the given LDAP attribute. The name of the LDAP attribute
-     * will automatically be transformed from "CamelCase", "headlessCamelCase",
-     * "lowercase_with_underscores", and "mixes_ofBoth_Styles" to consistent
-     * "UPPERCASE_WITH_UNDERSCORES". Each returned attribute will be prefixed
-     * with "LDAP_".
+     * the given string. The provided string will be automatically transformed
+     * from "CamelCase", "headlessCamelCase", "lowercase_with_underscores",
+     * and "mixes_ofBoth_Styles" to consistent "UPPERCASE_WITH_UNDERSCORES".
+     * Each returned token name will be prefixed with the string value provided
+     * in the prefix.  The value provided in prefix will be prepended to the
+     * string, but will itself not be transformed.
      *
      * @param name
-     *     The name of the LDAP attribute to use to generate the token name.
+     *     The string to be used to generate the token name.
+     * 
+     * @param prefix
+     *     The prefix to prepend to the generated token name.
      *
      * @return
      *     The name of the parameter token that should be populated with the
-     *     value of the LDAP attribute having the given name.
+     *     given string.
      */
-    public static String fromAttribute(String name) {
+    public static String canonicalize(final String name, final String prefix) {
 
         // If even one logical word grouping cannot be found, default to
-        // simply converting the attribute to uppercase and adding the
+        // simply converting the string to uppercase and adding the
         // prefix
-        Matcher groupMatcher = LDAP_ATTRIBUTE_NAME_GROUPING.matcher(name);
+        Matcher groupMatcher = STRING_NAME_GROUPING.matcher(name);
         if (!groupMatcher.find())
-            return LDAP_ATTRIBUTE_TOKEN_PREFIX + name.toUpperCase();
+            return prefix + name.toUpperCase();
 
         // Split the given name into logical word groups, separated by
         // underscores and converted to uppercase
-        StringBuilder builder = new StringBuilder(LDAP_ATTRIBUTE_TOKEN_PREFIX);
+        StringBuilder builder = new StringBuilder(prefix);
         builder.append(groupMatcher.group(0).toUpperCase());
 
         while (groupMatcher.find()) {
@@ -101,6 +99,24 @@ public class TokenName {
 
         return builder.toString();
 
+    }
+    
+    /**
+     * Generate the name of a parameter token from the given string, with no
+     * added prefix, such that the token name will simply be the transformed
+     * version of the string. See
+     * {@link #canonicalize(java.lang.String, java.lang.String)}
+     * 
+     * 
+     * @param name
+     *     The string to use to generate the token name.
+     * 
+     * @return 
+     *     The name of the parameter token that should be populated with the
+     *     given string.
+     */
+    public static String canonicalize(final String name) {
+        return canonicalize(name, "");
     }
 
 }

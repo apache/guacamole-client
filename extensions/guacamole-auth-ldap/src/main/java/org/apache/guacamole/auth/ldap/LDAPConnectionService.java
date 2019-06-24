@@ -28,7 +28,6 @@ import com.novell.ldap.LDAPJSSEStartTLSFactory;
 import java.io.UnsupportedEncodingException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
-import org.apache.guacamole.auth.ldap.ReferralAuthHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -19,12 +19,9 @@
 
 package org.apache.guacamole.auth.ldap;
 
-import com.google.inject.Inject;
 import com.novell.ldap.LDAPAuthHandler;
 import com.novell.ldap.LDAPAuthProvider;
-import com.novell.ldap.LDAPConnection;
 import java.io.UnsupportedEncodingException;
-import org.apache.guacamole.GuacamoleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +45,12 @@ public class ReferralAuthHandler implements LDAPAuthHandler {
      * Creates a ReferralAuthHandler object to handle authentication when
      * following referrals in a LDAP connection, using the provided dn and
      * password.
+     * 
+     * @param dn
+     *     The distinguished name to use for the referral login.
+     * 
+     * @param password
+     *     The password to use for the referral login.
      */
     public ReferralAuthHandler(String dn, String password) {
         byte[] passwordBytes;
