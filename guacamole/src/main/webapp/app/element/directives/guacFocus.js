@@ -52,20 +52,6 @@ angular.module('element').directive('guacFocus', ['$parse', function guacFocus($
                 });
             });
 
-            // Set focus flag when focus is received
-            element.addEventListener('focus', function focusReceived() {
-                $scope.$evalAsync(function setGuacFocusAsync() {
-                    guacFocus.assign($scope, true);
-                });
-            });
-
-            // Unset focus flag when focus is lost
-            element.addEventListener('blur', function focusLost() {
-                $scope.$evalAsync(function unsetGuacFocusAsync() {
-                    guacFocus.assign($scope, false);
-                });
-            });
-
         } // end guacFocus link function
 
     };
