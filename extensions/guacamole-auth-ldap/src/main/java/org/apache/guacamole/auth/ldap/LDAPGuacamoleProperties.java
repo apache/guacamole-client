@@ -237,4 +237,15 @@ public class LDAPGuacamoleProperties {
         public String getName() { return "ldap-member-attribute"; }
         
     };
+
+    /**
+     * Specify the type of data contained in 'ldap-member-attribute'
+     */
+    public static final StringGuacamoleProperty LDAP_MEMBER_ATTRIBUTE_TYPE = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ldap-member-attribute-type"; }
+
+    };
+
 }
