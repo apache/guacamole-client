@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.auth.ldap.ConfigurationService;
+import org.apache.guacamole.auth.ldap.MemberAttributeType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.ldap.ObjectQueryService;
 import org.apache.guacamole.net.auth.UserGroup;
@@ -166,10 +167,10 @@ public class UserGroupService {
             return Collections.emptyList();
 
         // memberAttribute specified in properties could contain DN or username 
-        String memberAttributeType = confService.getMemberAttributeType();
+        MemberAttributeType memberAttributeType = confService.getMemberAttributeType();
         String userID = userDN;
         switch (memberAttributeType) {
-            case "uid":
+            case UID:
                 // Retrieve user objects with userDN
                 List<LDAPEntry> userEntries = queryService.search(
                     ldapConnection,
@@ -177,7 +178,7 @@ public class UserGroupService {
                     confService.getUserSearchFilter());
                 // ... there can surely only be one
                 if (userEntries.size() != 1) {
-                    logger.warn("user DN '{}' does not return unique value and will be ignored",
+                    logger.warn("user DN \"{}\" does not return unique value and will be ignored",
                                 userDN);
                     break;
                 }
@@ -188,7 +189,7 @@ public class UserGroupService {
                 userID = queryService.getIdentifier(userEntry, userAttributes);
                 break;
                 
-            case "dn": // fallthru
+            case DN: // fallthru
             default:
                 userID = userDN;
                 break;
