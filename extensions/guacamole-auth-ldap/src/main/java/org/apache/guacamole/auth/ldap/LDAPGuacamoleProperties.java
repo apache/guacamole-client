@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.ldap;
 
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
+import org.apache.guacamole.properties.MemberAttributeTypeProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
 
@@ -241,7 +242,7 @@ public class LDAPGuacamoleProperties {
     /**
      * Specify the type of data contained in 'ldap-member-attribute'
      */
-    public static final StringGuacamoleProperty LDAP_MEMBER_ATTRIBUTE_TYPE = new StringGuacamoleProperty() {
+    public static final MemberAttributeTypeProperty LDAP_MEMBER_ATTRIBUTE_TYPE = new MemberAttributeTypeProperty() {
 
         @Override
         public String getName() { return "ldap-member-attribute-type"; }
