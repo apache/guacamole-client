@@ -66,10 +66,7 @@
         "ERROR_CONTAINS_USERNAME"      : "ユーザ名にパスワードを含んでいます。",
         "ERROR_REQUIRES_DIGIT"         : "パスワードには数字を含めてください。",
         "ERROR_REQUIRES_MULTIPLE_CASE" : "パスワードにはアルファベットの大文字・小文字を含めてください。",
-        "ERROR_REQUIRES_NON_ALNUM"     : "パスワードには記号を含めてください。",
-        "ERROR_REUSED"                 : "This password has already been used. Please do not reuse any of the previous {HISTORY_SIZE} {HISTORY_SIZE, plural, one{password} other{passwords}}.",
-        "ERROR_TOO_SHORT"              : "Passwords must be at least {LENGTH} {LENGTH, plural, one{character} other{characters}} long.",
-        "ERROR_TOO_YOUNG"              : "The password for this account has already been reset. Please wait at least {WAIT} more {WAIT, plural, one{day} other{days}} before changing the password again."
+        "ERROR_REQUIRES_NON_ALNUM"     : "パスワードには記号を含めてください。"
 
     },
 
