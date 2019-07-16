@@ -1015,7 +1015,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
                     var opcode = elements.shift();
 
                     // Update state and UUID when first instruction received
-                    if (tunnel.state === Guacamole.Tunnel.State.CONNECTING) {
+                    if (tunnel.uuid === null) {
 
                         // Associate tunnel UUID if received
                         if (opcode === Guacamole.Tunnel.INTERNAL_DATA_OPCODE)
