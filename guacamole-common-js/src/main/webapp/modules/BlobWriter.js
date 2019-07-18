@@ -110,6 +110,10 @@ Guacamole.BlobWriter = function BlobWriter(stream) {
         var offset = 0;
         var reader = new FileReader();
 
+        var sleep = function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
         /**
          * Reads the next chunk of the blob provided to
          * [sendBlob()]{@link Guacamole.BlobWriter#sendBlob}. The chunk itself
@@ -119,6 +123,12 @@ Guacamole.BlobWriter = function BlobWriter(stream) {
          * @private
          */
         var readNextChunk = function readNextChunk() {
+
+            while (reader.readyState == 1) {
+                // The reader is busy so give it time to finish before proceeding.
+                // 1 second might be a bit generous, but it seems functional.
+                await sleep(1000);
+            }
 
             // If no further chunks remain, inform of completion and stop
             if (offset >= blob.size) {
