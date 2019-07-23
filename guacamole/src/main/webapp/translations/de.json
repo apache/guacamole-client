@@ -440,7 +440,7 @@
         "FIELD_OPTION_RESIZE_METHOD_EMPTY"          : "",
         "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "Erneut verbinden",
 
-        "FIELD_OPTION_SECURITY_ANY"   : "Jeder",
+        "FIELD_OPTION_SECURITY_ANY"   : "Alle",
         "FIELD_OPTION_SECURITY_EMPTY" : "",
         "FIELD_OPTION_SECURITY_NLA"   : "NLA (Authentifizierung auf Netzwerkebene)",
         "FIELD_OPTION_SECURITY_RDP"   : "RDP-Verschlüsselung",
