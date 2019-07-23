@@ -443,7 +443,7 @@
         "FIELD_OPTION_SECURITY_ANY"   : "Jeder",
         "FIELD_OPTION_SECURITY_EMPTY" : "",
         "FIELD_OPTION_SECURITY_NLA"   : "NLA (Authentifizierung auf Netzwerkebene)",
-        "FIELD_OPTION_SECURITY_RDP"   : "RDP-Verschlüsselungn",
+        "FIELD_OPTION_SECURITY_RDP"   : "RDP-Verschlüsselung",
         "FIELD_OPTION_SECURITY_TLS"   : "TLS-Verschlüsselung",
 
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "Deutsch (Qwertz)",
