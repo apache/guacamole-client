@@ -1,0 +1,113 @@
+{
+
+    "LOGIN" : {
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_SAME"     : "Das neue Passwort muss sich vom abgelaufenen Passwort unterscheiden.",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_NOT_VALID"         : "Dieses Benutzerkonto ist derzeit nicht gültig.",
+        "ERROR_NOT_ACCESSIBLE"    : "Der Zugriff auf dieses Konto ist derzeit nicht zulässig. Bitte versuchen Sie es später noch einmal.",
+
+        "INFO_PASSWORD_EXPIRED" : "Ihr Passwort ist abgelaufen und muss zurückgesetzt werden. Bitte geben Sie ein neues Passwort ein, um fortzufahren.",
+
+        "FIELD_HEADER_NEW_PASSWORD"         : "Neues Passwort",
+        "FIELD_HEADER_CONFIRM_NEW_PASSWORD" : "Beues Passwort wiederholen"
+
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Maximale Anzahl von Verbindungen:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Maximale Anzahl von Verbindungen pro Benutzer:",
+
+        "FIELD_HEADER_FAILOVER_ONLY"            : "Nur für Failover verwenden:",
+        "FIELD_HEADER_WEIGHT"                   : "Priorität der Verbindung:",
+
+        "FIELD_HEADER_GUACD_HOSTNAME"   : "Hostname:",
+        "FIELD_HEADER_GUACD_ENCRYPTION" : "Verschlüsselung:",
+        "FIELD_HEADER_GUACD_PORT"       : "Port:",
+
+        "FIELD_OPTION_GUACD_ENCRYPTION_EMPTY" : "",
+        "FIELD_OPTION_GUACD_ENCRYPTION_NONE"  : "Keine (unverschlüsselt)",
+        "FIELD_OPTION_GUACD_ENCRYPTION_SSL"   : "SSL / TLS",
+
+        "SECTION_HEADER_CONCURRENCY"    : "Gleichzeitigkeitsbeschränkungen",
+        "SECTION_HEADER_LOAD_BALANCING" : "Lastverteilung",
+        "SECTION_HEADER_GUACD"          : "Guacamole Proxy Parameter (guacd)"
+
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_ENABLE_SESSION_AFFINITY"  : "!Enable session affinity:",
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Maximale Anzahl von Verbindungen:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Maximale Anzahl von Verbindungen pro Benutzer:",
+
+        "SECTION_HEADER_CONCURRENCY" : "Gleichzeitigkeitsbeschränkungen (Verteilungsgruppen)"
+
+    },
+
+    "DATA_SOURCE_MYSQL" : {
+        "NAME" : "MySQL"
+    },
+
+    "DATA_SOURCE_MYSQL_SHARED" : {
+        "NAME" : "Gemeinsame Verbindungen (MySQL)"
+    },
+
+    "DATA_SOURCE_POSTGRESQL" : {
+        "NAME" : "PostgreSQL"
+    },
+
+    "DATA_SOURCE_POSTGRESQL_SHARED" : {
+        "NAME" : "Gemeinsame Verbindungen (PostgreSQL)"
+    },
+
+    "DATA_SOURCE_SQLSERVER" : {
+        "NAME" : "SQL Server"
+    },
+
+    "DATA_SOURCE_SQLSERVER_SHARED" : {
+        "NAME" : "Gemeinsame Verbindungen (SQL Server)"
+    },
+
+    "HOME" : {
+        "INFO_SHARED_BY" : "Geteilt von {USERNAME}"
+    },
+
+    "PASSWORD_POLICY" : {
+
+        "ERROR_CONTAINS_USERNAME"      : "Passwörter dürfen den Benutzernamen nicht enthalten.",
+        "ERROR_REQUIRES_DIGIT"         : "Passwörter müssen mindestens eine Ziffer enthalten.",
+        "ERROR_REQUIRES_MULTIPLE_CASE" : "Passwörter müssen sowohl Groß- als auch Kleinbuchstaben enthalten.",
+        "ERROR_REQUIRES_NON_ALNUM"     : "Passwords must contain at least one symbol.",
+        "ERROR_REUSED"                 : "Dieses Passwort wurde bereits verwendet. Bitte verwenden Sie keines der vorherigen Passwörtern erneut.",
+        "ERROR_TOO_SHORT"              : "Passwörter müssen mindestens {LENGTH} {LENGTH, plural, one{Zeichen} other{Zeichen}} lang sein.",
+        "ERROR_TOO_YOUNG"              : "Das Passwort für dieses Konto wurde bereits zurückgesetzt. Bitte warten Sie mindestens {WAIT} weitere {WAIT, plural, einen {Tag} other {Tage}}, bevor Sie das Passwort erneut ändern."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_DISABLED"            : "Anmeldung deaktiviert:",
+        "FIELD_HEADER_EXPIRED"             : "Passwort abgelaufen:",
+        "FIELD_HEADER_ACCESS_WINDOW_END"   : "Zugriff erlauben bis:",
+        "FIELD_HEADER_ACCESS_WINDOW_START" : "Zugriff erlauben ab:",
+        "FIELD_HEADER_TIMEZONE"            : "Zeitzone des Benutzers:",
+        "FIELD_HEADER_VALID_FROM"          : "Konto aktivieren nach dem:",
+        "FIELD_HEADER_VALID_UNTIL"         : "Konto deaktivieren nach dem: ",
+
+        "SECTION_HEADER_RESTRICTIONS" : "Kontobeschränkungen",
+        "SECTION_HEADER_PROFILE"      : "Profil"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_DISABLED" : "Deaktiviert:",
+
+        "SECTION_HEADER_RESTRICTIONS" : "Gruppenbeschränkungen"
+
+    }
+
+}
