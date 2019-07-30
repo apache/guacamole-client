@@ -650,6 +650,23 @@ Guacamole.Client = function(tunnel) {
     this.onvideo = null;
 
     /**
+     * Fired when the current value of a connection parameter is being exposed
+     * by the server.
+     *
+     * @event
+     * @param {Guacamole.InputStream} stream
+     *     The stream that will receive connection parameter data from the
+     *     server.
+     *
+     * @param {String} mimetype
+     *     The mimetype of the data which will be received.
+     *
+     * @param {String} name
+     *     The name of the connection parameter whose value is being exposed.
+     */
+    this.onargv = null;
+
+    /**
      * Fired when the clipboard of the remote client is changing.
      * 
      * @event
@@ -843,6 +860,24 @@ Guacamole.Client = function(tunnel) {
             var negative = parseInt(parameters[6]);
 
             display.arc(layer, x, y, radius, startAngle, endAngle, negative != 0);
+
+        },
+
+        "argv": function(parameters) {
+
+            var stream_index = parseInt(parameters[0]);
+            var mimetype = parameters[1];
+            var name = parameters[2];
+
+            // Create stream
+            if (guac_client.onargv) {
+                var stream = streams[stream_index] = new Guacamole.InputStream(guac_client, stream_index);
+                guac_client.onargv(stream, mimetype, name);
+            }
+
+            // Otherwise, unsupported
+            else
+                guac_client.sendAck(stream_index, "Receiving argument values unsupported", 0x0100);
 
         },
 
