@@ -198,6 +198,7 @@ div.section {
     background-image: url('images/protocol-icons/guac-plug.png');
 }
 
+.connection .icon.kubernetes,
 .connection .icon.ssh,
 .connection .icon.telnet {
     background-image: url('images/protocol-icons/guac-text.png');
