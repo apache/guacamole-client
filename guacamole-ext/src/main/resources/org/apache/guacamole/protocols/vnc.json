@@ -20,8 +20,28 @@
             "name"  : "authentication",
             "fields" : [
                 {
+                    "name"  : "username",
+                    "type"  : "TEXT"
+                },
+                {
                     "name"  : "password",
                     "type"  : "PASSWORD"
+                },
+                {
+                    "name"  : "client-cert",
+                    "type"  : "MULTILINE"
+                },
+                {
+                    "name"  : "client-key",
+                    "type"  : "MULTILINE"
+                },
+                {
+                    "name"  : "ca-cert",
+                    "type"  : "MULTILINE"
+                },
+                {
+                    "name"  : "ca-crl",
+                    "type"  : "TEXT"
                 }
             ]
         },

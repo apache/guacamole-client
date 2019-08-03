@@ -647,6 +647,10 @@
     "PROTOCOL_VNC" : {
 
         "FIELD_HEADER_AUDIO_SERVERNAME" : "Audio server name:",
+        "FIELD_HEADER_CA_CERT"          : "CA certificate:",
+        "FIELD_HEADER_CA_CRL"           : "CA CRL location:",
+        "FIELD_HEADER_CLIENT_CERT"      : "Client certificate:",
+        "FIELD_HEADER_CLIENT_KEY"       : "Client private key:",
         "FIELD_HEADER_CLIPBOARD_ENCODING" : "Encoding:",
         "FIELD_HEADER_COLOR_DEPTH"      : "Color depth:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
@@ -677,6 +681,7 @@
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "File browser root directory:",
         "FIELD_HEADER_SFTP_USERNAME"              : "Username:",
         "FIELD_HEADER_SWAP_RED_BLUE"    : "Swap red/blue components:",
+        "FIELD_HEADER_USERNAME"     : "Username:",
 
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Low color (16-bit)",
