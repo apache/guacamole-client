@@ -179,6 +179,19 @@ angular.module('form').provider('formService', function formServiceProvider() {
             module      : 'form',
             controller  : 'timeFieldController',
             templateUrl : 'app/form/templates/timeField.html'
+        },
+
+        /**
+         * Field type which allows selection of color schemes accepted by the
+         * Guacamole server terminal emulator and protocols which leverage it.
+         *
+         * @see {@link Field.Type.TERMINAL_COLOR_SCHEME}
+         * @type FieldType
+         */
+        'TERMINAL_COLOR_SCHEME' : {
+            module      : 'form',
+            controller  : 'terminalColorSchemeFieldController',
+            templateUrl : 'app/form/templates/terminalColorSchemeField.html'
         }
 
     };

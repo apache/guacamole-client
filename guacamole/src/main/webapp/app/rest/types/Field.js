@@ -168,7 +168,16 @@ angular.module('rest').factory('Field', [function defineField() {
          *
          * @type String
          */
-        QUERY_PARAMETER : 'QUERY_PARAMETER'
+        QUERY_PARAMETER : 'QUERY_PARAMETER',
+
+        /**
+         * The type string associated with parameters that may contain color
+         * schemes accepted by the Guacamole server terminal emulator and
+         * protocols which leverage it.
+         *
+         * @type String
+         */
+        TERMINAL_COLOR_SCHEME : 'TERMINAL_COLOR_SCHEME'
 
     };
 

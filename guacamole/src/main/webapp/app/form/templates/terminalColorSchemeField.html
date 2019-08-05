@@ -1,0 +1,78 @@
+<div class="terminal-color-scheme-field">
+    <select ng-model="selectedColorScheme">
+        <option ng-repeat="option in field.options | orderBy: value"
+                ng-value="option">{{ getFieldOption(option) | translate }}</option>
+        <option value="custom">{{ getFieldOption('custom') | translate }}</option>
+    </select>
+    <table class="custom-color-scheme" ng-show="isCustom()">
+
+        <!-- Default foreground and background colors -->
+        <tbody class="default-colors">
+            <tr>
+                <th>{{ getFieldHeader(field.name + '-foreground') | translate }}</th>
+                <td>
+                    <input type="color" ng-model="customColorScheme.foreground">
+                </td>
+            </tr>
+            <tr>
+                <th>{{ getFieldHeader(field.name + '-background') | translate }}</th>
+                <td>
+                    <input type="color" ng-model="customColorScheme.background">
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- 16-color palette -->
+        <tbody class="palette">
+            <tr>
+                <th rowspan="2">{{ getFieldHeader(field.name + '-palette') | translate }}</th>
+                <td class="low-intensity-colors">
+                    <div class="palette-group">
+                        <div class="palette-group">
+                            <input type="color" ng-model="customColorScheme.colors[0]">
+                            <input type="color" ng-model="customColorScheme.colors[1]">
+                        </div>
+                        <div class="palette-group">
+                            <input type="color" ng-model="customColorScheme.colors[2]">
+                            <input type="color" ng-model="customColorScheme.colors[3]">
+                        </div>
+                    </div>
+                    <div class="palette-group">
+                        <div class="palette-group">
+                            <input type="color" ng-model="customColorScheme.colors[4]">
+                            <input type="color" ng-model="customColorScheme.colors[5]">
+                        </div>
+                        <div class="palette-group">
+                            <input type="color" ng-model="customColorScheme.colors[6]">
+                            <input type="color" ng-model="customColorScheme.colors[7]">
+                        </div>
+                    </div>
+            </tr>
+            <tr>
+                <td class="high-intensity-colors">
+                    <div class="palette-group">
+                        <div class="palette-group">
+                            <input type="color" ng-model="customColorScheme.colors[8]">
+                            <input type="color" ng-model="customColorScheme.colors[9]">
+                        </div>
+                        <div class="palette-group">
+                            <input type="color" ng-model="customColorScheme.colors[10]">
+                            <input type="color" ng-model="customColorScheme.colors[11]">
+                        </div>
+                    </div>
+                    <div class="palette-group">
+                        <div class="palette-group">
+                            <input type="color" ng-model="customColorScheme.colors[12]">
+                            <input type="color" ng-model="customColorScheme.colors[13]">
+                        </div>
+                        <div class="palette-group">
+                            <input type="color" ng-model="customColorScheme.colors[14]">
+                            <input type="color" ng-model="customColorScheme.colors[15]">
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+
+    </table>
+</div>
