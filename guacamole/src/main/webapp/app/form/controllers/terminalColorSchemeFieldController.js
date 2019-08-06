@@ -48,6 +48,14 @@ angular.module('form').controller('terminalColorSchemeFieldController', ['$scope
     $scope.customColorScheme = new ColorScheme();
 
     /**
+     * The array of colors to include within the color picker as pre-defined
+     * options for convenience.
+     *
+     * @type String[]
+     */
+    $scope.defaultPalette = new ColorScheme().colors;
+
+    /**
      * The string value which is assigned to selectedColorScheme if a custom
      * color scheme is selected.
      *
