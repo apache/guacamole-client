@@ -214,12 +214,12 @@ angular.module('form').factory('ColorScheme', [function defineColorScheme() {
     ColorScheme.toString = function toString(scheme) {
 
         // Add background and foreground
-        var str = 'background:' + fromHexColor(scheme.background) + ';'
-                + 'foreground:' + fromHexColor(scheme.foreground) + ';';
+        var str = 'background: ' + fromHexColor(scheme.background) + ';\n'
+                + 'foreground: ' + fromHexColor(scheme.foreground) + ';';
 
         // Add color definitions for each palette entry
         for (var index in scheme.colors)
-            str += 'color' + index + ':' + fromHexColor(scheme.colors[index]) + ';';
+            str += '\ncolor' + index + ': ' + fromHexColor(scheme.colors[index]) + ';';
 
         return str;
 
