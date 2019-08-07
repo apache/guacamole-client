@@ -23,10 +23,37 @@
  */
 angular.module('form').directive('guacInputColor', [function guacInputColor() {
 
+    /**
+     * Returns whether the given color is relatively dark. A color is
+     * considered dark if white text would be more visible over a background
+     * of that color (provide better contrast) than black text.
+     *
+     * @param {HSVaColor} color
+     *     The color to test.
+     *
+     * @returns {Boolean}
+     *     true if the given color is relatively dark (white text would provide
+     *     better contrast than black), false otherwise.
+     */
+    var isDark = function isDark(color) {
+
+        var rgb = color.toRGBA();
+
+        // Convert RGB to luminance in HSL space (as defined by the
+        // relative luminance formula given by the W3C for accessibility)
+        var luminance = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+
+        // Consider the background to be dark if white text over that
+        // background would provide better contrast than black
+        return luminance <= 153; // 153 is the component value 0.6 converted from 0-1 to the 0-255 range
+
+    };
+
     var config = {
         restrict: 'E',
         replace: true,
         templateUrl: 'app/form/templates/guacInputColor.html',
+        transclude: true
     };
 
     config.scope = {
@@ -57,6 +84,15 @@ angular.module('form').directive('guacInputColor', [function guacInputColor() {
         // Required services
         var $q         = $injector.get('$q');
         var $translate = $injector.get('$translate');
+
+        /**
+         * Whether the color currently selected is "dark" in the sense that the
+         * color white will have higher contrast against it than the color
+         * black.
+         *
+         * @type Boolean
+         */
+        $scope.dark = false;
 
         // Init color picker after required translation strings are available
         $q.all({
@@ -128,6 +164,7 @@ angular.module('form').directive('guacInputColor', [function guacInputColor() {
             pickr.on('save', function colorChanged(color) {
                 $scope.$evalAsync(function updateModel() {
                     $scope.model = color.toHEXA().toString();
+                    $scope.dark = isDark(pickr.getColor());
                 });
             });
 
@@ -135,6 +172,7 @@ angular.module('form').directive('guacInputColor', [function guacInputColor() {
             pickr.on('init', function pickrReady(color) {
                 $scope.$watch('model', function modelChanged(model) {
                     pickr.setColor(model);
+                    $scope.dark = isDark(pickr.getColor());
                 });
             });
 
