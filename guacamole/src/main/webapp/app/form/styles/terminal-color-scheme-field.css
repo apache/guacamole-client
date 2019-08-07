@@ -95,6 +95,7 @@
 .form-field .terminal-color-scheme-field .custom-color-scheme-details-header {
     font-size: 0.8em;
     margin: 0.5em 0;
+    padding: 0;
 }
 
 .form-field .terminal-color-scheme-field .custom-color-scheme-details-header::before {
