@@ -86,6 +86,15 @@ angular.module('form').factory('ColorScheme', [function defineColorScheme() {
 
         ];
 
+        /**
+         * The string which was parsed to produce this ColorScheme instance, if
+         * ColorScheme.fromString() was used to produce this ColorScheme.
+         *
+         * @private
+         * @type {String}
+         */
+        this._originalString = template._originalString;
+
     };
 
     /**
@@ -170,7 +179,7 @@ angular.module('form').factory('ColorScheme', [function defineColorScheme() {
      */
     ColorScheme.fromString = function fromString(str) {
 
-        var scheme = new ColorScheme();
+        var scheme = new ColorScheme({ _originalString : str });
 
         // For each semicolon-separated statement in the provided color scheme
         var statements = str.split(/;/);
@@ -201,6 +210,25 @@ angular.module('form').factory('ColorScheme', [function defineColorScheme() {
     };
 
     /**
+     * Returns whether the two given color schemes define the exact same
+     * colors.
+     *
+     * @param {ColorScheme} a
+     *     The first ColorScheme to compare.
+     *
+     * @param {ColorScheme} b
+     *     The second ColorScheme to compare.
+     *
+     * @returns {Boolean}
+     *     true if both color schemes contain the same colors, false otherwise.
+     */
+    ColorScheme.equals = function equals(a, b) {
+        return a.foreground === b.foreground
+            && a.background === b.background
+            && _.isEqual(a.colors, b.colors);
+    };
+
+    /**
      * Converts the given ColorScheme to a string representation which is
      * supported by the Guacamole terminal emulator.
      *
@@ -212,6 +240,10 @@ angular.module('form').factory('ColorScheme', [function defineColorScheme() {
      *     the Guacamole terminal emulator.
      */
     ColorScheme.toString = function toString(scheme) {
+
+        // Use originally-provided string if it equates to the exact same color scheme
+        if (scheme._originalString && ColorScheme.equals(scheme, ColorScheme.fromString(scheme._originalString)))
+            return scheme._originalString;
 
         // Add background and foreground
         var str = 'background: ' + fromHexColor(scheme.background) + ';\n'
