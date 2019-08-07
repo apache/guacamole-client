@@ -1,1 +1,3 @@
-<select ng-model="model" ng-options="option as getFieldOption(option) | translate for option in field.options | orderBy: value"></select>
+<select ng-attr-id="{{ fieldId }}"
+        ng-model="model"
+        ng-options="option as getFieldOption(option) | translate for option in field.options | orderBy: value"></select>

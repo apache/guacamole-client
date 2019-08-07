@@ -1,5 +1,5 @@
 <div class="terminal-color-scheme-field">
-    <select ng-model="selectedColorScheme">
+    <select ng-attr-id="{{ fieldId }}" ng-model="selectedColorScheme">
         <option ng-repeat="option in field.options | orderBy: value"
                 ng-value="option">{{ getFieldOption(option) | translate }}</option>
         <option value="custom">{{ getFieldOption('custom') | translate }}</option>

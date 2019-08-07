@@ -234,6 +234,11 @@ angular.module('form').provider('formService', function formServiceProvider() {
          *     A String which defines the unique namespace associated the
          *     translation strings used by the form using a field of this type.
          *
+         * fieldId:
+         *     A String value which is reasonably likely to be unique and may
+         *     be used to associate the main element of the field with its
+         *     label.
+         *
          * field:
          *     The Field object that is being rendered, representing a field of
          *     this type.

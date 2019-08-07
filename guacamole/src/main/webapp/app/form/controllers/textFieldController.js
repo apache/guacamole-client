@@ -35,6 +35,6 @@ angular.module('form').controller('textFieldController', ['$scope', '$injector',
 
     // Generate unique ID for datalist, if applicable
     if ($scope.field.options && $scope.field.options.length)
-        $scope.dataListId = $scope.field.name + '-datalist';
+        $scope.dataListId = $scope.fieldId + '-datalist';
 
 }]);
