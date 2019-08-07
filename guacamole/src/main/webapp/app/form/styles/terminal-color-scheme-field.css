@@ -17,6 +17,10 @@
  * under the License.
  */
 
+.form-field .terminal-color-scheme-field {
+    max-width: 320px;
+}
+
 .form-field .terminal-color-scheme-field select {
     width: 100%;
 }
@@ -63,6 +67,14 @@
     cursor: pointer;
 }
 
+/*
+ * Color button font colors
+ */
+
+.form-field .terminal-color-scheme-field .custom-color-scheme .guac-input-color {
+    color: black;
+}
+
 .form-field .terminal-color-scheme-field .custom-color-scheme .guac-input-color.dark {
     color: white;
 }
@@ -70,6 +82,72 @@
 .form-field .terminal-color-scheme-field .custom-color-scheme .palette .guac-input-color {
     font-weight: bold;
 }
+
+/* Hide palette numbers unless color scheme details are visible */
+.form-field .terminal-color-scheme-field.custom-color-scheme-details-hidden .custom-color-scheme .palette .guac-input-color {
+    color: transparent;
+}
+
+/*
+ * Custom color scheme details header
+ */
+
+.form-field .terminal-color-scheme-field .custom-color-scheme-details-header {
+    font-size: 0.8em;
+    margin: 0.5em 0;
+}
+
+.form-field .terminal-color-scheme-field .custom-color-scheme-details-header::before {
+    content: '▸ ';
+}
+
+.form-field .terminal-color-scheme-field.custom-color-scheme-details-visible .custom-color-scheme-details-header::before {
+    content: '▾ ';
+}
+
+/*
+ * Details show/hide link
+ */
+
+/* Render show/hide as a link */
+.form-field .terminal-color-scheme-field .custom-color-scheme-hide-details,
+.form-field .terminal-color-scheme-field .custom-color-scheme-show-details {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+    margin: 0 0.25em;
+    font-weight: normal;
+}
+
+.form-field .terminal-color-scheme-field .custom-color-scheme-hide-details {
+    display: none;
+}
+
+.form-field .terminal-color-scheme-field.custom-color-scheme-details-visible .custom-color-scheme-hide-details {
+    display: inline;
+}
+
+.form-field .terminal-color-scheme-field.custom-color-scheme-details-visible .custom-color-scheme-show-details {
+    display: none;
+}
+
+/*
+ * Color scheme details
+ */
+
+.form-field .terminal-color-scheme-field .custom-color-scheme-details {
+    display: none;
+}
+
+.form-field .terminal-color-scheme-field.custom-color-scheme-details-visible .custom-color-scheme-details {
+    display: block;
+    width: 100%;
+    margin: 0.5em 0;
+}
+
+/*
+ * Color picker
+ */
 
 /* Increase width of color picker to allow two even rows of eight color
  * swatches */

@@ -148,6 +148,22 @@
 
     },
 
+    "COLOR_SCHEME" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_HIDE_DETAILS" : "Hide",
+        "ACTION_SAVE"         : "@:APP.ACTION_SAVE",
+        "ACTION_SHOW_DETAILS" : "Show",
+
+        "FIELD_HEADER_BACKGROUND" : "Background",
+        "FIELD_HEADER_FOREGROUND" : "Foreground",
+
+        "FIELD_OPTION_CUSTOM" : "Custom...",
+
+        "SECTION_HEADER_DETAILS" : "Details:"
+
+    },
+
     "DATA_SOURCE_DEFAULT" : {
         "NAME" : "Default (XML)"
     },
@@ -370,8 +386,6 @@
         "FIELD_HEADER_CLIENT_CERT"     : "Client certificate:",
         "FIELD_HEADER_CLIENT_KEY"      : "Client key:",
         "FIELD_HEADER_COLOR_SCHEME"    : "Color scheme:",
-        "FIELD_HEADER_COLOR_SCHEME_BACKGROUND" : "Background",
-        "FIELD_HEADER_COLOR_SCHEME_FOREGROUND" : "Foreground",
         "FIELD_HEADER_CONTAINER"       : "Container name:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Automatically create recording path:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
@@ -398,7 +412,6 @@
         "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Black on white",
-        "FIELD_OPTION_COLOR_SCHEME_CUSTOM"      : "Custom...",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
         "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Gray on black",
         "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Green on black",
@@ -554,8 +567,6 @@
 
         "FIELD_HEADER_BACKSPACE"    : "Backspace key sends:",
         "FIELD_HEADER_COLOR_SCHEME" : "Color scheme:",
-        "FIELD_HEADER_COLOR_SCHEME_BACKGROUND" : "Background",
-        "FIELD_HEADER_COLOR_SCHEME_FOREGROUND" : "Foreground",
         "FIELD_HEADER_COMMAND"      : "Execute command:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
@@ -589,7 +600,6 @@
         "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Black on white",
-        "FIELD_OPTION_COLOR_SCHEME_CUSTOM"      : "Custom...",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
         "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Gray on black",
         "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Green on black",
@@ -636,8 +646,6 @@
 
         "FIELD_HEADER_BACKSPACE"      : "Backspace key sends:",
         "FIELD_HEADER_COLOR_SCHEME"   : "Color scheme:",
-        "FIELD_HEADER_COLOR_SCHEME_BACKGROUND" : "Background",
-        "FIELD_HEADER_COLOR_SCHEME_FOREGROUND" : "Foreground",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
         "FIELD_HEADER_FONT_NAME"      : "Font name:",
@@ -666,7 +674,6 @@
         "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Black on white",
-        "FIELD_OPTION_COLOR_SCHEME_CUSTOM"      : "Custom...",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
         "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Gray on black",
         "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Green on black",

@@ -56,6 +56,12 @@ angular.module('form').controller('terminalColorSchemeFieldController', ['$scope
     $scope.defaultPalette = new ColorScheme().colors;
 
     /**
+     * Whether the raw details of the custom color scheme should be shown. By
+     * default, such details are hidden.
+     */
+    $scope.detailsShown = false;
+
+    /**
      * The string value which is assigned to selectedColorScheme if a custom
      * color scheme is selected.
      *
@@ -72,6 +78,22 @@ angular.module('form').controller('terminalColorSchemeFieldController', ['$scope
      */
     $scope.isCustom = function isCustom() {
         return $scope.selectedColorScheme === CUSTOM_COLOR_SCHEME;
+    };
+
+    /**
+     * Shows the raw details of the custom color scheme. If the details are
+     * already shown, this function has no effect.
+     */
+    $scope.showDetails = function showDetails() {
+        $scope.detailsShown = true;
+    };
+
+    /**
+     * Hides the raw details of the custom color scheme. If the details are
+     * already hidden, this function has no effect.
+     */
+    $scope.hideDetails = function hideDetails() {
+        $scope.detailsShown = false;
     };
 
     // Keep selected color scheme and custom color scheme in sync with changes

@@ -1,9 +1,16 @@
-<div class="terminal-color-scheme-field">
+<div class="terminal-color-scheme-field" ng-class="{
+        'custom-color-scheme-details-visible' : detailsShown,
+        'custom-color-scheme-details-hidden' : !detailsShown
+    }">
+
+    <!-- Pre-defined color scheme options -->
     <select ng-attr-id="{{ fieldId }}" ng-model="selectedColorScheme">
         <option ng-repeat="option in field.options | orderBy: value"
                 ng-value="option">{{ getFieldOption(option) | translate }}</option>
-        <option value="custom">{{ getFieldOption('custom') | translate }}</option>
+        <option value="custom">{{ 'COLOR_SCHEME.FIELD_OPTION_CUSTOM' | translate }}</option>
     </select>
+
+    <!-- Custom color scheme -->
     <table class="custom-color-scheme" ng-show="isCustom()">
 
         <!-- Default foreground and background colors -->
@@ -11,14 +18,14 @@
             <tr>
                 <td>
                     <div class="palette-group">
-                        <guac-input-color model="customColorScheme.foreground" palette="defaultPalette">{{ getFieldHeader(field.name + '-foreground') | translate }}</guac-input-color>
+                        <guac-input-color model="customColorScheme.foreground" palette="defaultPalette">{{ 'COLOR_SCHEME.FIELD_HEADER_FOREGROUND' | translate }}</guac-input-color>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
                     <div class="palette-group">
-                        <guac-input-color model="customColorScheme.background" palette="defaultPalette">{{ getFieldHeader(field.name + '-background') | translate }}</guac-input-color>
+                        <guac-input-color model="customColorScheme.background" palette="defaultPalette">{{ 'COLOR_SCHEME.FIELD_HEADER_BACKGROUND' | translate }}</guac-input-color>
                     </div>
                 </td>
             </tr>
@@ -81,4 +88,15 @@
         </tbody>
 
     </table>
+
+    <!-- Show/hide details -->
+    <h3 class="custom-color-scheme-details-header" ng-show="isCustom()">
+        {{'COLOR_SCHEME.SECTION_HEADER_DETAILS' | translate}}
+        <a class="custom-color-scheme-show-details" ng-click="showDetails()">{{'COLOR_SCHEME.ACTION_SHOW_DETAILS' | translate}}</a>
+        <a class="custom-color-scheme-hide-details" ng-click="hideDetails()">{{'COLOR_SCHEME.ACTION_HIDE_DETAILS' | translate}}</a>
+    </h3>
+
+    <!-- Custom color scheme details (internal representation -->
+    <textarea class="custom-color-scheme-details" ng-model="model" ng-show="isCustom()"></textarea>
+
 </div>
