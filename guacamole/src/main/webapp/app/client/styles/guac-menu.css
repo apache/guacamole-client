@@ -199,16 +199,3 @@
     font-weight: bold;
 
 }
-
-#guac-menu #connection-settings .form .fields {
-    width: 100%;
-}
-
-#guac-menu #connection-settings .form .fields .field-header {
-    width: 0;
-    white-space: nowrap;
-}
-
-#guac-menu #connection-settings .form .fields .form-field {
-    width: 100%;
-}
