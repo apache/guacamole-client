@@ -242,7 +242,7 @@ angular.module('form').factory('ColorScheme', [function defineColorScheme() {
     ColorScheme.toString = function toString(scheme) {
 
         // Use originally-provided string if it equates to the exact same color scheme
-        if (scheme._originalString && ColorScheme.equals(scheme, ColorScheme.fromString(scheme._originalString)))
+        if (!_.isUndefined(scheme._originalString) && ColorScheme.equals(scheme, ColorScheme.fromString(scheme._originalString)))
             return scheme._originalString;
 
         // Add background and foreground

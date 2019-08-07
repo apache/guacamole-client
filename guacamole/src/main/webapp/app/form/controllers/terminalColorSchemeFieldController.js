@@ -77,14 +77,12 @@ angular.module('form').controller('terminalColorSchemeFieldController', ['$scope
     // Keep selected color scheme and custom color scheme in sync with changes
     // to model
     $scope.$watch('model', function modelChanged(model) {
-        if (!model)
-            $scope.selectedColorScheme = '';
-        else if (_.includes($scope.field.options, model))
-            $scope.selectedColorScheme = model;
-        else {
+        if ($scope.selectedColorScheme === CUSTOM_COLOR_SCHEME || (model && !_.includes($scope.field.options, model))) {
             $scope.customColorScheme = ColorScheme.fromString(model);
             $scope.selectedColorScheme = CUSTOM_COLOR_SCHEME;
         }
+        else
+            $scope.selectedColorScheme = model || '';
     });
 
     // Keep model in sync with changes to selected color scheme
