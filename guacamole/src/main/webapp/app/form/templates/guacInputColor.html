@@ -1,3 +1,10 @@
-<div class="guac-input-color" ng-class="{ 'dark' : dark }" ng-style="{ 'background-color' : model }">
+<div class="guac-input-color"
+     ng-class="{
+         'dark' : isDark(),
+         'read-only' : colorPickerUnavailable
+     }"
+     ng-style="{
+        'background-color' : model
+     }">
     <ng-transclude></ng-transclude>
 </div>

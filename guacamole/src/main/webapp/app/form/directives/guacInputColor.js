@@ -19,35 +19,12 @@
 
 /**
  * A directive which implements a color input field, leveraging the "Pickr"
- * color picker.
+ * color picker. If the "Picker" color picker cannot be used because it relies
+ * on JavaScript features not supported by the browser (Internet Explorer), a
+ * "guacInputColorUnavailable" event will be emitted up the scope, and this
+ * directive will become read-only, functioning essentially as a color preview.
  */
 angular.module('form').directive('guacInputColor', [function guacInputColor() {
-
-    /**
-     * Returns whether the given color is relatively dark. A color is
-     * considered dark if white text would be more visible over a background
-     * of that color (provide better contrast) than black text.
-     *
-     * @param {HSVaColor} color
-     *     The color to test.
-     *
-     * @returns {Boolean}
-     *     true if the given color is relatively dark (white text would provide
-     *     better contrast than black), false otherwise.
-     */
-    var isDark = function isDark(color) {
-
-        var rgb = color.toRGBA();
-
-        // Convert RGB to luminance in HSL space (as defined by the
-        // relative luminance formula given by the W3C for accessibility)
-        var luminance = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
-
-        // Consider the background to be dark if white text over that
-        // background would provide better contrast than black
-        return luminance <= 153; // 153 is the component value 0.6 converted from 0-1 to the 0-255 range
-
-    };
 
     var config = {
         restrict: 'E',
@@ -86,13 +63,44 @@ angular.module('form').directive('guacInputColor', [function guacInputColor() {
         var $translate = $injector.get('$translate');
 
         /**
-         * Whether the color currently selected is "dark" in the sense that the
-         * color white will have higher contrast against it than the color
-         * black.
+         * Whether the color picker ("Pickr") cannot be used. In general, all
+         * browsers should support Pickr with the exception of Internet
+         * Explorer.
          *
          * @type Boolean
          */
-        $scope.dark = false;
+        $scope.colorPickerUnavailable = false;
+
+        /**
+         * Returns whether the color currently selected is "dark" in the sense
+         * that the color white will have higher contrast against it than the
+         * color black.
+         *
+         * @returns {Boolean}
+         *     true if the currently selected color is relatively dark (white
+         *     text would provide better contrast than black), false otherwise.
+         */
+        $scope.isDark = function isDark() {
+
+            // Assume not dark if color is invalid or undefined
+            var rgb = $scope.model && /^#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/.exec($scope.model);
+            if (!rgb)
+                return false;
+
+            // Parse color component values as hexadecimal
+            var red = parseInt(rgb[1], 16);
+            var green = parseInt(rgb[2], 16);
+            var blue = parseInt(rgb[3], 16);
+
+            // Convert RGB to luminance in HSL space (as defined by the
+            // relative luminance formula given by the W3C for accessibility)
+            var luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+
+            // Consider the background to be dark if white text over that
+            // background would provide better contrast than black
+            return luminance <= 153; // 153 is the component value 0.6 converted from 0-1 to the 0-255 range
+
+        };
 
         // Init color picker after required translation strings are available
         $q.all({
@@ -100,81 +108,90 @@ angular.module('form').directive('guacInputColor', [function guacInputColor() {
             'cancel' : $translate('APP.ACTION_CANCEL')
         }).then(function stringsRetrieved(strings) {
 
-            /**
-             * An instance of the "Pickr" color picker, bound to the underlying
-             * element of this directive.
-             *
-             * @type Pickr
-             */
-            var pickr = Pickr.create({
+            try {
 
-                // Bind color picker to the underlying element of this directive
-                el : $element[0],
+                /**
+                 * An instance of the "Pickr" color picker, bound to the underlying
+                 * element of this directive.
+                 *
+                 * @type Pickr
+                 */
+                var pickr = Pickr.create({
 
-                // Wrap color picker dialog in Guacamole-specific class for
-                // sake of additional styling
-                appClass : 'guac-input-color-picker',
+                    // Bind color picker to the underlying element of this directive
+                    el : $element[0],
 
-                // Display color details as hex
-                defaultRepresentation : 'HEX',
+                    // Wrap color picker dialog in Guacamole-specific class for
+                    // sake of additional styling
+                    appClass : 'guac-input-color-picker',
 
-                // Use "monolith" theme, as a nice balance between "nano" (does
-                // not work in Internet Explorer) and "classic" (too big)
-                theme : 'monolith',
+                    // Display color details as hex
+                    defaultRepresentation : 'HEX',
 
-                // Leverage the container element as the button which shows the
-                // picker, relying on our own styling for that button
-                useAsButton  : true,
-                appendToBody : true,
+                    // Use "monolith" theme, as a nice balance between "nano" (does
+                    // not work in Internet Explorer) and "classic" (too big)
+                    theme : 'monolith',
 
-                // Do not include opacity controls
-                lockOpacity : true,
+                    // Leverage the container element as the button which shows the
+                    // picker, relying on our own styling for that button
+                    useAsButton  : true,
+                    appendToBody : true,
 
-                // Include a selection of palette entries for convenience and
-                // reference
-                swatches : $scope.palette || [],
+                    // Do not include opacity controls
+                    lockOpacity : true,
 
-                components: {
+                    // Include a selection of palette entries for convenience and
+                    // reference
+                    swatches : $scope.palette || [],
 
-                    // Include hue and color preview controls
-                    preview : true,
-                    hue     : true,
+                    components: {
 
-                    // Display only a text color input field and the save and
-                    // cancel buttons (no clear button)
-                    interaction: {
-                        input  : true,
-                        save   : true,
-                        cancel : true
-                    }
+                        // Include hue and color preview controls
+                        preview : true,
+                        hue     : true,
 
-                },
+                        // Display only a text color input field and the save and
+                        // cancel buttons (no clear button)
+                        interaction: {
+                            input  : true,
+                            save   : true,
+                            cancel : true
+                        }
 
-                // Use translation strings for buttons
-                strings : strings
+                    },
 
-            });
+                    // Use translation strings for buttons
+                    strings : strings
 
-            // Hide color picker after user clicks "cancel"
-            pickr.on('cancel', function colorChangeCanceled() {
-                pickr.hide();
-            });
-
-            // Keep model in sync with changes to the color picker
-            pickr.on('save', function colorChanged(color) {
-                $scope.$evalAsync(function updateModel() {
-                    $scope.model = color.toHEXA().toString();
-                    $scope.dark = isDark(pickr.getColor());
                 });
-            });
 
-            // Keep color picker in sync with changes to the model
-            pickr.on('init', function pickrReady(color) {
-                $scope.$watch('model', function modelChanged(model) {
-                    pickr.setColor(model);
-                    $scope.dark = isDark(pickr.getColor());
+                // Hide color picker after user clicks "cancel"
+                pickr.on('cancel', function colorChangeCanceled() {
+                    pickr.hide();
                 });
-            });
+
+                // Keep model in sync with changes to the color picker
+                pickr.on('save', function colorChanged(color) {
+                    $scope.$evalAsync(function updateModel() {
+                        $scope.model = color.toHEXA().toString();
+                    });
+                });
+
+                // Keep color picker in sync with changes to the model
+                pickr.on('init', function pickrReady(color) {
+                    $scope.$watch('model', function modelChanged(model) {
+                        pickr.setColor(model);
+                    });
+                });
+
+            }
+
+            // If the "Pickr" color picker cannot be loaded (Internet Explorer),
+            // let the scope above us know
+            catch (e) {
+                $scope.colorPickerUnavailable = true;
+                $scope.$emit('guacInputColorUnavailable', e);
+            }
 
         }, angular.noop);
 

@@ -67,6 +67,10 @@
     cursor: pointer;
 }
 
+.form-field .terminal-color-scheme-field .custom-color-scheme .guac-input-color.read-only {
+    cursor: not-allowed;
+}
+
 /*
  * Color button font colors
  */
