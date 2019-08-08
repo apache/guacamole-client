@@ -35,13 +35,17 @@
 }
 
 .terminal-color-scheme-field .custom-color-scheme-section  {
+    display: -ms-flexbox;
+    display: -moz-box;
+    display: -webkit-box;
+    display: -webkit-flex;
     display: flex;
 }
 
 .terminal-color-scheme-field .guac-input-color {
+
     display: block;
     margin: 2px;
-    flex: 1;
     width: 1.5em;
     height: 1.5em;
     min-width: 1.25em;
@@ -51,6 +55,13 @@
     font-size: 0.75em;
     cursor: pointer;
     color: black;
+
+    -ms-flex: 1;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+
 }
 
 .terminal-color-scheme-field .guac-input-color.read-only {
