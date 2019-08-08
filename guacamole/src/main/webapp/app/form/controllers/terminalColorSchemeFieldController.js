@@ -58,8 +58,24 @@ angular.module('form').controller('terminalColorSchemeFieldController', ['$scope
     /**
      * Whether the raw details of the custom color scheme should be shown. By
      * default, such details are hidden.
+     *
+     * @type Boolean
      */
     $scope.detailsShown = false;
+
+    /**
+     * The palette indices of all colors which are considered low-intensity.
+     *
+     * @type Number[]
+     */
+    $scope.lowIntensity = [ 0, 1, 2, 3, 4, 5, 6, 7 ];
+
+    /**
+     * The palette indices of all colors which are considered high-intensity.
+     *
+     * @type Number[]
+     */
+    $scope.highIntensity = [ 8, 9, 10, 11, 12, 13, 14, 15 ];
 
     /**
      * The string value which is assigned to selectedColorScheme if a custom

@@ -17,15 +17,15 @@
  * under the License.
  */
 
-.form-field .terminal-color-scheme-field {
+.terminal-color-scheme-field {
     max-width: 320px;
 }
 
-.form-field .terminal-color-scheme-field select {
+.terminal-color-scheme-field select {
     width: 100%;
 }
 
-.form-field .terminal-color-scheme-field .custom-color-scheme {
+.terminal-color-scheme-field .custom-color-scheme {
     background: #EEE;
     padding: 0.5em;
     border: 1px solid silver;
@@ -34,26 +34,11 @@
     width: 100%;
 }
 
-.form-field .terminal-color-scheme-field .custom-color-scheme th {
-    text-align: left;
-    font-weight: normal;
-    vertical-align: top;
-    width: 0;
-}
-
-.form-field .terminal-color-scheme-field .custom-color-scheme td {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-}
-
-.form-field .terminal-color-scheme-field .custom-color-scheme .palette-group {
+.terminal-color-scheme-field .custom-color-scheme-section  {
     display: flex;
-    flex-wrap: wrap;
-    flex: 1;
 }
 
-.form-field .terminal-color-scheme-field .custom-color-scheme .guac-input-color {
+.terminal-color-scheme-field .guac-input-color {
     display: block;
     margin: 2px;
     flex: 1;
@@ -65,30 +50,23 @@
     text-align: center;
     font-size: 0.75em;
     cursor: pointer;
-}
-
-.form-field .terminal-color-scheme-field .custom-color-scheme .guac-input-color.read-only {
-    cursor: not-allowed;
-}
-
-/*
- * Color button font colors
- */
-
-.form-field .terminal-color-scheme-field .custom-color-scheme .guac-input-color {
     color: black;
 }
 
-.form-field .terminal-color-scheme-field .custom-color-scheme .guac-input-color.dark {
+.terminal-color-scheme-field .guac-input-color.read-only {
+    cursor: not-allowed;
+}
+
+.terminal-color-scheme-field .guac-input-color.dark {
     color: white;
 }
 
-.form-field .terminal-color-scheme-field .custom-color-scheme .palette .guac-input-color {
+.terminal-color-scheme-field .palette .guac-input-color {
     font-weight: bold;
 }
 
 /* Hide palette numbers unless color scheme details are visible */
-.form-field .terminal-color-scheme-field.custom-color-scheme-details-hidden .custom-color-scheme .palette .guac-input-color {
+.terminal-color-scheme-field.custom-color-scheme-details-hidden .custom-color-scheme .palette .guac-input-color {
     color: transparent;
 }
 
@@ -96,17 +74,17 @@
  * Custom color scheme details header
  */
 
-.form-field .terminal-color-scheme-field .custom-color-scheme-details-header {
+.terminal-color-scheme-field .custom-color-scheme-details-header {
     font-size: 0.8em;
     margin: 0.5em 0;
     padding: 0;
 }
 
-.form-field .terminal-color-scheme-field .custom-color-scheme-details-header::before {
+.terminal-color-scheme-field .custom-color-scheme-details-header::before {
     content: '▸ ';
 }
 
-.form-field .terminal-color-scheme-field.custom-color-scheme-details-visible .custom-color-scheme-details-header::before {
+.terminal-color-scheme-field.custom-color-scheme-details-visible .custom-color-scheme-details-header::before {
     content: '▾ ';
 }
 
@@ -115,8 +93,8 @@
  */
 
 /* Render show/hide as a link */
-.form-field .terminal-color-scheme-field .custom-color-scheme-hide-details,
-.form-field .terminal-color-scheme-field .custom-color-scheme-show-details {
+.terminal-color-scheme-field .custom-color-scheme-hide-details,
+.terminal-color-scheme-field .custom-color-scheme-show-details {
     color: blue;
     text-decoration: underline;
     cursor: pointer;
@@ -124,15 +102,15 @@
     font-weight: normal;
 }
 
-.form-field .terminal-color-scheme-field .custom-color-scheme-hide-details {
+.terminal-color-scheme-field .custom-color-scheme-hide-details {
     display: none;
 }
 
-.form-field .terminal-color-scheme-field.custom-color-scheme-details-visible .custom-color-scheme-hide-details {
+.terminal-color-scheme-field.custom-color-scheme-details-visible .custom-color-scheme-hide-details {
     display: inline;
 }
 
-.form-field .terminal-color-scheme-field.custom-color-scheme-details-visible .custom-color-scheme-show-details {
+.terminal-color-scheme-field.custom-color-scheme-details-visible .custom-color-scheme-show-details {
     display: none;
 }
 
@@ -140,11 +118,11 @@
  * Color scheme details
  */
 
-.form-field .terminal-color-scheme-field .custom-color-scheme-details {
+.terminal-color-scheme-field .custom-color-scheme-details {
     display: none;
 }
 
-.form-field .terminal-color-scheme-field.custom-color-scheme-details-visible .custom-color-scheme-details {
+.terminal-color-scheme-field.custom-color-scheme-details-visible .custom-color-scheme-details {
     display: block;
     width: 100%;
     margin: 0.5em 0;

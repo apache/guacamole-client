@@ -11,83 +11,43 @@
     </select>
 
     <!-- Custom color scheme -->
-    <table class="custom-color-scheme" ng-show="isCustom()">
+    <div class="custom-color-scheme" ng-show="isCustom()">
 
-        <!-- Default foreground and background colors -->
-        <tbody class="default-colors">
-            <tr>
-                <td>
-                    <div class="palette-group">
-                        <guac-input-color model="customColorScheme.foreground" palette="defaultPalette">{{ 'COLOR_SCHEME.FIELD_HEADER_FOREGROUND' | translate }}</guac-input-color>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="palette-group">
-                        <guac-input-color model="customColorScheme.background" palette="defaultPalette">{{ 'COLOR_SCHEME.FIELD_HEADER_BACKGROUND' | translate }}</guac-input-color>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
+        <!-- Default foreground color -->
+        <div class="custom-color-scheme-section default-color foreground">
+            <guac-input-color model="customColorScheme.foreground"
+                              palette="defaultPalette">
+                {{ 'COLOR_SCHEME.FIELD_HEADER_FOREGROUND' | translate }}
+            </guac-input-color>
+        </div>
 
-        <!-- 16-color palette -->
-        <tbody class="palette">
-            <tr>
-                <td class="low-intensity-colors">
-                    <div class="palette-group">
-                        <div class="palette-group">
-                            <div class="palette-group">
-                                <guac-input-color model="customColorScheme.colors[0]" palette="defaultPalette">0</guac-input-color>
-                                <guac-input-color model="customColorScheme.colors[1]" palette="defaultPalette">1</guac-input-color>
-                            </div>
-                            <div class="palette-group">
-                                <guac-input-color model="customColorScheme.colors[2]" palette="defaultPalette">2</guac-input-color>
-                                <guac-input-color model="customColorScheme.colors[3]" palette="defaultPalette">3</guac-input-color>
-                            </div>
-                        </div>
-                        <div class="palette-group">
-                            <div class="palette-group">
-                                <guac-input-color model="customColorScheme.colors[4]" palette="defaultPalette">4</guac-input-color>
-                                <guac-input-color model="customColorScheme.colors[5]" palette="defaultPalette">5</guac-input-color>
-                            </div>
-                            <div class="palette-group">
-                                <guac-input-color model="customColorScheme.colors[6]" palette="defaultPalette">6</guac-input-color>
-                                <guac-input-color model="customColorScheme.colors[7]" palette="defaultPalette">7</guac-input-color>
-                            </div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="high-intensity-colors">
-                    <div class="palette-group">
-                        <div class="palette-group">
-                            <div class="palette-group">
-                                <guac-input-color model="customColorScheme.colors[8]" palette="defaultPalette">8</guac-input-color>
-                                <guac-input-color model="customColorScheme.colors[9]" palette="defaultPalette">9</guac-input-color>
-                            </div>
-                            <div class="palette-group">
-                                <guac-input-color model="customColorScheme.colors[10]" palette="defaultPalette">10</guac-input-color>
-                                <guac-input-color model="customColorScheme.colors[11]" palette="defaultPalette">11</guac-input-color>
-                            </div>
-                        </div>
-                        <div class="palette-group">
-                            <div class="palette-group">
-                                <guac-input-color model="customColorScheme.colors[12]" palette="defaultPalette">12</guac-input-color>
-                                <guac-input-color model="customColorScheme.colors[13]" palette="defaultPalette">13</guac-input-color>
-                            </div>
-                            <div class="palette-group">
-                                <guac-input-color model="customColorScheme.colors[14]" palette="defaultPalette">14</guac-input-color>
-                                <guac-input-color model="customColorScheme.colors[15]" palette="defaultPalette">15</guac-input-color>
-                            </div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
+        <!-- Default background color -->
+        <div class="custom-color-scheme-section default-color background">
+            <guac-input-color model="customColorScheme.background"
+                              palette="defaultPalette">
+                {{ 'COLOR_SCHEME.FIELD_HEADER_BACKGROUND' | translate }}
+            </guac-input-color>
+        </div>
 
-    </table>
+        <!-- Low intensity portion of 16-color palette -->
+        <div class="custom-color-scheme-section palette low-intensity">
+            <guac-input-color ng-repeat="index in lowIntensity"
+                              model="customColorScheme.colors[index]"
+                              palette="defaultPalette">
+                {{ index }}
+            </guac-input-color>
+        </div>
+
+        <!-- High intensity portion of 16-color palette -->
+        <div class="custom-color-scheme-section palette high-intensity">
+            <guac-input-color ng-repeat="index in highIntensity"
+                              model="customColorScheme.colors[index]"
+                              palette="defaultPalette">
+                {{ index }}
+            </guac-input-color>
+        </div>
+
+    </div>
 
     <!-- Show/hide details -->
     <h3 class="custom-color-scheme-details-header" ng-show="isCustom()">
