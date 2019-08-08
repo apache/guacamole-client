@@ -85,10 +85,8 @@ angular.module('form').directive('guacFormField', [function formField() {
             }) + '-' + new Date().getTime().toString(36);
 
             /**
-             * Produces the translation string for the header of the field with
-             * the given name. If no name is supplied, then the name of the
-             * current field will be used. The translation string will be of
-             * the form:
+             * Produces the translation string for the header of the current
+             * field. The translation string will be of the form:
              *
              * <code>NAMESPACE.FIELD_HEADER_NAME<code>
              *
@@ -96,24 +94,18 @@ angular.module('form').directive('guacFormField', [function formField() {
              * directive and <code>NAME</code> is the field name transformed
              * via translationStringService.canonicalize().
              *
-             * @param {String} [name]
-             *     The name of the field to produce the translation header
-             *     string for. If omitted, the name of the current field will
-             *     be used.
-             *
              * @returns {String}
              *     The translation string which produces the translated header
              *     of the field.
              */
-            $scope.getFieldHeader = function getFieldHeader(name) {
+            $scope.getFieldHeader = function getFieldHeader() {
 
                 // If no field, or no name, then no header
-                name = name || ($scope.field && $scope.field.name);
-                if (!name)
+                if (!$scope.field || !$scope.field.name)
                     return '';
 
                 return translationStringService.canonicalize($scope.namespace || 'MISSING_NAMESPACE')
-                        + '.FIELD_HEADER_' + translationStringService.canonicalize(name);
+                        + '.FIELD_HEADER_' + translationStringService.canonicalize($scope.field.name);
 
             };
 
