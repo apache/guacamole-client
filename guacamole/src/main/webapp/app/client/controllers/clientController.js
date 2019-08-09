@@ -27,6 +27,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var ManagedClient      = $injector.get('ManagedClient');
     var ManagedClientState = $injector.get('ManagedClientState');
     var ManagedFilesystem  = $injector.get('ManagedFilesystem');
+    var Protocol           = $injector.get('Protocol');
     var ScrollState        = $injector.get('ScrollState');
 
     // Required services
@@ -248,13 +249,31 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
          *
          * @type ScrollState
          */
-        scrollState : new ScrollState()
+        scrollState : new ScrollState(),
+
+        /**
+         * The current desired values of all editable connection parameters as
+         * a set of name/value pairs, including any changes made by the user.
+         *
+         * @type {Object.<String, String>}
+         */
+        connectionParameters : {}
 
     };
 
     // Convenience method for closing the menu
     $scope.closeMenu = function closeMenu() {
         $scope.menu.shown = false;
+    };
+
+    /**
+     * Applies any changes to connection parameters made by the user within the
+     * Guacamole menu.
+     */
+    $scope.applyParameterChanges = function applyParameterChanges() {
+        angular.forEach($scope.menu.connectionParameters, function sendArgv(value, name) {
+            ManagedClient.setArgument($scope.client, name, value);
+        });
     };
 
     /**
@@ -429,12 +448,20 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
+    // Update client state/behavior as visibility of the Guacamole menu changes
     $scope.$watch('menu.shown', function menuVisibilityChanged(menuShown, menuShownPreviousState) {
         
-        // Send clipboard data if menu is hidden
-        if (!menuShown && menuShownPreviousState)
+        // Send clipboard and argument value data once menu is hidden
+        if (!menuShown && menuShownPreviousState) {
             $scope.$broadcast('guacClipboard', $scope.client.clipboardData);
-        
+            $scope.applyParameterChanges();
+        }
+
+        // Obtain snapshot of current editable connection parameters when menu
+        // is opened
+        else if (menuShown)
+            $scope.menu.connectionParameters = ManagedClient.getArgumentModel($scope.client);
+
         // Disable client keyboard if the menu is shown
         $scope.client.clientProperties.keyboardEnabled = !menuShown;
 
@@ -804,6 +831,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     // Set client-specific menu actions
     $scope.clientMenuActions = [ DISCONNECT_MENU_ACTION ];
+
+    /**
+     * @borrows Protocol.getNamespace
+     */
+    $scope.getProtocolNamespace = Protocol.getNamespace;
 
     /**
      * The currently-visible filesystem within the filesystem menu, if the
