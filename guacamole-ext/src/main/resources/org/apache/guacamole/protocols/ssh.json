@@ -47,7 +47,7 @@
             "fields" : [
                 {
                     "name"  : "color-scheme",
-                    "type"  : "TEXT",
+                    "type"  : "TERMINAL_COLOR_SCHEME",
                     "options" : [ "", "black-white", "gray-black", "green-black", "white-black" ]
                 },
                 {

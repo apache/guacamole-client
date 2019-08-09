@@ -17,24 +17,23 @@
  * under the License.
  */
 
+package org.apache.guacamole.form;
 
 /**
- * Controller for text fields.
+ * Represents a terminal color scheme field. The field may contain only valid
+ * terminal color schemes as used by the Guacamole server terminal emulator
+ * and protocols which leverage it (SSH, telnet, Kubernetes).
  */
-angular.module('form').controller('textFieldController', ['$scope', '$injector',
-    function textFieldController($scope, $injector) {
+public class TerminalColorSchemeField extends Field {
 
     /**
-     * The ID of the datalist element that should be associated with the text
-     * field, providing a set of known-good values. If no such values are
-     * defined, this will be null.
+     * Creates a new TerminalColorSchemeField with the given name.
      *
-     * @type String
+     * @param name
+     *     The unique name to associate with this field.
      */
-    $scope.dataListId = null;
+    public TerminalColorSchemeField(String name) {
+        super(name, Field.Type.TERMINAL_COLOR_SCHEME);
+    }
 
-    // Generate unique ID for datalist, if applicable
-    if ($scope.field.options && $scope.field.options.length)
-        $scope.dataListId = $scope.fieldId + '-datalist';
-
-}]);
+}
