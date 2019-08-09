@@ -119,6 +119,14 @@
                     </div>
                 </div>
 
+                <!-- Connection parameters which may be modified while the connection is open -->
+                <div class="menu-section connection-parameters" id="connection-settings" ng-show="client.protocol">
+                    <guac-form namespace="getProtocolNamespace(client.protocol)"
+                               content="client.forms"
+                               model="menu.connectionParameters"
+                               model-only="true"></guac-form>
+                </div>
+
                 <!-- Input method -->
                 <div class="menu-section" id="keyboard-settings">
                     <h3>{{'CLIENT.SECTION_HEADER_INPUT_METHOD' | translate}}</h3>

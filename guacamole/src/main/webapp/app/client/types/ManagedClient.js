@@ -27,6 +27,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var ClientProperties       = $injector.get('ClientProperties');
     var ClientIdentifier       = $injector.get('ClientIdentifier');
     var ClipboardData          = $injector.get('ClipboardData');
+    var ManagedArgument        = $injector.get('ManagedArgument');
     var ManagedClientState     = $injector.get('ManagedClientState');
     var ManagedClientThumbnail = $injector.get('ManagedClientThumbnail');
     var ManagedDisplay         = $injector.get('ManagedDisplay');
@@ -44,6 +45,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var connectionService      = $injector.get('connectionService');
     var preferenceService      = $injector.get('preferenceService');
     var requestService         = $injector.get('requestService');
+    var schemaService          = $injector.get('schemaService');
     var tunnelService          = $injector.get('tunnelService');
     var guacAudio              = $injector.get('guacAudio');
     var guacHistory            = $injector.get('guacHistory');
@@ -128,6 +130,23 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         this.title = template.title;
 
         /**
+         * The name which uniquely identifies the protocol of the connection in
+         * use. If the protocol cannot be determined, such as when a connection
+         * group is in use, this will be null.
+         *
+         * @type {String}
+         */
+        this.protocol = template.protocol || null;
+
+        /**
+         * An array of forms describing all known parameters for the connection
+         * in use, including those which may not be editable.
+         *
+         * @type {Form[]}
+         */
+        this.forms = template.forms || [];
+
+        /**
          * The most recently-generated thumbnail for this connection, as
          * stored within the local connection history. If no thumbnail is
          * stored, this will be null.
@@ -188,6 +207,17 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * @type ClientProperties
          */
         this.clientProperties = template.clientProperties || new ClientProperties();
+
+        /**
+         * All editable arguments (connection parameters), stored by their
+         * names. Arguments will only be present within this set if their
+         * current values have been exposed by the server via an inbound "argv"
+         * stream and the server has confirmed that the value may be changed
+         * through a successful "ack" to an outbound "argv" stream.
+         *
+         * @type {Object.<String, ManagedArgument>}
+         */
+        this.arguments = template.arguments || {};
 
     };
 
@@ -458,6 +488,33 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
         };
 
+        // Test for argument mutability whenever an argument value is
+        // received
+        client.onargv = function clientArgumentValueReceived(stream, mimetype, name) {
+
+            // Ignore arguments which do not use a mimetype currently supported
+            // by the web application
+            if (mimetype !== 'text/plain')
+                return;
+
+            var reader = new Guacamole.StringReader(stream);
+
+            // Assemble received data into a single string
+            var value = '';
+            reader.ontext = function textReceived(text) {
+                value += text;
+            };
+
+            // Test mutability once stream is finished, storing the current
+            // value for the argument only if it is mutable
+            reader.onend = function textComplete() {
+                ManagedArgument.getInstance(managedClient, name, value).then(function argumentIsMutable(argument) {
+                    managedClient.arguments[name] = argument;
+                }, function ignoreImmutableArguments() {});
+            };
+
+        };
+
         // Handle any received clipboard data
         client.onclipboard = function clientClipboardReceived(stream, mimetype) {
 
@@ -532,11 +589,16 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             client.connect(connectString);
         });
 
-        // If using a connection, pull connection name
+        // If using a connection, pull connection name and protocol information
         if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION) {
-            connectionService.getConnection(clientIdentifier.dataSource, clientIdentifier.id)
-            .then(function connectionRetrieved(connection) {
-                managedClient.name = managedClient.title = connection.name;
+            $q.all({
+                connection : connectionService.getConnection(clientIdentifier.dataSource, clientIdentifier.id),
+                protocols  : schemaService.getProtocols(clientIdentifier.dataSource)
+            })
+            .then(function dataRetrieved(values) {
+                managedClient.name = managedClient.title = values.connection.name;
+                managedClient.protocol = values.connection.protocol;
+                managedClient.forms = values.protocols[values.connection.protocol].connectionForms;
             }, requestService.WARN);
         }
         
@@ -626,6 +688,52 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             writer.sendBlob(data.data);
 
         }
+
+    };
+
+    /**
+     * Assigns the given value to the connection parameter having the given
+     * name, updating the behavior of the connection in real-time. If the
+     * connection parameter is not editable, this function has no effect.
+     *
+     * @param {ManagedClient} managedClient
+     *     The ManagedClient instance associated with the active connection
+     *     being modified.
+     *
+     * @param {String} name
+     *     The name of the connection parameter to modify.
+     *
+     * @param {String} value
+     *     The value to attempt to assign to the given connection parameter.
+     */
+    ManagedClient.setArgument = function setArgument(managedClient, name, value) {
+        var managedArgument = managedClient.arguments[name];
+        if (managedArgument && ManagedArgument.setValue(managedArgument, value))
+            delete managedClient.arguments[name];
+    };
+
+    /**
+     * Retrieves the current values of all editable connection parameters as a
+     * set of name/value pairs suitable for use as the model of a form which
+     * edits those parameters.
+     *
+     * @param {ManagedClient} client
+     *     The ManagedClient instance associated with the active connection
+     *     whose parameter values are being retrieved.
+     *
+     * @returns {Object.<String, String>}
+     *     A new set of name/value pairs containing the current values of all
+     *     editable parameters.
+     */
+    ManagedClient.getArgumentModel = function getArgumentModel(client) {
+
+        var model = {};
+
+        angular.forEach(client.arguments, function addModelEntry(managedArgument) {
+            model[managedArgument.name] = managedArgument.value;
+        });
+
+        return model;
 
     };
 
