@@ -148,6 +148,22 @@
 
     },
 
+    "COLOR_SCHEME" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_HIDE_DETAILS" : "Hide",
+        "ACTION_SAVE"         : "@:APP.ACTION_SAVE",
+        "ACTION_SHOW_DETAILS" : "Show",
+
+        "FIELD_HEADER_BACKGROUND" : "Background",
+        "FIELD_HEADER_FOREGROUND" : "Foreground",
+
+        "FIELD_OPTION_CUSTOM" : "Custom...",
+
+        "SECTION_HEADER_DETAILS" : "Details:"
+
+    },
+
     "DATA_SOURCE_DEFAULT" : {
         "NAME" : "Default (XML)"
     },

@@ -501,6 +501,13 @@
             <version>1.0.10</version>
         </dependency>
 
+        <!-- Pickr (JavaScript color picker) -->
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>simonwep__pickr</artifactId>
+            <version>1.2.6</version>
+        </dependency>
+
     </dependencies>
 
 </project>

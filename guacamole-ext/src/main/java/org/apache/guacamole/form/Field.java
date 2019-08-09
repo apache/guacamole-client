@@ -117,6 +117,12 @@ public class Field {
          */
         public static String QUERY_PARAMETER = "QUERY_PARAMETER";
 
+        /**
+         * A color scheme accepted by the Guacamole server terminal emulator
+         * and protocols which leverage it.
+         */
+        public static String TERMINAL_COLOR_SCHEME = "TERMINAL_COLOR_SCHEME";
+
     }
 
     /**

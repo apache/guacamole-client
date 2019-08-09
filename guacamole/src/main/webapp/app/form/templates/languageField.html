@@ -1,1 +1,3 @@
-<select ng-model="model" ng-options="language.key as language.value for language in languages | toArray | orderBy: key"></select>
+<select ng-attr-id="{{ fieldId }}"
+        ng-model="model"
+        ng-options="language.key as language.value for language in languages | toArray | orderBy: key"></select>
