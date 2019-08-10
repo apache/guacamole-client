@@ -55,6 +55,11 @@ public class APIActiveConnection {
     private final String username;
 
     /**
+     * Whether this active connection may be connected to.
+     */
+    private final boolean connectable;
+
+    /**
      * Creates a new APIActiveConnection, copying the information from the given
      * active connection.
      *
@@ -67,6 +72,7 @@ public class APIActiveConnection {
         this.startDate            = connection.getStartDate();
         this.remoteHost           = connection.getRemoteHost();
         this.username             = connection.getUsername();
+        this.connectable          = connection.isConnectable();
     }
 
     /**
@@ -121,5 +127,16 @@ public class APIActiveConnection {
     public String getIdentifier() {
         return identifier;
     }
-    
+
+    /***
+     * Returns whether this active connection may be connected to, just as a
+     * normal connection.
+     *
+     * @return
+     *     true if this active connection may be connected to, false otherwise.
+     */
+    public boolean isConnectable() {
+        return connectable;
+    }
+
 }
