@@ -26,7 +26,6 @@ angular.module('guacRadius').config(['formServiceProvider',
     // Define field for the challenge from the RADIUS service
     formServiceProvider.registerFieldType('GUAC_RADIUS_CHALLENGE_RESPONSE', {
         module      : 'guacRadius',
-        controller  : 'radiusResponseController',
         templateUrl : 'app/ext/radius/templates/radiusResponseField.html'
     });
 
