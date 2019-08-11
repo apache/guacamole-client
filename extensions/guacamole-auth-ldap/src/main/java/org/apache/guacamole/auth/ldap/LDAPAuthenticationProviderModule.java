@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.ldap;
 
 import com.google.inject.AbstractModule;
+import org.apache.guacamole.auth.ldap.conf.ConfigurationService;
 import org.apache.guacamole.auth.ldap.connection.ConnectionService;
 import org.apache.guacamole.auth.ldap.user.UserService;
 import org.apache.guacamole.GuacamoleException;
@@ -76,7 +77,6 @@ public class LDAPAuthenticationProviderModule extends AbstractModule {
         // Bind LDAP-specific services
         bind(ConfigurationService.class);
         bind(ConnectionService.class);
-        bind(EscapingService.class);
         bind(LDAPConnectionService.class);
         bind(ObjectQueryService.class);
         bind(UserGroupService.class);

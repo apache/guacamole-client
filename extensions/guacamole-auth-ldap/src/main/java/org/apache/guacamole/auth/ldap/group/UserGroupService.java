@@ -20,15 +20,21 @@
 package org.apache.guacamole.auth.ldap.group;
 
 import com.google.inject.Inject;
-import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPEntry;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.guacamole.auth.ldap.ConfigurationService;
+import org.apache.directory.api.ldap.model.entry.Entry;
+import org.apache.directory.api.ldap.model.exception.LdapInvalidAttributeValueException;
+import org.apache.directory.api.ldap.model.filter.EqualityNode;
+import org.apache.directory.api.ldap.model.filter.ExprNode;
+import org.apache.directory.api.ldap.model.filter.NotNode;
+import org.apache.directory.api.ldap.model.filter.PresenceNode;
+import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.directory.ldap.client.api.LdapNetworkConnection;
+import org.apache.guacamole.auth.ldap.conf.ConfigurationService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.ldap.ObjectQueryService;
 import org.apache.guacamole.net.auth.UserGroup;
@@ -45,7 +51,7 @@ public class UserGroupService {
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(UserGroupService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserGroupService.class);
 
     /**
      * Service for retrieving LDAP server configuration information.
@@ -72,17 +78,17 @@ public class UserGroupService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    private String getGroupSearchFilter() throws GuacamoleException {
+    private ExprNode getGroupSearchFilter() throws GuacamoleException {
 
         // Explicitly exclude guacConfigGroup object class only if it should
         // be assumed to be defined (query may fail due to no such object
         // class existing otherwise)
         if (confService.getConfigurationBaseDN() != null)
-            return "(!(objectClass=guacConfigGroup))";
+            return new NotNode(new EqualityNode("objectClass","guacConfigGroup"));
 
         // Read any object as a group if LDAP is not being used for connection
         // storage (guacConfigGroup)
-        return "(objectClass=*)";
+        return new PresenceNode("objectClass");
 
     }
 
@@ -102,17 +108,17 @@ public class UserGroupService {
      * @throws GuacamoleException
      *     If an error occurs preventing retrieval of user groups.
      */
-    public Map<String, UserGroup> getUserGroups(LDAPConnection ldapConnection)
+    public Map<String, UserGroup> getUserGroups(LdapNetworkConnection ldapConnection)
             throws GuacamoleException {
 
         // Do not return any user groups if base DN is not specified
-        String groupBaseDN = confService.getGroupBaseDN();
+        Dn groupBaseDN = confService.getGroupBaseDN();
         if (groupBaseDN == null)
             return Collections.emptyMap();
 
         // Retrieve all visible user groups which are not guacConfigGroups
         Collection<String> attributes = confService.getGroupNameAttributes();
-        List<LDAPEntry> results = queryService.search(
+        List<Entry> results = queryService.search(
             ldapConnection,
             groupBaseDN,
             getGroupSearchFilter(),
@@ -125,13 +131,18 @@ public class UserGroupService {
         return queryService.asMap(results, entry -> {
 
             // Translate entry into UserGroup object having proper identifier
-            String name = queryService.getIdentifier(entry, attributes);
-            if (name != null)
-                return new SimpleUserGroup(name);
+            try {
+                String name = queryService.getIdentifier(entry, attributes);
+                if (name != null)
+                    return new SimpleUserGroup(name);
+            }
+            catch (LdapInvalidAttributeValueException e) {
+                return null;
+            }
 
             // Ignore user groups which lack a name attribute
             logger.debug("User group \"{}\" is missing a name attribute "
-                    + "and will be ignored.", entry.getDN());
+                    + "and will be ignored.", entry.getDn().toString());
             return null;
 
         });
@@ -157,11 +168,11 @@ public class UserGroupService {
      * @throws GuacamoleException
      *     If an error occurs preventing retrieval of user groups.
      */
-    public List<LDAPEntry> getParentUserGroupEntries(LDAPConnection ldapConnection,
-            String userDN) throws GuacamoleException {
+    public List<Entry> getParentUserGroupEntries(LdapNetworkConnection ldapConnection,
+            Dn userDN) throws GuacamoleException {
 
         // Do not return any user groups if base DN is not specified
-        String groupBaseDN = confService.getGroupBaseDN();
+        Dn groupBaseDN = confService.getGroupBaseDN();
         if (groupBaseDN == null)
             return Collections.emptyList();
 
@@ -172,7 +183,7 @@ public class UserGroupService {
             groupBaseDN,
             getGroupSearchFilter(),
             Collections.singleton(confService.getMemberAttribute()),
-            userDN
+            userDN.toString()
         );
 
     }
@@ -196,24 +207,31 @@ public class UserGroupService {
      * @throws GuacamoleException
      *     If an error occurs preventing retrieval of user groups.
      */
-    public Set<String> getParentUserGroupIdentifiers(LDAPConnection ldapConnection,
-            String userDN) throws GuacamoleException {
+    public Set<String> getParentUserGroupIdentifiers(LdapNetworkConnection ldapConnection,
+            Dn userDN) throws GuacamoleException {
 
         Collection<String> attributes = confService.getGroupNameAttributes();
-        List<LDAPEntry> userGroups = getParentUserGroupEntries(ldapConnection, userDN);
+        List<Entry> userGroups = getParentUserGroupEntries(ldapConnection, userDN);
 
         Set<String> identifiers = new HashSet<>(userGroups.size());
         userGroups.forEach(entry -> {
 
             // Determine unique identifier for user group
-            String name = queryService.getIdentifier(entry, attributes);
-            if (name != null)
-                identifiers.add(name);
+            try {
+                String name = queryService.getIdentifier(entry, attributes);
+                if (name != null)
+                    identifiers.add(name);
 
-            // Ignore user groups which lack a name attribute
-            else
-                logger.debug("User group \"{}\" is missing a name attribute "
-                        + "and will be ignored.", entry.getDN());
+                // Ignore user groups which lack a name attribute
+                else
+                    logger.debug("User group \"{}\" is missing a name attribute "
+                            + "and will be ignored.", entry.getDn().toString());
+            }
+            catch (LdapInvalidAttributeValueException e) {
+                logger.error("User group missing identifier: {}",
+                        e.getMessage());
+                logger.debug("LDAP exception while getting group identifier.", e);
+            }
 
         });
 
