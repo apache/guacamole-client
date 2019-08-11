@@ -20,8 +20,8 @@
 package org.apache.guacamole.auth.ldap.user;
 
 import com.google.inject.Inject;
-import com.novell.ldap.LDAPConnection;
 import java.util.Collections;
+import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.auth.ldap.connection.ConnectionService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.ldap.LDAPAuthenticationProvider;
@@ -39,19 +39,12 @@ import org.apache.guacamole.net.auth.simple.SimpleConnectionGroup;
 import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
 import org.apache.guacamole.net.auth.simple.SimpleUser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An LDAP-specific implementation of UserContext which queries all Guacamole
  * connections and users from the LDAP directory.
  */
 public class LDAPUserContext extends AbstractUserContext {
-
-    /**
-     * Logger for this class.
-     */
-    private final Logger logger = LoggerFactory.getLogger(LDAPUserContext.class);
 
     /**
      * Service for retrieving Guacamole connections from the LDAP server.
@@ -109,7 +102,7 @@ public class LDAPUserContext extends AbstractUserContext {
 
     /**
      * Initializes this UserContext using the provided AuthenticatedUser and
-     * LDAPConnection.
+     * LdapNetworkConnection.
      *
      * @param user
      *     The AuthenticatedUser representing the user that authenticated. This
@@ -124,7 +117,7 @@ public class LDAPUserContext extends AbstractUserContext {
      *     If associated data stored within the LDAP directory cannot be
      *     queried due to an error.
      */
-    public void init(AuthenticatedUser user, LDAPConnection ldapConnection)
+    public void init(AuthenticatedUser user, LdapNetworkConnection ldapConnection)
             throws GuacamoleException {
 
         // Query all accessible users
