@@ -19,7 +19,6 @@
     ],
 
     "resources" : {
-        "templates/radiusResponseField.html" : "text/html",
         "templates/radiusStateField.html"    : "text/html"
     }
 
