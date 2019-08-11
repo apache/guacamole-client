@@ -32,7 +32,6 @@ import org.apache.guacamole.net.AbstractGuacamoleTunnel;
 import org.apache.guacamole.net.GuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.ConnectionRecord;
-import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
 
 
 /**
@@ -202,8 +201,8 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      *
      * @param sharingProfile
      *     The sharing profile that was used to share access to the given
-     *     connection. As a record created in this way always refers to a
-     *     shared connection, this value may NOT be null.
+     *     connection, or null if no sharing profile should be used (access to
+     *     the connection is unrestricted).
      */
     public void init(RemoteAuthenticatedUser user,
             ActiveConnectionRecord activeConnection,
