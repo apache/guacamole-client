@@ -109,8 +109,7 @@ public class AuthenticationProviderService {
         }
 
         // We have the required attributes - convert to strings and then generate the additional login box/field
-        logger.debug("Received challenge: {}", replyAttr.getValue().toString());
-        String replyMsg = replyAttr.toString().split(" = ", 2)[1];
+        String replyMsg = replyAttr.getValue().toString();
         String radiusState = BaseEncoding.base16().encode(stateAttr.getValue().getBytes());
         Field radiusResponseField = new PasswordField(CHALLENGE_RESPONSE_PARAM);
         Field radiusStateField = new RadiusStateField(radiusState);
