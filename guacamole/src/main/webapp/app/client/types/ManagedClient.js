@@ -36,21 +36,22 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var ManagedShareLink       = $injector.get('ManagedShareLink');
 
     // Required services
-    var $document              = $injector.get('$document');
-    var $q                     = $injector.get('$q');
-    var $rootScope             = $injector.get('$rootScope');
-    var $window                = $injector.get('$window');
-    var authenticationService  = $injector.get('authenticationService');
-    var connectionGroupService = $injector.get('connectionGroupService');
-    var connectionService      = $injector.get('connectionService');
-    var preferenceService      = $injector.get('preferenceService');
-    var requestService         = $injector.get('requestService');
-    var schemaService          = $injector.get('schemaService');
-    var tunnelService          = $injector.get('tunnelService');
-    var guacAudio              = $injector.get('guacAudio');
-    var guacHistory            = $injector.get('guacHistory');
-    var guacImage              = $injector.get('guacImage');
-    var guacVideo              = $injector.get('guacVideo');
+    var $document               = $injector.get('$document');
+    var $q                      = $injector.get('$q');
+    var $rootScope              = $injector.get('$rootScope');
+    var $window                 = $injector.get('$window');
+    var activeConnectionService = $injector.get('activeConnectionService');
+    var authenticationService   = $injector.get('authenticationService');
+    var connectionGroupService  = $injector.get('connectionGroupService');
+    var connectionService       = $injector.get('connectionService');
+    var preferenceService       = $injector.get('preferenceService');
+    var requestService          = $injector.get('requestService');
+    var schemaService           = $injector.get('schemaService');
+    var tunnelService           = $injector.get('tunnelService');
+    var guacAudio               = $injector.get('guacAudio');
+    var guacHistory             = $injector.get('guacHistory');
+    var guacImage               = $injector.get('guacImage');
+    var guacVideo               = $injector.get('guacVideo');
 
     /**
      * The minimum amount of time to wait between updates to the client
@@ -597,6 +598,29 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             connectionGroupService.getConnectionGroup(clientIdentifier.dataSource, clientIdentifier.id)
             .then(function connectionGroupRetrieved(group) {
                 managedClient.name = managedClient.title = group.name;
+            }, requestService.WARN);
+        }
+
+        // If using an active connection, pull corresponding connection, then
+        // pull connection name and protocol information from that
+        else if (clientIdentifier.type === ClientIdentifier.Types.ACTIVE_CONNECTION) {
+            activeConnectionService.getActiveConnection(clientIdentifier.dataSource, clientIdentifier.id)
+            .then(function activeConnectionRetrieved(activeConnection) {
+
+                // Attempt to retrieve connection details only if the
+                // underlying connection is known
+                if (activeConnection.connectionIdentifier) {
+                    $q.all({
+                        connection : connectionService.getConnection(clientIdentifier.dataSource, activeConnection.connectionIdentifier),
+                        protocols  : schemaService.getProtocols(clientIdentifier.dataSource)
+                    })
+                    .then(function dataRetrieved(values) {
+                        managedClient.name = managedClient.title = values.connection.name;
+                        managedClient.protocol = values.connection.protocol;
+                        managedClient.forms = values.protocols[values.connection.protocol].connectionForms;
+                    }, requestService.WARN);
+                }
+
             }, requestService.WARN);
         }
 

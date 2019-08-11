@@ -35,6 +35,7 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
 
             // Required types
             var ActiveConnectionWrapper = $injector.get('ActiveConnectionWrapper');
+            var ClientIdentifier        = $injector.get('ClientIdentifier');
             var ConnectionGroup         = $injector.get('ConnectionGroup');
             var SortOrder               = $injector.get('SortOrder');
 
@@ -336,7 +337,37 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
                     'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
                 });
             };
-            
+
+            /**
+             * Returns the relative URL of the client page which accesses the
+             * given active connection. If the active connection is not
+             * connectable, null is returned.
+             *
+             * @param {String} dataSource
+             *     The unique identifier of the data source containing the
+             *     active connection.
+             *
+             * @param {String} activeConnection
+             *     The active connection to determine the relative URL of.
+             *
+             * @returns {String}
+             *     The relative URL of the client page which accesses the given
+             *     active connection, or null if the active connection is not
+             *     connectable.
+             */
+            $scope.getClientURL = function getClientURL(dataSource, activeConnection) {
+
+                if (!activeConnection.connectable)
+                    return null;
+
+                return '#/client/' + encodeURIComponent(ClientIdentifier.toString({
+                    dataSource : dataSource,
+                    type       : ClientIdentifier.Types.ACTIVE_CONNECTION,
+                    id         : activeConnection.identifier
+                }));
+
+            };
+
             /**
              * Returns whether the selected sessions can be deleted.
              * 

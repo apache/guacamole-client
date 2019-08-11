@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.jdbc.sharing;
 
 import com.google.inject.Inject;
 import java.util.Collections;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
@@ -30,11 +31,14 @@ import org.apache.guacamole.auth.jdbc.sharing.user.SharedAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileService;
 import org.apache.guacamole.auth.jdbc.tunnel.ActiveConnectionRecord;
+import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
+import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.UserCredentials;
+import org.apache.guacamole.protocol.GuacamoleClientInformation;
 
 /**
  * Service which provides convenience methods for sharing active connections.
@@ -75,10 +79,16 @@ public class ConnectionSharingService {
             ));
 
     /**
-     * Generates a set of temporary credentials which can be used to connect to
-     * the given connection using the given sharing profile. If the user does
-     * not have permission to share the connection via the given sharing
-     * profile, permission will be denied.
+     * Creates a new SharedConnectionDefinition which can be used to connect to
+     * the given connection, optionally restricting access to the shared
+     * connection using the given sharing profile. If the user does not have
+     * permission to share the connection via the given sharing profile,
+     * permission will be denied.
+     *
+     * @see GuacamoleTunnelService#getGuacamoleTunnel(RemoteAuthenticatedUser,
+     *          SharedConnectionDefinition, GuacamoleClientInformation, Map)
+     *
+     * @see #getSharingCredentials(SharedConnectionDefinition)
      *
      * @param user
      *     The user sharing the connection.
@@ -88,42 +98,67 @@ public class ConnectionSharingService {
      *
      * @param sharingProfileIdentifier
      *     The identifier of the sharing profile dictating the semantics or
-     *     restrictions applying to the shared session.
+     *     restrictions applying to the shared session, or null if no such
+     *     restrictions should apply.
      *
      * @return
-     *     A newly-generated set of temporary credentials which can be used to
-     *     connect to the given connection.
+     *     A new SharedConnectionDefinition which can be used to connect to the
+     *     given connection.
      *
      * @throws GuacamoleException
      *     If permission to share the given connection is denied.
      */
-    public UserCredentials generateTemporaryCredentials(ModeledAuthenticatedUser user,
+    public SharedConnectionDefinition shareConnection(ModeledAuthenticatedUser user,
             ActiveConnectionRecord activeConnection,
             String sharingProfileIdentifier) throws GuacamoleException {
 
-        // Pull sharing profile (verifying access)
-        ModeledSharingProfile sharingProfile =
-                sharingProfileService.retrieveObject(user,
-                        sharingProfileIdentifier);
+        // If a sharing profile is provided, verify that permission to use that
+        // profile to share the given connection is actually granted
+        ModeledSharingProfile sharingProfile = null;
+        if (sharingProfileIdentifier != null) {
 
-        // Verify that this profile is indeed a sharing profile for the
-        // requested connection
-        String connectionIdentifier = activeConnection.getConnectionIdentifier();
-        if (sharingProfile == null || !sharingProfile.getPrimaryConnectionIdentifier().equals(connectionIdentifier))
-            throw new GuacamoleSecurityException("Permission denied.");
+            // Pull sharing profile (verifying access)
+            sharingProfile = sharingProfileService.retrieveObject(user, sharingProfileIdentifier);
+
+            // Verify that this profile is indeed a sharing profile for the
+            // requested connection
+            String connectionIdentifier = activeConnection.getConnectionIdentifier();
+            if (sharingProfile == null || !sharingProfile.getPrimaryConnectionIdentifier().equals(connectionIdentifier))
+                throw new GuacamoleSecurityException("Permission denied.");
+
+        }
 
         // Generate a share key for the requested connection
         String key = keyGenerator.getShareKey();
-        connectionMap.add(new SharedConnectionDefinition(activeConnection,
-                sharingProfile, key));
+        SharedConnectionDefinition definition = new SharedConnectionDefinition(activeConnection, sharingProfile, key);
+        connectionMap.add(definition);
 
         // Ensure the share key is properly invalidated when the original
         // connection is closed
         activeConnection.registerShareKey(key);
 
+        return definition;
+
+    }
+
+    /**
+     * Generates a set of temporary credentials which can be used to connect to
+     * the given connection shared by the SharedConnectionDefinition.
+     *
+     * @param definition
+     *     The SharedConnectionDefinition which defines the connection being
+     *     shared and any applicable restrictions.
+     *
+     * @return
+     *     A newly-generated set of temporary credentials which can be used to
+     *     connect to the connection shared by the given
+     *     SharedConnectionDefinition.
+     */
+    public UserCredentials getSharingCredentials(SharedConnectionDefinition definition) {
+
         // Return credentials defining a single expected parameter
         return new UserCredentials(SHARE_KEY,
-                Collections.singletonMap(SHARE_KEY_NAME, key));
+                Collections.singletonMap(SHARE_KEY_NAME, definition.getShareKey()));
 
     }
 

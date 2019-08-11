@@ -40,7 +40,9 @@
                 <td><guac-user-item username="wrapper.activeConnection.username"></guac-user-item></td>
                 <td>{{wrapper.startDate}}</td>
                 <td>{{wrapper.activeConnection.remoteHost}}</td>
-                <td>{{wrapper.name}}</td>
+                <td><a ng-href="{{
+                    getClientURL(wrapper.dataSource, wrapper.activeConnection)
+                }}">{{wrapper.name}}</a></td>
             </tr>
         </tbody>
     </table>

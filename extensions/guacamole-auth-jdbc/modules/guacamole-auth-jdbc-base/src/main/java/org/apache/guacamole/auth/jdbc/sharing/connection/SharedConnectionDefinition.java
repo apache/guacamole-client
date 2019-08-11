@@ -29,9 +29,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Defines the semantics/restrictions of a shared connection by associating an
- * active connection with a sharing profile. The sharing profile defines the
- * access provided to users of the shared active connection through its
- * connection parameters.
+ * active connection with an optional sharing profile. The sharing profile, if
+ * present, defines the access provided to users of the shared active
+ * connection through its connection parameters. If no sharing profile is
+ * present, the shared connection has the same level of access as the original
+ * connection.
  */
 public class SharedConnectionDefinition {
 
@@ -88,7 +90,8 @@ public class SharedConnectionDefinition {
      *
      * @param sharingProfile
      *     A sharing profile whose associated parameters dictate the level of
-     *     access provided to the shared connection.
+     *     access provided to the shared connection, or null if the connection
+     *     should be given full access.
      *
      * @param shareKey
      *     The unique key with which a user may access the shared connection.

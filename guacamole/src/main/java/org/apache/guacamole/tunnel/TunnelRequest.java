@@ -21,8 +21,6 @@ package org.apache.guacamole.tunnel;
 
 import java.util.List;
 import org.apache.guacamole.GuacamoleClientException;
-import org.apache.guacamole.GuacamoleClientException;
-import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleException;
 
 /**
@@ -100,40 +98,6 @@ public abstract class TunnelRequest {
      * The name of the parameter specifying the timezone of the client.
      */
     public static final String TIMEZONE_PARAMETER = "GUAC_TIMEZONE";
-
-    /**
-     * All supported object types that can be used as the destination of a
-     * tunnel.
-     */
-    public static enum Type {
-
-        /**
-         * A Guacamole connection.
-         */
-        CONNECTION("c"),
-
-        /**
-         * A Guacamole connection group.
-         */
-        CONNECTION_GROUP("g");
-
-        /**
-         * The parameter value which denotes a destination object of this type.
-         */
-        final String PARAMETER_VALUE;
-        
-        /**
-         * Defines a Type having the given corresponding parameter value.
-         *
-         * @param value
-         *     The parameter value which denotes a destination object of this
-         *     type.
-         */
-        Type(String value) {
-            PARAMETER_VALUE = value;
-        }
-
-    };
 
     /**
      * Returns the value of the parameter having the given name.
@@ -257,18 +221,11 @@ public abstract class TunnelRequest {
      *     If the type was not present in the request, or if the type requested
      *     is in the wrong format.
      */
-    public Type getType() throws GuacamoleException {
+    public TunnelRequestType getType() throws GuacamoleException {
 
-        String type = getRequiredParameter(TYPE_PARAMETER);
-
-        // For each possible object type
-        for (Type possibleType : Type.values()) {
-
-            // Match against defined parameter value
-            if (type.equals(possibleType.PARAMETER_VALUE))
-                return possibleType;
-
-        }
+        TunnelRequestType type = TunnelRequestType.parseType(getRequiredParameter(TYPE_PARAMETER));
+        if (type != null)
+            return type;
 
         throw new GuacamoleClientException("Illegal identifier - unknown type.");
 

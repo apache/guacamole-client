@@ -91,15 +91,16 @@ public class ActiveConnectionService
         Collection<TrackedActiveConnection> activeConnections = new ArrayList<TrackedActiveConnection>(identifiers.size());
         for (ActiveConnectionRecord record : records) {
 
-            // Sensitive information should be included if the connection was
-            // started by the current user OR the user is an admin
-            boolean includeSensitiveInformation =
+            // The current user should have access to sensitive information and
+            // be able to connect to (join) the active connection if they are
+            // the user that started the connection OR the user is an admin
+            boolean hasPrivilegedAccess =
                     isAdmin || username.equals(record.getUsername());
 
             // Add connection if within requested identifiers
             if (identifierSet.contains(record.getUUID().toString())) {
                 TrackedActiveConnection activeConnection = trackedActiveConnectionProvider.get();
-                activeConnection.init(user, record, includeSensitiveInformation);
+                activeConnection.init(user, record, hasPrivilegedAccess, hasPrivilegedAccess);
                 activeConnections.add(activeConnection);
             }
 

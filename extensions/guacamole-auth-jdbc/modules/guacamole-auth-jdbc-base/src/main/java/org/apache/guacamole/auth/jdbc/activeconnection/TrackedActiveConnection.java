@@ -21,15 +21,20 @@ package org.apache.guacamole.auth.jdbc.activeconnection;
 
 import com.google.inject.Inject;
 import java.util.Date;
+import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.sharing.ConnectionSharingService;
+import org.apache.guacamole.auth.jdbc.sharing.connection.SharedConnectionDefinition;
 import org.apache.guacamole.auth.jdbc.tunnel.ActiveConnectionRecord;
+import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.net.auth.credentials.UserCredentials;
+import org.apache.guacamole.protocol.GuacamoleClientInformation;
 
 /**
  * An implementation of the ActiveConnection object which has an associated
@@ -42,6 +47,12 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
      */
     @Inject
     private ConnectionSharingService sharingService;
+
+    /**
+     * Service for creating and tracking tunnels.
+     */
+    @Inject
+    private GuacamoleTunnelService tunnelService;
 
     /**
      * The identifier of this active connection.
@@ -85,6 +96,11 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
     private GuacamoleTunnel tunnel;
 
     /**
+     * Whether connections to this TrackedActiveConnection are allowed.
+     */
+    private boolean connectable;
+
+    /**
      * Initializes this TrackedActiveConnection, copying the data associated
      * with the given active connection record. At a minimum, the identifier
      * of this active connection will be set, the start date, and the
@@ -102,13 +118,19 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
      *     Whether sensitive data should be copied from the connection record
      *     as well. This includes the remote host, associated tunnel, and
      *     username.
+     *
+     * @param connectable
+     *     Whether the user that retrieved this object should be allowed to
+     *     join the active connection.
      */
     public void init(ModeledAuthenticatedUser currentUser,
             ActiveConnectionRecord activeConnectionRecord,
-            boolean includeSensitiveInformation) {
+            boolean includeSensitiveInformation,
+            boolean connectable) {
 
         super.init(currentUser);
         this.connectionRecord = activeConnectionRecord;
+        this.connectable      = connectable;
         
         // Copy all non-sensitive data from given record
         this.connection               = activeConnectionRecord.getConnection();
@@ -169,11 +191,32 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
         this.sharingProfileIdentifier = sharingProfileIdentifier;
     }
 
+    /**
+     * Shares this active connection with the user that retrieved it, returning
+     * a SharedConnectionDefinition that can be used to establish a tunnel to
+     * the shared connection. If provided, access within the shared connection
+     * will be restricted by the sharing profile with the given identifier.
+     *
+     * @param identifier
+     *     The identifier of the sharing profile that defines the restrictions
+     *     applying to the shared connection, or null if no such restrictions
+     *     apply.
+     *
+     * @return
+     *     A new SharedConnectionDefinition which can be used to establish a
+     *     tunnel to the shared connection.
+     *
+     * @throws GuacamoleException
+     *     If permission to share this active connection is denied.
+     */
+    private SharedConnectionDefinition share(String identifier) throws GuacamoleException {
+        return sharingService.shareConnection(getCurrentUser(), connectionRecord, identifier);
+    }
+
     @Override
     public UserCredentials getSharingCredentials(String identifier)
             throws GuacamoleException {
-        return sharingService.generateTemporaryCredentials(getCurrentUser(),
-                connectionRecord, identifier);
+        return sharingService.getSharingCredentials(share(identifier));
     }
 
     @Override
@@ -214,6 +257,28 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
     @Override
     public void setTunnel(GuacamoleTunnel tunnel) {
         this.tunnel = tunnel;
+    }
+
+    @Override
+    public boolean isConnectable() {
+        return connectable;
+    }
+
+    @Override
+    public GuacamoleTunnel connect(GuacamoleClientInformation info,
+            Map<String, String> tokens) throws GuacamoleException {
+
+        // Establish connection only if connecting is allowed
+        if (isConnectable())
+            return tunnelService.getGuacamoleTunnel(getCurrentUser(), share(null), info, tokens);
+
+        throw new GuacamoleSecurityException("Permission denied.");
+
+    }
+
+    @Override
+    public int getActiveConnections() {
+        return 0;
     }
 
 }
