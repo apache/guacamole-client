@@ -197,8 +197,8 @@ public class LDAPConnectionService {
      *     If an error occurs parsing out the LdapUrl object or the
      *     maximum number of referral hops is reached.
      */
-    public LdapNetworkConnection referralConnection(LdapUrl referralUrl,
-            LdapConnectionConfig ldapConfig, int hop) 
+    public LdapNetworkConnection getReferralConnection(LdapUrl referralUrl,
+            LdapConnectionConfig ldapConfig, int hop)
             throws GuacamoleException {
        
         if (hop >= confService.getMaxReferralHops())

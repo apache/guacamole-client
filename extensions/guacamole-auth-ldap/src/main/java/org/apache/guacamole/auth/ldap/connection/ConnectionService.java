@@ -115,7 +115,7 @@ public class ConnectionService {
             // getConnections() will only be called after a connection has been
             // authenticated (via non-anonymous bind), thus userDN cannot
             // possibly be null
-            assert (userDN != null);
+            assert(userDN != null);
 
             // Get the search filter for finding connections accessible by the
             // current user
@@ -145,7 +145,9 @@ public class ConnectionService {
                     cnName = cn.getString();
                 }
                 catch (LdapInvalidAttributeValueException e) {
-                    logger.error("Invalid value for CN attribute.", e.getMessage());
+                    logger.error("Invalid value for CN attribute: {}",
+                            e.getMessage());
+                    logger.debug("LDAP exception while getting CN attribute.", e);
                     return null;
                 }
 
@@ -164,7 +166,9 @@ public class ConnectionService {
                     config.setProtocol(protocol.getString());
                 }
                 catch (LdapInvalidAttributeValueException e) {
-                    logger.error("Invalid value of the protocol entry.", e.getMessage());
+                    logger.error("Invalid value of the protocol entry: {}",
+                            e.getMessage());
+                    logger.debug("LDAP exception when getting protocol value.", e);
                     return null;
                 }
 
@@ -179,7 +183,10 @@ public class ConnectionService {
                             parameter = parameterAttribute.getString();
                         }
                         catch (LdapInvalidAttributeValueException e) {
-                            logger.warn("Parameter value not valid for {}", cnName, e);
+                            logger.warn("Parameter value not valid for {}: {}",
+                                    cnName, e.getMessage());
+                            logger.debug("LDAP exception when getting parameter value.",
+                                    e);
                             return null;
                         }
                         parameterAttribute.remove(parameter);

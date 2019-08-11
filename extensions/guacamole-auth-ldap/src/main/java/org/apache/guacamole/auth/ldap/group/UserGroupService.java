@@ -228,7 +228,9 @@ public class UserGroupService {
                             + "and will be ignored.", entry.getDn().toString());
             }
             catch (LdapInvalidAttributeValueException e) {
-                logger.debug("User group missing identifier.", e.getMessage());
+                logger.error("User group missing identifier: {}",
+                        e.getMessage());
+                logger.debug("LDAP exception while getting group identifier.", e);
             }
 
         });

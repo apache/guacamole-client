@@ -171,7 +171,8 @@ public class ObjectQueryService {
      *     The LDAP query to execute.
      * 
      * @param searchHop
-     *     The level of depth for this search, used for tracking referrals.
+     *     The current level of referral depth for this search, used for
+     *     limiting the maximum depth to which referrals can go.
      *
      * @return
      *     A list of all results accessible to the user currently bound under
@@ -209,9 +210,13 @@ public class ObjectQueryService {
                     
                     Referral referral = results.getReferral();
                     for (String url : referral.getLdapUrls()) {
-                        LdapNetworkConnection referralConnection = ldapService.referralConnection(
-                            new LdapUrl(url), ldapConnectionConfig, searchHop++);
-                        entries.addAll(search(referralConnection, baseDN, query, searchHop));
+                        LdapNetworkConnection referralConnection =
+                                ldapService.getReferralConnection(
+                                        new LdapUrl(url),
+                                        ldapConnectionConfig, searchHop++
+                                );
+                        entries.addAll(search(referralConnection, baseDN, query,
+                                searchHop));
                     }
                     
                 }
