@@ -55,7 +55,11 @@ public class AuthenticationProviderService {
      */
     private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
     
-    private static final String CHALLENGE_RESPONSE_PARAM = "radisuChallenge";
+    /**
+     * The name of the password field where the user will enter a response to
+     * the RADIUS challenge.
+     */
+    private static final String CHALLENGE_RESPONSE_PARAM = "radiusChallenge";
 
     /**
      * Service for creating and managing connections to RADIUS servers.
@@ -71,7 +75,8 @@ public class AuthenticationProviderService {
 
     /**
      * Returns an object containing the challenge message and the expected
-     * credentials from a RADIUS challenge.
+     * credentials from a RADIUS challenge, or null if either state or reply
+     * attributes are missing from the challenge.
      *
      * @param challengePacket
      *     The AccessChallenge RadiusPacket received from the RADIUS 
@@ -81,7 +86,9 @@ public class AuthenticationProviderService {
      *     A GuacamoleRadiusChallenge object that contains the challenge message
      *     sent by the RADIUS server and the expected credentials that should
      *     be requested of the user in order to continue authentication.  One
-     *     of the expected credentials *must* be the RADIUS state.
+     *     of the expected credentials *must* be the RADIUS state.  If either
+     *     state or the reply are missing from the challenge this method will
+     *     return null.
      */
     private GuacamoleRadiusChallenge getRadiusChallenge(RadiusPacket challengePacket) {
 
@@ -102,7 +109,7 @@ public class AuthenticationProviderService {
         }
 
         // We have the required attributes - convert to strings and then generate the additional login box/field
-        logger.debug("Received challenge: {}", replyAttr.toString());
+        logger.debug("Received challenge: {}", replyAttr.getValue().toString());
         String replyMsg = replyAttr.toString().split(" = ", 2)[1];
         String radiusState = BaseEncoding.base16().encode(stateAttr.getValue().getBytes());
         Field radiusResponseField = new PasswordField(CHALLENGE_RESPONSE_PARAM);

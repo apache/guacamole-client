@@ -22,8 +22,8 @@ package org.apache.guacamole.auth.radius.form;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 
 /**
- * A class for storing the RADIUS challenge message and expected credentials
- * in a single object.
+ * Stores the RADIUS challenge message and expected credentials in a single
+ * object.
  */
 public class GuacamoleRadiusChallenge {
     
@@ -39,7 +39,7 @@ public class GuacamoleRadiusChallenge {
     private final CredentialsInfo expectedCredentials;
     
     /**
-     * Create a new GuacamoleRadiusChallenge object with the provided
+     * Creates a new GuacamoleRadiusChallenge object with the provided
      * challenge message and expected credentials.
      * 
      * @param challengeText
@@ -55,7 +55,7 @@ public class GuacamoleRadiusChallenge {
     }
     
     /**
-     * Return the challenge message provided by the RADIUS server.
+     * Returns the challenge message provided by the RADIUS server.
      * 
      * @return
      *     The challenge message provided by the RADIUS server.
@@ -65,7 +65,7 @@ public class GuacamoleRadiusChallenge {
     }
     
     /**
-     * Return the credentials required to satisfy the RADIUS challenge.
+     * Returns the credentials required to satisfy the RADIUS challenge.
      * 
      * @return 
      *     The credentials required to satisfy the RADIUS challenge.
