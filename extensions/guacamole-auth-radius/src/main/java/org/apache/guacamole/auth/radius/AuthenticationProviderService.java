@@ -26,7 +26,6 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.radius.user.AuthenticatedUser;
 import org.apache.guacamole.auth.radius.form.GuacamoleRadiusChallenge;
-import org.apache.guacamole.auth.radius.form.RadiusChallengeResponseField;
 import org.apache.guacamole.auth.radius.form.RadiusStateField;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.Field;
@@ -43,6 +42,7 @@ import net.jradius.packet.AccessAccept;
 import net.jradius.packet.AccessChallenge;
 import net.jradius.packet.AccessReject;
 import net.jradius.packet.attribute.RadiusAttribute;
+import org.apache.guacamole.form.PasswordField;
 
 /**
  * Service providing convenience functions for the RADIUS AuthenticationProvider
@@ -54,6 +54,8 @@ public class AuthenticationProviderService {
      * Logger for this class.
      */
     private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
+    
+    private static final String CHALLENGE_RESPONSE_PARAM = "radisuChallenge";
 
     /**
      * Service for creating and managing connections to RADIUS servers.
@@ -103,7 +105,7 @@ public class AuthenticationProviderService {
         logger.debug("Received challenge: {}", replyAttr.toString());
         String replyMsg = replyAttr.toString().split(" = ", 2)[1];
         String radiusState = BaseEncoding.base16().encode(stateAttr.getValue().getBytes());
-        Field radiusResponseField = new RadiusChallengeResponseField(replyMsg);
+        Field radiusResponseField = new PasswordField(CHALLENGE_RESPONSE_PARAM);
         Field radiusStateField = new RadiusStateField(radiusState);
 
         // Return the GuacamoleRadiusChallenge object that has the state
@@ -141,7 +143,7 @@ public class AuthenticationProviderService {
 
         // Grab HTTP request object and a response to a challenge.
         HttpServletRequest request = credentials.getRequest();
-        String challengeResponse = request.getParameter(RadiusChallengeResponseField.PARAMETER_NAME);
+        String challengeResponse = request.getParameter(CHALLENGE_RESPONSE_PARAM);
 
         // RadiusPacket object to store response from server.
         RadiusPacket radPack;
