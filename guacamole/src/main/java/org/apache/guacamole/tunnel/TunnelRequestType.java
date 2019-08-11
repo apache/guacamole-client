@@ -20,6 +20,7 @@
 package org.apache.guacamole.tunnel;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.net.auth.Connectable;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
@@ -55,6 +56,19 @@ public enum TunnelRequestType {
         public ConnectionGroup getConnectable(UserContext userContext,
                 String identifier) throws GuacamoleException {
             return userContext.getConnectionGroupDirectory().get(identifier);
+        }
+
+    },
+
+    /**
+     * An active Guacamole connection.
+     */
+    ACTIVE_CONNECTION("a", "active connection") {
+
+        @Override
+        public ActiveConnection getConnectable(UserContext userContext,
+                String identifier) throws GuacamoleException {
+            return userContext.getActiveConnectionDirectory().get(identifier);
         }
 
     };
