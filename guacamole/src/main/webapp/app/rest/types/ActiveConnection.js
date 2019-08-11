@@ -76,6 +76,14 @@ angular.module('rest').factory('ActiveConnection', [function defineActiveConnect
          */
         this.username = template.username;
 
+        /**
+         * Whether this active connection may be connected to, just as a
+         * normal connection.
+         *
+         * @type Boolean
+         */
+        this.connectable = template.connectable;
+
     };
 
     return ActiveConnection;

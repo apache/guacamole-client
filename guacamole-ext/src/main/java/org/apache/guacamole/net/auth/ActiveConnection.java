@@ -20,13 +20,18 @@
 package org.apache.guacamole.net.auth;
 
 import java.util.Date;
+import java.util.Map;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.net.GuacamoleTunnel;
+import org.apache.guacamole.protocol.GuacamoleClientInformation;
 
 /**
  * A pairing of username and GuacamoleTunnel representing an active usage of a
  * particular connection.
  */
-public interface ActiveConnection extends Identifiable, Shareable<SharingProfile> {
+public interface ActiveConnection extends Identifiable, Connectable,
+        Shareable<SharingProfile> {
 
     /**
      * Returns the identifier of the connection being actively used. Unlike the
@@ -136,5 +141,31 @@ public interface ActiveConnection extends Identifiable, Shareable<SharingProfile
      *     The connected GuacamoleTunnel, or null if permission is denied.
      */
     void setTunnel(GuacamoleTunnel tunnel);
+
+    /**
+     * Returns whether this ActiveConnection may be joined through a call to
+     * {@link #connect(org.apache.guacamole.protocol.GuacamoleClientInformation, java.util.Map)}
+     * by the user that retrieved this ActiveConnection.
+     *
+     * @return
+     *     true if the user that retrieved this ActiveConnection may join the
+     *     ActiveConnection through a call to
+     *     {@link #connect(org.apache.guacamole.protocol.GuacamoleClientInformation, java.util.Map)},
+     *     false otherwise.
+     */
+    default boolean isConnectable() {
+        return false;
+    }
+
+    @Override
+    default GuacamoleTunnel connect(GuacamoleClientInformation info,
+            Map<String, String> tokens) throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
+    }
+
+    @Override
+    default int getActiveConnections() {
+        return 0;
+    }
     
 }

@@ -89,7 +89,14 @@ angular.module('client').factory('ClientIdentifier', ['$injector',
          *
          * @type String
          */
-        CONNECTION_GROUP : 'g'
+        CONNECTION_GROUP : 'g',
+
+        /**
+         * The type string for an active Guacamole connection.
+         *
+         * @type String
+         */
+        ACTIVE_CONNECTION : 'a'
 
     };
 
