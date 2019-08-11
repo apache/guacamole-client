@@ -30,6 +30,38 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
     var service = {};
 
     /**
+     * Makes a request to the REST API to get a single active connection,
+     * returning a promise that provides the corresponding
+     * @link{ActiveConnection} if successful.
+     *
+     * @param {String} dataSource
+     *     The identifier of the data source to retrieve the active connection
+     *     from.
+     *
+     * @param {String} id
+     *     The identifier of the active connection.
+     *
+     * @returns {Promise.<ActiveConnection>}
+     *     A promise which will resolve with a @link{ActiveConnection} upon
+     *     success.
+     */
+    service.getActiveConnection = function getActiveConnection(dataSource, id) {
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Retrieve active connection
+        return requestService({
+            method  : 'GET',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/activeConnections/' + encodeURIComponent(id),
+            params  : httpParameters
+        });
+
+    };
+
+    /**
      * Makes a request to the REST API to get the list of active tunnels,
      * returning a promise that provides a map of @link{ActiveConnection}
      * objects if successful.
