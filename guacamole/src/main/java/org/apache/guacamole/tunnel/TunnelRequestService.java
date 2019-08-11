@@ -24,15 +24,13 @@ import com.google.inject.Singleton;
 import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleSession;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.net.auth.Connection;
-import org.apache.guacamole.net.auth.ConnectionGroup;
+import org.apache.guacamole.net.auth.Connectable;
 import org.apache.guacamole.net.auth.Credentials;
-import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.event.TunnelCloseEvent;
 import org.apache.guacamole.net.event.TunnelConnectEvent;
@@ -204,58 +202,20 @@ public class TunnelRequestService {
      *     If an error occurs while creating the tunnel.
      */
     protected GuacamoleTunnel createConnectedTunnel(UserContext context,
-            final TunnelRequest.Type type, String id,
+            final TunnelRequestType type, String id,
             GuacamoleClientInformation info, Map<String, String> tokens)
             throws GuacamoleException {
 
-        // Create connected tunnel from identifier
-        GuacamoleTunnel tunnel = null;
-        switch (type) {
+        // Retrieve requested destination object
+        Connectable connectable = type.getConnectable(context, id);
+        if (connectable == null)
+            throw new GuacamoleResourceNotFoundException("Requested tunnel "
+                    + "destination does not exist.");
 
-            // Connection identifiers
-            case CONNECTION: {
-
-                // Get connection directory
-                Directory<Connection> directory = context.getConnectionDirectory();
-
-                // Get authorized connection
-                Connection connection = directory.get(id);
-                if (connection == null) {
-                    logger.info("Connection \"{}\" does not exist for user \"{}\".", id, context.self().getIdentifier());
-                    throw new GuacamoleSecurityException("Requested connection is not authorized.");
-                }
-
-                // Connect tunnel
-                tunnel = connection.connect(info, tokens);
-                logger.info("User \"{}\" connected to connection \"{}\".", context.self().getIdentifier(), id);
-                break;
-            }
-
-            // Connection group identifiers
-            case CONNECTION_GROUP: {
-
-                // Get connection group directory
-                Directory<ConnectionGroup> directory = context.getConnectionGroupDirectory();
-
-                // Get authorized connection group
-                ConnectionGroup group = directory.get(id);
-                if (group == null) {
-                    logger.info("Connection group \"{}\" does not exist for user \"{}\".", id, context.self().getIdentifier());
-                    throw new GuacamoleSecurityException("Requested connection group is not authorized.");
-                }
-
-                // Connect tunnel
-                tunnel = group.connect(info, tokens);
-                logger.info("User \"{}\" connected to group \"{}\".", context.self().getIdentifier(), id);
-                break;
-            }
-
-            // Type is guaranteed to be one of the above
-            default:
-                assert(false);
-
-        }
-
+        // Connect tunnel to destination
+        GuacamoleTunnel tunnel = connectable.connect(info, tokens);
+        logger.info("User \"{}\" connected to {} \"{}\".",
+                context.self().getIdentifier(), type.NAME, id);
         return tunnel;
 
     }
@@ -297,7 +257,7 @@ public class TunnelRequestService {
      */
     protected GuacamoleTunnel createAssociatedTunnel(final GuacamoleTunnel tunnel,
             final String authToken, final GuacamoleSession session,
-            final UserContext context, final TunnelRequest.Type type,
+            final UserContext context, final TunnelRequestType type,
             final String id) throws GuacamoleException {
 
         // Monitor tunnel closure and data
@@ -320,26 +280,9 @@ public class TunnelRequestService {
                 long connectionEndTime = System.currentTimeMillis();
                 long duration = connectionEndTime - connectionStartTime;
 
-                // Log closure
-                switch (type) {
-
-                    // Connection identifiers
-                    case CONNECTION:
-                        logger.info("User \"{}\" disconnected from connection \"{}\". Duration: {} milliseconds",
-                                session.getAuthenticatedUser().getIdentifier(), id, duration);
-                        break;
-
-                    // Connection group identifiers
-                    case CONNECTION_GROUP:
-                        logger.info("User \"{}\" disconnected from connection group \"{}\". Duration: {} milliseconds",
-                                session.getAuthenticatedUser().getIdentifier(), id, duration);
-                        break;
-
-                    // Type is guaranteed to be one of the above
-                    default:
-                        assert(false);
-
-                }
+                logger.info("User \"{}\" disconnected from {} \"{}\". Duration: {} milliseconds",
+                        session.getAuthenticatedUser().getIdentifier(),
+                        type.NAME, id, duration);
 
                 try {
 
@@ -390,7 +333,7 @@ public class TunnelRequestService {
         // Parse request parameters
         String authToken                = request.getAuthenticationToken();
         String id                       = request.getIdentifier();
-        TunnelRequest.Type type         = request.getType();
+        TunnelRequestType type          = request.getType();
         String authProviderIdentifier   = request.getAuthenticationProviderIdentifier();
         GuacamoleClientInformation info = getClientInformation(request);
 
