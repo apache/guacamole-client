@@ -25,9 +25,7 @@
         "INFO_VERIFICATION_FAILED" : "Verifikation fehlgeschlagen. Bitte nochmals versuchen.",
 
         "HELP_ENROLL_BARCODE" : "Bitte scannen Sie den Barcode mittels einer Zweifaktor-Authentifizierungs-App auf Ihrem Smartphone oder einem anderen Gerät, um den Prozess fortzusetzen.",
-        "HELP_ENROLL_VERIFY"  : "Nach dem Scannen des Barcodes wird Ihnen ein {DIGITS}-stelliger Authentifizierungscode angezeigt. Bitte geben Sie diesen Code ein um die Aktivierung des Zweifaktor-Verfahrens abzuschliessen.",
-
-        "SECTION_HEADER_DETAILS" : "Details:"
+        "HELP_ENROLL_VERIFY"  : "Nach dem Scannen des Barcodes wird Ihnen ein {DIGITS}-stelliger Authentifizierungscode angezeigt. Bitte geben Sie diesen Code ein um die Aktivierung des Zweifaktor-Verfahrens abzuschliessen."
 
     }
 

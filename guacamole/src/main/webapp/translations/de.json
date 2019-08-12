@@ -4,9 +4,6 @@
     
     "APP" : {
 
-        "NAME"    : "Apache Guacamole",
-        "VERSION" : "${project.version}",
-
         "ACTION_ACKNOWLEDGE"        : "OK",
         "ACTION_CANCEL"             : "Abbruch",
         "ACTION_CLONE"              : "Kopieren",
@@ -67,8 +64,8 @@
         "DIALOG_HEADER_CONNECTION_ERROR" : "Verbindungsfehler",
         "DIALOG_HEADER_DISCONNECTED"     : "Verbindung getrennt",
 
-        "ERROR_CLIENT_201"     : "Aufgrund hoher Serverauslastung wurde diese Verbindung zurückgesetzt. Versuche es in wenigen Minuten erneut.",
-        "ERROR_CLIENT_202"     : "Der Verbindungsaufbau wurde durch den Guacamole Server abgebrochen da der Entfernte Computer nicht reagiert. Versuchen Sie die Aktion erneut oder kontaktieren Sie Ihren Systemadministrator.",
+        "ERROR_CLIENT_201"     : "Aufgrund hoher Serverauslastung wurde diese Verbindung zurückgesetzt. Versuchen Sie es in wenigen Minuten erneut.",
+        "ERROR_CLIENT_202"     : "Der Verbindungsaufbau wurde durch den Guacamole Server abgebrochen da der entfernte Computer nicht reagiert. Versuchen Sie die Aktion erneut oder kontaktieren Sie Ihren Systemadministrator.",
         "ERROR_CLIENT_203"     : "Der entfernte Computer hat einen Fehler hervorgerufen und die Verbindung geschlossen. Versuchen Sie die Aktion erneut oder kontaktieren Sie Ihren Systemadministrator.",
         "ERROR_CLIENT_207"     : "Der entfernte Computer ist gegenwärtig nicht erreichbar. Versuchen Sie die Aktion erneut oder kontaktieren Sie Ihren Systemadministrator.",
         "ERROR_CLIENT_208"     : "Der entfernte Computer ist gegenwärtig nicht verfügbar. Versuchen Sie die Aktion erneut oder kontaktieren Sie Ihren Systemadministrator.",
@@ -81,26 +78,26 @@
         "ERROR_CLIENT_31D"     : "Der Zugang zu dieser Verbindung wurde durch den Guacamole Server verweigert, da die maximale Anzahl der gleichzeitigen Zugriffe für diese Verbindung für einen einzelnen Benutzer erreicht wurde.",
         "ERROR_CLIENT_DEFAULT" : "Die Verbindung wurde aufgrund eines internen Fehlers im Guacamole Server beendet. Sollte dieses Problem weiterhin bestehen informieren Sie den Systemadministrator oder überprüfen Sie die Protokolle.",
 
-        "ERROR_TUNNEL_201"     : "Der Verbindungsversuch wurde aufgrund zu vieler bestehenden Verbindungen durch den Guacamole Server zurückgewiesen. Versuche es in wenigen Minuten erneut.",
+        "ERROR_TUNNEL_201"     : "Der Verbindungsversuch wurde aufgrund zu vieler bestehender Verbindungen durch den Guacamole Server zurückgewiesen. Versuchen Sie es in wenigen Minuten erneut.",
         "ERROR_TUNNEL_202"     : "Die Verbindung zum Server wurde aufgrund hoher Latenz geschlossen. Dies wird gewöhnlich durch Netzwerkprobleme verursacht, wie eine schlechte drahtlose Verbindung oder eine sehr langsame Netzwerkverbindung. Bitte überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",
-        "ERROR_TUNNEL_203"     : "Die Verbindung wurde aufgrund eines internen Fehlers beendet. Versuche es noch einmal oder kontaktiere den Systemadministrator.",
-        "ERROR_TUNNEL_204"     : "Die angeforderte Verbindung existiert nicht. Bitte überprüfe den Verbindungsnamen und versuche es erneut.",
-        "ERROR_TUNNEL_205"     : "Diese Verbindung ist in Verwendung, ein konkurrierender Zugriff ist nicht gestattet. Versuche es später erneut.",
+        "ERROR_TUNNEL_203"     : "Die Verbindung wurde aufgrund eines internen Fehlers beendet. Versuche Sie es noch einmal oder kontaktieren Sie Ihren Systemadministrator.",
+        "ERROR_TUNNEL_204"     : "Die angeforderte Verbindung existiert nicht. Bitte überprüfen Sie den Verbindungsnamen und versuchen Sie es erneut.",
+        "ERROR_TUNNEL_205"     : "Diese Verbindung ist in Verwendung, ein konkurrierender Zugriff ist nicht gestattet. Versuche Sie es bitte später erneut.",
         "ERROR_TUNNEL_207"     : "Der Guacamole Server ist gegenwärtig nicht erreichbar. Versuchen Sie die Aktion erneut oder kontaktieren Sie Ihren Systemadministrator.",
         "ERROR_TUNNEL_208"     : "Der Guacamole Server ist gegenwärtig nicht verfügbar. Versuchen Sie die Aktion erneut oder kontaktieren Sie Ihren Systemadministrator.",
         "ERROR_TUNNEL_301"     : "Sie haben keine Zugriffsberechtigung für diese Verbindung. Bitte melden Sie sich an und versuchen es erneut.",
         "ERROR_TUNNEL_303"     : "Sie haben keine Zugriffsberechtigung für diese Verbindung. Wenn Sie diese Berechtigung benötigen, bitten Sie den Systemadministrator diese Berechtigung hinzuzufügen oder prüfen Sie Ihre Systemeinstellungen.",
         "ERROR_TUNNEL_308"     : "Die Verbindung wurde durch den Guacamole Server geschlossen da keine aktive Interkommunikation mit dem Browser besteht. Dies wird gewöhnlich durch Netzwerkprobleme verursacht, wie eine schlechte drahtlose Verbindung oder eine sehr langsame Netzwerkverbindung. Bitte überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",
-        "ERROR_TUNNEL_31D"     : "Der Zugang zu dieser Verbindung wurde durch den Guacamole Server verweigert, da die maximale Anzahl der gleichzeitigen Zugriffe für einen einzelnen Benutzer erreicht wurde. Bitte schliesse eine oder mehrere Verbindungen und versuche es erneut.",
+        "ERROR_TUNNEL_31D"     : "Der Zugang zu dieser Verbindung wurde durch den Guacamole Server verweigert, da die maximale Anzahl der gleichzeitigen Zugriffe für einen einzelnen Benutzer erreicht wurde. Bitte schliessen Sie eine oder mehrere Verbindungen und versuchen Sie es erneut.",
         "ERROR_TUNNEL_DEFAULT" : "Die Verbindung wurde aufgrund eines internen Fehlers im Guacamole Server beendet. Sollte dieses Problem weiterhin bestehen informieren Sie Ihren Systemadministrator oder überprüfen Sie die Protokolle.",
 
         "ERROR_UPLOAD_100"     : "Dateiübertragungen werden entweder nicht unterstützt oder sind nicht aktiviert. Bitte kontaktieren Sie Ihren Systemadministrator oder überprüfen die Protokolle.",
-        "ERROR_UPLOAD_201"     : "Die maximale Anzahl gleichzeitiger Dateiübertragungen erreicht. Bitte warten Sie bis laufende Dateiübertagungen abgeschlossen sind und versuche es dann erneut.",
-        "ERROR_UPLOAD_202"     : "Die Dateiübertragung konnte nicht gestartet werden da der entfernte Computer nicht reagiert. Bitte versuche Sie es erneut oder kontaktieren Ihren Systemadministrator.",
+        "ERROR_UPLOAD_201"     : "Die maximale Anzahl gleichzeitiger Dateiübertragungen ist erreicht. Bitte warten Sie bis laufende Dateiübertragungen abgeschlossen sind und versuchen Sie es dann erneut.",
+        "ERROR_UPLOAD_202"     : "Die Dateiübertragung konnte nicht gestartet werden da der entfernte Computer nicht reagiert. Bitte versuchen Sie es erneut oder kontaktieren Sie Ihren Systemadministrator.",
         "ERROR_UPLOAD_203"     : "Der entfernte Computer hat bei der Übertragungen einen Fehler verursacht. Bitte versuchen Sie es erneut oder kontaktieren Ihren Systemadministrator.",
-        "ERROR_UPLOAD_204"     : "Das Übertragungsziel existiert nicht. Bitte überprüfen Sie ob der Zielort wirklich existiert und versuchen es dann erneut oder kontaktieren Sie Ihren Systemadministrator.",
-        "ERROR_UPLOAD_205"     : "Das Übertragungsziel ist zur Zeit gesperrt. Bitte warten Sie bis alle laufenden Prozesse beendet wurden und versuche es dann erneut.",
-        "ERROR_UPLOAD_301"     : "Es besteht ohne Anmeldung keine Berechtigung zur Dateiübertragung. Bitte melden Sie sich an und versuchen es erneut.",
+        "ERROR_UPLOAD_204"     : "Das Übertragungsziel existiert nicht. Bitte überprüfen Sie ob der Zielort wirklich existiert und versuchen Sie es dann erneut oder kontaktieren Sie Ihren Systemadministrator.",
+        "ERROR_UPLOAD_205"     : "Das Übertragungsziel ist zur Zeit gesperrt. Bitte warten Sie bis alle laufenden Prozesse beendet wurden und versuchen Sie es dann erneut.",
+        "ERROR_UPLOAD_301"     : "Es besteht ohne Anmeldung keine Berechtigung zur Dateiübertragung. Bitte melden Sie sich an und versuchen Sie es erneut.",
         "ERROR_UPLOAD_303"     : "Es besteht keine Berechtigung zur Dateiübertragung. Wenn Sie diese Berechtigung benötigen überprüfen Sie die Systemeinstellungen oder kontaktieren Sie Ihren Systemadministrator.",
         "ERROR_UPLOAD_308"     : "Die Dateiübertragung weist keinen Fortschritt auf. Dies wird gewöhnlich durch Netzwerkprobleme verursacht, wie eine schlechte drahtlose Verbindung oder eine sehr langsame Netzwerkverbindung. Bitte überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",
         "ERROR_UPLOAD_31D"     : "Die maximale Anzahl gleichzeitiger Dateiübertragungen erreicht. Bitte warten Sie bis eine oder mehrere laufende Dateiübertragungen abgeschlossen sind und versuche Sie es dann erneut.",
@@ -294,7 +291,7 @@
         "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Administration:",
         "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Eigenes Passwort ändern:",
         "FIELD_HEADER_CREATE_NEW_USERS"              : "Neuen Benutzer erstellen:",
-		"FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "Neue Benutzergruppe erstellen:",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "Neue Benutzergruppe erstellen:",
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Neue Verbindung erstellen:",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Neue Verbindungsgruppe erstellen:",
         "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "Neues Verteil-Profil erstellen:",
@@ -545,7 +542,7 @@
         "NAME" : "SSH",
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentifizierung",
-        "SECTION_HEADER_BEHAVIOR"       : "Terminal behavior",
+        "SECTION_HEADER_BEHAVIOR"       : "Terminalverhalten",
         "SECTION_HEADER_DISPLAY"        : "Bildschirm",
         "SECTION_HEADER_NETWORK"        : "Netzwerk",
         "SECTION_HEADER_RECORDING"      : "Bildschirmaufzeichnung",
@@ -707,7 +704,7 @@
         "HELP_CONNECTION_HISTORY" : "Die letzten Verbindungen werden hier historisch aufgelistet und können durch Klicken auf die Spaltenüberschriften sortiert werden. Zum Aufsuchen von bestimmten Datensätzen, geben Sie eine Filterzeichenfolge ein und klicken Sie auf \"Suchen\". Nur Datensätze, die die vorgesehenen Filterzeichenfolge entsprechen, werden aufgelistet.",
 
         "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
-        "INFO_NO_HISTORY"                  : "No matching records",
+        "INFO_NO_HISTORY"                  : "Keine passenden Datensätze",
 
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Verbindungsname",
         "TABLE_HEADER_SESSION_DURATION"        : "Verbindungsdauer",
@@ -789,7 +786,7 @@
 
         "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_USERS" : "Klicken Sie auf eine der unten stehenden Benutzer, um diese zu modifizieren. Je nach Berechtigungsstufe können Sie Benutzer hinzufügen, bearbeiten, löschen oder die Passwörter ändern.",
+        "HELP_USERS" : "Klicken Sie auf einen der unten stehenden Benutzer, um diesen zu modifizieren. Je nach Berechtigungsstufe können Sie Benutzer hinzufügen, bearbeiten, löschen oder die Passwörter ändern.",
 
         "SECTION_HEADER_USERS"       : "Benutzer",
 

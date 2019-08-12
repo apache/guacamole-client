@@ -76,7 +76,7 @@
 
     "PASSWORD_POLICY" : {
 
-        "ERROR_CONTAINS_USERNAME"      : "Passwörten dürfen Ihren Benutzername nicht enthalten.",
+        "ERROR_CONTAINS_USERNAME"      : "Passwörter dürfen Ihren Benutzername nicht enthalten.",
         "ERROR_REQUIRES_DIGIT"         : "Passwörter müssen mindestens eine Ziffer enthalten.",
         "ERROR_REQUIRES_MULTIPLE_CASE" : "Passwörter müssen Gross- und Kleinschreibung beinhalten.",
         "ERROR_REQUIRES_NON_ALNUM"     : "Passwörter müssen mindestens ein Sonderzeichen enthalten.",
