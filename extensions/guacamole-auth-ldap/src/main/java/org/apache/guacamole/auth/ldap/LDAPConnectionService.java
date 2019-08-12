@@ -128,10 +128,8 @@ public class LDAPConnectionService {
     public LdapNetworkConnection bindAs(Dn userDN, String password)
             throws GuacamoleException {
 
-        // Obtain appropriately-configured LdapNetworkConnection instance
-        LdapNetworkConnection ldapConnection = createLDAPConnection();
-
-        try {
+        // Get ldapConnection and try to connect and bind.
+        try (LdapNetworkConnection ldapConnection = createLDAPConnection()) {
 
             // Connect to LDAP server
             ldapConnection.connect();
@@ -140,14 +138,7 @@ public class LDAPConnectionService {
             if (confService.getEncryptionMethod() == EncryptionMethod.STARTTLS)
                 ldapConnection.startTls();
 
-        }
-        catch (LdapException e) {
-            throw new GuacamoleServerException("Error connecting to LDAP server.", e);
-        }
-
-        // Bind using provided credentials
-        try {
-
+            // Bind using provided credentials
             BindRequest bindRequest = new BindRequestImpl();
             bindRequest.setDn(userDN);
             bindRequest.setCredentials(password);
@@ -165,7 +156,6 @@ public class LDAPConnectionService {
         // Disconnect if an error occurs during bind
         catch (LdapException e) {
             logger.debug("Unable to bind to LDAP server.", e);
-            disconnect(ldapConnection);
             throw new GuacamoleInvalidCredentialsException(
                     "Unable to bind to the LDAP server.",
                     CredentialsInfo.USERNAME_PASSWORD);
