@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.ldap;
 
 import com.google.inject.Inject;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -188,26 +189,24 @@ public class ObjectQueryService {
 
         logger.debug("Searching \"{}\" for objects matching \"{}\".", baseDN, query);
 
-        try {
-
-            LdapConnectionConfig ldapConnectionConfig = ldapConnection.getConfig();
+        LdapConnectionConfig ldapConnectionConfig = ldapConnection.getConfig();
             
-            // Search within subtree of given base DN
-            SearchRequest request = ldapService.getSearchRequest(baseDN,
-                    query);
+        // Search within subtree of given base DN
+        SearchRequest request = ldapService.getSearchRequest(baseDN,
+                query);
             
-            SearchCursor results = ldapConnection.search(request);
-
-            // Produce list of all entries in the search result, automatically
-            // following referrals if configured to do so
-            List<Entry> entries = new ArrayList<>();
+        // Produce list of all entries in the search result, automatically
+        // following referrals if configured to do so
+        List<Entry> entries = new ArrayList<>();
+            
+        try (SearchCursor results = ldapConnection.search(request)) {
             while (results.next()) {
 
                 if (results.isEntry()) {
                     entries.add(results.getEntry());
                 }
                 else if (results.isReferral() && request.isFollowReferrals()) {
-                    
+
                     Referral referral = results.getReferral();
                     for (String url : referral.getLdapUrls()) {
                         LdapNetworkConnection referralConnection =
@@ -218,15 +217,15 @@ public class ObjectQueryService {
                         entries.addAll(search(referralConnection, baseDN, query,
                                 searchHop));
                     }
-                    
+
                 }
-                
+
             }
 
             return entries;
 
         }
-        catch (CursorException | LdapException e) {
+        catch (CursorException | IOException | LdapException e) {
             throw new GuacamoleServerException("Unable to query list of "
                     + "objects from LDAP directory.", e);
         }
