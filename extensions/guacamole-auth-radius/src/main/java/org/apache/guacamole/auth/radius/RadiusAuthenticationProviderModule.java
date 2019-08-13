@@ -20,9 +20,12 @@
 package org.apache.guacamole.auth.radius;
 
 import com.google.inject.AbstractModule;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.security.Provider;
 import java.security.Security;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.radius.conf.ConfigurationService;
 import org.apache.guacamole.auth.radius.conf.RadiusAuthenticationProtocol;
 import org.apache.guacamole.auth.radius.conf.RadiusGuacamoleProperties;
@@ -57,7 +60,6 @@ public class RadiusAuthenticationProviderModule extends AbstractModule {
      *     If an error occurs while retrieving the Guacamole server
      *     environment.
      */
-    @SuppressWarnings("deprecation")
     public RadiusAuthenticationProviderModule(AuthenticationProvider authProvider)
             throws GuacamoleException {
 
@@ -72,11 +74,28 @@ public class RadiusAuthenticationProviderModule extends AbstractModule {
                     || innerProtocol == RadiusAuthenticationProtocol.MSCHAPv1 
                     || innerProtocol == RadiusAuthenticationProtocol.MSCHAPv2) {
             
-            Security.addProvider(new Provider("MD4", 0.00, "MD4 for MSCHAPv1/2 Support") {
-                {
-                    this.put("MessageDigest.MD4", org.bouncycastle.jce.provider.JDKMessageDigest.MD4.class.getName());
-                }
-            });
+            try {
+                Provider md4Provider;
+                Constructor providerConstructor = Provider.class
+                        .getConstructor(String.class, String.class, String.class);
+                if (providerConstructor != null)
+                    md4Provider = (Provider) providerConstructor
+                            .newInstance("MD4", "0.00", "MD4 for MSCHAPv1/2 Support");
+                else
+                    md4Provider = (Provider) Provider.class
+                            .getConstructor(String.class, Double.class, String.class)
+                            .newInstance("MD4", 0.00, "MD4 for MSCHAPv1/2 Support");
+
+                assert(md4Provider != null);
+                md4Provider.put("MessageDigest.MD4", org.bouncycastle.jce.provider.JDKMessageDigest.MD4.class.getName());
+                Security.addProvider(md4Provider);
+            }
+            catch (IllegalAccessException
+                    | InstantiationException
+                    | InvocationTargetException
+                    | NoSuchMethodException e) {
+                throw new GuacamoleServerException("Unable to load MD4 support.", e);
+            }
             
         }
 
