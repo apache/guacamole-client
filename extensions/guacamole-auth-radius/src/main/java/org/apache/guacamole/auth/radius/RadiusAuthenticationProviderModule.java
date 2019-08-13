@@ -57,6 +57,7 @@ public class RadiusAuthenticationProviderModule extends AbstractModule {
      *     If an error occurs while retrieving the Guacamole server
      *     environment.
      */
+    @SuppressWarnings("deprecation")
     public RadiusAuthenticationProviderModule(AuthenticationProvider authProvider)
             throws GuacamoleException {
 
