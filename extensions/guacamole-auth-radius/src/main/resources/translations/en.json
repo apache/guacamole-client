@@ -5,7 +5,8 @@
     },
 
     "LOGIN" : {
-        "FIELD_HEADER_GUAC_RADIUS_STATE"              : ""
+        "FIELD_HEADER_GUAC_RADIUS_STATE"              : "",
+        "FIELD_HEADER_RADIUSCHALLENGE"                : ""
     }
 
 }
