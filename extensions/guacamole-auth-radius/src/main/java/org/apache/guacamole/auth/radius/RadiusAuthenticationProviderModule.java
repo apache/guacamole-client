@@ -20,7 +20,8 @@
 package org.apache.guacamole.auth.radius;
 
 import com.google.inject.AbstractModule;
-import java.security.Provider;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.radius.conf.ConfigurationService;
@@ -29,6 +30,7 @@ import org.apache.guacamole.auth.radius.conf.RadiusGuacamoleProperties;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * Guice module which configures RADIUS-specific injections.
@@ -71,11 +73,12 @@ public class RadiusAuthenticationProviderModule extends AbstractModule {
                     || innerProtocol == RadiusAuthenticationProtocol.MSCHAPv1 
                     || innerProtocol == RadiusAuthenticationProtocol.MSCHAPv2) {
             
-            Security.addProvider(new Provider("MD4", 0.00, "MD4 for MSCHAPv1/2 Support") {
-                {
-                    this.put("MessageDigest.MD4", org.bouncycastle.jce.provider.JDKMessageDigest.MD4.class.getName());
-                }
-            });
+            try {
+                MessageDigest.getInstance("MD4");
+            }
+            catch (NoSuchAlgorithmException e) {
+                Security.addProvider(new BouncyCastleProvider());
+            }
             
         }
 
