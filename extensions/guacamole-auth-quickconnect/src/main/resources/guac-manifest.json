@@ -21,8 +21,8 @@
     ],
 
     "translations" : [
-        "translations/en.json",
-	"translations/de.json"
+        "translations/de.json",
+        "translations/en.json"
     ],
 
     "resources" : {
