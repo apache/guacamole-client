@@ -220,9 +220,44 @@ angular.module('form').provider('formService', function formServiceProvider() {
         var $q               = $injector.get('$q');
         var $templateRequest = $injector.get('$templateRequest');
 
+        /**
+         * Map of module name to the injector instance created for that module.
+         *
+         * @type {Object.<String, injector>}
+         */
+        var injectors = {};
+
         var service = {};
 
         service.fieldTypes = provider.fieldTypes;
+
+        /**
+         * Given the name of a module, returns an injector instance which
+         * injects dependencies within that module. A new injector may be
+         * created and initialized if no such injector has yet been requested.
+         * If the injector available to formService already includes the
+         * requested module, that injector will simply be returned.
+         *
+         * @param {String} module
+         *     The name of the module to produce an injector for.
+         *
+         * @returns {injector}
+         *     An injector instance which injects dependencies for the given
+         *     module.
+         */
+        var getInjector = function getInjector(module) {
+
+            // Use the formService's injector if possible
+            if ($injector.modules[module])
+                return $injector;
+
+            // If the formService's injector does not include the requested
+            // module, create the necessary injector, reusing that injector for
+            // future calls
+            injectors[module] = injectors[module] || angular.injector(['ng', module]);
+            return injectors[module];
+
+        };
 
         /**
          * Compiles and links the field associated with the given name to the given
@@ -304,7 +339,7 @@ angular.module('form').provider('formService', function formServiceProvider() {
 
                 // Populate scope using defined controller
                 if (fieldType.module && fieldType.controller) {
-                    var $controller = angular.injector(['ng', fieldType.module]).get('$controller');
+                    var $controller = getInjector(fieldType.module).get('$controller');
                     $controller(fieldType.controller, {
                         '$scope'   : scope,
                         '$element' : angular.element(fieldContainer.childNodes)
