@@ -498,6 +498,7 @@
         "FIELD_HEADER_ENABLE_AUDIO"     : "Inschakelen geluid:",
         "FIELD_HEADER_ENABLE_SFTP"      : "Inschakelen SFTP:",
         "FIELD_HEADER_HOSTNAME"         : "Servernaam:",
+        "FIELD_HEADER_USERNAME"         : "Gebruikersnaam:",
         "FIELD_HEADER_PASSWORD"         : "Wachtwoord:",
         "FIELD_HEADER_PORT"             : "Poort:",
         "FIELD_HEADER_READ_ONLY"        : "Alleen lezen:",

@@ -562,6 +562,7 @@
         "FIELD_HEADER_ENABLE_AUDIO"     : "启用音频：",
         "FIELD_HEADER_ENABLE_SFTP"      : "启用SFTP：",
         "FIELD_HEADER_HOSTNAME"         : "主机名：",
+        "FIELD_HEADER_USERNAME"         : "用户名：",
         "FIELD_HEADER_PASSWORD"         : "密码：",
         "FIELD_HEADER_PORT"             : "端口：",
         "FIELD_HEADER_READ_ONLY"        : "只读：",

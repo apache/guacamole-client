@@ -468,6 +468,7 @@
         "FIELD_HEADER_ENABLE_AUDIO"     : "Aktiviere Audio:",
         "FIELD_HEADER_ENABLE_SFTP"      : "Aktiviere SFTP:",
         "FIELD_HEADER_HOSTNAME"         : "Hostname:",
+        "FIELD_HEADER_USERNAME"         : "Benutzername:",
         "FIELD_HEADER_PASSWORD"         : "Passwort:",
         "FIELD_HEADER_PORT"             : "Port:",
         "FIELD_HEADER_READ_ONLY"        : "Nur-Lesen:",

@@ -21,7 +21,7 @@
             "fields" : [
                 {
                     "name"  : "username",
-                    "type"  : "TEXT"
+                    "type"  : "USERNAME"
                 },
                 {
                     "name"  : "password",
