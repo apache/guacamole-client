@@ -647,6 +647,7 @@
         "FIELD_HEADER_ENABLE_AUDIO"               : "Zapnout audio",
         "FIELD_HEADER_ENABLE_SFTP"                : "Povolit SFTP:",
         "FIELD_HEADER_HOSTNAME"                   : "Jméno hostitele:",
+        "FIELD_HEADER_USERNAME"                   : "Uživatelské jméno:",
         "FIELD_HEADER_PASSWORD"                   : "Heslo:",
         "FIELD_HEADER_PORT"                       : "Port:",
         "FIELD_HEADER_READ_ONLY"                  : "Pouze čtení:",

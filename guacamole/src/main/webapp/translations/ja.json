@@ -525,6 +525,7 @@
         "FIELD_HEADER_ENABLE_AUDIO"     : "オーディオの有効化:",
         "FIELD_HEADER_ENABLE_SFTP"      : "SFTPの有効化:",
         "FIELD_HEADER_HOSTNAME"         : "ホスト名:",
+        "FIELD_HEADER_USERNAME"         : "ユーザ名:",
         "FIELD_HEADER_PASSWORD"         : "パスワード:",
         "FIELD_HEADER_PORT"             : "ポート:",
         "FIELD_HEADER_READ_ONLY"        : "読み取り専用:",

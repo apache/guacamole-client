@@ -415,6 +415,7 @@
         "FIELD_HEADER_ENABLE_AUDIO"     : "Включить звук:",
         "FIELD_HEADER_ENABLE_SFTP"      : "Включить SFTP:",
         "FIELD_HEADER_HOSTNAME"         : "Название сервера:",
+        "FIELD_HEADER_USERNAME"         : "Имя пользователя:",
         "FIELD_HEADER_PASSWORD"         : "Пароль:",
         "FIELD_HEADER_PORT"             : "Порт:",
         "FIELD_HEADER_READ_ONLY"        : "Только просмотр:",

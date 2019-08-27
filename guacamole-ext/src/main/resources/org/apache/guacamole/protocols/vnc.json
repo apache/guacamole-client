@@ -20,6 +20,10 @@
             "name"  : "authentication",
             "fields" : [
                 {
+                    "name"  : "username",
+                    "type"  : "USERNAME"
+                },
+                {
                     "name"  : "password",
                     "type"  : "PASSWORD"
                 }

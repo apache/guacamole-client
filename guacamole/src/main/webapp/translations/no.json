@@ -479,6 +479,7 @@
         "FIELD_HEADER_ENABLE_AUDIO"     : "Aktiver lyd:",
         "FIELD_HEADER_ENABLE_SFTP"      : "Aktiver SFTP:",
         "FIELD_HEADER_HOSTNAME"         : "Servernavn:",
+        "FIELD_HEADER_USERNAME"         : "Brukernavn:",
         "FIELD_HEADER_PASSWORD"         : "Passord:",
         "FIELD_HEADER_PORT"             : "Port:",
         "FIELD_HEADER_READ_ONLY"        : "Skrivebeskyttet:",
