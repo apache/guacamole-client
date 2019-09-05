@@ -114,7 +114,7 @@
                     FROM [guacamole_user]
                     JOIN [guacamole_entity] ON [guacamole_user].entity_id = [guacamole_entity].entity_id
                     WHERE
-                            POSITION(#{term.term,jdbcType=VARCHAR} IN [guacamole_entity].name) > 0
+                            CHARINDEX(#{term.term,jdbcType=VARCHAR}, [guacamole_entity].name) > 0
                         AND [guacamole_entity].type = 'USER'),
                 )
 
@@ -171,7 +171,7 @@
                     FROM [guacamole_user]
                     JOIN [guacamole_entity] ON [guacamole_user].entity_id = [guacamole_entity].entity_id
                     WHERE
-                            POSITION(#{term.term,jdbcType=VARCHAR} IN [guacamole_entity].name) > 0
+                            CHARINDEX(#{term.term,jdbcType=VARCHAR}, [guacamole_entity].name) > 0
                         AND [guacamole_entity].type = 'USER'
                 )
 

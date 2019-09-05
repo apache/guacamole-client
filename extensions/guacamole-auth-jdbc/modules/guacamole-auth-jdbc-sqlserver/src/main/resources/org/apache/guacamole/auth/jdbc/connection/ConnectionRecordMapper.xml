@@ -113,13 +113,13 @@
                 [guacamole_connection_history].user_id IN (
                     SELECT user_id
                     FROM [guacamole_user]
-                    WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN username) > 0
+                    WHERE CHARINDEX(#{term.term,jdbcType=VARCHAR}, username) > 0
                 )
 
                 OR [guacamole_connection_history].connection_id IN (
                     SELECT connection_id
                     FROM [guacamole_connection]
-                    WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN connection_name) > 0
+                    WHERE CHARINDEX(#{term.term,jdbcType=VARCHAR}, connection_name) > 0
                 )
 
                 <if test="term.startDate != null and term.endDate != null">
@@ -191,14 +191,14 @@
                     FROM [guacamole_user]
                     JOIN [guacamole_entity] ON [guacamole_user].entity_id = [guacamole_entity].entity_id
                     WHERE
-                            POSITION(#{term.term,jdbcType=VARCHAR} IN [guacamole_entity].name) > 0
+                            CHARINDEX(#{term.term,jdbcType=VARCHAR}, [guacamole_entity].name) > 0
                         AND [guacamole_entity].type = 'USER'
                 )
 
                 OR [guacamole_connection_history].connection_id IN (
                     SELECT connection_id
                     FROM [guacamole_connection]
-                    WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN connection_name) > 0
+                    WHERE CHARINDEX(#{term.term,jdbcType=VARCHAR}, connection_name) > 0
                 )
 
                 <if test="term.startDate != null and term.endDate != null">
