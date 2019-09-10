@@ -1,0 +1,12 @@
+{
+
+    "DATA_SOURCE_CAS" : {
+        "NAME" : "CAS SSO Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_TICKET"        : "",
+        "INFO_CAS_REDIRECT_PENDING"  : "Bitte warten, Sie werden zur CAS-Authentifizierung weitergeleitet..."
+    }
+
+}

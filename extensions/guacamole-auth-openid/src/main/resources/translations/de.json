@@ -1,0 +1,12 @@
+{
+
+    "DATA_SOURCE_OPENID" : {
+        "NAME" : "OpenID SSO Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_ID_TOKEN" : "",
+        "INFO_REDIRECT_PENDING" : "Bitte warten, Sie werden zum Identitätsprovider weitergeleitet..."
+    }
+
+}
