@@ -512,11 +512,17 @@ Guacamole.Display = function() {
      * Draws the specified image at the given coordinates. The image specified
      * must already be loaded.
      * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
-     * @param {Number} x The destination X coordinate.
-     * @param {Number} y The destination Y coordinate.
-     * @param {Image} image The image to draw. Note that this is an Image
-     *                      object - not a URL.
+     * @param {Guacamole.Layer} layer
+     *     The layer to draw upon.
+     *
+     * @param {Number} x
+     *     The destination X coordinate.
+     *
+     * @param {Number} y 
+     *     The destination Y coordinate.
+     *
+     * @param {CanvasImageSource} image
+     *     The image to draw. Note that this not a URL.
      */
     this.drawImage = function(layer, x, y, image) {
         scheduleTask(function __display_drawImage() {
