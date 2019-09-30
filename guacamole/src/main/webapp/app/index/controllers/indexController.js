@@ -138,6 +138,12 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         keyboard.reset();
     };
 
+    // Release all keys upon form submission (there may not be corresponding
+    // keyup events for key presses involved in submitting a form)
+    $document.on('submit', function formSubmitted() {
+        keyboard.reset();
+    });
+
     /**
      * Checks whether the clipboard data has changed, firing a new
      * "guacClipboard" event if it has.
@@ -186,6 +192,11 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         $scope.page.title = 'APP.NAME';
         $scope.page.bodyClassName = '';
         $scope.fatalError = error;
+    });
+
+    // Ensure new pages always start with clear keyboard state
+    $scope.$on('$routeChangeStart', function routeChanging() {
+        keyboard.reset();
     });
 
     // Update title and CSS class upon navigation
