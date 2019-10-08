@@ -142,16 +142,21 @@ public class ObjectQueryService {
         AndNode searchFilter = new AndNode();
         searchFilter.addNode(filter);
 
-        // Include all attributes within OR clause if there are more than one
+        // If no attributes provided, we're done.
+        if (attributes.size() < 1)
+            return searchFilter;
+
+        // Include all attributes within OR clause
         OrNode attributeFilter = new OrNode();
-       
+
         // Add equality comparison for each possible attribute
         attributes.forEach(attribute ->
-            attributeFilter.addNode(new EqualityNode(attribute, attributeValue))
+            attributeFilter.addNode(new EqualityNode(attribute, 
+                    (attributeValue != null ? attributeValue : "*")))
         );
 
         searchFilter.addNode(attributeFilter);
-        
+
         return searchFilter;
 
     }
