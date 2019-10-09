@@ -319,10 +319,14 @@ Guacamole.Layer = function(width, height) {
      * Draws the specified image at the given coordinates. The image specified
      * must already be loaded.
      * 
-     * @param {Number} x The destination X coordinate.
-     * @param {Number} y The destination Y coordinate.
-     * @param {Image} image The image to draw. Note that this is an Image
-     *                      object - not a URL.
+     * @param {Number} x
+     *     The destination X coordinate.
+     *
+     * @param {Number} y
+     *     The destination Y coordinate.
+     *
+     * @param {CanvasImageSource} image
+     *     The image to draw. Note that this is not a URL.
      */
     this.drawImage = function(x, y, image) {
         if (layer.autosize) fitRect(x, y, image.width, image.height);

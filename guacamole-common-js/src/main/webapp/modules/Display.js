@@ -512,11 +512,17 @@ Guacamole.Display = function() {
      * Draws the specified image at the given coordinates. The image specified
      * must already be loaded.
      * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
-     * @param {Number} x The destination X coordinate.
-     * @param {Number} y The destination Y coordinate.
-     * @param {Image} image The image to draw. Note that this is an Image
-     *                      object - not a URL.
+     * @param {Guacamole.Layer} layer
+     *     The layer to draw upon.
+     *
+     * @param {Number} x
+     *     The destination X coordinate.
+     *
+     * @param {Number} y 
+     *     The destination Y coordinate.
+     *
+     * @param {CanvasImageSource} image
+     *     The image to draw. Note that this not a URL.
      */
     this.drawImage = function(layer, x, y, image) {
         scheduleTask(function __display_drawImage() {
@@ -543,26 +549,97 @@ Guacamole.Display = function() {
      */
     this.drawBlob = function(layer, x, y, blob) {
 
-        // Create URL for blob
-        var url = URL.createObjectURL(blob);
+        var task;
 
-        // Draw and free blob URL when ready
-        var task = scheduleTask(function __display_drawBlob() {
+        // Prefer createImageBitmap() over blob URLs if available
+        if (window.createImageBitmap) {
 
-            // Draw the image only if it loaded without errors
-            if (image.width && image.height)
-                layer.drawImage(x, y, image);
+            var bitmap;
 
-            // Blob URL no longer needed
-            URL.revokeObjectURL(url);
+            // Draw image once loaded
+            task = scheduleTask(function drawImageBitmap() {
+                layer.drawImage(x, y, bitmap);
+            }, true);
 
-        }, true);
+            // Load image from provided blob
+            window.createImageBitmap(blob).then(function bitmapLoaded(decoded) {
+                bitmap = decoded;
+                task.unblock();
+            });
 
-        // Load image from URL
-        var image = new Image();
-        image.onload = task.unblock;
-        image.onerror = task.unblock;
-        image.src = url;
+        }
+
+        // Use blob URLs and the Image object if createImageBitmap() is
+        // unavailable
+        else {
+
+            // Create URL for blob
+            var url = URL.createObjectURL(blob);
+
+            // Draw and free blob URL when ready
+            task = scheduleTask(function __display_drawBlob() {
+
+                // Draw the image only if it loaded without errors
+                if (image.width && image.height)
+                    layer.drawImage(x, y, image);
+
+                // Blob URL no longer needed
+                URL.revokeObjectURL(url);
+
+            }, true);
+
+            // Load image from URL
+            var image = new Image();
+            image.onload = task.unblock;
+            image.onerror = task.unblock;
+            image.src = url;
+
+        }
+
+    };
+
+    /**
+     * Draws the image within the given stream at the given coordinates. The
+     * image will be loaded automatically, and this and any future operations
+     * will wait for the image to finish loading. This function will
+     * automatically choose an approriate method for reading and decoding the
+     * given image stream, and should be preferred for received streams except
+     * where manual decoding of the stream is unavoidable.
+     *
+     * @param {Guacamole.Layer} layer
+     *     The layer to draw upon.
+     *
+     * @param {Number} x
+     *     The destination X coordinate.
+     *
+     * @param {Number} y
+     *     The destination Y coordinate.
+     *
+     * @param {Guacamole.InputStream} stream
+     *     The stream along which image data will be received.
+     *
+     * @param {String} mimetype
+     *     The mimetype of the image within the stream.
+     */
+    this.drawStream = function drawStream(layer, x, y, stream, mimetype) {
+
+        // If createImageBitmap() is available, load the image as a blob so
+        // that function can be used
+        if (window.createImageBitmap) {
+            var reader = new Guacamole.BlobReader(stream, mimetype);
+            reader.onend = function drawImageBlob() {
+                guac_display.drawBlob(layer, x, y, reader.getBlob());
+            };
+        }
+
+        // Lacking createImageBitmap(), fall back to data URIs and the Image
+        // object
+        else {
+            var reader = new Guacamole.DataURIReader(stream, mimetype);
+            reader.onend = function drawImageDataURI() {
+                guac_display.draw(layer, x, y, reader.getURI());
+            };
+        }
 
     };
 
