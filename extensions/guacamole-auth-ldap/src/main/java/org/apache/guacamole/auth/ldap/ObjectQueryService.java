@@ -37,6 +37,7 @@ import org.apache.directory.api.ldap.model.filter.AndNode;
 import org.apache.directory.api.ldap.model.filter.EqualityNode;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
 import org.apache.directory.api.ldap.model.filter.OrNode;
+import org.apache.directory.api.ldap.model.filter.PresenceNode;
 import org.apache.directory.api.ldap.model.message.Referral;
 import org.apache.directory.api.ldap.model.message.SearchRequest;
 import org.apache.directory.api.ldap.model.name.Dn;
@@ -142,15 +143,31 @@ public class ObjectQueryService {
         AndNode searchFilter = new AndNode();
         searchFilter.addNode(filter);
 
-        // Include all attributes within OR clause if there are more than one
+        // If no attributes provided, we're done.
+        if (attributes.size() < 1)
+            return searchFilter;
+
+        // Include all attributes within OR clause
         OrNode attributeFilter = new OrNode();
-       
-        // Add equality comparison for each possible attribute
-        attributes.forEach(attribute ->
-            attributeFilter.addNode(new EqualityNode(attribute, attributeValue))
-        );
+
+        // If value is defined, check each attribute for that value.
+        if (attributeValue != null) {
+            attributes.forEach(attribute ->
+                attributeFilter.addNode(new EqualityNode(attribute,
+                        attributeValue))
+            );
+        }
+        
+        // If no value is defined, just check for presence of attribute.
+        else {
+            attributes.forEach(attribute ->
+                attributeFilter.addNode(new PresenceNode(attribute))
+            );            
+        }
 
         searchFilter.addNode(attributeFilter);
+
+        logger.trace("Sending LDAP filter: \"{}\"", searchFilter.toString());
         
         return searchFilter;
 
