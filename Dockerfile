@@ -45,6 +45,9 @@ COPY guacamole-docker/bin/ /opt/guacamole/bin/
 COPY . "$BUILD_DIR"
 
 # Run the build itself
+RUN ["chmod", "777", "/opt/guacamole/bin/build-guacamole.sh"]
+RUN ["chmod", "777", "/opt/guacamole/bin/start.sh"]
+
 RUN /opt/guacamole/bin/build-guacamole.sh "$BUILD_DIR" /opt/guacamole "$BUILD_PROFILE"
 
 # For the runtime image, we start with the official Tomcat distribution

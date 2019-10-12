@@ -73,7 +73,7 @@ public class StandardTokenMap extends HashMap<String, String> {
      * The date format that should be used for the time token. This format must
      * be compatible with Java's SimpleDateFormat.
      */
-    private static final String TIME_FORMAT = "HHmmss";
+    private static final String TIME_FORMAT = "HHmmss-SSS";
 
     /**
      * Creates a new StandardTokenMap which is pre-populated with the

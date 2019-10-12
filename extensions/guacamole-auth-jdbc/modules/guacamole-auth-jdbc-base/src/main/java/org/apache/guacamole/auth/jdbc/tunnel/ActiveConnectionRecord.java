@@ -68,7 +68,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     /**
      * The time this connection record was created.
      */
-    private final Date startDate = new Date();
+    private Date startDate = new Date();
 
     /**
      * The UUID that will be assigned to the underlying tunnel.
@@ -81,7 +81,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      * is the ID that must be supplied to guacd if joining this connection.
      */
     private String connectionID;
-    
+
     /**
      * The GuacamoleTunnel used by the connection associated with this
      * connection record.
@@ -143,7 +143,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
         this.connection = connection;
         this.sharingProfile = sharingProfile;
     }
-   
+
     /**
      * Initializes this connection record, associating it with the given user,
      * connection, and balancing connection group. The given balancing
@@ -209,6 +209,10 @@ public class ActiveConnectionRecord implements ConnectionRecord {
             ModeledSharingProfile sharingProfile) {
         init(user, null, activeConnection.getConnection(), sharingProfile);
         this.connectionID = activeConnection.getConnectionID();
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
     /**
@@ -330,7 +334,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
 
         // Active connections have not yet ended
         return null;
-        
+
     }
 
     @Override
@@ -384,7 +388,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
             public GuacamoleSocket getSocket() {
                 return socket;
             }
-            
+
             @Override
             public UUID getUUID() {
                 return uuid;
@@ -398,7 +402,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
 
         // Return newly-created tunnel
         return this.tunnel;
-        
+
     }
 
     /**

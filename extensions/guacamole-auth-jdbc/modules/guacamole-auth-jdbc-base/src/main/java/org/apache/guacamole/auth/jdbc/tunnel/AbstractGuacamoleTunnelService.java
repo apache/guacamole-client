@@ -21,6 +21,9 @@ package org.apache.guacamole.auth.jdbc.tunnel;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -119,7 +122,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      */
     private final Map<String, ActiveConnectionRecord> activeTunnels =
             new ConcurrentHashMap<String, ActiveConnectionRecord>();
-    
+
     /**
      * All active connections to a connection having a given identifier.
      */
@@ -245,7 +248,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             config.setParameter(parameter.getName(), parameter.getValue());
 
         return config;
-        
+
     }
 
     /**
@@ -328,7 +331,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      * @return
      *     An unconfigured GuacamoleSocket, already connected to guacd.
      *
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      *     If an error occurs while connecting to guacd, or while parsing
      *     guacd-related properties.
      */
@@ -392,7 +395,29 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         public ConnectionCleanupTask(ActiveConnectionRecord activeConnection) {
             this.activeConnection = activeConnection;
         }
-        
+
+
+
+        /***
+         * @Author zero
+         * @Description 将活动会话记录里的 会话开始时间变更为GUAC_DATE,GUAC_TIME
+         * @InitDate 10:53 2019/10/12
+         * @Param [activeConnection, tokens]
+         **/
+        public ConnectionCleanupTask(ActiveConnectionRecord activeConnection,Map<String ,String > tokens) {
+            this.activeConnection = activeConnection;
+
+            String yearMonthDay = tokens.get("GUAC_DATE");
+            String hourMinSecMs = tokens.get("GUAC_TIME");
+            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyyMMddHHmmss-SSS");
+
+            try {
+                activeConnection.setStartDate(simpleDateFormat.parse(yearMonthDay+hourMinSecMs));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
         @Override
         public void run() {
 
@@ -427,7 +452,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             // Release any associated group
             if (activeConnection.hasBalancingGroup())
                 release(user, activeConnection.getBalancingGroup());
-            
+
             // Save history record to database
             saveConnectionRecord(activeConnection);
 
@@ -440,7 +465,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      * connection, which MUST already be acquired via acquire(). The given
      * client information will be passed to guacd when the connection is
      * established.
-     * 
+     *
      * The connection will be automatically released when it closes, or if it
      * fails to establish entirely.
      *
@@ -472,7 +497,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             boolean interceptErrors) throws GuacamoleException {
 
         // Record new active connection
-        Runnable cleanupTask = new ConnectionCleanupTask(activeConnection);
+        Runnable cleanupTask = new ConnectionCleanupTask(activeConnection,tokens);
         activeTunnels.put(activeConnection.getUUID().toString(), activeConnection);
 
         try {
@@ -524,7 +549,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 return activeConnection.assignGuacamoleTunnel(new FailoverGuacamoleSocket(socket), socket.getConnectionID());
             else
                 return activeConnection.assignGuacamoleTunnel(socket, socket.getConnectionID());
-            
+
         }
 
         // Execute cleanup if socket could not be created
@@ -616,7 +641,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         }
 
         return connections;
-        
+
     }
 
     @Override
