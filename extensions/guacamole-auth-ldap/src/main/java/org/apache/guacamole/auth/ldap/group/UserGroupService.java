@@ -180,23 +180,30 @@ public class UserGroupService {
         // memberAttribute specified in properties could contain DN or username 
         MemberAttributeType memberAttributeType = confService.getMemberAttributeType();
         String userID = userDN.toString();
-        // if (memberAttributeType == MemberAttributeType.UID) {
-        //     // Retrieve user objects with userDN
-        //     List<LDAPEntry> userEntries = queryService.search(
-        //         ldapConnection,
-        //         userDN,
-        //         confService.getUserSearchFilter());
-        //     // ... there can surely only be one
-        //     if (userEntries.size() != 1) {
-        //         logger.warn("user DN \"{}\" does not return unique value and will be ignored", 
-        //                     userDN);
-        //     } else {
-        //         // determine unique identifier for user
-        //         LDAPEntry userEntry = userEntries.get(0);
-        //         Collection<String> userAttributes = confService.getUsernameAttributes();
-        //         userID = queryService.getIdentifier(userEntry, userAttributes);
-        //     }
-        // }
+        if (memberAttributeType == MemberAttributeType.UID) {
+            // Retrieve user objects with userDN
+            List<Entry> userEntries = queryService.search(
+                ldapConnection,
+                userDN,
+                confService.getUserSearchFilter(),
+                0);
+            // ... there can surely only be one
+            if (userEntries.size() != 1) {
+                logger.warn("user DN \"{}\" does not return unique value \"{}\" and will be ignored",
+                            userDN.toString(), userEntries.size());
+            } else {
+                // determine unique identifier for user
+                Entry userEntry = userEntries.get(0);
+                Collection<String> userAttributes = confService.getUsernameAttributes();
+                try {
+                    userID = queryService.getIdentifier(userEntry, userAttributes);
+                }
+                catch (LdapInvalidAttributeValueException e) {
+                    // not sure what to do here.  Let's just bail...
+                    return null;
+                }
+            }
+        }
 
         // Get all groups the user is a member of starting at the groupBaseDN,
         // excluding guacConfigGroups
