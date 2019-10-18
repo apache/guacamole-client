@@ -179,7 +179,7 @@ public class UserGroupService {
 
         // memberAttribute specified in properties could contain DN or username 
         MemberAttributeType memberAttributeType = confService.getMemberAttributeType();
-        String userID = userDN.toString();
+        String userIDorDN = userDN.toString();
         if (memberAttributeType == MemberAttributeType.UID) {
             // Retrieve user objects with userDN
             List<Entry> userEntries = queryService.search(
@@ -189,18 +189,18 @@ public class UserGroupService {
                 0);
             // ... there can surely only be one
             if (userEntries.size() != 1) {
-                logger.warn("user DN \"{}\" does not return unique value \"{}\" and will be ignored",
-                            userDN.toString(), userEntries.size());
+                logger.warn("user DN \"{}\" does not return unique value and will be ignored",
+                            userDN.toString());
             } else {
                 // determine unique identifier for user
                 Entry userEntry = userEntries.get(0);
                 Collection<String> userAttributes = confService.getUsernameAttributes();
                 try {
-                    userID = queryService.getIdentifier(userEntry, userAttributes);
+                    userIDorDN = queryService.getIdentifier(userEntry, userAttributes);
                 }
                 catch (LdapInvalidAttributeValueException e) {
-                    // not sure what to do here.  Let's just bail...
-                    return null;
+                    logger.error("User group missing identifier: {}", e.getMessage());
+                    logger.debug("LDAP exception while getting group identifier.", e);
                 }
             }
         }
@@ -212,7 +212,7 @@ public class UserGroupService {
             groupBaseDN,
             getGroupSearchFilter(),
             Collections.singleton(confService.getMemberAttribute()),
-            userID
+            userIDorDN
         );
 
     }
