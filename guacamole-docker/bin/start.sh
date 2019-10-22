@@ -201,6 +201,10 @@ END
         "mysql-default-max-group-connections-per-user" \
         "$MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER"
 
+    set_optional_property     \
+        "mysql-user-required" \
+        "$MYSQL_USER_REQUIRED"
+
     # Add required .jar files to GUACAMOLE_LIB and GUACAMOLE_EXT
     ln -s /opt/guacamole/mysql/mysql-connector-*.jar "$GUACAMOLE_LIB"
     ln -s /opt/guacamole/mysql/guacamole-auth-*.jar "$GUACAMOLE_EXT"
@@ -323,6 +327,10 @@ END
     set_optional_property                                   \
         "postgresql-default-max-group-connections-per-user" \
         "$POSTGRES_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER"
+
+    set_optional_property          \
+        "postgresql-user-required" \
+        "$POSTGRES_USER_REQUIRED"
 
     # Add required .jar files to GUACAMOLE_LIB and GUACAMOLE_EXT
     ln -s /opt/guacamole/postgresql/postgresql-*.jar "$GUACAMOLE_LIB"
