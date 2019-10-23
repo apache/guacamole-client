@@ -384,7 +384,8 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public MemberAttributeType getMemberAttributeType() throws GuacamoleException {
+    public MemberAttributeType getMemberAttributeType()
+            throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_MEMBER_ATTRIBUTE_TYPE,
             MemberAttributeType.DN

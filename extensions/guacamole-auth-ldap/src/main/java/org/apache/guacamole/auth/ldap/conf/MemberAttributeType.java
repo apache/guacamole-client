@@ -20,7 +20,8 @@
 package org.apache.guacamole.auth.ldap.conf;
 
 /**
- * All possible means of describing membership within LDAP group directory records.
+ * All possible means of describing membership within 
+ * LDAP group directory records.
  */
 public enum MemberAttributeType {
     /**

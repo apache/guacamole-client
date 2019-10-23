@@ -188,19 +188,22 @@ public class UserGroupService {
                 confService.getUserSearchFilter(),
                 0);
             // ... there can surely only be one
-            if (userEntries.size() != 1) {
-                logger.warn("user DN \"{}\" does not return unique value and will be ignored",
-                            userDN.toString());
-            } else {
+            if (userEntries.size() != 1)
+                logger.warn("user DN \"{}\" does not return unique value "
+                        + "and will be ignored", userDN.toString());
+            else {
                 // determine unique identifier for user
                 Entry userEntry = userEntries.get(0);
                 Collection<String> userAttributes = confService.getUsernameAttributes();
                 try {
-                    userIDorDN = queryService.getIdentifier(userEntry, userAttributes);
+                    userIDorDN = queryService.getIdentifier(userEntry,
+                                         userAttributes);
                 }
                 catch (LdapInvalidAttributeValueException e) {
-                    logger.error("User group missing identifier: {}", e.getMessage());
-                    logger.debug("LDAP exception while getting group identifier.", e);
+                    logger.error("User group missing identifier: {}",
+                            e.getMessage());
+                    logger.debug("LDAP exception while getting "
+                            + "group identifier.", e);
                 }
             }
         }

@@ -28,10 +28,12 @@ import org.apache.guacamole.properties.GuacamoleProperty;
  * strings "dn" or "uid" are mapped to their values as a MemberAttributeType
  * enum.  Anything else results in a parse error.
  */
-public abstract class MemberAttributeTypeProperty implements GuacamoleProperty<MemberAttributeType> {
+public abstract class MemberAttributeTypeProperty
+        implements GuacamoleProperty<MemberAttributeType> {
 
     @Override
-    public MemberAttributeType parseValue(String value) throws GuacamoleException {
+    public MemberAttributeType parseValue(String value)
+            throws GuacamoleException {
 
         // If no value provided, return null.
         if (value == null)
@@ -46,7 +48,8 @@ public abstract class MemberAttributeTypeProperty implements GuacamoleProperty<M
             return MemberAttributeType.UID;
 
         // The provided value is not legal
-        throw new GuacamoleServerException("Member attribute type must be one of \"dn\" or \"uid\".");
+        throw new GuacamoleServerException("Member attribute type must be "
+                          + "one of \"dn\" or \"uid\".");
 
     }
 

@@ -259,7 +259,8 @@ public class LDAPGuacamoleProperties {
     /**
      * Specify the type of data contained in 'ldap-member-attribute'
      */
-    public static final MemberAttributeTypeProperty LDAP_MEMBER_ATTRIBUTE_TYPE = new MemberAttributeTypeProperty() {
+    public static final MemberAttributeTypeProperty LDAP_MEMBER_ATTRIBUTE_TYPE =
+            new MemberAttributeTypeProperty() {
 
         @Override
         public String getName() { return "ldap-member-attribute-type"; }
