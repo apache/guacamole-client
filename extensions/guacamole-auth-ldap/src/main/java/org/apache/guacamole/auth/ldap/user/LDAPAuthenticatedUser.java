@@ -87,7 +87,7 @@ public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
         this.tokens = Collections.unmodifiableMap(tokens);
         this.effectiveGroups = effectiveGroups;
         this.bindDn = bindDn;
-        setIdentifier(credentials.getUsername());
+        setIdentifier(credentials.getUsername().toLowerCase());
     }
     
     /**

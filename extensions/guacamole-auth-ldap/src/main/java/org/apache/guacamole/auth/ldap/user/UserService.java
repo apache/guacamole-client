@@ -95,7 +95,8 @@ public class UserService {
 
             // Get username from record
             try {
-                String username = queryService.getIdentifier(entry, attributes);
+                String username =
+                        queryService.getIdentifier(entry, attributes).toLowerCase();
                 if (username == null) {
                     logger.warn("User \"{}\" is missing a username attribute "
                             + "and will be ignored.", entry.getDn().toString());

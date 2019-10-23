@@ -132,7 +132,8 @@ public class UserGroupService {
 
             // Translate entry into UserGroup object having proper identifier
             try {
-                String name = queryService.getIdentifier(entry, attributes);
+                String name =
+                        queryService.getIdentifier(entry, attributes).toLowerCase();
                 if (name != null)
                     return new SimpleUserGroup(name);
             }
@@ -218,7 +219,8 @@ public class UserGroupService {
 
             // Determine unique identifier for user group
             try {
-                String name = queryService.getIdentifier(entry, attributes);
+                String name =
+                        queryService.getIdentifier(entry, attributes).toLowerCase();
                 if (name != null)
                     identifiers.add(name);
 
