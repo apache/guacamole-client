@@ -40,7 +40,7 @@ angular.module('form').controller('languageFieldController', ['$scope', '$inject
 
     // Retrieve defined languages
     languageService.getLanguages().then(function languagesRetrieved(languages) {
-        $scope.$apply(function updateLanguageOptions() {
+        $scope.$applyAsync(function updateLanguageOptions() {
             $scope.languages = languages;
         });
     }, requestService.DIE);
