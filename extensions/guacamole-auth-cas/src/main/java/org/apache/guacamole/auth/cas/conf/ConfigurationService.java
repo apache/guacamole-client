@@ -85,4 +85,34 @@ public class ConfigurationService {
         return environment.getProperty(CASGuacamoleProperties.CAS_CLEARPASS_KEY);
     }
 
+    /**
+     * Returns the attribute used to determine group memberships
+     * in CAS, or null if no key is defined.
+     *
+     * @return
+     *     The attribute name
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public String getCasGroupAttribute() throws GuacamoleException {
+        return environment.getProperty(CASGuacamoleProperties.CAS_GROUP_ATTRIBUTE);
+    }
+
+    /**
+     * Returns the attribute used to format group DN's
+     * in CAS, or null if no key is defined.
+     *
+     * @return
+     *     The attribute name
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public String getCasGroupDnFormat() throws GuacamoleException {
+        return environment.getProperty(CASGuacamoleProperties.CAS_GROUP_DN_FORMAT);
+    }
+
+
+
 }

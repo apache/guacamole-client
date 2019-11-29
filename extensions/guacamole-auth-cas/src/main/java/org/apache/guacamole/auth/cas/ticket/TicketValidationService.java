@@ -33,10 +33,14 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.regex.*;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.cas.conf.ConfigurationService;
+import org.apache.guacamole.auth.cas.util.TokensAndGroups;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.token.TokenName;
 import org.jasig.cas.client.authentication.AttributePrincipal;
@@ -68,6 +72,7 @@ public class TicketValidationService {
     @Inject
     private ConfigurationService confService;
 
+ 
     /**
      * Validates and parses the given ID ticket, returning a map of all
      * available tokens for the given user based on attributes provided by the
@@ -88,7 +93,7 @@ public class TicketValidationService {
      *     If the ID ticket is not valid or guacamole.properties could
      *     not be parsed.
      */
-    public Map<String, String> validateTicket(String ticket,
+    public TokensAndGroups  validateTicket(String ticket,
             Credentials credentials) throws GuacamoleException {
 
         // Retrieve the configured CAS URL, establish a ticket validator,
@@ -100,6 +105,7 @@ public class TicketValidationService {
         validator.setEncoding("UTF-8");
         try {
             Map<String, String> tokens = new HashMap<>();
+            Set<String> effectiveGroups = new HashSet<>();
             URI confRedirectURI = confService.getRedirectURI();
             Assertion a = validator.validate(ticket, confRedirectURI.toString());
             AttributePrincipal principal =  a.getPrincipal();
@@ -122,15 +128,34 @@ public class TicketValidationService {
             }
             
             // Convert remaining attributes that have values to Strings
+            // Use cas-member-attribute to retrieve and set memberships
+            String groupAttribute = confService.getCasGroupAttribute();
+            String groupDnFormat = confService.getCasGroupDnFormat();
+            String groupTemplate = "";
+            if (groupDnFormat != null) {
+                groupTemplate = groupDnFormat.replace("%s","([A-Za-z0-9_\\(\\)\\-\\.\\s+]+)"); 
+                groupTemplate=groupTemplate+",*\\s*";
+            }
             for (Entry <String, Object> attr : ticketAttrs.entrySet()) {
                 String tokenName = TokenName.canonicalize(attr.getKey(),
                         CAS_ATTRIBUTE_TOKEN_PREFIX);
                 Object value = attr.getValue();
-                if (value != null)
+                if (value != null) {
                     tokens.put(tokenName, value.toString());
+                    if (attr.getKey().equals(groupAttribute)) {
+                        String valueWithoutBrackets = value.toString().substring(1,value.toString().length()-1);
+                        if (groupDnFormat != null) {
+                            Pattern pattern = Pattern.compile(groupTemplate);
+                            Matcher matcher = pattern.matcher(valueWithoutBrackets);
+                            while (matcher.find()) {
+                               effectiveGroups.add(matcher.group(1));
+                            }
+                       }
+                    }
+				
+                }
             }
-
-            return tokens;
+            return new TokensAndGroups(tokens, effectiveGroups);
 
         } 
         catch (TicketValidationException e) {
