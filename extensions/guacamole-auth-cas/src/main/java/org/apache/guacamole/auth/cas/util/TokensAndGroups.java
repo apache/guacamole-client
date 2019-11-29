@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 
+/**
+ * A class to facilitate the return values of both Tokens and Groups
+ */
 public class TokensAndGroups {
       public final Map<String, String> tokens;
       public final Set<String> effectiveGroups;

@@ -128,14 +128,22 @@ public class TicketValidationService {
             }
             
             // Convert remaining attributes that have values to Strings
-            // Use cas-member-attribute to retrieve and set memberships
             String groupAttribute = confService.getCasGroupAttribute();
+            // Use cas-member-attribute to retrieve and set group memberships
             String groupDnFormat = confService.getCasGroupDnFormat();
             String groupTemplate = "";
             if (groupDnFormat != null) {
+                // if CAS is backended to LDAP, groups come in as RFC4514 DN
+                // syntax.  If cas-group-dn-format is set, this strips
+                // an entry such as "CN=Foo,OU=Bar,DC=example,DC=com" to
+                // "Foo"
                 groupTemplate = groupDnFormat.replace("%s","([A-Za-z0-9_\\(\\)\\-\\.\\s+]+)"); 
+                // the underlying parser aggregates all instances of the same
+                // attribute, so we need to be able to parse them out
                 groupTemplate=groupTemplate+",*\\s*";
-            }
+            } else {
+               groupTemplate = "([A-Za-z0-9_\\(\\)\\-\\.\\s+]+,*\\s*)";
+           }
             for (Entry <String, Object> attr : ticketAttrs.entrySet()) {
                 String tokenName = TokenName.canonicalize(attr.getKey(),
                         CAS_ATTRIBUTE_TOKEN_PREFIX);
@@ -144,13 +152,12 @@ public class TicketValidationService {
                     tokens.put(tokenName, value.toString());
                     if (attr.getKey().equals(groupAttribute)) {
                         String valueWithoutBrackets = value.toString().substring(1,value.toString().length()-1);
-                        if (groupDnFormat != null) {
-                            Pattern pattern = Pattern.compile(groupTemplate);
-                            Matcher matcher = pattern.matcher(valueWithoutBrackets);
-                            while (matcher.find()) {
-                               effectiveGroups.add(matcher.group(1));
-                            }
-                       }
+                        // probably could move this up further for efficiency
+                        Pattern pattern = Pattern.compile(groupTemplate);
+                        Matcher matcher = pattern.matcher(valueWithoutBrackets);
+                        while (matcher.find()) {
+                            effectiveGroups.add(matcher.group(1));
+                        }
                     }
 				
                 }

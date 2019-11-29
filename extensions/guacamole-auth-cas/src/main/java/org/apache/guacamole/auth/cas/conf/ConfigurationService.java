@@ -87,7 +87,7 @@ public class ConfigurationService {
 
     /**
      * Returns the attribute used to determine group memberships
-     * in CAS, or null if no key is defined.
+     * in CAS, or null if not defined.
      *
      * @return
      *     The attribute name
@@ -101,7 +101,7 @@ public class ConfigurationService {
 
     /**
      * Returns the attribute used to format group DN's
-     * in CAS, or null if no key is defined.
+     * in CAS, or null if not defined.
      *
      * @return
      *     The attribute name

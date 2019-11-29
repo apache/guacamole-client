@@ -72,6 +72,7 @@ public class CASGuacamoleProperties {
   
    /**
     * The attribute used for group membership
+    * example:  memberOf  (case sensitive)
     */
     public static final StringGuacamoleProperty CAS_GROUP_ATTRIBUTE =
          new StringGuacamoleProperty() {
@@ -83,6 +84,9 @@ public class CASGuacamoleProperties {
 
    /**
     * The attribute used for group DN Format
+    * such as CN=%s,OU=myou,DC=example,DC=com  (case sensitive)
+    * used to strip all but %s.  This is only necessary when
+    * CAS backend is LDAP. 
     */
     public static final StringGuacamoleProperty CAS_GROUP_DN_FORMAT =
          new StringGuacamoleProperty() {

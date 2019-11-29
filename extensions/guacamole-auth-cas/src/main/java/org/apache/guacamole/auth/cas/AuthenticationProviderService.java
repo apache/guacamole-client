@@ -87,11 +87,9 @@ public class AuthenticationProviderService {
         if (request != null) {
             String ticket = request.getParameter(CASTicketField.PARAMETER_NAME);
             if (ticket != null) {
-/*                Map<String, String> tokens = ticketService.validateTicket(ticket, credentials); */
 		TokensAndGroups tokensAndGroups = ticketService.validateTicket(ticket, credentials);
 		Map<String, String> tokens = tokensAndGroups.tokens;
                 Set<String> effectiveGroups = tokensAndGroups.effectiveGroups;
-                logger.info("TST: got this far");
                 String username = credentials.getUsername();
                 if (username != null) {
                     CASAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
