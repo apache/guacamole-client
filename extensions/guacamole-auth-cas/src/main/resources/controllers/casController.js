@@ -28,3 +28,16 @@ angular.module('guacCAS').controller('guacCASController', ['$scope',
         window.location = $scope.field.authorizationURI;
 
 }]);
+/**
+ * Controller for the "GUAC_CAS_LOGOUT" field which deletes the GUAC_AUTH
+ * token in localStorage and redirects the user immediately to the CAS 
+ * logout URI
+ */
+angular.module('guacCAS').controller('guacCASLogoutController', ['$scope', 
+    function guacCASLogoutController($scope) {
+
+        // Redirect to logout URI
+        window.localStorage.removeItem("GUAC_AUTH");
+        window.location = $scope.field.logoutURI;
+
+}]);

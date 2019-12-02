@@ -30,6 +30,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,7 +39,12 @@ import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.cas.conf.ConfigurationService;
 import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
+import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
+import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.token.TokenName;
+import org.apache.guacamole.form.Field;
+import org.apache.guacamole.auth.cas.form.CASLogoutField;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
@@ -134,7 +140,13 @@ public class TicketValidationService {
 
         } 
         catch (TicketValidationException e) {
-            throw new GuacamoleException("Ticket validation failed.", e);
+            throw new GuacamoleInvalidCredentialsException("Ticket validation failed.",
+                new CredentialsInfo(Arrays.asList(new Field[] {
+                 // Will automatically redirect the user
+                 // to the CAS logout page
+                 new CASLogoutField(confService.getLogoutURI())
+
+             })));
         }
 
     }

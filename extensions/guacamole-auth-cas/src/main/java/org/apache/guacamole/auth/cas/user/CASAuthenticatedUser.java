@@ -22,9 +22,15 @@ package org.apache.guacamole.auth.cas.user;
 import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.Map;
+import org.apache.guacamole.auth.cas.conf.ConfigurationService;
+import org.apache.guacamole.auth.cas.form.CASLogoutField;
+import org.apache.guacamole.form.Field;
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An CAS-specific implementation of AuthenticatedUser, associating a
@@ -33,12 +39,19 @@ import org.apache.guacamole.net.auth.Credentials;
  */
 public class CASAuthenticatedUser extends AbstractAuthenticatedUser {
 
+    private static final Logger logger = LoggerFactory.getLogger(CASAuthenticatedUser.class);
     /**
      * Reference to the authentication provider associated with this
      * authenticated user.
      */
     @Inject
     private AuthenticationProvider authProvider;
+
+    /**
+     * Service for retrieving CAS configuration information.
+     */
+    @Inject
+    private ConfigurationService confService;
 
     /**
      * The credentials provided when this user was authenticated.
@@ -107,4 +120,12 @@ public class CASAuthenticatedUser extends AbstractAuthenticatedUser {
         return credentials;
     }
 
+   @Override
+   public void invalidate() {
+	try {
+             new CASLogoutField(confService.getLogoutURI());
+        } catch (GuacamoleException e)  {
+             logger.debug("Need to set cas-logout-uri");
+        }
+   }
 }

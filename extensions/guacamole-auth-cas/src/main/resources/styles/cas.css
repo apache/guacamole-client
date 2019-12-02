@@ -33,3 +33,19 @@
     vertical-align: middle;
     text-align: center;
 }
+.cas-logout-field-container {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: table;
+    background: white;
+}
+
+.cas-logout-field {
+    width: 100%;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
