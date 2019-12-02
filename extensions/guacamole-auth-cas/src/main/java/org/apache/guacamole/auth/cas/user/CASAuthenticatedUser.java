@@ -52,8 +52,7 @@ public class CASAuthenticatedUser extends AbstractAuthenticatedUser {
     private Map<String, String> tokens;
 
     /**
-     * The unique identifiers of all user groups which affect the permissions
-     * available to this user.
+     * The unique identifiers of all user groups which a user is a member of
      */
     private Set<String> effectiveGroups;
 

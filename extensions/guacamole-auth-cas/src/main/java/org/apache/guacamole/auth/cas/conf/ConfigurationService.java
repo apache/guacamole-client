@@ -90,7 +90,8 @@ public class ConfigurationService {
      * in CAS, or null if not defined.
      *
      * @return
-     *     The attribute name
+     *     The attribute name user to determine group memberships in CAS,
+     *     null if not defined.
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
@@ -101,7 +102,12 @@ public class ConfigurationService {
 
     /**
      * Returns the attribute used to format group DN's
-     * in CAS, or null if not defined.
+     * in CAS, or null if not defined.  If CAS is backed by LDAP, it will
+     * return an LDAP DN, such as CN=foo,OU=bar,DC=example,DC=com.
+     * This attribute may be set to CN=%s,OU=bar,DC=example,DC=com and given
+     * the example above, would result in a group called "foo."  CAS backed
+     * by something other than LDAP (such as a database) would likely not 
+     * need this.
      *
      * @return
      *     The attribute name

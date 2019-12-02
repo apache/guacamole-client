@@ -77,8 +77,8 @@ public class CASGuacamoleProperties {
     public static final StringGuacamoleProperty CAS_GROUP_ATTRIBUTE =
          new StringGuacamoleProperty() {
 
-      @Override
-      public String getName() { return "cas-group-attribute"; }
+    @Override
+    public String getName() { return "cas-group-attribute"; }
 
     };
 
@@ -91,8 +91,8 @@ public class CASGuacamoleProperties {
     public static final StringGuacamoleProperty CAS_GROUP_DN_FORMAT =
          new StringGuacamoleProperty() {
 
-      @Override
-      public String getName() { return "cas-group-dn-format"; }
+    @Override
+    public String getName() { return "cas-group-dn-format"; }
 
     };
 }

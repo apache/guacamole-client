@@ -23,14 +23,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 
-/**
- * A class to facilitate the return values of both Tokens and Groups
- */
-public class TokensAndGroups {
-      public final Map<String, String> tokens;
-      public final Set<String> effectiveGroups;
-      public <TokensAndGroups> TokensAndGroups(Map<String, String> tokens, Set<String> effectiveGroups) {
-             this.tokens=tokens;
-             this.effectiveGroups=effectiveGroups;
-      }
-}
+    /**
+     * A class to facilitate the return values of both Tokens and Groups
+     *
+     * @param tokens, groups
+     *     A Map<String, String> of tokens, parsed from attributes returned
+     *     by CAS.
+     *      A Set<String> of groups, parsed from attributes returned by CAS.
+     *
+     * @return an instance of itself
+     *
+     */
+    public class TokensAndGroups {
+        public final Map<String, String> tokens;
+        public final Set<String> effectiveGroups;
+        public <TokensAndGroups> TokensAndGroups(Map<String, String> tokens, Set<String> effectiveGroups) {
+            this.tokens=tokens;
+            this.effectiveGroups=effectiveGroups;
+       }
+    }

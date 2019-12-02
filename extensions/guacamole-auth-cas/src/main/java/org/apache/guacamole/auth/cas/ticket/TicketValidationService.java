@@ -72,7 +72,6 @@ public class TicketValidationService {
     @Inject
     private ConfigurationService confService;
 
- 
     /**
      * Validates and parses the given ID ticket, returning a map of all
      * available tokens for the given user based on attributes provided by the

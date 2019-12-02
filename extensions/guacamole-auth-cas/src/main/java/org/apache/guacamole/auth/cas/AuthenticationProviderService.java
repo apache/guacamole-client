@@ -63,7 +63,6 @@ public class AuthenticationProviderService {
     @Inject
     private Provider<CASAuthenticatedUser> authenticatedUserProvider;
 
-
     /**
      * Returns an AuthenticatedUser representing the user authenticated by the
      * given credentials.
@@ -87,8 +86,8 @@ public class AuthenticationProviderService {
         if (request != null) {
             String ticket = request.getParameter(CASTicketField.PARAMETER_NAME);
             if (ticket != null) {
-		TokensAndGroups tokensAndGroups = ticketService.validateTicket(ticket, credentials);
-		Map<String, String> tokens = tokensAndGroups.tokens;
+                TokensAndGroups tokensAndGroups = ticketService.validateTicket(ticket, credentials);
+                Map<String, String> tokens = tokensAndGroups.tokens;
                 Set<String> effectiveGroups = tokensAndGroups.effectiveGroups;
                 String username = credentials.getUsername();
                 if (username != null) {
