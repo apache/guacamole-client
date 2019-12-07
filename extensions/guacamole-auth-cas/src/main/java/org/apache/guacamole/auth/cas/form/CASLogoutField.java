@@ -23,8 +23,6 @@ import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.cas.conf.ConfigurationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -32,24 +30,15 @@ import org.slf4j.LoggerFactory;
  */
 public class CASLogoutField extends Field {
 
-    private static final Logger logger = LoggerFactory.getLogger(CASLogoutField.class);
-
+   /**
+    *  A parameter name for the field
+    */
     public static final String PARAMETER_NAME = "logout";
-
-    /**
-     * The standard URI name for the CAS logout resource.
-     */
-    private static final String CAS_LOGOUT_URI = "logout";
 
     /**
      * The full URI which the field should link to.
      */
     private final URI logoutURI;
-
-    /**
-     * Service for retrieving CAS configuration information.
-     */
-    private ConfigurationService confService;
 
     /**
      * Mimics the CAS ticket routine but calls logout...
@@ -66,6 +55,7 @@ public class CASLogoutField extends Field {
         // Init base field properties
         super(PARAMETER_NAME, "GUAC_CAS_LOGOUT");
         this.logoutURI = logoutURI;
+
     }
 
 

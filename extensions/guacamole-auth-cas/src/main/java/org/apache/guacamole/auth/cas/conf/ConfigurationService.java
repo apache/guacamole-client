@@ -69,8 +69,9 @@ public class ConfigurationService {
     public URI getRedirectURI() throws GuacamoleException {
         return environment.getRequiredProperty(CASGuacamoleProperties.CAS_REDIRECT_URI);
     }
+
     /**
-     * Returns the URI that Guacamole redirects the clients browswer to in 
+     * Returns the URI that Guacamole redirects the client browswer to in 
      * order to log the current user out of CAS
      *
      * @return

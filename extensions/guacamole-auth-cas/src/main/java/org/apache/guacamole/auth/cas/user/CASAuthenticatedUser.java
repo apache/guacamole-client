@@ -39,7 +39,12 @@ import org.slf4j.LoggerFactory;
  */
 public class CASAuthenticatedUser extends AbstractAuthenticatedUser {
 
+
+    /**
+     * Adding a logger for this class
+     */
     private static final Logger logger = LoggerFactory.getLogger(CASAuthenticatedUser.class);
+
     /**
      * Reference to the authentication provider associated with this
      * authenticated user.

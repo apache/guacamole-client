@@ -63,6 +63,7 @@ public class CASGuacamoleProperties {
      */
     public static final URIGuacamoleProperty CAS_LOGOUT_URI =
             new URIGuacamoleProperty() {
+
         @Override
         public String getName() { return "cas-logout-uri"; }
 
