@@ -189,6 +189,16 @@
                 {
                     "name"  : "sftp-root-directory",
                     "type"  : "TEXT"
+                },
+                {
+                    "name"    : "disable-download",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-upload",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
                 }
             ]
         }
