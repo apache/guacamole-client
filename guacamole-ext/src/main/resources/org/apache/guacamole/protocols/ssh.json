@@ -191,12 +191,12 @@
                     "type"  : "TEXT"
                 },
                 {
-                    "name"    : "disable-download",
+                    "name"    : "sftp-disable-download",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
                 },
                 {
-                    "name"    : "disable-upload",
+                    "name"    : "sftp-disable-upload",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
                 }
