@@ -69,6 +69,11 @@ public class SQLServerAuthenticationProviderModule implements Module {
         myBatisProperties.setProperty("JDBC.schema", environment.getSQLServerDatabase());
         myBatisProperties.setProperty("JDBC.username", environment.getSQLServerUsername());
         myBatisProperties.setProperty("JDBC.password", environment.getSQLServerPassword());
+        
+        String instance = environment.getSQLServerInstance();
+        if (instance != null)
+            myBatisProperties.setProperty("JDBC.instanceName", instance);
+        
         myBatisProperties.setProperty("JDBC.autoCommit", "false");
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");

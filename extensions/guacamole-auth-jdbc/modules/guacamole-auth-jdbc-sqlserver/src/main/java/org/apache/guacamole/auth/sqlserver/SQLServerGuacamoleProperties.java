@@ -43,6 +43,17 @@ public class SQLServerGuacamoleProperties {
         public String getName() { return "sqlserver-hostname"; }
 
     };
+    
+    /**
+     * The instance name of the SQL Server where the Guacamole database is running.
+     */
+    public static final StringGuacamoleProperty SQLSERVER_INSTANCE =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "sqlserver-instance"; }
+                
+    };
 
     /**
      * The port of the SQLServer server hosting the Guacamole authentication
