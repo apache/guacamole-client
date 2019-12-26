@@ -19,8 +19,11 @@
 
 package org.apache.guacamole.auth.totp.user;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.guacamole.form.BooleanField;
+import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.DelegatingUser;
 import org.apache.guacamole.net.auth.User;
 
@@ -41,6 +44,17 @@ public class TOTPUser extends DelegatingUser {
      */
     public static final String TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME = "guac-totp-key-confirmed";
 
+    /**
+     * The form which contains all configurable properties for this user.
+     */
+    public static final Form TOTP_CONFIG_FORM = new Form("totp-config-form",
+            Arrays.asList(
+                    new BooleanField(TOTP_KEY_SECRET_ATTRIBUTE_NAME, ""),
+                    new BooleanField(TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME, "true")
+            )
+    );
+    
+    
     /**
      * Wraps the given User object, hiding and blocking access to the core
      * attributes used by TOTP.
@@ -66,14 +80,8 @@ public class TOTPUser extends DelegatingUser {
     public Map<String, String> getAttributes() {
 
         // Create independent, mutable copy of attributes
-        Map<String, String> attributes =
-                new HashMap<String, String>(super.getAttributes());
+        Map<String, String> attributes = new HashMap<>(super.getAttributes());
 
-        // Do not expose any TOTP-related attributes outside this extension
-        attributes.remove(TOTP_KEY_SECRET_ATTRIBUTE_NAME);
-        attributes.remove(TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME);
-
-        // Expose only non-TOTP attributes
         return attributes;
 
     }
@@ -82,13 +90,8 @@ public class TOTPUser extends DelegatingUser {
     public void setAttributes(Map<String, String> attributes) {
 
         // Create independent, mutable copy of attributes
-        attributes = new HashMap<String, String>(attributes);
+        attributes = new HashMap<>(attributes);
 
-        // Do not expose any TOTP-related attributes outside this extension
-        attributes.remove(TOTP_KEY_SECRET_ATTRIBUTE_NAME);
-        attributes.remove(TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME);
-
-        // Set only non-TOTP attributes
         super.setAttributes(attributes);
 
     }

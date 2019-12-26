@@ -19,7 +19,11 @@
 
 package org.apache.guacamole.auth.totp.user;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.DecoratingDirectory;
 import org.apache.guacamole.net.auth.DelegatingUserContext;
 import org.apache.guacamole.net.auth.Directory;
@@ -59,6 +63,13 @@ public class TOTPUserContext extends DelegatingUserContext {
             }
 
         };
+    }
+    
+    @Override
+    public Collection<Form> getUserAttributes() {
+        Collection<Form> userAttrs = new HashSet<>(super.getUserAttributes());
+        userAttrs.add(TOTPUser.TOTP_CONFIG_FORM);
+        return Collections.unmodifiableCollection(userAttrs);
     }
 
 }

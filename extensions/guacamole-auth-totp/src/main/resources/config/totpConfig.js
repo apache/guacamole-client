@@ -29,5 +29,12 @@ angular.module('guacTOTP').config(['formServiceProvider',
         controller  : 'authenticationCodeFieldController',
         templateUrl : 'app/ext/totp/templates/authenticationCodeField.html'
     });
+    
+    // Add field type for resetting TOTP data
+    formServiceProvider.registerFieldType('GUAC_TOTP_RESET', {
+        module      : 'guacTOTP',
+        controller  : 'totpResetFieldController',
+        templateUrl : 'app/form/templates/checkboxField.html'
+    });
 
 }]);
