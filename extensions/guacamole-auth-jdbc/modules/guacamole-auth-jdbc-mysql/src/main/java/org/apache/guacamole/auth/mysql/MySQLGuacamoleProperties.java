@@ -32,6 +32,17 @@ public class MySQLGuacamoleProperties {
      * This class should not be instantiated.
      */
     private MySQLGuacamoleProperties() {}
+    
+    /**
+     * The JDBC driver that should be used to talk to MySQL-compatible servers.
+     */
+    public static final MySQLDriverProperty MYSQL_DRIVER =
+            new MySQLDriverProperty() {
+
+        @Override
+        public String getName() { return "mysql-driver"; }
+
+    };
 
     /**
      * The hostname of the MySQL server hosting the Guacamole authentication 

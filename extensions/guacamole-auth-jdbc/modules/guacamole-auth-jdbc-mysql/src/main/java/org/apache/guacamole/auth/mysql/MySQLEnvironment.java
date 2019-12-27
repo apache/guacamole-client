@@ -52,6 +52,11 @@ public class MySQLEnvironment extends JDBCEnvironment {
     private static final MySQLVersion MYSQL_SUPPORTS_CTE = new MySQLVersion(8, 0, 1, false);
 
     /**
+     * The default MySQL-compatible driver to use, if not specified.
+     */
+    private static final MySQLDriver DEFAULT_DRIVER = MySQLDriver.MYSQL;
+    
+    /**
      * The default host to connect to, if MYSQL_HOSTNAME is not specified.
      */
     private static final String DEFAULT_HOSTNAME = "localhost";
@@ -164,6 +169,25 @@ public class MySQLEnvironment extends JDBCEnvironment {
         return new MySQLPasswordPolicy(this);
     }
 
+    /**
+     * Returns the MySQL driver that will be used to talk to the MySQL-compatible
+     * database server hosting the Guacamole Client database.  If unspecified
+     * a default value of MySQL will be used.
+     * 
+     * @return
+     *     The MySQL driver that will be used to communicate with the MySQL-
+     *     compatible server.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be parsed.
+     */
+    public MySQLDriver getMySQLDriver() throws GuacamoleException {
+        return getProperty(
+            MySQLGuacamoleProperties.MYSQL_DRIVER,
+            DEFAULT_DRIVER
+        );
+    }
+    
     /**
      * Returns the hostname of the MySQL server hosting the Guacamole
      * authentication tables. If unspecified, this will be "localhost".
