@@ -24,12 +24,15 @@ package org.apache.guacamole.auth.ldap.conf;
  * LDAP group directory records.
  */
 public enum MemberAttributeType {
+
     /**
      * group membership is specified by DN
      */
     DN,
+
     /**
      * group membership is specified by usercode
      */
     UID;
+
 }
