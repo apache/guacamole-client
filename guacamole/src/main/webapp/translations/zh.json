@@ -401,8 +401,8 @@
         "FIELD_HEADER_RECORDING_NAME" : "录像名：",
         "FIELD_HEADER_RECORDING_PATH" : "录像路径：",
         "FIELD_HEADER_SCROLLBACK"      : "最大回滚尺寸:",
-        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript名称：",
-        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript路径：",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "打字稿名称：",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "打字稿路径：",
         "FIELD_HEADER_USE_SSL"         : "使用SSL/TLS",
 
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
@@ -597,8 +597,8 @@
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "文件浏览器根目录：",
         "FIELD_HEADER_TERMINAL_TYPE"   : "终端类型:",
         "FIELD_HEADER_TIMEZONE"        : "时区($TZ):",
-        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript名称：",
-        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript路径：",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "打字稿名称：",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "打字稿路径：",
 
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
         "FIELD_OPTION_BACKSPACE_8"     : "退格键（Ctrl-H）",
@@ -720,7 +720,7 @@
         "SECTION_HEADER_CLIPBOARD"      : "剪贴板",
         "SECTION_HEADER_DISPLAY"        : "显示",
         "SECTION_HEADER_RECORDING"      : "屏幕录像",
-        "SECTION_HEADER_TYPESCRIPT"     : "Typescript（文本会话录像）",
+        "SECTION_HEADER_TYPESCRIPT"     : "打字稿（文本会话录像）",
         "SECTION_HEADER_NETWORK"        : "网络"
 
     },
