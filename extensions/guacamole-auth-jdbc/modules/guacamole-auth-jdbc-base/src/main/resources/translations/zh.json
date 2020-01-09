@@ -81,9 +81,9 @@
         "ERROR_REQUIRES_DIGIT"         : "密码必须至少包含一位数字。",
         "ERROR_REQUIRES_MULTIPLE_CASE" : "密码必须同时包含大写和小写字符。",
         "ERROR_REQUIRES_NON_ALNUM"     : "密码必须包含至少一个符号。",
-        "ERROR_REUSED"                 : "此密码已被使用。请勿重复使用以前的{HISTORY_SIZE} {HISTORY_SIZE, plural, one{password} other{passwords}}。",
-        "ERROR_TOO_SHORT"              : "密码必须至少{LENGTH} {LENGTH, plural, one{character} other{characters}} 位长度。",
-        "ERROR_TOO_YOUNG"              : "此帐户的密码已被重设。请至少再等待 {WAIT}个{WAIT, plural, one{day} other{days}}，然后再次更改密码。"
+        "ERROR_REUSED"                 : "此密码已被使用。请勿重复使用以前的密码。",
+        "ERROR_TOO_SHORT"              : "密码必须至少{LENGTH}位长度。",
+        "ERROR_TOO_YOUNG"              : "此帐户的密码已被重设。请至少再等待 {WAIT}天，然后再次更改密码。"
 
     },
 

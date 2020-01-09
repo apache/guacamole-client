@@ -440,7 +440,7 @@
         "SECTION_HEADER_CONTAINER"      : "容器",
         "SECTION_HEADER_DISPLAY"        : "显示",
         "SECTION_HEADER_RECORDING"      : "屏幕录制",
-        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (文本会话录制)",
+        "SECTION_HEADER_TYPESCRIPT"     : "打字稿(文本会话录制)",
         "SECTION_HEADER_NETWORK"        : "网络"
 
     },
@@ -562,7 +562,7 @@
         "SECTION_HEADER_PERFORMANCE"        : "性能",
         "SECTION_HEADER_PRECONNECTION_PDU"  : "预连接PDU / Hyper-V",
         "SECTION_HEADER_RECORDING"          : "屏幕录像",
-        "SECTION_HEADER_REMOTEAPP"          : "远程应用",
+        "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
         "SECTION_HEADER_SFTP"               : "SFTP"
 
     },
@@ -634,7 +634,7 @@
         "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
         "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
         "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
-        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256色",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
 	
         "NAME" : "SSH",
 
@@ -678,12 +678,12 @@
         "FIELD_HEADER_RECORDING_PATH" : "记录路径:",
         "FIELD_HEADER_SCROLLBACK"     : "最大回滚尺寸:",
         "FIELD_HEADER_TERMINAL_TYPE"   : "终端类型:",
-        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript 名称:",
-        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript 路径:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "打字稿名称:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "打字稿路径:",
 
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
-        "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
-        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
+        "FIELD_OPTION_BACKSPACE_8"     : "退格键(Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "删除键(Ctrl-?)",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "白底黑字",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -713,7 +713,7 @@
         "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
         "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
         "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
-        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256色",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
 	
         "NAME" : "Telnet",
 
