@@ -3,8 +3,6 @@
     "NAME" : "简体中文",
     
     "APP" : {
-
-        "NAME"    : "服务器管理系统",
         "ACTION_ACKNOWLEDGE"        : "确定",
         "ACTION_CANCEL"             : "取消",
         "ACTION_CLONE"              : "克隆",
