@@ -435,6 +435,11 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
         source = context.createMediaStreamSource(stream);
         source.connect(processor);
 
+        // Attempt to explicitly resume AudioContext, as it may be paused
+        // by default
+        if (context.state === 'suspended')
+            context.resume();
+
         // Save stream for later cleanup
         mediaStream = stream;
 
