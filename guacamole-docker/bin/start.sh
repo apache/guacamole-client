@@ -40,12 +40,14 @@ if [ -n "$GUACAMOLE_HOME" ]; then
 ##
 ## GUACD_HOSTNAME and GUACD_PORT
 ##
-	GUACD_HOSTNAME=$(grep -i GUACD_HOSTNAME $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
-	if [ -n "$GUACD_HOSTNAME" ]; then
-	    echo " - import GUACD_HOSTNAME with value $GUACD_HOSTNAME"
-	    GUACD_PORT=$(grep -i GUACD_PORT $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
-            if [ -n "$GUACD_PORT" ]; then
-                echo " - import GUACD_PORT with value $GUACD_PORT"
+	GUACD_HOSTNAME_CHECK=$(grep -i GUACD_HOSTNAME $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
+	if [ -n "$GUACD_HOSTNAME_CHECK" ]; then
+	    echo " - import GUACD_HOSTNAME with value $GUACD_HOSTNAME_CHECK"
+	    GUACD_HOSTNAME=$GUACD_HOSTNAME_CHECK
+	    GUACD_PORT_CHECK=$(grep -i GUACD_PORT $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
+            if [ -n "$GUACD_PORT_CHECK" ]; then
+                echo " - import GUACD_PORT with value $GUACD_PORT_CHECK"
+		GUACD_PORT=$GUACD_PORT_CHECK
             else
                 echo " - GUACD_PORT not found in guacamole.properties"
             fi
@@ -85,12 +87,14 @@ if [ -n "$GUACAMOLE_HOME" ]; then
 ##
 ## LDAP_HOSTNAME and LDAP_USER_BASE_DN
 ##
-        LDAP_HOSTNAME=$(grep -i LDAP_HOSTNAME $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
-        if [ -n "$LDAP_HOSTNAME" ]; then
-            echo " - import LDAP_HOSTNAME with value $LDAP_HOSTNAME"
-	    LDAP_USER_BASE_DN=$(grep -i LDAP_USER_BASE_DN $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2-99)
-            if [ -n "$LDAP_USER_BASE_DN" ]; then
-                echo " - import LDAP_USER_BASE_DN with value $LDAP_USER_BASE_DN"
+        LDAP_HOSTNAME_CHECK=$(grep -i LDAP_HOSTNAME $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
+        if [ -n "$LDAP_HOSTNAME_CHECK" ]; then
+            echo " - import LDAP_HOSTNAME with value $LDAP_HOSTNAME_CHECK"
+	    LDAP_HOSTNAME=$LDAP_HOSTNAME_CHECK
+	    LDAP_USER_BASE_DN_CHECK=$(grep -i LDAP_USER_BASE_DN $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2-99)
+            if [ -n "$LDAP_USER_BASE_DN_CHECL" ]; then
+                echo " - import LDAP_USER_BASE_DN_CHECK with value $LDAP_USER_BASE_DN_CHECK"
+		LDAP_USER_BASE_DN=$LDAP_USER_BASE_DN_CHECK
             else
                 echo " - LDAP_USER_BASE_DN not found in guacamole.properties"
             fi
