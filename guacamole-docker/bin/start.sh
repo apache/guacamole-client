@@ -34,7 +34,7 @@
 ##
 
 if [ -n "$GUACAMOLE_HOME" ]; then
-    echo "Debug: check $GUACAMOLE_HOME/guacamole.properies file exists"
+    echo "Found $GUACAMOLE_HOME/guacamole.properies file."
     if [ -f "$GUACAMOLE_HOME/guacamole.properties" ]; then
         echo "Try to import default values from guacamole.properties"
 ##
@@ -42,78 +42,78 @@ if [ -n "$GUACAMOLE_HOME" ]; then
 ##
 	GUACD_HOSTNAME=$(grep -i GUACD_HOSTNAME $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
 	if [ -n "$GUACD_HOSTNAME" ]; then
-	    echo "Import GUACD_HOSTNAME with value $GUACD_HOSTNAME"
+	    echo " - import GUACD_HOSTNAME with value $GUACD_HOSTNAME"
 	    GUACD_PORT=$(grep -i GUACD_PORT $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
             if [ -n "$GUACD_PORT" ]; then
-                echo "Import GUACD_PORT with value $GUACD_PORT"
+                echo " - import GUACD_PORT with value $GUACD_PORT"
             else
-                echo "GUACD_PORT not found in guacamole.properties"
+                echo " - GUACD_PORT not found in guacamole.properties"
             fi
 	else
-	    echo "GUACD_HOSTNAME not found in guacamole.properties"
+	    echo " - GUACD_HOSTNAME not found in guacamole.properties"
 	fi
 ##
 ## MYSQL_DATABASE and MYSQL_DATABASE_FILE
 ##
         MYSQL_DATABASE=$(grep -i MYSQL_DATABASE $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
         if [ -n "$MYSQL_DATABASE" ]; then
-            echo "Import MYSQL_DATABASE with value $MYSQL_DATABASE"
+            echo " - import MYSQL_DATABASE with value $MYSQL_DATABASE"
 	    MYSQL_DATABASE_FILE=$(grep -i MYSQL_DATABASE_FILE $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
             if [ -n "$MYSQL_DATABASE_FILE" ]; then
-                echo "Import MYSQL_DATABASE_FILE with value $MYSQL_DATABASE_FILE"
+                echo " - import MYSQL_DATABASE_FILE with value $MYSQL_DATABASE_FILE"
             else
-                echo "MYSQL_DATABASE_FILE not found in guacamole.properties"
+                echo " - MYSQL_DATABASE_FILE not found in guacamole.properties"
             fi
         else
-            echo "MYSQL_DATABASE not found in guacamole.properties"
+            echo " - MYSQL_DATABASE not found in guacamole.properties"
         fi
 ##
 ## POSTGRES_DATABASE and POSTGRES_DATABASE_FILE
 ##
         POSTGRES_DATABASE=$(grep -i POSTGRES_DATABASE $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
         if [ -n "$POSTGRES_DATABASE" ]; then
-            echo "Import POSTGRES_DATABASE with value $POSTGRES_DATABASE"
+            echo " - import POSTGRES_DATABASE with value $POSTGRES_DATABASE"
             POSTGRES_DATABASE_FILE=$(grep -i POSTGRES_DATABASE_FILE $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
             if [ -n "$POSTGRES_DATABASE_FILE" ]; then
-                echo "Import POSTGRES_DATABASE_FILE with value $POSTGRES_DATABASE_FILE"
+                echo " - import POSTGRES_DATABASE_FILE with value $POSTGRES_DATABASE_FILE"
             else
-                echo "POSTGRES_DATABASE_FILE not found in guacamole.properties"
+                echo " - POSTGRES_DATABASE_FILE not found in guacamole.properties"
             fi
         else
-            echo "POSTGRES_DATABASE not found in guacamole.properties"
+            echo " - POSTGRES_DATABASE not found in guacamole.properties"
         fi
 ##
 ## LDAP_HOSTNAME and LDAP_USER_BASE_DN
 ##
         LDAP_HOSTNAME=$(grep -i LDAP_HOSTNAME $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
         if [ -n "$LDAP_HOSTNAME" ]; then
-            echo "Import LDAP_HOSTNAME with value $LDAP_HOSTNAME"
+            echo " - import LDAP_HOSTNAME with value $LDAP_HOSTNAME"
 	    LDAP_USER_BASE_DN=$(grep -i LDAP_USER_BASE_DN $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2-99)
             if [ -n "$LDAP_USER_BASE_DN" ]; then
-                echo "Import LDAP_USER_BASE_DN with value $LDAP_USER_BASE_DN"
+                echo " - import LDAP_USER_BASE_DN with value $LDAP_USER_BASE_DN"
             else
-                echo "LDAP_USER_BASE_DN not found in guacamole.properties"
+                echo " - LDAP_USER_BASE_DN not found in guacamole.properties"
             fi
         else
-            echo "LDAP_HOSTNAME not found in guacamole.properties"
+            echo " - LDAP_HOSTNAME not found in guacamole.properties"
         fi
 ##
 ## RADIUS_SHARED_SECRET
 ##
         RADIUS_SHARED_SECRET=$(grep -i RADIUS_SHARED_SECRET $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
         if [ -n "$RADIUS_SHARED_SECRET" ]; then
-            echo "Import RADIUS_SHARED_SECRET with value $RADIUS_SHARED_SECRET"
+            echo " - import RADIUS_SHARED_SECRET with value $RADIUS_SHARED_SECRET"
         else
-            echo "RADIUS_SHARED_SECRET not found in guacamole.properties"
+            echo " - RADIUS_SHARED_SECRET not found in guacamole.properties"
         fi
 ##
 ## OPENID_AUTHORIZATION_ENDPOINT
 ##
         OPENID_AUTHORIZATION_ENDPOINT=$(grep -i OPENID_AUTHORIZATION_ENDPOINT $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
         if [ -n "$OPENID_AUTHORIZATION_ENDPOINT" ]; then
-            echo "Import OPENID_AUTHORIZATION_ENDPOINT with value $OPENID_AUTHORIZATION_ENDPOINT"
+            echo " - import OPENID_AUTHORIZATION_ENDPOINT with value $OPENID_AUTHORIZATION_ENDPOINT"
         else
-            echo "OPENID_AUTHORIZATION_ENDPOINT not found in guacamole.properties"
+            echo " - OPENID_AUTHORIZATION_ENDPOINT not found in guacamole.properties"
         fi
 ##
 ## end import
@@ -122,7 +122,7 @@ if [ -n "$GUACAMOLE_HOME" ]; then
 	echo "No guacamole.properties file found in GUACAMOLE_HOME directory"
     fi
 fi
-
+echo ""
 ## end: pre read
 
 GUACAMOLE_HOME_TEMPLATE="$GUACAMOLE_HOME"
