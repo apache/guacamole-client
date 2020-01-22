@@ -69,10 +69,12 @@ if [ -n "$GUACAMOLE_HOME" ]; then
 ##
                 MYSQL_DATABASE)
                     MYSQL_DATABASE=$(echo $line | cut -d= -f2)
+                    sed -i '/MYSQL_DATABASE/Id;/MYSQL_DATABASE/Id' $GUACAMOLE_HOME/guacamole.properties
                     echo " - MYSQL_DATABASE is set to $MYSQL_DATABASE"
                 ;;
                 MYSQL_DATABASE_FILE)
                     MYSQL_DATABASE_FILE=$(echo $line | cut -d= -f2)
+                    sed -i '/MYSQL_DATABASE_FILE/Id;/MYSQL_DATABASE_FILE/Id' $GUACAMOLE_HOME/guacamole.properties
                     echo " - MYSQL_DATABASE_FILE is set to $MYSQL_DATABASE_FILE)"
                 ;;
 ##
@@ -80,10 +82,12 @@ if [ -n "$GUACAMOLE_HOME" ]; then
 ##
                 POSTGRES_DATABASE)
                     POSTGRES_DATABASE=$(echo $line | cut -d= -f2)
+                    sed -i '/POSTGRES_DATABASE/Id;/POSTGRES_DATABASE/Id' $GUACAMOLE_HOME/guacamole.properties
                     echo " - POSTGRES_DATABASE is set to $POSTGRES_DATABASE)"
                 ;;
                 POSTGRES_DATABASE_FILE)
                     POSTGRES_DATABASE_FILE=$(echo $line | cut -d= -f2)
+                    sed -i '/POSTGRES_DATABASE_FILE/Id;/POSTGRES_DATABASE_FILE/Id' $GUACAMOLE_HOME/guacamole.properties
                     echo " - POSTGRES_DATABASE_FILE is set to $POSTGRES_DATABASE_FILE"
                 ;;
 ##
@@ -99,74 +103,36 @@ if [ -n "$GUACAMOLE_HOME" ]; then
                     sed -i '/LDAP_USER_BASE_DN/Id;/LDAP-USER-BASE-DN/Id' $GUACAMOLE_HOME/guacamole.properties
                     echo " - LDAP_USER_BASE_DN is set to $LDAP_USER_BASE_DN"
                 ;;
-            esac
-        done < $GUACAMOLE_HOME/guacamole.properties
-
-
-##
-## MYSQL_DATABASE and MYSQL_DATABASE_FILE
-##
-        CHECK_MYSQL_DATABASE=$(grep -i MYSQL_DATABASE $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
-        if [ -n "$CHECK_MYSQL_DATABASE" ]; then
-            echo " - import MYSQL_DATABASE with value $CHECK_MYSQL_DATABASE"
-	    MYSQL_DATABASE=$CHECK_MYSQL_DATABASE
-	    CHECK_MYSQL_DATABASE_FILE=$(grep -i MYSQL_DATABASE_FILE $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
-            if [ -n "$CHECK_MYSQL_DATABASE_FILE" ]; then
-                echo " - import MYSQL_DATABASE_FILE with value $CHECK_MYSQL_DATABASE_FILE"
-		MYSQL_DATABASE_FILE=$CHECK_MYSQL_DATABASE_FILE
-            else
-                echo " - MYSQL_DATABASE_FILE not found in guacamole.properties"
-            fi
-        else
-            echo " - MYSQL_DATABASE not found in guacamole.properties"
-        fi
-##
-## POSTGRES_DATABASE and POSTGRES_DATABASE_FILE
-##
-        CHECK_POSTGRES_DATABASE=$(grep -i POSTGRES_DATABASE $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
-        if [ -n "$CHECK_POSTGRES_DATABASE" ]; then
-            echo " - import POSTGRES_DATABASE with value $CHECK_POSTGRES_DATABASE"
-	    POSTGRES_DATABASE=$CHECK_POSTGRES_DATABASE
-            CHECK_POSTGRES_DATABASE_FILE=$(grep -i POSTGRES_DATABASE_FILE $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
-            if [ -n "$CHECK_POSTGRES_DATABASE_FILE" ]; then
-                echo " - import POSTGRES_DATABASE_FILE with value $CHECK_POSTGRES_DATABASE_FILE"
-		POSTGRES_DATABASE_FILE=$CHECK_POSTGRES_DATABASE_FILE
-            else
-                echo " - POSTGRES_DATABASE_FILE not found in guacamole.properties"
-            fi
-        else
-            echo " - POSTGRES_DATABASE not found in guacamole.properties"
-        fi
 ##
 ## RADIUS_SHARED_SECRET
 ##
-        CHECK_RADIUS_SHARED_SECRET=$(grep -i RADIUS_SHARED_SECRET $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
-        if [ -n "$CHECK_RADIUS_SHARED_SECRET" ]; then
-            echo " - import RADIUS_SHARED_SECRET with value $CHECK_RADIUS_SHARED_SECRET"
-	    RADIUS_SHARED_SECRET=$CHECK_RADIUS_SHARED_SECRET
-        else
-            echo " - RADIUS_SHARED_SECRET not found in guacamole.properties"
-        fi
+                RADIUS_SHARED_SECRET|RADIUS-SHARED-SECRET)
+                    RADIUS_SHARED_SECRET=$(echo $line | cut -d: -f2)
+                    sed -i '/RADIUS_SHARED_SECRET/Id;/RADIUS-SHARED-SECRET/Id' $GUACAMOLE_HOME/guacamole.properties
+                    echo " - RADIUS_SHARED_SECRET is set to $RADIUS_SHARED_SECRET"
+                ;;
 ##
 ## OPENID_AUTHORIZATION_ENDPOINT
 ##
-        CHECK_OPENID_AUTHORIZATION_ENDPOINT=$(grep -i OPENID_AUTHORIZATION_ENDPOINT $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
-        if [ -n "$CHECK_OPENID_AUTHORIZATION_ENDPOINT" ]; then
-            echo " - import OPENID_AUTHORIZATION_ENDPOINT with value $CHECK_OPENID_AUTHORIZATION_ENDPOINT"
-	    OPENID_AUTHORIZATION_ENDPOINT=$CHECK_OPENID_AUTHORIZATION_ENDPOINT
-        else
-            echo " - OPENID_AUTHORIZATION_ENDPOINT not found in guacamole.properties"
-        fi
+                OPENID_AUTHORIZATION_ENDPOINT|OPENID_AUTHORIZATION_ENDPOINT)
+                    OPENID_AUTHORIZATION_ENDPOINT=$(echo $line | cut -d: -f2)
+                    sed -i '/OPENID_AUTHORIZATION_ENDPOINT/Id;/OPENID-AUTHORIZATION-ENDPOINT/Id' $GUACAMOLE_HOME/guacamole.properties
+                    echo " - OPENID_AUTHORIZATION_ENDPOINT is set to $OPENID_AUTHORIZATION_ENDPOINT"
+                ;;
+            esac
+        done < $GUACAMOLE_HOME/guacamole.properties
 ##
 ## end import
 ##
     else
-	echo "No guacamole.properties file found in GUACAMOLE_HOME directory"
+	    echo "No guacamole.properties file found in GUACAMOLE_HOME directory"
     fi
     echo "No GUACAMOLE_HOME Directory define."
 fi
 echo ""
+##
 ## end: pre read
+##
 
 GUACAMOLE_HOME_TEMPLATE="$GUACAMOLE_HOME"
 
