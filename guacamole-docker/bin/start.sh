@@ -31,7 +31,6 @@
 ## pre read GUACAMOLE_PROPERTIES if exists
 ## and get all variable that needed to start guacamole
 ## - like docker run -v /etc/guacamole:/config -e GUACAMOLE_HOME=/config 
-## - DEBUG_LEVEL = info, in guacamole.properies file
 
 if [ -n "$GUACAMOLE_HOME" ]; then
     echo "Found $GUACAMOLE_HOME/guacamole.properies file."
@@ -44,14 +43,13 @@ if [ -n "$GUACAMOLE_HOME" ]; then
         mkdir -p $GUACAMOLE_HOME-tmp
         cp -r $GUACAMOLE_HOME/* $GUACAMOLE_HOME-tmp/
         GUACAMOLE_HOME=$GUACAMOLE_HOME-tmp
-	echo " - new GUACAMOLE_HOME directory is $GUACAMOLE_HOME"
+	    echo " - new GUACAMOLE_HOME directory is $GUACAMOLE_HOME"
 ##
 ## read guaacamole.properties
 ##
         while IFS= read -r line; do
             # echo "Text read from file: $line"
             # echo "Debug: line:$line - value $(echo $line | cut -d':' -f2 | tr '[:lower:]' '[:upper:]')"
-	    # keyname="$(echo $line  | cut -d':' -f1 | tr '[:lower:]' '[:upper:]')"
             case $(echo $line  | cut -d':' -f1 | tr '[:lower:]' '[:upper:]') in
 ##
 ## GUACD_HOSTNAME and GUACD_PORT
@@ -101,11 +99,6 @@ if [ -n "$GUACAMOLE_HOME" ]; then
                     sed -i '/LDAP_USER_BASE_DN/Id;/LDAP-USER-BASE-DN/Id' $GUACAMOLE_HOME/guacamole.properties
                     echo " - LDAP_USER_BASE_DN is set to $LDAP_USER_BASE_DN"
                 ;;
-	        DEBUG_LEVEL|DEBUG-LEVEL)
-                    DEBUG_LEVEL=$(echo $line | cut -d: -f2)
-                    sed -i 's/<root level.*/<root level=\"$DEBUG_LEVEL\">/' /usr/local/tomcat/webapps/guacamole/WEB-INF/classes/logback.xml
-		    echo " - DEBUG_LEVEL is set to $DEBUG_LEVEL i /usr/local/tomcat/webapps/guacamole/WEB-INF/classes/logback.xml"
-		;;
             esac
         done < $GUACAMOLE_HOME/guacamole.properties
 
