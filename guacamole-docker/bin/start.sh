@@ -30,30 +30,86 @@
 
 ## pre read GUACAMOLE_PROPERTIES if exists
 ## and get all variable that needed to start guacamole
-## like docker run -v /etc/guacamole:/config -e GUACAMOLE_HOME=/config 
-##
+## - like docker run -v /etc/guacamole:/config -e GUACAMOLE_HOME=/config 
+## - DEBUG_LEVEL = info, in guacamole.properies file
 
 if [ -n "$GUACAMOLE_HOME" ]; then
     echo "Found $GUACAMOLE_HOME/guacamole.properies file."
     if [ -f "$GUACAMOLE_HOME/guacamole.properties" ]; then
         echo "Try to import default values from guacamole.properties"
 ##
+## copy GUACAMOLE_HOME Directory to a temporary writable Directory
+## to mount the GUACAMOLE_HOME readonly
+##
+        mkdir -p $GUACAMOLE_HOME-tmp
+        cp -r $GUACAMOLE_HOME/* $GUACAMOLE_HOME-tmp/
+        GUACAMOLE_HOME=$GUACAMOLE_HOME-tmp
+	echo " - new GUACAMOLE_HOME directory is $GUACAMOLE_HOME"
+##
+## read guaacamole.properties
+##
+        while IFS= read -r line; do
+            # echo "Text read from file: $line"
+            # echo "Debug: line:$line - value $(echo $line | cut -d':' -f2 | tr '[:lower:]' '[:upper:]')"
+	    # keyname="$(echo $line  | cut -d':' -f1 | tr '[:lower:]' '[:upper:]')"
+            case $(echo $line  | cut -d':' -f1 | tr '[:lower:]' '[:upper:]') in
+##
 ## GUACD_HOSTNAME and GUACD_PORT
 ##
-	CHECK_GUACD_HOSTNAME=$(grep -i GUACD_HOSTNAME $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
-	if [ -n "$CHECK_GUACD_HOSTNAME" ]; then
-	    echo " - import GUACD_HOSTNAME with value $CHECK_GUACD_HOSTNAME"
-	    GUACD_HOSTNAME=$CHECK_GUACD_HOSTNAME
-	    CHECK_GUACD_PORT=$(grep -i GUACD_PORT $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
-            if [ -n "$CHECK_GUACD_PORT" ]; then
-                echo " - import GUACD_PORT with value $CHECK_GUACD_PORT"
-		GUACD_PORT=$CHECK_GUACD_PORT
-            else
-                echo " - GUACD_PORT not found in guacamole.properties"
-            fi
-	else
-	    echo " - GUACD_HOSTNAME not found in guacamole.properties"
-	fi
+                GUACD_HOSTNAME|GUACD-HOSTNAME)
+                    GUACD_HOSTNAME=$(echo $line | cut -d: -f2)
+                    sed -i '/GUACD_HOSTNAME/Id;/GUACD-HOSTNAME/Id' $GUACAMOLE_HOME/guacamole.properties
+                    echo " - GUACD_HOSTNAME is set to $GUACD_HOSTNAME"
+                ;;
+                GUACD_PORT|GUACD-PORT)
+                    GUACD_PORT=$(echo $line | cut -d: -f2)
+                    sed -i '/GUACD_PORT/Id;/GUACD-PORT/Id' $GUACAMOLE_HOME/guacamole.properties
+                    echo " - GUACD_PORT is set to $GUACD_PORT"
+                ;;
+##
+## MYSQL_DATABASE and MYSQL_DATABASE_FILE
+##
+                MYSQL_DATABASE)
+                    MYSQL_DATABASE=$(echo $line | cut -d= -f2)
+                    echo " - MYSQL_DATABASE is set to $MYSQL_DATABASE"
+                ;;
+                MYSQL_DATABASE_FILE)
+                    MYSQL_DATABASE_FILE=$(echo $line | cut -d= -f2)
+                    echo " - MYSQL_DATABASE_FILE is set to $MYSQL_DATABASE_FILE)"
+                ;;
+##
+## POSTGRES_DATABASE and POSTGRES_DATABASE_FILE
+##
+                POSTGRES_DATABASE)
+                    POSTGRES_DATABASE=$(echo $line | cut -d= -f2)
+                    echo " - POSTGRES_DATABASE is set to $POSTGRES_DATABASE)"
+                ;;
+                POSTGRES_DATABASE_FILE)
+                    POSTGRES_DATABASE_FILE=$(echo $line | cut -d= -f2)
+                    echo " - POSTGRES_DATABASE_FILE is set to $POSTGRES_DATABASE_FILE"
+                ;;
+##
+## LDAP_HOSTNAME and LDAP_USER_BASE_DN
+##
+                LDAP_HOSTNAME|LDAP-HOSTNAME)
+                    LDAP_HOSTNAME=$(echo $line | cut -d: -f2)
+                    sed -i '/LDAP_HOSTNAME/Id;/LDAP-HOSTNAME/Id' $GUACAMOLE_HOME/guacamole.properties
+                    echo " - LDAP_HOSTNAME is set to $LDAP_HOSTNAME"
+                ;;
+                LDAP_USER_BASE_DN|LDAP-USER-BASE-DN)
+                    LDAP_USER_BASE_DN=$(echo $line | cut -d: -f2)
+                    sed -i '/LDAP_USER_BASE_DN/Id;/LDAP-USER-BASE-DN/Id' $GUACAMOLE_HOME/guacamole.properties
+                    echo " - LDAP_USER_BASE_DN is set to $LDAP_USER_BASE_DN"
+                ;;
+	        DEBUG_LEVEL|DEBUG-LEVEL)
+                    DEBUG_LEVEL=$(echo $line | cut -d: -f2)
+                    sed -i 's/<root level.*/<root level=\"$DEBUG_LEVEL\">/' /usr/local/tomcat/webapps/guacamole/WEB-INF/classes/logback.xml
+		    echo " - DEBUG_LEVEL is set to $DEBUG_LEVEL i /usr/local/tomcat/webapps/guacamole/WEB-INF/classes/logback.xml"
+		;;
+            esac
+        done < $GUACAMOLE_HOME/guacamole.properties
+
+
 ##
 ## MYSQL_DATABASE and MYSQL_DATABASE_FILE
 ##
@@ -89,23 +145,6 @@ if [ -n "$GUACAMOLE_HOME" ]; then
             echo " - POSTGRES_DATABASE not found in guacamole.properties"
         fi
 ##
-## LDAP_HOSTNAME and LDAP_USER_BASE_DN
-##
-        CHECK_LDAP_HOSTNAME=$(grep -i LDAP_HOSTNAME $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
-        if [ -n "$CHECK_LDAP_HOSTNAME" ]; then
-            echo " - import LDAP_HOSTNAME with value $CHECK_LDAP_HOSTNAME"
-	    LDAP_HOSTNAME=$CHECK_LDAP_HOSTNAME
-	    CHECK_LDAP_USER_BASE_DN=$(grep -i LDAP_USER_BASE_DN $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2-99)
-            if [ -n "$CHECK_LDAP_USER_BASE_DN" ]; then
-                echo " - import CHECK_LDAP_USER_BASE_DN with value $CHECK_LDAP_USER_BASE_DN"
-		LDAP_USER_BASE_DN=$CHECK_LDAP_USER_BASE_DN
-            else
-                echo " - LDAP_USER_BASE_DN not found in guacamole.properties"
-            fi
-        else
-            echo " - LDAP_HOSTNAME not found in guacamole.properties"
-        fi
-##
 ## RADIUS_SHARED_SECRET
 ##
         CHECK_RADIUS_SHARED_SECRET=$(grep -i RADIUS_SHARED_SECRET $GUACAMOLE_HOME/guacamole.properties | cut -d= -f2)
@@ -131,6 +170,7 @@ if [ -n "$GUACAMOLE_HOME" ]; then
     else
 	echo "No guacamole.properties file found in GUACAMOLE_HOME directory"
     fi
+    echo "No GUACAMOLE_HOME Directory define."
 fi
 echo ""
 ## end: pre read
