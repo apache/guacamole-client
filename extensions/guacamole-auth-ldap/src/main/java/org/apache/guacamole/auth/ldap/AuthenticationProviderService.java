@@ -204,6 +204,10 @@ public class AuthenticationProviderService {
         
         // Attempt bind
         LdapNetworkConnection ldapConnection = ldapService.bindAs(bindDn, password);
+        if (ldapConnection == null)
+            throw new GuacamoleInvalidCredentialsException("Invalid login.",
+                    CredentialsInfo.USERNAME_PASSWORD);
+
         try {
 
             // Retrieve group membership of the user that just authenticated
@@ -309,8 +313,16 @@ public class AuthenticationProviderService {
         // Bind using credentials associated with AuthenticatedUser
         Credentials credentials = authenticatedUser.getCredentials();
         if (authenticatedUser instanceof LDAPAuthenticatedUser) {
+
             Dn bindDn = ((LDAPAuthenticatedUser) authenticatedUser).getBindDn();
             LdapNetworkConnection ldapConnection = ldapService.bindAs(bindDn, credentials.getPassword());
+            if (ldapConnection == null) {
+                logger.debug("LDAP bind succeeded for \"{}\" during "
+                        + "authentication but failed during data retrieval.",
+                        authenticatedUser.getIdentifier());
+                throw new GuacamoleInvalidCredentialsException("Invalid login.",
+                        CredentialsInfo.USERNAME_PASSWORD);
+            }
 
             try {
 

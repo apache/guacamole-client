@@ -144,13 +144,12 @@ public class LDAPConnectionService {
             bindRequest.setDn(userDN);
             bindRequest.setCredentials(password);
             BindResponse bindResponse = ldapConnection.bind(bindRequest);
-            if (bindResponse.getLdapResult().getResultCode() == ResultCodeEnum.SUCCESS)
-                return ldapConnection;
-            
-            else
-                throw new GuacamoleInvalidCredentialsException("Error binding"
-                        + " to server: " + bindResponse.toString(),
-                        CredentialsInfo.USERNAME_PASSWORD);
+
+            if (bindResponse.getLdapResult().getResultCode() != ResultCodeEnum.SUCCESS) {
+                ldapConnection.close();
+                logger.debug("LDAP bind attempt failed: {}", bindResponse.toString());
+                return null;
+            }
 
         }
 
@@ -158,10 +157,10 @@ public class LDAPConnectionService {
         catch (LdapException e) {
             ldapConnection.close();
             logger.debug("Unable to bind to LDAP server.", e);
-            throw new GuacamoleInvalidCredentialsException(
-                    "Unable to bind to the LDAP server.",
-                    CredentialsInfo.USERNAME_PASSWORD);
+            return null;
         }
+
+        return ldapConnection;
 
     }
     
