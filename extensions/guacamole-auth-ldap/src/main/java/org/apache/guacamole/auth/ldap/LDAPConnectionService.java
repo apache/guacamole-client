@@ -40,8 +40,6 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.auth.ldap.conf.ConfigurationService;
 import org.apache.guacamole.auth.ldap.conf.EncryptionMethod;
-import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,7 +121,8 @@ public class LDAPConnectionService {
      *     bound.
      *
      * @throws GuacamoleException
-     *     If an error occurs while binding to the LDAP server.
+     *     If the configuration details relevant to binding to the LDAP server
+     *     cannot be read.
      */
     public LdapNetworkConnection bindAs(Dn userDN, String password)
             throws GuacamoleException {
@@ -165,46 +164,49 @@ public class LDAPConnectionService {
     }
     
     /**
-     * Generate a new LdapNetworkConnection object for following a referral
-     * with the given LdapUrl, and copy the username and password
-     * from the original connection.
+     * Establishes a new network connection to the LDAP server indicated by the
+     * given LDAP referral URL. The credentials used to bind with the referred
+     * LDAP server will be the same as those used to bind with the original
+     * connection.
      * 
-     * @param referralUrl
-     *     The LDAP URL to follow.
-     * 
-     * @param ldapConfig
-     *     The connection configuration to use to retrieve username and
-     *     password.
-     * 
-     * @param hop
-     *     The current hop number of this referral - once the configured
-     *     limit is reached, this method will throw an exception.
-     * 
+     * @param ldapConnection
+     *     The LDAP connection that bind credentials should be copied from.
+     *
+     * @param url
+     *     The URL of the referred LDAP server to which a new network
+     *     connection should be established.
+     *
      * @return
-     *     A LdapNetworkConnection object that points at the location
-     *     specified in the referralUrl.
-     *     
-     * @throws GuacamoleException
-     *     If an error occurs parsing out the LdapUrl object or the
-     *     maximum number of referral hops is reached.
+     *     A LdapNetworkConnection representing a network connection to the
+     *     LDAP server specified in the URL, or null if the specified URL is
+     *     invalid.
      */
-    public LdapNetworkConnection getReferralConnection(LdapUrl referralUrl,
-            LdapConnectionConfig ldapConfig, int hop)
-            throws GuacamoleException {
+    public LdapNetworkConnection getReferralConnection(
+            LdapNetworkConnection ldapConnection, String url) {
        
-        if (hop >= confService.getMaxReferralHops())
-            throw new GuacamoleServerException("Maximum number of referrals reached.");
-        
+        LdapConnectionConfig ldapConfig = ldapConnection.getConfig();
         LdapConnectionConfig referralConfig = new LdapConnectionConfig();
         
         // Copy bind name and password from original config
         referralConfig.setName(ldapConfig.getName());
         referralConfig.setCredentials(ldapConfig.getCredentials());        
-        
+
+        LdapUrl referralUrl;
+        try {
+            referralUrl = new LdapUrl(url);
+        }
+        catch (LdapException e) {
+            logger.debug("Referral URL \"{}\" is invalid.", url, e);
+            return null;
+        }
+
         // Look for host - if not there, bail out.
         String host = referralUrl.getHost();
-        if (host == null || host.isEmpty())
-            throw new GuacamoleServerException("Referral URL contains no host.");
+        if (host == null || host.isEmpty()) {
+            logger.debug("Referral URL \"{}\" is invalid as it contains "
+                    + "no hostname.", url );
+            return null;
+        }
        
         referralConfig.setLdapHost(host);
        

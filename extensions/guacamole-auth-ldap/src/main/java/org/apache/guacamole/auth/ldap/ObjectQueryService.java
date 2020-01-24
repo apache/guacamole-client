@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,6 @@ import org.apache.directory.api.ldap.model.filter.EqualityNode;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
 import org.apache.directory.api.ldap.model.filter.OrNode;
 import org.apache.directory.api.ldap.model.filter.PresenceNode;
-import org.apache.directory.api.ldap.model.message.Referral;
 import org.apache.directory.api.ldap.model.message.SearchRequest;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.api.ldap.model.url.LdapUrl;
@@ -46,6 +46,8 @@ import org.apache.directory.ldap.client.api.LdapConnectionConfig;
 import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.auth.ldap.conf.ConfigurationService;
+import org.apache.guacamole.auth.ldap.conf.LDAPGuacamoleProperties;
 import org.apache.guacamole.net.auth.Identifiable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +71,12 @@ public class ObjectQueryService {
      */
     @Inject
     private LDAPConnectionService ldapService;
+
+    /**
+     * Service for retrieving LDAP server configuration information.
+     */
+    @Inject
+    private ConfigurationService confService;
 
     /**
      * Returns the identifier of the object represented by the given LDAP
@@ -204,13 +212,21 @@ public class ObjectQueryService {
     public List<Entry> search(LdapNetworkConnection ldapConnection,
             Dn baseDN, ExprNode query, int searchHop) throws GuacamoleException {
 
+        // Refuse to follow referrals if limit has been reached
+        int maxHops = confService.getMaxReferralHops();
+        if (searchHop >= maxHops) {
+            logger.debug("Refusing to follow further referrals as the maximum "
+                    + "number of referral hops ({}) has been reached. LDAP "
+                    + "search results may be incomplete. If further referrals "
+                    + "should be followed, consider setting the \"{}\" "
+                    + "property to a larger value.", maxHops, LDAPGuacamoleProperties.LDAP_MAX_REFERRAL_HOPS.getName());
+            return Collections.emptyList();
+        }
+
         logger.debug("Searching \"{}\" for objects matching \"{}\".", baseDN, query);
 
-        LdapConnectionConfig ldapConnectionConfig = ldapConnection.getConfig();
-            
         // Search within subtree of given base DN
-        SearchRequest request = ldapService.getSearchRequest(baseDN,
-                query);
+        SearchRequest request = ldapService.getSearchRequest(baseDN, query);
             
         // Produce list of all entries in the search result, automatically
         // following referrals if configured to do so
@@ -219,21 +235,47 @@ public class ObjectQueryService {
         try (SearchCursor results = ldapConnection.search(request)) {
             while (results.next()) {
 
-                if (results.isEntry()) {
+                // Add entry directly if no referral is involved
+                if (results.isEntry())
                     entries.add(results.getEntry());
-                }
-                else if (results.isReferral() && request.isFollowReferrals()) {
 
-                    Referral referral = results.getReferral();
-                    for (String url : referral.getLdapUrls()) {
-                        LdapNetworkConnection referralConnection =
-                                ldapService.getReferralConnection(
-                                        new LdapUrl(url),
-                                        ldapConnectionConfig, searchHop++
-                                );
-                        entries.addAll(search(referralConnection, baseDN, query,
-                                searchHop));
+                // If a referral must be followed to obtain further results,
+                // retrieval of those results depends on whether such referral
+                // following is enabled
+                else if (results.isReferral()) {
+
+                    // Follow received referrals only if configured to do so
+                    if (request.isFollowReferrals()) {
+                        for (String url : results.getReferral().getLdapUrls()) {
+
+                            // Connect to referred LDAP server to retrieve further results, ensuring the network
+                            // connection is always closed when it will no longer be used
+                            try (LdapNetworkConnection referralConnection = ldapService.getReferralConnection(ldapConnection, url)) {
+                                if (referralConnection != null) {
+                                    logger.debug("Following referral to \"{}\"...", url);
+                                    entries.addAll(search(referralConnection, baseDN, query, searchHop + 1));
+                                }
+                                else
+                                    logger.debug("Could not follow referral to "
+                                            + "\"{}\" as the URL is invalid.", url);
+                            }
+                            catch (GuacamoleException e) {
+                                logger.warn("Referral to \"{}\" could not be followed: {}", url, e.getMessage());
+                                logger.debug("Failed to follow LDAP referral.", e);
+                            }
+
+                        }
                     }
+
+                    // Log if referrals may be applicable but they aren't being
+                    // followed
+                    else
+                        logger.debug("Referrals to one or more other LDAP "
+                                + "servers were received but are being "
+                                + "ignored because following of referrals is "
+                                + "not enabled. If referrals must be "
+                                + "followed, consider setting the \"{}\" "
+                                + "property to \"true\".", LDAPGuacamoleProperties.LDAP_FOLLOW_REFERRALS.getName());
 
                 }
 
@@ -244,7 +286,7 @@ public class ObjectQueryService {
         }
         catch (CursorException | IOException | LdapException e) {
             throw new GuacamoleServerException("Unable to query list of "
-                    + "objects from LDAP directory.", e);
+                    + "objects from LDAP directory: " + e.getMessage(), e);
         }
 
     }
