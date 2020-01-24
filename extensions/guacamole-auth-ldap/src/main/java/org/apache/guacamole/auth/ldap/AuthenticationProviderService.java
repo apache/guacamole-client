@@ -204,18 +204,26 @@ public class AuthenticationProviderService {
         
         // Attempt bind
         LdapNetworkConnection ldapConnection = ldapService.bindAs(bindDn, password);
-            
-        // Retrieve group membership of the user that just authenticated
-        Set<String> effectiveGroups =
-                userGroupService.getParentUserGroupIdentifiers(ldapConnection,
-                        bindDn);
+        try {
 
-        // Return AuthenticatedUser if bind succeeds
-        LDAPAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-        authenticatedUser.init(credentials, getAttributeTokens(ldapConnection,
-                bindDn), effectiveGroups, bindDn);
-        
-        return authenticatedUser;
+            // Retrieve group membership of the user that just authenticated
+            Set<String> effectiveGroups =
+                    userGroupService.getParentUserGroupIdentifiers(ldapConnection,
+                            bindDn);
+
+            // Return AuthenticatedUser if bind succeeds
+            LDAPAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+            authenticatedUser.init(credentials, getAttributeTokens(ldapConnection,
+                    bindDn), effectiveGroups, bindDn);
+
+            return authenticatedUser;
+
+        }
+
+        // Always disconnect
+        finally {
+            ldapService.disconnect(ldapConnection);
+        }
 
     }
 
