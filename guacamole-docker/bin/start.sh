@@ -125,9 +125,10 @@ if [ -n "$GUACAMOLE_HOME" ]; then
 ## end import
 ##
     else
-	    echo "No guacamole.properties file found in GUACAMOLE_HOME directory"
+        echo "No guacamole.properties file found in GUACAMOLE_HOME directory"
     fi
-    echo "No GUACAMOLE_HOME Directory define."
+else
+        echo "No GUACAMOLE_HOME Directory define."
 fi
 echo ""
 ##
