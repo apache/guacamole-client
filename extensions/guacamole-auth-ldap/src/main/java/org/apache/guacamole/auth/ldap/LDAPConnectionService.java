@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.ldap;
 
 import com.google.inject.Inject;
-import java.io.IOException;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
 import org.apache.directory.api.ldap.model.message.BindRequest;
@@ -32,7 +31,6 @@ import org.apache.directory.api.ldap.model.message.SearchRequestImpl;
 import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.api.ldap.model.url.LdapUrl;
-import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.directory.ldap.client.api.LdapConnectionConfig;
 import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.GuacamoleException;
@@ -227,28 +225,6 @@ public class LDAPConnectionService {
         
     }
 
-    /**
-     * Disconnects the given LDAP connection, logging any failure to do so
-     * appropriately.
-     *
-     * @param ldapConnection
-     *     The LDAP connection to disconnect.
-     */
-    public void disconnect(LdapConnection ldapConnection) {
-
-        // Attempt disconnect
-        try {
-            ldapConnection.close();
-        }
-
-        // Warn if disconnect unexpectedly fails
-        catch (IOException e) {
-            logger.warn("Unable to disconnect from LDAP server: {}", e.getMessage());
-            logger.debug("LDAP disconnect failed.", e);
-        }
-
-    }
-    
     /**
      * Generate a SearchRequest object using the given Base DN and filter
      * and retrieving other properties from the LDAP configuration service.
