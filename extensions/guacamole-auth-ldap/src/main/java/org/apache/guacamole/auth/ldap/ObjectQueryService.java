@@ -41,8 +41,6 @@ import org.apache.directory.api.ldap.model.filter.OrNode;
 import org.apache.directory.api.ldap.model.filter.PresenceNode;
 import org.apache.directory.api.ldap.model.message.SearchRequest;
 import org.apache.directory.api.ldap.model.name.Dn;
-import org.apache.directory.api.ldap.model.url.LdapUrl;
-import org.apache.directory.ldap.client.api.LdapConnectionConfig;
 import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
@@ -250,14 +248,15 @@ public class ObjectQueryService {
 
                             // Connect to referred LDAP server to retrieve further results, ensuring the network
                             // connection is always closed when it will no longer be used
-                            try (LdapNetworkConnection referralConnection = ldapService.getReferralConnection(ldapConnection, url)) {
+                            try (LdapNetworkConnection referralConnection = ldapService.bindAs(url, ldapConnection)) {
                                 if (referralConnection != null) {
                                     logger.debug("Following referral to \"{}\"...", url);
                                     entries.addAll(search(referralConnection, baseDN, query, searchHop + 1));
                                 }
                                 else
-                                    logger.debug("Could not follow referral to "
-                                            + "\"{}\" as the URL is invalid.", url);
+                                    logger.debug("Could not bind with LDAP "
+                                            + "server indicated by referral "
+                                            + "URL \"{}\".", url);
                             }
                             catch (GuacamoleException e) {
                                 logger.warn("Referral to \"{}\" could not be followed: {}", url, e.getMessage());
