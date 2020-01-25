@@ -128,7 +128,7 @@ if [ -n "$GUACAMOLE_HOME" ]; then
         echo "No guacamole.properties file found in GUACAMOLE_HOME directory"
     fi
 else
-        echo "No GUACAMOLE_HOME Directory define."
+    echo "No GUACAMOLE_HOME Directory define."
 fi
 echo ""
 ##
