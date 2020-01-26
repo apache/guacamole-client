@@ -154,7 +154,7 @@ public class AuthenticationProviderService {
 
             // Always disconnect
             finally {
-                ldapService.disconnect(searchConnection);
+                searchConnection.close();
             }
 
         }
@@ -226,7 +226,7 @@ public class AuthenticationProviderService {
 
         // Always disconnect
         finally {
-            ldapService.disconnect(ldapConnection);
+            ldapConnection.close();
         }
 
     }
@@ -335,7 +335,7 @@ public class AuthenticationProviderService {
 
             // Always disconnect
             finally {
-                ldapService.disconnect(ldapConnection);
+                ldapConnection.close();
             }
         }
         return null;
