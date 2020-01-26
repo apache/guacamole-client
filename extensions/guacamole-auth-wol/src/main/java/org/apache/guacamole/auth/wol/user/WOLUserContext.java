@@ -79,7 +79,7 @@ public class WOLUserContext extends DelegatingUserContext {
                 Permissions effective = self().getEffectivePermissions();
                 SystemPermissionSet systemPermissions = effective.getSystemPermissions();
                 ObjectPermissionSet objectPermissions = effective.getConnectionPermissions();
-                Boolean canUpdate = false;
+                boolean canUpdate = false;
                 if (systemPermissions.hasPermission(SystemPermission.Type.ADMINISTER)
                         || objectPermissions.hasPermission(ObjectPermission.Type.UPDATE, object.getIdentifier()))
                     canUpdate = true;

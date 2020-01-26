@@ -46,12 +46,4 @@ public class WOLAuthenticationProvider extends AbstractAuthenticationProvider {
         
     }
 
-    @Override
-    public UserContext redecorate(UserContext decorated, UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
-            throws GuacamoleException {
-        
-        return new WOLUserContext(context, this);
-    }
-
 }

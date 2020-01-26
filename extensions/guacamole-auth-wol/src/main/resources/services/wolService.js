@@ -124,7 +124,7 @@ angular.module('guacWOL').factory('wolService', ['$injector',
         var hostInfo = getHostInfo(dataSource, identifier);
         
         // Retrieve a promise to get the status of the host.
-        var status = hostInfo.then(function(hostData) {
+        var status = hostInfo.then(function hostInfoRetrieved(hostData) {
         
             // Send the WOL request
             return requestService({
@@ -132,21 +132,21 @@ angular.module('guacWOL').factory('wolService', ['$injector',
                 url     : 'api/session/ext/wol/check/' + hostData['hostname'] + '/' + hostData['port'],
                 params  : httpParameters
             })
-            .then(function gotStatus(statusData) {
+            .then(function hostStatusRequested(statusData) {
                 return statusData;
-            }, function(error) {
+            }, function hostStatusRequestError(error) {
                 $log.error(error);
                 return false;
             });
-        }, function(error) {
+        }, function hostInfoError(error) {
             $log.error(error);
             return false;
         });
         
         // Return the status, once resolved.
-        return status.then(function(statusData) {
+        return status.then(function hostStatusRetrieved(statusData) {
             return statusData;
-        }, function(error) {
+        }, function hostStatusError(error) {
             $log.error(error);
             return false;
         });

@@ -35,6 +35,8 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.wol.connection.WOLConnection;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.Directory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * REST API endpoints for the Wake-on-LAN module
@@ -42,6 +44,12 @@ import org.apache.guacamole.net.auth.Directory;
 @Produces(MediaType.APPLICATION_JSON)
 public class WOLUserContextResource {
 
+    /**
+     * The logger for this class.
+     */
+    private static final Logger logger =
+            LoggerFactory.getLogger(WOLUserContextResource.class);
+    
     /**
      * The directory associated with this REST endpoint resource that
      * will be queried to trigger WOL packets.
@@ -120,6 +128,8 @@ public class WOLUserContextResource {
             return true;
         }
         catch (IOException | IllegalArgumentException | SecurityException e) {
+            logger.debug("Received an exception while trying to connection: {}",
+                    e);
             return false;
         }
     }

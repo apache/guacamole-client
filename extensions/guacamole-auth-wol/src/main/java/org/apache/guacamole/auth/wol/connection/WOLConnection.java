@@ -89,16 +89,6 @@ public class WOLConnection extends DelegatingConnection {
             WOL_ATTRIBUTE_MAC_ADDRESS,
             WOL_ATTRIBUTE_NET_BROADCAST
     );
-
-    /**
-     * The attributes for this connection.
-     */
-    private final Map<String, String> attributes;
-
-    /**
-     * The undecorated connection object used as the base of this WOLConnection.
-     */
-    private final Connection undecorated;
     
     /**
      * Whether or not the user has access to update the data for this connection.
@@ -119,8 +109,6 @@ public class WOLConnection extends DelegatingConnection {
     public WOLConnection(Connection connection, Boolean canUpdate) {
 
         super(connection);
-        this.undecorated = connection;
-        this.attributes = super.getAttributes();
         this.canUpdate = canUpdate;
 
     }
@@ -134,22 +122,24 @@ public class WOLConnection extends DelegatingConnection {
      *     WOLConnection.
      */
     public Connection getUndecorated() {
-        return undecorated;
+        return getDelegateConnection();
     }
 
     @Override
     public Map<String, String> getAttributes() {
         
+        Map<String, String> attributes = super.getAttributes();
+        
+        /* If user lacks update privilegs, just return what we have. */
+        if (!canUpdate)
+            return attributes;
+
         // Create a mutable copy of the attributes
         Map<String, String> effectiveAttributes = new HashMap<>(attributes);
-        
+
         // Check to see if any need to be added or removed
-        for (String attr : WOL_ATTRIBUTES) {
-            if (canUpdate && !effectiveAttributes.containsKey(attr))
-                effectiveAttributes.put(attr, null);
-            else if (!canUpdate && effectiveAttributes.containsKey(attr))
-                effectiveAttributes.remove(attr);
-        }
+        for (String attr : WOL_ATTRIBUTES)
+            effectiveAttributes.putIfAbsent(attr, null);
 
         return effectiveAttributes;
 
@@ -158,7 +148,7 @@ public class WOLConnection extends DelegatingConnection {
     @Override
     public void setAttributes(Map<String, String> setAttributes) {
 
-        // Create a multable copy of the attributes
+        // Create a mutable copy of the attributes
         setAttributes =  new HashMap<>(setAttributes);
 
         if (!canUpdate)
@@ -185,6 +175,7 @@ public class WOLConnection extends DelegatingConnection {
     public void wakeUpHost() throws GuacamoleException {
 
         // Retrieve the broadcast address, or use the default.
+        Map<String, String> attributes = getAttributes();
         String strBroadcast = attributes.get(WOL_ATTRIBUTE_NET_BROADCAST);
         if (strBroadcast == null || strBroadcast.isEmpty())
             strBroadcast = WOL_DEFAULT_BROADCAST;
