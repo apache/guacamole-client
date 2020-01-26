@@ -195,6 +195,15 @@ public class LDAPConnectionService {
         if (LdapUrl.LDAPS_SCHEME.equals(ldapUrl.getScheme()))
             encryptionMethod = EncryptionMethod.SSL;
 
+        // Use STARTTLS for otherwise unencrypted ldap:// URLs if the main
+        // LDAP connection requires STARTTLS
+        else if (confService.getEncryptionMethod() == EncryptionMethod.STARTTLS) {
+            logger.debug("Using STARTTLS for LDAP URL \"{}\" as the main LDAP "
+                    + "connection described in guacamole.properties is "
+                    + "configured to use STARTTLS.", url);
+            encryptionMethod = EncryptionMethod.STARTTLS;
+        }
+
         // If no post is specified within the URL, use the default port
         // dictated by the encryption method
         int port = ldapUrl.getPort();
