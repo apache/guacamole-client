@@ -42,6 +42,12 @@ public class MySQLAuthenticationProviderModule implements Module {
     private final Properties driverProperties = new Properties();
     
     /**
+     * The MySQL-compatible driver that should be used to talk to the database
+     * server.
+     */
+    private MySQLDriver mysqlDriver;
+    
+    /**
      * Creates a new MySQL authentication provider module that configures
      * driver and MyBatis properties using the given environment.
      *
@@ -72,15 +78,34 @@ public class MySQLAuthenticationProviderModule implements Module {
 
         // Allow use of multiple statements within a single query
         driverProperties.setProperty("allowMultiQueries", "true");
+        
+        // Get the MySQL-compatible driver to use.
+        mysqlDriver = environment.getMySQLDriver();
 
     }
 
     @Override
     public void configure(Binder binder) {
 
-        // Bind MySQL-specific properties
-        JdbcHelper.MySQL.configure(binder);
-        
+        // Check which MySQL-compatible driver is in use
+        switch(mysqlDriver) {
+            
+            // Bind MySQL-specific properties
+            case MYSQL:
+                JdbcHelper.MySQL.configure(binder);
+                break;
+                
+            // Bind MariaDB-specific properties
+            case MARIADB:
+                JdbcHelper.MariaDB.configure(binder);
+                break;
+                
+            default:
+                throw new UnsupportedOperationException(
+                    "A driver has been specified that is not supported by this module."
+                );
+        }
+
         // Bind MyBatis properties
         Names.bindProperties(binder, myBatisProperties);
 
