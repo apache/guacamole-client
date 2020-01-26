@@ -60,9 +60,9 @@ public class LDAPConnectionService {
      * to use the given encryption method to communicate with the LDAP server
      * at the given hostname and port. The returned LdapNetworkConnection is
      * configured for use but is not yet connected nor bound to the LDAP
-     * server. It will not be bound until it a bind operation is explicitly
-     * requested, and will not connected until it is used in an LDAP operation
-     * (such as a bind).
+     * server. It will not be bound until a bind operation is explicitly
+     * requested, and will not be connected until it is used in an LDAP
+     * operation (such as a bind).
      *
      * @param host
      *     The hostname or IP address of the LDAP server.
@@ -126,9 +126,9 @@ public class LDAPConnectionService {
      * to use whichever encryption method, hostname, and port are requested
      * within guacamole.properties. The returned LdapNetworkConnection is
      * configured for use but is not yet connected nor bound to the LDAP
-     * server. It will not be bound until it a bind operation is explicitly
-     * requested, and will not connected until it is used in an LDAP operation
-     * (such as a bind).
+     * server. It will not be bound until a bind operation is explicitly
+     * requested, and will not be connected until it is used in an LDAP
+     * operation (such as a bind).
      *
      * @return
      *     A new LdapNetworkConnection instance which has already been
@@ -152,9 +152,9 @@ public class LDAPConnectionService {
      * to use whichever encryption method, hostname, and port are specified
      * within the given LDAP URL. The returned LdapNetworkConnection is
      * configured for use but is not yet connected nor bound to the LDAP
-     * server. It will not be bound until it a bind operation is explicitly
-     * requested, and will not connected until it is used in an LDAP operation
-     * (such as a bind).
+     * server. It will not be bound until a bind operation is explicitly
+     * requested, and will not be connected until it is used in an LDAP
+     * operation (such as a bind).
      *
      * @param url
      *     The LDAP URL containing the details which should be used to connect
