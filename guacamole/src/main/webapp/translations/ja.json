@@ -12,6 +12,7 @@
         "ACTION_DOWNLOAD"           : "ダウンロード",
         "ACTION_LOGIN"              : "ログイン",
         "ACTION_LOGOUT"             : "ログアウト",
+        "ACTION_FULLSCREEN"         : "全画面表示",
         "ACTION_MANAGE_CONNECTIONS" : "接続",
         "ACTION_MANAGE_PREFERENCES" : "ユーザ設定",
         "ACTION_MANAGE_SETTINGS"    : "設定",
@@ -733,6 +734,7 @@
     "USER_MENU" : {
 
         "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_FULLSCREEN"         : "@:APP.ACTION_FULLSCREEN",
         "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
         "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
         "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",

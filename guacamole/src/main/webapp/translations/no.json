@@ -12,6 +12,7 @@
         "ACTION_DELETE_SESSIONS"    : "Avslutt Sesjoner",
         "ACTION_LOGIN"              : "Logg inn",
         "ACTION_LOGOUT"             : "Logg ut",
+        "ACTION_FULLSCREEN"         : "Full skjerm",
         "ACTION_MANAGE_CONNECTIONS" : "Forbindelser",
         "ACTION_MANAGE_PREFERENCES" : "Mine valg",
         "ACTION_MANAGE_SETTINGS"    : "Innstillinger",
@@ -659,6 +660,7 @@
     "USER_MENU" : {
 
         "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_FULLSCREEN"         : "@:APP.ACTION_FULLSCREEN",
         "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
         "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
         "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",

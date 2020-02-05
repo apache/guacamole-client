@@ -135,6 +135,48 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
             };
 
             /**
+             * Requests fullscreen for the Guacamole page.
+             */
+            $scope.fullscreen = function fullscreen() {
+                var elem = document.documentElement;
+                var fullscreenElem = !(!document.fullscreenElement &&
+                    !document.msFullscreenElement &&
+                    !document.mozFullScreenElement &&
+                    !document.webkitFullscreenElement);
+
+                if (!fullscreenElem) {
+                    if (!elem.requestFullscreen) {
+                        elem.requestFullscreen = (elem.mozRequestFullScreen
+                                || elem.webkitRequestFullscreen
+                                || elem.msRequestFullscreen).bind(elem);
+                    }
+
+                    if (elem.requestFullscreen) {
+                        elem.requestFullscreen();
+                    }
+                } else {
+                    if (!document.exitFullscreen) {
+                        document.exitFullscreen = (document.mozCancelFullScreen
+                                || document.webkitExitFullscreen
+                                || document.msExitFullscreen).bind(document);
+                    }
+
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            };
+
+            /**
+             * Action which requests fullscreen for the Guacamole page.
+             */
+            var FULLSCREEN_ACTION = {
+                name      : 'USER_MENU.ACTION_FULLSCREEN',
+                className : 'fullscreen',
+                callback  : $scope.fullscreen
+            };
+
+            /**
              * Logs out the current user, redirecting them to back to the root
              * after logout completes.
              */
@@ -162,7 +204,7 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
             /**
              * All available actions for the current user.
              */
-            $scope.actions = [ LOGOUT_ACTION ];
+            $scope.actions = [ FULLSCREEN_ACTION, LOGOUT_ACTION ];
 
         }] // end controller
 

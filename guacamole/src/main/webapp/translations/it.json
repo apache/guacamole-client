@@ -12,6 +12,7 @@
         "ACTION_DELETE_SESSIONS"    : "Termina Sessione",
         "ACTION_LOGIN"              : "Entra",
         "ACTION_LOGOUT"             : "Esci",
+        "ACTION_FULLSCREEN"         : "A schermo intero",
         "ACTION_MANAGE_CONNECTIONS" : "Connessioni",
         "ACTION_MANAGE_PREFERENCES" : "Preferenze",
         "ACTION_MANAGE_SETTINGS"    : "Opzioni",
@@ -590,6 +591,7 @@
     "USER_MENU" : {
 
         "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_FULLSCREEN"         : "@:APP.ACTION_FULLSCREEN",
         "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
         "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
         "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",

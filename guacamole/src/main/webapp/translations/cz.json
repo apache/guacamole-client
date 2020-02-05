@@ -13,6 +13,7 @@
         "ACTION_DOWNLOAD"           : "Stáhnout",
         "ACTION_LOGIN"              : "Přihlásit",
         "ACTION_LOGOUT"             : "Odhlásit",
+        "ACTION_FULLSCREEN"         : "Celá obrazovka",
         "ACTION_MANAGE_CONNECTIONS" : "Připojení",
         "ACTION_MANAGE_PREFERENCES" : "Vlastnosti",
         "ACTION_MANAGE_SETTINGS"    : "Nastavení",
@@ -869,6 +870,7 @@
     "USER_MENU" : {
 
         "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_FULLSCREEN"         : "@:APP.ACTION_FULLSCREEN",
         "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
         "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
         "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",

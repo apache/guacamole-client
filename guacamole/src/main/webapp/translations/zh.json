@@ -13,6 +13,7 @@
         "ACTION_DOWNLOAD"           : "下载",
         "ACTION_LOGIN"              : "登录",
         "ACTION_LOGOUT"             : "登出",
+        "ACTION_FULLSCREEN"         : "全屏",
         "ACTION_MANAGE_CONNECTIONS" : "连接",
         "ACTION_MANAGE_PREFERENCES" : "偏好",
         "ACTION_MANAGE_SETTINGS"    : "设置",
@@ -764,6 +765,7 @@
     "USER_MENU" : {
 
         "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_FULLSCREEN"         : "@:APP.ACTION_FULLSCREEN",
         "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
         "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
         "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
