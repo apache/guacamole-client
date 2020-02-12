@@ -47,16 +47,10 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
      */
     service.getActiveConnection = function getActiveConnection(dataSource, id) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve active connection
-        return requestService({
+        return authenticationService.request({
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/activeConnections/' + encodeURIComponent(id),
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/activeConnections/' + encodeURIComponent(id)
         });
 
     };
@@ -79,17 +73,13 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
      */
     service.getActiveConnections = function getActiveConnections(dataSource, permissionTypes) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Add permission filter if specified
+        var httpParameters = {};
         if (permissionTypes)
             httpParameters.permission = permissionTypes;
 
         // Retrieve tunnels
-        return requestService({
+        return authenticationService.request({
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/activeConnections',
             params  : httpParameters
@@ -111,11 +101,6 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
      */
     service.deleteActiveConnections = function deleteActiveConnections(dataSource, identifiers) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Convert provided array of identifiers to a patch
         var activeConnectionPatch = [];
         identifiers.forEach(function addActiveConnectionPatch(identifier) {
@@ -126,10 +111,9 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
         });
 
         // Perform active connection deletion via PATCH
-        return requestService({
+        return authenticationService.request({
             method  : 'PATCH',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/activeConnections',
-            params  : httpParameters,
             data    : activeConnectionPatch
         });
         
@@ -154,18 +138,12 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
      */
     service.getSharingCredentials = function getSharingCredentials(dataSource, id, sharingProfile) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Generate sharing credentials
-        return requestService({
+        return authenticationService.request({
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource)
                         + '/activeConnections/' + encodeURIComponent(id)
-                        + '/sharingCredentials/' + encodeURIComponent(sharingProfile),
-            params  : httpParameters
+                        + '/sharingCredentials/' + encodeURIComponent(sharingProfile)
         });
 
     };

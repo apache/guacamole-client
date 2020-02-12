@@ -42,17 +42,11 @@ angular.module('rest').factory('patchService', ['$injector',
      */
     service.getPatches = function getPatches() {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve all applicable HTML patches
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.patches,
             method  : 'GET',
-            url     : 'api/patches',
-            params  : httpParameters
+            url     : 'api/patches'
         });
 
     };

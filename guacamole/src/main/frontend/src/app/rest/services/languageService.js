@@ -41,17 +41,11 @@ angular.module('rest').factory('languageService', ['$injector',
      */
     service.getLanguages = function getLanguages() {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve available languages
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.languages,
             method  : 'GET',
-            url     : 'api/languages',
-            params  : httpParameters
+            url     : 'api/languages'
         });
 
     };

@@ -47,17 +47,11 @@ angular.module('rest').factory('connectionService', ['$injector',
      */
     service.getConnection = function getConnection(dataSource, id) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve connection
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.connections,
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id),
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id)
         });
 
     };
@@ -76,16 +70,10 @@ angular.module('rest').factory('connectionService', ['$injector',
      */
     service.getConnectionHistory = function getConnectionHistory(dataSource, id) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve connection history
-        return requestService({
+        return authenticationService.request({
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id) + '/history',
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id) + '/history'
         });
  
     };
@@ -104,17 +92,11 @@ angular.module('rest').factory('connectionService', ['$injector',
      */
     service.getConnectionParameters = function getConnectionParameters(dataSource, id) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve connection parameters
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.connections,
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id) + '/parameters',
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id) + '/parameters'
         });
  
     };
@@ -134,17 +116,11 @@ angular.module('rest').factory('connectionService', ['$injector',
      */
     service.saveConnection = function saveConnection(dataSource, connection) {
         
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // If connection is new, add it and set the identifier automatically
         if (!connection.identifier) {
-            return requestService({
+            return authenticationService.request({
                 method  : 'POST',
                 url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections',
-                params  : httpParameters,
                 data    : connection
             })
 
@@ -161,10 +137,9 @@ angular.module('rest').factory('connectionService', ['$injector',
 
         // Otherwise, update the existing connection
         else {
-            return requestService({
+            return authenticationService.request({
                 method  : 'PUT',
                 url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(connection.identifier),
-                params  : httpParameters,
                 data    : connection
             })
             
@@ -192,16 +167,10 @@ angular.module('rest').factory('connectionService', ['$injector',
      */
     service.deleteConnection = function deleteConnection(dataSource, connection) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Delete connection
-        return requestService({
+        return authenticationService.request({
             method  : 'DELETE',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(connection.identifier),
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(connection.identifier)
         })
 
         // Clear the cache

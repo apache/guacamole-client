@@ -105,17 +105,11 @@ angular.module('rest').factory('permissionService', ['$injector',
      */
     service.getEffectivePermissions = function getEffectivePermissions(dataSource, userID) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve user permissions
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.users,
             method  : 'GET',
-            url     : getEffectivePermissionsResourceURL(dataSource, userID),
-            params  : httpParameters
+            url     : getEffectivePermissionsResourceURL(dataSource, userID)
         });
 
     };
@@ -198,17 +192,11 @@ angular.module('rest').factory('permissionService', ['$injector',
      */
     service.getPermissions = function getPermissions(dataSource, identifier, group) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve user/group permissions
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.users,
             method  : 'GET',
-            url     : getPermissionsResourceURL(dataSource, identifier, group),
-            params  : httpParameters
+            url     : getPermissionsResourceURL(dataSource, identifier, group)
         });
 
     };
@@ -333,11 +321,6 @@ angular.module('rest').factory('permissionService', ['$injector',
 
         var permissionPatch = [];
         
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Add all the add operations to the patch
         addPatchOperations(permissionPatch, PermissionPatch.Operation.ADD, permissionsToAdd);
 
@@ -345,10 +328,9 @@ angular.module('rest').factory('permissionService', ['$injector',
         addPatchOperations(permissionPatch, PermissionPatch.Operation.REMOVE, permissionsToRemove);
 
         // Patch user/group permissions
-        return requestService({
+        return authenticationService.request({
             method  : 'PATCH', 
             url     : getPermissionsResourceURL(dataSource, identifier, group),
-            params  : httpParameters,
             data    : permissionPatch
         })
         

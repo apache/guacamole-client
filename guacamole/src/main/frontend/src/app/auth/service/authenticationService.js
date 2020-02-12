@@ -409,5 +409,36 @@ angular.module('auth').factory('authenticationService', ['$injector',
 
     };
 
+    /**
+     * Makes an HTTP request leveraging the requestService(), automatically
+     * including the user's authentication token using the "Guacamole-Token"
+     * header. If the user is not logged in, the "Guacamole-Token" header is
+     * simply omitted. The provided configuration object is not modified by
+     * this function.
+     *
+     * @param {Object} object
+     *     A configuration object describing the HTTP request to be made by
+     *     requestService(). As described by requestService(), this object must
+     *     be a configuration object accepted by AngularJS' $http service.
+     *
+     * @returns {Promise.<Object>}
+     *     A promise that will resolve with the data from the HTTP response for
+     *     the underlying requestService() call if successful, or reject with
+     *     an @link{Error} describing the failure.
+     */
+    service.request = function request(object) {
+
+        // Add "Guacamole-Token" header if an authentication token is available
+        var token = service.getCurrentToken();
+        if (token) {
+            object = _.merge({
+                headers : { 'Guacamole-Token' : token }
+            }, object);
+        }
+
+        return requestService(object);
+
+    };
+
     return service;
 }]);

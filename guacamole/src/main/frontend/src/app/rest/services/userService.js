@@ -56,17 +56,13 @@ angular.module('rest').factory('userService', ['$injector',
      */
     service.getUsers = function getUsers(dataSource, permissionTypes) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Add permission filter if specified
+        var httpParameters = {};
         if (permissionTypes)
             httpParameters.permission = permissionTypes;
 
         // Retrieve users
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.users,
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users',
@@ -93,17 +89,11 @@ angular.module('rest').factory('userService', ['$injector',
      */
     service.getUser = function getUser(dataSource, username) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve user
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.users,
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username),
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username)
         });
 
     };
@@ -126,16 +116,10 @@ angular.module('rest').factory('userService', ['$injector',
      */
     service.deleteUser = function deleteUser(dataSource, user) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Delete user
-        return requestService({
+        return authenticationService.request({
             method  : 'DELETE',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(user.username),
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(user.username)
         })
 
         // Clear the cache
@@ -164,16 +148,10 @@ angular.module('rest').factory('userService', ['$injector',
      */
     service.createUser = function createUser(dataSource, user) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Create user
-        return requestService({
+        return authenticationService.request({
             method  : 'POST',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users',
-            params  : httpParameters,
             data    : user
         })
 
@@ -202,16 +180,10 @@ angular.module('rest').factory('userService', ['$injector',
      */
     service.saveUser = function saveUser(dataSource, user) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Update user
-        return requestService({
+        return authenticationService.request({
             method  : 'PUT',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(user.username),
-            params  : httpParameters,
             data    : user
         })
 
@@ -247,16 +219,10 @@ angular.module('rest').factory('userService', ['$injector',
     service.updateUserPassword = function updateUserPassword(dataSource, username,
             oldPassword, newPassword) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Update user password
-        return requestService({
+        return authenticationService.request({
             method  : 'PUT',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username) + '/password',
-            params  : httpParameters,
             data    : new UserPasswordUpdate({
                 oldPassword : oldPassword,
                 newPassword : newPassword
