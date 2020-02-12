@@ -41,6 +41,7 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsExce
 import org.apache.guacamole.net.event.AuthenticationFailureEvent;
 import org.apache.guacamole.net.event.AuthenticationSuccessEvent;
 import org.apache.guacamole.rest.event.ListenerService;
+import org.glassfish.jersey.server.ContainerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,6 +91,18 @@ public class AuthenticationService {
      */
     @Inject
     private ListenerService listenerService;
+
+    /**
+     * The name of the HTTP header that may contain the authentication token
+     * used by the Guacamole REST API.
+     */
+    public static final String TOKEN_HEADER_NAME = "Guacamole-Token";
+
+    /**
+     * The name of the query parameter that may contain the authentication
+     * token used by the Guacamole REST API.
+     */
+    public static final String TOKEN_PARAMETER_NAME = "token";
 
     /**
      * Regular expression which matches any IPv4 address.
@@ -539,6 +552,36 @@ public class AuthenticationService {
     public List<DecoratedUserContext> getUserContexts(String authToken)
             throws GuacamoleException {
         return getGuacamoleSession(authToken).getUserContexts();
+    }
+
+    /**
+     * Returns the authentication token sent within the given request, if
+     * present, or null if otherwise. Authentication tokens may be sent via
+     * the "Guacamole-Token" header or the "token" query parameter. If both
+     * the header and a parameter are used, the header is given priority.
+     *
+     * @param request
+     *     The HTTP request to retrieve the authentication token from.
+     *
+     * @return
+     *     The authentication token within the given request, or null if no
+     *     token is present.
+     */
+    public String getAuthenticationToken(ContainerRequest request) {
+
+        // Give priority to token within HTTP header
+        String token = request.getHeaderString(TOKEN_HEADER_NAME);
+        if (token != null && !token.isEmpty())
+            return token;
+
+        // If no token was provided via HTTP headers, fall back to using
+        // query parameters
+        token = request.getUriInfo().getQueryParameters().getFirst(TOKEN_PARAMETER_NAME);
+        if (token != null && !token.isEmpty())
+            return token;
+
+        return null;
+
     }
 
 }
