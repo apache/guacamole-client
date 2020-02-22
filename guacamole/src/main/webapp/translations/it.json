@@ -322,13 +322,14 @@
         "FIELD_OPTION_SECURITY_RDP"   : "RDP encryption",
         "FIELD_OPTION_SECURITY_TLS"   : "TLS encryption",
 
-        "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "German (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "Tedesco (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
-        "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "US English (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "Inglese Americano (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
-        "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "French (Azerty)",
-        "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italian (Qwerty)",
-        "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Swedish (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "Francese (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italiano (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Svedese (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NB_NO_QWERTY" : "Norvegese (Qwerty)",
 
         "NAME" : "RDP",
 

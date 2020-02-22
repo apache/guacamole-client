@@ -392,7 +392,8 @@
         "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "Francés (Azerty)",
         "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italiano (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japones (Qwerty)",
-        "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Swedish (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Sueco (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NB_NO_QWERTY" : "Noruego (Qwerty)",
 
         "NAME" : "RDP",
 
