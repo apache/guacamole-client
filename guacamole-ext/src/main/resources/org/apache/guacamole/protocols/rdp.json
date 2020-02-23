@@ -102,11 +102,11 @@
                         "hu-hu-qwertz",                        
                         "it-it-qwerty",
                         "ja-jp-qwerty",
+                        "nb-no-qwerty",
                         "pt-br-qwerty",
                         "sv-se-qwerty",
                         "da-dk-qwerty",
-                        "tr-tr-qwerty",
-                        "nb-no-qwerty"
+                        "tr-tr-qwerty"
                     ]
                 },
                 {

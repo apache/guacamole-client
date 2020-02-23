@@ -457,10 +457,10 @@
         "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "Französisch (Azerty)",
         "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italienisch (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japanisch (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NB_NO_QWERTY" : "Norwegisch (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Portugiesisch (BR) (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Schwedisch (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Türkisch (Qwerty)",
-        "FIELD_OPTION_SERVER_LAYOUT_NB_NO_QWERTY" : "Norwegisch (Qwerty)",
 
         "NAME" : "RDP",
 
