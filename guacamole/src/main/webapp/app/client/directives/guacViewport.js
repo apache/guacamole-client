@@ -32,8 +32,7 @@ angular.module('client').directive('guacViewport', [function guacViewport() {
             function guacViewportController($scope, $injector, $element) {
 
             // Required services
-            var $window   = $injector.get('$window');
-            var $document = $injector.get('$document');
+            var $window = $injector.get('$window');
 
             /**
              * The fullscreen container element.
@@ -43,18 +42,22 @@ angular.module('client').directive('guacViewport', [function guacViewport() {
             var element = $element.find('.viewport')[0];
 
             /**
-             * The main document object.
-             *
-             * @type Document
-             */
-            var document = $document[0];
-
-            /**
-             * The current adjusted height of the viewport element, if any.
+             * The width of the browser viewport when fitVisibleArea() was last
+             * invoked, in pixels, or null if fitVisibleArea() has not yet been
+             * called.
              *
              * @type Number
              */
-            var currentAdjustedHeight = null;
+            var lastViewportWidth = null;
+
+            /**
+             * The height of the browser viewport when fitVisibleArea() was
+             * last invoked, in pixels, or null if fitVisibleArea() has not yet
+             * been called.
+             *
+             * @type Number
+             */
+            var lastViewportHeight = null;
 
             /**
              * Resizes the container element inside the guacViewport such that
@@ -63,31 +66,32 @@ angular.module('client').directive('guacViewport', [function guacViewport() {
              */
             var fitVisibleArea = function fitVisibleArea() {
 
-                // Pull scroll properties
-                var scrollLeft   = document.body.scrollLeft;
-                var scrollTop    = document.body.scrollTop;
-                var scrollWidth  = document.body.scrollWidth;
-                var scrollHeight = document.body.scrollHeight;
+                // Calculate viewport dimensions (this is NOT necessarily the
+                // same as 100vw and 100vh, 100%, etc., particularly when the
+                // on-screen keyboard of a mobile device pops open)
+                var viewportWidth = $window.innerWidth;
+                var viewportHeight = $window.innerHeight;
 
-                // Calculate new height
-                var adjustedHeight = scrollHeight - scrollTop;
-
-                // Only update if not in response to our own call to scrollTo()
-                if (scrollLeft !== scrollWidth && scrollTop !== scrollHeight
-                        && currentAdjustedHeight !== adjustedHeight) {
-
-                    // Adjust element to fit exactly within visible area
-                    element.style.height = adjustedHeight + 'px';
-                    currentAdjustedHeight = adjustedHeight;
-
-                    // Scroll to bottom
-                    $window.scrollTo(scrollWidth, scrollHeight);
-
+                // Adjust element width to fit exactly within visible area
+                if (viewportWidth !== lastViewportWidth) {
+                    element.style.width = viewportWidth + 'px';
+                    lastViewportWidth = viewportWidth;
                 }
 
-                // Manually attempt scroll if height has not been adjusted
-                else if (adjustedHeight === 0)
-                    $window.scrollTo(scrollWidth, scrollHeight);
+                // Adjust element height to fit exactly within visible area
+                if (viewportHeight !== lastViewportHeight) {
+                    element.style.height = viewportHeight + 'px';
+                    lastViewportHeight = viewportHeight;
+                }
+
+                // Scroll element such that its upper-left corner is exactly
+                // within the viewport upper-left corner, if not already there
+                if (element.scrollLeft || element.scrollTop) {
+                    $window.scrollTo(
+                        $window.pageXOffset + element.scrollLeft,
+                        $window.pageYOffset + element.scrollTop
+                    );
+                }
 
             };
 
