@@ -22,12 +22,12 @@
             <div class="client-bottom">
 
                 <!-- Text input -->
-                <div class="text-input-container" ng-class="{ open : showTextInput }">
-                    <guac-text-input needs-focus="showTextInput"></guac-text-input>
+                <div class="text-input-container" ng-if="showTextInput">
+                    <guac-text-input></guac-text-input>
                 </div>
 
                 <!-- On-screen keyboard -->
-                <div class="keyboard-container" ng-class="{ open : showOSK }">
+                <div class="keyboard-container" ng-if="showOSK">
                     <guac-osk layout="'CLIENT.URL_OSK_LAYOUT' | translate"></guac-osk>
                 </div>
 

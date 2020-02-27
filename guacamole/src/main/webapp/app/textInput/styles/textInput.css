@@ -18,26 +18,36 @@
  */
 
 .text-input {
+
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+
     width: 100%;
     background: #222;
     color: white;
-}
 
-.text-input .text-input-field,
-.text-input .text-input-buttons {
-    display: inline-block;
-    vertical-align: middle;
 }
 
 .text-input .text-input-field {
-    width: 30%;
-    overflow: hidden;
-    white-space: nowrap;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    -moz-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
 }
 
-.text-input .text-input-buttons {
-    width: 70%;
-    text-align: right;
+.text-input .text-input-field {
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .text-input .target {
@@ -60,10 +70,6 @@
     background: transparent;
     overflow: hidden;
 
-}
-
-.text-input.open {
-    display: block;
 }
 
 .text-input .sent-history {
