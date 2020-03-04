@@ -30,7 +30,7 @@
 
 GUACAMOLE_HOME_TEMPLATE="$GUACAMOLE_HOME"
 
-GUACAMOLE_HOME="$HOME/.guacamole"
+GUACAMOLE_HOME="/tmp/guacamole"
 GUACAMOLE_EXT="$GUACAMOLE_HOME/extensions"
 GUACAMOLE_LIB="$GUACAMOLE_HOME/lib"
 GUACAMOLE_PROPERTIES="$GUACAMOLE_HOME/guacamole.properties"
@@ -582,9 +582,18 @@ END
 ##
 start_guacamole() {
 
+    # User-only writable CATALINA_BASE
+    export CATALINA_BASE=$GUACAMOLE_HOME/tomcat
+    for dir in logs temp webapps work; do
+        mkdir -p $CATALINA_BASE/$dir
+    done
+    cp -R /usr/local/tomcat/conf $CATALINA_BASE
+
+    # Turn on the Remote IP Valve
+    sed -i 's|^\(\(\s\)\+\)</Host>|\1\2\2<Valve className="org.apache.catalina.valves.RemoteIpValve" />\n\n\1</Host>|' $CATALINA_BASE/conf/server.xml
+
     # Install webapp
-    rm -Rf /usr/local/tomcat/webapps/${WEBAPP_CONTEXT:-guacamole}
-    ln -sf /opt/guacamole/guacamole.war /usr/local/tomcat/webapps/${WEBAPP_CONTEXT:-guacamole}.war
+    ln -sf /opt/guacamole/guacamole.war $CATALINA_BASE/webapps/${WEBAPP_CONTEXT:-guacamole}.war
 
     # Start tomcat
     cd /usr/local/tomcat
