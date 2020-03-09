@@ -330,6 +330,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italian (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Swedish (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_RU_RU_QWERTY" : "Russian (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NB_NO_QWERTY" : "Norwegian (Qwerty)",
 
         "NAME" : "RDP",
 
