@@ -261,7 +261,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * @param {SampleArray} data
      *     The audio packet to split.
      *
-     * @returns {SampleArray[]}
+     * @returns {!SampleArray[]}
      *     An array of audio packets containing the result of splitting the
      *     provided audio packet. If splitting is possible, this array will
      *     contain two packets. If splitting is not possible, this array will
@@ -371,7 +371,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      *     The raw audio packet that should be converted into a Web Audio API
      *     AudioBuffer.
      *
-     * @returns {AudioBuffer}
+     * @returns {!AudioBuffer}
      *     A new Web Audio API AudioBuffer containing the provided audio data,
      *     converted to the format used by the Web Audio API.
      */
@@ -463,7 +463,7 @@ Guacamole.RawAudioPlayer.prototype = new Guacamole.AudioPlayer();
  * @param {String} mimetype
  *     The mimetype to check.
  *
- * @returns {Boolean}
+ * @returns {boolean}
  *     true if the given mimetype is supported by Guacamole.RawAudioPlayer,
  *     false otherwise.
  */
@@ -485,7 +485,7 @@ Guacamole.RawAudioPlayer.isSupportedType = function isSupportedType(mimetype) {
  * additional parameters. Something like "audio/L8;rate=44100" would be valid,
  * however (see https://tools.ietf.org/html/rfc4856).
  *
- * @returns {String[]}
+ * @returns {string[]}
  *     A list of all mimetypes supported by Guacamole.RawAudioPlayer, excluding
  *     any parameters. If the necessary JavaScript APIs for playing raw audio
  *     are absent, this list will be empty.

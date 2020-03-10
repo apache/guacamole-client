@@ -359,7 +359,7 @@ Guacamole.Client = function(tunnel) {
      * instruction which creates the stream, such as a "clipboard", "file", or
      * "pipe" instruction.
      *
-     * @returns {Guacamole.OutputStream}
+     * @returns {!Guacamole.OutputStream}
      *     A new Guacamole.OutputStream with a newly-allocated index and
      *     associated with this Guacamole.Client.
      */
@@ -383,7 +383,7 @@ Guacamole.Client = function(tunnel) {
      *     The mimetype of the audio data that will be sent along the returned
      *     stream.
      *
-     * @return {Guacamole.OutputStream}
+     * @return {!Guacamole.OutputStream}
      *     The created audio stream.
      */
     this.createAudioStream = function(mimetype) {
@@ -402,7 +402,7 @@ Guacamole.Client = function(tunnel) {
      *
      * @param {String} mimetype The mimetype of the file being sent.
      * @param {String} filename The filename of the file being sent.
-     * @return {Guacamole.OutputStream} The created file stream.
+     * @return {!Guacamole.OutputStream} The created file stream.
      */
     this.createFileStream = function(mimetype, filename) {
 
@@ -419,7 +419,7 @@ Guacamole.Client = function(tunnel) {
      *
      * @param {String} mimetype The mimetype of the data being sent.
      * @param {String} name The name of the pipe.
-     * @return {Guacamole.OutputStream} The created file stream.
+     * @return {!Guacamole.OutputStream} The created file stream.
      */
     this.createPipeStream = function(mimetype, name) {
 
@@ -436,7 +436,7 @@ Guacamole.Client = function(tunnel) {
      *
      * @param {String} mimetype The mimetype of the data being sent.
      * @param {String} name The name of the pipe.
-     * @return {Guacamole.OutputStream} The created file stream.
+     * @return {!Guacamole.OutputStream} The created file stream.
      */
     this.createClipboardStream = function(mimetype) {
 
@@ -488,7 +488,7 @@ Guacamole.Client = function(tunnel) {
      * @param {String} name
      *     The defined name of an output stream within the given object.
      *
-     * @returns {Guacamole.OutputStream}
+     * @returns {!Guacamole.OutputStream}
      *     An output stream which will write blobs to the named output stream
      *     of the given object.
      */

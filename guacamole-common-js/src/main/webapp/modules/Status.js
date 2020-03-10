@@ -58,7 +58,7 @@ Guacamole.Status = function(code, message) {
 
     /**
      * Returns whether this status represents an error.
-     * @returns {Boolean} true if this status represents an error, false
+     * @returns {boolean} true if this status represents an error, false
      *                    otherwise.
      */
     this.isError = function() {

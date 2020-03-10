@@ -50,7 +50,7 @@ Guacamole.VideoPlayer = function VideoPlayer() {
  * @param {String} mimetype
  *     The mimetype to check.
  *
- * @returns {Boolean}
+ * @returns {boolean}
  *     true if the given mimetype is supported by any built-in
  *     Guacamole.VideoPlayer, false otherwise.
  */
@@ -68,7 +68,7 @@ Guacamole.VideoPlayer.isSupportedType = function isSupportedType(mimetype) {
  * mimetypes themselves will be listed. Any mimetype parameters, even required
  * ones, will not be included in the list.
  *
- * @returns {String[]}
+ * @returns {string[]}
  *     A list of all mimetypes supported by any built-in Guacamole.VideoPlayer,
  *     excluding any parameters.
  */

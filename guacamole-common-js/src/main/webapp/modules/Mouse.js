@@ -375,7 +375,7 @@ Guacamole.Mouse = function(element) {
      * @param {HTMLCanvasElement} canvas The cursor image.
      * @param {Number} x The X-coordinate of the cursor hotspot.
      * @param {Number} y The Y-coordinate of the cursor hotspot.
-     * @return {Boolean} true if the cursor was successfully set, false if the
+     * @return {!Boolean} true if the cursor was successfully set, false if the
      *                   cursor could not be set for any reason.
      */
     this.setCursor = function(canvas, x, y) {
@@ -951,7 +951,7 @@ Guacamole.Mouse.Touchscreen = function(element) {
      *
      * @private
      * @param {TouchEvent} e The touch event to check.
-     * @return {Boolean} true if the movement threshold is exceeded, false
+     * @return {!Boolean} true if the movement threshold is exceeded, false
      *                   otherwise.
      */
     function finger_moved(e) {

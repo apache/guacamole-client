@@ -271,7 +271,7 @@ Guacamole.Layer = function(width, height) {
      * of the canvas may not exactly match those of the Layer, as resizing a
      * canvas while maintaining its state is an expensive operation.
      *
-     * @returns {HTMLCanvasElement}
+     * @returns {!HTMLCanvasElement}
      *     The canvas element backing this Layer.
      */
     this.getCanvas = function getCanvas() {
@@ -283,7 +283,7 @@ Guacamole.Layer = function(width, height) {
      * Unlike getCanvas(), the canvas element returned is guaranteed to have
      * the exact same dimensions as the Layer.
      *
-     * @returns {HTMLCanvasElement}
+     * @returns {!HTMLCanvasElement}
      *     A new canvas element containing a copy of the image content this
      *     Layer.
      */

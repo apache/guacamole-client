@@ -278,7 +278,7 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
      * @param {Number} x
      *     The point at which the normalized sinc function should be computed.
      *
-     * @returns {Number}
+     * @returns {number}
      *     The value of the normalized sinc function at x.
      */
     var sinc = function sinc(x) {
@@ -305,7 +305,7 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
      * @param {Number} a
      *     The window size to use for the Lanczos kernel.
      *
-     * @returns {Number}
+     * @returns {number}
      *     The value of the Lanczos kernel at the given point for the given
      *     window size.
      */
@@ -336,7 +336,7 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
      *     0 and 1 inclusive, where 0 represents the earliest point in time and
      *     1 represents the latest.
      *
-     * @returns {Number}
+     * @returns {number}
      *     The value of the waveform at the given location.
      */
     var interpolateSample = function getValueAt(audioData, t) {
@@ -371,7 +371,7 @@ Guacamole.RawAudioRecorder = function RawAudioRecorder(stream, mimetype) {
      *     The Web Audio API AudioBuffer that should be converted to a raw
      *     audio packet.
      *
-     * @returns {SampleArray}
+     * @returns {!SampleArray}
      *     A new raw audio packet containing the audio data from the provided
      *     AudioBuffer.
      */
@@ -561,7 +561,7 @@ Guacamole.RawAudioRecorder.prototype = new Guacamole.AudioRecorder();
  * @param {String} mimetype
  *     The mimetype to check.
  *
- * @returns {Boolean}
+ * @returns {boolean}
  *     true if the given mimetype is supported by Guacamole.RawAudioRecorder,
  *     false otherwise.
  */
@@ -583,7 +583,7 @@ Guacamole.RawAudioRecorder.isSupportedType = function isSupportedType(mimetype) 
  * additional parameters. Something like "audio/L8;rate=44100" would be valid,
  * however (see https://tools.ietf.org/html/rfc4856).
  *
- * @returns {String[]}
+ * @returns {string[]}
  *     A list of all mimetypes supported by Guacamole.RawAudioRecorder,
  *     excluding any parameters. If the necessary JavaScript APIs for recording
  *     raw audio are absent, this list will be empty.

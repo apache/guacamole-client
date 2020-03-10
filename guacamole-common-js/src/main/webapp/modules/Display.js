@@ -194,7 +194,7 @@ Guacamole.Display = function() {
          * Returns whether this frame is ready to be rendered. This function
          * returns true if and only if ALL underlying tasks are unblocked.
          * 
-         * @returns {Boolean} true if all underlying tasks are unblocked,
+         * @returns {boolean} true if all underlying tasks are unblocked,
          *                    false otherwise.
          */
         this.isReady = function() {
@@ -282,7 +282,7 @@ Guacamole.Display = function() {
      * @private
      * @param {function} handler The function to call when possible, if any.
      * @param {boolean} blocked Whether the task should start blocked.
-     * @returns {Task} The Task created and added to the queue for future
+     * @returns {!Task} The Task created and added to the queue for future
      *                 running.
      */
     function scheduleTask(handler, blocked) {
@@ -294,7 +294,7 @@ Guacamole.Display = function() {
     /**
      * Returns the element which contains the Guacamole display.
      * 
-     * @return {Element} The element containing the Guacamole display.
+     * @return {!Element} The element containing the Guacamole display.
      */
     this.getElement = function() {
         return bounds;
@@ -324,7 +324,7 @@ Guacamole.Display = function() {
      * this layer, but the default layer cannot be removed and is the absolute
      * ancestor of all other layers.
      * 
-     * @return {Guacamole.Display.VisibleLayer} The default layer.
+     * @return {!Guacamole.Display.VisibleLayer} The default layer.
      */
     this.getDefaultLayer = function() {
         return default_layer;
@@ -335,7 +335,7 @@ Guacamole.Display = function() {
      * a layer for the image of the mouse cursor. This layer is a special case
      * and exists above all other layers, similar to the hardware mouse cursor.
      * 
-     * @return {Guacamole.Display.VisibleLayer} The cursor layer.
+     * @return {!Guacamole.Display.VisibleLayer} The cursor layer.
      */
     this.getCursorLayer = function() {
         return cursor;
@@ -346,7 +346,7 @@ Guacamole.Display = function() {
      * layer, but can be moved to be a child of any other layer. Layers returned
      * by this function are visible.
      * 
-     * @return {Guacamole.Display.VisibleLayer} The newly-created layer.
+     * @return {!Guacamole.Display.VisibleLayer} The newly-created layer.
      */
     this.createLayer = function() {
         var layer = new Guacamole.Display.VisibleLayer(displayWidth, displayHeight);
@@ -359,7 +359,7 @@ Guacamole.Display = function() {
      * are implemented in the same manner as layers, but do not provide the
      * same nesting semantics.
      * 
-     * @return {Guacamole.Layer} The newly-created buffer.
+     * @return {!Guacamole.Layer} The newly-created buffer.
      */
     this.createBuffer = function() {
         var buffer = new Guacamole.Layer(0, 0);
@@ -1202,7 +1202,7 @@ Guacamole.Display = function() {
      * Returns a canvas element containing the entire display, with all child
      * layers composited within.
      *
-     * @return {HTMLCanvasElement} A new canvas element containing a copy of
+     * @return {!HTMLCanvasElement} A new canvas element containing a copy of
      *                             the display.
      */
     this.flatten = function() {
@@ -1400,7 +1400,7 @@ Guacamole.Display.VisibleLayer = function(width, height) {
     /**
      * Returns the element containing the canvas and any other elements
      * associated with this layer.
-     * @returns {Element} The element containing this layer's canvas.
+     * @returns {!Element} The element containing this layer's canvas.
      */
     this.getElement = function() {
         return div;

@@ -76,7 +76,7 @@ Guacamole.Tunnel = function() {
     /**
      * Returns whether this tunnel is currently connected.
      *
-     * @returns {Boolean}
+     * @returns {boolean}
      *     true if this tunnel is currently connected, false otherwise.
      */
     this.isConnected = function isConnected() {
@@ -389,7 +389,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
          * 
          * @private
          * @param value The value to convert.
-         * @return {String} The converted value. 
+         * @return {string} The converted value.
          */
         function getElement(value) {
             var string = new String(value);
@@ -911,7 +911,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
          * 
          * @private
          * @param value The value to convert.
-         * @return {String} The converted value. 
+         * @return {string} The converted value.
          */
         function getElement(value) {
             var string = new String(value);

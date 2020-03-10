@@ -217,7 +217,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
      * @param {String[]} names
      *     The names of all modifiers to test.
      *
-     * @returns {Boolean}
+     * @returns {boolean}
      *     true if all specified modifiers are pressed, false otherwise.
      */
     var modifiersPressed = function modifiersPressed(names) {
@@ -428,7 +428,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
 
     /**
      * Returns the element containing the entire on-screen keyboard.
-     * @returns {Element} The element containing the entire on-screen keyboard.
+     * @returns {!Element} The element containing the entire on-screen keyboard.
      */
     this.getElement = function() {
         return keyboard;
@@ -470,7 +470,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
      *     which may be the title of the key (a string), the keysym (a number),
      *     a single Key object, or an array of Key objects.
      *     
-     * @returns {Guacamole.OnScreenKeyboard.Key[]}
+     * @returns {!Guacamole.OnScreenKeyboard.Key[]}
      *     An array of all keys associated with the given name.
      */
     var asKeyArray = function asKeyArray(name, object) {
@@ -554,7 +554,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
      *     An arbitrary string representing the name of some component of the
      *     on-screen keyboard.
      *
-     * @returns {String}
+     * @returns {string}
      *     A string formatted for use as a CSS class name.
      */
     var getCSSName = function getCSSName(name) {
