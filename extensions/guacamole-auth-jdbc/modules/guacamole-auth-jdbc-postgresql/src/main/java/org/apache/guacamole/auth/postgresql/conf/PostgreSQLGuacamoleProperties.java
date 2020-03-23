@@ -95,6 +95,18 @@ public class PostgreSQLGuacamoleProperties {
     };
 
     /**
+     * Sets the number of seconds the driver will wait for
+     * a response from the database.
+     */
+    public static final StringGuacamoleProperty
+            POSTGRESQL_DEFAULT_STATEMENT_TIMEOUT = new StringGuacamoleProperty(){
+
+        @Override
+        public String getName() { return "postgresql-default-statement-timeout"; }
+
+    };
+
+    /**
      * Whether a user account within the database is required for authentication
      * to succeed, even if the user has been authenticated via another
      * authentication provider.

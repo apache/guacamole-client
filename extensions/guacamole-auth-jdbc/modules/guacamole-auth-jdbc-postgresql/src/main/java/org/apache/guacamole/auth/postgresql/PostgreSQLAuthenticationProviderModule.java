@@ -69,6 +69,7 @@ public class PostgreSQLAuthenticationProviderModule implements Module {
         myBatisProperties.setProperty("JDBC.autoCommit", "false");
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
+        myBatisProperties.setProperty("mybatis.configuration.defaultStatementTimeout", environment.getPostgreSQLDefaultStatementTimeout());
 
         // Use UTF-8 in database
         driverProperties.setProperty("characterEncoding", "UTF-8");
