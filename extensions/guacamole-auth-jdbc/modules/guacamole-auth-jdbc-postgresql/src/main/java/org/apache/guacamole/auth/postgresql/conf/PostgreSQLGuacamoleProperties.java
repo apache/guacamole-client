@@ -107,6 +107,18 @@ public class PostgreSQLGuacamoleProperties {
     };
 
     /**
+     * Sets the number of seconds the driver will wait in a read() call
+     * on the TCP connection to the database.
+     */
+    public static final IntegerGuacamoleProperty
+            POSTGRESQL_SOCKET_TIMEOUT = new IntegerGuacamoleProperty(){
+
+        @Override
+        public String getName() { return "postgresql-socket-timeout"; }
+
+    };
+
+    /**
      * Whether a user account within the database is required for authentication
      * to succeed, even if the user has been authenticated via another
      * authentication provider.

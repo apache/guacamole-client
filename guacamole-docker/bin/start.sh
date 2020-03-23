@@ -362,6 +362,10 @@ END
         "postgresql-user-required" \
         "$POSTGRES_USER_REQUIRED"
 
+    set_optional_property               \
+        "postgresql-socket-timeout" \
+        "$POSTGRES_SOCKET_TIMEOUT"
+
     set_optional_property      \
         "postgresql-ssl-mode"  \
         "$POSTGRESQL_SSL_MODE"

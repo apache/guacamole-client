@@ -57,6 +57,13 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     private static final String DEFAULT_DEFAULT_STATEMENT_TIMEOUT = "null";
 
     /**
+     * The default socketTimeout (in seconds), if POSTGRESQL_SOCKET_TIMEOUT is not specified.
+     * Default to 0 (no timeout)
+     * https://jdbc.postgresql.org/documentation/head/connect.html
+     */
+    private static final int DEFAULT_SOCKET_TIMEOUT = 0;
+
+    /**
      * Whether a database user account is required by default for authentication
      * to succeed.
      */
@@ -257,7 +264,7 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     public String getPostgreSQLPassword() throws GuacamoleException {
         return getRequiredProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_PASSWORD);
     }
-        
+    
     /**
      * Returns the defaultStatementTimeout set for PostgreSQL connections.
      * If unspecified, this will be the default "null" (no timeout)
@@ -272,6 +279,23 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
         return getProperty(
             PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_STATEMENT_TIMEOUT,
             DEFAULT_DEFAULT_STATEMENT_TIMEOUT
+        );
+    }
+    
+    /**
+     * Returns the socketTimeout property to set on PostgreSQL connections.
+     * If unspecified, this will be the default to 0 (no timeout)
+     * 
+     * @return
+     *     The socketTimeout to use when waiting on read operations (in seconds)
+     *
+     * @throws GuacamoleException 
+     *     If an error occurs while retrieving the property value.
+     */
+    public int getPostgreSQLSocketTimeout() throws GuacamoleException {
+        return getProperty(
+            PostgreSQLGuacamoleProperties.POSTGRESQL_SOCKET_TIMEOUT,
+            DEFAULT_SOCKET_TIMEOUT
         );
     }
 

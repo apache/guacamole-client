@@ -111,6 +111,9 @@ public class PostgreSQLAuthenticationProviderModule implements Module {
             
         }
 
+        // Handle case where TCP connection to database is silently dropped
+        driverProperties.setProperty("socketTimeout", String.valueOf(environment.getPostgreSQLSocketTimeout()));
+
     }
 
     @Override
