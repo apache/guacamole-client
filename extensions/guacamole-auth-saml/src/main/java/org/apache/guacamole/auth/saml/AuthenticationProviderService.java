@@ -25,8 +25,6 @@ import com.onelogin.saml2.authn.AuthnRequest;
 import com.onelogin.saml2.authn.SamlResponse;
 import com.onelogin.saml2.exception.SettingsException;
 import com.onelogin.saml2.exception.ValidationError;
-import com.onelogin.saml2.http.HttpRequest;
-import com.onelogin.saml2.servlet.ServletUtils;
 import com.onelogin.saml2.settings.Saml2Settings;
 import com.onelogin.saml2.util.Util;
 import java.io.IOException;
@@ -69,6 +67,12 @@ public class AuthenticationProviderService {
      */
     @Inject
     private Provider<SAMLAuthenticatedUser> authenticatedUserProvider;
+    
+    /**
+     * The map used to track active SAML responses.
+     */
+    @Inject
+    private SAMLResponseMap samlResponseMap;
 
     /**
      * Returns an AuthenticatedUser representing the user authenticated by the
@@ -87,7 +91,7 @@ public class AuthenticationProviderService {
      */
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
-
+        
         HttpServletRequest request = credentials.getRequest();
 
         // Initialize and configure SAML client.
@@ -96,16 +100,18 @@ public class AuthenticationProviderService {
         if (request != null) {
             
             // Look for the SAML Response parameter.
-            String samlResponseParam = request.getParameter("SAMLResponse");
+            String responseHash = Util.urlDecoder(request.getParameter("responseHash"));
 
-            if (samlResponseParam != null) {
+            if (responseHash != null) {
 
-                // Convert the SAML response into the version needed for the client.
-                HttpRequest httpRequest = ServletUtils.makeHttpRequest(request);
                 try {
 
                     // Generate the response object
-                    SamlResponse samlResponse = new SamlResponse(samlSettings, httpRequest);
+                    if (!samlResponseMap.hasSamlResponse(responseHash))
+                        throw new GuacamoleInvalidCredentialsException("Provided response has not found.",
+                                CredentialsInfo.USERNAME_PASSWORD);
+                        
+                    SamlResponse samlResponse = samlResponseMap.getSamlResponse(responseHash);
 
                     if (!samlResponse.validateNumAssertions()) {
                         logger.warn("SAML response contained other than single assertion.");
@@ -196,7 +202,6 @@ public class AuthenticationProviderService {
                     new SAMLRedirectField(reqString)
                 }))
         );
-
 
     }
 

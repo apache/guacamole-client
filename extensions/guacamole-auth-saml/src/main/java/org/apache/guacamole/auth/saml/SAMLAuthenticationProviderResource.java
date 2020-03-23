@@ -20,16 +20,34 @@
 package org.apache.guacamole.auth.saml;
 
 import com.google.inject.Inject;
+import com.onelogin.saml2.authn.SamlResponse;
+import com.onelogin.saml2.exception.SettingsException;
+import com.onelogin.saml2.exception.ValidationError;
+import com.onelogin.saml2.http.HttpRequest;
+import com.onelogin.saml2.servlet.ServletUtils;
+import com.onelogin.saml2.settings.Saml2Settings;
 import com.onelogin.saml2.util.Util;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.POST;
+import javax.ws.rs.core.Context;
+import javax.xml.bind.DatatypeConverter;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.saml.conf.ConfigurationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * A class that implements the REST API necessary for the
@@ -38,17 +56,34 @@ import org.apache.guacamole.auth.saml.conf.ConfigurationService;
 public class SAMLAuthenticationProviderResource {
 
     /**
+     * Logger for this class.
+     */
+    private final Logger logger =
+            LoggerFactory.getLogger(SAMLAuthenticationProviderResource.class);
+    
+    /**
      * The configuration service for this module.
      */
     @Inject
     private ConfigurationService confService;
+    
+    /**
+     * The map used to track active responses.
+     */
+    @Inject
+    private SAMLResponseMap samlResponseMap;
 
     /**
      * A REST endpoint that is POSTed to by the SAML IdP
      * with the results of the SAML SSO Authentication.
      * 
-     * @param samlResponse
+     * @param samlResponseString
      *     The encoded response returned by the SAML IdP.
+     * 
+     * @param consumedRequest
+     *     The HttpServletRequest associated with the SAML response. The
+     *     parameters of this request may not be accessible, as the request may
+     *     have been fully consumed by JAX-RS.
      * 
      * @return
      *     A HTTP Response that will redirect the user back to the
@@ -61,21 +96,61 @@ public class SAMLAuthenticationProviderResource {
      */
     @POST
     @Path("callback")
-    public Response processSamlResponse(@FormParam("SAMLResponse") String samlResponse)
+    public Response processSamlResponse(
+            @FormParam("SAMLResponse") String samlResponseString,
+            @Context HttpServletRequest consumedRequest)
             throws GuacamoleException {
-
-        String guacBase = confService.getCallbackUrl().toString();
-        try {
-            Response redirectHome = Response.seeOther(
-                new URI(guacBase + "?SAMLResponse=" + Util.urlEncoder(samlResponse))).build();
-            return redirectHome;
-        }
-        catch (URISyntaxException e) {
-            throw new GuacamoleServerException("Error processing SAML response.", e);
-        }
-
         
+        String guacBase = confService.getCallbackUrl().toString();
+        Saml2Settings samlSettings = confService.getSamlSettings();
+        try {
+            HttpRequest request = ServletUtils
+                    .makeHttpRequest(consumedRequest)
+                    .addParameter("SAMLResponse", samlResponseString);
+            SamlResponse samlResponse = new SamlResponse(samlSettings, request);
+            
+            String responseHash = hashSamlResponse(samlResponseString);
+            samlResponseMap.putSamlResponse(responseHash, samlResponse);
+            return Response.seeOther(new URI(guacBase 
+                    + "?responseHash="
+                    + Util.urlEncoder(responseHash))
+            ).build();
 
+        }
+        catch (IOException
+                | NoSuchAlgorithmException
+                | ParserConfigurationException
+                | SAXException
+                | SettingsException
+                | URISyntaxException
+                | ValidationError
+                | XPathExpressionException e) {
+            throw new GuacamoleServerException(e);
+        }
+
+    }
+    
+    /**
+     * This is a utility method designed to generate a SHA-256 has for the
+     * given string representation of the SAMLResponse, throwing an exception
+     * if, for some reason, the Java implementation in use doesn't support
+     * SHA-256, and returning a hex-formatted hash value.
+     * 
+     * @param samlResponse
+     *     The String representation of the SAML response.
+     * 
+     * @return
+     *     A hex-formatted string of the SHA-256 hash.
+     * 
+     * @throws NoSuchAlgorithmException 
+     *     If Java does not support SHA-256.
+     */
+    private String hashSamlResponse(String samlResponse)
+            throws NoSuchAlgorithmException {
+        
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        return DatatypeConverter.printHexBinary(
+                digest.digest(samlResponse.getBytes(StandardCharsets.UTF_8)));
     }
 
 }

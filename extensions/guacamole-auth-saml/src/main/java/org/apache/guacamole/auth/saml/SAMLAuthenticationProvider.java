@@ -72,7 +72,8 @@ public class SAMLAuthenticationProvider extends AbstractAuthenticationProvider {
             throws GuacamoleException {
 
         // Attempt to authenticate user with given credentials
-        AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
+        AuthenticationProviderService authProviderService =
+                injector.getInstance(AuthenticationProviderService.class);
         return authProviderService.authenticateUser(credentials);
 
     }

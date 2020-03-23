@@ -71,9 +71,10 @@ public class SAMLAuthenticationProviderModule extends AbstractModule {
         bind(AuthenticationProvider.class).toInstance(authProvider);
         bind(Environment.class).toInstance(environment);
 
-        // Bind saml-specific services
+        // Bind SAML-specific services
         bind(ConfigurationService.class);
         bind(SAMLAuthenticationProviderResource.class);
+        bind(SAMLResponseMap.class);
 
     }
 
