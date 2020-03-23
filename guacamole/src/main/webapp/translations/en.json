@@ -534,6 +534,7 @@
         "FIELD_OPTION_SECURITY_NLA"   : "NLA (Network Level Authentication)",
         "FIELD_OPTION_SECURITY_RDP"   : "RDP encryption",
         "FIELD_OPTION_SECURITY_TLS"   : "TLS encryption",
+        "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
 
         "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Swiss German (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "German (Qwertz)",
