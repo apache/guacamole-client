@@ -102,6 +102,20 @@ public class LDAPGuacamoleProperties {
         public String getName() { return "ldap-group-name-attribute"; }
 
     };
+    
+    /**
+     * The LDAP filter to use when searching for groups in the specified
+     * group search base.  Groups that match this filter will be made available
+     * to the LDAP extension for the purposes of providing access to connections
+     * and layering with other authentication modules.
+     */
+    public static final LdapFilterGuacamoleProperty LDAP_GROUP_SEARCH_FILTER =
+            new LdapFilterGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ldap-group-search-filter"; }
+
+    };
 
     /**
      * The port on the LDAP server to connect to when authenticating users.

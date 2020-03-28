@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.ldap.conf;
 import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.List;
+import org.apache.directory.api.ldap.model.filter.EqualityNode;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
 import org.apache.directory.api.ldap.model.filter.PresenceNode;
 import org.apache.directory.api.ldap.model.message.AliasDerefMode;
@@ -169,6 +170,26 @@ public class ConfigurationService {
             LDAPGuacamoleProperties.LDAP_GROUP_BASE_DN
         );
     }
+    
+    /**
+     * Return the filter that should be used when looking for groups within
+     * the LDAP tree, if the LDAP extension is configured to search for
+     * groups.  This filter will be applied within the tree specified
+     * by the ldap-group-search-base property.  The default is to look
+     * for items with objectClass of group.
+     * 
+     * @return
+     *     The search filter to use to find groups within the LDAP tree.
+     * 
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public ExprNode getGroupSearchFilter() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_GROUP_SEARCH_FILTER,
+            new EqualityNode("objectClass","group")
+        );
+    } 
 
     /**
      * Returns the DN that should be used when searching for the DNs of users
@@ -304,12 +325,12 @@ public class ConfigurationService {
     /**
      * Returns the search filter that should be used when querying the
      * LDAP server for Guacamole users.  If no filter is specified,
-     * a default of "(objectClass=user)" is returned.
+     * a default of "(objectClass=*)" is returned.
      *
      * @return
      *     The search filter that should be used when querying the
      *     LDAP server for users that are valid in Guacamole, or
-     *     "(objectClass=user)" if not specified.
+     *     "(objectClass=*)" if not specified.
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
