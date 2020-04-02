@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.openid.token;
 
 import com.google.inject.Inject;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -229,7 +230,7 @@ public class TokenValidationService {
      *     If guacamole.properties could not be parsed.
      */
     public Map<String, String> processAttributes(JwtClaims claims) throws GuacamoleException {
-        List<String> attributesClaim = confService.getAttributesClaimType();
+        Collection<String> attributesClaim = confService.getAttributesClaimType();
 
         if (claims != null && !attributesClaim.isEmpty()) {
             try {

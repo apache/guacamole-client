@@ -19,7 +19,10 @@
 
 package org.apache.guacamole.properties;
 
+import java.util.Arrays;
+import java.util.List;
 import org.apache.guacamole.GuacamoleException;
+import static org.apache.guacamole.properties.GuacamoleProperty.DELIMITER_PATTERN;
 
 /**
  * A GuacamoleProperty whose value is a simple string.
@@ -29,6 +32,21 @@ public abstract class StringGuacamoleProperty implements GuacamoleProperty<Strin
     @Override
     public String parseValue(String value) throws GuacamoleException {
         return value;
+    }
+    
+    @Override
+    public List<String> parseValueCollection(String value) throws GuacamoleException {
+        
+        if (value == null)
+            return null;
+        
+        // Split string into a list of individual values
+        List<String> stringValues = Arrays.asList(DELIMITER_PATTERN.split(value));
+        if (stringValues.isEmpty())
+            return null;
+        
+        return stringValues;
+        
     }
 
 }

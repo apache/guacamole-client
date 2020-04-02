@@ -31,7 +31,12 @@ import org.apache.guacamole.GuacamoleException;
  * compatibility with the behavior of Java properties in general, only
  * whitespace at the beginning of each value is ignored; trailing whitespace
  * becomes part of the value.
+ * 
+ * @deprecated 
+ *     This class is now deprecated in favor of using the StringGuacamoleProperty
+ *     class with the parseValueCollection method.
  */
+@Deprecated
 public abstract class StringListProperty implements GuacamoleProperty<List<String>> {
 
     /**

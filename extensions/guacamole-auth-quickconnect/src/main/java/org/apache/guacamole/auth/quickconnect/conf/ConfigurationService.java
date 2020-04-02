@@ -20,10 +20,11 @@
 package org.apache.guacamole.auth.quickconnect.conf;
 
 import com.google.inject.Inject;
+import java.util.Collection;
 import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
-import org.apache.guacamole.properties.StringListProperty;
+import org.apache.guacamole.properties.StringGuacamoleProperty;
 
 /**
  * Configuration options to control the QuickConnect module.
@@ -42,7 +43,7 @@ public class ConfigurationService {
      * the parameters defined in this list.  Defaults to null (all parameters
      * are allowed).
      */
-    public static final StringListProperty QUICKCONNECT_ALLOWED_PARAMETERS = new StringListProperty() {
+    public static final StringGuacamoleProperty QUICKCONNECT_ALLOWED_PARAMETERS = new StringGuacamoleProperty() {
         
         @Override
         public String getName() { return "quickconnect-allowed-parameters"; }
@@ -55,7 +56,7 @@ public class ConfigurationService {
      * except the ones defined in this list.  Defaults to null (all parameters
      * are allowed).
      */
-    public static final StringListProperty QUICKCONNECT_DENIED_PARAMETERS = new StringListProperty() {
+    public static final StringGuacamoleProperty QUICKCONNECT_DENIED_PARAMETERS = new StringGuacamoleProperty() {
         
         @Override
         public String getName() { return "quickconnect-denied-parameters"; }
@@ -74,8 +75,8 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *    If guacamole.properties cannot be parsed.
      */
-    public List<String> getAllowedParameters() throws GuacamoleException {
-        return environment.getProperty(QUICKCONNECT_ALLOWED_PARAMETERS);
+    public Collection<String> getAllowedParameters() throws GuacamoleException {
+        return environment.getPropertyCollection(QUICKCONNECT_ALLOWED_PARAMETERS);
     }
     
     /**
@@ -90,8 +91,8 @@ public class ConfigurationService {
      * @throws GuacamoleException 
      *     If guacamole.properties cannot be parsed.
      */
-    public List<String> getDeniedParameters() throws GuacamoleException {
-        return environment.getProperty(QUICKCONNECT_DENIED_PARAMETERS);
+    public Collection<String> getDeniedParameters() throws GuacamoleException {
+        return environment.getPropertyCollection(QUICKCONNECT_DENIED_PARAMETERS);
     }
     
 }
