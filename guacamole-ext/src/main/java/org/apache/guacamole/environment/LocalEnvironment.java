@@ -25,6 +25,8 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -353,6 +355,38 @@ public class LocalEnvironment implements Environment {
         return value;
 
     }
+    
+    @Override
+    public <Type> Collection<Type> getPropertyCollection(GuacamoleProperty<Type> property)
+            throws GuacamoleException {
+        
+        return property.parseValueCollection(getPropertyValue(property.getName()));
+        
+    }
+    
+    @Override
+    public <Type> Collection<Type> getPropertyCollection(GuacamoleProperty<Type> property,
+            Type defaultValue) throws GuacamoleException {
+        
+        Collection<Type> value = getPropertyCollection(property);
+        if (value == null)
+            return Collections.singletonList(defaultValue);
+        
+        return value;
+        
+    }
+    
+    @Override
+    public <Type> Collection<Type> getPropertyCollection(GuacamoleProperty<Type> property,
+            Collection<Type> defaultValue) throws GuacamoleException {
+        
+        Collection<Type> value = getPropertyCollection(property);
+        if (value == null)
+            return defaultValue;
+        
+        return value;
+        
+    }
 
     @Override
     public <Type> Type getRequiredProperty(GuacamoleProperty<Type> property)
@@ -364,6 +398,18 @@ public class LocalEnvironment implements Environment {
 
         return value;
 
+    }
+    
+    @Override
+    public <Type> Collection<Type> getRequiredPropertyCollection(GuacamoleProperty<Type> property)
+            throws GuacamoleException {
+        
+        Collection<Type> value = getPropertyCollection(property);
+        if (value == null)
+            throw new GuacamoleServerException("Property " + property.getName() + " is required.");
+        
+        return value;
+        
     }
 
     @Override
