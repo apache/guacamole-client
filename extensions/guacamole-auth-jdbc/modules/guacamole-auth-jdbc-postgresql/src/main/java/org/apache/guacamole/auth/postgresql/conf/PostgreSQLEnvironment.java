@@ -51,10 +51,10 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     /**
      * The default defaultStatementTimeout (in seconds),
      * if POSTGRESQL_DEFAULT_STATEMENT_TIMEOUT is not specified.
-     * Default to null (no timeout)
+     * Default to 0 (no timeout, property won't be set)
      * https://mybatis.org/mybatis-3/configuration.html
      */
-    private static final String DEFAULT_DEFAULT_STATEMENT_TIMEOUT = "null";
+    private static final int DEFAULT_DEFAULT_STATEMENT_TIMEOUT = 0;
 
     /**
      * The default socketTimeout (in seconds), if POSTGRESQL_SOCKET_TIMEOUT is not specified.
@@ -267,7 +267,8 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     
     /**
      * Returns the defaultStatementTimeout set for PostgreSQL connections.
-     * If unspecified, this will be the default "null" (no timeout)
+     * If unspecified, this will be the default 0,
+     * and should not be passed through to the backend.
      * 
      * @return
      *     The statement timeout (in seconds)
@@ -275,7 +276,7 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
      * @throws GuacamoleException 
      *     If an error occurs while retrieving the property value.
      */
-    public String getPostgreSQLDefaultStatementTimeout() throws GuacamoleException {
+    public int getPostgreSQLDefaultStatementTimeout() throws GuacamoleException {
         return getProperty(
             PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_STATEMENT_TIMEOUT,
             DEFAULT_DEFAULT_STATEMENT_TIMEOUT

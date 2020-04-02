@@ -98,8 +98,8 @@ public class PostgreSQLGuacamoleProperties {
      * Sets the number of seconds the driver will wait for
      * a response from the database.
      */
-    public static final StringGuacamoleProperty
-            POSTGRESQL_DEFAULT_STATEMENT_TIMEOUT = new StringGuacamoleProperty(){
+    public static final IntegerGuacamoleProperty
+            POSTGRESQL_DEFAULT_STATEMENT_TIMEOUT = new IntegerGuacamoleProperty(){
 
         @Override
         public String getName() { return "postgresql-default-statement-timeout"; }
