@@ -708,6 +708,65 @@ associate_json() {
     # Add required .jar files to GUACAMOLE_EXT
     ln -s /opt/guacamole/json/guacamole-auth-*.jar "$GUACAMOLE_EXT"
 }
+##
+## Sets up Tomcat's remote IP valve that allows gathering the remote IP
+## from headers set by a remote proxy
+##
+enable_remote_ip_valve() {
+    # Check the required variables
+    if [ -z "$GUACAMOLE_PROXY_ALLOWED_IPS_REGEX" ]; then
+        cat <<END
+FATAL: Missing required environment variables
+-------------------------------------------------------------------------------
+If using the Tomcat RemoteIPValve preseed, you must provide each of the
+following environment variables:
+
+    GUACAMOLE_PROXY_ALLOWED_IPS_REGEX   The regex of addresses allowed to set
+                                        the remote IP of the client via
+                                        transmission of specific headers
+END
+        exit 1
+    fi
+
+    # Set reasonable defaults if optional variables have not been provided
+    if [ -z "$GUACAMOLE_PROXY_IP_HEADER" ]; then
+        GUACAMOLE_PROXY_IP_HEADER='X-Forwarded-For'
+        echo "Defaulted RemoteIPValve IP header to: $GUACAMOLE_PROXY_IP_HEADER"
+    fi
+    if [ -z "$GUACAMOLE_PROXY_PROTOCOL_HEADER" ]; then
+        GUACAMOLE_PROXY_PROTOCOL_HEADER='X-Forwarded-Proto'
+        echo "Defaulted RemoteIPValve protocol header to: $GUACAMOLE_PROXY_PROTOCOL_HEADER"
+    fi
+    if [ -z "$GUACAMOLE_PROXY_BY_HEADER" ]; then
+        GUACAMOLE_PROXY_BY_HEADER='X-Forwarded-By'
+        echo "Defaulted RemoteIPValve source header to: $GUACAMOLE_PROXY_BY_HEADER"
+    fi
+
+    # Build the new Tomcat configuration
+    cat > /tmp/valve.xml <<EOF
+        <Valve className="org.apache.catalina.valves.RemoteIpValve"
+          internalProxies="$GUACAMOLE_PROXY_ALLOWED_IPS_REGEX"
+          remoteIpHeader="$GUACAMOLE_PROXY_IP_HEADER"
+          remoteIpProxiesHeader="$GUACAMOLE_PROXY_BY_HEADER"
+          protocolHeader="$GUACAMOLE_PROXY_PROTOCOL_HEADER" />
+EOF
+
+    # Get the line where the Host configuration ends
+    LINEN=$(grep -n '</Host>' /usr/local/tomcat/conf/server.xml | cut -d ':' -f 1)
+
+    # Split the file in 2 around the Host configuration
+    head -n "$(( LINEN - 1 ))" < /usr/local/tomcat/conf/server.xml > /tmp/head.xml
+    tail -n "+$LINEN" < /usr/local/tomcat/conf/server.xml > /tmp/tail.xml
+
+    # Reassemble the file
+    cat /tmp/head.xml /tmp/valve.xml /tmp/tail.xml > /usr/local/tomcat/conf/server.xml
+
+    # Cleanup
+    rm -f \
+        /tmp/head.xml \
+        /tmp/tail.xml \
+        /tmp/valve.xml
+}
 
 ##
 ## Starts Guacamole under Tomcat, replacing the current process with the
@@ -793,6 +852,11 @@ fi
 # Update config file
 set_property "guacd-hostname" "$GUACD_HOSTNAME"
 set_property "guacd-port"     "$GUACD_PORT"
+
+# Set up Tomcat RemoteIPValve
+if [ -n "$GUACAMOLE_PROXY_ALLOWED_IPS_REGEX" ]; then
+    enable_remote_ip_valve
+fi
 
 #
 # Track which authentication backends are installed
@@ -883,4 +947,3 @@ fi
 #
 
 start_guacamole
-
