@@ -87,9 +87,9 @@ public class UserGroupService {
         if (confService.getConfigurationBaseDN() != null)
             return new NotNode(new EqualityNode("objectClass","guacConfigGroup"));
 
-        // Read any object as a group if LDAP is not being used for connection
+        // Read any object containing "ldap-member-attribute" attribute as a group if LDAP is not being used for connection
         // storage (guacConfigGroup)
-        return new PresenceNode("objectClass");
+        return new PresenceNode(confService.getMemberAttribute());
 
     }
 
