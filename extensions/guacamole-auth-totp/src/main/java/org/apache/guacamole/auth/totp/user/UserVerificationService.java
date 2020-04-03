@@ -108,7 +108,7 @@ public class UserVerificationService {
 
         // If no key is defined, attempt to generate a new key
         String secret = attributes.get(TOTPUser.TOTP_KEY_SECRET_ATTRIBUTE_NAME);
-        if (secret == null) {
+        if (secret == null || secret.isEmpty()) {
 
             // Generate random key for user
             TOTPGenerator.Mode mode = confService.getMode();
