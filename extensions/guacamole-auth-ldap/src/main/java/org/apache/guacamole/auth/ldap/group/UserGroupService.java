@@ -79,7 +79,7 @@ public class UserGroupService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    private ExprNode getGroupSearchFilter() throws GuacamoleException {
+    private ExprNode buildGroupSearchFilter() throws GuacamoleException {
 
         // Explicitly exclude guacConfigGroup object class only if it should
         // be assumed to be defined (query may fail due to no such object
@@ -87,9 +87,9 @@ public class UserGroupService {
         if (confService.getConfigurationBaseDN() != null)
             return new NotNode(new EqualityNode("objectClass","guacConfigGroup"));
 
-        // Read any object containing "ldap-member-attribute" attribute as a group if LDAP is not being used for connection
+        // Read objects from LDAP with filter defined by "ldap-group-search-filter" as a group if LDAP is not being used for connection
         // storage (guacConfigGroup)
-        return new PresenceNode(confService.getMemberAttribute());
+        return confService.getGroupSearchFilter();
 
     }
 
@@ -122,7 +122,7 @@ public class UserGroupService {
         List<Entry> results = queryService.search(
             ldapConnection,
             groupBaseDN,
-            getGroupSearchFilter(),
+            buildGroupSearchFilter(),
             attributes,
             null
         );
@@ -213,7 +213,7 @@ public class UserGroupService {
         return queryService.search(
             ldapConnection,
             groupBaseDN,
-            getGroupSearchFilter(),
+            buildGroupSearchFilter(),
             Collections.singleton(confService.getMemberAttribute()),
             userIDorDN
         );
