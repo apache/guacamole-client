@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.postgresql;
+package org.apache.guacamole.auth.postgresql.conf;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;

@@ -17,8 +17,9 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.postgresql;
+package org.apache.guacamole.auth.postgresql.conf;
 
+import java.io.File;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.slf4j.Logger;
@@ -96,6 +97,11 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
      * the values that should be used in the absence of the correct properties.
      */
     private final int DEFAULT_MAX_GROUP_CONNECTIONS = 0;
+    
+    /**
+     * The default value to use for SSL mode if none is explicitly configured.
+     */
+    private final PostgreSQLSSLMode DEFAULT_SSL_MODE = PostgreSQLSSLMode.DISABLE;
 
     /**
      * Constructs a new PostgreSQLEnvironment, providing access to PostgreSQL-specific
@@ -247,6 +253,79 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     @Override
     public boolean isRecursiveQuerySupported(SqlSession session) {
         return true; // All versions of PostgreSQL support recursive queries through CTEs
+    }
+    
+    /**
+     * Get the SSL mode to use to make the JDBC connection to the PostgreSQL
+     * server.  If unspecified this will default to disabling SSL.
+     * 
+     * @return
+     *     The enum value of the SSL mode to use to make the JDBC connection
+     *     to the server.
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs retrieving the value from guacamole.properties.
+     */
+    public PostgreSQLSSLMode getPostgreSQLSSLMode() throws GuacamoleException {
+        return getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_SSL_MODE,
+                DEFAULT_SSL_MODE);
+    }
+    
+    /**
+     * Return the SSL client certificate file to use to make the connection
+     * to the PostgreSQL server.
+     * 
+     * @return
+     *     The SSL client certificate file to use for the PostgreSQL connection.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs retrieving the value from guacamole.properties.
+     */
+    public File getPostgreSQLSSLClientCertFile() throws GuacamoleException {
+        return getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_SSL_CERT_FILE);
+    }
+    
+    /**
+     * Return the SSL client private key file to use to make the connection to the
+     * PostgreSQL server.
+     * 
+     * @return
+     *     The SSL client private key file to use for the PostgreSQL connection.
+     * @throws GuacamoleException 
+     *     If an error occurs retrieving the value from guacamole.properties.
+     */
+    public File getPostgreSQLSSLClientKeyFile() throws GuacamoleException {
+        return getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_SSL_KEY_FILE);
+    }
+    
+    /**
+     * Return the SSL client root certificate file to use to make the connection
+     * to the PostgreSQL server.
+     * 
+     * @return
+     *     The SSL client root certificate file to use to make the connection
+     *     to the PostgreSQL server.
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs retrieving the value from guacamole.properties.
+     */
+    public File getPostgreSQLSSLClientRootCertFile() throws GuacamoleException {
+        return getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_SSL_ROOT_CERT_FILE);
+    }
+    
+    /**
+     * Return the password to use to decrypt the private SSL key file when making
+     * the connection to the PostgreSQL server.
+     * 
+     * @return
+     *     The password to use to decrypt the private SSL key file when making
+     *     the connection to the PostgreSQL server.
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs retrieving the value from guacamole.properties.
+     */
+    public String getPostgreSQLSSLClientKeyPassword() throws GuacamoleException {
+        return getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_SSL_KEY_PASSWORD);
     }
     
 }

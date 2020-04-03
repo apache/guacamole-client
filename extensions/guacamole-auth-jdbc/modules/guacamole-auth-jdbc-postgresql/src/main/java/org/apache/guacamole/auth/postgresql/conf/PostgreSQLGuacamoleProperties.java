@@ -17,9 +17,10 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.postgresql;
+package org.apache.guacamole.auth.postgresql.conf;
 
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.FileGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
@@ -170,5 +171,65 @@ public class PostgreSQLGuacamoleProperties {
         public String getName() { return "postgresql-default-max-group-connections-per-user"; }
 
     };
-
+    
+    /**
+     * The SSL mode that should be used by the JDBC driver when making
+     * connections to the remote server.  By default SSL will be disabled.
+     */
+    public static final PostgreSQLSSLProperty POSTGRESQL_SSL_MODE =
+            new PostgreSQLSSLProperty() {
+        
+        @Override
+        public String getName() { return "postgresql-ssl-mode"; }
+        
+    };
+    
+    /**
+     * The client SSL certificate file used by the JDBC driver to make the
+     * SSL connection.
+     */
+    public static final FileGuacamoleProperty POSTGRESQL_SSL_CERT_FILE =
+            new FileGuacamoleProperty() {
+             
+        @Override
+        public String getName() { return "postgresql-ssl-cert-file"; }
+                
+    };
+    
+    /**
+     * The client SSL private key file used by the JDBC driver to make the
+     * SSL connection.
+     */
+    public static final FileGuacamoleProperty POSTGRESQL_SSL_KEY_FILE =
+            new FileGuacamoleProperty() {
+    
+        @Override
+        public String getName() { return "postgresql-ssl-key-file"; }
+        
+    };
+    
+    /**
+     * The client SSL root certificate file used by the JDBC driver to validate
+     * certificates when making the SSL connection.
+     */
+    public static final FileGuacamoleProperty POSTGRESQL_SSL_ROOT_CERT_FILE =
+            new FileGuacamoleProperty() {
+        
+        @Override
+        public String getName() { return "postgresql-ssl-root-cert-file"; }
+        
+    };
+    
+    /**
+     * The password of the SSL private key used by the JDBC driver to make
+     * the SSL connection to the PostgreSQL server.
+     */
+    public static final StringGuacamoleProperty POSTGRESQL_SSL_KEY_PASSWORD =
+            new StringGuacamoleProperty() {
+        
+        @Override
+        public String getName() { return "postgresql-ssl-key-password"; }
+        
+    };
+    
 }
