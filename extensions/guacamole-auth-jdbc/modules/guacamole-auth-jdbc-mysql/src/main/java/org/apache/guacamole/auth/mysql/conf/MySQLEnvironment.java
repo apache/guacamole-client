@@ -17,8 +17,9 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.mysql;
+package org.apache.guacamole.auth.mysql.conf;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -101,6 +102,11 @@ public class MySQLEnvironment extends JDBCEnvironment {
      * allowed to any one connection group.
      */
     private final int DEFAULT_MAX_GROUP_CONNECTIONS = 0;
+    
+    /**
+     * The default SSL mode for connecting to MySQL servers.
+     */
+    private final MySQLSSLMode DEFAULT_SSL_MODE = MySQLSSLMode.DISABLED;
 
     /**
      * Constructs a new MySQLEnvironment, providing access to MySQL-specific
@@ -299,6 +305,37 @@ public class MySQLEnvironment extends JDBCEnvironment {
             return false;
         }
 
+    }
+    
+    /**
+     * Return the MySQL SSL mode as configured in guacamole.properties, or the
+     * default value of DISABLED if not configured.
+     * 
+     * @return
+     *     The SSL mode to use when connecting to the MySQL server.
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs retrieving the property value.
+     */
+    public MySQLSSLMode getMySQLSSLMode() throws GuacamoleException {
+        return getProperty(MySQLGuacamoleProperties.MYSQL_SSL_MODE,
+                DEFAULT_SSL_MODE);
+    }
+    
+    public File getMySQLSSLTrustStore() throws GuacamoleException {
+        return getProperty(MySQLGuacamoleProperties.MYSQL_SSL_TRUST_STORE);
+    }
+    
+    public String getMySQLSSLTrustPassword() throws GuacamoleException {
+        return getProperty(MySQLGuacamoleProperties.MYSQL_SSL_TRUST_PASSWORD);
+    }
+    
+    public File getMySQLSSLClientStore() throws GuacamoleException {
+        return getProperty(MySQLGuacamoleProperties.MYSQL_SSL_TRUST_STORE);
+    }
+    
+    public String getMYSQLSSLClientPassword() throws GuacamoleException {
+        return getProperty(MySQLGuacamoleProperties.MYSQL_SSL_TRUST_PASSWORD);
     }
 
 }

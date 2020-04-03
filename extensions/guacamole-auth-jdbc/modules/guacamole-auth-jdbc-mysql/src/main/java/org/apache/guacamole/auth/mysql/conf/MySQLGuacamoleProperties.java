@@ -17,10 +17,11 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.mysql;
+package org.apache.guacamole.auth.mysql.conf;
 
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.EnumGuacamoleProperty;
+import org.apache.guacamole.properties.FileGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
@@ -176,6 +177,48 @@ public class MySQLGuacamoleProperties {
         @Override
         public String getName() { return "mysql-default-max-group-connections-per-user"; }
 
+    };
+    
+    /**
+     * The SSL mode used to connect to the MySQL Server.  By default SSL will
+     * not be used.
+     */
+    public static final MySQLSSLProperty MYSQL_SSL_MODE =
+            new MySQLSSLProperty() {
+        
+        @Override
+        public String getName() { return "mysql-ssl-mode" ; }
+        
+    };
+    
+    public static final FileGuacamoleProperty MYSQL_SSL_TRUST_STORE =
+            new FileGuacamoleProperty() {
+        
+        @Override
+        public String getName() { return "mysql-ssl-trust-store"; }
+        
+    };
+    
+    public static final StringGuacamoleProperty MYSQL_SSL_TRUST_PASSWORD =
+            new StringGuacamoleProperty() {
+        
+        @Override
+        public String getName() { return "mysql-ssl-trust-password"; }
+        
+    };
+    
+    public static final FileGuacamoleProperty MYSQL_SSL_CLIENT_STORE = new FileGuacamoleProperty() {
+        
+        @Override
+        public String getName() { return "mysql-ssl-client-store"; }
+        
+    };
+    
+    public static final StringGuacamoleProperty MYSQL_SSL_CLIENT_PASSWORD = new StringGuacamoleProperty() {
+        
+        @Override
+        public String getName() { return "mysql-ssl-client-password"; }
+        
     };
 
 }
