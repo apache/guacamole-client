@@ -318,7 +318,13 @@ public class ConfigurationService {
     public ExprNode getUserSearchFilter() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_USER_SEARCH_FILTER,
+<<<<<<< HEAD
             new PresenceNode("objectClass")
+=======
+            new EqualityNode("objectClass","user")
+        );
+    }
+>>>>>>> bbbf021b2f1a5660028d172fbe47a8039cdc5f89
 
     /**
      * Returns the search filter that should be used when querying the
