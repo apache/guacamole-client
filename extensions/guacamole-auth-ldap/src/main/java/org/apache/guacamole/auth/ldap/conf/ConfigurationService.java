@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
 import org.apache.directory.api.ldap.model.filter.PresenceNode;
 import org.apache.directory.api.ldap.model.message.AliasDerefMode;
+import org.apache.directory.api.ldap.model.filter.EqualityNode;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
@@ -318,6 +319,26 @@ public class ConfigurationService {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_USER_SEARCH_FILTER,
             new PresenceNode("objectClass")
+        );
+    }
+
+    /**
+     * Returns the search filter that should be used when querying the
+     * LDAP server for Guacamole groups.  If no filter is specified,
+     * a default of "(objectClass=group)" is returned.
+     *
+     * @return
+     *     The search filter that should be used when querying the
+     *     LDAP server for groups that are valid in Guacamole, or
+     *     "(objectClass=group)" if not specified.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public ExprNode getGroupSearchFilter() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_GROUP_SEARCH_FILTER,
+            new EqualityNode("objectClass","group")
         );
     }
 

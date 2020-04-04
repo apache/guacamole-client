@@ -87,9 +87,9 @@ public class UserGroupService {
         if (confService.getConfigurationBaseDN() != null)
             return new NotNode(new EqualityNode("objectClass","guacConfigGroup"));
 
-        // Read any object as a group if LDAP is not being used for connection
-        // storage (guacConfigGroup)
-        return new PresenceNode("objectClass");
+        // Read objects from LDAP with filter defined by "ldap-group-search-filter"
+        // as a group if LDAP is not being used for connection storage (guacConfigGroup)
+        return confService.getGroupSearchFilter();
 
     }
 
