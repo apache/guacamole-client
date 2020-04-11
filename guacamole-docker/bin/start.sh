@@ -369,6 +369,7 @@ END
     set_optional_property "ldap-encryption-method"  "$LDAP_ENCRYPTION_METHOD"
     set_optional_property "ldap-max-search-results" "$LDAP_MAX_SEARCH_RESULTS"
     set_optional_property "ldap-search-bind-dn"     "$LDAP_SEARCH_BIND_DN"
+    set_optional_property "ldap-user-attributes"    "$LDAP_USER_ATTRIBUTES"
 
     set_optional_property           \
         "ldap-search-bind-password" \
