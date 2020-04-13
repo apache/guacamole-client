@@ -22,16 +22,16 @@ package org.apache.guacamole.auth.duo;
 import com.google.inject.Inject;
 import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.duo.api.DuoService;
 import org.apache.guacamole.auth.duo.conf.ConfigurationService;
 import org.apache.guacamole.auth.duo.form.DuoSignedResponseField;
 import org.apache.guacamole.form.Field;
+import org.apache.guacamole.language.TranslatableGuacamoleClientException;
+import org.apache.guacamole.language.TranslatableGuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 
 /**
  * Service for verifying the identity of a user against Duo.
@@ -95,14 +95,18 @@ public class UserVerificationService {
                         Collections.singletonList(signedResponseField));
 
             // Request additional credentials
-            throw new GuacamoleInsufficientCredentialsException(
-                    "LOGIN.INFO_DUO_AUTH_REQUIRED", expectedCredentials);
+            throw new TranslatableGuacamoleInsufficientCredentialsException(
+                    "Verification using Duo is required before authentication "
+                    + "can continue.", "LOGIN.INFO_DUO_AUTH_REQUIRED",
+                    expectedCredentials);
 
         }
 
         // If signed response does not verify this user's identity, abort auth
         if (!duoService.isValidSignedResponse(authenticatedUser, signedResponse))
-            throw new GuacamoleClientException("LOGIN.INFO_DUO_VALIDATION_CODE_INCORRECT");
+            throw new TranslatableGuacamoleClientException("Provided Duo "
+                    + "validation code is incorrect.",
+                    "LOGIN.INFO_DUO_VALIDATION_CODE_INCORRECT");
 
     }
 
