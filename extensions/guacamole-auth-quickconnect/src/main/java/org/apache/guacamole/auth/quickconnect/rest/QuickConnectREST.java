@@ -36,7 +36,7 @@ import org.apache.guacamole.auth.quickconnect.utility.QCParser;
  */
 @Produces(MediaType.APPLICATION_JSON)
 public class QuickConnectREST {
-
+    
     /**
      * The connection directory for this REST endpoint.
      */
@@ -74,8 +74,7 @@ public class QuickConnectREST {
     public Map<String, String> create(@FormParam("uri") String uri) 
             throws GuacamoleException {
 
-        return Collections.singletonMap("identifier",
-                directory.create(QCParser.getConfiguration(uri)));
+        return Collections.singletonMap("identifier", directory.create(uri));
  
     }
 

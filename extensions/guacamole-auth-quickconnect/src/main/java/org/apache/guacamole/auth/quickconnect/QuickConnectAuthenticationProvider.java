@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.quickconnect;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
@@ -31,6 +33,20 @@ import org.apache.guacamole.net.auth.UserContext;
  */
 public class QuickConnectAuthenticationProvider extends AbstractAuthenticationProvider {
 
+    /**
+     * Injector which will manage the object graph of this authentication
+     * provider.
+     */
+    private final Injector injector;
+    
+    public QuickConnectAuthenticationProvider() throws GuacamoleException {
+
+        // Set up Guice injector.
+        injector = Guice.createInjector(
+            new QuickConnectAuthenticationProviderModule(this)
+        );
+    }
+    
     @Override
     public String getIdentifier() {
         return "quickconnect";
@@ -40,9 +56,13 @@ public class QuickConnectAuthenticationProvider extends AbstractAuthenticationPr
     public UserContext getUserContext(AuthenticatedUser authenticatedUser)
             throws GuacamoleException {
 
-        return new QuickConnectUserContext(this,
-                authenticatedUser.getIdentifier());
-
+        QuickConnectUserContext userContext = 
+                injector.getInstance(QuickConnectUserContext.class);
+        
+        userContext.init(authenticatedUser.getIdentifier());
+        
+        return userContext;
+        
     }
 
 }
