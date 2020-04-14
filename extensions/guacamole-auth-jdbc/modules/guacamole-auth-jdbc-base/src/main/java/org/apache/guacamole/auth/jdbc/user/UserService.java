@@ -46,12 +46,13 @@ import org.apache.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicyService;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.PasswordField;
+import org.apache.guacamole.language.TranslatableGuacamoleClientException;
+import org.apache.guacamole.language.TranslatableGuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
@@ -494,20 +495,25 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         // Require new password if account is expired
         if (newPassword == null || confirmNewPassword == null) {
             logger.info("The password of user \"{}\" has expired and must be reset.", username);
-            throw new GuacamoleInsufficientCredentialsException("LOGIN.INFO_PASSWORD_EXPIRED", EXPIRED_PASSWORD);
+            throw new TranslatableGuacamoleInsufficientCredentialsException("Password has expired",
+                    "LOGIN.INFO_PASSWORD_EXPIRED", EXPIRED_PASSWORD);
         }
 
         // New password must be different from old password
         if (newPassword.equals(credentials.getPassword()))
-            throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_SAME");
+            throw new TranslatableGuacamoleClientException("New passwords may "
+                    + "not be identical to the current password if password "
+                    + "reset is required.", "LOGIN.ERROR_PASSWORD_SAME");
 
         // New password must not be blank
         if (newPassword.isEmpty())
-            throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_BLANK");
+            throw new TranslatableGuacamoleClientException("Passwords may not "
+                    + "be blank.", "LOGIN.ERROR_PASSWORD_BLANK");
 
         // Confirm that the password was entered correctly twice
         if (!newPassword.equals(confirmNewPassword))
-            throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_MISMATCH");
+            throw new TranslatableGuacamoleClientException("New password does "
+                    + "not match.", "LOGIN.ERROR_PASSWORD_MISMATCH");
 
         // Verify new password does not violate defined policies
         passwordPolicyService.verifyPassword(username, newPassword);
