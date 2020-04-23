@@ -21,6 +21,7 @@ package org.apache.guacamole.protocol;
 
 import java.util.List;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerErrorCommandException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.io.GuacamoleReader;
 import org.apache.guacamole.io.GuacamoleWriter;
@@ -54,7 +55,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
      * by the "ready" instruction received from the Guacamole proxy.
      */
     private String id;
-    
+
     /**
      * The protocol version that will be used to communicate with guacd.  The
      * default is 1.0.0, and, if the server does not provide a specific version
@@ -63,12 +64,39 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
      */
     private GuacamoleProtocolVersion protocolVersion =
             GuacamoleProtocolVersion.VERSION_1_0_0;
-    
+
+    /**
+     * Parses the arguments for the Guacamole "error" server command and returns
+     * the corresponding exception.
+     * @param args The arguments as provided by the server command.
+     * @return An instance of {@link GuacamoleServerErrorCommandException} configured
+     *         with the server-provided arguments, or {@literal null} if the specified
+     *         arguments are invalid.
+     */
+    private static GuacamoleServerErrorCommandException parseServerErrorCommandArgs(List<String> args) {
+        if (args == null || args.size() != 2)
+            return null;
+
+        int code;
+        try {
+            code = Integer.parseInt(args.get(1));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        GuacamoleStatus status = GuacamoleStatus.fromGuacamoleStatusCode(code);
+        return (status == null)
+                ? null
+                : new GuacamoleServerErrorCommandException(args.get(0), status);
+    }
+
     /**
      * Waits for the instruction having the given opcode, returning that
      * instruction once it has been read. If the instruction is never read,
      * an exception is thrown.
-     * 
+     *
+     * Respects server control commands that are allowed during the handshake
+     * phase, namely {@code error} and {@code disconnect}.
+     *
      * @param reader The reader to read instructions from.
      * @param opcode The opcode of the instruction we are expecting.
      * @return The instruction having the given opcode.
@@ -83,6 +111,16 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         if (instruction == null)
             throw new GuacamoleServerException("End of stream while waiting for \"" + opcode + "\".");
 
+        // Handle server control commands
+        if ("disconnect".equals(instruction.getOpcode()))
+            throw new GuacamoleServerException("Server disconnected while waiting for \"" + opcode + "\".");
+        if ("error".equals(instruction.getOpcode())) {
+            GuacamoleServerErrorCommandException e = parseServerErrorCommandArgs(instruction.getArgs());
+            if (e == null)
+                throw new GuacamoleServerException("Invalid command received from server: " + instruction);
+            throw e;
+        }
+
         // Ensure instruction has expected opcode
         if (!instruction.getOpcode().equals(opcode))
             throw new GuacamoleServerException("Expected \"" + opcode + "\" instruction but instead received \"" + instruction.getOpcode() + "\".");
@@ -90,7 +128,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         return instruction;
 
     }
- 
+
     /**
      * Creates a new ConfiguredGuacamoleSocket which uses the given
      * GuacamoleConfiguration to complete the initial protocol handshake over
@@ -150,7 +188,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
 
             // Retrieve argument name
             String arg_name = arg_names.get(i);
-            
+
             // Check for valid protocol version as first argument
             if (i == 0) {
                 GuacamoleProtocolVersion version = GuacamoleProtocolVersion.parseVersion(arg_name);
@@ -209,7 +247,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
                     "image",
                     info.getImageMimetypes().toArray(new String[0])
                 ));
-        
+
         // Send client timezone, if supported and available
         if (GuacamoleProtocolCapability.TIMEZONE_HANDSHAKE.isSupported(protocolVersion)) {
             String timezone = info.getTimezone();
@@ -246,7 +284,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
      * Returns the unique ID associated with the Guacamole connection
      * negotiated by this ConfiguredGuacamoleSocket. The ID is provided by
      * the "ready" instruction returned by the Guacamole proxy.
-     * 
+     *
      * @return The ID of the negotiated Guacamole connection.
      */
     public String getConnectionID() {
