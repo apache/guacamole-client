@@ -21,6 +21,7 @@ package org.apache.guacamole.protocol;
 
 import java.util.List;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerErrorInstructionException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.io.GuacamoleReader;
 import org.apache.guacamole.io.GuacamoleWriter;
@@ -59,12 +60,35 @@ public class ConfiguredGuacamoleSocket extends DelegatingGuacamoleSocket {
      */
     private GuacamoleProtocolVersion protocolVersion =
             GuacamoleProtocolVersion.VERSION_1_0_0;
-    
+
+    /**
+     * Parses the arguments for the Guacamole "error" server instruction and returns
+     * the corresponding exception.
+     * @param args The arguments as provided by the server instruction.
+     * @return An instance of {@link GuacamoleServerErrorInstructionException} configured
+     *         with the server-provided arguments, or a generic {@link GuacamoleServerException} if
+     *         the specified arguments are invalid.
+     */
+    private static GuacamoleServerException parseServerErrorInstructionArgs(List<String> args) {
+        try {
+            if (args.size() >= 2) {
+                int code = Integer.parseInt(args.get(1));
+                GuacamoleStatus status = GuacamoleStatus.fromGuacamoleStatusCode(code);
+                return new GuacamoleServerErrorInstructionException(args.get(0), status);
+            }
+        } catch (NumberFormatException ignored) {}
+
+        return new GuacamoleServerException("Invalid error instruction arguments received: " + args);
+    }
+
     /**
      * Waits for the instruction having the given opcode, returning that
      * instruction once it has been read. If the instruction is never read,
      * an exception is thrown.
-     * 
+     *
+     * Respects server control instructions that are allowed during the handshake
+     * phase, namely {@code error} and {@code disconnect}.
+     *
      * @param reader The reader to read instructions from.
      * @param opcode The opcode of the instruction we are expecting.
      * @return The instruction having the given opcode.
@@ -78,6 +102,12 @@ public class ConfiguredGuacamoleSocket extends DelegatingGuacamoleSocket {
         GuacamoleInstruction instruction = reader.readInstruction();
         if (instruction == null)
             throw new GuacamoleServerException("End of stream while waiting for \"" + opcode + "\".");
+
+        // Handle server control instructions
+        if ("disconnect".equals(instruction.getOpcode()))
+            throw new GuacamoleServerException("Server disconnected while waiting for \"" + opcode + "\".");
+        if ("error".equals(instruction.getOpcode()))
+            throw parseServerErrorInstructionArgs(instruction.getArgs());
 
         // Ensure instruction has expected opcode
         if (!instruction.getOpcode().equals(opcode))
