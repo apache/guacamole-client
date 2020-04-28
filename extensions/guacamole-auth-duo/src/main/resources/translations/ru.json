@@ -5,7 +5,6 @@
     },
 
     "LOGIN" : {
-        "FIELD_HEADER_GUAC_DUO_SIGNED_RESPONSE" : "",
         "INFO_DUO_VALIDATION_CODE_INCORRECT"    : "Неверный код валидации Duo.",
         "INFO_DUO_AUTH_REQUIRED"                : "Пожалуйста, аутентифицируйтесь в Duo для продолжения."
     }

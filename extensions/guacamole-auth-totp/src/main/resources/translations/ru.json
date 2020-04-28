@@ -4,10 +4,6 @@
         "NAME" : "Бэкенд TOTP TFA"
     },
 
-    "LOGIN" : {
-        "FIELD_HEADER_GUAC_TOTP" : ""
-    },
-
     "TOTP" : {
 
         "ACTION_HIDE_DETAILS" : "Спрятать",

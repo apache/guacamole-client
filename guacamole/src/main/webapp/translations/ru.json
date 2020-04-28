@@ -118,10 +118,6 @@
         "NAME_INPUT_METHOD_NONE"   : "Нет",
         "NAME_INPUT_METHOD_OSK"    : "Экранная клавиатура",
         "NAME_INPUT_METHOD_TEXT"   : "Ввод текста",
-        "NAME_KEY_CTRL"            : "Ctrl",
-        "NAME_KEY_ALT"             : "Alt",
-        "NAME_KEY_ESC"             : "Esc",
-        "NAME_KEY_TAB"             : "Tab",
         "NAME_MOUSE_MODE_ABSOLUTE" : "Тачскрин",
         "NAME_MOUSE_MODE_RELATIVE" : "Тачпад",
 
@@ -404,12 +400,7 @@
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Путь typescript:",
         "FIELD_HEADER_USE_SSL"         : "Использовать SSL/TLS",
 
-        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
-        "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
-        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
-
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Черное на белом",
-        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
         "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Серое на черном",
         "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Зеленое на черном",
         "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Белое на черном",
@@ -499,21 +490,14 @@
         "FIELD_OPTION_COLOR_DEPTH_24"    : "True color (24-бит)",
         "FIELD_OPTION_COLOR_DEPTH_32"    : "True color (32-бит)",
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 цветов",
-        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
 
         "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "Виртуальный канал \"Display Update\" (RDP 8.1+)",
-        "FIELD_OPTION_RESIZE_METHOD_EMPTY"          : "",
         "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "Переподключение",
 
         "FIELD_OPTION_SECURITY_ANY"   : "Любой",
-        "FIELD_OPTION_SECURITY_EMPTY" : "",
         "FIELD_OPTION_SECURITY_NLA"   : "NLA (аутентификация уровня сети)",
         "FIELD_OPTION_SECURITY_RDP"   : "RDP-шифрование",
         "FIELD_OPTION_SECURITY_TLS"   : "TLS-шифрование",
-
-        "FIELD_OPTION_SERVER_LAYOUT_RU_RU_QWERTY_LAT" : "Русская+Lat (Qwerty)",
-
-        "NAME" : "RDP",
 
         "SECTION_HEADER_AUTHENTICATION"     : "Аутентификация",
         "SECTION_HEADER_BASIC_PARAMETERS"   : "Основные настройки",
@@ -524,9 +508,7 @@
         "SECTION_HEADER_NETWORK"            : "Сеть",
         "SECTION_HEADER_PERFORMANCE"        : "Производительность",
         "SECTION_HEADER_PRECONNECTION_PDU"  : "Предварительные данные подключения (Hyper-V)",
-        "SECTION_HEADER_RECORDING"          : "Запись экрана",
-        "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
-        "SECTION_HEADER_SFTP"               : "SFTP"
+        "SECTION_HEADER_RECORDING"          : "Запись экрана"
 
     },
 
@@ -562,25 +544,10 @@
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Название typescript:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Путь typescript:",
 
-        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
-        "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
-        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
-
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Черное на белом",
-        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
         "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Серое на черном",
         "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Зеленое на черном",
         "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Белое на черном",
-
-        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
-        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
-        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
-        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
-        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
-        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
-        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
-
-        "NAME" : "SSH",
 
         "SECTION_HEADER_AUTHENTICATION" : "Аутентификация",
         "SECTION_HEADER_BEHAVIOR"       : "Поведение терминала",
@@ -588,8 +555,7 @@
         "SECTION_HEADER_NETWORK"        : "Сеть",
         "SECTION_HEADER_RECORDING"      : "Запись экрана",
         "SECTION_HEADER_SESSION"        : "Сессия / среда:",
-        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (запись текстовой сессии)",
-        "SECTION_HEADER_SFTP"           : "SFTP"
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (запись текстовой сессии)"
 
     },
 
@@ -620,25 +586,10 @@
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Название typescript:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Путь typescript:",
 
-        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
-        "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
-        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
-
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Черное на белом",
-        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
         "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Серое на черном",
         "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Зеленое на черном",
         "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Белое на черном",
-
-        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
-        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
-        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
-        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
-        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
-        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
-        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
-
-        "NAME" : "Telnet",
 
         "SECTION_HEADER_AUTHENTICATION" : "Аутентификация",
         "SECTION_HEADER_BEHAVIOR"       : "Поведение терминала",
@@ -685,22 +636,16 @@
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Low color (16-бит)",
         "FIELD_OPTION_COLOR_DEPTH_24"    : "True color (24-бит)",
         "FIELD_OPTION_COLOR_DEPTH_32"    : "True color (32-бит)",
-        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
 
-        "FIELD_OPTION_CURSOR_EMPTY"  : "",
         "FIELD_OPTION_CURSOR_LOCAL"  : "Локальный",
         "FIELD_OPTION_CURSOR_REMOTE" : "Удаленный",
-
-        "NAME" : "VNC",
 
         "SECTION_HEADER_AUDIO"          : "Аудио",
         "SECTION_HEADER_AUTHENTICATION" : "Аутентификация",
         "SECTION_HEADER_CLIPBOARD"      : "Буфер обмена",
         "SECTION_HEADER_DISPLAY"        : "Экран",
         "SECTION_HEADER_NETWORK"        : "Сеть",
-        "SECTION_HEADER_RECORDING"      : "Запись экрана",
-        "SECTION_HEADER_REPEATER"       : "VNC Repeater",
-        "SECTION_HEADER_SFTP"           : "SFTP"
+        "SECTION_HEADER_RECORDING"      : "Запись экрана"
 
     },
 
@@ -716,8 +661,6 @@
         "ACTION_SEARCH"   : "@:APP.ACTION_SEARCH",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-
-        "FILENAME_HISTORY_CSV" : "history.csv",
 
         "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 

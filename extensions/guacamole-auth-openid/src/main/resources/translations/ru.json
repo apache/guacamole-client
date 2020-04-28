@@ -5,7 +5,6 @@
     },
 
     "LOGIN" : {
-        "FIELD_HEADER_ID_TOKEN" : "",
         "INFO_REDIRECT_PENDING" : "Пожалуйста, подождите. Переадресую на страницу аутентификации..."
     }
 
