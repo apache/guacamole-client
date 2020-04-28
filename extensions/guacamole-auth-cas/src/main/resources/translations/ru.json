@@ -1,0 +1,12 @@
+{
+
+    "DATA_SOURCE_CAS" : {
+        "NAME" : "Бэкенд CAS SSO"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_TICKET"        : "",
+        "INFO_CAS_REDIRECT_PENDING"  : "Пожалуйста, подождите. Переадресую на страницу аутентификации CAS..."
+    }
+
+}
