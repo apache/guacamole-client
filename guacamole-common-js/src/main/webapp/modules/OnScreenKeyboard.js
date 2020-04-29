@@ -307,13 +307,13 @@ Guacamole.OnScreenKeyboard = function(layout) {
                 var originalKeysym = modifierKeysyms[key.modifier];
 
                 // Activate modifier if not pressed
-                if (!originalKeysym) {
+                if (originalKeysym === undefined) {
                     
                     addClass(keyboard, modifierClass);
                     modifierKeysyms[key.modifier] = key.keysym;
                     
-                    // Send key event
-                    if (osk.onkeydown)
+                    // Send key event only if keysym is meaningful
+                    if (key.keysym && osk.onkeydown)
                         osk.onkeydown(key.keysym);
 
                 }
@@ -324,8 +324,8 @@ Guacamole.OnScreenKeyboard = function(layout) {
                     removeClass(keyboard, modifierClass);
                     delete modifierKeysyms[key.modifier];
                     
-                    // Send key event
-                    if (osk.onkeyup)
+                    // Send key event only if original keysym is meaningful
+                    if (originalKeysym && osk.onkeyup)
                         osk.onkeyup(originalKeysym);
 
                 }
