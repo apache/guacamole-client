@@ -280,7 +280,7 @@ public class RadiusConnectionService {
         }
         catch (UnknownHostException e) {
             logger.error("Could not resolve address: {}", e.getMessage());
-            logger.debug("Exxception resolving host address.", e);
+            logger.debug("Exception resolving host address.", e);
             return null;
         }
         finally {
