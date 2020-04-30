@@ -368,7 +368,7 @@
         "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS",
         "SECTION_HEADER_USER_GROUPS"         : "Родительские группы",
 
-        "TEXT_CONFIRM_DELETE" : "Groups cannot be restored after they have been deleted. Are you sure you want to delete this group?"
+        "TEXT_CONFIRM_DELETE" : "Группы не могут быть восстановлены после удаления. Вы уверены, что хотите удалить группу?"
 
     },
 
