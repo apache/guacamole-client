@@ -27,8 +27,8 @@
         "FIELD_HEADER_GUACD_ENCRYPTION" : "Шифрование:",
         "FIELD_HEADER_GUACD_PORT"       : "Порт:",
 
-        "FIELD_OPTION_GUACD_ENCRYPTION_NONE"  : "Нет (не зашифровано)",
-        "FIELD_OPTION_GUACD_ENCRYPTION_SSL"   : "SSL/TLS",
+        "FIELD_OPTION_GUACD_ENCRYPTION_NONE" : "Нет (не зашифровано)",
+        "FIELD_OPTION_GUACD_ENCRYPTION_SSL"  : "SSL/TLS",
 
         "SECTION_HEADER_CONCURRENCY"    : "Совместное использование",
         "SECTION_HEADER_LOAD_BALANCING" : "Балансировка нагрузки",

@@ -5,7 +5,7 @@
     },
 
     "QUICKCONNECT" : {
-        "ACTION_CONNECT"        : "Подключиться",
+        "ACTION_CONNECT" : "Подключиться",
 
         "ERROR_INVALID_URI"      : "Указан неверный адрес URI",
         "ERROR_NO_HOST"          : "Не указан сервер",
