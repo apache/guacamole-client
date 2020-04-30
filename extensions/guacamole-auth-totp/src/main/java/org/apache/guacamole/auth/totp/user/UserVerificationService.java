@@ -136,8 +136,24 @@ public class UserVerificationService {
         }
 
         // Otherwise, parse value from attributes
+
+        // Parse key confirmed attribute
         boolean confirmed = "true".equals(attributes.get(TOTPUser.TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME));
-        return new UserTOTPKey(username, key, confirmed);
+
+        // Parse offset attribute
+        int offset;
+        try {
+            offset = Integer.valueOf(attributes.get(TOTPUser.TOTP_TIMEDRIFT_OFFSET_ATTRIBUTE_NAME));
+        }
+
+        // If offset is not an valid integer, warn and use zero instead
+        catch (NumberFormatException  e) {
+            logger.warn("TOTP offset of user \"{}\" is not valid integer, instead zero is used.", self.getIdentifier());
+            logger.debug("TOTP offset is not valid integer, instead zero is used.", e);
+            offset = 0;
+        }
+
+        return new UserTOTPKey(username, key, confirmed, offset);
 
     }
 
@@ -171,12 +187,14 @@ public class UserVerificationService {
         // Set/overwrite current TOTP key state
         attributes.put(TOTPUser.TOTP_KEY_SECRET_ATTRIBUTE_NAME, BASE32.encode(key.getSecret()));
         attributes.put(TOTPUser.TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME, key.isConfirmed() ? "true" : "false");
+        attributes.put(TOTPUser.TOTP_TIMEDRIFT_OFFSET_ATTRIBUTE_NAME, String.valueOf(key.getOffset()));
         self.setAttributes(attributes);
 
         // Confirm that attributes have actually been set
         Map<String, String> setAttributes = self.getAttributes();
         if (!setAttributes.containsKey(TOTPUser.TOTP_KEY_SECRET_ATTRIBUTE_NAME)
-                || !setAttributes.containsKey(TOTPUser.TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME))
+                || !setAttributes.containsKey(TOTPUser.TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME)
+                || !setAttributes.containsKey(TOTPUser.TOTP_TIMEDRIFT_OFFSET_ATTRIBUTE_NAME))
             return false;
 
         // Update user object
@@ -271,18 +289,29 @@ public class UserVerificationService {
 
             // Get generator based on user's key and provided configuration
             TOTPGenerator totp = new TOTPGenerator(key.getSecret(),
-                    confService.getMode(), confService.getDigits(),
+                    key.getOffset(), confService.getMode(), confService.getDigits(),
                     TOTPGenerator.DEFAULT_START_TIME, confService.getPeriod());
 
-            // Verify provided TOTP against value produced by generator
-            if ((code.equals(totp.generate()) || code.equals(totp.previous()))
-                    && codeService.useCode(username, code)) {
+            // Verify provided TOTP against value produced by generator and correct the offset
+            boolean verified = false;
+            if (code.equals(totp.previous()) && codeService.useCode(username, code)) {
+                verified = true;
+                key.decrementOffset();
+            } else if (code.equals(totp.generate()) && codeService.useCode(username, code)) {
+                verified = true;
+            } else if (code.equals(totp.next()) && codeService.useCode(username, code)) {
+                verified = true;
+                key.incrementOffset();
+            }
+
+            if (verified) {
 
                 // Record key as confirmed, if it hasn't already been so recorded
                 if (!key.isConfirmed()) {
                     key.setConfirmed(true);
-                    setKey(context, key);
                 }
+
+                setKey(context, key);
 
                 // User has been verified
                 return;

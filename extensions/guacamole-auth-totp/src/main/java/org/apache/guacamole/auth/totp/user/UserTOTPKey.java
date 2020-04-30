@@ -50,6 +50,11 @@ public class UserTOTPKey {
     private byte[] secret;
 
     /**
+     * Integer which contain the time drift information in timesteps.
+     */
+    private int offset;
+
+    /**
      * Generates the given number of random bytes.
      *
      * @param length
@@ -75,7 +80,7 @@ public class UserTOTPKey {
      *     The length of the key to generate, in bytes.
      */
     public UserTOTPKey(String username, int length) {
-        this(username, generateBytes(length), false);
+        this(username, generateBytes(length), false, 0);
     }
 
     /**
@@ -92,11 +97,15 @@ public class UserTOTPKey {
      *     true if the user associated with the key has confirmed that they can
      *     successfully generate the corresponding TOTP codes (the user has
      *     been "enrolled"), false otherwise.
+     *
+     * @param offset
+     *     The number of timesteps between TOTP token and systemtime.
      */
-    public UserTOTPKey(String username, byte[] secret, boolean confirmed) {
+    public UserTOTPKey(String username, byte[] secret, boolean confirmed, int offset) {
         this.username = username;
         this.confirmed = confirmed;
         this.secret = secret;
+        this.offset = offset;
     }
 
     /**
@@ -133,6 +142,16 @@ public class UserTOTPKey {
     }
 
     /**
+     * Returns the number of timesteps between TOTP token and systemtime.
+     *
+     * @return
+     *     The number of timesteps between TOTP token and systemtime.
+     */
+    public int getOffset() {
+        return offset;
+    }
+
+    /**
      * Sets whether the user associated with the key has confirmed that they
      * can successfully generate the corresponding TOTP codes (the user has
      * been "enrolled").
@@ -145,4 +164,17 @@ public class UserTOTPKey {
         this.confirmed = confirmed;
     }
 
+    /**
+     * Incermetns the number of timesteps between TOTP token and systemtime by one.
+     */
+    public void incrementOffset() {
+        this.offset++;
+    }
+
+    /**
+     * Decrements the number of timesteps between TOTP token and systemtime by one.
+     */
+    public void decrementOffset() {
+        this.offset--;
+    }
 }
