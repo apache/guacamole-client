@@ -126,13 +126,13 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
-     * The DN of the user that the LDAP authentication should bind as when
-     * searching for the user accounts of users attempting to log in. If not
-     * specified, the DNs of users attempting to log in will be derived from
-     * the LDAP_BASE_DN and LDAP_USERNAME_ATTRIBUTE directly.
+     * The user that the LDAP extension should bind as when searching for the
+     * accounts of users attempting to log in, in either UPN or DN format.
+     * If not specified, the DNs of users attempting to log in will be derived
+     * from the LDAP_BASE_DN and LDAP_USERNAME_ATTRIBUTE directly.
      */
-    public static final LdapDnGuacamoleProperty LDAP_SEARCH_BIND_DN =
-            new LdapDnGuacamoleProperty() {
+    public static final LdapBindGuacamoleProperty LDAP_SEARCH_BIND_DN =
+            new LdapBindGuacamoleProperty() {
 
         @Override
         public String getName() { return "ldap-search-bind-dn"; }

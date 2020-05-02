@@ -119,18 +119,19 @@ public class AuthenticationProviderService {
 
         // If a search DN is provided, search the LDAP directory for the DN
         // corresponding to the given username
-        Dn searchBindDN = confService.getSearchBindDN();
-        if (searchBindDN != null) {
+        String searchBindLogon = confService.getSearchBindDN();
+        if (searchBindLogon != null) {
 
             // Create an LDAP connection using the search account
             LdapNetworkConnection searchConnection = ldapService.bindAs(
-                searchBindDN,
+                searchBindLogon,
                 confService.getSearchBindPassword()
             );
 
             // Warn of failure to find
             if (searchConnection == null) {
-                logger.error("Unable to bind using search DN \"{}\"", searchBindDN);
+                logger.error("Unable to bind using search DN \"{}\"",
+                        searchBindLogon);
                 return null;
             }
 
@@ -203,7 +204,8 @@ public class AuthenticationProviderService {
         }
         
         // Attempt bind
-        LdapNetworkConnection ldapConnection = ldapService.bindAs(bindDn, password);
+        LdapNetworkConnection ldapConnection =
+                ldapService.bindAs(bindDn.getName(), password);
         if (ldapConnection == null)
             throw new GuacamoleInvalidCredentialsException("Invalid login.",
                     CredentialsInfo.USERNAME_PASSWORD);
@@ -315,7 +317,8 @@ public class AuthenticationProviderService {
         if (authenticatedUser instanceof LDAPAuthenticatedUser) {
 
             Dn bindDn = ((LDAPAuthenticatedUser) authenticatedUser).getBindDn();
-            LdapNetworkConnection ldapConnection = ldapService.bindAs(bindDn, credentials.getPassword());
+            LdapNetworkConnection ldapConnection =
+                    ldapService.bindAs(bindDn.getName(), credentials.getPassword());
             if (ldapConnection == null) {
                 logger.debug("LDAP bind succeeded for \"{}\" during "
                         + "authentication but failed during data retrieval.",

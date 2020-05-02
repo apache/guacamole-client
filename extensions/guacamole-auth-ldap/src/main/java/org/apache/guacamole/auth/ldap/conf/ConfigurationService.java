@@ -171,7 +171,7 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the DN that should be used when searching for the DNs of users
+     * Returns the login that should be used when searching for the DNs of users
      * attempting to authenticate. If no such search should be performed, null
      * is returned.
      *
@@ -183,7 +183,7 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public Dn getSearchBindDN() throws GuacamoleException {
+    public String getSearchBindDN() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_SEARCH_BIND_DN
         );

@@ -239,11 +239,11 @@ public class LDAPConnectionService {
      *     bound.
      */
     private LdapNetworkConnection bindAs(LdapNetworkConnection ldapConnection,
-            Dn userDN, String password) {
+            String bindUser, String password) {
 
         // Add credentials to existing config
         LdapConnectionConfig config = ldapConnection.getConfig();
-        config.setName(userDN.getName());
+        config.setName(bindUser);
         config.setCredentials(password);
 
         try {
@@ -255,7 +255,8 @@ public class LDAPConnectionService {
         // only at the debug level (such failures are expected)
         catch (LdapAuthenticationException e) {
             ldapConnection.close();
-            logger.debug("Bind attempt with LDAP server as user \"{}\" failed.", userDN, e);
+            logger.debug("Bind attempt with LDAP server as user \"{}\" failed.",
+                    bindUser, e);
             return null;
         }
 
@@ -264,7 +265,8 @@ public class LDAPConnectionService {
         catch (LdapException e) {
             ldapConnection.close();
             logger.error("Binding with the LDAP server at \"{}\" as user "
-                    + "\"{}\" failed: {}", config.getLdapHost(), userDN, e.getMessage());
+                    + "\"{}\" failed: {}", config.getLdapHost(), bindUser,
+                    e.getMessage());
             logger.debug("Unable to bind to LDAP server.", e);
             return null;
         }
@@ -318,7 +320,7 @@ public class LDAPConnectionService {
         }
 
         // Bind using username/password from existing connection
-        return bindAs(ldapConnection, userDN, password);
+        return bindAs(ldapConnection, userDN.getName(), password);
 
     }
 
@@ -327,8 +329,8 @@ public class LDAPConnectionService {
      * hostname, port, and encryption method of the LDAP server are determined
      * from guacamole.properties.
      *
-     * @param userDN
-     *     The DN of the user to bind as, or null to bind anonymously.
+     * @param bindUser
+     *     The DN or UPN of the user to bind as, or null to bind anonymously.
      *
      * @param password
      *     The password to use when binding as the specified user, or null to
@@ -342,9 +344,9 @@ public class LDAPConnectionService {
      *     If an error occurs while parsing guacamole.properties, or if the
      *     configured encryption method is actually not implemented (a bug).
      */
-    public LdapNetworkConnection bindAs(Dn userDN, String password)
+    public LdapNetworkConnection bindAs(String bindUser, String password)
             throws GuacamoleException {
-        return bindAs(createLDAPConnection(), userDN, password);
+        return bindAs(createLDAPConnection(), bindUser, password);
     }
 
     /**
