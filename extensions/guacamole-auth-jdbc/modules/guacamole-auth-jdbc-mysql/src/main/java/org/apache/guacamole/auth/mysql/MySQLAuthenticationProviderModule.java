@@ -28,6 +28,7 @@ import java.util.Properties;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.mysql.conf.MySQLDriver;
 import org.apache.guacamole.auth.mysql.conf.MySQLEnvironment;
+import org.apache.guacamole.auth.mysql.conf.MySQLSSLMode;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
 
 /**
@@ -84,7 +85,14 @@ public class MySQLAuthenticationProviderModule implements Module {
         driverProperties.setProperty("allowMultiQueries", "true");
         
         // Set the SSL mode to use when conncting
-        driverProperties.setProperty("sslMode", environment.getMySQLSSLMode().toString());
+        MySQLSSLMode sslMode = environment.getMySQLSSLMode();
+        driverProperties.setProperty("sslMode", sslMode.toString());
+        
+        // Set legacy properties
+        if (sslMode == MySQLSSLMode.DISABLED)
+            driverProperties.setProperty("useSSL", "false");
+        else
+            driverProperties.setProperty("useSSL", "true");
         
         // Check other SSL settings and set as required
         File trustStore = environment.getMySQLSSLTrustStore();
