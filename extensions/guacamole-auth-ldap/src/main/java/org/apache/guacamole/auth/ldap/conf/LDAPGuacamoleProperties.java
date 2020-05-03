@@ -126,6 +126,20 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
+     * The type of bind that is used to initially connect to the LDAP directory
+     * for the purpose of locating the user that is trying to log in.  The
+     * default value, if not specified, is "derived", unless a search user and
+     * password are specified, in which case it will effectively be "search".
+     */
+    public static final BindTypeGuacamoleProperty LDAP_BIND_TYPE =
+            new BindTypeGuacamoleProperty() {
+        
+        @Override
+        public String getName() { return "ldap-bind-type"; }
+        
+    };
+    
+    /**
      * The user that the LDAP extension should bind as when searching for the
      * accounts of users attempting to log in, in either UPN or DN format.
      * If not specified, the DNs of users attempting to log in will be derived

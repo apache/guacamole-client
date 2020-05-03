@@ -348,6 +348,22 @@ public class LDAPConnectionService {
             throws GuacamoleException {
         return bindAs(createLDAPConnection(), bindUser, password);
     }
+    
+    /**
+     * Attempt to bind to the LDAP directory using anonymous access, providing
+     * no username and password.
+     * 
+     * @return
+     *     A LDAP connection that has been bound anonymously, or null if the
+     *     connection cannot be bound.
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs while parsing guacamole.properties, or the
+     *     configured encryption method is not implemented (a bug).
+     */
+    public LdapNetworkConnection bindAnonymous() throws GuacamoleException {
+        return bindAs(createLDAPConnection(), null, null);
+    }
 
     /**
      * Binds to the LDAP server indicated by the given LDAP URL using the
