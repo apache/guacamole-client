@@ -173,18 +173,19 @@ public class ConfigurationService {
     /**
      * Returns the type of bind that will be used when locating the user who
      * is attempting to authenticate in the LDAP directory.  The default, if
-     * not specified, is DERIVED.
+     * not specified, is SEARCH, but will fall back to DERIVED if a search
+     * account is not specified..
      * 
      * @return
      *     The configured LDAP bind type from guacamole.properties, or
-     *     DERIVED if not configured.
+     *     SEARCH if not configured.
      * 
      * @throws GuacamoleException 
      *     If guacamole.properties cannot be parsed.
      */
     public BindType getBindType() throws GuacamoleException {
         return environment.getProperty(LDAPGuacamoleProperties.LDAP_BIND_TYPE,
-                BindType.DERIVED);
+                BindType.SEARCH);
     }
     
     /**

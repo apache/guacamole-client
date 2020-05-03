@@ -35,9 +35,17 @@ public abstract class BindTypeGuacamoleProperty implements GuacamoleProperty<Bin
         if (value == null || value.isEmpty())
             return null;
         
-        BindType bindType = BindType.valueOf(value);
-        if (bindType != null)
-            return bindType;
+        if (value.equals("anonymous"))
+            return BindType.ANONYMOUS;
+        
+        if (value.equals("derived"))
+            return BindType.DERIVED;
+        
+        if (value.equals("direct"))
+            return BindType.DIRECT;
+        
+        if (value.equals("search"))
+            return BindType.SEARCH;
         
         throw new GuacamoleServerException("Invalid bind type specified - value "
             + " should be one of \"anonymous\", \"derived\", \"direct\", "

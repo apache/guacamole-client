@@ -133,6 +133,9 @@ public class AuthenticationProviderService {
                 searchConnection = ldapService.bindAnonymous();
                 break;
                 
+            case DERIVED:
+                return userService.deriveUserDN(username);
+            
             default:
                 String searchBindLogon = confService.getSearchBindDN();
                 if (searchBindLogon != null)
