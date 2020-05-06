@@ -2,10 +2,6 @@
 
     "DATA_SOURCE_RADIUS" : {
         "NAME" : "Бэкенд RADIUS"
-    },
-
-    "LOGIN" : {
-        "INFO_RADIUS_ADDL_REQUIRED" : "Требуются дополнительные данные доступа."
     }
 
 }

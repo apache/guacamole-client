@@ -40,7 +40,7 @@
 
         "FORMAT_DATE_TIME_PRECISE" : "dd.MM.yyyy HH:mm:ss",
 
-        "INFO_ACTIVE_USER_COUNT" : "Сейчас систему используют {USERS} {USERS, plural, one{пользователь} few{пользователя} many{пользователей} other{пользователя}}.",
+        "INFO_ACTIVE_USER_COUNT" : "Сейчас в системе {USERS} {USERS, plural, one{пользователь} few{пользователя} many{пользователей} other{пользователя}}.",
 
         "TEXT_ANONYMOUS_USER"   : "Аноним",
         "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{секунда} few{секуны} many{секунд} other{секуны}}} minute{{VALUE, plural, one{минута} few{минуты} many{минут} other{минуты}}} hour{{VALUE, plural, one{час} few{часа} many{часов} other{часа}}} day{{VALUE, plural, one{день} few{дня} many{дней} other{дня}}} other{}}"
@@ -427,6 +427,8 @@
         "FIELD_HEADER_CREATE_RECORDING_PATH"      : "Автоматически создавать путь для записи:",
         "FIELD_HEADER_DISABLE_AUDIO"              : "Отключить звук:",
         "FIELD_HEADER_DISABLE_AUTH"               : "Отключить аутентификацию:",
+        "FIELD_HEADER_DISABLE_COPY"               : "Отключить копирование в буфер обмена:",
+        "FIELD_HEADER_DISABLE_PASTE"              : "Отключить вставку из буфера обмена:",
         "FIELD_HEADER_DOMAIN"                     : "Домен:",
         "FIELD_HEADER_DPI"                        : "Разрешение экрана (DPI):",
         "FIELD_HEADER_DRIVE_NAME"                 : "Название диска:",
@@ -519,6 +521,8 @@
         "FIELD_HEADER_COMMAND"                  : "Команда для выполнения:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"    : "Автоматически создавать путь для записи:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH"   : "Автоматически создавать путь typescript:",
+        "FIELD_HEADER_DISABLE_COPY"             : "Отключить копирование в буфер обмена:",
+        "FIELD_HEADER_DISABLE_PASTE"            : "Отключить вставку из буфера обмена:",
         "FIELD_HEADER_FONT_NAME"                : "Шрифт:",
         "FIELD_HEADER_FONT_SIZE"                : "Размер шрифта:",
         "FIELD_HEADER_ENABLE_SFTP"              : "Включить SFTP:",
@@ -565,6 +569,8 @@
         "FIELD_HEADER_COLOR_SCHEME"             : "Цветовая схема:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"    : "Автоматически создавать путь для записи:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH"   : "Автоматически создавать путь typescript:",
+        "FIELD_HEADER_DISABLE_COPY"             : "Отключить копирование в буфер обмена:",
+        "FIELD_HEADER_DISABLE_PASTE"            : "Отключить вставку из буфера обмена:",
         "FIELD_HEADER_FONT_NAME"                : "Шрифт:",
         "FIELD_HEADER_FONT_SIZE"                : "Размер шрифта:",
         "FIELD_HEADER_HOSTNAME"                 : "Сервер:",
@@ -609,6 +615,8 @@
         "FIELD_HEADER_CURSOR"                     : "Курсор:",
         "FIELD_HEADER_DEST_HOST"                  : "Сервер назначения:",
         "FIELD_HEADER_DEST_PORT"                  : "Порт назначения:",
+        "FIELD_HEADER_DISABLE_COPY"               : "Отключить копирование в буфер обмена:",
+        "FIELD_HEADER_DISABLE_PASTE"              : "Отключить вставку из буфера обмена:",
         "FIELD_HEADER_ENABLE_AUDIO"               : "Включить звук:",
         "FIELD_HEADER_ENABLE_SFTP"                : "Включить SFTP:",
         "FIELD_HEADER_HOSTNAME"                   : "Сервер:",
@@ -722,7 +730,7 @@
         "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
         "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
         "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
-        "HELP_LANGUAGE"             : "Выберите язык из списка ниже, чтобы использовать его в Guacamole. Доступность опций зависит от установленных в системе языков.",
+        "HELP_LOCALE"               : "Ниже вы можете выбрать язык и установить другие настройки локали, влияющие на отображение интерфейса пользователя.",
         "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
         "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
         "HELP_UPDATE_PASSWORD"      : "Если вы хотите изменить пароль, укажите ваш текущий пароль и дважды укажите новый. Затем нажмите «Обновить пароль». Изменения вступят в силу моментально.",
