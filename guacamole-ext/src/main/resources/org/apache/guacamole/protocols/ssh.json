@@ -148,6 +148,11 @@
             "name" : "recording",
             "fields" : [
                 {
+                    "name"    : "recording-disabled",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"  : "recording-path",
                     "type"  : "TEXT"
                 },
