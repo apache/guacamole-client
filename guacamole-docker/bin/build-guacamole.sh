@@ -168,3 +168,19 @@ if [ -f extensions/guacamole-auth-header/target/guacamole-auth-header*.jar ]; th
     mkdir -p "$DESTINATION/header"
     cp extensions/guacamole-auth-header/target/guacamole-auth-header*.jar "$DESTINATION/header"
 fi
+
+#
+# Copy CAS auth extension if it was built
+#
+
+if [ -f extensions/guacamole-auth-cas/target/*.tar.gz ]; then
+    mkdir -p "$DESTINATION/cas"
+    tar -xzf extensions/guacamole-auth-cas/target/*.tar.gz  \
+    -C "$DESTINATION/cas/"                                  \
+    --wildcards                                             \
+    --no-anchored                                           \
+    --no-wildcards-match-slash                              \
+    --strip-components=1                                    \
+    "*.jar"
+fi
+

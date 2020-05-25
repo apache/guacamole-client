@@ -653,6 +653,38 @@ associate_header() {
 }
 
 ##
+## Adds properties to guacamole.properties witch configure the CAS
+## authentication service.
+##
+associate_cas() {
+    # Verify required parameters are present
+    if [ -z "$CAS_AUTHORIZATION_ENDPOINT" ] || \
+       [ -z "$CAS_REDIRECT_URI" ]
+    then
+        cat <<END
+FATAL: Missing required environment variables
+-----------------------------------------------------------------------------------
+If using the CAS authentication extension, you must provide each of the
+following environment variables:
+
+    CAS_AUTHORIZATION_ENDPOINT      The URL of the CAS authentication server.
+
+    CAS_REDIRECT_URI                The URI to redirect back to upon successful authentication.
+
+END
+        exit 1;
+    fi
+
+    # Update config file
+    set_property            "cas-authorization-endpoint"       "$CAS_AUTHORIZATION_ENDPOINT"
+    set_property            "cas-redirect-uri"                 "$CAS_REDIRECT_URI"
+    set_optional_property   "cas-clearpass-key"                "$CAS_CLEARPASS_KEY"
+
+    # Add required .jar files to GUACAMOLE_EXT
+    ln -s /opt/guacamole/cas/guacamole-auth-*.jar   "$GUACAMOLE_EXT"
+}
+
+##
 ## Starts Guacamole under Tomcat, replacing the current process with the
 ## Tomcat process. As the current process will be replaced, this MUST be the
 ## last function run within the script.
@@ -797,6 +829,11 @@ fi
 # Use header if specified.
 if [ "$HEADER_ENABLED" = "true" ]; then
     associate_header
+fi
+
+# Use CAS if specified.
+if [ -n "$CAS_AUTHORIZATION_ENDPOINT" ]; then
+    associate_cas
 fi
 
 # Set logback level if specified
