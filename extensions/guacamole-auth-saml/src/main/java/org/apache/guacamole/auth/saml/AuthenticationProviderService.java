@@ -100,7 +100,7 @@ public class AuthenticationProviderService {
         if (request != null) {
             
             // Look for the SAML Response parameter.
-            String responseHash = Util.urlDecoder(request.getParameter("responseHash"));
+            String responseHash = request.getParameter("responseHash");
 
             if (responseHash != null) {
 
