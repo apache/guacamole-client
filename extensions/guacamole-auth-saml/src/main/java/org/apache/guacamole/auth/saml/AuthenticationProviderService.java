@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.saml;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.onelogin.saml2.Auth;
 import com.onelogin.saml2.authn.AuthnRequest;
 import com.onelogin.saml2.authn.SamlResponse;
 import com.onelogin.saml2.exception.SettingsException;
@@ -29,6 +30,11 @@ import com.onelogin.saml2.settings.Saml2Settings;
 import com.onelogin.saml2.util.Util;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -129,9 +135,22 @@ public class AuthenticationProviderService {
                     // Grab the username, and, if present, finish authentication.
                     String username = samlResponse.getNameId().toLowerCase();
                     if (username != null) {
+                        
+                        // Retrieve any provided attributes
+                        Map<String, List<String>> attributes =
+                                samlResponse.getAttributes();
+                        
+                        // Back-port the username to the credentials
                         credentials.setUsername(username);
-                        SAMLAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-                        authenticatedUser.init(username, credentials);
+                        
+                        // Configure the AuthenticatedUser and return it
+                        SAMLAuthenticatedUser authenticatedUser =
+                                authenticatedUserProvider.get();
+                        
+                        authenticatedUser.init(username, credentials,
+                                parseTokens(attributes),
+                                new HashSet<>(attributes.get(confService.getGroupAttribute())));
+                        
                         return authenticatedUser;
                     }
                 }
@@ -199,10 +218,25 @@ public class AuthenticationProviderService {
         // Redirect to SAML Identity Provider (IdP)
         throw new GuacamoleInsufficientCredentialsException("Redirecting to SAML IdP.",
                 new CredentialsInfo(Arrays.asList(new Field[] {
-                    new SAMLRedirectField(reqString)
+                    new RedirectField("samlRedirect", reqString, "LOGIN.REDIRECT_PENDING")
                 }))
         );
 
+    }
+    
+    private Map<String, String> parseTokens(Map<String, List<String>> attributes)
+            throws GuacamoleException {
+        
+        Map<String, String> tokens = new HashMap<>();
+        for (Entry<String, List<String>> entry : attributes.entrySet()) {
+            
+            List<String> values = entry.getValue();
+            tokens.put(entry.getKey(), values.get(0));
+            
+        }
+        
+        return tokens;
+        
     }
 
 }

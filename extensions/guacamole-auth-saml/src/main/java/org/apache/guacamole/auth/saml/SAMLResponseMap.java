@@ -21,8 +21,13 @@ package org.apache.guacamole.auth.saml;
 
 import com.google.inject.Singleton;
 import com.onelogin.saml2.authn.SamlResponse;
+import com.onelogin.saml2.exception.ValidationError;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A class that handles mapping of hashes to SAMLResponse objects.
@@ -36,6 +41,21 @@ public class SAMLResponseMap {
      */
     private final ConcurrentMap<String, SamlResponse> samlResponseMap =
         new ConcurrentHashMap<>();
+    
+    /**
+     * Executor service which runs the periodic cleanup task
+     */
+    private final ScheduledExecutorService executor =
+            Executors.newScheduledThreadPool(1);
+
+    /**
+     * Create a new instance of this response map and kick off the executor
+     * that schedules the response cleanup task to run every five minutes.
+     */
+    public SAMLResponseMap() {
+        // Cleanup unclaimed responses every five minutes
+        executor.scheduleAtFixedRate(new SAMLResponseCleanupTask(), 5, 5, TimeUnit.MINUTES);
+    }
     
     /**
      * Retrieve the SamlResponse from the map that is represented by the
@@ -75,6 +95,29 @@ public class SAMLResponseMap {
      */
     protected boolean hasSamlResponse(String hash) {
         return samlResponseMap.containsKey(hash);
+    }
+    
+    /**
+     * Task which runs every five minutes and cleans up any expired SAML
+     * responses that haven't been claimed and removed from the map.
+     */
+    private class SAMLResponseCleanupTask implements Runnable {
+        
+        @Override
+        public void run() {
+
+            // Loop through responses in map and remove ones that are no longer valid.
+            for (Entry<String, SamlResponse> entry : samlResponseMap.entrySet()) {
+                try {
+                    entry.getValue().validateTimestamps();
+                }
+                catch (ValidationError e) {
+                    samlResponseMap.remove(entry.getKey());
+                }
+            }
+
+        }
+    
     }
     
 }

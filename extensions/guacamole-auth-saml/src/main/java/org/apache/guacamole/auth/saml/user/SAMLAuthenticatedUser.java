@@ -20,6 +20,8 @@
 package org.apache.guacamole.auth.saml.user;
 
 import com.google.inject.Inject;
+import java.util.Map;
+import java.util.Set;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -42,6 +44,16 @@ public class SAMLAuthenticatedUser extends AbstractAuthenticatedUser {
      * The credentials provided when this user was authenticated.
      */
     private Credentials credentials;
+    
+    /**
+     * The effective groups of the authenticated user.
+     */
+    private Set<String> effectiveGroups;
+    
+    /**
+     * Tokens associated with the authenticated user.
+     */
+    private Map<String, String> tokens;
 
     /**
      * Initializes this AuthenticatedUser using the given username and
@@ -52,10 +64,29 @@ public class SAMLAuthenticatedUser extends AbstractAuthenticatedUser {
      *
      * @param credentials
      *     The credentials provided when this user was authenticated.
+     * 
+     * @param tokens
+     *     The tokens available from this authentication provider.
+     * 
+     * @param effectiveGroups
+     *     The groups of which this user is a member.
      */
-    public void init(String username, Credentials credentials) {
+    public void init(String username, Credentials credentials,
+            Map<String, String> tokens, Set<String> effectiveGroups) {
         this.credentials = credentials;
+        this.effectiveGroups = effectiveGroups;
+        this.tokens = tokens;
         setIdentifier(username);
+    }
+    
+    /**
+     * Get the tokens associated with this particular user.
+     * 
+     * @return 
+     *     A map of token names and values available from this user account.
+     */
+    public Map<String, String> getTokens() {
+        return tokens;
     }
 
     @Override
@@ -66,6 +97,11 @@ public class SAMLAuthenticatedUser extends AbstractAuthenticatedUser {
     @Override
     public Credentials getCredentials() {
         return credentials;
+    }
+    
+    @Override
+    public Set<String> getEffectiveUserGroups() {
+        return effectiveGroups;
     }
 
 }

@@ -33,6 +33,7 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.FileGuacamoleProperty;
+import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
 
 /**
@@ -140,6 +141,18 @@ public class ConfigurationService {
         @Override
         public String getName() { return "saml-strict"; }
         
+    };
+    
+    /**
+     * The property that defines what attribute the SAML provider will return
+     * that contains group membership for the authenticated user.
+     */
+    private static final StringGuacamoleProperty SAML_GROUP_ATTRIBUTE =
+            new StringGuacamoleProperty() {
+            
+        @Override
+        public String getName() { return "saml-group-attribute"; }
+                
     };
 
     /**
@@ -286,6 +299,20 @@ public class ConfigurationService {
      */
     private Boolean getCompressResponse() throws GuacamoleException {
         return environment.getProperty(SAML_COMPRESS_RESPONSE, true);
+    }
+    
+    /**
+     * Return the name of the attribute that will be supplied by the identity
+     * provider that contains the groups of which this user is a member.
+     * 
+     * @return
+     *     The name of the attribute that contains the user groups.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be parsed.
+     */
+    public String getGroupAttribute() throws GuacamoleException {
+        return environment.getProperty(SAML_GROUP_ATTRIBUTE, "groups");
     }
 
     /**
