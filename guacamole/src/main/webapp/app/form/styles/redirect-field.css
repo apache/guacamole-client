@@ -17,14 +17,19 @@
  * under the License.
  */
 
-/**
- * Controller for the "GUAC_CAS_TICKET" field which simply redirects the user
- * immediately to the authorization URI.
- */
-angular.module('guacCAS').controller('guacCASController', ['$scope', 
-    function guacCASController($scope) {
+.redirect-field-container {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: table;
+    background: white;
+}
 
-        // Redirect to authorization URI
-        window.location = $scope.field.authorizationURI;
-
-}]);
+.redirect-field {
+    width: 100%;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}

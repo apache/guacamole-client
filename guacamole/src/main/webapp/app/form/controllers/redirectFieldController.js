@@ -18,16 +18,26 @@
  */
 
 /**
- * Config block which registers openid-specific field types.
+ * Controller for the redirect field, which redirects the user to the provided
+ * URL.
  */
-angular.module('guacOpenID').config(['formServiceProvider',
-        function guacOpenIDConfig(formServiceProvider) {
+angular.module('form').controller('redirectFieldController', ['$scope','$window',
+    function redirectFieldController($scope,$window) {
 
-    // Define field for token from OpenID service
-    formServiceProvider.registerFieldType("GUAC_OPENID_TOKEN", {
-        templateUrl : 'app/ext/guac-openid/templates/openidTokenField.html',
-        controller  : 'guacOpenIDController',
-        module      : 'guacOpenID'
-    });
+    /**
+     * Redirect the user to the provided URL.
+     */
+    $window.location.href = $scope.field.redirectUrl;
+    
+    /**
+     * Return the text that should be displayed to the user while the redirect
+     * is taking place.
+     * 
+     * @return {String}
+     *     The text to display for the user during the redirect.
+     */
+    $scope.getRedirectMsg = function getRedirctMsg() {
+        return $scope.field.redirectMsg;
+    };
 
 }]);

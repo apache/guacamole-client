@@ -53,27 +53,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Pre-cache Angular templates with maven-angular-plugin -->
-            <plugin>
-                <groupId>com.keithbranton.mojo</groupId>
-                <artifactId>angular-maven-plugin</artifactId>
-                <version>0.3.2</version>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>html2js</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <sourceDir>${basedir}/src/main/resources</sourceDir>
-                    <include>**/*.html</include>
-                    <target>${basedir}/src/main/resources/generated/templates-main/templates.js</target>
-                    <prefix>app/ext/guac-openid</prefix>
-                </configuration>
-            </plugin>
-
             <!-- JS/CSS Minification Plugin -->
             <plugin>
                 <groupId>com.samaxes.maven</groupId>
@@ -87,18 +66,6 @@
 
                             <webappSourceDir>${basedir}/src/main/resources</webappSourceDir>
                             <webappTargetDir>${project.build.directory}/classes</webappTargetDir>
-
-                            <cssSourceDir>/</cssSourceDir>
-                            <cssTargetDir>/</cssTargetDir>
-                            <cssFinalFile>openid.css</cssFinalFile>
-
-                            <cssSourceFiles>
-                                <cssSourceFile>license.txt</cssSourceFile>
-                            </cssSourceFiles>
-
-                            <cssSourceIncludes>
-                                <cssSourceInclude>**/*.css</cssSourceInclude>
-                            </cssSourceIncludes>
 
                             <jsSourceDir>/</jsSourceDir>
                             <jsTargetDir>/</jsTargetDir>

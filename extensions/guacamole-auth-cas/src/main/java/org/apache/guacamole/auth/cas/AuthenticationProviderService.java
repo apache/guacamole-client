@@ -99,7 +99,8 @@ public class AuthenticationProviderService {
                 // to the authorization page via JavaScript)
                 new CASTicketField(
                     confService.getAuthorizationEndpoint(),
-                    confService.getRedirectURI()
+                    confService.getRedirectURI(),
+                    "LOGIN.INFO_CAS_REDIRECT_PENDING"
                 )
 
             }))

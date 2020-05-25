@@ -6,7 +6,7 @@
 
     "LOGIN" : {
         "FIELD_HEADER_ID_TOKEN" : "",
-        "INFO_REDIRECT_PENDING" : "Please wait, redirecting to identity provider..."
+        "INFO_OID_REDIRECT_PENDING" : "Please wait, redirecting to identity provider..."
     }
 
 }
