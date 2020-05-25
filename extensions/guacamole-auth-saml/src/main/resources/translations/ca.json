@@ -1,0 +1,12 @@
+{
+
+    "DATA_SOURCE_SAML" : {
+        "NAME" : "Extensión de autenticación SAML"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_SAML"     : "",
+        "INFO_SAML_REDIRECT_PENDING" : "Por favor espere, redirigiendo al proveedor de identidad ..."
+    }
+
+}
