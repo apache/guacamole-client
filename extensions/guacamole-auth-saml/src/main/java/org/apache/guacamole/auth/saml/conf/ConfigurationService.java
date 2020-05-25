@@ -31,6 +31,7 @@ import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.FileGuacamoleProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
 
@@ -94,6 +95,40 @@ public class ConfigurationService {
         @Override
         public String getName() { return "saml-logout-url"; }
 
+    };
+    
+    /**
+     * Whether or not debugging should be enabled in the SAML library to help
+     * track down errors.
+     */
+    private static final BooleanGuacamoleProperty SAML_DEBUG =
+            new BooleanGuacamoleProperty() {
+    
+        @Override
+        public String getName() { return "saml-debug"; }
+                
+    };
+    
+    /**
+     * Whether or not to enabled compression for the SAML request.
+     */
+    private static final BooleanGuacamoleProperty SAML_COMPRESS_REQUEST =
+            new BooleanGuacamoleProperty() {
+            
+        @Override
+        public String getName() { return "saml-compress-request"; }
+                
+    };
+    
+    /**
+     * Whether or not to enabled compression for the SAML response.
+     */
+    private static final BooleanGuacamoleProperty SAML_COMPRESS_RESPONSE =
+            new BooleanGuacamoleProperty() {
+            
+        @Override
+        public String getName() { return "saml-compress-response"; }
+                
     };
 
     /**
@@ -179,6 +214,52 @@ public class ConfigurationService {
     private URI getLogoutUrl() throws GuacamoleException {
         return environment.getProperty(SAML_LOGOUT_URL);
     }
+    
+    /**
+     * Return true if SAML debugging should be enabled, otherwise false.  The
+     * default is false.
+     * 
+     * @return
+     *     True if debugging should be enabled in the SAML library, otherwise
+     *     false.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be parsed.
+     */
+    private Boolean getDebug() throws GuacamoleException {
+        return environment.getProperty(SAML_DEBUG, false);
+    }
+    
+    /**
+     * Return true if compression should be enabled when sending the SAML
+     * request, otherwise false.  The default is to enable compression.
+     * 
+     * @return
+     *     True if compression should be enabled when sending the SAML request,
+     *     otherwise false.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be parsed.
+     */
+    private Boolean getCompressRequest() throws GuacamoleException {
+        return environment.getProperty(SAML_COMPRESS_REQUEST, true);
+    }
+    
+    /**
+     * Return true if compression should be requested from the server when the
+     * SAML response is returned, otherwise false.  The default is to request
+     * that the response be compressed.
+     * 
+     * @return
+     *     True if compression should be requested from the server for the SAML
+     *     response.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be parsed.
+     */
+    private Boolean getCompressResponse() throws GuacamoleException {
+        return environment.getProperty(SAML_COMPRESS_RESPONSE, true);
+    }
 
     /**
      * Returns the collection of SAML settings used to
@@ -222,9 +303,9 @@ public class ConfigurationService {
         
         SettingsBuilder samlBuilder = new SettingsBuilder();
         Saml2Settings samlSettings = samlBuilder.fromValues(samlMap).build();
-        samlSettings.setDebug(true);
-        samlSettings.setCompressRequest(true);
-        samlSettings.setCompressResponse(true);
+        samlSettings.setDebug(getDebug());
+        samlSettings.setCompressRequest(getCompressRequest());
+        samlSettings.setCompressResponse(getCompressResponse());
     
         return samlSettings;
     }
