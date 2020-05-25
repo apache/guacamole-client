@@ -39,7 +39,7 @@ public class TokenFilter {
      * escape character preceding the token, the name of the token, and the
      * entire token itself.
      */
-    private final Pattern tokenPattern = Pattern.compile("(.*?)(^|.)(\\$\\{([A-Za-z0-9_]*)\\})");
+    private final Pattern tokenPattern = Pattern.compile("(.*?)(^|.)(\\$\\{([A-Za-z0-9_]*)(\\:(.*))?\\})");
 
     /**
      * The index of the capturing group within tokenPattern which matches
@@ -65,6 +65,12 @@ public class TokenFilter {
      * the token name contained within the "${" and "}" strings.
      */
     private static final int TOKEN_NAME_GROUP = 4;
+    
+    /**
+     * The index of the capturing group within tokenPattern which matches the
+     * string of the actual modifier for the token.
+     */
+    private static final int TOKEN_MODIFIER = 6;
     
     /**
      * The values of all known tokens.
@@ -182,6 +188,7 @@ public class TokenFilter {
             // Pull possible leading text and first char before possible token
             String literal = tokenMatcher.group(LEADING_TEXT_GROUP);
             String escape = tokenMatcher.group(ESCAPE_CHAR_GROUP);
+            String modifier = tokenMatcher.group(TOKEN_MODIFIER);
 
             // Append leading non-token text
             output.append(literal);
@@ -208,9 +215,33 @@ public class TokenFilter {
                     output.append(notToken);
                 }
 
-                // Otherwise, substitute value
-                else
-                    output.append(tokenValue);
+                // Otherwise, check for modifiers and substitute value appropriately
+                else {
+                    
+                    // If a modifier is present, try to use it.
+                    if (modifier != null && !modifier.isEmpty()) {
+                        switch (modifier) {
+                            // Switch token to upper-case
+                            case "upper":
+                                output.append(tokenValue.toUpperCase());
+                                break;
+                                
+                            // Switch token to lower case
+                            case "lower":
+                                output.append(tokenValue.toLowerCase());
+                                break;
+                                
+                            // Just append the token value
+                            default:
+                                output.append(tokenValue);
+                        }
+                    }
+                    
+                    // No modifier present, so just append token value.
+                    else
+                        output.append(tokenValue);
+                    
+                }
 
             }
 
