@@ -117,15 +117,29 @@ public class SAMLAuthenticationProviderResource {
             ).build();
 
         }
-        catch (IOException
-                | NoSuchAlgorithmException
-                | ParserConfigurationException
-                | SAXException
-                | SettingsException
-                | URISyntaxException
-                | ValidationError
-                | XPathExpressionException e) {
-            throw new GuacamoleServerException(e);
+        catch (IOException e) {
+            throw new GuacamoleServerException("I/O exception processing SAML response.", e);
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new GuacamoleServerException("Unexpected missing SHA-256 support while generating SAML response hash.", e);
+        }
+        catch (ParserConfigurationException e) {
+            throw new GuacamoleServerException("Parser exception processing SAML response.", e);
+        }
+        catch (SAXException e) {
+            throw new GuacamoleServerException("SAX exception processing SAML response.", e);
+        }
+        catch (SettingsException e) {
+            throw new GuacamoleServerException("Settings exception processing SAML response.", e);
+        }
+        catch (URISyntaxException e) {
+            throw new GuacamoleServerException("URI exception process SAML response.", e);
+        }
+        catch (ValidationError e) {
+            throw new GuacamoleServerException("Exception validating SAML response.", e);
+        }
+        catch (XPathExpressionException e) {
+            throw new GuacamoleServerException("XML Xpath exception validating SAML response.", e);
         }
 
     }
