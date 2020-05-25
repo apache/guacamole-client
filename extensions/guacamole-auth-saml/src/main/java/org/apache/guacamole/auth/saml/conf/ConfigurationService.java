@@ -130,6 +130,17 @@ public class ConfigurationService {
         public String getName() { return "saml-compress-response"; }
                 
     };
+    
+    /**
+     * Whether or not to enforce strict SAML security during processing.
+     */
+    private static final BooleanGuacamoleProperty SAML_STRICT =
+            new BooleanGuacamoleProperty() {
+            
+        @Override
+        public String getName() { return "saml-strict"; }
+        
+    };
 
     /**
      * The Guacamole server environment.
@@ -246,6 +257,22 @@ public class ConfigurationService {
     }
     
     /**
+     * Returns whether or not the SAML login should enforce strict security
+     * controls.  By default this is true, and should be set to true in any
+     * production environment.
+     * 
+     * @return
+     *     True if the SAML login should enforce strict security checks,
+     *     otherwise false.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be parsed.
+     */
+    private Boolean getStrict() throws GuacamoleException {
+        return environment.getProperty(SAML_STRICT, true);
+    }
+    
+    /**
      * Return true if compression should be requested from the server when the
      * SAML response is returned, otherwise false.  The default is to request
      * that the response be compressed.
@@ -303,6 +330,7 @@ public class ConfigurationService {
         
         SettingsBuilder samlBuilder = new SettingsBuilder();
         Saml2Settings samlSettings = samlBuilder.fromValues(samlMap).build();
+        samlSettings.setStrict(getStrict());
         samlSettings.setDebug(getDebug());
         samlSettings.setCompressRequest(getCompressRequest());
         samlSettings.setCompressResponse(getCompressResponse());
