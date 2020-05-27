@@ -7,6 +7,11 @@
     "LOGIN" : {
         "FIELD_HEADER_TICKET"        : "",
         "INFO_CAS_REDIRECT_PENDING"  : "Bitte warten, Sie werden zur CAS-Authentifizierung weitergeleitet..."
+    },
+
+    "LOGOUT" : {
+        "FIELD_HEADER_TICKET"        : "",
+        "INFO_CAS_REDIRECT_PENDING"  : "Bitte warten Sie, Sie werden zur CAS-Abmeldung weitergeleitet ..."
     }
 
 }

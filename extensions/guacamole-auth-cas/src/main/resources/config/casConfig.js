@@ -30,4 +30,11 @@ angular.module('guacCAS').config(['formServiceProvider',
         module        : 'guacCAS'
     });
 
+    // Define field for Logout from CAS service
+    formServiceProvider.registerFieldType("GUAC_CAS_LOGOUT", {
+        templateUrl   : 'app/ext/guac-cas/templates/casLogoutField.html',
+        controller    : 'guacCASLogoutController',
+        module        : 'guacCAS'
+    });
+
 }]);

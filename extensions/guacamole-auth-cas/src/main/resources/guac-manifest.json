@@ -25,7 +25,8 @@
     ],
 
     "resources" : {
-        "templates/casTicketField.html" : "text/html"
+        "templates/casTicketField.html" : "text/html",
+        "templates/casLogoutField.html" : "text/html"
     }
 
 }

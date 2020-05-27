@@ -58,6 +58,18 @@ public class CASGuacamoleProperties {
     };
 
     /**
+     * The URI that Guacamole should redirect to in order to
+     * log the current user out of CAS
+     */
+    public static final URIGuacamoleProperty CAS_LOGOUT_URI =
+            new URIGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "cas-logout-uri"; }
+
+    };
+
+    /**
      * The location of the private key file used to retrieve the
      * password if CAS is configured to support ClearPass.
      */

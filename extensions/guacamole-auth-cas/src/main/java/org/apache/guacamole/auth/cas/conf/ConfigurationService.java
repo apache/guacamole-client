@@ -71,6 +71,22 @@ public class ConfigurationService {
     }
 
     /**
+     * Returns the URI that Guacamole redirects the client browswer to in 
+     * order to log the current user out of CAS
+     *
+     * @return
+     *     The URI to redirect the client to log out of CAS
+     *     as configured in guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed, or if the redirect URI
+     *     property is missing.
+     */
+    public URI getLogoutURI() throws GuacamoleException {
+        return environment.getRequiredProperty(CASGuacamoleProperties.CAS_LOGOUT_URI);
+    }
+
+    /**
      * Returns the PrivateKey used to decrypt the credential object
      * sent encrypted by CAS, or null if no key is defined.
      *
