@@ -33,18 +33,15 @@ import org.apache.guacamole.GuacamoleException;
 public class APIException extends WebApplicationException {
 
     /**
-     * Construct a new APIException based on the given GuacamoleException and
-     * HTTP status. The details of the GuacamoleException relevant to the REST
-     * API will be exposed via an APIError.
-     *
-     * @param status
-     *     The HTTP status which corresponds to the GuacamoleException.
+     * Construct a new APIException based on the given GuacamoleException. The
+     * details of the GuacamoleException relevant to the REST API will be
+     * exposed via an APIError.
      *
      * @param exception
      *     The GuacamoleException that occurred.
      */
-    public APIException(Response.Status status, GuacamoleException exception) {
-        super(Response.status(status)
+    public APIException(GuacamoleException exception) {
+        super(Response.status(exception.getHttpStatusCode())
                 .type(MediaType.APPLICATION_JSON)
                 .entity(new APIError(exception))
                 .build());

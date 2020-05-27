@@ -24,10 +24,11 @@ import org.apache.guacamole.rest.session.UserContextResourceFactory;
 import org.apache.guacamole.rest.session.SessionRESTService;
 import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.google.inject.matcher.Matchers;
 import com.google.inject.servlet.ServletModule;
+import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
-import org.aopalliance.intercept.MethodInterceptor;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.guacamole.rest.activeconnection.ActiveConnectionModule;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.apache.guacamole.rest.auth.TokenRESTService;
@@ -75,6 +76,8 @@ public class RESTServiceModule extends ServletModule {
     @Override
     protected void configureServlets() {
 
+        Map<String, String> containerParams = new HashMap<>();
+
         // Bind session map
         bind(TokenSessionMap.class).toInstance(tokenSessionMap);
 
@@ -86,6 +89,10 @@ public class RESTServiceModule extends ServletModule {
 
         // Automatically translate GuacamoleExceptions for REST methods
         bind(RESTExceptionMapper.class);
+
+        // Restrict API requests by entity size
+        containerParams.put(ResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, RequestSizeFilter.class.getName());
+        bind(RequestSizeFilter.class).in(Scopes.SINGLETON);
 
         // Set up the API endpoints
         bind(ExtensionRESTService.class);
@@ -111,7 +118,7 @@ public class RESTServiceModule extends ServletModule {
         // Set up the servlet and JSON mappings
         bind(GuiceContainer.class);
         bind(JacksonJsonProvider.class).in(Scopes.SINGLETON);
-        serve("/api/*").with(GuiceContainer.class);
+        serve("/api/*").with(GuiceContainer.class, containerParams);
 
         // Serve Webjar JavaScript dependencies
         bind(WebjarsServlet.class).in(Scopes.SINGLETON);
