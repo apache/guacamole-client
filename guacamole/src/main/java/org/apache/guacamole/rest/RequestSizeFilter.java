@@ -19,11 +19,12 @@
 
 package org.apache.guacamole.rest;
 
-import com.sun.jersey.spi.container.ContainerRequest;
-import com.sun.jersey.spi.container.ContainerRequestFilter;
-import com.sun.jersey.spi.resource.Singleton;
+import java.io.IOException;
 import java.io.InputStream;
 import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
@@ -61,7 +62,7 @@ public class RequestSizeFilter implements ContainerRequestFilter {
     private Environment environment;
 
     @Override
-    public ContainerRequest filter(ContainerRequest request) {
+    public void filter(ContainerRequestContext context) throws IOException {
 
         // Retrieve configured request size limits
         final long maxRequestSize;
@@ -74,15 +75,13 @@ public class RequestSizeFilter implements ContainerRequestFilter {
 
         // Ignore request size if limit is disabled
         if (maxRequestSize == 0)
-            return request;
+            return;
 
         // Restrict maximum size of requests which have an input stream
         // available to be limited
-        InputStream stream = request.getEntityInputStream();
+        InputStream stream = context.getEntityStream();
         if (stream != null)
-            request.setEntityInputStream(new LimitedRequestInputStream(stream, maxRequestSize));
-
-        return request;
+            context.setEntityStream(new LimitedRequestInputStream(stream, maxRequestSize));
 
     }
 

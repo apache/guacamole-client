@@ -23,13 +23,13 @@ import java.util.List;
 import java.util.Set;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.rest.APIPatch;
-import org.apache.guacamole.rest.PATCH;
 
 /**
  * A REST resource which abstracts the operations available on arbitrary sets

@@ -19,19 +19,14 @@
 
 package org.apache.guacamole.rest;
 
-import org.apache.guacamole.rest.event.ListenerService;
-import org.apache.guacamole.rest.session.UserContextResourceFactory;
-import org.apache.guacamole.rest.session.SessionRESTService;
 import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.servlet.ServletModule;
-import com.sun.jersey.api.core.ResourceConfig;
-import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
+import org.apache.guacamole.rest.event.ListenerService;
+import org.apache.guacamole.rest.session.UserContextResourceFactory;
+import org.apache.guacamole.GuacamoleApplication;
 import org.apache.guacamole.rest.activeconnection.ActiveConnectionModule;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
-import org.apache.guacamole.rest.auth.TokenRESTService;
 import org.apache.guacamole.rest.auth.AuthTokenGenerator;
 import org.apache.guacamole.rest.auth.AuthenticationService;
 import org.apache.guacamole.rest.auth.DecorationService;
@@ -39,15 +34,14 @@ import org.apache.guacamole.rest.auth.SecureRandomAuthTokenGenerator;
 import org.apache.guacamole.rest.auth.TokenSessionMap;
 import org.apache.guacamole.rest.connection.ConnectionModule;
 import org.apache.guacamole.rest.connectiongroup.ConnectionGroupModule;
-import org.apache.guacamole.rest.extension.ExtensionRESTService;
-import org.apache.guacamole.rest.language.LanguageRESTService;
-import org.apache.guacamole.rest.patch.PatchRESTService;
 import org.apache.guacamole.rest.session.SessionResourceFactory;
 import org.apache.guacamole.rest.sharingprofile.SharingProfileModule;
 import org.apache.guacamole.rest.tunnel.TunnelCollectionResourceFactory;
 import org.apache.guacamole.rest.tunnel.TunnelResourceFactory;
 import org.apache.guacamole.rest.user.UserModule;
 import org.apache.guacamole.rest.usergroup.UserGroupModule;
+import org.glassfish.jersey.servlet.ServletContainer;
+import org.glassfish.jersey.servlet.ServletProperties;
 import org.webjars.servlet.WebjarsServlet;
 
 /**
@@ -76,8 +70,6 @@ public class RESTServiceModule extends ServletModule {
     @Override
     protected void configureServlets() {
 
-        Map<String, String> containerParams = new HashMap<>();
-
         // Bind session map
         bind(TokenSessionMap.class).toInstance(tokenSessionMap);
 
@@ -87,21 +79,7 @@ public class RESTServiceModule extends ServletModule {
         bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
         bind(DecorationService.class);
 
-        // Automatically translate GuacamoleExceptions for REST methods
-        bind(RESTExceptionMapper.class);
-
-        // Restrict API requests by entity size
-        containerParams.put(ResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, RequestSizeFilter.class.getName());
-        bind(RequestSizeFilter.class).in(Scopes.SINGLETON);
-
-        // Set up the API endpoints
-        bind(ExtensionRESTService.class);
-        bind(LanguageRESTService.class);
-        bind(PatchRESTService.class);
-        bind(TokenRESTService.class);
-
         // Root-level resources
-        bind(SessionRESTService.class);
         install(new FactoryModuleBuilder().build(SessionResourceFactory.class));
         install(new FactoryModuleBuilder().build(TunnelCollectionResourceFactory.class));
         install(new FactoryModuleBuilder().build(TunnelResourceFactory.class));
@@ -115,10 +93,12 @@ public class RESTServiceModule extends ServletModule {
         install(new UserModule());
         install(new UserGroupModule());
 
-        // Set up the servlet and JSON mappings
-        bind(GuiceContainer.class);
-        bind(JacksonJsonProvider.class).in(Scopes.SINGLETON);
-        serve("/api/*").with(GuiceContainer.class, containerParams);
+        // Serve REST services using Jersey 2.x
+        bind(ServletContainer.class).in(Scopes.SINGLETON);
+        serve("/api/*").with(ServletContainer.class, Collections.singletonMap(
+            ServletProperties.JAXRS_APPLICATION_CLASS,
+            GuacamoleApplication.class.getName()
+        ));
 
         // Serve Webjar JavaScript dependencies
         bind(WebjarsServlet.class).in(Scopes.SINGLETON);
