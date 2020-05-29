@@ -21,10 +21,16 @@ package org.apache.guacamole.rest;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
@@ -36,6 +42,14 @@ import org.apache.guacamole.properties.LongGuacamoleProperty;
 @Singleton
 @Provider
 public class RequestSizeFilter implements ContainerRequestFilter {
+
+    /**
+     * Informs the RequestSizeFilter to NOT enforce its request size limits on
+     * requests serviced by the annotated method.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public static @interface DoNotLimit {}
 
     /**
      * The default maximum number of bytes to accept within the entity body of
@@ -61,6 +75,12 @@ public class RequestSizeFilter implements ContainerRequestFilter {
     @Inject
     private Environment environment;
 
+    /**
+     * Information describing the resource that was requested.
+     */
+    @Context
+    private ResourceInfo resourceInfo;
+
     @Override
     public void filter(ContainerRequestContext context) throws IOException {
 
@@ -74,7 +94,7 @@ public class RequestSizeFilter implements ContainerRequestFilter {
         }
 
         // Ignore request size if limit is disabled
-        if (maxRequestSize == 0)
+        if (maxRequestSize == 0 || resourceInfo.getResourceMethod().isAnnotationPresent(DoNotLimit.class))
             return;
 
         // Restrict maximum size of requests which have an input stream
