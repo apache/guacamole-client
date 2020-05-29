@@ -21,11 +21,11 @@ package org.apache.guacamole;
 
 import org.apache.guacamole.tunnel.TunnelModule;
 import com.google.inject.Guice;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Stage;
 import com.google.inject.servlet.GuiceServletContextListener;
 import java.util.List;
+import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;

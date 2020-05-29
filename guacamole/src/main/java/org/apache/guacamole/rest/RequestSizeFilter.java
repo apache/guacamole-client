@@ -19,11 +19,11 @@
 
 package org.apache.guacamole.rest;
 
-import com.google.inject.Inject;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 import com.sun.jersey.spi.resource.Singleton;
 import java.io.InputStream;
+import javax.inject.Inject;
 import javax.ws.rs.ext.Provider;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;

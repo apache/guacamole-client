@@ -19,8 +19,8 @@
 
 package org.apache.guacamole.rest.extension;
 
-import com.google.inject.Inject;
 import java.util.List;
+import javax.inject.Inject;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import org.apache.guacamole.GuacamoleException;

@@ -19,9 +19,9 @@
 
 package org.apache.guacamole.rest.auth;
 
-import com.google.inject.Inject;
 import java.util.Iterator;
 import java.util.List;
+import javax.inject.Inject;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
