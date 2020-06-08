@@ -65,19 +65,23 @@ public class TokenField extends Field {
      *     The URI that the OpenID service should redirect to upon successful
      *     authentication.
      *
+     * @param responseType
+     *     The value that should be used for the response_type parameter of
+     *     the authentication request.
+     *
      * @param nonce
      *     A random string unique to this request. To defend against replay
      *     attacks, this value must cease being valid after its first use.
      */
     public TokenField(URI authorizationEndpoint, String scope,
-            String clientID, URI redirectURI, String nonce) {
+            String clientID, URI redirectURI, String responseType, String nonce) {
 
         // Init base field properties
         super(PARAMETER_NAME, "GUAC_OPENID_TOKEN");
 
         this.authorizationURI = UriBuilder.fromUri(authorizationEndpoint)
                 .queryParam("scope", scope)
-                .queryParam("response_type", "id_token")
+                .queryParam("response_type", responseType)
                 .queryParam("client_id", clientID)
                 .queryParam("redirect_uri", redirectURI)
                 .queryParam("nonce", nonce)

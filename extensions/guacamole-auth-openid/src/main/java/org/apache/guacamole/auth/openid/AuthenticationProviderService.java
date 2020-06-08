@@ -121,6 +121,7 @@ public class AuthenticationProviderService {
                     confService.getScope(),
                     confService.getClientID(),
                     confService.getRedirectURI(),
+                    confService.getResponseType(),
                     nonceService.generate(confService.getMaxNonceValidity() * 60000L)
                 )
 

@@ -63,6 +63,12 @@ public class ConfigurationService {
     private static final int DEFAULT_MAX_NONCE_VALIDITY = 10;
 
     /**
+     * The default maximum value to use for the response_type parameter
+     * in the authorization request.
+     */
+    private static final String DEFAULT_RESPONSE_TYPE = "id_token";
+
+    /**
      * The authorization endpoint (URI) of the OpenID service.
      */
     private static final URIGuacamoleProperty OPENID_AUTHORIZATION_ENDPOINT =
@@ -183,6 +189,18 @@ public class ConfigurationService {
         public String getName() { return "openid-redirect-uri"; }
 
     };
+
+    /**
+     * The value to use for the response_type query parameter when submitting
+     * the authentication request to the authorization server.
+     */
+    private static final StringGuacamoleProperty RESPONSE_TYPE =
+            new StringGuacamoleProperty() {
+
+                @Override
+                public String getName() { return "response-type-override"; }
+
+            };
 
     /**
      * The Guacamole server environment.
@@ -359,6 +377,24 @@ public class ConfigurationService {
      */
     public int getMaxNonceValidity() throws GuacamoleException {
         return environment.getProperty(OPENID_MAX_NONCE_VALIDITY, DEFAULT_MAX_NONCE_VALIDITY);
+    }
+
+    /**
+     * Returns the value of the response_type parameter to use when submitting
+     * an authentication request to the authorization server. Some authorization
+     * servers may require values other than "id_token" for this parameter and
+     * this allows the user to override the default value with an alternate
+     * implementation-specific value that still results in the server following
+     * the "implicit flow." By default, this will be "id_token".
+     *
+     * @return
+     *     The value to use for the response_type parameter
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public String getResponseType() throws GuacamoleException {
+        return environment.getProperty(RESPONSE_TYPE, DEFAULT_RESPONSE_TYPE);
     }
 
 }
