@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.radius.conf;
 
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.EnumGuacamoleProperty;
 import org.apache.guacamole.properties.FileGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
@@ -81,8 +82,8 @@ public class RadiusGuacamoleProperties {
     /**
      * The authentication protocol of the RADIUS server to connect to when authenticating users.
      */
-    public static final RadiusAuthenticationProtocolProperty RADIUS_AUTH_PROTOCOL =
-            new RadiusAuthenticationProtocolProperty() {
+    public static final EnumGuacamoleProperty<RadiusAuthenticationProtocol> RADIUS_AUTH_PROTOCOL =
+            new EnumGuacamoleProperty<RadiusAuthenticationProtocol>(RadiusAuthenticationProtocol.class) {
 
         @Override
         public String getName() { return "radius-auth-protocol"; }
@@ -182,8 +183,8 @@ public class RadiusGuacamoleProperties {
     /**
      * The tunneled protocol to use inside a RADIUS EAP-TTLS connection.
      */
-    public static final RadiusAuthenticationProtocolProperty RADIUS_EAP_TTLS_INNER_PROTOCOL =
-            new RadiusAuthenticationProtocolProperty() {
+    public static final EnumGuacamoleProperty<RadiusAuthenticationProtocol> RADIUS_EAP_TTLS_INNER_PROTOCOL =
+            new EnumGuacamoleProperty<RadiusAuthenticationProtocol>(RadiusAuthenticationProtocol.class) {
 
         @Override
         public String getName() { return "radius-eap-ttls-inner-protocol"; }

@@ -68,10 +68,10 @@ public class RadiusAuthenticationProviderModule extends AbstractModule {
         // Check for MD4 requirement
         RadiusAuthenticationProtocol authProtocol = environment.getProperty(RadiusGuacamoleProperties.RADIUS_AUTH_PROTOCOL);
         RadiusAuthenticationProtocol innerProtocol = environment.getProperty(RadiusGuacamoleProperties.RADIUS_EAP_TTLS_INNER_PROTOCOL);
-        if (authProtocol == RadiusAuthenticationProtocol.MSCHAPv1 
-                    || authProtocol == RadiusAuthenticationProtocol.MSCHAPv2
-                    || innerProtocol == RadiusAuthenticationProtocol.MSCHAPv1 
-                    || innerProtocol == RadiusAuthenticationProtocol.MSCHAPv2) {
+        if (authProtocol == RadiusAuthenticationProtocol.MSCHAP_V1 
+                    || authProtocol == RadiusAuthenticationProtocol.MSCHAP_V2
+                    || innerProtocol == RadiusAuthenticationProtocol.MSCHAP_V1 
+                    || innerProtocol == RadiusAuthenticationProtocol.MSCHAP_V2) {
             
             try {
                 MessageDigest.getInstance("MD4");
