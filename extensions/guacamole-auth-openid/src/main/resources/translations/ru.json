@@ -1,0 +1,11 @@
+{
+
+    "DATA_SOURCE_OPENID" : {
+        "NAME" : "Бэкенд OpenID SSO"
+    },
+
+    "LOGIN" : {
+        "INFO_REDIRECT_PENDING" : "Пожалуйста, подождите. Переадресую на страницу аутентификации..."
+    }
+
+}

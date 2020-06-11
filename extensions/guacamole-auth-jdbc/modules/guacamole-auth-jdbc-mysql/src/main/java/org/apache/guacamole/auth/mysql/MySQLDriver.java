@@ -17,10 +17,21 @@
  * under the License.
  */
 
-.text-input-container {
-    display: none;
-}
+package org.apache.guacamole.auth.mysql;
 
-.text-input-container.open {
-    display: block;
+/**
+ * The possible JDBC drivers to use when talking to a MySQL-compatible database
+ * server.
+ */
+public enum MySQLDriver {
+
+    /**
+     * MySQL driver.
+     */
+    MYSQL,
+
+    /**
+     * MariaDB driver.
+     */
+    MARIADB;
 }

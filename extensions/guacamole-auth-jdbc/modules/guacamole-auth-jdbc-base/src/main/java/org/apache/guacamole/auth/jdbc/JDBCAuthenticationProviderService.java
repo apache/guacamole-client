@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.jdbc;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicyService;
 import org.apache.guacamole.auth.jdbc.sharing.user.SharedAuthenticatedUser;
@@ -29,6 +28,7 @@ import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUserContext;
 import org.apache.guacamole.auth.jdbc.user.UserService;
+import org.apache.guacamole.language.TranslatableGuacamoleClientException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -104,11 +104,15 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
 
                 // Verify user account is still valid as of today
                 if (!user.isAccountValid())
-                    throw new GuacamoleClientException("LOGIN.ERROR_NOT_VALID");
+                    throw new TranslatableGuacamoleClientException("User "
+                            + "account is no longer valid.",
+                            "LOGIN.ERROR_NOT_VALID");
 
                 // Verify user account is allowed to be used at the current time
                 if (!user.isAccountAccessible())
-                    throw new GuacamoleClientException("LOGIN.ERROR_NOT_ACCESSIBLE");
+                    throw new TranslatableGuacamoleClientException("User "
+                            + "account may not be used at this time.",
+                            "LOGIN.ERROR_NOT_ACCESSIBLE");
 
             }
 

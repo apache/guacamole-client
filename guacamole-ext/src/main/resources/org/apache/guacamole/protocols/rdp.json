@@ -34,7 +34,7 @@
                 {
                     "name"    : "security",
                     "type"    : "ENUM",
-                    "options" : [ "", "rdp", "tls", "nla", "any" ]
+                    "options" : [ "", "rdp", "tls", "nla", "vmconnect", "any" ]
                 },
                 {
                     "name"    : "disable-auth",
@@ -96,7 +96,9 @@
                         "en-gb-qwerty",
                         "en-us-qwerty",
                         "es-es-qwerty",
+                        "es-latam-qwerty",
                         "failsafe",
+                        "fr-be-azerty",
                         "fr-fr-azerty",
                         "fr-ch-qwertz",
                         "hu-hu-qwertz",                        

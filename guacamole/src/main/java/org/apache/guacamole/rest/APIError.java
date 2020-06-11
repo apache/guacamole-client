@@ -20,6 +20,7 @@
 package org.apache.guacamole.rest;
 
 import java.util.Collection;
+import java.util.Collections;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
@@ -36,6 +37,19 @@ import org.apache.guacamole.tunnel.GuacamoleStreamException;
  * Describes an error that occurred within a REST endpoint.
  */
 public class APIError {
+
+    /**
+     * The translation key of the generic translation string which should be
+     * used to display arbitrary messages which otherwise have no translation
+     * string.
+     */
+    private static final String UNTRANSLATED_MESSAGE_KEY = "APP.TEXT_UNTRANSLATED";
+
+    /**
+     * The name of the placeholder within the translation string associated with
+     * UNTRANSLATED_MESSAGE_KEY that should receive the raw, untranslated text.
+     */
+    private static final String UNTRANSLATED_MESSAGE_VARIABLE_NAME = "MESSAGE";
 
     /**
      * The human-readable error message.
@@ -187,8 +201,11 @@ public class APIError {
             Translatable translatable = (Translatable) exception;
             this.translatableMessage = translatable.getTranslatableMessage();
         }
+
+        // Use generic translation string if message is not translated
         else
-            this.translatableMessage = new TranslatableMessage(this.message);
+            this.translatableMessage = new TranslatableMessage(UNTRANSLATED_MESSAGE_KEY,
+                    Collections.singletonMap(UNTRANSLATED_MESSAGE_VARIABLE_NAME, this.message));
 
     }
 

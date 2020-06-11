@@ -107,10 +107,15 @@ public class AuthenticationService {
     private static final String IP_ADDRESS_REGEX = "(" + IPV4_ADDRESS_REGEX + "|" + IPV6_ADDRESS_REGEX + ")";
 
     /**
+     * Regular expression which matches any Port Number.
+     */
+    private static final String PORT_NUMBER_REGEX = "(:[0-9]{1,5})?";
+    
+    /**
      * Pattern which matches valid values of the de-facto standard
      * "X-Forwarded-For" header.
      */
-    private static final Pattern X_FORWARDED_FOR = Pattern.compile("^" + IP_ADDRESS_REGEX + "(, " + IP_ADDRESS_REGEX + ")*$");
+    private static final Pattern X_FORWARDED_FOR = Pattern.compile("^" + IP_ADDRESS_REGEX + PORT_NUMBER_REGEX + "(, " + IP_ADDRESS_REGEX + PORT_NUMBER_REGEX + ")*$");
 
     /**
      * Returns a formatted string containing an IP address, or list of IP

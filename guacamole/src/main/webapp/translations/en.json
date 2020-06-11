@@ -46,7 +46,8 @@
         "INFO_ACTIVE_USER_COUNT" : "Currently in use by {USERS} {USERS, plural, one{user} other{users}}.",
 
         "TEXT_ANONYMOUS_USER"   : "Anonymous",
-        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{second} other{seconds}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{hour} other{hours}}} day{{VALUE, plural, one{day} other{days}}} other{}}"
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{second} other{seconds}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{hour} other{hours}}} day{{VALUE, plural, one{day} other{days}}} other{}}",
+        "TEXT_UNTRANSLATED" : "{MESSAGE}"
 
     },
 
@@ -533,6 +534,7 @@
         "FIELD_OPTION_SECURITY_NLA"   : "NLA (Network Level Authentication)",
         "FIELD_OPTION_SECURITY_RDP"   : "RDP encryption",
         "FIELD_OPTION_SECURITY_TLS"   : "TLS encryption",
+        "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
 
         "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Swiss German (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "German (Qwertz)",
@@ -540,7 +542,9 @@
         "FIELD_OPTION_SERVER_LAYOUT_EN_GB_QWERTY" : "UK English (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "US English (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_ES_ES_QWERTY" : "Spanish (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_LATAM_QWERTY" : "Latin American (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_BE_AZERTY" : "Belgian French (Azerty)",
         "FIELD_OPTION_SERVER_LAYOUT_FR_CH_QWERTZ" : "Swiss French (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "French (Azerty)",
         "FIELD_OPTION_SERVER_LAYOUT_HU_HU_QWERTZ" : "Hungarian (Qwertz)",        

@@ -32,7 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.quickconnect.QuickConnectException;
+import org.apache.guacamole.language.TranslatableGuacamoleClientException;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -78,11 +78,11 @@ public class QCParser {
         try {
             qcUri = new URI(uri);
             if (!qcUri.isAbsolute())
-                throw new QuickConnectException("URI must be absolute.",
+                throw new TranslatableGuacamoleClientException("URI must be absolute.",
                         "QUICKCONNECT.ERROR_NOT_ABSOLUTE_URI");
         }
         catch (URISyntaxException e) {
-            throw new QuickConnectException("Invalid URI Syntax",
+            throw new TranslatableGuacamoleClientException("Invalid URI Syntax",
                     "QUICKCONNECT.ERROR_INVALID_URI");
         }
 
@@ -100,7 +100,7 @@ public class QCParser {
         if (protocol != null && !protocol.isEmpty())
             qcConfig.setProtocol(protocol);
         else
-            throw new QuickConnectException("No protocol specified.",
+            throw new TranslatableGuacamoleClientException("No protocol specified.",
                     "QUICKCONNECT.ERROR_NO_PROTOCOL");
 
         // Check for provided port number
@@ -111,7 +111,7 @@ public class QCParser {
         if (host != null && !host.isEmpty())
             qcConfig.setParameter("hostname", host);
         else
-            throw new QuickConnectException("No host specified.",
+            throw new TranslatableGuacamoleClientException("No host specified.",
                     "QUICKCONNECT.ERROR_NO_HOST");
 
         // Look for extra query parameters and parse them out.

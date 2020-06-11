@@ -19,7 +19,6 @@
 
 .keyboard-container {
 
-    display: none;
     text-align: center;
 
     width: 100%;
@@ -32,8 +31,4 @@
 
     z-index: 1;
 
-}
-
-.keyboard-container.open {
-    display: block;
 }
