@@ -363,24 +363,47 @@ END
         exit 1;
     fi
 
+    # Handle Docker secrets for LDAP
+    if [ -n "$LDAP_SEARCH_BIND_DN_FILE" ]; then
+        set_optional_property "ldap-search-bind-dn" "$(cat $LDAP_SEARCH_BIND_DN_FILE)"
+    elif [ -n "$LDAP_SEARCH_BIND_DN" ]; then
+        set_optional_property "ldap-search-bind-dn" "$LDAP_SEARCH_BIND_DN"
+    fi
+
+    if [ -n "$LDAP_SEARCH_BIND_PASSWORD_FILE" ]; then
+        set_optional_property "ldap-search-bind-password" "$(cat $LDAP_SEARCH_BIND_PASSWORD_FILE)"
+    elif [ -n "$LDAP_SEARCH_BIND_PASSWORD" ]; then
+        set_optional_property "ldap-search-bind-password" "$LDAP_SEARCH_BIND_PASSWORD"
+    fi
+
+    if [ -n "$LDAP_USER_BASE_DN_FILE" ]; then
+        set_property "ldap-user-base-dn" "$(cat $LDAP_USER_BASE_DN_FILE)"
+    elif [ -n "$LDAP_USER_BASE_DN" ]; then
+        set_property "ldap-user-base-dn" "$LDAP_USER_BASE_DN"
+    fi
+
+    if [ -n "$LDAP_CONFIG_BASE_DN_FILE" ]; then
+        set_optional_property "ldap-config-base-dn" "$(cat $LDAP_CONFIG_BASE_DN_FILE)"
+    elif [ -n "$LDAP_CONFIG_BASE_DN" ]; then
+        set_optional_property "ldap-config-base-dn" "$LDAP_CONFIG_BASE_DN"
+    fi
+
+    if [ -n "$LDAP_GROUP_BASE_DN_FILE" ]; then
+        set_optional_property "ldap-group-base-dn" "$(cat $LDAP_GROUP_BASE_DN_FILE)"
+    elif [ -n "$LDAP_GROUP_BASE_DN" ]; then
+        set_optional_property "ldap-group-base-dn" "$LDAP_GROUP_BASE_DN"
+    fi
+
     # Update config file
     set_property          "ldap-hostname"           "$LDAP_HOSTNAME"
     set_optional_property "ldap-port"               "$LDAP_PORT"
     set_optional_property "ldap-encryption-method"  "$LDAP_ENCRYPTION_METHOD"
     set_optional_property "ldap-max-search-results" "$LDAP_MAX_SEARCH_RESULTS"
-    set_optional_property "ldap-search-bind-dn"     "$LDAP_SEARCH_BIND_DN"
     set_optional_property "ldap-user-attributes"    "$LDAP_USER_ATTRIBUTES"
 
-    set_optional_property           \
-        "ldap-search-bind-password" \
-        "$LDAP_SEARCH_BIND_PASSWORD"
-
-    set_property          "ldap-user-base-dn"       "$LDAP_USER_BASE_DN"
     set_optional_property "ldap-username-attribute" "$LDAP_USERNAME_ATTRIBUTE"
     set_optional_property "ldap-member-attribute"   "$LDAP_MEMBER_ATTRIBUTE"
     set_optional_property "ldap-user-search-filter" "$LDAP_USER_SEARCH_FILTER"
-    set_optional_property "ldap-config-base-dn"     "$LDAP_CONFIG_BASE_DN"
-    set_optional_property "ldap-group-base-dn"      "$LDAP_GROUP_BASE_DN"
 
     set_optional_property           \
         "ldap-group-name-attribute" \
@@ -393,6 +416,10 @@ END
     set_optional_property "ldap-follow-referrals"   "$LDAP_FOLLOW_REFERRALS"
     set_optional_property "ldap-max-referral-hops"  "$LDAP_MAX_REFERRAL_HOPS"
     set_optional_property "ldap-operation-timeout"  "$LDAP_OPERATION_TIMEOUT"
+
+    if [ -n "$LDAP_SSL_CERT_FILE" ]; then
+      keytool -importcert -file $LDAP_SSL_CERT_FILE -alias $LDAP_SSL_CERT_FILE -storepass changeit -noprompt -keystore $JAVA_HOME/lib/security/cacerts
+    fi
 
     # Add required .jar files to GUACAMOLE_EXT
     ln -s /opt/guacamole/ldap/guacamole-auth-*.jar "$GUACAMOLE_EXT"
