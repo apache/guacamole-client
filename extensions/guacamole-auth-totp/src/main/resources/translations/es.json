@@ -1,0 +1,34 @@
+{
+
+    "DATA_SOURCE_TOTP" : {
+        "NAME" : "TOTP TFA Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_TOTP" : ""
+    },
+
+    "TOTP" : {
+
+        "ACTION_HIDE_DETAILS" : "Ocultar",
+        "ACTION_SHOW_DETAILS" : "Mostrar",
+
+        "FIELD_HEADER_ALGORITHM"  : "Algoritmo:",
+        "FIELD_HEADER_DIGITS"     : "Dígitos:",
+        "FIELD_HEADER_INTERVAL"   : "Intervalo:",
+        "FIELD_HEADER_SECRET_KEY" : "Clave secreta:",
+
+        "FIELD_PLACEHOLDER_CODE" : "Código de autenticación",
+
+        "INFO_CODE_REQUIRED"       : "Por favor, introduzca su código de autenticación para verificar su identidad.",
+        "INFO_ENROLL_REQUIRED"     : "Se ha habilitado la autenticación de doble factor para su cuenta.",
+        "INFO_VERIFICATION_FAILED" : "Verificación fallida. Inténtelo de nuevo.",
+
+        "HELP_ENROLL_BARCODE" : "Para completar el proceso de registro, escanée el código QR con su aplicación o dispositivo.",
+        "HELP_ENROLL_VERIFY"  : "Despues de escanear el código QR, se le mostrará un código de {DIGITS} dígitos. Introdúzcalo para finalizar el registro de la autenticación de doble factor.",
+
+        "SECTION_HEADER_DETAILS" : "Detalles:"
+
+    }
+
+}
