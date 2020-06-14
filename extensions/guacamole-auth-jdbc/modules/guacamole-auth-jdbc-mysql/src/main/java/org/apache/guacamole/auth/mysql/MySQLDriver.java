@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.mysql;
 
+import org.apache.guacamole.properties.EnumGuacamoleProperty.PropertyValue;
+
 /**
  * The possible JDBC drivers to use when talking to a MySQL-compatible database
  * server.
@@ -28,10 +30,12 @@ public enum MySQLDriver {
     /**
      * MySQL driver.
      */
+    @PropertyValue("mysql")
     MYSQL,
 
     /**
      * MariaDB driver.
      */
+    @PropertyValue("mariadb")
     MARIADB;
 }

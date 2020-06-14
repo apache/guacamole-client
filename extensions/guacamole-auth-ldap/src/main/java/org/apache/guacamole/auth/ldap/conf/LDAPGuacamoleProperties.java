@@ -19,7 +19,9 @@
 
 package org.apache.guacamole.auth.ldap.conf;
 
+import org.apache.directory.api.ldap.model.message.AliasDerefMode;
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.EnumGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
@@ -158,8 +160,8 @@ public class LDAPGuacamoleProperties {
      * The chosen method will also dictate the default port if not already
      * explicitly specified via LDAP_PORT.
      */
-    public static final EncryptionMethodProperty LDAP_ENCRYPTION_METHOD =
-            new EncryptionMethodProperty() {
+    public static final EnumGuacamoleProperty<EncryptionMethod> LDAP_ENCRYPTION_METHOD =
+            new EnumGuacamoleProperty<EncryptionMethod>(EncryptionMethod.class) {
 
         @Override
         public String getName() { return "ldap-encryption-method"; }
@@ -181,8 +183,13 @@ public class LDAPGuacamoleProperties {
      * Property that controls whether or not the LDAP connection follows
      * (dereferences) aliases as it searches the tree.
      */
-    public static final DereferenceAliasesProperty LDAP_DEREFERENCE_ALIASES =
-            new DereferenceAliasesProperty() {
+    public static final EnumGuacamoleProperty<AliasDerefMode> LDAP_DEREFERENCE_ALIASES =
+            new EnumGuacamoleProperty<AliasDerefMode>(
+                "never",     AliasDerefMode.NEVER_DEREF_ALIASES,
+                "searching", AliasDerefMode.DEREF_IN_SEARCHING,
+                "finding",   AliasDerefMode.DEREF_FINDING_BASE_OBJ,
+                "always",    AliasDerefMode.DEREF_ALWAYS
+            ) {
 
         @Override
         public String getName() { return "ldap-dereference-aliases"; }
@@ -257,10 +264,10 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
-     * Specify the type of data contained in 'ldap-member-attribute'
+     * Specify the type of data contained in 'ldap-member-attribute'.
      */
-    public static final MemberAttributeTypeProperty LDAP_MEMBER_ATTRIBUTE_TYPE =
-            new MemberAttributeTypeProperty() {
+    public static final EnumGuacamoleProperty<MemberAttributeType> LDAP_MEMBER_ATTRIBUTE_TYPE =
+            new EnumGuacamoleProperty<MemberAttributeType>(MemberAttributeType.class) {
 
         @Override
         public String getName() { return "ldap-member-attribute-type"; }

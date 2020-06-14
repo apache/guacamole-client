@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.mysql;
 
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.EnumGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
@@ -36,8 +37,8 @@ public class MySQLGuacamoleProperties {
     /**
      * The JDBC driver that should be used to talk to MySQL-compatible servers.
      */
-    public static final MySQLDriverProperty MYSQL_DRIVER =
-            new MySQLDriverProperty() {
+    public static final EnumGuacamoleProperty<MySQLDriver> MYSQL_DRIVER =
+            new EnumGuacamoleProperty<MySQLDriver>(MySQLDriver.class) {
 
         @Override
         public String getName() { return "mysql-driver"; }
