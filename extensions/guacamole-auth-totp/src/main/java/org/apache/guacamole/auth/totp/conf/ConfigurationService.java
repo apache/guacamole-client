@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.properties.EnumGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.totp.TOTPGenerator;
@@ -80,8 +81,8 @@ public class ConfigurationService {
      * default, this will be "sha1". Legal values are "sha1", "sha256", and
      * "sha512".
      */
-    private static final TOTPModeProperty TOTP_MODE =
-            new TOTPModeProperty() {
+    private static final EnumGuacamoleProperty<TOTPGenerator.Mode> TOTP_MODE =
+            new EnumGuacamoleProperty<TOTPGenerator.Mode>(TOTPGenerator.Mode.class) {
 
         @Override
         public String getName() { return "totp-mode"; }

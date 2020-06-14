@@ -47,7 +47,6 @@ import net.jradius.packet.attribute.AttributeList;
 import net.jradius.client.auth.EAPTLSAuthenticator;
 import net.jradius.client.auth.EAPTTLSAuthenticator;
 import net.jradius.client.auth.RadiusAuthenticator;
-import net.jradius.client.auth.PEAPAuthenticator;
 import net.jradius.packet.attribute.AttributeFactory;
 import net.jradius.packet.AccessChallenge;
 import net.jradius.packet.RadiusResponse;
@@ -102,74 +101,57 @@ public class RadiusConnectionService {
     }
 
     /**
-     * Creates a new instance of RadiusAuthentictor, configured with
+     * Creates a new instance of RadiusAuthenticator, configured with
      * parameters specified within guacamole.properties.
-     *
-     * @param radiusClient
-     *     A RadiusClient instance that has been initialized to
-     *     communicate with a RADIUS server.
      *
      * @return
      *     A new RadiusAuthenticator instance which has been configured
-     *     with parameters from guacamole.properties, or null if
-     *     configuration fails.
+     *     with parameters from guacamole.properties.
      *
      * @throws GuacamoleException
      *     If the configuration cannot be read or the inner protocol is
      *     not configured when the client is set up for a tunneled
      *     RADIUS connection.
      */
-    private RadiusAuthenticator setupRadiusAuthenticator(
-            RadiusClient radiusClient) throws GuacamoleException {
+    private RadiusAuthenticator getRadiusAuthenticator() throws GuacamoleException {
 
-        // If we don't have a radiusClient object, yet, don't go any further.
-        if (radiusClient == null) {
-            logger.error("RADIUS client hasn't been set up, yet.");
-            logger.debug("We can't run this method until the RADIUS client has been set up.");
-            return null;
-        }
-
-        RadiusAuthenticator radAuth = radiusClient.getAuthProtocol(
-                confService.getRadiusAuthProtocol().toString());
-        
-        if (radAuth == null)
-            throw new GuacamoleException("Could not get a valid RadiusAuthenticator for specified protocol: " + confService.getRadiusAuthProtocol());
+        RadiusAuthenticator radAuth = confService.getRadiusAuthProtocol().getAuthenticator();
 
         // If we're using any of the TLS protocols, we need to configure them
-        if (radAuth instanceof PEAPAuthenticator || 
-            radAuth instanceof EAPTLSAuthenticator || 
-            radAuth instanceof EAPTTLSAuthenticator) {
+        if (radAuth instanceof EAPTLSAuthenticator) {
 
-            // Pull TLS configuration parameters from guacamole.properties
+            EAPTLSAuthenticator tlsAuth = (EAPTLSAuthenticator) radAuth;
+
+            // If provided, use the configured certificate authority for
+            // validating the connection to the RADIUS server
             File caFile = confService.getRadiusCAFile();
-            String caPassword = confService.getRadiusCAPassword();
-            File keyFile = confService.getRadiusKeyFile();
-            String keyPassword = confService.getRadiusKeyPassword();
-
             if (caFile != null) {
-                ((EAPTLSAuthenticator)radAuth).setCaFile(caFile.toString());
-                ((EAPTLSAuthenticator)radAuth).setCaFileType(confService.getRadiusCAType());
+                tlsAuth.setCaFile(caFile.toString());
+                tlsAuth.setCaFileType(confService.getRadiusCAType());
+                String caPassword = confService.getRadiusCAPassword();
                 if (caPassword != null)
-                    ((EAPTLSAuthenticator)radAuth).setCaPassword(caPassword);
+                    tlsAuth.setCaPassword(caPassword);
             }
 
+            // Use configured password for unlocking the RADIUS private key,
+            // if specified
+            String keyPassword = confService.getRadiusKeyPassword();
             if (keyPassword != null)
-                ((EAPTLSAuthenticator)radAuth).setKeyPassword(keyPassword);
+                tlsAuth.setKeyPassword(keyPassword);
 
-            ((EAPTLSAuthenticator)radAuth).setKeyFile(keyFile.toString());
-            ((EAPTLSAuthenticator)radAuth).setKeyFileType(confService.getRadiusKeyType());
-            ((EAPTLSAuthenticator)radAuth).setTrustAll(confService.getRadiusTrustAll());
+            // Use configured RADIUS certificate and private key (always
+            // required for TLS-based protocols)
+            File keyFile = confService.getRadiusKeyFile();
+            tlsAuth.setKeyFile(keyFile.toString());
+            tlsAuth.setKeyFileType(confService.getRadiusKeyType());
+            tlsAuth.setTrustAll(confService.getRadiusTrustAll());
+
         }
 
         // If we're using EAP-TTLS, we need to define tunneled protocol
         if (radAuth instanceof EAPTTLSAuthenticator) {
-            RadiusAuthenticationProtocol innerProtocol =
-                    confService.getRadiusEAPTTLSInnerProtocol();
-            
-            if (innerProtocol == null)
-                throw new GuacamoleException("Missing or invalid inner protocol for EAP-TTLS.");
-
-            ((EAPTTLSAuthenticator)radAuth).setInnerProtocol(innerProtocol.toString());
+            RadiusAuthenticationProtocol innerProtocol = confService.getRadiusEAPTTLSInnerProtocol();
+            ((EAPTTLSAuthenticator)radAuth).setInnerProtocol(innerProtocol.JRADIUS_PROTOCOL_NAME);
         }
 
         return radAuth;
@@ -219,14 +201,8 @@ public class RadiusConnectionService {
         RadiusClient radiusClient = createRadiusConnection();
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
 
-        // Client failed to set up, so we return null
-        if (radiusClient == null)
-            return null;
-
         // Set up the RadiusAuthenticator
-        RadiusAuthenticator radAuth = setupRadiusAuthenticator(radiusClient);
-        if (radAuth == null)
-            throw new GuacamoleException("Unknown RADIUS authentication protocol.");
+        RadiusAuthenticator radAuth = getRadiusAuthenticator();
 
         // Add attributes to the connection and send the packet
         try {

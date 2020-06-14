@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.sqlserver;
 
+import org.apache.guacamole.properties.EnumGuacamoleProperty.PropertyValue;
+
 /**
  * The possible SQL Server drivers to use when using a TDS-compatible database.
  */
@@ -27,20 +29,24 @@ public enum SQLServerDriver {
     /**
      * The open source jTDS driver.
      */
+    @PropertyValue("jtds")
     JTDS,
 
     /**
      * The Progress DataDirect driver.
      */
+    @PropertyValue("datadirect")
     DATA_DIRECT,
 
     /**
      * The Microsoft Legacy SQL Server driver.
      */
+    @PropertyValue("microsoft")
     MICROSOFT_LEGACY,
 
     /**
      * The Microsoft 2005 SQL Server driver.
      */
+    @PropertyValue("microsoft2005")
     MICROSOFT_2005;
 }
