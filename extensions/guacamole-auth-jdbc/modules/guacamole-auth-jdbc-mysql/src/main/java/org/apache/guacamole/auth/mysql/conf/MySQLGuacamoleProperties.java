@@ -183,14 +183,19 @@ public class MySQLGuacamoleProperties {
      * The SSL mode used to connect to the MySQL Server.  By default SSL will
      * not be used.
      */
-    public static final MySQLSSLProperty MYSQL_SSL_MODE =
-            new MySQLSSLProperty() {
+    public static final EnumGuacamoleProperty<MySQLSSLMode> MYSQL_SSL_MODE =
+            new EnumGuacamoleProperty<MySQLSSLMode>(MySQLSSLMode.class) {
         
         @Override
         public String getName() { return "mysql-ssl-mode" ; }
         
     };
     
+    /**
+     * The File where trusted SSL certificate authorities and server certificates
+     * are stored.  By default no file is specified, and the default Java
+     * trusted certificate stores will be used.
+     */
     public static final FileGuacamoleProperty MYSQL_SSL_TRUST_STORE =
             new FileGuacamoleProperty() {
         
@@ -199,6 +204,10 @@ public class MySQLGuacamoleProperties {
         
     };
     
+    /**
+     * The password to use to access the mysql-ssl-trust-store, if required.  By
+     * default no password will be used to attempt to access the store.
+     */
     public static final StringGuacamoleProperty MYSQL_SSL_TRUST_PASSWORD =
             new StringGuacamoleProperty() {
         
@@ -207,14 +216,25 @@ public class MySQLGuacamoleProperties {
         
     };
     
-    public static final FileGuacamoleProperty MYSQL_SSL_CLIENT_STORE = new FileGuacamoleProperty() {
+    /**
+     * The File used to store the client certificate for configurations where
+     * a client certificate is required for authentication.  By default no
+     * client certificate store will be specified.
+     */
+    public static final FileGuacamoleProperty MYSQL_SSL_CLIENT_STORE =
+            new FileGuacamoleProperty() {
         
         @Override
         public String getName() { return "mysql-ssl-client-store"; }
         
     };
     
-    public static final StringGuacamoleProperty MYSQL_SSL_CLIENT_PASSWORD = new StringGuacamoleProperty() {
+    /**
+     * The password to use to access the mysql-ssl-client-store file.  By
+     * default no password will be used to attempt to access the file.
+     */
+    public static final StringGuacamoleProperty MYSQL_SSL_CLIENT_PASSWORD =
+            new StringGuacamoleProperty() {
         
         @Override
         public String getName() { return "mysql-ssl-client-password"; }

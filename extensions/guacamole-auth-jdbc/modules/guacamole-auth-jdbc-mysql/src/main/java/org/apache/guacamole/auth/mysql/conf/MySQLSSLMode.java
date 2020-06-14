@@ -19,24 +19,42 @@
 
 package org.apache.guacamole.auth.mysql.conf;
 
+import org.apache.guacamole.properties.EnumGuacamoleProperty.PropertyValue;
+
 /**
  * Possible values for enabling SSL within the MySQL Driver.
  */
 public enum MySQLSSLMode {
     
-    // Disable SSL altogether.
+    /**
+     * Do not use SSL at all.
+     */
+    @PropertyValue("disabled")
     DISABLED,
     
-    // Prefer SSL, but fall-back to non-SSL.
+    /**
+     * Prefer SSL, but fall back to unencrypted.
+     */
+    @PropertyValue("preferred")
     PREFERRED,
     
-    // Require SSL, but perform no verification.
+    /**
+     * Require SSL, but perform no certificate validation.
+     */
+    @PropertyValue("required")
     REQUIRED,
     
-    // Require SSL and verify a valid authority.
+    /**
+     * Require SSL, and validate server certificate issuer.
+     */
+    @PropertyValue("verify-ca")
     VERIFY_CA,
     
-    // Require SSL and verify a valid authority and server certificate.
+    /**
+     * Require SSL and validate both server certificate issuer and server
+     * identity.
+     */
+    @PropertyValue("verify-identity")
     VERIFY_IDENTITY;
     
 }

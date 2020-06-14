@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.postgresql.conf;
 
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.EnumGuacamoleProperty;
 import org.apache.guacamole.properties.FileGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
@@ -176,8 +177,8 @@ public class PostgreSQLGuacamoleProperties {
      * The SSL mode that should be used by the JDBC driver when making
      * connections to the remote server.  By default SSL will be disabled.
      */
-    public static final PostgreSQLSSLProperty POSTGRESQL_SSL_MODE =
-            new PostgreSQLSSLProperty() {
+    public static final EnumGuacamoleProperty<PostgreSQLSSLMode> POSTGRESQL_SSL_MODE =
+            new EnumGuacamoleProperty<PostgreSQLSSLMode>(PostgreSQLSSLMode.class) {
         
         @Override
         public String getName() { return "postgresql-ssl-mode"; }

@@ -19,31 +19,53 @@
 
 package org.apache.guacamole.auth.postgresql.conf;
 
+import org.apache.guacamole.properties.EnumGuacamoleProperty.PropertyValue;
+
 /**
  * Possible values for PostgreSQL SSL connectivity.
  */
 public enum PostgreSQLSSLMode {
     
-    // Do not use SSL to connect to server.
+    /**
+     * Do not use SSL to connect to server.
+     */
+    @PropertyValue("disable")
     DISABLE("disable"),
     
-    // Allow SSL connections, but try non-SSL, first.
+    /**
+     * Allow SSL connections, but try non-SSL, first.
+     */
+    @PropertyValue("allow")
     ALLOW("allow"),
     
-    // Prefer SSL connections, falling back to non-SSL if that fails.
+    /**
+     * Prefer SSL connections, falling back to non-SSL if that fails.
+     */
+    @PropertyValue("prefer")
     PREFER("prefer"),
     
-    // Require SSL connections, do not connect if SSL fails.
+    /**
+     * Require SSL connections, do not connect if SSL fails.
+     */
+    @PropertyValue("require")
     REQUIRE("require"),
     
-    // Require SSL connections and validate the CA certificate.
+    /**
+     * Require SSL connections and validate the CA certificate.
+     */
+    @PropertyValue("verify-ca")
     VERIFY_CA("verify-ca"),
     
-    // Require SSL connections and validate both the CA and server certificates.
+    /**
+     * Require SSL connections and validate both the CA and server certificates.
+     */
+    @PropertyValue("verify-full")
     VERIFY_FULL("verify-full");
     
-    // The value actually passed on to the JDBC driver.
-    private String configValue;
+    /**
+     * The value actually passed on to the JDBC driver.
+     */
+    private final String configValue;
     
     /**
      * Create a new instance of this enum with the given configValue as the
