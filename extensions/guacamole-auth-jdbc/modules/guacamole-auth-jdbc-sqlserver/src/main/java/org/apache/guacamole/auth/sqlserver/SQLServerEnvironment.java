@@ -173,6 +173,23 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     }
     
     /**
+     * Returns the instance name of the SQL Server installation hosting the
+     * Guacamole database, if any.  If unspecified it will be null.
+     * 
+     * @return
+     *     The instance name of the SQL Server install hosting the Guacamole
+     *     database, or null if undefined.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs reading guacamole.properties.
+     */
+    public String getSQLServerInstance() throws GuacamoleException {
+        return getProperty(
+            SQLServerGuacamoleProperties.SQLSERVER_INSTANCE
+        );
+    }
+    
+    /**
      * Returns the port number of the SQLServer server hosting the Guacamole
      * authentication tables. If unspecified, this will be the default
      * SQLServer port of 5432.
