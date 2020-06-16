@@ -63,42 +63,32 @@ public enum PostgreSQLSSLMode {
     VERIFY_FULL("verify-full");
     
     /**
-     * The value actually passed on to the JDBC driver.
+     * The value expected by and passed on to the JDBC driver for the given
+     * SSL operation mode.
      */
-    private final String configValue;
+    private final String driverValue;
     
     /**
-     * Create a new instance of this enum with the given configValue as the
+     * Create a new instance of this enum with the given driverValue as the
      * value that will be used when configuring the JDBC driver.
      * 
-     * @param configValue
+     * @param driverValue
      *     The value to use when configuring the JDBC driver.
      */
-    PostgreSQLSSLMode(String configValue) {
-        this.configValue = configValue;
-    }
-    
-    @Override
-    public String toString() {
-        return configValue;
+    PostgreSQLSSLMode(String driverValue) {
+        this.driverValue = driverValue;
     }
     
     /**
-     * Given the String value, determine the correct enum value that matches
-     * the string, or null if there is no match.
-     * 
-     * @param value
-     *     The String value to test to find a match.
+     * Returns the String value for a given Enum that properly configures the
+     * JDBC driver for the desired mode of SSL operation.
      * 
      * @return 
-     *     The enum value matching the given String.
+     *     The String value for the current Enum that configures the JDBC driver
+     *     for the desired mode of SSL operation.
      */
-    public static PostgreSQLSSLMode getValue(String value) {
-        for (PostgreSQLSSLMode mode : PostgreSQLSSLMode.values()) {
-            if (mode.toString().equals(value))
-                return mode;
-        }
-        return null;
+    public String getDriverValue() {
+        return driverValue;
     }
     
 }

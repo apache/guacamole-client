@@ -75,10 +75,12 @@ public class PostgreSQLAuthenticationProviderModule implements Module {
         
         // Check the SSL mode and set if configured.
         PostgreSQLSSLMode sslMode = environment.getPostgreSQLSSLMode();
-        driverProperties.setProperty("sslmode", sslMode.toString());
+        driverProperties.setProperty("sslmode", sslMode.getDriverValue());
         
         // If SSL is enabled, check for and set other SSL properties.
         if (sslMode != PostgreSQLSSLMode.DISABLE) {
+            
+            // Sets the legacy SSL configuration mode required by older servers.
             driverProperties.setProperty("ssl", "true");
 
             File sslClientCert = environment.getPostgreSQLSSLClientCertFile();
