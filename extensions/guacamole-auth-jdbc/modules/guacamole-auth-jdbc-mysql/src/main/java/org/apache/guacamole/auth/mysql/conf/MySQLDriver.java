@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.mysql;
+package org.apache.guacamole.auth.mysql.conf;
 
 import org.apache.guacamole.properties.EnumGuacamoleProperty.PropertyValue;
 

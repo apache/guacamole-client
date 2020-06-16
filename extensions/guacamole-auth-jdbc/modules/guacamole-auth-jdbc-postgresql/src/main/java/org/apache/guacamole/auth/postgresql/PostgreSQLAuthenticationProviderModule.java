@@ -22,8 +22,11 @@ package org.apache.guacamole.auth.postgresql;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
+import java.io.File;
 import java.util.Properties;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.postgresql.conf.PostgreSQLEnvironment;
+import org.apache.guacamole.auth.postgresql.conf.PostgreSQLSSLMode;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
 
 /**
@@ -69,6 +72,34 @@ public class PostgreSQLAuthenticationProviderModule implements Module {
 
         // Use UTF-8 in database
         driverProperties.setProperty("characterEncoding", "UTF-8");
+        
+        // Check the SSL mode and set if configured.
+        PostgreSQLSSLMode sslMode = environment.getPostgreSQLSSLMode();
+        driverProperties.setProperty("sslmode", sslMode.getDriverValue());
+        
+        // If SSL is enabled, check for and set other SSL properties.
+        if (sslMode != PostgreSQLSSLMode.DISABLE) {
+            
+            // Sets the legacy SSL configuration mode required by older servers.
+            driverProperties.setProperty("ssl", "true");
+
+            File sslClientCert = environment.getPostgreSQLSSLClientCertFile();
+            if (sslClientCert != null)
+                driverProperties.setProperty("sslcert", sslClientCert.getAbsolutePath());
+            
+            File sslClientKey = environment.getPostgreSQLSSLClientKeyFile();
+            if (sslClientKey != null)
+                driverProperties.setProperty("sslkey", sslClientKey.getAbsolutePath());
+            
+            File sslRootCert = environment.getPostgreSQLSSLClientRootCertFile();
+            if (sslRootCert != null)
+                driverProperties.setProperty("sslrootcert", sslRootCert.getAbsolutePath());
+            
+            String sslClientKeyPassword = environment.getPostgreSQLSSLClientKeyPassword();
+            if (sslClientKeyPassword != null)
+                driverProperties.setProperty("sslpassword", sslClientKeyPassword);
+            
+        }
 
     }
 
