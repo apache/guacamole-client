@@ -171,7 +171,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
         ObjectPermissionSet permissionSet = getEffectivePermissionSet(user);
         
         // Return whether permission is granted
-        return user.getUser().isAdministrator()
+        return user.isPrivileged()
             || permissionSet.hasPermission(type, identifier);
 
     }
@@ -248,7 +248,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
             ExternalType object, ModelType model) throws GuacamoleException {
 
         // Verify permission to create objects
-        if (!user.getUser().isAdministrator() && !hasCreatePermission(user))
+        if (!user.isPrivileged() && !hasCreatePermission(user))
             throw new GuacamoleSecurityException("Permission denied.");
 
     }
@@ -396,7 +396,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
         Collection<ModelType> objects;
 
         // Bypass permission checks if the user is a system admin
-        if (user.getUser().isAdministrator())
+        if (user.isPrivileged())
             objects = getObjectMapper().select(identifiers);
 
         // Otherwise only return explicitly readable identifiers
@@ -508,7 +508,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
         throws GuacamoleException {
 
         // Bypass permission checks if the user is a system admin
-        if (user.getUser().isAdministrator())
+        if (user.isPrivileged())
             return getObjectMapper().selectIdentifiers();
 
         // Otherwise only return explicitly readable identifiers

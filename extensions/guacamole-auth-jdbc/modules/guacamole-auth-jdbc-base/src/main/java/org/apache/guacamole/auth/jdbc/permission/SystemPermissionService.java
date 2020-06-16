@@ -95,7 +95,7 @@ public class SystemPermissionService
             Collection<SystemPermission> permissions) throws GuacamoleException {
 
         // Only an admin can create system permissions
-        if (user.getUser().isAdministrator()) {
+        if (user.isPrivileged()) {
             Collection<SystemPermissionModel> models = getModelInstances(targetEntity, permissions);
             systemPermissionMapper.insert(models);
             return;
@@ -112,7 +112,7 @@ public class SystemPermissionService
             Collection<SystemPermission> permissions) throws GuacamoleException {
 
         // Only an admin can delete system permissions
-        if (user.getUser().isAdministrator()) {
+        if (user.isPrivileged()) {
 
             // Do not allow users to remove their own admin powers
             if (user.getUser().getIdentifier().equals(targetEntity.getIdentifier()))

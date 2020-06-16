@@ -149,7 +149,7 @@ public abstract class ModeledChildDirectoryObjectService<InternalType extends Mo
             String identifier, ModelType model) throws GuacamoleException {
 
         // If user is an administrator, no need to check
-        if (user.getUser().isAdministrator())
+        if (user.isPrivileged())
             return true;
         
         // Verify that we have permission to modify any modified parents

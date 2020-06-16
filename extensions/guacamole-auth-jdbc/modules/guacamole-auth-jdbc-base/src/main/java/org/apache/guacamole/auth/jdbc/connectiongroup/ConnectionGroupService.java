@@ -219,7 +219,7 @@ public class ConnectionGroupService extends ModeledChildDirectoryObjectService<M
             throws GuacamoleException {
 
         // Bypass permission checks if the user is a system admin
-        if (user.getUser().isAdministrator())
+        if (user.isPrivileged())
             return connectionGroupMapper.selectIdentifiersWithin(identifier);
 
         // Otherwise only return explicitly readable identifiers

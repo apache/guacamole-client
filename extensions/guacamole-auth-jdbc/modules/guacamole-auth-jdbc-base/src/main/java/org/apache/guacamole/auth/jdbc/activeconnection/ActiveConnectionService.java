@@ -81,7 +81,7 @@ public class ActiveConnectionService
             Collection<String> identifiers) throws GuacamoleException {
 
         String username = user.getIdentifier();
-        boolean isAdmin = user.getUser().isAdministrator();
+        boolean isAdmin = user.isPrivileged();
         Set<String> identifierSet = new HashSet<String>(identifiers);
 
         // Retrieve all visible connections (permissions enforced by tunnel service)
@@ -211,7 +211,7 @@ public class ActiveConnectionService
         
         ObjectPermissionSet permissionSet = getPermissionSet(user);
         
-        return user.getUser().isAdministrator() 
+        return user.isPrivileged()
                 || permissionSet.hasPermission(type, identifier);
         
     }

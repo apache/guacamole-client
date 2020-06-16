@@ -629,7 +629,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             return Collections.<ActiveConnectionRecord>emptyList();
 
         // A system administrator can view all connections; no need to filter
-        if (user.getUser().isAdministrator())
+        if (user.isPrivileged())
             return records;
 
         // Build set of all connection identifiers associated with active tunnels
