@@ -30,32 +30,32 @@ public enum MySQLSSLMode {
      * Do not use SSL at all.
      */
     @PropertyValue("disabled")
-    DISABLED("disabled"),
+    DISABLED("DISABLED"),
     
     /**
      * Prefer SSL, but fall back to unencrypted.
      */
     @PropertyValue("preferred")
-    PREFERRED("preferred"),
+    PREFERRED("PREFERRED"),
     
     /**
      * Require SSL, but perform no certificate validation.
      */
     @PropertyValue("required")
-    REQUIRED("required"),
+    REQUIRED("REQUIRED"),
     
     /**
      * Require SSL, and validate server certificate issuer.
      */
     @PropertyValue("verify-ca")
-    VERIFY_CA("verify-ca"),
+    VERIFY_CA("VERIFY_CA"),
     
     /**
      * Require SSL and validate both server certificate issuer and server
      * identity.
      */
     @PropertyValue("verify-identity")
-    VERIFY_IDENTITY("verify-identity");
+    VERIFY_IDENTITY("VERIFY_IDENTITY");
     
     /**
      * The value expected by and passed on to the JDBC driver for the given

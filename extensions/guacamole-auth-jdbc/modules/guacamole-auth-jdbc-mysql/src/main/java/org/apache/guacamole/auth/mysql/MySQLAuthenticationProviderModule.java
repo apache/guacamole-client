@@ -23,7 +23,6 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
 import java.io.File;
-import java.net.URI;
 import java.util.Properties;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.mysql.conf.MySQLDriver;
