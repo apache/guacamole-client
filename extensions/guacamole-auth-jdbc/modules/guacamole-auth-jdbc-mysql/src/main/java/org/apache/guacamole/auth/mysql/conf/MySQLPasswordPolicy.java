@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.postgresql;
+package org.apache.guacamole.auth.mysql.conf;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
@@ -27,9 +27,9 @@ import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 
 /**
  * PasswordPolicy implementation which reads the details of the policy from
- * PostgreSQL-specific properties in guacamole.properties.
+ * MySQL-specific properties in guacamole.properties.
  */
-public class PostgreSQLPasswordPolicy implements PasswordPolicy {
+public class MySQLPasswordPolicy implements PasswordPolicy {
 
     /**
      * The property which specifies the minimum length required of all user
@@ -39,7 +39,7 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
             new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-user-password-min-length"; }
+        public String getName() { return "mysql-user-password-min-length"; }
 
     };
 
@@ -52,7 +52,7 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
             new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-user-password-min-age"; }
+        public String getName() { return "mysql-user-password-min-age"; }
 
     };
 
@@ -65,7 +65,7 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
             new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-user-password-max-age"; }
+        public String getName() { return "mysql-user-password-max-age"; }
 
     };
 
@@ -78,7 +78,7 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
             new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-user-password-history-size"; }
+        public String getName() { return "mysql-user-password-history-size"; }
 
     };
 
@@ -91,7 +91,7 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
             new BooleanGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-user-password-require-multiple-case"; }
+        public String getName() { return "mysql-user-password-require-multiple-case"; }
 
     };
 
@@ -104,7 +104,7 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
             new BooleanGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-user-password-require-digit"; }
+        public String getName() { return "mysql-user-password-require-digit"; }
 
     };
 
@@ -117,7 +117,7 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
             new BooleanGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-user-password-require-symbol"; }
+        public String getName() { return "mysql-user-password-require-symbol"; }
 
     };
 
@@ -130,7 +130,7 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
             new BooleanGuacamoleProperty() {
 
         @Override
-        public String getName() { return "postgresql-user-password-prohibit-username"; }
+        public String getName() { return "mysql-user-password-prohibit-username"; }
 
     };
 
@@ -140,14 +140,14 @@ public class PostgreSQLPasswordPolicy implements PasswordPolicy {
     private final JDBCEnvironment environment;
 
     /**
-     * Creates a new PostgreSQLPasswordPolicy which reads the details of the
-     * policy from the properties exposed by the given environment.
+     * Creates a new MySQLPasswordPolicy which reads the details of the policy
+     * from the properties exposed by the given environment.
      *
      * @param environment
      *     The environment from which password policy properties should be
      *     read.
      */
-    public PostgreSQLPasswordPolicy(JDBCEnvironment environment) {
+    public MySQLPasswordPolicy(JDBCEnvironment environment) {
         this.environment = environment;
     }
 
