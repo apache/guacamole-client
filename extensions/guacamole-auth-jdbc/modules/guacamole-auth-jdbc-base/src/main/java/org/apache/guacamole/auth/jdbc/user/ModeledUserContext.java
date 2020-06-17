@@ -48,6 +48,7 @@ import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.UserGroup;
 
 /**
@@ -118,13 +119,22 @@ public class ModeledUserContext extends RestrictedObject
     private Provider<UserRecordSet> userRecordSetProvider;
 
     /**
+     * Provider for retrieving UserContext instances.
+     */
+    @Inject
+    private Provider<ModeledUserContext> userContextProvider;
+
+    /**
      * Mapper for user login records.
      */
     @Inject
     private UserRecordMapper userRecordMapper;
 
     /**
-     * The activity record associated with this user's Guacamole session.
+     * The activity record associated with this user's Guacamole session. If
+     * this user's session will not have an associated activity record, such as
+     * a temporary privileged session created via getPrivileged(), this will be
+     * null.
      */
     private ActivityRecordModel userRecord;
 
@@ -141,15 +151,40 @@ public class ModeledUserContext extends RestrictedObject
         sharingProfileDirectory.init(currentUser);
         activeConnectionDirectory.init(currentUser);
 
+    }
+
+    /**
+     * Records that the user associated with this UserContext has logged in,
+     * creating a partial activity record. The resulting activity record will
+     * contain a start date only, with the end date being automatically
+     * populated when this UserContext is invalidated. If this function is
+     * invoked more than once for the same UserContext, only the first
+     * invocation has any effect. If this function is never invoked, no
+     * activity record will be recorded, including when this UserContext is
+     * invalidated.
+     */
+    public void recordUserLogin() {
+
+        // Do nothing if invoked multiple times
+        if (userRecord != null)
+            return;
+
         // Create login record for user
         userRecord = new ActivityRecordModel();
-        userRecord.setUsername(currentUser.getIdentifier());
+        userRecord.setUsername(getCurrentUser().getIdentifier());
         userRecord.setStartDate(new Date());
-        userRecord.setRemoteHost(currentUser.getCredentials().getRemoteAddress());
+        userRecord.setRemoteHost(getCurrentUser().getCredentials().getRemoteAddress());
 
         // Insert record representing login
         userRecordMapper.insert(userRecord);
+        
+    }
 
+    @Override
+    public UserContext getPrivileged() {
+        ModeledUserContext context = userContextProvider.get();
+        context.init(new PrivilegedModeledAuthenticatedUser(getCurrentUser()));
+        return context;
     }
 
     @Override
@@ -253,9 +288,11 @@ public class ModeledUserContext extends RestrictedObject
     @Override
     public void invalidate() {
 
-        // Record logout time
-        userRecord.setEndDate(new Date());
-        userRecordMapper.update(userRecord);
+        // Record logout time only if login time was recorded
+        if (userRecord != null) {
+            userRecord.setEndDate(new Date());
+            userRecordMapper.update(userRecord);
+        }
 
     }
 
