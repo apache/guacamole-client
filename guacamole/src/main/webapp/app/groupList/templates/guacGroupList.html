@@ -3,6 +3,7 @@
     <script type="text/ng-template" id="nestedItem.html">
         <div class="{{item.type}}" ng-if="isVisible(item.type)"
             ng-class="{
+                balancer   : item.balancing,
                 expanded   : item.expanded,
                 expandable : item.expandable,
                 empty      : !item.children.length
