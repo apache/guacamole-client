@@ -54,3 +54,13 @@ div.recent-connections div.connection {
 a.home-connection {
     display: block;
 }
+
+/* Show only expand/collapse icon for connection groups on home screen */
+
+.all-connections .connection-group > .caption .icon {
+    display: none;
+}
+
+.all-connections .connection-group > .caption .icon.expand {
+    display: inline-block;
+}
