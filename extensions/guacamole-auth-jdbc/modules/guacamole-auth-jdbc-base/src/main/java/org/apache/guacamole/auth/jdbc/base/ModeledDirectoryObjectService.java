@@ -395,7 +395,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
         Collection<ModelType> objects;
 
-        // Bypass permission checks if the user is a system admin
+        // Bypass permission checks if the user is privileged
         if (user.isPrivileged())
             objects = getObjectMapper().select(identifiers);
 
@@ -507,7 +507,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
     public Set<String> getIdentifiers(ModeledAuthenticatedUser user)
         throws GuacamoleException {
 
-        // Bypass permission checks if the user is a system admin
+        // Bypass permission checks if the user is privileged
         if (user.isPrivileged())
             return getObjectMapper().selectIdentifiers();
 

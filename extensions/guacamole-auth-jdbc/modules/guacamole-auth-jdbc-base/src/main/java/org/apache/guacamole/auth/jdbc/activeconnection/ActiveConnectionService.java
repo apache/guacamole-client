@@ -81,7 +81,7 @@ public class ActiveConnectionService
             Collection<String> identifiers) throws GuacamoleException {
 
         String username = user.getIdentifier();
-        boolean isAdmin = user.isPrivileged();
+        boolean isPrivileged = user.isPrivileged();
         Set<String> identifierSet = new HashSet<String>(identifiers);
 
         // Retrieve all visible connections (permissions enforced by tunnel service)
@@ -95,7 +95,7 @@ public class ActiveConnectionService
             // be able to connect to (join) the active connection if they are
             // the user that started the connection OR the user is an admin
             boolean hasPrivilegedAccess =
-                    isAdmin || username.equals(record.getUsername());
+                    isPrivileged || username.equals(record.getUsername());
 
             // Add connection if within requested identifiers
             if (identifierSet.contains(record.getUUID().toString())) {

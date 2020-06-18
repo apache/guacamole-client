@@ -148,7 +148,7 @@ public abstract class ModeledChildDirectoryObjectService<InternalType extends Mo
     protected boolean canUpdateModifiedParents(ModeledAuthenticatedUser user,
             String identifier, ModelType model) throws GuacamoleException {
 
-        // If user is an administrator, no need to check
+        // If user is privileged, no need to check
         if (user.isPrivileged())
             return true;
         

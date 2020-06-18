@@ -94,7 +94,8 @@ public class SystemPermissionService
             ModeledPermissions<? extends EntityModel> targetEntity,
             Collection<SystemPermission> permissions) throws GuacamoleException {
 
-        // Only an admin can create system permissions
+        // Only privileged users (such as system administrators) can create
+        // system permissions
         if (user.isPrivileged()) {
             Collection<SystemPermissionModel> models = getModelInstances(targetEntity, permissions);
             systemPermissionMapper.insert(models);
@@ -111,7 +112,8 @@ public class SystemPermissionService
             ModeledPermissions<? extends EntityModel> targetEntity,
             Collection<SystemPermission> permissions) throws GuacamoleException {
 
-        // Only an admin can delete system permissions
+        // Only privileged users (such as system administrators) can delete
+        // system permissions
         if (user.isPrivileged()) {
 
             // Do not allow users to remove their own admin powers

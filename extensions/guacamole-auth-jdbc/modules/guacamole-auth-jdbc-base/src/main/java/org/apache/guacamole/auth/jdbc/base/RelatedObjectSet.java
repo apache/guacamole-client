@@ -140,7 +140,8 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
     private boolean canAlterRelation(Collection<String> identifiers)
             throws GuacamoleException {
 
-        // System administrators may alter any relations
+        // Privileged users (such as system administrators) may alter any
+        // relations
         if (getCurrentUser().isPrivileged())
             return true;
 
@@ -162,7 +163,7 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
     @Override
     public Set<String> getObjects() throws GuacamoleException {
 
-        // Bypass permission checks if the user is a system admin
+        // Bypass permission checks if the user is a privileged
         ModeledAuthenticatedUser user = getCurrentUser();
         if (user.isPrivileged())
             return getObjectRelationMapper().selectChildIdentifiers(parent.getModel());

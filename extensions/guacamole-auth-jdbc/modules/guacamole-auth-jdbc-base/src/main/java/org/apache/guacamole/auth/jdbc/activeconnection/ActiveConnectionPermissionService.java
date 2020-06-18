@@ -82,8 +82,9 @@ public class ActiveConnectionPermissionService
         // Retrieve permissions only if allowed
         if (canReadPermissions(user, targetEntity)) {
 
-            // Administrators may always access active connections
-            boolean isAdmin = targetEntity.isPrivileged();
+            // Privileged accounts (such as administrators or UserContexts
+            // returned by getPrivileged()) may always access active connections
+            boolean isPrivileged = targetEntity.isPrivileged();
 
             // Get all active connections
             Collection<ActiveConnectionRecord> records = tunnelService.getActiveConnections(user);
@@ -96,9 +97,9 @@ public class ActiveConnectionPermissionService
                 String identifier = record.getUUID().toString();
                 permissions.add(new ObjectPermission(ObjectPermission.Type.READ, identifier));
 
-                // If the target use is an admin, or the connection belongs to
-                // the target user, then they can DELETE
-                if (isAdmin || targetEntity.isUser(record.getUsername()))
+                // If the target user is privileged, or the connection belongs
+                // to the target user, then they can DELETE
+                if (isPrivileged || targetEntity.isUser(record.getUsername()))
                     permissions.add(new ObjectPermission(ObjectPermission.Type.DELETE, identifier));
 
             }
