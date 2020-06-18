@@ -278,8 +278,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         // Verify new password does not violate defined policies (if specified)
         if (object.getPassword() != null) {
 
-            // Enforce password age only for non-adminstrators
-            if (!user.getUser().isAdministrator())
+            // Enforce password age only for non-privileged users
+            if (!user.isPrivileged())
                 passwordPolicyService.verifyPasswordAge(object);
 
             // Always verify password complexity
@@ -626,8 +626,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
         List<ActivityRecordModel> searchResults;
 
-        // Bypass permission checks if the user is a system admin
-        if (user.getUser().isAdministrator())
+        // Bypass permission checks if the user is privileged
+        if (user.isPrivileged())
             searchResults = userRecordMapper.search(requiredContents,
                     sortPredicates, limit);
 

@@ -139,6 +139,7 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
         
         // Initialize the UserContext with the user account and return it.
         context.init(user.getCurrentUser());
+        context.recordUserLogin();
         return context;
 
     }
