@@ -181,12 +181,13 @@ public class UserVerificationService {
 
         // Update user object
         try {
-            context.getUserDirectory().update(self);
+            context.getPrivileged().getUserDirectory().update(self);
         }
         catch (GuacamoleSecurityException e) {
             logger.info("User \"{}\" cannot store their TOTP key as they "
-                    + "lack permission to update their own account. TOTP "
-                    + "will be disabled for this user.",
+                    + "lack permission to update their own account and the "
+                    + "TOTP extension was unable to obtain privileged access. "
+                    + "TOTP will be disabled for this user.",
                     self.getIdentifier());
             logger.debug("Permission denied to set TOTP key of user "
                     + "account.", e);

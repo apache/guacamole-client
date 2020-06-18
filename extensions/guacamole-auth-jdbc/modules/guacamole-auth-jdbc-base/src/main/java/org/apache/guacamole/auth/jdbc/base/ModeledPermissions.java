@@ -132,18 +132,20 @@ public abstract class ModeledPermissions<ModelType extends EntityModel>
     }
 
     /**
-     * Returns whether this entity is a system administrator, and thus is not
-     * restricted by permissions, taking into account permission inheritance
-     * via user groups.
+     * Returns whether this entity is effectively unrestricted by permissions,
+     * such as a system administrator or an internal user operating via a
+     * privileged UserContext. Permission inheritance via user groups is taken
+     * into account.
      *
      * @return
-     *    true if this entity is a system administrator, false otherwise.
+     *     true if this entity should be unrestricted by permissions, false
+     *     otherwise.
      *
      * @throws GuacamoleException
-     *    If an error occurs while determining the entity's system administrator
-     *    status.
+     *     If an error occurs while determining whether permission restrictions
+     *     apply to the entity.
      */
-    public boolean isAdministrator() throws GuacamoleException {
+    public boolean isPrivileged() throws GuacamoleException {
         SystemPermissionSet systemPermissionSet = getEffective().getSystemPermissions();
         return systemPermissionSet.hasPermission(SystemPermission.Type.ADMINISTER);
     }

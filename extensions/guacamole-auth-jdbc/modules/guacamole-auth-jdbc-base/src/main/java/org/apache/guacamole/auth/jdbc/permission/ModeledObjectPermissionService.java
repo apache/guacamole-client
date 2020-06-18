@@ -95,8 +95,8 @@ public abstract class ModeledObjectPermissionService
             Collection<ObjectPermission> permissions)
             throws GuacamoleException {
 
-        // A system adminstrator can do anything
-        if (user.getUser().isAdministrator())
+        // Privileged users (such as system administrators) may do anything
+        if (user.isPrivileged())
             return true;
         
         // Verify user has update permission on the target entity
@@ -187,8 +187,8 @@ public abstract class ModeledObjectPermissionService
         if (identifiers.isEmpty())
             return identifiers;
         
-        // If user is an admin, everything is accessible
-        if (user.getUser().isAdministrator())
+        // Privileged users (such as system administrators) may access everything
+        if (user.isPrivileged())
             return identifiers;
 
         // Otherwise, return explicitly-retrievable identifiers only if allowed

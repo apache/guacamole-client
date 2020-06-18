@@ -297,8 +297,8 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
             String identifier)
             throws GuacamoleException {
 
-        // Bypass permission checks if the user is a system admin
-        if (user.getUser().isAdministrator())
+        // Bypass permission checks if the user is privileged
+        if (user.isPrivileged())
             return connectionMapper.selectIdentifiersWithin(identifier);
 
         // Otherwise only return explicitly readable identifiers
@@ -470,8 +470,8 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
 
         List<ConnectionRecordModel> searchResults;
 
-        // Bypass permission checks if the user is a system admin
-        if (user.getUser().isAdministrator())
+        // Bypass permission checks if the user is privileged
+        if (user.isPrivileged())
             searchResults = connectionRecordMapper.search(requiredContents,
                     sortPredicates, limit);
 

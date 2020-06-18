@@ -262,4 +262,29 @@ public interface UserContext {
      */
     void invalidate();
 
+    /**
+     * Returns a user context which provides privileged access. Unlike the
+     * original user context, which is required to enforce its own permissions
+     * and act only within the rights of the associated user, the user context
+     * returned by this function MAY ignore the restrictions that otherwise
+     * limit the current user's access.
+     *
+     * <p>This function is intended to allow extensions which decorate other
+     * extensions to act independently of the restrictions that affect the
+     * current user. This function will only be invoked by extensions and
+     * WILL NOT be invoked directly by the web application. Implementations of
+     * this function MAY still enforce access restrictions, particularly if
+     * they do not want to grant full, unrestricted access to other extensions.
+     *
+     * <p>A default implementation which simply returns <code>this</code> is
+     * provided for compatibility with Apache Guacamole 1.1.0 and older.
+     *
+     * @return
+     *     A user context instance which MAY ignore some or all restrictions
+     *     which otherwise limit the current user's access.
+     */
+    default UserContext getPrivileged() {
+        return this;
+    }
+
 }
