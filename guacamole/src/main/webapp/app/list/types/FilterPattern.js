@@ -124,10 +124,14 @@ angular.module('list').factory('FilterPattern', ['$injector',
             // For each defined getter
             for (var i=0; i < getters.length; i++) {
 
-                // Test value against IPv4 network
-                var value = IPv4Network.parse(String(getters[i](object)));
-                if (value && network.contains(value))
-                    return true;
+                // Test each possible IPv4 address within the string against
+                // the given IPv4 network
+                var addresses = String(getters[i](object)).split(/[^0-9.]+/);
+                for (var j=0; j < addresses.length; j++) {
+                    var value = IPv4Network.parse(addresses[j]);
+                    if (value && network.contains(value))
+                        return true;
+                }
 
             }
 
@@ -154,10 +158,14 @@ angular.module('list').factory('FilterPattern', ['$injector',
             // For each defined getter
             for (var i=0; i < getters.length; i++) {
 
-                // Test value against IPv6 network
-                var value = IPv6Network.parse(String(getters[i](object)));
-                if (value && network.contains(value))
-                    return true;
+                // Test each possible IPv6 address within the string against
+                // the given IPv6 network
+                var addresses = String(getters[i](object)).split(/[^0-9A-Fa-f:]+/);
+                for (var j=0; j < addresses.length; j++) {
+                    var value = IPv6Network.parse(addresses[j]);
+                    if (value && network.contains(value))
+                        return true;
+                }
 
             }
 
