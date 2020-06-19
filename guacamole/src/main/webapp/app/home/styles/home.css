@@ -51,6 +51,27 @@ div.recent-connections div.connection {
     overflow: hidden;
 }
 
-a.home-connection {
+a.home-connection, .empty.balancer a.home-connection-group {
     display: block;
+}
+
+/* Show only expand/collapse icon for connection groups on home screen ... */
+
+.all-connections .connection-group > .caption .icon {
+    display: none;
+}
+
+.all-connections .connection-group > .caption .icon.expand {
+    display: inline-block;
+}
+
+/* ... except for empty balancing groups, which should be rendered as if they
+ * are connections. */
+
+.all-connections .connection-group.empty.balancer > .caption .icon {
+    display: inline-block;
+}
+
+.all-connections .connection-group.empty.balancer > .caption .icon.expand {
+    display: none;
 }

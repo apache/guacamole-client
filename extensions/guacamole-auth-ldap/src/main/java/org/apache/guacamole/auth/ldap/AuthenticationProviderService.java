@@ -154,7 +154,7 @@ public class AuthenticationProviderService {
 
             // Always disconnect
             finally {
-                ldapService.disconnect(searchConnection);
+                searchConnection.close();
             }
 
         }
@@ -204,18 +204,30 @@ public class AuthenticationProviderService {
         
         // Attempt bind
         LdapNetworkConnection ldapConnection = ldapService.bindAs(bindDn, password);
-            
-        // Retrieve group membership of the user that just authenticated
-        Set<String> effectiveGroups =
-                userGroupService.getParentUserGroupIdentifiers(ldapConnection,
-                        bindDn);
+        if (ldapConnection == null)
+            throw new GuacamoleInvalidCredentialsException("Invalid login.",
+                    CredentialsInfo.USERNAME_PASSWORD);
 
-        // Return AuthenticatedUser if bind succeeds
-        LDAPAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-        authenticatedUser.init(credentials, getAttributeTokens(ldapConnection,
-                bindDn), effectiveGroups, bindDn);
-        
-        return authenticatedUser;
+        try {
+
+            // Retrieve group membership of the user that just authenticated
+            Set<String> effectiveGroups =
+                    userGroupService.getParentUserGroupIdentifiers(ldapConnection,
+                            bindDn);
+
+            // Return AuthenticatedUser if bind succeeds
+            LDAPAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+            authenticatedUser.init(credentials, getAttributeTokens(ldapConnection,
+                    bindDn), effectiveGroups, bindDn);
+
+            return authenticatedUser;
+
+        }
+
+        // Always disconnect
+        finally {
+            ldapConnection.close();
+        }
 
     }
 
@@ -301,8 +313,16 @@ public class AuthenticationProviderService {
         // Bind using credentials associated with AuthenticatedUser
         Credentials credentials = authenticatedUser.getCredentials();
         if (authenticatedUser instanceof LDAPAuthenticatedUser) {
+
             Dn bindDn = ((LDAPAuthenticatedUser) authenticatedUser).getBindDn();
             LdapNetworkConnection ldapConnection = ldapService.bindAs(bindDn, credentials.getPassword());
+            if (ldapConnection == null) {
+                logger.debug("LDAP bind succeeded for \"{}\" during "
+                        + "authentication but failed during data retrieval.",
+                        authenticatedUser.getIdentifier());
+                throw new GuacamoleInvalidCredentialsException("Invalid login.",
+                        CredentialsInfo.USERNAME_PASSWORD);
+            }
 
             try {
 
@@ -315,7 +335,7 @@ public class AuthenticationProviderService {
 
             // Always disconnect
             finally {
-                ldapService.disconnect(ldapConnection);
+                ldapConnection.close();
             }
         }
         return null;

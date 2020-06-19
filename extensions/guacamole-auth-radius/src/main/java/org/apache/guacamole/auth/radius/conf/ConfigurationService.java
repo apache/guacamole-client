@@ -317,7 +317,7 @@ public class ConfigurationService {
     public RadiusAuthenticationProtocol getRadiusEAPTTLSInnerProtocol()
             throws GuacamoleException {
         
-        RadiusAuthenticationProtocol authProtocol = environment.getProperty(
+        RadiusAuthenticationProtocol authProtocol = environment.getRequiredProperty(
             RadiusGuacamoleProperties.RADIUS_EAP_TTLS_INNER_PROTOCOL
         );
         

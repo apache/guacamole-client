@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "1.1.0",
+    "guacamoleVersion" : "1.2.0",
 
     "name"      : "CAS Authentication Extension",
     "namespace" : "guac-cas",
@@ -13,6 +13,7 @@
         "translations/de.json",
         "translations/en.json",
         "translations/ja.json",
+        "translations/ru.json",
         "translations/zh.json"
     ],
 

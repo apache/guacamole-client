@@ -35,6 +35,7 @@ import org.apache.directory.api.ldap.model.filter.PresenceNode;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.auth.ldap.conf.ConfigurationService;
+import org.apache.guacamole.auth.ldap.conf.MemberAttributeType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.ldap.ObjectQueryService;
 import org.apache.guacamole.net.auth.UserGroup;
@@ -176,6 +177,37 @@ public class UserGroupService {
         if (groupBaseDN == null)
             return Collections.emptyList();
 
+        // memberAttribute specified in properties could contain DN or username 
+        MemberAttributeType memberAttributeType = confService.getMemberAttributeType();
+        String userIDorDN = userDN.toString();
+        if (memberAttributeType == MemberAttributeType.UID) {
+            // Retrieve user objects with userDN
+            List<Entry> userEntries = queryService.search(
+                ldapConnection,
+                userDN,
+                confService.getUserSearchFilter(),
+                0);
+            // ... there can surely only be one
+            if (userEntries.size() != 1)
+                logger.warn("user DN \"{}\" does not return unique value "
+                        + "and will be ignored", userDN.toString());
+            else {
+                // determine unique identifier for user
+                Entry userEntry = userEntries.get(0);
+                Collection<String> userAttributes = confService.getUsernameAttributes();
+                try {
+                    userIDorDN = queryService.getIdentifier(userEntry,
+                                         userAttributes);
+                }
+                catch (LdapInvalidAttributeValueException e) {
+                    logger.error("User group missing identifier: {}",
+                            e.getMessage());
+                    logger.debug("LDAP exception while getting "
+                            + "group identifier.", e);
+                }
+            }
+        }
+
         // Get all groups the user is a member of starting at the groupBaseDN,
         // excluding guacConfigGroups
         return queryService.search(
@@ -183,7 +215,7 @@ public class UserGroupService {
             groupBaseDN,
             getGroupSearchFilter(),
             Collections.singleton(confService.getMemberAttribute()),
-            userDN.toString()
+            userIDorDN
         );
 
     }

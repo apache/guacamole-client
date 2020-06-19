@@ -69,12 +69,18 @@ public class SQLServerAuthenticationProviderModule implements Module {
         myBatisProperties.setProperty("JDBC.schema", environment.getSQLServerDatabase());
         myBatisProperties.setProperty("JDBC.username", environment.getSQLServerUsername());
         myBatisProperties.setProperty("JDBC.password", environment.getSQLServerPassword());
+        
         myBatisProperties.setProperty("JDBC.autoCommit", "false");
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
 
         // Use UTF-8 in database
         driverProperties.setProperty("characterEncoding", "UTF-8");
+        
+        // Retrieve instance name and set it
+        String instance = environment.getSQLServerInstance();
+        if (instance != null)
+            driverProperties.setProperty("JDBC.instanceName", instance);
 
         // Capture which driver to use for the connection.
         this.sqlServerDriver = environment.getSQLServerDriver();

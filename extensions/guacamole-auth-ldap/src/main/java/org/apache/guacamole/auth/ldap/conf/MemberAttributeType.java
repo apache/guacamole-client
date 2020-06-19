@@ -17,10 +17,26 @@
  * under the License.
  */
 
-.text-input-container {
-    display: none;
-}
+package org.apache.guacamole.auth.ldap.conf;
 
-.text-input-container.open {
-    display: block;
+import org.apache.guacamole.properties.EnumGuacamoleProperty.PropertyValue;
+
+/**
+ * All possible means of describing membership within LDAP group directory
+ * records.
+ */
+public enum MemberAttributeType {
+
+    /**
+     * Group membership is specified by DN.
+     */
+    @PropertyValue("dn")
+    DN,
+
+    /**
+     * Group membership is specified by usercode.
+     */
+    @PropertyValue("uid")
+    UID;
+
 }

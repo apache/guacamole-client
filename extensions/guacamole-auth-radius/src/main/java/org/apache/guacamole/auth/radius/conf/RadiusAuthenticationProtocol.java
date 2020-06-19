@@ -19,6 +19,17 @@
 
 package org.apache.guacamole.auth.radius.conf;
 
+import net.jradius.client.RadiusClient;
+import net.jradius.client.auth.CHAPAuthenticator;
+import net.jradius.client.auth.EAPMD5Authenticator;
+import net.jradius.client.auth.EAPTLSAuthenticator;
+import net.jradius.client.auth.EAPTTLSAuthenticator;
+import net.jradius.client.auth.MSCHAPv1Authenticator;
+import net.jradius.client.auth.MSCHAPv2Authenticator;
+import net.jradius.client.auth.PAPAuthenticator;
+import net.jradius.client.auth.RadiusAuthenticator;
+import org.apache.guacamole.properties.EnumGuacamoleProperty.PropertyValue;
+
 /**
  * This enum represents supported RADIUS authentication protocols for
  * the guacamole-auth-radius extension.
@@ -26,93 +37,91 @@ package org.apache.guacamole.auth.radius.conf;
 public enum RadiusAuthenticationProtocol {
     
     /**
-     * Password Authentication Protocol (PAP)
+     * Password Authentication Protocol (PAP).
      */
-    PAP("pap"),
+    @PropertyValue("pap")
+    PAP(PAPAuthenticator.NAME),
     
     /**
-     * Challenge-Handshake Authentication Protocol (CHAP)
+     * Challenge-Handshake Authentication Protocol (CHAP).
      */
-    CHAP("chap"),
+    @PropertyValue("chap")
+    CHAP(CHAPAuthenticator.NAME),
     
     /**
-     * Microsoft implementation of CHAP, Version 1 (MS-CHAPv1)
+     * Microsoft implementation of CHAP, Version 1 (MS-CHAPv1).
      */
-    MSCHAPv1("mschapv1"),
+    @PropertyValue("mschapv1")
+    MSCHAP_V1(MSCHAPv1Authenticator.NAME),
     
     /**
-     * Microsoft implementation of CHAP, Version 2 (MS-CHAPv2)
+     * Microsoft implementation of CHAP, Version 2 (MS-CHAPv2).
      */
-    MSCHAPv2("mschapv2"),
+    @PropertyValue("mschapv2")
+    MSCHAP_V2(MSCHAPv2Authenticator.NAME),
     
     /**
-     * Extensible Authentication Protocol (EAP) with MD5 Hashing (EAP-MD5)
+     * Extensible Authentication Protocol (EAP) with MD5 Hashing (EAP-MD5).
      */
-    EAP_MD5("eap-md5"),
+    @PropertyValue("eap-md5")
+    EAP_MD5(EAPMD5Authenticator.NAME),
 
     /**
      * Extensible Authentication Protocol (EAP) with TLS encryption (EAP-TLS).
      */
-    EAP_TLS("eap-tls"),
+    @PropertyValue("eap-tls")
+    EAP_TLS(EAPTLSAuthenticator.NAME),
 
     /**
      * Extensible Authentication Protocol (EAP) with Tunneled TLS (EAP-TTLS).
      */
-    EAP_TTLS("eap-ttls");
+    @PropertyValue("eap-ttls")
+    EAP_TTLS(EAPTTLSAuthenticator.NAME);
 
     /**
-     * This variable stores the string value of the protocol, and is also
-     * used within the extension to pass to JRadius for configuring the
-     * library to talk to the RADIUS server.
+     * The unique name of the JRadius {@link RadiusAuthenticator} that
+     * implements this protocol.
      */
-    private final String strValue;
-    
+    public final String JRADIUS_PROTOCOL_NAME;
+
     /**
-     * Create a new RadiusAuthenticationProtocol object having the
-     * given string value.
-     * 
-     * @param strValue
-     *     The value of the protocol to store as a string, which will be used
-     *     in specifying the protocol within the guacamole.properties file, and
-     *     will also be used by the JRadius library for its configuration.
+     * Creates a new RadiusAuthenticationProtocol associated with the given
+     * JRadius protocol name.
+     *
+     * @param protocolName
+     *     The unique name of the JRadius {@link RadiusAuthenticator} that
+     *     implements this protocol.
      */
-    RadiusAuthenticationProtocol(String strValue) {
-        this.strValue = strValue;
+    RadiusAuthenticationProtocol(String protocolName) {
+        this.JRADIUS_PROTOCOL_NAME = protocolName;
     }
-    
+
     /**
-    * {@inheritDoc}
-    * <p>
-    * This function returns the stored string values of the selected RADIUS
-    * protocol, which is used both in Guacamole configuration and also to pass
-    * on to the JRadius library for its configuration.
-    * 
-    * @return
-    *     The string value stored for the selected RADIUS protocol.
-    */
-    @Override
-    public String toString() {
-        return strValue;
-    }
-    
-    /**
-     * For a given String value, return the enum value that matches that string,
-     * or null if no matchi is found.
-     * 
-     * @param value
-     *     The string value to search for in the list of enums.
-     * 
+     * Returns a new instance of the JRadius {@link RadiusAuthenticator} that
+     * implements this protocol. This function will never return null.
+     *
      * @return
-     *     The RadiusAuthenticationProtocol value that is identified by the
-     *     provided String value.
+     *     A new instance of the JRadius {@link RadiusAuthenticator} that
+     *     implements this protocol.
+     *
+     * @throws IllegalStateException
+     *     If a bug within the JRadius library prevents retrieval of the
+     *     authenticator for a protocol that is known to be supported.
      */
-    public static RadiusAuthenticationProtocol getEnum(String value) {
-    
-        for (RadiusAuthenticationProtocol v : values())
-            if(v.toString().equals(value))
-                return v;
-        
-        return null;
+    public RadiusAuthenticator getAuthenticator() throws IllegalStateException {
+
+        // As we are using JRadius' own NAME constants for retrieving
+        // authenticator instances, the retrieval operation should always
+        // succeed except in the case of a bug within the JRadius library
+        RadiusAuthenticator authenticator = RadiusClient.getAuthProtocol(JRADIUS_PROTOCOL_NAME);
+        if (authenticator == null)
+            throw new IllegalStateException(String.format("JRadius failed "
+                    +"to locate its own support for protocol \"%s\". This is "
+                    + "likely a bug in the JRadius library.",
+                    JRADIUS_PROTOCOL_NAME));
+
+        return authenticator;
+
     }
-    
+
 }

@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.sqlserver;
 
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.EnumGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
@@ -42,6 +43,17 @@ public class SQLServerGuacamoleProperties {
         @Override
         public String getName() { return "sqlserver-hostname"; }
 
+    };
+    
+    /**
+     * The instance name of the SQL Server where the Guacamole database is running.
+     */
+    public static final StringGuacamoleProperty SQLSERVER_INSTANCE =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "sqlserver-instance"; }
+                
     };
 
     /**
@@ -174,8 +186,8 @@ public class SQLServerGuacamoleProperties {
     /**
      * Which TDS-compatible JDBC driver should be used for the connection.
      */
-    public static final SQLServerDriverProperty
-            SQLSERVER_DRIVER = new SQLServerDriverProperty() {
+    public static final EnumGuacamoleProperty<SQLServerDriver>
+            SQLSERVER_DRIVER = new EnumGuacamoleProperty<SQLServerDriver>(SQLServerDriver.class) {
 
         @Override
         public String getName() { return "sqlserver-driver"; }

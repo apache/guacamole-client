@@ -373,4 +373,23 @@ public class ConfigurationService {
         );
     }
 
+    /**
+     * Returns whether the LDAP attribute used to enumerate members in a group
+     * specifies UID or DN.
+     *
+     * @return
+     *     The type of data contained in the LDAP attribute used to enumerate
+     *     members in a group, as configured in guacamole.properties
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public MemberAttributeType getMemberAttributeType()
+            throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_MEMBER_ATTRIBUTE_TYPE,
+            MemberAttributeType.DN
+        );
+    }
+
 }

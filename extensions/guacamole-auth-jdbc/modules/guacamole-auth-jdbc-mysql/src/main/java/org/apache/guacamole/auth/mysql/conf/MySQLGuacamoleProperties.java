@@ -17,9 +17,11 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.mysql;
+package org.apache.guacamole.auth.mysql.conf;
 
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.EnumGuacamoleProperty;
+import org.apache.guacamole.properties.FileGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
@@ -32,6 +34,17 @@ public class MySQLGuacamoleProperties {
      * This class should not be instantiated.
      */
     private MySQLGuacamoleProperties() {}
+    
+    /**
+     * The JDBC driver that should be used to talk to MySQL-compatible servers.
+     */
+    public static final EnumGuacamoleProperty<MySQLDriver> MYSQL_DRIVER =
+            new EnumGuacamoleProperty<MySQLDriver>(MySQLDriver.class) {
+
+        @Override
+        public String getName() { return "mysql-driver"; }
+
+    };
 
     /**
      * The hostname of the MySQL server hosting the Guacamole authentication 
@@ -164,6 +177,68 @@ public class MySQLGuacamoleProperties {
         @Override
         public String getName() { return "mysql-default-max-group-connections-per-user"; }
 
+    };
+    
+    /**
+     * The SSL mode used to connect to the MySQL Server.  By default SSL will
+     * not be used.
+     */
+    public static final EnumGuacamoleProperty<MySQLSSLMode> MYSQL_SSL_MODE =
+            new EnumGuacamoleProperty<MySQLSSLMode>(MySQLSSLMode.class) {
+        
+        @Override
+        public String getName() { return "mysql-ssl-mode" ; }
+        
+    };
+    
+    /**
+     * The File where trusted SSL certificate authorities and server certificates
+     * are stored.  By default no file is specified, and the default Java
+     * trusted certificate stores will be used.
+     */
+    public static final FileGuacamoleProperty MYSQL_SSL_TRUST_STORE =
+            new FileGuacamoleProperty() {
+        
+        @Override
+        public String getName() { return "mysql-ssl-trust-store"; }
+        
+    };
+    
+    /**
+     * The password to use to access the mysql-ssl-trust-store, if required.  By
+     * default no password will be used to attempt to access the store.
+     */
+    public static final StringGuacamoleProperty MYSQL_SSL_TRUST_PASSWORD =
+            new StringGuacamoleProperty() {
+        
+        @Override
+        public String getName() { return "mysql-ssl-trust-password"; }
+        
+    };
+    
+    /**
+     * The File used to store the client certificate for configurations where
+     * a client certificate is required for authentication.  By default no
+     * client certificate store will be specified.
+     */
+    public static final FileGuacamoleProperty MYSQL_SSL_CLIENT_STORE =
+            new FileGuacamoleProperty() {
+        
+        @Override
+        public String getName() { return "mysql-ssl-client-store"; }
+        
+    };
+    
+    /**
+     * The password to use to access the mysql-ssl-client-store file.  By
+     * default no password will be used to attempt to access the file.
+     */
+    public static final StringGuacamoleProperty MYSQL_SSL_CLIENT_PASSWORD =
+            new StringGuacamoleProperty() {
+        
+        @Override
+        public String getName() { return "mysql-ssl-client-password"; }
+        
     };
 
 }

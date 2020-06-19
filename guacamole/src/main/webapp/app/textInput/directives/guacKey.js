@@ -78,8 +78,12 @@ angular.module('textInput').directive('guacKey', [function guacKey() {
              * and keyup events. In the case of sticky keys, the pressed state
              * is toggled, and only a single keydown/keyup event will be sent,
              * depending on the current state.
+             *
+             * @param {MouseEvent} event
+             *     The mouse event which resulted in this function being
+             *     invoked.
              */
-            $scope.updateKey = function updateKey() {
+            $scope.updateKey = function updateKey(event) {
 
                 // If sticky, toggle pressed state
                 if ($scope.sticky)
@@ -90,6 +94,9 @@ angular.module('textInput').directive('guacKey', [function guacKey() {
                     $rootScope.$broadcast('guacSyntheticKeydown', $scope.keysym);
                     $rootScope.$broadcast('guacSyntheticKeyup', $scope.keysym);
                 }
+
+                // Prevent loss of focus due to interaction with buttons
+                event.preventDefault();
 
             };
 

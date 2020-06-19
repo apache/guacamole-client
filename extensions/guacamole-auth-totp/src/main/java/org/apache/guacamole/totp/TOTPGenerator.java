@@ -25,6 +25,7 @@ import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import org.apache.guacamole.properties.EnumGuacamoleProperty.PropertyValue;
 
 /*
  * NOTE: This TOTP implementation is based on the TOTP reference implementation
@@ -124,18 +125,21 @@ public class TOTPGenerator {
          * TOTP mode which generates hashes using SHA1. TOTP in SHA1 mode
          * requires 160-bit keys.
          */
+        @PropertyValue("sha1")
         SHA1("HmacSHA1", 20),
 
         /**
          * TOTP mode which generates hashes using SHA256. TOTP in SHA256 mode
          * requires 256-bit keys.
          */
+        @PropertyValue("sha256")
         SHA256("HmacSHA256", 32),
 
         /**
          * TOTP mode which generates hashes using SHA512. TOTP in SHA512 mode
          * requires 512-bit keys.
          */
+        @PropertyValue("sha512")
         SHA512("HmacSHA512", 64);
 
         /**
