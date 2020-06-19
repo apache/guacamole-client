@@ -52,6 +52,7 @@ import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -407,11 +408,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         if (authenticatedUser instanceof ModeledAuthenticatedUser)
             return ((ModeledAuthenticatedUser) authenticatedUser).getUser();
 
-        // Get username
-        String username = authenticatedUser.getIdentifier();
-
         // Retrieve corresponding user model, if such a user exists
-        UserModel userModel = userMapper.selectOne(username);
+        UserModel userModel = userMapper.selectOne(authenticatedUser.getIdentifier());
         if (userModel == null)
             return null;
 
@@ -448,6 +446,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      */
     public ModeledUser retrieveSkeletonUser(AuthenticationProvider authenticationProvider,
             AuthenticatedUser authenticatedUser) throws GuacamoleException {
+        
+        logger.info(">>>JDBC<<< Creating skeleton user {}", authenticatedUser.getIdentifier());
         
         // Set up an empty user model
         ModeledUser user = getObjectInstance(null,

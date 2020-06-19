@@ -27,6 +27,7 @@ import org.apache.guacamole.auth.jdbc.sharing.user.SharedAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUserContext;
+import org.apache.guacamole.auth.jdbc.user.PrivilegedModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.UserService;
 import org.apache.guacamole.language.TranslatableGuacamoleClientException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
@@ -98,7 +99,7 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
         ModeledUser user = userService.retrieveUser(authenticationProvider, authenticatedUser);
         ModeledUserContext context = userContextProvider.get();
         if (user != null && !user.isDisabled()) {
-
+            
             // Enforce applicable account restrictions
             if (databaseRestrictionsApplicable) {
 
@@ -126,9 +127,15 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
         }
         
         // If no user account is found, and database-specific account
-        // restrictions do not apply, get an empty user.
+        // restrictions do not apply, get a skeleton user.
         else if (!databaseRestrictionsApplicable) {
             user = userService.retrieveSkeletonUser(authenticationProvider, authenticatedUser);
+            
+            // If auto account creation is enabled, add user to DB.
+            if(environment.autoCreateAbsentAccounts()) {
+                userService.createObject(new PrivilegedModeledAuthenticatedUser(user.getCurrentUser()), user);
+            }
+            
         }
 
         // Veto authentication result only if database-specific account
