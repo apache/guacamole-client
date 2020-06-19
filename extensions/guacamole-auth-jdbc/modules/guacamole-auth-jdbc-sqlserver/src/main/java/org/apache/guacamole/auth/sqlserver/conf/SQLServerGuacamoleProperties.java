@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.sqlserver;
+package org.apache.guacamole.auth.sqlserver.conf;
 
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.EnumGuacamoleProperty;
@@ -192,6 +192,14 @@ public class SQLServerGuacamoleProperties {
         @Override
         public String getName() { return "sqlserver-driver"; }
 
+    };
+    
+    public static final BooleanGuacamoleProperty SQLSERVER_AUTO_CREATE_ACCOUNTS =
+            new BooleanGuacamoleProperty() {
+        
+        @Override
+        public String getName() { return "sqlserver-auto-create-accounts"; }
+        
     };
 
 }

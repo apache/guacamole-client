@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.sqlserver;
+package org.apache.guacamole.auth.sqlserver.conf;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
@@ -272,6 +272,12 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     @Override
     public boolean isRecursiveQuerySupported(SqlSession session) {
         return true; // All versions of SQL Server support recursive queries through CTEs
+    }
+    
+    @Override
+    public boolean autoCreateAbsentAccounts() throws GuacamoleException {
+        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_AUTO_CREATE_ACCOUNTS,
+                false);
     }
 
 }

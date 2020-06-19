@@ -233,4 +233,16 @@ public class PostgreSQLGuacamoleProperties {
         
     };
     
+    /**
+     * Whether or not the PostgreSQL extension should automatically add database
+     * entries for users who are granted access through other extensions.
+     */
+    public static final BooleanGuacamoleProperty POSTGRESQL_AUTO_CREATE_ACCOUNTS =
+            new BooleanGuacamoleProperty() {
+                
+        @Override
+        public String getName() { return "postgresql-auto-create-accounts"; }
+                
+    };
+    
 }

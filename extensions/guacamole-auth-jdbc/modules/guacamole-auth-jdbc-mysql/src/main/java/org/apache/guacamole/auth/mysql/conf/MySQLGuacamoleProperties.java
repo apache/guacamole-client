@@ -240,5 +240,13 @@ public class MySQLGuacamoleProperties {
         public String getName() { return "mysql-ssl-client-password"; }
         
     };
+    
+    public static final BooleanGuacamoleProperty MYSQL_AUTO_CREATE_ACCOUNTS =
+            new BooleanGuacamoleProperty() {
+    
+        @Override
+        public String getName() { return "mysql-auto-create-accounts"; }
+                
+    };
 
 }

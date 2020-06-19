@@ -328,4 +328,10 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
         return getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_SSL_KEY_PASSWORD);
     }
     
+    @Override
+    public boolean autoCreateAbsentAccounts() throws GuacamoleException {
+        return getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_AUTO_CREATE_ACCOUNTS,
+                false);
+    }
+    
 }
