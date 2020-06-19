@@ -158,6 +158,29 @@
                     "options" : [ "true" ]
                 }
             ]
+        },
+        
+        {
+            "name"   : "wol",
+            "fields" : [
+                {
+                    "name"    : "wol-send-packet",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name" : "wol-mac-addr",
+                    "type" : "TEXT"
+                },
+                {
+                    "name" : "wol-broadcast-addr",
+                    "type" : "TEXT"
+                },
+                {
+                    "name" : "wol-wait-time",
+                    "type" : "NUMERIC"
+                }
+            ]
         }
 
     ],
