@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.saml;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.onelogin.saml2.Auth;
 import com.onelogin.saml2.authn.AuthnRequest;
 import com.onelogin.saml2.authn.SamlResponse;
 import com.onelogin.saml2.exception.SettingsException;
@@ -29,12 +28,15 @@ import com.onelogin.saml2.exception.ValidationError;
 import com.onelogin.saml2.settings.Saml2Settings;
 import com.onelogin.saml2.util.Util;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -113,9 +115,12 @@ public class AuthenticationProviderService {
                 try {
 
                     // Generate the response object
-                    if (!samlResponseMap.hasSamlResponse(responseHash))
-                        throw new GuacamoleInvalidCredentialsException("Provided response has not found.",
+                    if (!samlResponseMap.hasSamlResponse(responseHash)) {
+                        logger.warn("SAML response was not found.");
+                        logger.debug("SAML response hash {} not fonud in response map.", responseHash);
+                        throw new GuacamoleInvalidCredentialsException("Provided response was not found.",
                                 CredentialsInfo.USERNAME_PASSWORD);
+                    }
                         
                     SamlResponse samlResponse = samlResponseMap.getSamlResponse(responseHash);
 
@@ -149,7 +154,7 @@ public class AuthenticationProviderService {
                         
                         authenticatedUser.init(username, credentials,
                                 parseTokens(attributes),
-                                new HashSet<>(attributes.get(confService.getGroupAttribute())));
+                                parseGroups(attributes, confService.getGroupAttribute()));
                         
                         return authenticatedUser;
                     }
@@ -237,6 +242,15 @@ public class AuthenticationProviderService {
         
         return tokens;
         
+    }
+    
+    private Set<String> parseGroups(Map<String, List<String>> attributes, String groupAttribute) throws GuacamoleException {
+        
+        List<String> samlGroups = attributes.get(groupAttribute);
+        if (samlGroups != null && !samlGroups.isEmpty())
+            return Collections.unmodifiableSet(new HashSet<>(samlGroups));
+        
+        return Collections.emptySet();
     }
 
 }
