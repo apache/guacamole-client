@@ -52,7 +52,6 @@ import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.User;
-import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -297,8 +296,9 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     protected Collection<ObjectPermissionModel>
         getImplicitPermissions(ModeledAuthenticatedUser user, UserModel model) {
             
-        // Get original set of implicit permissions
-        Collection<ObjectPermissionModel> implicitPermissions = super.getImplicitPermissions(user, model);
+        // Get original set of implicit permissions and make a copy
+        Collection<ObjectPermissionModel> implicitPermissions =
+                new ArrayList<>(super.getImplicitPermissions(user, model));
         
         // Grant implicit permissions to the new user
         for (ObjectPermission.Type permissionType : IMPLICIT_USER_PERMISSIONS) {
@@ -313,7 +313,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
             
         }
         
-        return implicitPermissions;
+        return Collections.unmodifiableCollection(implicitPermissions);
     }
         
     @Override
@@ -446,8 +446,6 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      */
     public ModeledUser retrieveSkeletonUser(AuthenticationProvider authenticationProvider,
             AuthenticatedUser authenticatedUser) throws GuacamoleException {
-        
-        logger.info(">>>JDBC<<< Creating skeleton user {}", authenticatedUser.getIdentifier());
         
         // Set up an empty user model
         ModeledUser user = getObjectInstance(null,
