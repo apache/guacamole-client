@@ -471,7 +471,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
         // Add implicit permissions
         Collection<ObjectPermissionModel> implicitPermissions = getImplicitPermissions(user, model);
-        if (implicitPermissions != null && !implicitPermissions.isEmpty())
+        if (!implicitPermissions.isEmpty())
             getPermissionMapper().insert(implicitPermissions);
 
         // Add any arbitrary attributes
