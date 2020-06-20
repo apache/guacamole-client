@@ -234,9 +234,9 @@ public class PostgreSQLGuacamoleProperties {
     };
     
     /**
-     * Wether or not to automatically create accounts in the PostgreSQL database
-     * for users who successfully authenticate through another extension.  By
-     * default users will not be automatically created.
+     * Whether or not to automatically create accounts in the PostgreSQL
+     * database for users who successfully authenticate through another
+     * extension. By default users will not be automatically created.
      */
     public static final BooleanGuacamoleProperty POSTGRESQL_AUTO_CREATE_ACCOUNTS =
             new BooleanGuacamoleProperty() {
