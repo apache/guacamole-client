@@ -240,5 +240,18 @@ public class MySQLGuacamoleProperties {
         public String getName() { return "mysql-ssl-client-password"; }
         
     };
+    
+    /**
+     * Whether or not to automatically create accounts in the MySQL database for
+     * users who successfully authenticate through another extension. By default
+     * users will not be automatically created.
+     */
+    public static final BooleanGuacamoleProperty MYSQL_AUTO_CREATE_ACCOUNTS =
+            new BooleanGuacamoleProperty() {
+    
+        @Override
+        public String getName() { return "mysql-auto-create-accounts"; }
+                
+    };
 
 }

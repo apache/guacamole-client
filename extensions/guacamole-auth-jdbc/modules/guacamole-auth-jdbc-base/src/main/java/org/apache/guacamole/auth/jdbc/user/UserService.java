@@ -296,8 +296,9 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     protected Collection<ObjectPermissionModel>
         getImplicitPermissions(ModeledAuthenticatedUser user, UserModel model) {
             
-        // Get original set of implicit permissions
-        Collection<ObjectPermissionModel> implicitPermissions = super.getImplicitPermissions(user, model);
+        // Get original set of implicit permissions and make a copy
+        Collection<ObjectPermissionModel> implicitPermissions =
+                new ArrayList<>(super.getImplicitPermissions(user, model));
         
         // Grant implicit permissions to the new user
         for (ObjectPermission.Type permissionType : IMPLICIT_USER_PERMISSIONS) {
@@ -312,7 +313,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
             
         }
         
-        return implicitPermissions;
+        return Collections.unmodifiableCollection(implicitPermissions);
     }
         
     @Override
@@ -407,11 +408,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         if (authenticatedUser instanceof ModeledAuthenticatedUser)
             return ((ModeledAuthenticatedUser) authenticatedUser).getUser();
 
-        // Get username
-        String username = authenticatedUser.getIdentifier();
-
         // Retrieve corresponding user model, if such a user exists
-        UserModel userModel = userMapper.selectOne(username);
+        UserModel userModel = userMapper.selectOne(authenticatedUser.getIdentifier());
         if (userModel == null)
             return null;
 

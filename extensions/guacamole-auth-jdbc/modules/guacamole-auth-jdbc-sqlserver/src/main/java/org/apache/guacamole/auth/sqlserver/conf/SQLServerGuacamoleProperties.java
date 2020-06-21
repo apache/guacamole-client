@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.sqlserver;
+package org.apache.guacamole.auth.sqlserver.conf;
 
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.EnumGuacamoleProperty;
@@ -192,6 +192,19 @@ public class SQLServerGuacamoleProperties {
         @Override
         public String getName() { return "sqlserver-driver"; }
 
+    };
+    
+    /**
+     * Whether or not to automatically create accounts in the SQL Server
+     * database for users who successfully authenticate through another
+     * extension. By default users will not be automatically created.
+     */
+    public static final BooleanGuacamoleProperty SQLSERVER_AUTO_CREATE_ACCOUNTS =
+            new BooleanGuacamoleProperty() {
+        
+        @Override
+        public String getName() { return "sqlserver-auto-create-accounts"; }
+        
     };
 
 }
