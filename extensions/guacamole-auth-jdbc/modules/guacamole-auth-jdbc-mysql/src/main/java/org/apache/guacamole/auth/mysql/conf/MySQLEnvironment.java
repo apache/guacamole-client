@@ -386,5 +386,11 @@ public class MySQLEnvironment extends JDBCEnvironment {
     public String getMYSQLSSLClientPassword() throws GuacamoleException {
         return getProperty(MySQLGuacamoleProperties.MYSQL_SSL_TRUST_PASSWORD);
     }
+    
+    @Override
+    public boolean autoCreateAbsentAccounts() throws GuacamoleException {
+        return getProperty(MySQLGuacamoleProperties.MYSQL_AUTO_CREATE_ACCOUNTS,
+                false);
+    }
 
 }

@@ -25,6 +25,8 @@ import com.google.inject.name.Names;
 import java.lang.UnsupportedOperationException;
 import java.util.Properties;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.sqlserver.conf.SQLServerDriver;
+import org.apache.guacamole.auth.sqlserver.conf.SQLServerEnvironment;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
 
 /**
@@ -45,7 +47,7 @@ public class SQLServerAuthenticationProviderModule implements Module {
     /**
      * Which SQL Server driver should be used.
      */
-    private SQLServerDriver sqlServerDriver;
+    private final SQLServerDriver sqlServerDriver;
 
     /**
      * Creates a new SQLServer authentication provider module that configures
