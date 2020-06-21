@@ -763,5 +763,16 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
     public Permissions getEffectivePermissions() throws GuacamoleException {
         return super.getEffective();
     }
+    
+    /**
+     * Returns true if this user is a skeleton user, lacking a database entity
+     * entry.
+     * 
+     * @return 
+     *     True if this user is a skeleton user, otherwise false.
+     */
+    public boolean isSkeleton() {
+        return (getModel().getEntityID() == null);
+    }
 
 }

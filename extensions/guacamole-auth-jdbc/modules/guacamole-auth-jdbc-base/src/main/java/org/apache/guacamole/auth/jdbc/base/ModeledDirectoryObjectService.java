@@ -427,11 +427,13 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
     protected Collection<ObjectPermissionModel> getImplicitPermissions(ModeledAuthenticatedUser user,
             ModelType model) {
         
+        // Check to see if the user granting permissions is a skeleton user,
+        // thus lacking database backing.
+        if (user.getUser().isSkeleton())
+            return Collections.emptyList();
+
         // Get the user model and check for an entity ID.
         UserModel userModel = user.getUser().getModel();
-        Integer entityId = userModel.getEntityID();
-        if (entityId == null)
-            return Collections.emptyList();
         
         // Build list of implicit permissions
         Collection<ObjectPermissionModel> implicitPermissions =
@@ -442,7 +444,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
             // Create model which grants this permission to the current user
             ObjectPermissionModel permissionModel = new ObjectPermissionModel();
-            permissionModel.setEntityID(entityId);
+            permissionModel.setEntityID(userModel.getEntityID());
             permissionModel.setType(permission);
             permissionModel.setObjectIdentifier(model.getIdentifier());
 
