@@ -53,19 +53,40 @@ public class TokenFilterTest {
             tokenFilter.filter("${NOPE}hello${TOKEN_A}world${TOKEN_D}")
         );
         
+        // Check that mixed-case token passes through unmodified.
         assertEquals(
             "Value-of-C",
             tokenFilter.filter("${TOKEN_C}")
         );
         
+        // Check that an invalid modifier passes the token value unmodified.
+        assertEquals(
+            "Value-of-C",
+            tokenFilter.filter("${TOKEN_C:broccoli}")
+        );
+        
+        // Check that "lower" modifier converts to lower-case.
         assertEquals(
             "value-of-c",
             tokenFilter.filter("${TOKEN_C:lower}")
         );
         
+        // Check that "LOWER" modifier converts to lower-case.
+        assertEquals(
+            "value-of-c",
+            tokenFilter.filter("${TOKEN_C:LOWER}")
+        );
+        
+        // Check that "upper" modifier converts to upper-case.
         assertEquals(
             "VALUE-OF-C",
             tokenFilter.filter("${TOKEN_C:upper}")
+        );
+        
+        // Check that "UPPER" modifier converts to upper-case.
+        assertEquals(
+            "VALUE-OF-C",
+            tokenFilter.filter("${TOKEN_C:UPPER}")
         );
         
     }
