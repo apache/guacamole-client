@@ -155,7 +155,7 @@ public abstract class JDBCEnvironment extends LocalEnvironment {
     /**
      * Returns a boolean value representing whether or not the JDBC module
      * should automatically create accounts within the database for users that
-     * are successfully authenticated via other extensions.  Returns true if
+     * are successfully authenticated via other extensions. Returns true if
      * accounts should be auto-created, otherwise returns false.
      * 
      * @return

@@ -411,7 +411,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
     /**
      * Returns an immutable collection of permissions that should be granted due
-     * to the creation of the given object.  These permissions need not be
+     * to the creation of the given object. These permissions need not be
      * granted solely to the user creating the object.
      * 
      * @param user
@@ -431,15 +431,13 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
         // thus lacking database backing.
         if (user.getUser().isSkeleton())
             return Collections.emptyList();
-
-        // Get the user model and check for an entity ID.
-        UserModel userModel = user.getUser().getModel();
         
         // Build list of implicit permissions
         Collection<ObjectPermissionModel> implicitPermissions =
                 new ArrayList<>(IMPLICIT_OBJECT_PERMISSIONS.length);
 
         
+        UserModel userModel = user.getUser().getModel();
         for (ObjectPermission.Type permission : IMPLICIT_OBJECT_PERMISSIONS) {
 
             // Create model which grants this permission to the current user
