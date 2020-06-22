@@ -592,6 +592,18 @@ END
 }
 
 ##
+## Adds properties to guacamole.properties which configure the header
+## authentication provider.
+##
+associate_header() {
+    # Update config file
+    set_optional_property "http-auth-header"         "$HTTP_AUTH_HEADER"
+
+    # Add required .jar files to GUACAMOLE_EXT
+    ln -s /opt/guacamole/header/guacamole-auth-*.jar "$GUACAMOLE_EXT"
+}
+
+##
 ## Starts Guacamole under Tomcat, replacing the current process with the
 ## Tomcat process. As the current process will be replaced, this MUST be the
 ## last function run within the script.
@@ -731,6 +743,11 @@ fi
 # Use Duo if specified.
 if [ -n "$DUO_API_HOSTNAME" ]; then
     associate_duo
+fi
+
+# Use header if specified.
+if [ "$HEADER_ENABLED" = "true" ]; then
+    associate_header
 fi
 
 # Set logback level if specified
