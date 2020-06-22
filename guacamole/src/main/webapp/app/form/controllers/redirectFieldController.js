@@ -18,13 +18,15 @@
  */
 
 /**
- * Controller for the "GUAC_CAS_TICKET" field which simply redirects the user
- * immediately to the authorization URI.
+ * Controller for the redirect field, which redirects the user to the provided
+ * URL.
  */
-angular.module('guacCAS').controller('guacCASController', ['$scope', 
-    function guacCASController($scope) {
+angular.module('form').controller('redirectFieldController', ['$scope','$window',
+    function redirectFieldController($scope,$window) {
 
-        // Redirect to authorization URI
-        window.location = $scope.field.authorizationURI;
+    /**
+     * Redirect the user to the provided URL.
+     */
+    $window.location.href = $scope.field.redirectUrl;
 
 }]);

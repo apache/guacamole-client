@@ -33,6 +33,7 @@ import org.apache.guacamole.auth.cas.conf.ConfigurationService;
 import org.apache.guacamole.auth.cas.form.CASTicketField;
 import org.apache.guacamole.auth.cas.ticket.TicketValidationService;
 import org.apache.guacamole.auth.cas.user.CASAuthenticatedUser;
+import org.apache.guacamole.language.TranslatableMessage;
 
 /**
  * Service providing convenience functions for the CAS AuthenticationProvider
@@ -99,7 +100,8 @@ public class AuthenticationProviderService {
                 // to the authorization page via JavaScript)
                 new CASTicketField(
                     confService.getAuthorizationEndpoint(),
-                    confService.getRedirectURI()
+                    confService.getRedirectURI(),
+                    new TranslatableMessage("LOGIN.INFO_CAS_REDIRECT_PENDING")
                 )
 
             }))
