@@ -1,5 +1,8 @@
 <div class="redirect-field-container">
     <div class="redirect-field">
-        <p>{{ getRedirectMsg() | translate }}</p>
+        <p ng-show="field.translatableMessage"
+           translate="{{field.translatableMessage.key}}"
+           translate-values="{{field.translatableMessage.variables}}">
+        </p>
     </div>
 </div>

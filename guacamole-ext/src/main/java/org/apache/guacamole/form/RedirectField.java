@@ -20,22 +20,25 @@
 package org.apache.guacamole.form;
 
 import java.net.URI;
+import org.apache.guacamole.language.Translatable;
+import org.apache.guacamole.language.TranslatableMessage;
 
 /**
  * A Guacamole field that redirects a user to another page.
  */
-public class RedirectField extends Field {
+public class RedirectField extends Field implements Translatable {
 
     /**
-     * The encoded URL of the redirect.
+     * The URL to which the user should be redirected.  The URL should be
+     * encoded 
      */
     private final URI redirectUrl;
     
     /**
-     * The message that will be displayed for the user during the redirect
-     * process.  This will be processed through Guacamole's translation system.
+     * The translatable message that should be displayed for the user while the
+     * browser redirects.
      */
-    private final String redirectMsg;
+    private final TranslatableMessage redirectMessage;
 
     /**
      * Creates a new field which facilitates redirection of the user
@@ -47,40 +50,37 @@ public class RedirectField extends Field {
      * @param redirectUrl
      *     The URL to which the user should be redirected.
      * 
-     * @param redirectMsg
-     *     The message to display during the redirect, which will be processed
-     *     through Guacamole's translation system.
+     * @param redirectMessage
+     *     The translatable message that should be displayed for the user while
+     *     the browser redirects.
      */
-    public RedirectField(String name, URI redirectUrl, String redirectMsg) {
+    public RedirectField(String name, URI redirectUrl,
+            TranslatableMessage redirectMessage) {
 
         // Init base field properties
         super(name, Field.Type.REDIRECT);
 
-        // Store the URL to which the user will be redirected.
+        // Store the URL to which the user will be redirected
         this.redirectUrl = redirectUrl;
-        this.redirectMsg = redirectMsg;
+        
+        // Store the message that will be displayed for the user during redirect
+        this.redirectMessage = redirectMessage;
 
     }
 
     /**
-     * Returns the URL of the redirect.
+     * Returns the URL to which the user should be redirected.
      * 
      * @return
-     *     The URL of the redirect.
+     *     The URL to which the user should be redirected.
      */
     public String getRedirectUrl() {
         return redirectUrl.toString();
     }
-    
-    /**
-     * Returns the message that will be displayed for the user while the
-     * redirect takes place.
-     * 
-     * @return
-     *     The message to display for the user.
-     */
-    public String getRedirectMsg() {
-        return redirectMsg;
+
+    @Override
+    public TranslatableMessage getTranslatableMessage() {
+        return redirectMessage;
     }
 
 }

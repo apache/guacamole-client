@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.openid.form;
 import java.net.URI;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.form.RedirectField;
+import org.apache.guacamole.language.TranslatableMessage;
 
 /**
  * Field definition which represents the token returned by an OpenID Connect
@@ -64,13 +65,13 @@ public class TokenField extends RedirectField {
      *     A random string unique to this request. To defend against replay
      *     attacks, this value must cease being valid after its first use.
      * 
-     * @param redirectMsg
+     * @param redirectMessage
      *     The message that will be displayed to the user during redirect.  This
      *     will be processed through Guacamole's translation system.
      */
     public TokenField(URI authorizationEndpoint, String scope,
             String clientID, URI redirectURI, String nonce,
-            String redirectMsg) {
+            TranslatableMessage redirectMessage) {
 
         super(PARAMETER_NAME, UriBuilder.fromUri(authorizationEndpoint)
                 .queryParam("scope", scope)
@@ -79,7 +80,7 @@ public class TokenField extends RedirectField {
                 .queryParam("redirect_uri", redirectURI)
                 .queryParam("nonce", nonce)
                 .build(),
-                redirectMsg);
+                redirectMessage);
 
     }
 

@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.cas.form;
 import java.net.URI;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.form.RedirectField;
+import org.apache.guacamole.language.TranslatableMessage;
 
 
 /**
@@ -58,19 +59,19 @@ public class CASTicketField extends RedirectField {
      *     The URI that the CAS service should redirect to upon successful
      *     authentication.
      * 
-     * @param redirectMsg
+     * @param redirectMessage
      *     The message that will be displayed for the user while the redirect
      *     is processed.  This will be processed through Guacamole's translation
      *     system.
      */
     public CASTicketField(URI authorizationEndpoint, URI redirectURI,
-            String redirectMsg) {
+            TranslatableMessage redirectMessage) {
         
         super(PARAMETER_NAME, UriBuilder.fromUri(authorizationEndpoint)
                 .path(CAS_LOGIN_URI)
                 .queryParam("service", redirectURI)
                 .build(),
-                redirectMsg);
+                redirectMessage);
 
     }
 

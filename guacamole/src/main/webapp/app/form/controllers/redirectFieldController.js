@@ -28,16 +28,5 @@ angular.module('form').controller('redirectFieldController', ['$scope','$window'
      * Redirect the user to the provided URL.
      */
     $window.location.href = $scope.field.redirectUrl;
-    
-    /**
-     * Return the text that should be displayed to the user while the redirect
-     * is taking place.
-     * 
-     * @return {String}
-     *     The text to display for the user during the redirect.
-     */
-    $scope.getRedirectMsg = function getRedirctMsg() {
-        return $scope.field.redirectMsg;
-    };
 
 }]);

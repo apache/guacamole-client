@@ -30,6 +30,7 @@ import org.apache.guacamole.auth.openid.token.TokenValidationService;
 import org.apache.guacamole.auth.openid.user.AuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.Field;
+import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
@@ -122,7 +123,7 @@ public class AuthenticationProviderService {
                     confService.getClientID(),
                     confService.getRedirectURI(),
                     nonceService.generate(confService.getMaxNonceValidity() * 60000L),
-                    "LOGIN.INFO_OID_PENDING_REDIRECT"
+                    new TranslatableMessage("LOGIN.INFO_OID_PENDING_REDIRECT")
                 )
 
             }))
