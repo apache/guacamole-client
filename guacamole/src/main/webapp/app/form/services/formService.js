@@ -192,6 +192,19 @@ angular.module('form').provider('formService', function formServiceProvider() {
             module      : 'form',
             controller  : 'terminalColorSchemeFieldController',
             templateUrl : 'app/form/templates/terminalColorSchemeField.html'
+        },
+        
+        /**
+         * Field type that supports redirecting the client browser to another
+         * URL.
+         * 
+         * @see {@link Field.Type.REDIRECT}
+         * @type FieldType
+         */
+        'REDIRECT' : {
+            module      : 'form',
+            controller  : 'redirectFieldController',
+            templateUrl : 'app/form/templates/redirectField.html'
         }
 
     };

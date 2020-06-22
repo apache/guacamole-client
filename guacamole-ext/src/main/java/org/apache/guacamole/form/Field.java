@@ -45,51 +45,51 @@ public class Field {
         /**
          * A text field, accepting arbitrary values.
          */
-        public static String TEXT = "TEXT";
+        public static final String TEXT = "TEXT";
 
         /**
          * An email address field. This field type generally behaves
          * identically to arbitrary text fields, but has semantic differences.
          */
-        public static String EMAIL = "EMAIL";
+        public static final String EMAIL = "EMAIL";
 
         /**
          * A username field. This field type generally behaves identically to
          * arbitrary text fields, but has semantic differences.
          */
-        public static String USERNAME = "USERNAME";
+        public static final String USERNAME = "USERNAME";
 
         /**
          * A password field, whose value is sensitive and must be hidden.
          */
-        public static String PASSWORD = "PASSWORD";
+        public static final String PASSWORD = "PASSWORD";
 
         /**
          * A numeric field, whose value must contain only digits.
          */
-        public static String NUMERIC = "NUMERIC";
+        public static final String NUMERIC = "NUMERIC";
 
         /**
          * A boolean field, whose value is either blank or "true".
          */
-        public static String BOOLEAN = "BOOLEAN";
+        public static final String BOOLEAN = "BOOLEAN";
 
         /**
          * An enumerated field, whose legal values are fully enumerated by a
          * provided, finite list.
          */
-        public static String ENUM = "ENUM";
+        public static final String ENUM = "ENUM";
 
         /**
          * A text field that can span more than one line.
          */
-        public static String MULTILINE = "MULTILINE";
+        public static final String MULTILINE = "MULTILINE";
 
         /**
          * A time zone field whose legal values are only valid time zone IDs,
          * as dictated by Java within TimeZone.getAvailableIDs().
          */
-        public static String TIMEZONE = "TIMEZONE";
+        public static final String TIMEZONE = "TIMEZONE";
 
         /**
          * Field type which allows selection of languages. The languages
@@ -97,31 +97,37 @@ public class Field {
          * application. Legal values are valid language IDs, as dictated by
          * the filenames of Guacamole's available translations.
          */
-        public static String LANGUAGE = "LANGUAGE";
+        public static final String LANGUAGE = "LANGUAGE";
 
         /**
          * A date field whose legal values conform to the pattern "YYYY-MM-DD",
          * zero-padded.
          */
-        public static String DATE = "DATE";
+        public static final String DATE = "DATE";
 
         /**
          * A time field whose legal values conform to the pattern "HH:MM:SS",
          * zero-padded, 24-hour.
          */
-        public static String TIME = "TIME";
+        public static final String TIME = "TIME";
 
         /**
          * An HTTP query parameter which is expected to be embedded in the URL
          * given to a user.
          */
-        public static String QUERY_PARAMETER = "QUERY_PARAMETER";
+        public static final String QUERY_PARAMETER = "QUERY_PARAMETER";
 
         /**
          * A color scheme accepted by the Guacamole server terminal emulator
          * and protocols which leverage it.
          */
-        public static String TERMINAL_COLOR_SCHEME = "TERMINAL_COLOR_SCHEME";
+        public static final String TERMINAL_COLOR_SCHEME = "TERMINAL_COLOR_SCHEME";
+        
+        /**
+         * A redirect field whose value is an encoded URL to which the user
+         * will be redirected.
+         */
+        public static final String REDIRECT = "REDIRECT";
 
     }
 

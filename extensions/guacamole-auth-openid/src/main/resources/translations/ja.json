@@ -1,7 +1,7 @@
 {
 
     "LOGIN" : {
-        "INFO_REDIRECT_PENDING" : "IDプロバイダへリダイレクトしています。"
+        "INFO_OID_REDIRECT_PENDING" : "IDプロバイダへリダイレクトしています。"
     }
 
 }
