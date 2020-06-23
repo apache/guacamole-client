@@ -80,7 +80,7 @@ public class SAMLAuthenticatedUser extends AbstractAuthenticatedUser {
     }
     
     /**
-     * Get the tokens associated with this particular user.
+     * Returns a Map of tokens associated with this authenticated user.
      * 
      * @return 
      *     A map of token names and values available from this user account.

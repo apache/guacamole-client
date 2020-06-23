@@ -22,7 +22,7 @@ package org.apache.guacamole.auth.saml;
 import com.google.inject.Singleton;
 import com.onelogin.saml2.authn.SamlResponse;
 import com.onelogin.saml2.exception.ValidationError;
-import java.util.Map.Entry;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
@@ -107,17 +107,27 @@ public class SAMLResponseMap {
         public void run() {
 
             // Loop through responses in map and remove ones that are no longer valid.
-            for (Entry<String, SamlResponse> entry : samlResponseMap.entrySet()) {
+            Collection<SamlResponse> samlResponses = samlResponseMap.values();
+            for (SamlResponse value : samlResponses) {
                 try {
-                    entry.getValue().validateTimestamps();
+                    value.validateTimestamps();
                 }
                 catch (ValidationError e) {
-                    samlResponseMap.remove(entry.getKey());
+                    samlResponses.remove(value);
                 }
             }
 
         }
     
+    }
+    
+    /**
+     * Shut down the executor service that periodically cleans out the
+     * SamlResponse Map.  This must be invoked during webapp shutdown in order
+     * to avoid resource leaks.
+     */
+    public void shutdown() {
+        executor.shutdownNow();
     }
     
 }

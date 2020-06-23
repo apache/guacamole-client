@@ -28,7 +28,8 @@ import com.onelogin.saml2.exception.ValidationError;
 import com.onelogin.saml2.settings.Saml2Settings;
 import com.onelogin.saml2.util.Util;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,10 +42,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.guacamole.auth.saml.conf.ConfigurationService;
-import org.apache.guacamole.auth.saml.form.SAMLRedirectField;
 import org.apache.guacamole.auth.saml.user.SAMLAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.Field;
+import org.apache.guacamole.form.RedirectField;
+import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
@@ -130,12 +132,9 @@ public class AuthenticationProviderService {
                         throw new GuacamoleInvalidCredentialsException("Error during SAML login.",
                                 CredentialsInfo.USERNAME_PASSWORD);
                     }
-                    if (!samlResponse.validateTimestamps()) {
-                        logger.warn("SAML response timestamps were invalid.");
-                        logger.debug("validateTimestamps returned false.");
-                        throw new GuacamoleInvalidCredentialsException("Error during SAML login.",
-                                CredentialsInfo.USERNAME_PASSWORD);
-                    }
+                    
+                    // Validate timestamps, generating ValidationException if this fails.
+                    samlResponse.validateTimestamps();
 
                     // Grab the username, and, if present, finish authentication.
                     String username = samlResponse.getNameId().toLowerCase();
@@ -208,10 +207,10 @@ public class AuthenticationProviderService {
 
         // No SAML Response is present, so generate a request.
         AuthnRequest samlReq = new AuthnRequest(samlSettings);
-        String reqString;
+        URI authUri;
         try {
-            reqString = samlSettings.getIdpSingleSignOnServiceUrl() + "?SAMLRequest=" +
-                    Util.urlEncoder(samlReq.getEncodedAuthnRequest());
+            authUri = new URI(samlSettings.getIdpSingleSignOnServiceUrl() + "?SAMLRequest=" +
+                    Util.urlEncoder(samlReq.getEncodedAuthnRequest()));
         }
         catch (IOException e) {
             logger.error("Error encoding authentication request to string: {}", e.getMessage());
@@ -219,18 +218,37 @@ public class AuthenticationProviderService {
             throw new GuacamoleInvalidCredentialsException("Error during SAML login.",
                     CredentialsInfo.USERNAME_PASSWORD);
         }
+        catch(URISyntaxException e) {
+            logger.error("Error generating URI for authentication redirect: {}", e.getMessage());
+            logger.debug("Got URISyntaxException generating authentication URI", e);
+            throw new GuacamoleInvalidCredentialsException("Error during SAML login.",
+                    CredentialsInfo.USERNAME_PASSWORD);
+        }
 
         // Redirect to SAML Identity Provider (IdP)
         throw new GuacamoleInsufficientCredentialsException("Redirecting to SAML IdP.",
                 new CredentialsInfo(Arrays.asList(new Field[] {
-                    new RedirectField("samlRedirect", reqString, "LOGIN.REDIRECT_PENDING")
+                    new RedirectField("samlRedirect", authUri, new TranslatableMessage("LOGIN.INFO_SAML_REDIRECT_PENDING"))
                 }))
         );
 
     }
     
-    private Map<String, String> parseTokens(Map<String, List<String>> attributes)
-            throws GuacamoleException {
+    /**
+     * Generates Map of tokens that can be substituted within Guacamole
+     * parameters given a Map containing a List of attributes from the SAML IdP. 
+     * Attributes that have multiple values will be reduced to a single value,
+     * taking the first available value and discarding the remaining values.
+     * 
+     * @param attributes
+     *     The Map containing the attributes retrieved from the SAML IdP.
+     * 
+     * @return
+     *     A Map of key and single value pairs that can be used as parameter
+     *     tokens.
+     */
+    private Map<String, String> parseTokens(Map<String,
+            List<String>> attributes) {
         
         Map<String, String> tokens = new HashMap<>();
         for (Entry<String, List<String>> entry : attributes.entrySet()) {
@@ -244,7 +262,22 @@ public class AuthenticationProviderService {
         
     }
     
-    private Set<String> parseGroups(Map<String, List<String>> attributes, String groupAttribute) throws GuacamoleException {
+    /**
+     * Returns a list of groups found in the provided Map of attributes returned
+     * by the SAML IdP by searching the map for the provided group attribute.
+     * 
+     * @param attributes
+     *     The Map of attributes provided by the SAML IdP.
+     * 
+     * @param groupAttribute
+     *     The name of the attribute that may be present in the Map that
+     *     will be used to parse group membership for the authenticated user.
+     * 
+     * @return
+     *     A Set of groups of which the user is a member.
+     */
+    private Set<String> parseGroups(Map<String, List<String>> attributes,
+            String groupAttribute) {
         
         List<String> samlGroups = attributes.get(groupAttribute);
         if (samlGroups != null && !samlGroups.isEmpty())

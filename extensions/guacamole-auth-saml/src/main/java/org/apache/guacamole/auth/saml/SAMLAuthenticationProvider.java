@@ -77,5 +77,10 @@ public class SAMLAuthenticationProvider extends AbstractAuthenticationProvider {
         return authProviderService.authenticateUser(credentials);
 
     }
+    
+    @Override
+    public void shutdown() {
+        injector.getInstance(SAMLResponseMap.class).shutdown();
+    }
 
 }

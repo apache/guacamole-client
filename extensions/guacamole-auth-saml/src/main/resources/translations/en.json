@@ -1,12 +1,12 @@
 {
 
     "DATA_SOURCE_SAML" : {
-        "NAME" : "SAML SSO Backend"
+        "NAME" : "SAML Authentication Extension"
     },
 
     "LOGIN" : {
         "FIELD_HEADER_SAML"     : "",
-        "INFO_SAML_REDIRECT_PENDING" : "Please wait, redirecting for SAML authentication..."
+        "INFO_SAML_REDIRECT_PENDING" : "Please wait, redirecting to identity provider..."
     }
 
 }

@@ -145,7 +145,7 @@ public class SAMLAuthenticationProviderResource {
     }
     
     /**
-     * This is a utility method designed to generate a SHA-256 has for the
+     * This is a utility method designed to generate a SHA-256 hash for the
      * given string representation of the SAMLResponse, throwing an exception
      * if, for some reason, the Java implementation in use doesn't support
      * SHA-256, and returning a hex-formatted hash value.
