@@ -44,14 +44,15 @@ import javax.xml.xpath.XPathExpressionException;
 import org.apache.guacamole.auth.saml.conf.ConfigurationService;
 import org.apache.guacamole.auth.saml.user.SAMLAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.RedirectField;
 import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
+import org.apache.guacamole.token.TokenName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -64,7 +65,7 @@ public class AuthenticationProviderService {
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
 
     /**
      * Service for retrieving SAML configuration information.
@@ -83,6 +84,8 @@ public class AuthenticationProviderService {
      */
     @Inject
     private SAMLResponseMap samlResponseMap;
+    
+    private static final String SAML_ATTRIBUTE_TOKEN_PREFIX = "SAML_";
 
     /**
      * Returns an AuthenticatedUser representing the user authenticated by the
@@ -119,9 +122,8 @@ public class AuthenticationProviderService {
                     // Generate the response object
                     if (!samlResponseMap.hasSamlResponse(responseHash)) {
                         logger.warn("SAML response was not found.");
-                        logger.debug("SAML response hash {} not fonud in response map.", responseHash);
-                        throw new GuacamoleInvalidCredentialsException("Provided response was not found.",
-                                CredentialsInfo.USERNAME_PASSWORD);
+                        logger.debug("SAML response hash {} not found in response map.", responseHash);
+                        throw new GuacamoleServerException("Provided response was not found in response map.");
                     }
                         
                     SamlResponse samlResponse = samlResponseMap.getSamlResponse(responseHash);
@@ -129,8 +131,7 @@ public class AuthenticationProviderService {
                     if (!samlResponse.validateNumAssertions()) {
                         logger.warn("SAML response contained other than single assertion.");
                         logger.debug("validateNumAssertions returned false.");
-                        throw new GuacamoleInvalidCredentialsException("Error during SAML login.",
-                                CredentialsInfo.USERNAME_PASSWORD);
+                        throw new GuacamoleServerException("Unable to validate SAML assertions.");
                     }
                     
                     // Validate timestamps, generating ValidationException if this fails.
@@ -159,48 +160,41 @@ public class AuthenticationProviderService {
                     }
                 }
 
-                // Errors are logged and result in a normal username/password login box.
+                // Catch errors and convert to a GuacamoleExcetion.
                 catch (IOException e) {
                     logger.warn("Error during I/O while parsing SAML response: {}", e.getMessage());
                     logger.debug("Received IOException when trying to parse SAML response.", e);
-                    throw new GuacamoleInvalidCredentialsException("Error during SAML login.",
-                                CredentialsInfo.USERNAME_PASSWORD);
+                    throw new GuacamoleServerException("IOException received while processing SAML response.", e);
                 }
                 catch (ParserConfigurationException e) {
                     logger.warn("Error configuring XML parser: {}", e.getMessage());
                     logger.debug("Received ParserConfigurationException when trying to parse SAML response.", e);
-                    throw new GuacamoleInvalidCredentialsException("Error during SAML login.",
-                                CredentialsInfo.USERNAME_PASSWORD);
+                    throw new GuacamoleServerException("XML ParserConfigurationException received while processing SAML response.", e);
                 }
                 catch (SAXException e) {
                     logger.warn("Bad XML when parsing SAML response: {}", e.getMessage());
                     logger.debug("Received SAXException while parsing SAML response.", e);
-                    throw new GuacamoleInvalidCredentialsException("Error during SAML login.",
-                                CredentialsInfo.USERNAME_PASSWORD);
+                    throw new GuacamoleServerException("XML SAXException received while processing SAML response.", e);
                 }
                 catch (SettingsException e) {
                     logger.warn("Error with SAML settings while parsing response: {}", e.getMessage());
                     logger.debug("Received SettingsException while parsing SAML response.", e);
-                    throw new GuacamoleInvalidCredentialsException("Error during SAML login.",
-                                CredentialsInfo.USERNAME_PASSWORD);
+                    throw new GuacamoleServerException("SAML SettingsException received while process SAML response.", e);
                 }
                 catch (ValidationError e) {
                     logger.warn("Error validating SAML response: {}", e.getMessage());
                     logger.debug("Received ValidationError while parsing SAML response.", e);
-                    throw new GuacamoleInvalidCredentialsException("Error during SAML login.",
-                                CredentialsInfo.USERNAME_PASSWORD);
+                    throw new GuacamoleServerException("SAML ValidationError received while processing SAML response.", e);
                 }
                 catch (XPathExpressionException e) {
                     logger.warn("Problem with XML parsing response: {}", e.getMessage());
                     logger.debug("Received XPathExpressionException while processing SAML response.", e);
-                    throw new GuacamoleInvalidCredentialsException("Error during SAML login.",
-                                CredentialsInfo.USERNAME_PASSWORD);
+                    throw new GuacamoleServerException("XML XPathExpressionExcetion received while processing SAML response.", e);
                 }
                 catch (Exception e) {
                     logger.warn("Exception while getting name from SAML response: {}", e.getMessage());
                     logger.debug("Received Exception while retrieving name from SAML response.", e);
-                    throw new GuacamoleInvalidCredentialsException("Error during SAML login.",
-                                CredentialsInfo.USERNAME_PASSWORD);
+                    throw new GuacamoleServerException("Generic Exception received processing SAML response.", e);
                 }
             }
         }
@@ -215,14 +209,12 @@ public class AuthenticationProviderService {
         catch (IOException e) {
             logger.error("Error encoding authentication request to string: {}", e.getMessage());
             logger.debug("Got IOException encoding authentication request.", e);
-            throw new GuacamoleInvalidCredentialsException("Error during SAML login.",
-                    CredentialsInfo.USERNAME_PASSWORD);
+            throw new GuacamoleServerException("IOException received while generating SAML authentication URI.", e);
         }
         catch(URISyntaxException e) {
             logger.error("Error generating URI for authentication redirect: {}", e.getMessage());
             logger.debug("Got URISyntaxException generating authentication URI", e);
-            throw new GuacamoleInvalidCredentialsException("Error during SAML login.",
-                    CredentialsInfo.USERNAME_PASSWORD);
+            throw new GuacamoleServerException("URISyntaxException received while generating SAML authentication URI.", e);
         }
 
         // Redirect to SAML Identity Provider (IdP)
@@ -254,7 +246,9 @@ public class AuthenticationProviderService {
         for (Entry<String, List<String>> entry : attributes.entrySet()) {
             
             List<String> values = entry.getValue();
-            tokens.put(entry.getKey(), values.get(0));
+            tokens.put(TokenName.canonicalize(
+                    entry.getKey(), SAML_ATTRIBUTE_TOKEN_PREFIX),
+                    values.get(0));
             
         }
         

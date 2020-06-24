@@ -23,6 +23,7 @@ import com.google.inject.Singleton;
 import com.onelogin.saml2.authn.SamlResponse;
 import com.onelogin.saml2.exception.ValidationError;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
@@ -107,13 +108,13 @@ public class SAMLResponseMap {
         public void run() {
 
             // Loop through responses in map and remove ones that are no longer valid.
-            Collection<SamlResponse> samlResponses = samlResponseMap.values();
-            for (SamlResponse value : samlResponses) {
+            Iterator<SamlResponse> responseIterator = samlResponseMap.values().iterator();
+            while (responseIterator.hasNext()) {
                 try {
-                    value.validateTimestamps();
+                    responseIterator.next().validateTimestamps();
                 }
                 catch (ValidationError e) {
-                    samlResponses.remove(value);
+                    responseIterator.remove();
                 }
             }
 
