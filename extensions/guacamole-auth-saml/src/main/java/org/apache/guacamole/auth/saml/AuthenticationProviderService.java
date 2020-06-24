@@ -26,7 +26,6 @@ import com.onelogin.saml2.authn.SamlResponse;
 import com.onelogin.saml2.exception.SettingsException;
 import com.onelogin.saml2.exception.ValidationError;
 import com.onelogin.saml2.settings.Saml2Settings;
-import com.onelogin.saml2.util.Util;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -39,6 +38,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.guacamole.auth.saml.conf.ConfigurationService;
@@ -196,8 +196,9 @@ public class AuthenticationProviderService {
         AuthnRequest samlReq = new AuthnRequest(samlSettings);
         URI authUri;
         try {
-            authUri = new URI(samlSettings.getIdpSingleSignOnServiceUrl() + "?SAMLRequest=" +
-                    Util.urlEncoder(samlReq.getEncodedAuthnRequest()));
+            authUri = UriBuilder.fromUri(samlSettings.getIdpSingleSignOnServiceUrl().toURI())
+                    .queryParam("SAMLRequest", samlReq.getEncodedAuthnRequest())
+                    .build();
         }
         catch (IOException e) {
             logger.error("Error encoding authentication request to string: {}", e.getMessage());
