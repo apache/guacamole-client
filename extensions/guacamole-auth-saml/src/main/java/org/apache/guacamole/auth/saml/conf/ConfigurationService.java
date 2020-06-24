@@ -27,6 +27,7 @@ import com.onelogin.saml2.util.Constants;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
@@ -330,13 +331,18 @@ public class ConfigurationService {
             samlMap.put(SettingsBuilder.IDP_SINGLE_SIGN_ON_SERVICE_BINDING_PROPERTY_KEY,
                     Constants.BINDING_HTTP_REDIRECT);
         }
-        
-        // Common settings, required with or without metadata file.
-        samlMap.put(SettingsBuilder.SP_ENTITYID_PROPERTY_KEY,
-                getEntityId().toString());
-        samlMap.put(SettingsBuilder.SP_ASSERTION_CONSUMER_SERVICE_URL_PROPERTY_KEY,
-                getCallbackUrl().toString() + "/api/ext/saml/callback");
-        
+
+        // Read entity ID from properties if not provided within metadata XML
+        if (!samlMap.containsKey(SettingsBuilder.SP_ENTITYID_PROPERTY_KEY)) {
+            samlMap.put(SettingsBuilder.SP_ENTITYID_PROPERTY_KEY, getEntityId().toString());
+        }
+
+        // Derive ACS URL from properties if not provided within metadata XML
+        if (!samlMap.containsKey(SettingsBuilder.SP_ASSERTION_CONSUMER_SERVICE_URL_PROPERTY_KEY)) {
+            samlMap.put(SettingsBuilder.SP_ASSERTION_CONSUMER_SERVICE_URL_PROPERTY_KEY,
+                    UriBuilder.fromUri(getCallbackUrl()).path("api/ext/saml/callback").build().toString());
+        }
+
         SettingsBuilder samlBuilder = new SettingsBuilder();
         Saml2Settings samlSettings = samlBuilder.fromValues(samlMap).build();
         samlSettings.setStrict(getStrict());
