@@ -115,16 +115,9 @@ public class AuthenticationProviderService {
             // Look for the SAML Response parameter.
             String responseHash = request.getParameter("responseHash");
 
-            if (responseHash != null) {
+            if (responseHash != null && samlResponseMap.hasSamlResponse(responseHash)) {
 
                 try {
-
-                    // Generate the response object
-                    if (!samlResponseMap.hasSamlResponse(responseHash)) {
-                        logger.warn("SAML response was not found.");
-                        logger.debug("SAML response hash {} not found in response map.", responseHash);
-                        throw new GuacamoleServerException("Provided response was not found in response map.");
-                    }
                         
                     SamlResponse samlResponse = samlResponseMap.getSamlResponse(responseHash);
 
@@ -199,7 +192,7 @@ public class AuthenticationProviderService {
             }
         }
 
-        // No SAML Response is present, so generate a request.
+        // No SAML Response is present, or hash is not present in map.
         AuthnRequest samlReq = new AuthnRequest(samlSettings);
         URI authUri;
         try {
