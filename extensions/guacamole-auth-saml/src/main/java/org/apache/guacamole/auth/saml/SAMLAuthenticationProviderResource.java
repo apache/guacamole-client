@@ -26,7 +26,6 @@ import com.onelogin.saml2.exception.ValidationError;
 import com.onelogin.saml2.http.HttpRequest;
 import com.onelogin.saml2.servlet.ServletUtils;
 import com.onelogin.saml2.settings.Saml2Settings;
-import com.onelogin.saml2.util.Util;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -39,6 +38,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.POST;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -101,7 +101,7 @@ public class SAMLAuthenticationProviderResource {
             @Context HttpServletRequest consumedRequest)
             throws GuacamoleException {
         
-        String guacBase = confService.getCallbackUrl().toString();
+        URI guacBase = confService.getCallbackUrl();
         Saml2Settings samlSettings = confService.getSamlSettings();
         try {
             HttpRequest request = ServletUtils
@@ -111,9 +111,9 @@ public class SAMLAuthenticationProviderResource {
             
             String responseHash = hashSamlResponse(samlResponseString);
             samlResponseMap.putSamlResponse(responseHash, samlResponse);
-            return Response.seeOther(new URI(guacBase 
-                    + "?responseHash="
-                    + Util.urlEncoder(responseHash))
+            return Response.seeOther(UriBuilder.fromUri(guacBase)
+                    .queryParam("responseHash", responseHash)
+                    .build()
             ).build();
 
         }
@@ -131,9 +131,6 @@ public class SAMLAuthenticationProviderResource {
         }
         catch (SettingsException e) {
             throw new GuacamoleServerException("Settings exception processing SAML response.", e);
-        }
-        catch (URISyntaxException e) {
-            throw new GuacamoleServerException("URI exception process SAML response.", e);
         }
         catch (ValidationError e) {
             throw new GuacamoleServerException("Exception validating SAML response.", e);
