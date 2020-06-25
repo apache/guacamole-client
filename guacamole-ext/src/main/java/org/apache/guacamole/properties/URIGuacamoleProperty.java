@@ -32,6 +32,10 @@ public abstract class URIGuacamoleProperty implements GuacamoleProperty<URI> {
     @Override
     public URI parseValue(String value) throws GuacamoleException {
         
+        // If nothing is provided, just return null.
+        if (value == null)
+            return null;
+        
         try {
             return new URI(value);
         }
