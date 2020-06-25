@@ -1,4 +1,4 @@
-<a class="connection" ng-href="#/client/{{ item.getClientIdentifier() }}">
+<a class="connection" ng-href="{{ item.getClientURL() }}">
     <div class="icon type" ng-class="item.protocol"></div>
     <span class="name">{{item.name}}</span>
 </a>
