@@ -106,7 +106,7 @@ public class MySQLEnvironment extends JDBCEnvironment {
     /**
      * The default SSL mode for connecting to MySQL servers.
      */
-    private final MySQLSSLMode DEFAULT_SSL_MODE = MySQLSSLMode.DISABLED;
+    private final MySQLSSLMode DEFAULT_SSL_MODE = MySQLSSLMode.PREFERRED;
 
     /**
      * Constructs a new MySQLEnvironment, providing access to MySQL-specific
@@ -309,7 +309,7 @@ public class MySQLEnvironment extends JDBCEnvironment {
     
     /**
      * Return the MySQL SSL mode as configured in guacamole.properties, or the
-     * default value of DISABLED if not configured.
+     * default value of PREFERRED if not configured.
      * 
      * @return
      *     The SSL mode to use when connecting to the MySQL server.

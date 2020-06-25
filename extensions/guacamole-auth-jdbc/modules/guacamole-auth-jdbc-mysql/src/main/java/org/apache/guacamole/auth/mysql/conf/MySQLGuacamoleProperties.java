@@ -180,8 +180,8 @@ public class MySQLGuacamoleProperties {
     };
     
     /**
-     * The SSL mode used to connect to the MySQL Server.  By default SSL will
-     * not be used.
+     * The SSL mode used to connect to the MySQL Server.  By default the driver
+     * will attempt SSL connections and fall back to plain-text if SSL fails.
      */
     public static final EnumGuacamoleProperty<MySQLSSLMode> MYSQL_SSL_MODE =
             new EnumGuacamoleProperty<MySQLSSLMode>(MySQLSSLMode.class) {

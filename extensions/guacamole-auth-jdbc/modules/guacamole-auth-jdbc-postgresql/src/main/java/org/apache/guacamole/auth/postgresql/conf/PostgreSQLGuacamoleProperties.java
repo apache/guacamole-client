@@ -175,7 +175,8 @@ public class PostgreSQLGuacamoleProperties {
     
     /**
      * The SSL mode that should be used by the JDBC driver when making
-     * connections to the remote server.  By default SSL will be disabled.
+     * connections to the remote server.  By default SSL will be attempted but
+     * plain-text will be allowed if SSL fails.
      */
     public static final EnumGuacamoleProperty<PostgreSQLSSLMode> POSTGRESQL_SSL_MODE =
             new EnumGuacamoleProperty<PostgreSQLSSLMode>(PostgreSQLSSLMode.class) {
