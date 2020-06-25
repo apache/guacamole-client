@@ -101,7 +101,7 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     /**
      * The default value to use for SSL mode if none is explicitly configured.
      */
-    private final PostgreSQLSSLMode DEFAULT_SSL_MODE = PostgreSQLSSLMode.DISABLE;
+    private final PostgreSQLSSLMode DEFAULT_SSL_MODE = PostgreSQLSSLMode.PREFER;
 
     /**
      * Constructs a new PostgreSQLEnvironment, providing access to PostgreSQL-specific
@@ -257,7 +257,8 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     
     /**
      * Get the SSL mode to use to make the JDBC connection to the PostgreSQL
-     * server.  If unspecified this will default to disabling SSL.
+     * server.  If unspecified this will default to PREFER, attempting SSL
+     * and falling back to plain-text if SSL fails.
      * 
      * @return
      *     The enum value of the SSL mode to use to make the JDBC connection
