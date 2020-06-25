@@ -45,7 +45,7 @@ public class ConfigurationService {
      * The URI of the file containing the XML Metadata associated with the
      * SAML IdP.
      */
-    private static final URIGuacamoleProperty SAML_IDP_METADATA =
+    private static final URIGuacamoleProperty SAML_IDP_METADATA_URL =
             new URIGuacamoleProperty() {
 
         @Override
@@ -159,11 +159,10 @@ public class ConfigurationService {
      *     The URL to send to the SAML IdP as the Client Identifier.
      *
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the
-     *     property is missing.
+     *     If guacamole.properties cannot be parsed.
      */
     private URI getEntityId() throws GuacamoleException {
-        return environment.getRequiredProperty(SAML_ENTITY_ID);
+        return environment.getProperty(SAML_ENTITY_ID);
     }
 
     /**
@@ -183,7 +182,7 @@ public class ConfigurationService {
      *     metadata is missing.
      */
     private URI getIdpMetadata() throws GuacamoleException {
-        return environment.getProperty(SAML_IDP_METADATA);
+        return environment.getProperty(SAML_IDP_METADATA_URL);
     }
 
     /**
@@ -209,8 +208,8 @@ public class ConfigurationService {
      *     be POSTed to upon completion of SAML authentication.
      *
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the
-     *     callback parameter is missing.
+     *     If guacamole.properties cannot be parsed, or the property
+     *     is missing.
      */
     public URI getCallbackUrl() throws GuacamoleException {
         return environment.getRequiredProperty(SAML_CALLBACK_URL);
@@ -334,7 +333,11 @@ public class ConfigurationService {
 
         // Read entity ID from properties if not provided within metadata XML
         if (!samlMap.containsKey(SettingsBuilder.SP_ENTITYID_PROPERTY_KEY)) {
-            samlMap.put(SettingsBuilder.SP_ENTITYID_PROPERTY_KEY, getEntityId().toString());
+            URI entityId = getEntityId();
+            if (entityId == null)
+                throw new GuacamoleServerException("SAML Entity ID was not found"
+                        + " in either the metadata XML file or guacamole.properties");
+            samlMap.put(SettingsBuilder.SP_ENTITYID_PROPERTY_KEY, entityId.toString());
         }
 
         // Derive ACS URL from properties if not provided within metadata XML
