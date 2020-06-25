@@ -131,9 +131,12 @@ public class AuthenticationProviderService {
                     samlResponse.validateTimestamps();
 
                     // Grab the username, and, if present, finish authentication.
-                    String username = samlResponse.getNameId().toLowerCase();
+                    String username = samlResponse.getNameId();
                     if (username != null) {
-                        
+
+                        // Canonicalize username as lowercase
+                        username = username.toLowerCase();
+
                         // Retrieve any provided attributes
                         Map<String, List<String>> attributes =
                                 samlResponse.getAttributes();
