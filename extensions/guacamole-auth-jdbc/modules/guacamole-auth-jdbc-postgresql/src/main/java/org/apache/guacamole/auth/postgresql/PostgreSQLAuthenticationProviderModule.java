@@ -75,7 +75,15 @@ public class PostgreSQLAuthenticationProviderModule implements Module {
         
         // Check the SSL mode and set if configured.
         PostgreSQLSSLMode sslMode = environment.getPostgreSQLSSLMode();
-        driverProperties.setProperty("sslmode", sslMode.getDriverValue());
+        
+        /**
+         * Older versions of the PostgreSQL JDBC driver do not support directly
+         * setting the "prefer" mode; however, the behavior defined by this
+         * mode is the default if nothing is set, so if that mode is requested
+         * in guacamole.properties we just don't set sslmode in the driver.
+         */
+        if (sslMode != PostgreSQLSSLMode.PREFER)
+            driverProperties.setProperty("sslmode", sslMode.getDriverValue());
         
         // If SSL is enabled, check for and set other SSL properties.
         if (sslMode != PostgreSQLSSLMode.DISABLE) {
