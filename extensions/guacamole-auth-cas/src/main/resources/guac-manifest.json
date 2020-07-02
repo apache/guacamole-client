@@ -14,18 +14,6 @@
         "translations/en.json",
         "translations/ja.json",
         "translations/ru.json"
-    ],
-
-    "js" : [
-        "cas.min.js"
-    ],
-
-    "css" : [
-        "cas.min.css"
-    ],
-
-    "resources" : {
-        "templates/casTicketField.html" : "text/html"
-    }
+    ]
 
 }
