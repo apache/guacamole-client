@@ -208,6 +208,16 @@
                     "type"    : "TEXT"
                 },
                 {
+                    "name"    : "disable-download",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-upload",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"  : "drive-path",
                     "type"  : "TEXT"
                 },
@@ -397,6 +407,39 @@
                 {
                     "name"  : "sftp-server-alive-interval",
                     "type"  : "NUMERIC"
+                },
+                {
+                    "name"    : "sftp-disable-download",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "sftp-disable-upload",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+        
+        {
+            "name"   : "wol",
+            "fields" : [
+                {
+                    "name"    : "wol-send-packet",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name" : "wol-mac-addr",
+                    "type" : "TEXT"
+                },
+                {
+                    "name" : "wol-broadcast-addr",
+                    "type" : "TEXT"
+                },
+                {
+                    "name" : "wol-wait-time",
+                    "type" : "NUMERIC"
                 }
             ]
         }

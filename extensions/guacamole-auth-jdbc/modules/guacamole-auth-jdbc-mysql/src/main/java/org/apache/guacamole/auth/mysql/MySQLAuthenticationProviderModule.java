@@ -22,8 +22,12 @@ package org.apache.guacamole.auth.mysql;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
+import java.io.File;
 import java.util.Properties;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.mysql.conf.MySQLDriver;
+import org.apache.guacamole.auth.mysql.conf.MySQLEnvironment;
+import org.apache.guacamole.auth.mysql.conf.MySQLSSLMode;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
 
 /**
@@ -78,6 +82,35 @@ public class MySQLAuthenticationProviderModule implements Module {
 
         // Allow use of multiple statements within a single query
         driverProperties.setProperty("allowMultiQueries", "true");
+        
+        // Set the SSL mode to use when conncting
+        MySQLSSLMode sslMode = environment.getMySQLSSLMode();
+        driverProperties.setProperty("sslMode", sslMode.getDriverValue());
+        
+        // For compatibility, set legacy useSSL property when SSL is disabled.
+        if (sslMode == MySQLSSLMode.DISABLED)
+            driverProperties.setProperty("useSSL", "false");
+        
+        // Check other SSL settings and set as required
+        File trustStore = environment.getMySQLSSLTrustStore();
+        if (trustStore != null)
+            driverProperties.setProperty("trustCertificateKeyStoreUrl",
+                    trustStore.getAbsolutePath());
+        
+        String trustPassword = environment.getMySQLSSLTrustPassword();
+        if (trustPassword != null)
+            driverProperties.setProperty("trustCertificateKeyStorePassword",
+                    trustPassword);
+        
+        File clientStore = environment.getMySQLSSLClientStore();
+        if (clientStore != null)
+            driverProperties.setProperty("clientCertificateKeyStoreUrl",
+                    clientStore.getAbsolutePath());
+        
+        String clientPassword = environment.getMYSQLSSLClientPassword();
+        if (clientPassword != null)
+            driverProperties.setProperty("clientCertificateKeyStorePassword",
+                    clientPassword);
         
         // Get the MySQL-compatible driver to use.
         mysqlDriver = environment.getMySQLDriver();

@@ -104,8 +104,8 @@ public abstract class AbstractPermissionService<PermissionSetType extends Permis
         if (targetEntity.isUser(user.getUser().getIdentifier()))
             return true;
         
-        // A system adminstrator can do anything
-        if (user.getUser().isAdministrator())
+        // Privileged users (such as system administrators) may do anything
+        if (user.isPrivileged())
             return true;
 
         // Can read permissions on target entity if explicit READ is granted

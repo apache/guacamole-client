@@ -27,19 +27,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.auth.totp.conf.ConfigurationService;
 import org.apache.guacamole.auth.totp.form.AuthenticationCodeField;
 import org.apache.guacamole.form.Field;
+import org.apache.guacamole.language.TranslatableGuacamoleClientException;
+import org.apache.guacamole.language.TranslatableGuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.totp.TOTPGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -181,12 +181,13 @@ public class UserVerificationService {
 
         // Update user object
         try {
-            context.getUserDirectory().update(self);
+            context.getPrivileged().getUserDirectory().update(self);
         }
         catch (GuacamoleSecurityException e) {
             logger.info("User \"{}\" cannot store their TOTP key as they "
-                    + "lack permission to update their own account. TOTP "
-                    + "will be disabled for this user.",
+                    + "lack permission to update their own account and the "
+                    + "TOTP extension was unable to obtain privileged access. "
+                    + "TOTP will be disabled for this user.",
                     self.getIdentifier());
             logger.debug("Permission denied to set TOTP key of user "
                     + "account.", e);
@@ -249,15 +250,18 @@ public class UserVerificationService {
             // If the user hasn't completed enrollment, request that they do
             if (!key.isConfirmed()) {
                 field.exposeKey(key);
-                throw new GuacamoleInsufficientCredentialsException(
+                throw new TranslatableGuacamoleInsufficientCredentialsException(
+                        "TOTP enrollment must be completed before "
+                        + "authentication can continue",
                         "TOTP.INFO_ENROLL_REQUIRED", new CredentialsInfo(
                             Collections.<Field>singletonList(field)
                         ));
             }
 
             // Otherwise simply request the user's authentication code
-            throw new GuacamoleInsufficientCredentialsException(
-                    "TOTP.INFO_CODE_REQUIRED", new CredentialsInfo(
+            throw new TranslatableGuacamoleInsufficientCredentialsException(
+                    "A TOTP authentication code is required before login can "
+                    + "continue", "TOTP.INFO_CODE_REQUIRED", new CredentialsInfo(
                         Collections.<Field>singletonList(field)
                     ));
 
@@ -291,7 +295,8 @@ public class UserVerificationService {
         }
 
         // Provided code is not valid
-        throw new GuacamoleClientException("TOTP.INFO_VERIFICATION_FAILED");
+        throw new TranslatableGuacamoleClientException("Provided TOTP code "
+                + "is not valid.", "TOTP.INFO_VERIFICATION_FAILED");
 
     }
 

@@ -21,24 +21,20 @@ package org.apache.guacamole.auth.openid.form;
 
 import java.net.URI;
 import javax.ws.rs.core.UriBuilder;
-import org.apache.guacamole.form.Field;
+import org.apache.guacamole.form.RedirectField;
+import org.apache.guacamole.language.TranslatableMessage;
 
 /**
  * Field definition which represents the token returned by an OpenID Connect
  * service.
  */
-public class TokenField extends Field {
+public class TokenField extends RedirectField {
 
     /**
      * The standard HTTP parameter which will be included within the URL by all
      * OpenID services upon successful authentication and redirect.
      */
     public static final String PARAMETER_NAME = "id_token";
-
-    /**
-     * The full URI which the field should link to.
-     */
-    private final URI authorizationURI;
 
     /**
      * Creates a new field which requests authentication via OpenID connect.
@@ -68,32 +64,24 @@ public class TokenField extends Field {
      * @param nonce
      *     A random string unique to this request. To defend against replay
      *     attacks, this value must cease being valid after its first use.
+     * 
+     * @param redirectMessage
+     *     The message that will be displayed to the user during redirect.  This
+     *     will be processed through Guacamole's translation system.
      */
     public TokenField(URI authorizationEndpoint, String scope,
-            String clientID, URI redirectURI, String nonce) {
+            String clientID, URI redirectURI, String nonce,
+            TranslatableMessage redirectMessage) {
 
-        // Init base field properties
-        super(PARAMETER_NAME, "GUAC_OPENID_TOKEN");
-
-        this.authorizationURI = UriBuilder.fromUri(authorizationEndpoint)
+        super(PARAMETER_NAME, UriBuilder.fromUri(authorizationEndpoint)
                 .queryParam("scope", scope)
                 .queryParam("response_type", "id_token")
                 .queryParam("client_id", clientID)
                 .queryParam("redirect_uri", redirectURI)
                 .queryParam("nonce", nonce)
-                .build();
+                .build(),
+                redirectMessage);
 
-    }
-
-    /**
-     * Returns the full URI that this field should link to when a new token
-     * needs to be obtained from the OpenID service.
-     *
-     * @return
-     *     The full URI that this field should link to.
-     */
-    public String getAuthorizationURI() {
-        return authorizationURI.toString();
     }
 
 }

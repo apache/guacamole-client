@@ -21,14 +21,15 @@ package org.apache.guacamole.auth.jdbc;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicyService;
 import org.apache.guacamole.auth.jdbc.sharing.user.SharedAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledUserContext;
+import org.apache.guacamole.auth.jdbc.user.PrivilegedModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.UserService;
+import org.apache.guacamole.language.TranslatableGuacamoleClientException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -98,17 +99,21 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
         ModeledUser user = userService.retrieveUser(authenticationProvider, authenticatedUser);
         ModeledUserContext context = userContextProvider.get();
         if (user != null && !user.isDisabled()) {
-
+            
             // Enforce applicable account restrictions
             if (databaseRestrictionsApplicable) {
 
                 // Verify user account is still valid as of today
                 if (!user.isAccountValid())
-                    throw new GuacamoleClientException("LOGIN.ERROR_NOT_VALID");
+                    throw new TranslatableGuacamoleClientException("User "
+                            + "account is no longer valid.",
+                            "LOGIN.ERROR_NOT_VALID");
 
                 // Verify user account is allowed to be used at the current time
                 if (!user.isAccountAccessible())
-                    throw new GuacamoleClientException("LOGIN.ERROR_NOT_ACCESSIBLE");
+                    throw new TranslatableGuacamoleClientException("User "
+                            + "account may not be used at this time.",
+                            "LOGIN.ERROR_NOT_ACCESSIBLE");
 
             }
 
@@ -122,9 +127,15 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
         }
         
         // If no user account is found, and database-specific account
-        // restrictions do not apply, get an empty user.
+        // restrictions do not apply, get a skeleton user.
         else if (!databaseRestrictionsApplicable) {
             user = userService.retrieveSkeletonUser(authenticationProvider, authenticatedUser);
+            
+            // If auto account creation is enabled, add user to DB.
+            if (environment.autoCreateAbsentAccounts()) {
+                userService.createObject(new PrivilegedModeledAuthenticatedUser(user.getCurrentUser()), user);
+            }
+            
         }
 
         // Veto authentication result only if database-specific account
@@ -135,6 +146,7 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
         
         // Initialize the UserContext with the user account and return it.
         context.init(user.getCurrentUser());
+        context.recordUserLogin();
         return context;
 
     }

@@ -23,7 +23,8 @@
     "translations" : [
         "translations/de.json",
         "translations/en.json",
-        "translations/ja.json"
+        "translations/ja.json",
+        "translations/ru.json"
     ],
 
     "resources" : {

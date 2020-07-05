@@ -28,6 +28,7 @@
  * parameter in the first position; it may occur after several other parameters
  * within the fragment.
  */
+
 (function guacOpenIDTransformToken() {
     if (/^#(?![?\/])(.*&)?id_token=/.test(location.hash))
         location.hash = '/?' + location.hash.substring(1);

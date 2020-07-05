@@ -25,6 +25,8 @@ import com.google.inject.name.Names;
 import java.lang.UnsupportedOperationException;
 import java.util.Properties;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.sqlserver.conf.SQLServerDriver;
+import org.apache.guacamole.auth.sqlserver.conf.SQLServerEnvironment;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
 
 /**
@@ -45,7 +47,7 @@ public class SQLServerAuthenticationProviderModule implements Module {
     /**
      * Which SQL Server driver should be used.
      */
-    private SQLServerDriver sqlServerDriver;
+    private final SQLServerDriver sqlServerDriver;
 
     /**
      * Creates a new SQLServer authentication provider module that configures
@@ -69,12 +71,18 @@ public class SQLServerAuthenticationProviderModule implements Module {
         myBatisProperties.setProperty("JDBC.schema", environment.getSQLServerDatabase());
         myBatisProperties.setProperty("JDBC.username", environment.getSQLServerUsername());
         myBatisProperties.setProperty("JDBC.password", environment.getSQLServerPassword());
+        
         myBatisProperties.setProperty("JDBC.autoCommit", "false");
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
 
         // Use UTF-8 in database
         driverProperties.setProperty("characterEncoding", "UTF-8");
+        
+        // Retrieve instance name and set it
+        String instance = environment.getSQLServerInstance();
+        if (instance != null)
+            driverProperties.setProperty("JDBC.instanceName", instance);
 
         // Capture which driver to use for the connection.
         this.sqlServerDriver = environment.getSQLServerDriver();

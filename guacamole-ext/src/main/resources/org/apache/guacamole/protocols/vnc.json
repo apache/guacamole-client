@@ -172,6 +172,16 @@
                 {
                     "name"  : "sftp-server-alive-interval",
                     "type"  : "NUMERIC"
+                },
+                {
+                    "name"    : "sftp-disable-download",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "sftp-disable-upload",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
                 }
             ]
         },
@@ -187,6 +197,29 @@
                 {
                     "name"  : "audio-servername",
                     "type"  : "TEXT"
+                }
+            ]
+        },
+        
+        {
+            "name"   : "wol",
+            "fields" : [
+                {
+                    "name"    : "wol-send-packet",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name" : "wol-mac-addr",
+                    "type" : "TEXT"
+                },
+                {
+                    "name" : "wol-broadcast-addr",
+                    "type" : "TEXT"
+                },
+                {
+                    "name" : "wol-wait-time",
+                    "type" : "NUMERIC"
                 }
             ]
         }

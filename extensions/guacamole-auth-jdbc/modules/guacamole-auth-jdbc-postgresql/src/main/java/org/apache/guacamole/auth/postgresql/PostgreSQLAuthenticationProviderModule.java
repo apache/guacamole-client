@@ -22,8 +22,11 @@ package org.apache.guacamole.auth.postgresql;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
+import java.io.File;
 import java.util.Properties;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.postgresql.conf.PostgreSQLEnvironment;
+import org.apache.guacamole.auth.postgresql.conf.PostgreSQLSSLMode;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
 
 /**
@@ -69,6 +72,43 @@ public class PostgreSQLAuthenticationProviderModule implements Module {
 
         // Use UTF-8 in database
         driverProperties.setProperty("characterEncoding", "UTF-8");
+        
+        // Check the SSL mode and set if configured.
+        PostgreSQLSSLMode sslMode = environment.getPostgreSQLSSLMode();
+        
+        /**
+         * Older versions of the PostgreSQL JDBC driver do not support directly
+         * setting the "prefer" mode; however, the behavior defined by this
+         * mode is the default if nothing is set, so if that mode is requested
+         * in guacamole.properties we just don't set sslmode in the driver.
+         */
+        if (sslMode != PostgreSQLSSLMode.PREFER)
+            driverProperties.setProperty("sslmode", sslMode.getDriverValue());
+        
+        // If SSL is requested disabled, also set the legacy property.
+        if (sslMode == PostgreSQLSSLMode.DISABLE)
+            driverProperties.setProperty("ssl", "false");
+        
+        // If SSL is enabled, check for and set other SSL properties.
+        else {
+            
+            File sslClientCert = environment.getPostgreSQLSSLClientCertFile();
+            if (sslClientCert != null)
+                driverProperties.setProperty("sslcert", sslClientCert.getAbsolutePath());
+            
+            File sslClientKey = environment.getPostgreSQLSSLClientKeyFile();
+            if (sslClientKey != null)
+                driverProperties.setProperty("sslkey", sslClientKey.getAbsolutePath());
+            
+            File sslRootCert = environment.getPostgreSQLSSLClientRootCertFile();
+            if (sslRootCert != null)
+                driverProperties.setProperty("sslrootcert", sslRootCert.getAbsolutePath());
+            
+            String sslClientKeyPassword = environment.getPostgreSQLSSLClientKeyPassword();
+            if (sslClientKeyPassword != null)
+                driverProperties.setProperty("sslpassword", sslClientKeyPassword);
+            
+        }
 
     }
 

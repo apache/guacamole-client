@@ -151,7 +151,7 @@ END
 
     # Verify that the required Docker secrets are present, else, default to their normal environment variables
     if [ -n "$MYSQL_USER_FILE" ]; then
-        set_property "mysql-username" `cat $MYSQL_USER_FILE`
+        set_property "mysql-username" "`cat "$MYSQL_USER_FILE"`"
     elif [ -n "$MYSQL_USER" ]; then
         set_property "mysql-username" "$MYSQL_USER"
     else
@@ -160,7 +160,7 @@ END
     fi
     
     if [ -n "$MYSQL_PASSWORD_FILE" ]; then
-        set_property "mysql-password" `cat $MYSQL_PASSWORD_FILE`
+        set_property "mysql-password" "`cat "$MYSQL_PASSWORD_FILE"`"
     elif [ -n "$MYSQL_PASSWORD" ]; then
         set_property "mysql-password" "$MYSQL_PASSWORD"
     else
@@ -169,7 +169,7 @@ END
     fi
 
     if [ -n "$MYSQL_DATABASE_FILE" ]; then
-        set_property "mysql-database" `cat $MYSQL_DATABASE_FILE`
+        set_property "mysql-database" "`cat "$MYSQL_DATABASE_FILE"`"
     elif [ -n "$MYSQL_DATABASE" ]; then
         set_property "mysql-database" "$MYSQL_DATABASE"
     else
@@ -204,6 +204,32 @@ END
     set_optional_property     \
         "mysql-user-required" \
         "$MYSQL_USER_REQUIRED"
+
+    set_optional_property \
+        "mysql-ssl-mode"  \
+        "$MYSQL_SSL_MODE"
+
+    set_optional_property        \
+        "mysql-ssl-trust-store"  \
+        "$MYSQL_SSL_TRUST_STORE"
+
+    # For SSL trust store password, check secrets, first, then standard env variable
+    if [ -n "$MYSQL_SSL_TRUST_PASSWORD_FILE" ]; then
+        set_property "mysql-ssl-trust-password" "`cat "$MYSQL_SSL_TRUST_PASSWORD_FILE"`"
+    elif [ -n "$MYSQL_SSL_TRUST_PASSWORD" ]; then
+        set_property "mysql-ssl-trust-password" "$MYSQL_SSL_TRUST_PASSWORD"
+    fi
+
+    set_optional_property         \
+        "mysql-ssl-client-store"  \
+        "$MYSQL_SSL_CLIENT_STORE"
+
+    # For SSL trust store password, check secrets, first, then standard env variable
+    if [ -n "$MYSQL_SSL_CLIENT_PASSWORD_FILE" ]; then
+        set_property "mysql-ssl-client-password" "`cat "$MYSQL_SSL_CLIENT_PASSWORD_FILE"`"
+    elif [ -n "$MYSQL_SSL_CLIENT_PASSWORD" ]; then
+        set_property "mysql-ssl-client-password" "$MYSQL_SSL_CLIENT_PASSWORD"
+    fi
 
     # Add required .jar files to GUACAMOLE_LIB and GUACAMOLE_EXT
     ln -s /opt/guacamole/mysql/mysql-connector-*.jar "$GUACAMOLE_LIB"
@@ -278,7 +304,7 @@ END
 
     # Verify that the required Docker secrets are present, else, default to their normal environment variables
     if [ -n "$POSTGRES_USER_FILE" ]; then
-        set_property "postgresql-username" `cat $POSTGRES_USER_FILE`
+        set_property "postgresql-username" "`cat "$POSTGRES_USER_FILE"`"
     elif [ -n "$POSTGRES_USER" ]; then
         set_property "postgresql-username" "$POSTGRES_USER"
     else
@@ -287,7 +313,7 @@ END
     fi
     
     if [ -n "$POSTGRES_PASSWORD_FILE" ]; then
-        set_property "postgresql-password" `cat $POSTGRES_PASSWORD_FILE`
+        set_property "postgresql-password" "`cat "$POSTGRES_PASSWORD_FILE"`"
     elif [ -n "$POSTGRES_PASSWORD" ]; then
         set_property "postgresql-password" "$POSTGRES_PASSWORD"
     else
@@ -296,7 +322,7 @@ END
     fi
 
     if [ -n "$POSTGRES_DATABASE_FILE" ]; then
-        set_property "postgresql-database" `cat $POSTGRES_DATABASE_FILE`
+        set_property "postgresql-database" "`cat "$POSTGRES_DATABASE_FILE"`"
     elif [ -n "$POSTGRES_DATABASE" ]; then
         set_property "postgresql-database" "$POSTGRES_DATABASE"
     else
@@ -331,6 +357,29 @@ END
     set_optional_property          \
         "postgresql-user-required" \
         "$POSTGRES_USER_REQUIRED"
+
+    set_optional_property      \
+        "postgresql-ssl-mode"  \
+        "$POSTGRESQL_SSL_MODE"
+
+    set_optional_property           \
+        "postgresql-ssl-cert-file"  \
+        "$POSTGRESQL_SSL_CERT_FILE"
+
+    set_optional_property          \
+        "postgresql-ssl-key-file"  \
+        "$POSTGRESQL_SSL_KEY_FILE"
+
+    set_optional_property                \
+        "postgresql-ssl-root-cert-file"  \
+        "$POSTGRESQL_SSL_ROOT_CERT_FILE"
+
+    # For SSL key password, check secrets, first, then standard env variable
+    if [ -n "$POSTGRES_SSL_KEY_PASSWORD_FILE" ]; then
+        set_property "postgresql-ssl-key-password" "`cat "$POSTGRES_SSL_KEY_PASSWORD_FILE"`"
+    elif [ -n "$POSTGRES_SSL_KEY_PASSWORD" ]; then
+        set_property "postgresql-ssl-key-password" "$POSTGRES_SSL_KEY_PASSWORD"
+    fi
 
     # Add required .jar files to GUACAMOLE_LIB and GUACAMOLE_EXT
     ln -s /opt/guacamole/postgresql/postgresql-*.jar "$GUACAMOLE_LIB"
@@ -369,6 +418,7 @@ END
     set_optional_property "ldap-encryption-method"  "$LDAP_ENCRYPTION_METHOD"
     set_optional_property "ldap-max-search-results" "$LDAP_MAX_SEARCH_RESULTS"
     set_optional_property "ldap-search-bind-dn"     "$LDAP_SEARCH_BIND_DN"
+    set_optional_property "ldap-user-attributes"    "$LDAP_USER_ATTRIBUTES"
 
     set_optional_property           \
         "ldap-search-bind-password" \

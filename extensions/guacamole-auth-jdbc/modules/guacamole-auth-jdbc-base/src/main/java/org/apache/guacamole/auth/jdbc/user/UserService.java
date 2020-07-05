@@ -46,12 +46,13 @@ import org.apache.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicyService;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.PasswordField;
+import org.apache.guacamole.language.TranslatableGuacamoleClientException;
+import org.apache.guacamole.language.TranslatableGuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
@@ -277,8 +278,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         // Verify new password does not violate defined policies (if specified)
         if (object.getPassword() != null) {
 
-            // Enforce password age only for non-adminstrators
-            if (!user.getUser().isAdministrator())
+            // Enforce password age only for non-privileged users
+            if (!user.isPrivileged())
                 passwordPolicyService.verifyPasswordAge(object);
 
             // Always verify password complexity
@@ -295,8 +296,9 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     protected Collection<ObjectPermissionModel>
         getImplicitPermissions(ModeledAuthenticatedUser user, UserModel model) {
             
-        // Get original set of implicit permissions
-        Collection<ObjectPermissionModel> implicitPermissions = super.getImplicitPermissions(user, model);
+        // Get original set of implicit permissions and make a copy
+        Collection<ObjectPermissionModel> implicitPermissions =
+                new ArrayList<>(super.getImplicitPermissions(user, model));
         
         // Grant implicit permissions to the new user
         for (ObjectPermission.Type permissionType : IMPLICIT_USER_PERMISSIONS) {
@@ -311,7 +313,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
             
         }
         
-        return implicitPermissions;
+        return Collections.unmodifiableCollection(implicitPermissions);
     }
         
     @Override
@@ -406,11 +408,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         if (authenticatedUser instanceof ModeledAuthenticatedUser)
             return ((ModeledAuthenticatedUser) authenticatedUser).getUser();
 
-        // Get username
-        String username = authenticatedUser.getIdentifier();
-
         // Retrieve corresponding user model, if such a user exists
-        UserModel userModel = userMapper.selectOne(username);
+        UserModel userModel = userMapper.selectOne(authenticatedUser.getIdentifier());
         if (userModel == null)
             return null;
 
@@ -494,20 +493,25 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         // Require new password if account is expired
         if (newPassword == null || confirmNewPassword == null) {
             logger.info("The password of user \"{}\" has expired and must be reset.", username);
-            throw new GuacamoleInsufficientCredentialsException("LOGIN.INFO_PASSWORD_EXPIRED", EXPIRED_PASSWORD);
+            throw new TranslatableGuacamoleInsufficientCredentialsException("Password has expired",
+                    "LOGIN.INFO_PASSWORD_EXPIRED", EXPIRED_PASSWORD);
         }
 
         // New password must be different from old password
         if (newPassword.equals(credentials.getPassword()))
-            throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_SAME");
+            throw new TranslatableGuacamoleClientException("New passwords may "
+                    + "not be identical to the current password if password "
+                    + "reset is required.", "LOGIN.ERROR_PASSWORD_SAME");
 
         // New password must not be blank
         if (newPassword.isEmpty())
-            throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_BLANK");
+            throw new TranslatableGuacamoleClientException("Passwords may not "
+                    + "be blank.", "LOGIN.ERROR_PASSWORD_BLANK");
 
         // Confirm that the password was entered correctly twice
         if (!newPassword.equals(confirmNewPassword))
-            throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_MISMATCH");
+            throw new TranslatableGuacamoleClientException("New password does "
+                    + "not match.", "LOGIN.ERROR_PASSWORD_MISMATCH");
 
         // Verify new password does not violate defined policies
         passwordPolicyService.verifyPassword(username, newPassword);
@@ -620,8 +624,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
         List<ActivityRecordModel> searchResults;
 
-        // Bypass permission checks if the user is a system admin
-        if (user.getUser().isAdministrator())
+        // Bypass permission checks if the user is privileged
+        if (user.isPrivileged())
             searchResults = userRecordMapper.search(requiredContents,
                     sortPredicates, limit);
 

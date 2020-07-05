@@ -23,6 +23,7 @@ import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -174,6 +175,24 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
     public Set<String> getEffectiveUserGroups() {
         return Sets.union(user.getEffectiveUserGroups(),
                 super.getEffectiveUserGroups());
+    }
+
+    /**
+     * Returns whether this user is effectively unrestricted by permissions,
+     * such as a system administrator or an internal user operating via a
+     * privileged UserContext. Permission inheritance via user groups is taken
+     * into account.
+     *
+     * @return
+     *     true if this user should be unrestricted by permissions, false
+     *     otherwise.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while determining whether permission restrictions
+     *     apply to the user.
+     */
+    public boolean isPrivileged() throws GuacamoleException {
+        return getUser().isPrivileged();
     }
 
 }

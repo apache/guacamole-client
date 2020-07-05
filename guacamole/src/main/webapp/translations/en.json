@@ -459,11 +459,13 @@
         "FIELD_HEADER_DISABLE_AUDIO"   : "Disable audio:",
         "FIELD_HEADER_DISABLE_AUTH"    : "Disable authentication:",
         "FIELD_HEADER_DISABLE_COPY"    : "Disable copying from remote desktop:",
+        "FIELD_HEADER_DISABLE_DOWNLOAD" : "Disable file download:",
         "FIELD_HEADER_DISABLE_PASTE"   : "Disable pasting from client:",
+        "FIELD_HEADER_DISABLE_UPLOAD"   : "Disable file upload:",
         "FIELD_HEADER_DOMAIN"          : "Domain:",
         "FIELD_HEADER_DPI"             : "Resolution (DPI):",
-        "FIELD_HEADER_DRIVE_NAME"      : "Drive name:",
-        "FIELD_HEADER_DRIVE_PATH"      : "Drive path:",
+        "FIELD_HEADER_DRIVE_NAME"       : "Drive name:",
+        "FIELD_HEADER_DRIVE_PATH"       : "Drive path:",
         "FIELD_HEADER_ENABLE_AUDIO_INPUT"         : "Enable audio input (microphone):",
         "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "Enable desktop composition (Aero):",
         "FIELD_HEADER_ENABLE_DRIVE"               : "Enable drive:",
@@ -505,6 +507,7 @@
         "FIELD_HEADER_SECURITY"        : "Security mode:",
         "FIELD_HEADER_SERVER_LAYOUT"   : "Keyboard layout:",
         "FIELD_HEADER_SFTP_DIRECTORY"             : "Default upload directory:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Disable file download:",
         "FIELD_HEADER_SFTP_HOST_KEY"              : "Public host key (Base64):",
         "FIELD_HEADER_SFTP_HOSTNAME"              : "Hostname:",
         "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "SFTP keepalive interval:",
@@ -513,11 +516,17 @@
         "FIELD_HEADER_SFTP_PORT"                  : "Port:",
         "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Private key:",
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "File browser root directory:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Disable file upload:",
         "FIELD_HEADER_SFTP_USERNAME"              : "Username:",
         "FIELD_HEADER_STATIC_CHANNELS" : "Static channel names:",
         "FIELD_HEADER_TIMEZONE"        : "Time zone:",
         "FIELD_HEADER_USERNAME"        : "Username:",
         "FIELD_HEADER_WIDTH"           : "Width:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcast address for WoL packet:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC address of the remote host:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Host boot wait time:",
+        
 
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Low color (16-bit)",
         "FIELD_OPTION_COLOR_DEPTH_24"    : "True color (24-bit)",
@@ -569,7 +578,8 @@
         "SECTION_HEADER_PRECONNECTION_PDU"  : "Preconnection PDU / Hyper-V",
         "SECTION_HEADER_RECORDING"          : "Screen Recording",
         "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
-        "SECTION_HEADER_SFTP"               : "SFTP"
+        "SECTION_HEADER_SFTP"               : "SFTP",
+        "SECTION_HEADER_WOL"                : "Wake-on-LAN (WoL)"
 
     },
 
@@ -601,11 +611,17 @@
         "FIELD_HEADER_RECORDING_NAME" : "Recording name:",
         "FIELD_HEADER_RECORDING_PATH" : "Recording path:",
         "FIELD_HEADER_SERVER_ALIVE_INTERVAL" : "Server keepalive interval:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD" : "Disable file download:",
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "File browser root directory:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"   : "Disable file upload:",
         "FIELD_HEADER_TERMINAL_TYPE"   : "Terminal type:",
         "FIELD_HEADER_TIMEZONE"        : "Time zone ($TZ):",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcast address for WoL packet:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC address of the remote host:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Host boot wait time:",
 
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
         "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
@@ -651,7 +667,8 @@
         "SECTION_HEADER_RECORDING"      : "Screen Recording",
         "SECTION_HEADER_SESSION"        : "Session / Environment",
         "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)",
-        "SECTION_HEADER_SFTP"           : "SFTP"
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
 
     },
 
@@ -683,6 +700,10 @@
         "FIELD_HEADER_TERMINAL_TYPE"   : "Terminal type:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcast address for WoL packet:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC address of the remote host:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Host boot wait time:",
 
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
         "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
@@ -726,7 +747,8 @@
         "SECTION_HEADER_DISPLAY"        : "Display",
         "SECTION_HEADER_RECORDING"      : "Screen Recording",
         "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)",
-        "SECTION_HEADER_NETWORK"        : "Network"
+        "SECTION_HEADER_NETWORK"        : "Network",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
 
     },
 
@@ -754,6 +776,7 @@
         "FIELD_HEADER_RECORDING_NAME" : "Recording name:",
         "FIELD_HEADER_RECORDING_PATH" : "Recording path:",
         "FIELD_HEADER_SFTP_DIRECTORY"             : "Default upload directory:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Disable file download:",
         "FIELD_HEADER_SFTP_HOST_KEY"              : "Public host key (Base64):",
         "FIELD_HEADER_SFTP_HOSTNAME"              : "Hostname:",
         "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "SFTP keepalive interval:",
@@ -762,8 +785,13 @@
         "FIELD_HEADER_SFTP_PORT"                  : "Port:",
         "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Private key:",
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "File browser root directory:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Disable file upload:",
         "FIELD_HEADER_SFTP_USERNAME"              : "Username:",
         "FIELD_HEADER_SWAP_RED_BLUE"    : "Swap red/blue components:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcast address for WoL packet:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC address of the remote host:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Host boot wait time:",
 
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Low color (16-bit)",
@@ -790,7 +818,8 @@
         "SECTION_HEADER_NETWORK"        : "Network",
         "SECTION_HEADER_RECORDING"      : "Screen Recording",
         "SECTION_HEADER_REPEATER"       : "VNC Repeater",
-        "SECTION_HEADER_SFTP"           : "SFTP"
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
 
     },
 

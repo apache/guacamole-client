@@ -1,4 +1,4 @@
-<span class="connection-group name">
-    <a ng-show="item.balancing" ng-href="#/client/{{ item.getClientIdentifier() }}">{{item.name}}</a>
-    <span ng-show="!item.balancing">{{item.name}}</span>
-</span>
+<a class="connection-group" ng-href="{{ item.getClientURL() }}">
+    <div ng-show="item.balancing" class="icon type balancer"></div>
+    <span class="name">{{item.name}}</span>
+</a>

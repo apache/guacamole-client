@@ -145,7 +145,7 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
                 });
 
             // If the item is a connection group, generate a connection group identifier
-            if (this.type === GroupListItem.Type.CONNECTION_GROUP)
+            if (this.type === GroupListItem.Type.CONNECTION_GROUP && this.balancing)
                 return ClientIdentifier.toString({
                     dataSource : this.dataSource,
                     type       : ClientIdentifier.Types.CONNECTION_GROUP,
@@ -153,6 +153,27 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
                 });
 
             // Otherwise, no such identifier can exist
+            return null;
+
+        };
+
+        /**
+         * Returns the relative URL of the client page that connects to the
+         * connection or connection group represented by this GroupListItem.
+         *
+         * @returns {String}
+         *     The relative URL of the client page that connects to the
+         *     connection or connection group represented by this GroupListItem,
+         *     or null if this GroupListItem cannot be connected to.
+         */
+        this.getClientURL = template.getClientURL || function getClientURL() {
+
+            // There is a client page for this item only if it has an
+            // associated client identifier
+            var identifier = this.getClientIdentifier();
+            if (identifier)
+                return '#/client/' + encodeURIComponent(identifier);
+
             return null;
 
         };

@@ -171,7 +171,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
         ObjectPermissionSet permissionSet = getEffectivePermissionSet(user);
         
         // Return whether permission is granted
-        return user.getUser().isAdministrator()
+        return user.isPrivileged()
             || permissionSet.hasPermission(type, identifier);
 
     }
@@ -248,7 +248,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
             ExternalType object, ModelType model) throws GuacamoleException {
 
         // Verify permission to create objects
-        if (!user.getUser().isAdministrator() && !hasCreatePermission(user))
+        if (!user.isPrivileged() && !hasCreatePermission(user))
             throw new GuacamoleSecurityException("Permission denied.");
 
     }
@@ -395,8 +395,8 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
         Collection<ModelType> objects;
 
-        // Bypass permission checks if the user is a system admin
-        if (user.getUser().isAdministrator())
+        // Bypass permission checks if the user is privileged
+        if (user.isPrivileged())
             objects = getObjectMapper().select(identifiers);
 
         // Otherwise only return explicitly readable identifiers
@@ -410,9 +410,9 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
     }
 
     /**
-     * Returns a collection of permissions that should be granted due to the
-     * creation of the given object. These permissions need not be granted
-     * solely to the user creating the object.
+     * Returns an immutable collection of permissions that should be granted due
+     * to the creation of the given object. These permissions need not be
+     * granted solely to the user creating the object.
      * 
      * @param user
      *     The user creating the object.
@@ -427,10 +427,16 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
     protected Collection<ObjectPermissionModel> getImplicitPermissions(ModeledAuthenticatedUser user,
             ModelType model) {
         
+        // Check to see if the user granting permissions is a skeleton user,
+        // thus lacking database backing.
+        if (user.getUser().isSkeleton())
+            return Collections.emptyList();
+        
         // Build list of implicit permissions
         Collection<ObjectPermissionModel> implicitPermissions =
-                new ArrayList<ObjectPermissionModel>(IMPLICIT_OBJECT_PERMISSIONS.length);
+                new ArrayList<>(IMPLICIT_OBJECT_PERMISSIONS.length);
 
+        
         UserModel userModel = user.getUser().getModel();
         for (ObjectPermission.Type permission : IMPLICIT_OBJECT_PERMISSIONS) {
 
@@ -445,7 +451,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
         }
         
-        return implicitPermissions;
+        return Collections.unmodifiableCollection(implicitPermissions);
 
     }
 
@@ -464,7 +470,9 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
         object.setIdentifier(model.getIdentifier());
 
         // Add implicit permissions
-        getPermissionMapper().insert(getImplicitPermissions(user, model));
+        Collection<ObjectPermissionModel> implicitPermissions = getImplicitPermissions(user, model);
+        if (!implicitPermissions.isEmpty())
+            getPermissionMapper().insert(implicitPermissions);
 
         // Add any arbitrary attributes
         if (model.hasArbitraryAttributes())
@@ -507,8 +515,8 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
     public Set<String> getIdentifiers(ModeledAuthenticatedUser user)
         throws GuacamoleException {
 
-        // Bypass permission checks if the user is a system admin
-        if (user.getUser().isAdministrator())
+        // Bypass permission checks if the user is privileged
+        if (user.isPrivileged())
             return getObjectMapper().selectIdentifiers();
 
         // Otherwise only return explicitly readable identifiers
