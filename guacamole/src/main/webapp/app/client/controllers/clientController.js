@@ -678,8 +678,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Deal with substitute key presses
         if (substituteKeysPressed[keysym]) {
             event.preventDefault();
-            delete substituteKeysPressed[keysym];
             $scope.$broadcast('guacSyntheticKeyup', substituteKeysPressed[keysym]);
+            delete substituteKeysPressed[keysym];
         }
 
         // Mark key as released
