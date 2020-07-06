@@ -382,6 +382,13 @@
 
     },
 
+    "PROTOCOL_COMMON" : {
+        "SECTION_HEADER_AUTORECONNECT"              : "Auto-Reconnect behavior",
+        "FIELD_HEADER_AUTORECONNECT_DISABLE"        : "Disable:",
+        "FIELD_HEADER_AUTORECONNECT_MAXRETRIES"     : "Maximum number of cycles:",
+        "FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS"   : "Wait interval (Seconds):"
+    },
+
     "PROTOCOL_KUBERNETES" : {
 
         "FIELD_HEADER_BACKSPACE"       : "Backspace key sends:",
@@ -526,6 +533,9 @@
         "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC address of the remote host:",
         "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
         "FIELD_HEADER_WOL_WAIT_TIME"      : "Host boot wait time:",
+        "FIELD_HEADER_AUTORECONNECT_DISABLE"        : @:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_DISABLE,
+        "FIELD_HEADER_AUTORECONNECT_MAXRETRIES"     : @:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_MAXRETRIES,
+        "FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS"   : @:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS",
         
 
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Low color (16-bit)",
@@ -579,7 +589,8 @@
         "SECTION_HEADER_RECORDING"          : "Screen Recording",
         "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
         "SECTION_HEADER_SFTP"               : "SFTP",
-        "SECTION_HEADER_WOL"                : "Wake-on-LAN (WoL)"
+        "SECTION_HEADER_WOL"                : "Wake-on-LAN (WoL)",
+        "SECTION_HEADER_AUTORECONNECT"      : @:PROTOCOL_COMMON.SECTION_HEADER_AUTORECONNECT
 
     },
 
@@ -622,6 +633,9 @@
         "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC address of the remote host:",
         "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
         "FIELD_HEADER_WOL_WAIT_TIME"      : "Host boot wait time:",
+        "FIELD_HEADER_AUTORECONNECT_DISABLE"        : @:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_DISABLE,
+        "FIELD_HEADER_AUTORECONNECT_MAXRETRIES"     : @:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_MAXRETRIES,
+        "FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS"   : @:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS",
 
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
         "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
@@ -668,7 +682,8 @@
         "SECTION_HEADER_SESSION"        : "Session / Environment",
         "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)",
         "SECTION_HEADER_SFTP"           : "SFTP",
-        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)",
+        "SECTION_HEADER_AUTORECONNECT"      : @:PROTOCOL_COMMON.SECTION_HEADER_AUTORECONNECT
 
     },
 
@@ -704,6 +719,9 @@
         "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC address of the remote host:",
         "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
         "FIELD_HEADER_WOL_WAIT_TIME"      : "Host boot wait time:",
+        "FIELD_HEADER_AUTORECONNECT_DISABLE"        : @:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_DISABLE,
+        "FIELD_HEADER_AUTORECONNECT_MAXRETRIES"     : @:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_MAXRETRIES,
+        "FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS"   : @:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS",
 
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
         "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
@@ -748,7 +766,8 @@
         "SECTION_HEADER_RECORDING"      : "Screen Recording",
         "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)",
         "SECTION_HEADER_NETWORK"        : "Network",
-        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)",
+        "SECTION_HEADER_AUTORECONNECT"      : @:PROTOCOL_COMMON.SECTION_HEADER_AUTORECONNECT
 
     },
 
@@ -792,6 +811,9 @@
         "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC address of the remote host:",
         "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
         "FIELD_HEADER_WOL_WAIT_TIME"      : "Host boot wait time:",
+        "FIELD_HEADER_AUTORECONNECT_DISABLE"        : @:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_DISABLE,
+        "FIELD_HEADER_AUTORECONNECT_MAXRETRIES"     : @:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_MAXRETRIES,
+        "FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS"   : @:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS",
 
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Low color (16-bit)",
@@ -819,7 +841,8 @@
         "SECTION_HEADER_RECORDING"      : "Screen Recording",
         "SECTION_HEADER_REPEATER"       : "VNC Repeater",
         "SECTION_HEADER_SFTP"           : "SFTP",
-        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)",
+        "SECTION_HEADER_AUTORECONNECT"      : @:PROTOCOL_COMMON.SECTION_HEADER_AUTORECONNECT
 
     },
 
