@@ -159,3 +159,12 @@ if [ -f extensions/guacamole-auth-duo/target/*.tar.gz ]; then
         --strip-components=1                               \
         "*.jar"
 fi
+
+#
+# Copy header auth extension if it was built
+#
+
+if [ -f extensions/guacamole-auth-header/target/guacamole-auth-header*.jar ]; then
+    mkdir -p "$DESTINATION/header"
+    cp extensions/guacamole-auth-header/target/guacamole-auth-header*.jar "$DESTINATION/header"
+fi
