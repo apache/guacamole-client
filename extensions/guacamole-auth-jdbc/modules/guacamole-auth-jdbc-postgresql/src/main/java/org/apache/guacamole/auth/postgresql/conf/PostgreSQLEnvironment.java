@@ -49,17 +49,18 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     private static final int DEFAULT_PORT = 5432;
 
     /**
-     * The default defaultStatementTimeout (in seconds),
-     * if POSTGRESQL_DEFAULT_STATEMENT_TIMEOUT is not specified.
-     * Default to 0 (no timeout, property won't be set)
-     * https://mybatis.org/mybatis-3/configuration.html
+     * The default number of seconds the driver will wait for a response from
+     * the database. A value of 0 (the default) means the timeout is disabled.
      */
-    private static final int DEFAULT_DEFAULT_STATEMENT_TIMEOUT = 0;
+    private static final int DEFAULT_STATEMENT_TIMEOUT = 0;
 
     /**
-     * The default socketTimeout (in seconds), if POSTGRESQL_SOCKET_TIMEOUT is not specified.
-     * Default to 0 (no timeout)
-     * https://jdbc.postgresql.org/documentation/head/connect.html
+     * The default timeout (in seconds) used for socket read operations.
+     * If reading from the server takes longer than this value, the
+     * connection is closed. This can be used to handle network problems
+     * such as a dropped connection to the database. Similar to 
+     * DEFAULT_STATEMENT_TIMEOUT, it will also abort queries that take too 
+     * long. The value 0 (the default) means the timeout is disabled.
      */
     private static final int DEFAULT_SOCKET_TIMEOUT = 0;
 
@@ -279,7 +280,7 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     public int getPostgreSQLDefaultStatementTimeout() throws GuacamoleException {
         return getProperty(
             PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_STATEMENT_TIMEOUT,
-            DEFAULT_DEFAULT_STATEMENT_TIMEOUT
+            DEFAULT_STATEMENT_TIMEOUT
         );
     }
     

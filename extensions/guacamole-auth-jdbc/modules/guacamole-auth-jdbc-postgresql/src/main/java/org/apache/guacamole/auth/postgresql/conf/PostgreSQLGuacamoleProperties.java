@@ -95,7 +95,7 @@ public class PostgreSQLGuacamoleProperties {
     };
 
     /**
-     * Sets the number of seconds the driver will wait for
+     * The number of seconds the driver will wait for
      * a response from the database.
      */
     public static final IntegerGuacamoleProperty
@@ -107,7 +107,7 @@ public class PostgreSQLGuacamoleProperties {
     };
 
     /**
-     * Sets the number of seconds the driver will wait in a read() call
+     * The number of seconds the driver will wait in a read() call
      * on the TCP connection to the database.
      */
     public static final IntegerGuacamoleProperty

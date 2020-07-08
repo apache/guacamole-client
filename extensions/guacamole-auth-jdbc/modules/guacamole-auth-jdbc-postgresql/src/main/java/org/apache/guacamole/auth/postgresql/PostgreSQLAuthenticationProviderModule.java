@@ -72,7 +72,7 @@ public class PostgreSQLAuthenticationProviderModule implements Module {
 
         // Only set if > 0. Underlying backend does not take 0 as not-set.
         int defaultStatementTimeout = environment.getPostgreSQLDefaultStatementTimeout();
-        if(defaultStatementTimeout > 0) {
+        if (defaultStatementTimeout > 0) {
             myBatisProperties.setProperty("mybatis.configuration.defaultStatementTimeout", String.valueOf(defaultStatementTimeout));
         }
 
