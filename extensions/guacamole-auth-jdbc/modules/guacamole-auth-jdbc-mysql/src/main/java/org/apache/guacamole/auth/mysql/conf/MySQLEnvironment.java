@@ -369,7 +369,7 @@ public class MySQLEnvironment extends JDBCEnvironment {
      *     If guacamole.properties cannot be parsed.
      */
     public File getMySQLSSLClientStore() throws GuacamoleException {
-        return getProperty(MySQLGuacamoleProperties.MYSQL_SSL_TRUST_STORE);
+        return getProperty(MySQLGuacamoleProperties.MYSQL_SSL_CLIENT_STORE);
     }
     
     /**
@@ -384,7 +384,7 @@ public class MySQLEnvironment extends JDBCEnvironment {
      *     If guacamole.properties cannot be parsed.
      */
     public String getMYSQLSSLClientPassword() throws GuacamoleException {
-        return getProperty(MySQLGuacamoleProperties.MYSQL_SSL_TRUST_PASSWORD);
+        return getProperty(MySQLGuacamoleProperties.MYSQL_SSL_CLIENT_PASSWORD);
     }
     
     @Override
