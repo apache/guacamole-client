@@ -50,17 +50,14 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
 
     /**
      * The default number of seconds the driver will wait for a response from
-     * the database. A value of 0 (the default) means the timeout is disabled.
+     * the database, before aborting the query.
+     * A value of 0 (the default) means the timeout is disabled.
      */
     private static final int DEFAULT_STATEMENT_TIMEOUT = 0;
 
     /**
-     * The default timeout (in seconds) used for socket read operations.
-     * If reading from the server takes longer than this value, the
-     * connection is closed. This can be used to handle network problems
-     * such as a dropped connection to the database. Similar to 
-     * DEFAULT_STATEMENT_TIMEOUT, it will also abort queries that take too 
-     * long. The value 0 (the default) means the timeout is disabled.
+     * The default number of seconds to wait for socket read operations.
+     * A value of 0 (the default) means the timeout is disabled.
      */
     private static final int DEFAULT_SOCKET_TIMEOUT = 0;
 
@@ -268,7 +265,7 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     
     /**
      * Returns the defaultStatementTimeout set for PostgreSQL connections.
-     * If unspecified, this will be the default 0,
+     * If unspecified, this will default to 0,
      * and should not be passed through to the backend.
      * 
      * @return
@@ -286,7 +283,7 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     
     /**
      * Returns the socketTimeout property to set on PostgreSQL connections.
-     * If unspecified, this will be the default to 0 (no timeout)
+     * If unspecified, this will default to 0 (no timeout)
      * 
      * @return
      *     The socketTimeout to use when waiting on read operations (in seconds)

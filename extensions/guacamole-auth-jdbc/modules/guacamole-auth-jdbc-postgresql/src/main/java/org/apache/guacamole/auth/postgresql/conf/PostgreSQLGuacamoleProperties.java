@@ -95,11 +95,12 @@ public class PostgreSQLGuacamoleProperties {
     };
 
     /**
-     * The number of seconds the driver will wait for
-     * a response from the database.
+     * The number of seconds the driver will wait for a response from
+     * the database, before aborting the query.
+     * A value of 0 (the default) means the timeout is disabled.
      */
     public static final IntegerGuacamoleProperty
-            POSTGRESQL_DEFAULT_STATEMENT_TIMEOUT = new IntegerGuacamoleProperty(){
+            POSTGRESQL_DEFAULT_STATEMENT_TIMEOUT = new IntegerGuacamoleProperty() {
 
         @Override
         public String getName() { return "postgresql-default-statement-timeout"; }
@@ -107,11 +108,16 @@ public class PostgreSQLGuacamoleProperties {
     };
 
     /**
-     * The number of seconds the driver will wait in a read() call
-     * on the TCP connection to the database.
+     * The number of seconds to wait for socket read operations.
+     * If reading from the server takes longer than this value, the
+     * connection will be closed. This can be used to handle network problems
+     * such as a dropped connection to the database. Similar to 
+     * postgresql-default-statement-timeout, it will have the effect of
+     * aborting queries that take too long.
+     * A value of 0 (the default) means the timeout is disabled.
      */
     public static final IntegerGuacamoleProperty
-            POSTGRESQL_SOCKET_TIMEOUT = new IntegerGuacamoleProperty(){
+            POSTGRESQL_SOCKET_TIMEOUT = new IntegerGuacamoleProperty() {
 
         @Override
         public String getName() { return "postgresql-socket-timeout"; }

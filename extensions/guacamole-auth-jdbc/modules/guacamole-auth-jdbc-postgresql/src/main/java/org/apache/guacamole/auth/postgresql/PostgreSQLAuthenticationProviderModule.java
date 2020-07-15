@@ -73,7 +73,10 @@ public class PostgreSQLAuthenticationProviderModule implements Module {
         // Only set if > 0. Underlying backend does not take 0 as not-set.
         int defaultStatementTimeout = environment.getPostgreSQLDefaultStatementTimeout();
         if (defaultStatementTimeout > 0) {
-            myBatisProperties.setProperty("mybatis.configuration.defaultStatementTimeout", String.valueOf(defaultStatementTimeout));
+            myBatisProperties.setProperty(
+                "mybatis.configuration.defaultStatementTimeout",
+                String.valueOf(defaultStatementTimeout)
+            );
         }
 
         // Use UTF-8 in database
@@ -117,7 +120,10 @@ public class PostgreSQLAuthenticationProviderModule implements Module {
         }
 
         // Handle case where TCP connection to database is silently dropped
-        driverProperties.setProperty("socketTimeout", String.valueOf(environment.getPostgreSQLSocketTimeout()));
+        driverProperties.setProperty(
+            "socketTimeout",
+            String.valueOf(environment.getPostgreSQLSocketTimeout())
+        );
 
     }
 
