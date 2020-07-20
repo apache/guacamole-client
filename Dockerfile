@@ -25,7 +25,7 @@
 # such as `--build-arg TOMCAT_JRE=jre8-alpine`
 #
 ARG TOMCAT_VERSION=8.5
-ARG TOMCAT_JRE=jre8
+ARG TOMCAT_JRE=jdk8
 
 # Use official maven image for the build
 FROM maven:3-jdk-8 AS builder
