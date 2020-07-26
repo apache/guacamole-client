@@ -18,8 +18,8 @@
  */
 
 package org.apache.guacamole.auth.ldap.group;
-
 import com.google.inject.Inject;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -192,7 +192,7 @@ public class UserGroupService {
                 ldapConnection,
                 userDN,
                 confService.getUserSearchFilter(),
-                0);
+                0, null);
             // ... there can surely only be one
             if (userEntries.size() != 1)
                 logger.warn("user DN \"{}\" does not return unique value "
@@ -214,13 +214,21 @@ public class UserGroupService {
             }
         }
 
+        // Gather all attributes relevant for a group
+        ArrayList<String> groupAttributes = new ArrayList<String>();
+        groupAttributes.add(confService.getMemberAttribute());
+        confService.getGroupNameAttributes().forEach(
+                       attribute -> groupAttributes.add(attribute)
+                       );
+
         // Get all groups the user is a member of starting at the groupBaseDN,
         // excluding guacConfigGroups
+
         return queryService.search(
             ldapConnection,
             groupBaseDN,
             getGroupSearchFilter(),
-            Collections.singleton(confService.getMemberAttribute()),
+            groupAttributes,
             userIDorDN
         );
 
