@@ -166,7 +166,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
 
         // If authentication succeeds, handle received auth data
         .then(function authenticationSuccessful(data) {
-
+			data.username = AuthenticationResult.ANONYMOUS_USERNAME;
             var currentToken = service.getCurrentToken();
 
             // If a new token was received, ensure the old token is invalidated,
@@ -175,7 +175,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
 
                 // If an old token existed, request that the token be revoked
                 if (currentToken) {
-                    service.logout().catch(angular.noop)
+                    //service.logout().catch(angular.noop)
                 }
 
                 // Notify of login and new token
