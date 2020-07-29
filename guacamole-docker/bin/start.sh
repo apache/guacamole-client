@@ -438,6 +438,7 @@ END
     set_optional_property "ldap-user-search-filter" "$LDAP_USER_SEARCH_FILTER"
     set_optional_property "ldap-config-base-dn"     "$LDAP_CONFIG_BASE_DN"
     set_optional_property "ldap-group-base-dn"      "$LDAP_GROUP_BASE_DN"
+    set_optional_property "ldap-member-attribute-type"   "$LDAP_MEMBER_ATTRIBUTE_TYPE"
 
     set_optional_property           \
         "ldap-group-name-attribute" \
