@@ -49,6 +49,19 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     private static final int DEFAULT_PORT = 5432;
 
     /**
+     * The default number of seconds the driver will wait for a response from
+     * the database, before aborting the query.
+     * A value of 0 (the default) means the timeout is disabled.
+     */
+    private static final int DEFAULT_STATEMENT_TIMEOUT = 0;
+
+    /**
+     * The default number of seconds to wait for socket read operations.
+     * A value of 0 (the default) means the timeout is disabled.
+     */
+    private static final int DEFAULT_SOCKET_TIMEOUT = 0;
+
+    /**
      * Whether a database user account is required by default for authentication
      * to succeed.
      */
@@ -248,6 +261,41 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
      */
     public String getPostgreSQLPassword() throws GuacamoleException {
         return getRequiredProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_PASSWORD);
+    }
+    
+    /**
+     * Returns the defaultStatementTimeout set for PostgreSQL connections.
+     * If unspecified, this will default to 0,
+     * and should not be passed through to the backend.
+     * 
+     * @return
+     *     The statement timeout (in seconds)
+     *
+     * @throws GuacamoleException 
+     *     If an error occurs while retrieving the property value.
+     */
+    public int getPostgreSQLDefaultStatementTimeout() throws GuacamoleException {
+        return getProperty(
+            PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_STATEMENT_TIMEOUT,
+            DEFAULT_STATEMENT_TIMEOUT
+        );
+    }
+    
+    /**
+     * Returns the socketTimeout property to set on PostgreSQL connections.
+     * If unspecified, this will default to 0 (no timeout)
+     * 
+     * @return
+     *     The socketTimeout to use when waiting on read operations (in seconds)
+     *
+     * @throws GuacamoleException 
+     *     If an error occurs while retrieving the property value.
+     */
+    public int getPostgreSQLSocketTimeout() throws GuacamoleException {
+        return getProperty(
+            PostgreSQLGuacamoleProperties.POSTGRESQL_SOCKET_TIMEOUT,
+            DEFAULT_SOCKET_TIMEOUT
+        );
     }
 
     @Override

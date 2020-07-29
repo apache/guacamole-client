@@ -354,9 +354,17 @@ END
         "postgresql-default-max-group-connections-per-user" \
         "$POSTGRES_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER"
 
+    set_optional_property                      \
+        "postgresql-default-statement-timeout" \
+        "$POSTGRES_DEFAULT_STATEMENT_TIMEOUT"
+
     set_optional_property          \
         "postgresql-user-required" \
         "$POSTGRES_USER_REQUIRED"
+
+    set_optional_property           \
+        "postgresql-socket-timeout" \
+        "$POSTGRES_SOCKET_TIMEOUT"
 
     set_optional_property      \
         "postgresql-ssl-mode"  \

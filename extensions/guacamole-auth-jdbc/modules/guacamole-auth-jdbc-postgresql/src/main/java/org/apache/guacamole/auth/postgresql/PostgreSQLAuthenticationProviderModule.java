@@ -70,6 +70,15 @@ public class PostgreSQLAuthenticationProviderModule implements Module {
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
 
+        // Only set if > 0. Underlying backend does not take 0 as not-set.
+        int defaultStatementTimeout = environment.getPostgreSQLDefaultStatementTimeout();
+        if (defaultStatementTimeout > 0) {
+            myBatisProperties.setProperty(
+                "mybatis.configuration.defaultStatementTimeout",
+                String.valueOf(defaultStatementTimeout)
+            );
+        }
+
         // Use UTF-8 in database
         driverProperties.setProperty("characterEncoding", "UTF-8");
         
@@ -109,6 +118,12 @@ public class PostgreSQLAuthenticationProviderModule implements Module {
                 driverProperties.setProperty("sslpassword", sslClientKeyPassword);
             
         }
+
+        // Handle case where TCP connection to database is silently dropped
+        driverProperties.setProperty(
+            "socketTimeout",
+            String.valueOf(environment.getPostgreSQLSocketTimeout())
+        );
 
     }
 
