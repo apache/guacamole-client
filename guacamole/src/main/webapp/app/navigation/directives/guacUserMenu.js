@@ -191,6 +191,10 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
              */
             $scope.actions = [ LOGOUT_ACTION ];
 
+            // Check if Internet Explorer UserAgent
+            var ua = window.navigator.userAgent;
+            var isIE = (ua.indexOf('MSIE ') > -1) || (ua.indexOf('Trident/') > -1);
+
             // Initialize fullscreen functions
             var docElem = document.documentElement;
             var requestFullscreen = docElem.requestFullscreen
@@ -202,7 +206,7 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
                 || document.webkitExitFullscreen
                 || document.msExitFullscreen;
 
-            if (!!requestFullscreen && !!exitFullscreen) {
+            if (!!requestFullscreen && !!exitFullscreen && !isIE) {
                 // Bind browser-specific fullscreen functions
                 if (!docElem.requestFullscreen) {
                     docElem.requestFullscreen = (requestFullscreen).bind(docElem);
