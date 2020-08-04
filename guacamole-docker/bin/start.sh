@@ -421,35 +421,26 @@ END
     fi
 
     # Update config file
-    set_property          "ldap-hostname"           "$LDAP_HOSTNAME"
-    set_optional_property "ldap-port"               "$LDAP_PORT"
-    set_optional_property "ldap-encryption-method"  "$LDAP_ENCRYPTION_METHOD"
-    set_optional_property "ldap-max-search-results" "$LDAP_MAX_SEARCH_RESULTS"
-    set_optional_property "ldap-search-bind-dn"     "$LDAP_SEARCH_BIND_DN"
-    set_optional_property "ldap-user-attributes"    "$LDAP_USER_ATTRIBUTES"
+    set_property          "ldap-hostname"                   "$LDAP_HOSTNAME"
+    set_property          "ldap-user-base-dn"               "$LDAP_USER_BASE_DN"
 
-    set_optional_property           \
-        "ldap-search-bind-password" \
-        "$LDAP_SEARCH_BIND_PASSWORD"
-
-    set_property          "ldap-user-base-dn"       "$LDAP_USER_BASE_DN"
-    set_optional_property "ldap-username-attribute" "$LDAP_USERNAME_ATTRIBUTE"
-    set_optional_property "ldap-member-attribute"   "$LDAP_MEMBER_ATTRIBUTE"
-    set_optional_property "ldap-user-search-filter" "$LDAP_USER_SEARCH_FILTER"
-    set_optional_property "ldap-config-base-dn"     "$LDAP_CONFIG_BASE_DN"
-    set_optional_property "ldap-group-base-dn"      "$LDAP_GROUP_BASE_DN"
-
-    set_optional_property           \
-        "ldap-group-name-attribute" \
-        "$LDAP_GROUP_NAME_ATTRIBUTE"
-
-    set_optional_property           \
-        "ldap-dereference-aliases"  \
-        "$LDAP_DEREFERENCE_ALIASES"
-
-    set_optional_property "ldap-follow-referrals"   "$LDAP_FOLLOW_REFERRALS"
-    set_optional_property "ldap-max-referral-hops"  "$LDAP_MAX_REFERRAL_HOPS"
-    set_optional_property "ldap-operation-timeout"  "$LDAP_OPERATION_TIMEOUT"
+    set_optional_property "ldap-port"                       "$LDAP_PORT"
+    set_optional_property "ldap-encryption-method"          "$LDAP_ENCRYPTION_METHOD"
+    set_optional_property "ldap-max-search-results"         "$LDAP_MAX_SEARCH_RESULTS"
+    set_optional_property "ldap-search-bind-dn"             "$LDAP_SEARCH_BIND_DN"
+    set_optional_property "ldap-user-attributes"            "$LDAP_USER_ATTRIBUTES"
+    set_optional_property "ldap-search-bind-password"       "$LDAP_SEARCH_BIND_PASSWORD"
+    set_optional_property "ldap-username-attribute"         "$LDAP_USERNAME_ATTRIBUTE"
+    set_optional_property "ldap-member-attribute"           "$LDAP_MEMBER_ATTRIBUTE"
+    set_optional_property "ldap-user-search-filter"         "$LDAP_USER_SEARCH_FILTER"
+    set_optional_property "ldap-config-base-dn"             "$LDAP_CONFIG_BASE_DN"
+    set_optional_property "ldap-group-base-dn"              "$LDAP_GROUP_BASE_DN"
+    set_optional_property "ldap-member-attribute-type"      "$LDAP_MEMBER_ATTRIBUTE_TYPE"
+    set_optional_property "ldap-group-name-attribute"       "$LDAP_GROUP_NAME_ATTRIBUTE"
+    set_optional_property "ldap-dereference-aliases"        "$LDAP_DEREFERENCE_ALIASES"
+    set_optional_property "ldap-follow-referrals"           "$LDAP_FOLLOW_REFERRALS"
+    set_optional_property "ldap-max-referral-hops"          "$LDAP_MAX_REFERRAL_HOPS"
+    set_optional_property "ldap-operation-timeout"          "$LDAP_OPERATION_TIMEOUT"
 
     # Add required .jar files to GUACAMOLE_EXT
     ln -s /opt/guacamole/ldap/guacamole-auth-*.jar "$GUACAMOLE_EXT"
