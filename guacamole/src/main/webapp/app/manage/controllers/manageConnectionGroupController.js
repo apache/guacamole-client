@@ -242,7 +242,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
         $scope.managementPermissions = ManagementPermissions.fromPermissionSet(
                     values.permissions,
                     PermissionSet.SystemPermissionType.CREATE_CONNECTION,
-                    PermissionSet.hasConnectionPermission,
+                    PermissionSet.hasConnectionGroupPermission,
                     identifier);
 
     }, requestService.DIE);
