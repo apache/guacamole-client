@@ -42,6 +42,15 @@ public enum GuacamoleProtocolCapability {
     PROTOCOL_VERSION_DETECTION(GuacamoleProtocolVersion.VERSION_1_1_0),
     
     /**
+     * Support for the "required" instruction.  The "required" instruction
+     * allows the server to request additional information from the client
+     * during the course of a connection.  Support for this instruction was
+     * introduced in
+     * {@link GuacamoleProtocolVersion#VERSION_1_3_0}.
+     */
+    REQUIRED_INSTRUCTION(GuacamoleProtocolVersion.VERSION_1_3_0),
+    
+    /**
      * Support for the "timezone" handshake instruction. The "timezone"
      * instruction allows the client to request that the server forward their
      * local timezone for use within the remote desktop session. Support for
