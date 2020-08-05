@@ -95,7 +95,7 @@ public class MySQLAuthenticationProviderModule implements Module {
         File trustStore = environment.getMySQLSSLTrustStore();
         if (trustStore != null)
             driverProperties.setProperty("trustCertificateKeyStoreUrl",
-                    trustStore.getAbsolutePath());
+                    trustStore.toURI().toString());
         
         String trustPassword = environment.getMySQLSSLTrustPassword();
         if (trustPassword != null)
@@ -105,7 +105,7 @@ public class MySQLAuthenticationProviderModule implements Module {
         File clientStore = environment.getMySQLSSLClientStore();
         if (clientStore != null)
             driverProperties.setProperty("clientCertificateKeyStoreUrl",
-                    clientStore.getAbsolutePath());
+                    clientStore.toURI().toString());
         
         String clientPassword = environment.getMYSQLSSLClientPassword();
         if (clientPassword != null)
