@@ -27,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
 import org.apache.guacamole.rest.auth.AuthenticationService;
@@ -91,14 +92,25 @@ public class RESTExceptionMapper implements ExceptionMapper<Throwable> {
         }
         
         // Translate GuacamoleException subclasses to HTTP error codes 
-        if (t instanceof GuacamoleException)
+        if (t instanceof GuacamoleException) {
+
+            // Always log the human-readable details of GuacacamoleExceptions
+            // for the benefit of the administrator
+            if (t instanceof GuacamoleClientException)
+                logger.debug("Client request rejected: {}", t.getMessage());
+            else {
+                logger.error("Request could not be processed: {}", t.getMessage());
+                logger.debug("Processing of request aborted by extension.", t);
+            }
+
             return Response
                     .status(((GuacamoleException) t).getHttpStatusCode())
                     .entity(new APIError((GuacamoleException) t))
                     .type(MediaType.APPLICATION_JSON)
                     .build();
+        }
         
-        // Rethrow unchecked exceptions such that they are properly wrapped            
+        // Wrap unchecked exceptions
         String message = t.getMessage();
         if (message != null)
             logger.error("Unexpected internal error: {}", message);
