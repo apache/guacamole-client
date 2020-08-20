@@ -72,6 +72,23 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         var requestService        = $injector.get('requestService');
 
         /**
+         * The initial value for all login fields. Note that this value must
+         * not be null. If null, empty fields may not be submitted back to the
+         * server at all, causing the request to misrepresent true login state.
+         *
+         * For example, if a user receives an insufficient credentials error
+         * due to their password expiring, failing to provide that new password
+         * should result in the user submitting their username, original
+         * password, and empty new password. If only the username and original
+         * password are sent, the invalid password reset request will be
+         * indistinguishable from a normal login attempt.
+         *
+         * @constant
+         * @type String
+         */
+        var DEFAULT_FIELD_VALUE = '';
+
+        /**
          * A description of the error that occurred during login, if any.
          *
          * @type TranslatableMessage
@@ -148,7 +165,7 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
             // Set default values for all unset fields
             angular.forEach($scope.remainingFields, function setDefault(field) {
                 if (!$scope.enteredValues[field.name])
-                    $scope.enteredValues[field.name] = '';
+                    $scope.enteredValues[field.name] = DEFAULT_FIELD_VALUE;
             });
 
             $scope.relevantField = getRelevantField();
@@ -195,13 +212,11 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
                     else
                         $scope.loginError = error.translatableMessage;
 
-                    // Clear all remaining fields that are not username fields
+                    // Reset all remaining fields to default values, but
+                    // preserve any usernames
                     angular.forEach($scope.remainingFields, function clearEnteredValueIfPassword(field) {
-
-                        // If field is not username field, delete it.
                         if (field.type !== Field.Type.USERNAME && field.name in $scope.enteredValues)
-                            delete $scope.enteredValues[field.name];
-
+                            $scope.enteredValues[field.name] = DEFAULT_FIELD_VALUE;
                     });
                 }
 
