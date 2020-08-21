@@ -260,7 +260,19 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
             ModeledUser object, UserModel model) throws GuacamoleException {
 
         super.beforeUpdate(user, object, model);
-        
+
+        // Refuse to update if the user is a skeleton and does not actually
+        // exist in the database (this will happen if the user is authenticated
+        // via a non-database authentication provider)
+        if (object.isSkeleton()) {
+            logger.info("Data cannot be stored for user \"{}\" as they do not "
+                    + "have an account within the database. If this is "
+                    + "unexpected, consider allowing automatic creation of "
+                    + "user accounts.", object.getIdentifier());
+            throw new GuacamoleUnsupportedException("User does not exist "
+                    + "within the database and cannot be updated.");
+        }
+
         // Username must not be blank
         if (model.getIdentifier() == null || model.getIdentifier().trim().isEmpty())
             throw new GuacamoleClientException("The username must not be blank.");

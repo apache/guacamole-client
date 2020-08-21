@@ -133,7 +133,8 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
             
             // If auto account creation is enabled, add user to DB.
             if (environment.autoCreateAbsentAccounts()) {
-                userService.createObject(new PrivilegedModeledAuthenticatedUser(user.getCurrentUser()), user);
+                ModeledUser createdUser = userService.createObject(new PrivilegedModeledAuthenticatedUser(user.getCurrentUser()), user);
+                user.setModel(createdUser.getModel());
             }
             
         }
