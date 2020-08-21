@@ -623,20 +623,25 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     public Collection<ActiveConnectionRecord> getActiveConnections(ModeledAuthenticatedUser user)
         throws GuacamoleException {
 
-        // Simply return empty list if there are no active tunnels
-        Collection<ActiveConnectionRecord> records = activeTunnels.values();
-        if (records.isEmpty())
-            return Collections.<ActiveConnectionRecord>emptyList();
-
         // Privileged users (such as system administrators) can view all
         // connections; no need to filter
+        Collection<ActiveConnectionRecord> records = activeTunnels.values();
         if (user.isPrivileged())
             return records;
 
         // Build set of all connection identifiers associated with active tunnels
-        Set<String> identifiers = new HashSet<String>(records.size());
+        Set<String> identifiers = new HashSet<>(records.size());
         for (ActiveConnectionRecord record : records)
             identifiers.add(record.getConnection().getIdentifier());
+
+        // Simply return empty list if there are no active tunnels (note that
+        // this check cannot be performed prior to building the set of
+        // identifiers, as activeTunnels may be non-empty at the beginning of
+        // the call to getActiveConnections() yet become empty before the
+        // set of identifiers is built, resulting in an error within
+        // selectReadable()
+        if (identifiers.isEmpty())
+            return Collections.<ActiveConnectionRecord>emptyList();
 
         // Produce collection of readable connection identifiers
         Collection<ConnectionModel> connections =
@@ -649,7 +654,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             identifiers.add(connection.getIdentifier());
 
         // Produce readable subset of records
-        Collection<ActiveConnectionRecord> visibleRecords = new ArrayList<ActiveConnectionRecord>(records.size());
+        Collection<ActiveConnectionRecord> visibleRecords = new ArrayList<>(records.size());
         for (ActiveConnectionRecord record : records) {
             if (identifiers.contains(record.getConnection().getIdentifier()))
                 visibleRecords.add(record);
