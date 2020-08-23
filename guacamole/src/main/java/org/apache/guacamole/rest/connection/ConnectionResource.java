@@ -156,7 +156,7 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
             throws GuacamoleException {
 
         // Retrieve the requested connection's history
-        List<APIConnectionRecord> apiRecords = new ArrayList<APIConnectionRecord>();
+        List<APIConnectionRecord> apiRecords = new ArrayList<>();
         for (ConnectionRecord record : connection.getHistory())
             apiRecords.add(new APIConnectionRecord(record));
 
@@ -184,7 +184,7 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
 
         // Produce subset of all SharingProfiles, containing only those which
         // are associated with this connection
-        Directory<SharingProfile> sharingProfiles = new DirectoryView<SharingProfile>(
+        Directory<SharingProfile> sharingProfiles = new DirectoryView<>(
             userContext.getSharingProfileDirectory(),
             connection.getSharingProfileIdentifiers()
         );
