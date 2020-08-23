@@ -140,6 +140,7 @@ public class APIUserWrapper implements User {
         return null;
     }
 
+    @Deprecated
     @Override
     public List<? extends ActivityRecord> getHistory() throws GuacamoleException {
         return Collections.<ActivityRecord>emptyList();

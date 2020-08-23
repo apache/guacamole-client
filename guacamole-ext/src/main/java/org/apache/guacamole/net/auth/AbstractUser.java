@@ -93,6 +93,7 @@ public abstract class AbstractUser extends AbstractIdentifiable
      * <p>This implementation simply an immutable, empty list. Implementations
      * that wish to expose user login history should override this function.
      */
+    @Deprecated
     @Override
     public List<ActivityRecord> getHistory() throws GuacamoleException {
         return Collections.emptyList();

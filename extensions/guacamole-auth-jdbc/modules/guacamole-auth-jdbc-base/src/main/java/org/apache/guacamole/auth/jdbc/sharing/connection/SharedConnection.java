@@ -154,6 +154,7 @@ public class SharedConnection implements Connection {
         return null;
     }
 
+    @Deprecated
     @Override
     public List<? extends ConnectionRecord> getHistory()
             throws GuacamoleException {

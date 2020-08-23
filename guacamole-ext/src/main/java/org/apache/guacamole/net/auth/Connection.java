@@ -106,7 +106,10 @@ public interface Connection extends Identifiable, Connectable, Attributes {
      * @throws GuacamoleException If an error occurs while reading the history
      *                            of this connection, or if permission is
      *                            denied.
+     * 
+     * @deprecated Use {@link getConnectionHistory} instead.
      */
+    @Deprecated
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException;
 
     /**

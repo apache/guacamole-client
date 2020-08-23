@@ -93,6 +93,7 @@ public class DelegatingUser implements User {
         return user.getLastActive();
     }
 
+    @Deprecated
     @Override
     public List<? extends ActivityRecord> getHistory()
             throws GuacamoleException {

@@ -754,6 +754,7 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
         return getModel().getLastActive();
     }
 
+    @Deprecated
     @Override
     public List<ActivityRecord> getHistory() throws GuacamoleException {
         return userService.retrieveHistory(getCurrentUser(), this);

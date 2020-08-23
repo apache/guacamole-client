@@ -260,6 +260,7 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
         return getModel().getLastActive();
     }
 
+    @Deprecated
     @Override
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException {
         return connectionService.retrieveHistory(getCurrentUser(), this);

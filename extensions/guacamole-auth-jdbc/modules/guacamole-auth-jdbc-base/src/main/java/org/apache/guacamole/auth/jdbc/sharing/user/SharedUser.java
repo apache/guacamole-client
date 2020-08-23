@@ -101,6 +101,7 @@ public class SharedUser implements User {
 
     }
 
+    @Deprecated
     @Override
     public List<ActivityRecord> getHistory() throws GuacamoleException {
 

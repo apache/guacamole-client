@@ -285,6 +285,7 @@ public class SimpleConnection extends AbstractConnection {
         return null;
     }
 
+    @Deprecated
     @Override
     public List<ConnectionRecord> getHistory() throws GuacamoleException {
         return Collections.<ConnectionRecord>emptyList();

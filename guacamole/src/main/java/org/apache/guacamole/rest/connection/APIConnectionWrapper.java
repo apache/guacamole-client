@@ -140,6 +140,7 @@ public class APIConnectionWrapper implements Connection {
         return null;
     }
 
+    @Deprecated
     @Override
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException {
         return Collections.<ConnectionRecord>emptyList();
