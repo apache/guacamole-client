@@ -33,7 +33,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
-import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.User;
@@ -42,7 +41,7 @@ import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.credentials.GuacamoleCredentialsException;
 import org.apache.guacamole.rest.directory.DirectoryObjectResource;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
-import org.apache.guacamole.rest.history.APIActivityRecord;
+import org.apache.guacamole.rest.history.UserHistoryResource;
 import org.apache.guacamole.rest.identifier.RelatedObjectSetResource;
 import org.apache.guacamole.rest.permission.APIPermissionSet;
 import org.apache.guacamole.rest.permission.PermissionSetResource;
@@ -110,18 +109,11 @@ public class UserResource
      * @throws GuacamoleException
      *     If an error occurs while retrieving the user history.
      */
-    @GET
     @Path("history")
-    public List<APIActivityRecord> getUserHistory()
+    public UserHistoryResource getUserHistory()
             throws GuacamoleException {
 
-        // Retrieve the requested user's history
-        List<APIActivityRecord> apiRecords = new ArrayList<APIActivityRecord>();
-        for (ActivityRecord record : user.getHistory())
-            apiRecords.add(new APIActivityRecord(record));
-
-        // Return the converted history
-        return apiRecords;
+        return new UserHistoryResource(user.getUserHistory());
 
     }
 

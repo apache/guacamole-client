@@ -110,6 +110,24 @@ public interface Connection extends Identifiable, Connectable, Attributes {
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException;
 
     /**
+     * Returns an ActivityRecordSet containing ConnectionRecords that
+     * represent the usage history of this Connection, including any active
+     * users. ConnectionRecords in this list will be sorted in descending order
+     * of end time (active connections are first), and then in descending order
+     * of start time (newer connections are first).
+     * 
+     * @return
+     *     An ActivityRecordSet containing ConnectionRecords representing the
+     *     usage history of this Connection.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs retrieving history for this Connection, or if
+     *     permission to retrieve the history is denied.
+     */
+    public ActivityRecordSet<ConnectionRecord> getConnectionHistory()
+            throws GuacamoleException;
+    
+    /**
      * Returns identifiers of all readable sharing profiles that can be used to
      * join this connection when it is active. The level of access granted to a
      * joining user is dictated by the connection parameters associated with

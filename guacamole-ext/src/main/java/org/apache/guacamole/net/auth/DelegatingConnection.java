@@ -139,6 +139,12 @@ public class DelegatingConnection implements Connection {
             throws GuacamoleException {
         return connection.getHistory();
     }
+    
+    @Override
+    public ActivityRecordSet<ConnectionRecord> getConnectionHistory()
+            throws GuacamoleException {
+        return connection.getConnectionHistory();
+    }
 
     @Override
     public Set<String> getSharingProfileIdentifiers()

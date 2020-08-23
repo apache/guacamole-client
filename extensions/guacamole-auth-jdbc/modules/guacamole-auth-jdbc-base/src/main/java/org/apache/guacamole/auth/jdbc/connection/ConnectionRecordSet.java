@@ -27,6 +27,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
 import org.apache.guacamole.auth.jdbc.base.ModeledActivityRecordSet;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 
@@ -43,6 +44,27 @@ public class ConnectionRecordSet extends ModeledActivityRecordSet<ConnectionReco
     @Inject
     private ConnectionService connectionService;
     
+    /**
+     * The identifier of the connection to which this record set should be
+     * limited, if any.
+     */
+    private String identifier = null;
+    
+    /**
+     * Initializes this object, associating it with the current authenticated
+     * user and connection identifier.
+     *
+     * @param currentUser
+     *     The user that created or retrieved this object.
+     * 
+     * @param identifier
+     *     The connection identifier to which this record set should be limited.
+     */
+    protected void init(ModeledAuthenticatedUser currentUser, String identifier) {
+        super.init(currentUser);
+        this.identifier = identifier;
+    }
+    
     @Override
     protected Collection<ConnectionRecord> retrieveHistory(
             AuthenticatedUser user, Set<ActivityRecordSearchTerm> requiredContents,
@@ -50,7 +72,7 @@ public class ConnectionRecordSet extends ModeledActivityRecordSet<ConnectionReco
             throws GuacamoleException {
 
         // Retrieve history from database
-        return connectionService.retrieveHistory(getCurrentUser(),
+        return connectionService.retrieveHistory(identifier, getCurrentUser(),
                 requiredContents, sortPredicates, limit);
 
     }

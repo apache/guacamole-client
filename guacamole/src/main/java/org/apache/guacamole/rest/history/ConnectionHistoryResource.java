@@ -42,7 +42,7 @@ public class ConnectionHistoryResource extends ActivityRecordSetResource<Connect
     }
 
     @Override
-    protected APIConnectionRecord toExternalRecord(ConnectionRecord record) {
+    public APIConnectionRecord toExternalRecord(ConnectionRecord record) {
         return new APIConnectionRecord(record);
     }
 

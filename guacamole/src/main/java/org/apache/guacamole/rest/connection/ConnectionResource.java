@@ -22,8 +22,6 @@ package org.apache.guacamole.rest.connection;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -33,7 +31,6 @@ import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.net.auth.Connection;
-import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.rest.directory.DirectoryView;
@@ -43,12 +40,12 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
-import org.apache.guacamole.rest.history.APIConnectionRecord;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.rest.directory.DirectoryObjectResource;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.directory.DirectoryResource;
 import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
+import org.apache.guacamole.rest.history.ConnectionHistoryResource;
 import org.apache.guacamole.rest.sharingprofile.APISharingProfile;
 
 /**
@@ -150,18 +147,11 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
      * @throws GuacamoleException
      *     If an error occurs while retrieving the connection history.
      */
-    @GET
     @Path("history")
-    public List<APIConnectionRecord> getConnectionHistory()
+    public ConnectionHistoryResource getConnectionHistory()
             throws GuacamoleException {
 
-        // Retrieve the requested connection's history
-        List<APIConnectionRecord> apiRecords = new ArrayList<>();
-        for (ConnectionRecord record : connection.getHistory())
-            apiRecords.add(new APIConnectionRecord(record));
-
-        // Return the converted history
-        return apiRecords;
+        return new ConnectionHistoryResource(connection.getConnectionHistory());
 
     }
 

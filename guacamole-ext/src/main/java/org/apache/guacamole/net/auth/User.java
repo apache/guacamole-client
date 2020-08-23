@@ -104,6 +104,24 @@ public interface User extends Identifiable, Attributes, Permissions {
      *     permission is denied.
      */
     List<? extends ActivityRecord> getHistory() throws GuacamoleException;
+    
+    /**
+     * Returns an ActivityRecordSet containing ActivityRecords representing
+     * the login history for this user, including any active sessions.
+     * ActivityRecords in this list will be sorted in descending order of end
+     * time (active sessions are first), and then in descending order of start
+     * time (newer sessions are first).
+     * 
+     * @return
+     *     An ActivityRecordSet containing ActivityRecords representing the
+     *     login history for this user.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs retrieving this user's login history, or if
+     *     permission to retrieve login history is denied.
+     */
+    public ActivityRecordSet<ActivityRecord> getUserHistory()
+            throws GuacamoleException;
 
     /**
      * Returns a set of all readable user groups of which this user is a member.

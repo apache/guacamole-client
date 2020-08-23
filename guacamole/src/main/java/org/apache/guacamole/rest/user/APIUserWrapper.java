@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.net.auth.ActivityRecord;
+import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.User;
@@ -142,6 +143,12 @@ public class APIUserWrapper implements User {
     @Override
     public List<? extends ActivityRecord> getHistory() throws GuacamoleException {
         return Collections.<ActivityRecord>emptyList();
+    }
+    
+    @Override
+    public ActivityRecordSet<ActivityRecord> getUserHistory()
+            throws GuacamoleException {
+        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide login history.");
     }
 
 }

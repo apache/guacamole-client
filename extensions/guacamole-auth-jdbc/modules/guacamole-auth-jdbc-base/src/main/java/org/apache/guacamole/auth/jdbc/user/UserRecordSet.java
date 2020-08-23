@@ -44,6 +44,13 @@ public class UserRecordSet extends ModeledActivityRecordSet<ActivityRecord> {
     @Inject
     private UserService userService;
     
+    private String identifier = null;
+    
+    protected void init(ModeledAuthenticatedUser currentUser, String identifier) {
+        super.init(currentUser);
+        this.identifier = identifier;
+    }
+    
     @Override
     protected Collection<ActivityRecord> retrieveHistory(
             AuthenticatedUser user, Set<ActivityRecordSearchTerm> requiredContents,
@@ -51,7 +58,7 @@ public class UserRecordSet extends ModeledActivityRecordSet<ActivityRecord> {
             throws GuacamoleException {
 
         // Retrieve history from database
-        return userService.retrieveHistory(getCurrentUser(),
+        return userService.retrieveHistory(identifier, getCurrentUser(),
                 requiredContents, sortPredicates, limit);
 
     }

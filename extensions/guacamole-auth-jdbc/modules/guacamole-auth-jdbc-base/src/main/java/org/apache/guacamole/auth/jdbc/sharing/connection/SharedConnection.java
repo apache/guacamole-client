@@ -26,10 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.auth.jdbc.sharing.connectiongroup.SharedRootConnectionGroup;
 import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 import org.apache.guacamole.net.GuacamoleTunnel;
+import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
@@ -156,6 +158,12 @@ public class SharedConnection implements Connection {
     public List<? extends ConnectionRecord> getHistory()
             throws GuacamoleException {
         return Collections.<ConnectionRecord>emptyList();
+    }
+    
+    @Override
+    public ActivityRecordSet<ConnectionRecord> getConnectionHistory()
+            throws GuacamoleException {
+        throw new GuacamoleUnsupportedException("SharedConnection objects do not provide history.");
     }
 
     @Override

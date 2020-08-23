@@ -41,7 +41,7 @@ public class UserHistoryResource extends ActivityRecordSetResource<ActivityRecor
     }
 
     @Override
-    protected APIActivityRecord toExternalRecord(ActivityRecord record) {
+    public APIActivityRecord toExternalRecord(ActivityRecord record) {
         return new APIActivityRecord(record);
     }
 

@@ -98,6 +98,12 @@ public class DelegatingUser implements User {
             throws GuacamoleException {
         return user.getHistory();
     }
+    
+    @Override
+    public ActivityRecordSet<ActivityRecord> getUserHistory()
+            throws GuacamoleException {
+        return user.getUserHistory();
+    }
 
     @Override
     public SystemPermissionSet getSystemPermissions()
