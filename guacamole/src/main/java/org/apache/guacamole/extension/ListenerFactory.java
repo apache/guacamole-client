@@ -30,7 +30,6 @@ import org.apache.guacamole.net.event.listener.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.guacamole.environment.Environment;
 
 /**
  * A factory that reflectively instantiates Listener objects for a given
@@ -45,20 +44,15 @@ class ListenerFactory {
      * only listener type that will be returned. Otherwise, a list of Listener
      * objects that adapt the legacy listener interfaces will be returned.
      *
-     * @param environment
-     *      The Environment instance that should be passed to the constructor
-     *      of the given class, if a constructor accepting an Environment
-     *      instance is defined.
-     *
      * @param providerClass
      *      A class that represents a listener.
      *
      * @return
      *      The list of listeners represented by the given provider class.
      */
-    static List<Listener> createListeners(Environment environment, Class<?> providerClass) {
+    static List<Listener> createListeners(Class<?> providerClass) {
 
-        Object provider = ProviderFactory.newInstance(environment, "listener", providerClass);
+        Object provider = ProviderFactory.newInstance("listener", providerClass);
 
         if (provider instanceof Listener) {
             return Collections.singletonList((Listener) provider);

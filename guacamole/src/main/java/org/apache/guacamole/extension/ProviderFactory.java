@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
-import org.apache.guacamole.environment.Environment;
 
 /**
  * A utility for creating provider instances and logging unexpected outcomes
@@ -38,18 +37,10 @@ class ProviderFactory {
     private static final Logger logger = LoggerFactory.getLogger(ProviderFactory.class);
 
     /**
-     * Creates an instance of the specified provider class using either the
-     * constructor accepting an instance of the Environment interface or, if no
-     * such constructor is defined, the no-arg constructor.
-     *
-     * @param environment
-     *      The Environment instance that should be passed to the constructor
-     *      of the given class, if a constructor accepting an Environment
-     *      instance is defined.
+     * Creates an instance of the specified provider class using the no-arg constructor.
      *
      * @param typeName
-     *      The provider type name used for log messages; e.g. "authentication
-     *      provider".
+     *      The provider type name used for log messages; e.g. "authentication provider".
      *
      * @param providerClass
      *      The provider class to instantiate.
@@ -60,33 +51,19 @@ class ProviderFactory {
      * @return
      *      A provider instance or null if no instance was created due to error.
      */
-    static <T> T newInstance(Environment environment, String typeName,
-            Class<? extends T> providerClass) {
+    static <T> T newInstance(String typeName, Class<? extends T> providerClass) {
         T instance = null;
 
         try {
-
-            // Attempt to instantiate the provider while providing the
-            // Guacamole server's environment
-            try {
-                instance = providerClass.getConstructor(Environment.class).newInstance(environment);
-            }
-
-            // Fall back to no-arg constructor if no constructor accepts
-            // Environment
-            catch (NoSuchMethodException e) {
-                logger.debug("{} does not provide a constructor accepting "
-                        + "Environment. Falling back to no-arg constructor.",
-                        providerClass.getName());
-                instance = providerClass.getConstructor().newInstance();
-            }
-
+            // Attempt to instantiate the provider
+            instance = providerClass.getConstructor().newInstance();
         }
         catch (NoSuchMethodException e) {
             logger.error("The {} extension in use is not properly defined. "
                     + "Please contact the developers of the extension or, if you "
                     + "are the developer, turn on debug-level logging.", typeName);
-            logger.debug("{} is missing a usable constructor.", providerClass.getName(), e);
+            logger.debug("{} is missing a default constructor.",
+                    providerClass.getName(), e);
         }
         catch (SecurityException e) {
             logger.error("The Java security manager is preventing extensions "
