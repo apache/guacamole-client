@@ -19,9 +19,11 @@
 
 package org.apache.guacamole.environment;
 
+import org.apache.guacamole.properties.GuacamoleProperties;
 import java.io.File;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.GuacamoleProperty;
@@ -161,5 +163,25 @@ public interface Environment {
      */
     public GuacamoleProxyConfiguration getDefaultGuacamoleProxyConfiguration()
             throws GuacamoleException;
+
+    /**
+     * Adds another possible source of Guacamole configuration properties to
+     * this Environment. Properties not already defined by other sources of
+     * Guacamole configuration properties will alternatively be read from the
+     * given {@link GuacamoleProperties}.
+     *
+     * @param properties
+     *     The GuacamoleProperties to add to this Environment.
+     *
+     * @throws GuacamoleException
+     *     If the given GuacamoleProperties cannot be added, or if this
+     *     Environment does not support this operation.
+     */
+    public default void addGuacamoleProperties(GuacamoleProperties properties)
+            throws GuacamoleException {
+        throw new GuacamoleUnsupportedException(String.format("%s does not "
+                + "support dynamic definition of Guacamole properties.",
+                getClass()));
+    }
 
 }
