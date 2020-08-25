@@ -20,25 +20,23 @@
 package org.apache.guacamole.auth.jdbc;
 
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
+import org.apache.guacamole.environment.DelegatingEnvironment;
+import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.ibatis.session.SqlSession;
 
 /**
  * A JDBC-specific implementation of Environment that defines generic properties
  * intended for use within JDBC based authentication providers.
  */
-public abstract class JDBCEnvironment extends LocalEnvironment {
+public abstract class JDBCEnvironment extends DelegatingEnvironment {
     
     /**
      * Constructs a new JDBCEnvironment using an underlying LocalEnviroment to
      * read properties from the file system.
-     * 
-     * @throws GuacamoleException
-     *     If an error occurs while setting up the underlying LocalEnvironment.
      */
-    public JDBCEnvironment() throws GuacamoleException {
-        super();
+    public JDBCEnvironment() {
+        super(LocalEnvironment.getInstance());
     }
 
     /**
