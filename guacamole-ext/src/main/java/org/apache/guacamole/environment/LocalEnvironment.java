@@ -26,12 +26,13 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
-import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.GuacamoleProperties;
 import org.apache.guacamole.properties.GuacamoleProperty;
 import org.apache.guacamole.protocols.ProtocolInfo;
 import org.slf4j.Logger;
@@ -40,7 +41,10 @@ import org.slf4j.LoggerFactory;
 /**
  * The environment of the locally-running Guacamole instance, describing
  * available protocols, configuration parameters, and the GUACAMOLE_HOME
- * directory.
+ * directory. Sources of configuration properties like guacamole.properties and
+ * environment variables will be automatically added by the Guacamole web
+ * application and may also be added by extensions using
+ * {@link #addGuacamoleProperties(org.apache.guacamole.properties.GuacamoleProperties)}.
  */
 public class LocalEnvironment implements Environment {
 
@@ -52,8 +56,13 @@ public class LocalEnvironment implements Environment {
     /**
      * Array of all known protocol names.
      */
-    private static final String[] KNOWN_PROTOCOLS = new String[]{
-        "vnc", "rdp", "ssh", "telnet", "kubernetes"};
+    private static final String[] KNOWN_PROTOCOLS = new String[] {
+        "kubernetes",
+        "rdp",
+        "ssh",
+        "telnet",
+        "vnc",
+    };
 
     /**
      * The hostname to use when connecting to guacd if no hostname is provided
@@ -74,23 +83,6 @@ public class LocalEnvironment implements Environment {
     private static final boolean DEFAULT_GUACD_SSL = false;
 
     /**
-     * A property that determines whether environment variables are evaluated
-     * to override properties specified in guacamole.properties.
-     */
-    private static final BooleanGuacamoleProperty ENABLE_ENVIRONMENT_PROPERTIES =
-        new BooleanGuacamoleProperty() {
-            @Override
-            public String getName() {
-                return "enable-environment-properties";
-            }
-        };
-
-    /**
-     * All properties read from guacamole.properties.
-     */
-    private final Properties properties;
-
-    /**
      * The location of GUACAMOLE_HOME, which may not truly exist.
      */
     private final File guacHome;
@@ -101,9 +93,13 @@ public class LocalEnvironment implements Environment {
     private final Map<String, ProtocolInfo> availableProtocols;
 
     /**
-     * Flag indicating whether environment variables can override properties.
+     * All GuacamoleProperties instances added via addGuacamoleProperties(), in
+     * the order that they were added. This storage has been made static to
+     * allow addGuacamoleProperties() to work as expected even if extensions
+     * continue to use the deprecated constructor to create non-singleton
+     * instances.
      */
-    private final boolean environmentPropertiesEnabled;
+    private static final List<GuacamoleProperties> availableProperties = new CopyOnWriteArrayList<>();
 
     /**
      * The Jackson parser for parsing JSON files.
@@ -111,56 +107,43 @@ public class LocalEnvironment implements Environment {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     /**
-     * Creates a new Environment, initializing that environment based on the
-     * location of GUACAMOLE_HOME and the contents of guacamole.properties.
-     * 
-     * @throws GuacamoleException If an error occurs while determining the
-     *                            environment of this Guacamole instance.
+     * Singleton instance of this environment, to be returned by calls to
+     * getInstance().
      */
-    public LocalEnvironment() throws GuacamoleException {
+    private static final LocalEnvironment instance = new LocalEnvironment();
+
+    /**
+     * Returns a singleton instance of LocalEnvironment which may be shared by
+     * the Guacamole web application and all extensions.
+     *
+     * @return
+     *     A singleton instance of this class.
+     */
+    public static LocalEnvironment getInstance() {
+        return instance;
+    }
+
+    /**
+     * Creates a new LocalEnvironment, initializing that environment based on
+     * the contents of GUACAMOLE_HOME. Sources of configuration properties like
+     * guacamole.properties and environment variables will be automatically
+     * added by the Guacamole web application and/or any installed extensions.
+     *
+     * @deprecated
+     *     Extensions leveraging LocalEnvironment should instead use
+     *     LocalEnvironment.getInstance() to obtain a singleton instance of the
+     *     environment.
+     */
+    @Deprecated
+    public LocalEnvironment() {
 
         // Determine location of GUACAMOLE_HOME
         guacHome = findGuacamoleHome();
         logger.info("GUACAMOLE_HOME is \"{}\".", guacHome.getAbsolutePath());
 
-        // Read properties
-        properties = new Properties();
-        try {
-
-            InputStream stream = null;
-
-            // If not a directory, load from classpath
-            if (!guacHome.isDirectory())
-                stream = LocalEnvironment.class.getResourceAsStream("/guacamole.properties");
-
-            // Otherwise, try to load from file
-            else {
-                File propertiesFile = new File(guacHome, "guacamole.properties");
-                if (propertiesFile.exists())
-                    stream = new FileInputStream(propertiesFile);
-            }
-
-            // Load properties from stream, if any, always closing stream when done
-            if (stream != null) {
-                try { properties.load(stream); }
-                finally { stream.close(); }
-            }
-
-            // Notify if we're proceeding without guacamole.properties
-            else
-                logger.info("No guacamole.properties file found within GUACAMOLE_HOME or the classpath. Using defaults.");
-
-        }
-        catch (IOException e) {
-            logger.warn("The guacamole.properties file within GUACAMOLE_HOME cannot be read: {}", e.getMessage());
-            logger.debug("Error reading guacamole.properties.", e);
-        }
-
         // Read all protocols
         availableProtocols = readProtocols();
 
-        // Should environment variables override configuration properties?
-        environmentPropertiesEnabled = environmentPropertiesEnabled(properties);
     }
 
     /**
@@ -265,7 +248,7 @@ public class LocalEnvironment implements Environment {
                 logger.error("Unable to read contents of \"{}\".", protocol_directory.getAbsolutePath());
                 files = new File[0];
             }
-            
+
             // Load each protocol from each file
             for (File file : files) {
 
@@ -319,69 +302,39 @@ public class LocalEnvironment implements Environment {
 
     }
 
-    /**
-     * Checks for the presence of the {@link #ENABLE_ENVIRONMENT_PROPERTIES}
-     * property in the given properties collection.
-     *
-     * @param properties
-     *     The properties collection to check.
-     *
-     * @return
-     *     true if the property is present in the given properties collection
-     *     and its parsed value is true
-     *
-     * @throws GuacamoleException If the value specified for the property
-     *                            cannot be successfully parsed as a Boolean
-     *
-     */
-    private static boolean environmentPropertiesEnabled(Properties properties)
-            throws GuacamoleException {
-
-        final Boolean enabled = ENABLE_ENVIRONMENT_PROPERTIES.parseValue(
-                properties.getProperty(ENABLE_ENVIRONMENT_PROPERTIES.getName()));
-
-        return enabled != null && enabled;
-    }
-
     @Override
     public File getGuacamoleHome() {
         return guacHome;
     }
 
     /**
-     * Gets the string value for a property name.
-     *
-     * The value may come from either the OS environment (if property override
-     * is enabled) or the Properties collection that was loaded from
-     * guacamole.properties. When checking the environment for the named
-     * property, the name is first transformed by converting all hyphens to
-     * underscores and converting the string to upper case letter, in accordance
-     * with common convention for environment strings.
+     * Returns the string value of the property having the given name, trying
+     * each source of properties added with addGuacamoleProperties() until a
+     * value is found. If no such property is defined, null is returned.
      *
      * @param name
      *     The name of the property value to retrieve.
      *
      * @return
-     *     The corresponding value for the property. If property override
-     *     is enabled and the value is found in the OS environment, the value
-     *     from the environment is returned. Otherwise, the value from
-     *     guacamole.properties, if any, is returned.
+     *     The value of the property having the given name, or null if no such
+     *     property is defined.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs retrieving a property from a GuacamoleProperties
+     *     implementation added via addGuacamoleProperties().
      */
-    private String getPropertyValue(String name) {
+    private String getPropertyValue(String name) throws GuacamoleException {
 
-        // Check for corresponding environment variable if overrides enabled
-        if (environmentPropertiesEnabled) {
-
-            // Transform the name according to common convention
-            final String envName = name.replace('-', '_').toUpperCase();
-            final String envValue = System.getenv(envName);
-
-            if (envValue != null) {
-                return envValue;
-            }
+        // Search all provided GuacamoleProperties implementations, in order
+        for (GuacamoleProperties properties : availableProperties) {
+            String value = properties.getProperty(name);
+            if (value != null)
+                return value;
         }
 
-        return properties.getProperty(name);
+        // No such property
+        return null;
+
     }
 
     @Override
@@ -434,6 +387,11 @@ public class LocalEnvironment implements Environment {
             getProperty(Environment.GUACD_SSL, DEFAULT_GUACD_SSL)
         );
 
+    }
+
+    @Override
+    public void addGuacamoleProperties(GuacamoleProperties properties) {
+        availableProperties.add(properties);
     }
 
 }
