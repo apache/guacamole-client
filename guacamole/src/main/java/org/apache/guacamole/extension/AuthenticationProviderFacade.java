@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.UUID;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -71,6 +72,9 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
      * facade will still succeed, but its use will result in errors being
      * logged, and all authentication attempts will fail.
      *
+     * @param environment
+     *      The Guacamole server environment.
+     *
      * @param authProviderClass
      *     The AuthenticationProvider subclass to instantiate.
      *
@@ -83,12 +87,12 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
      *     attempt. By default, errors during authentication halt the
      *     authentication process entirely.
      */
-    public AuthenticationProviderFacade(
+    public AuthenticationProviderFacade(Environment environment,
             Class<? extends AuthenticationProvider> authProviderClass,
             Set<String> tolerateFailures) {
         this.tolerateFailures = tolerateFailures;
-        this.authProvider = ProviderFactory.newInstance("authentication provider",
-            authProviderClass);
+        this.authProvider = ProviderFactory.newInstance(environment,
+                "authentication provider", authProviderClass);
     }
 
     @Override

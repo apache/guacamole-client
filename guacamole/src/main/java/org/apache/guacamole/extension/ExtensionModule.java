@@ -199,7 +199,7 @@ public class ExtensionModule extends ServletModule {
         logger.debug("[{}] Binding AuthenticationProvider \"{}\".",
                 boundAuthenticationProviders.size(), authenticationProvider.getName());
         boundAuthenticationProviders.add(new AuthenticationProviderFacade(
-                authenticationProvider, tolerateFailures));
+                environment, authenticationProvider, tolerateFailures));
 
     }
 
@@ -255,7 +255,7 @@ public class ExtensionModule extends ServletModule {
 
         logger.debug("[{}] Binding listener \"{}\".",
                 boundListeners.size(), providerClass.getName());
-        boundListeners.addAll(ListenerFactory.createListeners(providerClass));
+        boundListeners.addAll(ListenerFactory.createListeners(environment, providerClass));
 
     }
 
