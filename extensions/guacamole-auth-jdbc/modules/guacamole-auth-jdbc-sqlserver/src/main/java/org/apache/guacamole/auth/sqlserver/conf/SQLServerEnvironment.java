@@ -222,33 +222,13 @@ public class SQLServerEnvironment extends JDBCEnvironment {
         return getRequiredProperty(SQLServerGuacamoleProperties.SQLSERVER_DATABASE);
     }
 
-    /**
-     * Returns the username that should be used when authenticating with the
-     * SQLServer database containing the Guacamole authentication tables.
-     * 
-     * @return
-     *     The username for the SQLServer database.
-     *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value, or if the
-     *     value was not set, as this property is required.
-     */
-    public String getSQLServerUsername() throws GuacamoleException {
+    @Override
+    public String getUsername() throws GuacamoleException {
         return getRequiredProperty(SQLServerGuacamoleProperties.SQLSERVER_USERNAME);
     }
     
-    /**
-     * Returns the password that should be used when authenticating with the
-     * SQLServer database containing the Guacamole authentication tables.
-     * 
-     * @return
-     *     The password for the SQLServer database.
-     *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value, or if the
-     *     value was not set, as this property is required.
-     */
-    public String getSQLServerPassword() throws GuacamoleException {
+    @Override
+    public String getPassword() throws GuacamoleException {
         return getRequiredProperty(SQLServerGuacamoleProperties.SQLSERVER_PASSWORD);
     }
 

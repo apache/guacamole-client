@@ -166,4 +166,30 @@ public abstract class JDBCEnvironment extends DelegatingEnvironment {
      */
     public abstract boolean autoCreateAbsentAccounts() throws GuacamoleException;
 
+    /**
+     * Returns the username that should be used when authenticating with the
+     * database containing the Guacamole authentication tables.
+     *
+     * @return
+     *     The username for the database.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the property value, or if the
+     *     value was not set, as this property is required.
+     */
+    public abstract String getUsername() throws GuacamoleException;
+
+    /**
+     * Returns the password that should be used authenticating with the
+     * database containing the Guacamole authentication tables.
+     *
+     * @return
+     *     The password for the database.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the property value, or if the
+     *     value was not set, as this property is required.
+     */
+    public abstract String getPassword() throws GuacamoleException;
+
 }
