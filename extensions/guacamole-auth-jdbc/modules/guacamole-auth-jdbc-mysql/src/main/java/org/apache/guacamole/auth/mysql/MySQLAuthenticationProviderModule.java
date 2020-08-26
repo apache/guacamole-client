@@ -72,8 +72,6 @@ public class MySQLAuthenticationProviderModule implements Module {
         myBatisProperties.setProperty("JDBC.host", environment.getMySQLHostname());
         myBatisProperties.setProperty("JDBC.port", String.valueOf(environment.getMySQLPort()));
         myBatisProperties.setProperty("JDBC.schema", environment.getMySQLDatabase());
-        myBatisProperties.setProperty("JDBC.username", environment.getUsername());
-        myBatisProperties.setProperty("JDBC.password", environment.getPassword());
         myBatisProperties.setProperty("JDBC.autoCommit", "false");
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
