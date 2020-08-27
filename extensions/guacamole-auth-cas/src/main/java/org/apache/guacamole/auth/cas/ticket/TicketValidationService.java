@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.cas.ticket;
 
 import com.google.common.io.BaseEncoding;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import java.net.URI;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -33,10 +34,15 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.cas.conf.ConfigurationService;
+import org.apache.guacamole.auth.cas.user.CASAuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.token.TokenName;
 import org.jasig.cas.client.authentication.AttributePrincipal;
@@ -69,6 +75,12 @@ public class TicketValidationService {
     private ConfigurationService confService;
 
     /**
+     * Provider for AuthenticatedUser objects.
+     */
+    @Inject
+    private Provider<CASAuthenticatedUser> authenticatedUserProvider;
+
+    /**
      * Validates and parses the given ID ticket, returning a map of all
      * available tokens for the given user based on attributes provided by the
      * CAS server.  If the ticket is invalid an exception is thrown.
@@ -81,14 +93,13 @@ public class TicketValidationService {
      *     password values in.
      *
      * @return
-     *     A Map all of tokens for the user parsed from attributes returned
-     *     by the CAS server.
+     *     The CASAuthenticatedUser instance returned by the CAS server.
      *
      * @throws GuacamoleException
      *     If the ID ticket is not valid or guacamole.properties could
      *     not be parsed.
      */
-    public Map<String, String> validateTicket(String ticket,
+    public CASAuthenticatedUser validateTicket(String ticket,
             Credentials credentials) throws GuacamoleException {
 
         // Retrieve the configured CAS URL, establish a ticket validator,
@@ -100,6 +111,7 @@ public class TicketValidationService {
         validator.setEncoding("UTF-8");
         try {
             Map<String, String> tokens = new HashMap<>();
+            Set<String> effectiveGroups = new HashSet<>();
             URI confRedirectURI = confService.getRedirectURI();
             Assertion a = validator.validate(ticket, confRedirectURI.toString());
             AttributePrincipal principal =  a.getPrincipal();
@@ -122,16 +134,42 @@ public class TicketValidationService {
             }
             
             // Convert remaining attributes that have values to Strings
+            String groupAttribute = confService.getGroupAttribute();
+            // Use cas-member-attribute to retrieve and set group memberships
+            String groupDnFormat = confService.getGroupDnFormat();
+            String groupTemplate = "";
+            if (groupDnFormat != null) {
+                // if CAS is backended to LDAP, groups come in as RFC4514 DN
+                // syntax.  If cas-group-dn-format is set, this strips
+                // an entry such as "CN=Foo,OU=Bar,DC=example,DC=com" to
+                // "Foo"
+                groupTemplate = groupDnFormat.replace("%s","([A-Za-z0-9_\\(\\)\\-\\.\\s+]+)");
+                // the underlying parser aggregates all instances of the same
+                // attribute, so we need to be able to parse them out
+                groupTemplate=groupTemplate+",*\\s*";
+            } else {
+               groupTemplate = "([A-Za-z0-9_\\(\\)\\-\\.\\s+]+,*\\s*)";
+            }
+            Pattern pattern = Pattern.compile(groupTemplate);
+
             for (Entry <String, Object> attr : ticketAttrs.entrySet()) {
                 String tokenName = TokenName.canonicalize(attr.getKey(),
                         CAS_ATTRIBUTE_TOKEN_PREFIX);
                 Object value = attr.getValue();
-                if (value != null)
+                if (value != null) {
                     tokens.put(tokenName, value.toString());
+                    if (attr.getKey().equals(groupAttribute)) {
+                        String valueWithoutBrackets = value.toString().substring(1,value.toString().length()-1);
+                        Matcher matcher = pattern.matcher(valueWithoutBrackets);
+                        while (matcher.find()) {
+                            effectiveGroups.add(matcher.group(1));
+                        }
+                    }
+                }
             }
 
-            return tokens;
-
+            CASAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+            return authenticatedUser;
         } 
         catch (TicketValidationException e) {
             throw new GuacamoleException("Ticket validation failed.", e);
