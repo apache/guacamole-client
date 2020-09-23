@@ -711,61 +711,38 @@ associate_json() {
 ##
 ## Sets up Tomcat's remote IP valve that allows gathering the remote IP
 ## from headers set by a remote proxy
+## Upstream documentation: https://tomcat.apache.org/tomcat-8.5-doc/api/org/apache/catalina/valves/RemoteIpValve.html
 ##
 enable_remote_ip_valve() {
-    # Check the required variables
+    # Use Tomcat defaults if optional variables have not been provided
     if [ -z "$GUACAMOLE_PROXY_ALLOWED_IPS_REGEX" ]; then
-        cat <<END
-FATAL: Missing required environment variables
--------------------------------------------------------------------------------
-If using the Tomcat RemoteIPValve preseed, you must provide each of the
-following environment variables:
-
-    GUACAMOLE_PROXY_ALLOWED_IPS_REGEX   The regex of addresses allowed to set
-                                        the remote IP of the client via
-                                        transmission of specific headers
-END
-        exit 1
+    	echo "Using default Tomcat allowed IPs regex"
     fi
-
-    # Set reasonable defaults if optional variables have not been provided
     if [ -z "$GUACAMOLE_PROXY_IP_HEADER" ]; then
-        GUACAMOLE_PROXY_IP_HEADER='X-Forwarded-For'
-        echo "Defaulted RemoteIPValve IP header to: $GUACAMOLE_PROXY_IP_HEADER"
+        echo "Using default Tomcat proxy IP header"
     fi
     if [ -z "$GUACAMOLE_PROXY_PROTOCOL_HEADER" ]; then
-        GUACAMOLE_PROXY_PROTOCOL_HEADER='X-Forwarded-Proto'
-        echo "Defaulted RemoteIPValve protocol header to: $GUACAMOLE_PROXY_PROTOCOL_HEADER"
+        echo "Using default Tomcat proxy protocol header"
     fi
     if [ -z "$GUACAMOLE_PROXY_BY_HEADER" ]; then
-        GUACAMOLE_PROXY_BY_HEADER='X-Forwarded-By'
-        echo "Defaulted RemoteIPValve source header to: $GUACAMOLE_PROXY_BY_HEADER"
+        echo "Using default Tomcat proxy forwarded by header"
     fi
 
-    # Build the new Tomcat configuration
-    cat > /tmp/valve.xml <<EOF
-        <Valve className="org.apache.catalina.valves.RemoteIpValve"
-          internalProxies="$GUACAMOLE_PROXY_ALLOWED_IPS_REGEX"
-          remoteIpHeader="$GUACAMOLE_PROXY_IP_HEADER"
-          remoteIpProxiesHeader="$GUACAMOLE_PROXY_BY_HEADER"
-          protocolHeader="$GUACAMOLE_PROXY_PROTOCOL_HEADER" />
-EOF
-
-    # Get the line where the Host configuration ends
-    LINEN=$(grep -n '</Host>' /usr/local/tomcat/conf/server.xml | cut -d ':' -f 1)
-
-    # Split the file in 2 around the Host configuration
-    head -n "$(( LINEN - 1 ))" < /usr/local/tomcat/conf/server.xml > /tmp/head.xml
-    tail -n "+$LINEN" < /usr/local/tomcat/conf/server.xml > /tmp/tail.xml
-
-    # Reassemble the file
-    cat /tmp/head.xml /tmp/valve.xml /tmp/tail.xml > /usr/local/tomcat/conf/server.xml
-
-    # Cleanup
-    rm -f \
-        /tmp/head.xml \
-        /tmp/tail.xml \
-        /tmp/valve.xml
+    # Build the new Tomcat configuration inplace
+    ## Explaination:
+    ## The initial regex ((\s)+)</Host>
+    ## Matches the spaces before </Host> as \1 and individual spaces as \2, ...
+    ## The replacement will be located at \1\2\2 (original + 2 spaces)
+    ## ${VAR:+expr} expressions yield either empty (thus using Tomcat's default) or our setting
+    ## The last line restores the configuration file original tag at its original indentation
+    sed -i "s|^\(\(\s\)\+\)</Host>|\1\2\2<Valve \
+	className=\"org.apache.catalina.valves.RemoteIpValve\" \
+	${GUACAMOLE_PROXY_ALLOWED_IPS_REGEX:+internalProxies=\"$GUACAMOLE_PROXY_ALLOWED_IPS_REGEX\"} \
+	${GUACAMOLE_PROXY_IP_HEADER:+remoteIpHeader=\"$GUACAMOLE_PROXY_IP_HEADER\"} \
+	${GUACAMOLE_PROXY_BY_HEADER:+remoteIpProxiesHeader=\"$GUACAMOLE_PROXY_BY_HEADER\"} \
+	${GUACAMOLE_PROXY_PROTOCOL_HEADER:+protocolHeader=\"$GUACAMOLE_PROXY_PROTOCOL_HEADER\"} \
+	/>\n\1</Host>|" \
+	/usr/local/tomcat/conf/server.xml
 }
 
 ##
@@ -854,7 +831,7 @@ set_property "guacd-hostname" "$GUACD_HOSTNAME"
 set_property "guacd-port"     "$GUACD_PORT"
 
 # Set up Tomcat RemoteIPValve
-if [ -n "$GUACAMOLE_PROXY_ALLOWED_IPS_REGEX" ]; then
+if [ "$REMOTE_IP_VALVE_ENABLED" = "true" ]; then
     enable_remote_ip_valve
 fi
 
