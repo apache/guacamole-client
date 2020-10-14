@@ -213,6 +213,10 @@ END
         "mysql-ssl-trust-store"  \
         "$MYSQL_SSL_TRUST_STORE"
 
+    set_optional_property        \
+        "mysql-auto-create-accounts"  \
+        "$MYSQL_AUTO_CREATE_ACCOUNTS"
+
     # For SSL trust store password, check secrets, first, then standard env variable
     if [ -n "$MYSQL_SSL_TRUST_PASSWORD_FILE" ]; then
         set_property "mysql-ssl-trust-password" "`cat "$MYSQL_SSL_TRUST_PASSWORD_FILE"`"
@@ -381,6 +385,10 @@ END
     set_optional_property                \
         "postgresql-ssl-root-cert-file"  \
         "$POSTGRESQL_SSL_ROOT_CERT_FILE"
+
+    set_optional_property        \
+        "postgresql-auto-create-accounts"  \
+        "$POSTGRESQL_AUTO_CREATE_ACCOUNTS"
 
     # For SSL key password, check secrets, first, then standard env variable
     if [ -n "$POSTGRES_SSL_KEY_PASSWORD_FILE" ]; then
