@@ -104,10 +104,7 @@ public class SharedUser implements User {
     @Deprecated
     @Override
     public List<ActivityRecord> getHistory() throws GuacamoleException {
-
-        // History is not recorded for shared users
-        return Collections.<ActivityRecord>emptyList();
-
+        throw new GuacamoleUnsupportedException("SharedUser objects do not provide login history.");
     }
     
     @Override

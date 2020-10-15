@@ -46,7 +46,8 @@ public class ConnectionRecordSet extends ModeledActivityRecordSet<ConnectionReco
     
     /**
      * The identifier of the connection to which this record set should be
-     * limited, if any.
+     * limited, if any. If null, the set should contain all records readable
+     * by the user making the request.
      */
     private String identifier = null;
     
@@ -58,7 +59,9 @@ public class ConnectionRecordSet extends ModeledActivityRecordSet<ConnectionReco
      *     The user that created or retrieved this object.
      * 
      * @param identifier
-     *     The connection identifier to which this record set should be limited.
+     *     The connection identifier to which this record set should be limited,
+     *     or null if the record set should contain all records readable by the
+     *     currentUser.
      */
     protected void init(ModeledAuthenticatedUser currentUser, String identifier) {
         super.init(currentUser);

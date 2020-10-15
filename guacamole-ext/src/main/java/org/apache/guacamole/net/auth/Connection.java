@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -100,17 +101,23 @@ public interface Connection extends Identifiable, Connectable, Attributes {
      * connections are first), and then in descending order of start time
      * (newer connections are first).
      *
+     * @deprecated 
+     *     This function has been deprecated in favor of
+     *     {@link getConnectionHistory}, which returns the connection history
+     *     as an ActivityRecordSet that can be easily sorted and filtered.
+     *     While the getHistory() method is provided for API compatibility,
+     *     new implementations should avoid use of this method and, instead,
+     *     implement the getConnectionHistory() method.
+     * 
      * @return A list of ConnectionRecrods representing the usage history
      *         of this Connection.
      *
      * @throws GuacamoleException If an error occurs while reading the history
      *                            of this connection, or if permission is
      *                            denied.
-     * 
-     * @deprecated Use {@link getConnectionHistory} instead.
      */
     @Deprecated
-    public List<? extends ConnectionRecord> getHistory() throws GuacamoleException;
+    List<? extends ConnectionRecord> getHistory() throws GuacamoleException;
 
     /**
      * Returns an ActivityRecordSet containing ConnectionRecords that
@@ -127,7 +134,7 @@ public interface Connection extends Identifiable, Connectable, Attributes {
      *     If an error occurs retrieving history for this Connection, or if
      *     permission to retrieve the history is denied.
      */
-    public ActivityRecordSet<ConnectionRecord> getConnectionHistory()
+    ActivityRecordSet<ConnectionRecord> getConnectionHistory()
             throws GuacamoleException;
     
     /**

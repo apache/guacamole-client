@@ -84,7 +84,7 @@ public abstract class ActivityRecordSetResource<InternalRecordType extends Activ
      *     A new record object containing the same data as the given internal
      *     record, but intended for use in interchange.
      */
-    public abstract ExternalRecordType toExternalRecord(InternalRecordType record);
+    protected abstract ExternalRecordType toExternalRecord(InternalRecordType record);
 
     /**
      * Retrieves the list of activity records stored within the underlying

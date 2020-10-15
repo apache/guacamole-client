@@ -143,7 +143,7 @@ public class APIUserWrapper implements User {
     @Deprecated
     @Override
     public List<? extends ActivityRecord> getHistory() throws GuacamoleException {
-        return Collections.<ActivityRecord>emptyList();
+        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide login history.");
     }
     
     @Override

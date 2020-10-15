@@ -158,7 +158,7 @@ public class SharedConnection implements Connection {
     @Override
     public List<? extends ConnectionRecord> getHistory()
             throws GuacamoleException {
-        return Collections.<ConnectionRecord>emptyList();
+        throw new GuacamoleUnsupportedException("SharedConnection objects do not provide history.");
     }
     
     @Override

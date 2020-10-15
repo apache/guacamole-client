@@ -143,7 +143,8 @@ public class APIConnectionWrapper implements Connection {
     @Deprecated
     @Override
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException {
-        return Collections.<ConnectionRecord>emptyList();
+        throw new GuacamoleUnsupportedException("APIConnectionWrapper does not "
+                + "support retrieving connection history.");
     }
     
     @Override

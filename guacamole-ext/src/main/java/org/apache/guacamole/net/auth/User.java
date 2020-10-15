@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.apache.guacamole.GuacamoleException;
@@ -95,6 +96,13 @@ public interface User extends Identifiable, Attributes, Permissions {
      * sessions are first), and then in descending order of start time
      * (newer sessions are first).
      *
+     * @deprecated
+     *     This function is deprecated in favor of {@link getUserHistory}, which
+     *     returns the login history as an ActivityRecordSet which supports
+     *     various sort and filter functions. While this continues to be defined
+     *     for API compatibility, new implementation should avoid this function
+     *     and use getUserHistory(), instead.
+     * 
      * @return
      *     A list of ActivityRecords representing the login history of this
      *     User.
@@ -102,9 +110,6 @@ public interface User extends Identifiable, Attributes, Permissions {
      * @throws GuacamoleException
      *     If an error occurs while reading the history of this user, or if
      *     permission is denied.
-     * 
-     * @deprecated
-     *     Use {@link getUserHistory} instead.
      */
     @Deprecated
     List<? extends ActivityRecord> getHistory() throws GuacamoleException;
@@ -124,7 +129,7 @@ public interface User extends Identifiable, Attributes, Permissions {
      *     If an error occurs retrieving this user's login history, or if
      *     permission to retrieve login history is denied.
      */
-    public ActivityRecordSet<ActivityRecord> getUserHistory()
+    ActivityRecordSet<ActivityRecord> getUserHistory()
             throws GuacamoleException;
 
     /**

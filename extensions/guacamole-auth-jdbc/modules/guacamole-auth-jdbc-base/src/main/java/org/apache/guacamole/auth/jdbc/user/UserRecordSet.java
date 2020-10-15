@@ -44,8 +44,26 @@ public class UserRecordSet extends ModeledActivityRecordSet<ActivityRecord> {
     @Inject
     private UserService userService;
     
+    /**
+     * The identifier that indicates which user object these records should be
+     * limited to, if any. If null is specified (the default) then all records
+     * that are readable by the current user will be retrieved.
+     */
     private String identifier = null;
     
+    /**
+     * Initialize this UserRecordSet with currentUser requesting the login
+     * records, and, optionally, the identifier of the user to which records
+     * should be limited.
+     * 
+     * @param currentUser
+     *     The user requesting login history.
+     * 
+     * @param identifier 
+     *     The identifier of the user whose login history should be contained
+     *     in this record set, or null if the record set should contain all
+     *     records readable by the currentUser.
+     */
     protected void init(ModeledAuthenticatedUser currentUser, String identifier) {
         super.init(currentUser);
         this.identifier = identifier;
