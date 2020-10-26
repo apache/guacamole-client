@@ -21,6 +21,7 @@ package org.apache.guacamole.properties;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.TimeZone;
 import org.apache.guacamole.GuacamoleException;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -102,6 +103,12 @@ public class TimeZoneGuacamolePropertyTest {
             "GMT-1:99",
             "GMT+10:65"
     );
+    
+    /**
+     * The list of all available timezones that are known to the TimeZone class.
+     */
+    private static final List<String> TZ_AVAIL_IDS =
+            Arrays.asList(TimeZone.getAvailableIDs());
     
     /**
      * An example TimeZoneGuacamoleProperty for testing how various possible
@@ -215,6 +222,23 @@ public class TimeZoneGuacamolePropertyTest {
                 assertTrue(msg.contains("does not specify a valid time zone"));
             }
         });
+    }
+    
+    /**
+     * Tests the list of available identifiers provided by the TimeZone class
+     * to make sure that all identifiers provided pass through successfully and
+     * do not yield unexpected results.
+     * 
+     * @throws GuacamoleException 
+     *     If the test fails unexpectedly because the timezone is not recognized
+     *     and is converted to GMT.
+     */
+    public void availTzCheck() throws GuacamoleException {
+        for (String tzStr : TZ_AVAIL_IDS) {
+            String tzId = WHERE_IN_WORLD.parseValue(tzStr).getID();
+            assertNotNull(tzId);
+            assertTrue(tzId.equals(tzStr));
+        }
     }
     
     /**
