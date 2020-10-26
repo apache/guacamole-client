@@ -24,6 +24,7 @@ import org.apache.guacamole.properties.EnumGuacamoleProperty;
 import org.apache.guacamole.properties.FileGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
+import org.apache.guacamole.properties.TimeZoneGuacamoleProperty;
 
 /**
  * Properties used by the MySQL Authentication plugin.
@@ -251,6 +252,16 @@ public class MySQLGuacamoleProperties {
     
         @Override
         public String getName() { return "mysql-auto-create-accounts"; }
+    };
+
+    /**
+     * The time zone of the MySQL database server.
+     */
+    public static final TimeZoneGuacamoleProperty SERVER_TIMEZONE =
+            new TimeZoneGuacamoleProperty() {
+                
+        @Override
+        public String getName() { return "mysql-server-timezone"; }
                 
     };
 

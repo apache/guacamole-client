@@ -24,6 +24,7 @@ import com.google.inject.Module;
 import com.google.inject.name.Names;
 import java.io.File;
 import java.util.Properties;
+import java.util.TimeZone;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.mysql.conf.MySQLDriver;
 import org.apache.guacamole.auth.mysql.conf.MySQLEnvironment;
@@ -114,6 +115,11 @@ public class MySQLAuthenticationProviderModule implements Module {
         
         // Get the MySQL-compatible driver to use.
         mysqlDriver = environment.getMySQLDriver();
+
+        // If timezone is present, set it.
+        TimeZone serverTz = environment.getServerTimeZone();
+        if (serverTz != null)
+            driverProperties.setProperty("serverTimezone", serverTz.getID());
 
     }
 
