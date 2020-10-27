@@ -21,7 +21,6 @@ package org.apache.guacamole.net.auth.simple;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
@@ -283,12 +282,6 @@ public class SimpleConnection extends AbstractConnection {
     @Override
     public Date getLastActive() {
         return null;
-    }
-
-    @Deprecated
-    @Override
-    public List<ConnectionRecord> getHistory() throws GuacamoleException {
-        return Collections.<ConnectionRecord>emptyList();
     }
     
     @Override

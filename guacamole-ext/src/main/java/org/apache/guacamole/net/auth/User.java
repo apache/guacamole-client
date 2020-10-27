@@ -20,9 +20,11 @@
 package org.apache.guacamole.net.auth;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleUnsupportedException;
 
 /**
  * A user of the Guacamole web application.
@@ -94,7 +96,8 @@ public interface User extends Identifiable, Attributes, Permissions {
      * of this user, including any active sessions. ActivityRecords
      * in this list will be sorted in descending order of end time (active
      * sessions are first), and then in descending order of start time
-     * (newer sessions are first).
+     * (newer sessions are first). If user login history is not implemented
+     * this method should throw GuacamoleUnsupportedException.
      *
      * @deprecated
      *     This function is deprecated in favor of {@link getUserHistory}, which
@@ -108,29 +111,35 @@ public interface User extends Identifiable, Attributes, Permissions {
      *     User.
      *
      * @throws GuacamoleException
-     *     If an error occurs while reading the history of this user, or if
-     *     permission is denied.
+     *     If history tracking is not implemented, if an error occurs while
+     *     reading the history of this user, or if permission is denied.
      */
     @Deprecated
-    List<? extends ActivityRecord> getHistory() throws GuacamoleException;
+    default List<? extends ActivityRecord> getHistory() throws GuacamoleException {
+        return Collections.unmodifiableList(new ArrayList<>(getUserHistory().asCollection()));
+    }
     
     /**
      * Returns an ActivityRecordSet containing ActivityRecords representing
      * the login history for this user, including any active sessions.
      * ActivityRecords in this list will be sorted in descending order of end
      * time (active sessions are first), and then in descending order of start
-     * time (newer sessions are first).
+     * time (newer sessions are first). If login history tracking is not
+     * implemented, or is only implemented using the deprecated {@link getHistory}
+     * method, this method should throw GuacamoleUnsupportedException.
      * 
      * @return
      *     An ActivityRecordSet containing ActivityRecords representing the
      *     login history for this user.
      * 
      * @throws GuacamoleException
-     *     If an error occurs retrieving this user's login history, or if
-     *     permission to retrieve login history is denied.
+     *     If history tracking is not implemented, if an error occurs while
+     *     reading the history of this user, or if permission is denied.
      */
-    ActivityRecordSet<ActivityRecord> getUserHistory()
-            throws GuacamoleException;
+    default ActivityRecordSet<ActivityRecord> getUserHistory()
+            throws GuacamoleException {
+        throw new GuacamoleUnsupportedException("The default implementation of User does not provide login history.");
+    }
 
     /**
      * Returns a set of all readable user groups of which this user is a member.
