@@ -271,7 +271,8 @@ public class UserVerificationService {
 
             // Get generator based on user's key and provided configuration
             TOTPGenerator totp = new TOTPGenerator(key.getSecret(),
-                    confService.getMode(), confService.getDigits());
+                    confService.getMode(), confService.getDigits(),
+                    TOTPGenerator.DEFAULT_START_TIME, confService.getPeriod());
 
             // Verify provided TOTP against value produced by generator
             if ((code.equals(totp.generate()) || code.equals(totp.previous()))
