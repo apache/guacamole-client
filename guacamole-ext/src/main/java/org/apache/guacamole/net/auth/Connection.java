@@ -19,10 +19,13 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -98,17 +101,56 @@ public interface Connection extends Identifiable, Connectable, Attributes {
      * of this Connection, including any active users. ConnectionRecords
      * in this list will be sorted in descending order of end time (active
      * connections are first), and then in descending order of start time
-     * (newer connections are first).
+     * (newer connections are first). If connection history tracking is
+     * not implemented this method should throw GuacamoleUnsupportedException.
      *
-     * @return A list of ConnectionRecrods representing the usage history
-     *         of this Connection.
+     * @deprecated 
+     *     This function has been deprecated in favor of
+     *     {@link getConnectionHistory}, which returns the connection history
+     *     as an ActivityRecordSet that can be easily sorted and filtered.
+     *     While the getHistory() method is provided for API compatibility,
+     *     new implementations should avoid use of this method and, instead,
+     *     implement the getConnectionHistory() method.
+     * 
+     * @return
+     *     A list of ConnectionRecrods representing the usage history of this
+     *     Connection.
      *
-     * @throws GuacamoleException If an error occurs while reading the history
-     *                            of this connection, or if permission is
-     *                            denied.
+     * @throws GuacamoleException
+     *     If history tracking is not implemented, if an error occurs while
+     *     reading the history of this connection, or if permission is
+     *     denied.
      */
-    public List<? extends ConnectionRecord> getHistory() throws GuacamoleException;
+    @Deprecated
+    default List<? extends ConnectionRecord> getHistory()
+            throws GuacamoleException {
+        return Collections.unmodifiableList(new ArrayList<>(getConnectionHistory().asCollection()));
+    }
 
+    /**
+     * Returns an ActivityRecordSet containing ConnectionRecords that
+     * represent the usage history of this Connection, including any active
+     * users. ConnectionRecords in this list will be sorted in descending order
+     * of end time (active connections are first), and then in descending order
+     * of start time (newer connections are first). If connection history
+     * tracking has not been implemented, or has been implemented using the
+     * deprecated {@link getHistory} method, this function should throw
+     * GuacamoleUnsupportedExpcetion.
+     * 
+     * @return
+     *     An ActivityRecordSet containing ConnectionRecords representing the
+     *     usage history of this Connection.
+     * 
+     * @throws GuacamoleException
+     *     If history tracking is not implemented, if an error occurs while
+     *     reading the history of this connection, or if permission is
+     *     denied.
+     */
+    default ActivityRecordSet<ConnectionRecord> getConnectionHistory()
+            throws GuacamoleException {
+        throw new GuacamoleUnsupportedException("This implementation of Connection does not provide connection history.");
+    }
+    
     /**
      * Returns identifiers of all readable sharing profiles that can be used to
      * join this connection when it is active. The level of access granted to a

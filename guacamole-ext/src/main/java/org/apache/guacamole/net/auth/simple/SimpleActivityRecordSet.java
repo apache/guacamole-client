@@ -35,10 +35,34 @@ import org.apache.guacamole.net.auth.ActivityRecordSet.SortableProperty;
 public class SimpleActivityRecordSet<RecordType extends ActivityRecord>
         implements ActivityRecordSet<RecordType> {
 
+    /**
+     * The records associated with this record set, if any.
+     */
+    private final Collection<RecordType> records;
+    
+    /**
+     * Create a new SimpleActivityRecordSet that contains an empty set of
+     * records.
+     */
+    public SimpleActivityRecordSet() {
+        records = Collections.emptyList();
+    }
+    
+    /**
+     * Create a new SimpleActivityRecordSet that contains the provided records
+     * which will back this record set.
+     * 
+     * @param records 
+     *     The records that this SimpleActivityRecordSet should contain.
+     */
+    public SimpleActivityRecordSet(Collection<? extends RecordType> records) {
+        this.records = Collections.unmodifiableCollection(records);
+    }
+    
     @Override
     public Collection<RecordType> asCollection()
             throws GuacamoleException {
-        return Collections.<RecordType>emptyList();
+        return records;
     }
 
     @Override

@@ -73,8 +73,12 @@ public interface UserRecordMapper {
      * the data they are associated with is is readable by any particular user.
      * This should only be called on behalf of a system administrator. If
      * records are needed by a non-administrative user who must have explicit
-     * read rights, use searchReadable() instead.
+     * read rights, use {@link searchReadable()} instead.
      *
+     * @param username
+     *     The optional username to which records should be limited, or null
+     *     if all records should be retrieved.
+     * 
      * @param terms
      *     The search terms that must match the returned records.
      *
@@ -88,7 +92,8 @@ public interface UserRecordMapper {
      * @return
      *     The results of the search performed with the given parameters.
      */
-    List<ActivityRecordModel> search(@Param("terms") Collection<ActivityRecordSearchTerm> terms,
+    List<ActivityRecordModel> search(@Param("username") String username,
+            @Param("terms") Collection<ActivityRecordSearchTerm> terms,
             @Param("sortPredicates") List<ActivityRecordSortPredicate> sortPredicates,
             @Param("limit") int limit);
 
@@ -97,11 +102,16 @@ public interface UserRecordMapper {
      * the given terms, sorted by the given predicates. Only records that are
      * associated with data explicitly readable by the given user will be
      * returned. If records are needed by a system administrator (who, by
-     * definition, does not need explicit read rights), use search() instead.
+     * definition, does not need explicit read rights), use {@link search()}
+     * instead.
      *
+     * @param username
+     *     The optional username to which records should be limited, or null
+     *     if all readable records should be retrieved.
+     * 
      * @param user
-     *    The user whose permissions should determine whether a record is
-     *    returned.
+     *     The user whose permissions should determine whether a record is
+     *     returned.
      *
      * @param terms
      *     The search terms that must match the returned records.
@@ -122,7 +132,8 @@ public interface UserRecordMapper {
      * @return
      *     The results of the search performed with the given parameters.
      */
-    List<ActivityRecordModel> searchReadable(@Param("user") UserModel user,
+    List<ActivityRecordModel> searchReadable(@Param("username") String username,
+            @Param("user") UserModel user,
             @Param("terms") Collection<ActivityRecordSearchTerm> terms,
             @Param("sortPredicates") List<ActivityRecordSortPredicate> sortPredicates,
             @Param("limit") int limit,
