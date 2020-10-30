@@ -21,7 +21,6 @@ package org.apache.guacamole.net.auth.simple;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
@@ -33,6 +32,7 @@ import org.apache.guacamole.net.InetGuacamoleSocket;
 import org.apache.guacamole.net.SSLGuacamoleSocket;
 import org.apache.guacamole.net.SimpleGuacamoleTunnel;
 import org.apache.guacamole.net.auth.AbstractConnection;
+import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
 import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
@@ -283,10 +283,11 @@ public class SimpleConnection extends AbstractConnection {
     public Date getLastActive() {
         return null;
     }
-
+    
     @Override
-    public List<ConnectionRecord> getHistory() throws GuacamoleException {
-        return Collections.<ConnectionRecord>emptyList();
+    public ActivityRecordSet<ConnectionRecord> getConnectionHistory()
+            throws GuacamoleException {
+        return new SimpleActivityRecordSet<>();
     }
 
 }

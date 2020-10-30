@@ -134,10 +134,17 @@ public class DelegatingConnection implements Connection {
         return connection.getLastActive();
     }
 
+    @Deprecated
     @Override
     public List<? extends ConnectionRecord> getHistory()
             throws GuacamoleException {
         return connection.getHistory();
+    }
+    
+    @Override
+    public ActivityRecordSet<ConnectionRecord> getConnectionHistory()
+            throws GuacamoleException {
+        return connection.getConnectionHistory();
     }
 
     @Override

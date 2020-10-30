@@ -213,7 +213,7 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
         Map<String, String> parameters = connection.getConfiguration().getParameters();
         
         // Convert parameters to model objects
-        Collection<ConnectionParameterModel> parameterModels = new ArrayList<ConnectionParameterModel>(parameters.size());
+        Collection<ConnectionParameterModel> parameterModels = new ArrayList<>(parameters.size());
         for (Map.Entry<String, String> parameterEntry : parameters.entrySet()) {
 
             // Get parameter name and value
@@ -329,7 +329,7 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
     public Map<String, String> retrieveParameters(ModeledAuthenticatedUser user,
             String identifier) {
 
-        Map<String, String> parameterMap = new HashMap<String, String>();
+        Map<String, String> parameterMap = new HashMap<>();
 
         // Determine whether we have permission to read parameters
         boolean canRetrieveParameters;
@@ -382,7 +382,7 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
     protected List<ConnectionRecord> getObjectInstances(List<ConnectionRecordModel> models) {
 
         // Create new list of records by manually converting each model
-        List<ConnectionRecord> objects = new ArrayList<ConnectionRecord>(models.size());
+        List<ConnectionRecord> objects = new ArrayList<>(models.size());
         for (ConnectionRecordModel model : models)
             objects.add(getObjectInstance(model));
 
@@ -411,28 +411,16 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
             ModeledConnection connection) throws GuacamoleException {
 
         String identifier = connection.getIdentifier();
-
-        // Retrieve history only if READ permission is granted
-        if (hasObjectPermission(user, identifier, ObjectPermission.Type.READ)) {
-
-            // Retrieve history
-            List<ConnectionRecordModel> models = connectionRecordMapper.select(identifier);
-
-            // Get currently-active connections
-            List<ConnectionRecord> records = new ArrayList<ConnectionRecord>(tunnelService.getActiveConnections(connection));
-            Collections.reverse(records);
-
-            // Add past connections from model objects
-            for (ConnectionRecordModel model : models)
-                records.add(getObjectInstance(model));
-
-            // Return converted history list
-            return records;
-
-        }
-
-        // The user does not have permission to read the history
-        throw new GuacamoleSecurityException("Permission denied.");
+        
+        // Get current active connections.
+        List<ConnectionRecord> records = new ArrayList<>(tunnelService.getActiveConnections(connection));
+        Collections.reverse(records);
+        
+        // Add in the history records.
+        records.addAll(retrieveHistory(identifier, user, Collections.emptyList(),
+                Collections.emptyList(), Integer.MAX_VALUE));
+        
+        return records;
 
     }
 
@@ -442,6 +430,60 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
      * the given terms and sorted by the given predicates. Only history records
      * associated with data that the given user can read are returned.
      *
+     * @param identifier
+     *     The optional connection identifier for which history records should
+     *     be retrieved, or null if all readable records should be retrieved.
+     * 
+     * @param user
+     *     The user retrieving the connection history.
+     *
+     * @param requiredContents
+     *     The search terms that must be contained somewhere within each of the
+     *     returned records.
+     *
+     * @param sortPredicates
+     *     A list of predicates to sort the returned records by, in order of
+     *     priority.
+     *
+     * @param limit
+     *     The maximum number of records that should be returned.
+     *
+     * @return
+     *     The connection history of the given connection, including any
+     *     active connections.
+     *
+     * @throws GuacamoleException
+     *     If permission to read the connection history is denied.
+     */
+    public List<ConnectionRecord> retrieveHistory(String identifier,
+            ModeledAuthenticatedUser user,
+            Collection<ActivityRecordSearchTerm> requiredContents,
+            List<ActivityRecordSortPredicate> sortPredicates, int limit)
+            throws GuacamoleException {
+
+        List<ConnectionRecordModel> searchResults;
+
+        // Bypass permission checks if the user is privileged
+        if (user.isPrivileged())
+            searchResults = connectionRecordMapper.search(identifier, requiredContents,
+                    sortPredicates, limit);
+
+        // Otherwise only return explicitly readable history records
+        else
+            searchResults = connectionRecordMapper.searchReadable(identifier,
+                    user.getUser().getModel(), requiredContents, sortPredicates,
+                    limit, user.getEffectiveUserGroups());
+
+        return getObjectInstances(searchResults);
+
+    }
+    
+    /**
+     * Retrieves the connection history records matching the given criteria.
+     * Retrieves up to <code>limit</code> connection history records matching
+     * the given terms and sorted by the given predicates. Only history records
+     * associated with data that the given user can read are returned.
+     * 
      * @param user
      *     The user retrieving the connection history.
      *
@@ -467,22 +509,9 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
             Collection<ActivityRecordSearchTerm> requiredContents,
             List<ActivityRecordSortPredicate> sortPredicates, int limit)
             throws GuacamoleException {
-
-        List<ConnectionRecordModel> searchResults;
-
-        // Bypass permission checks if the user is privileged
-        if (user.isPrivileged())
-            searchResults = connectionRecordMapper.search(requiredContents,
-                    sortPredicates, limit);
-
-        // Otherwise only return explicitly readable history records
-        else
-            searchResults = connectionRecordMapper.searchReadable(
-                    user.getUser().getModel(), requiredContents, sortPredicates,
-                    limit, user.getEffectiveUserGroups());
-
-        return getObjectInstances(searchResults);
-
+        
+        return retrieveHistory(null, user, requiredContents, sortPredicates, limit);
+        
     }
 
     /**
