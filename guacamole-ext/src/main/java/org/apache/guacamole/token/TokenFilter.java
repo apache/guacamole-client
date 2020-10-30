@@ -222,12 +222,12 @@ public class TokenFilter {
                     if (modifier != null && !modifier.isEmpty()) {
                         switch (modifier) {
                             // Switch token to upper-case
-                            case "upper":
+                            case "UPPER":
                                 output.append(tokenValue.toUpperCase());
                                 break;
                                 
                             // Switch token to lower case
-                            case "lower":
+                            case "LOWER":
                                 output.append(tokenValue.toLowerCase());
                                 break;
                                 
