@@ -160,21 +160,19 @@
             guacamole_user_history.end_date
         FROM guacamole_user_history
 
-        <!-- Restrict to readable users -->
-        JOIN guacamole_user_permission ON
-                guacamole_user_history.user_id       = guacamole_user_permission.affected_user_id
-            AND <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="guacamole_user_permission.entity_id"/>
-                <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
-            </include>
-            AND guacamole_user_permission.permission = 'READ'
-
         <!-- Search terms -->
         <where>
+
+            <!-- Restrict to readable users -->
+            guacamole_connection_history.user_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.user.UserMapper.getReadableIDs">
+                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"   value="effectiveGroups"/>
+                </include>
+            )
             
             <if test="username != null">
-                guacamole_entity.name = #{username,jdbcType=VARCHAR}
+                AND guacamole_entity.name = #{username,jdbcType=VARCHAR}
             </if>
             
             <foreach collection="terms" item="term" open=" AND " separator=" AND ">

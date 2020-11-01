@@ -49,20 +49,45 @@
         WHERE [guacamole_entity].type = 'USER_GROUP'
     </select>
 
+    <!--
+      * SQL fragment which lists the IDs of all user groups readable by the
+      * entity having the given entity ID. If group identifiers are provided,
+      * the IDs of the entities for all groups having those identifiers are
+      * tested, as well. Disabled groups are ignored.
+      *
+      * @param entityID
+      *     The ID of the specific entity to test against.
+      *
+      * @param groups
+      *     A collection of group identifiers to additionally test against.
+      *     Though this functionality is optional, a collection must always be
+      *     given, even if that collection is empty.
+      -->
+    <sql id="getReadableIDs">
+        SELECT DISTINCT [guacamole_user_group_permission].affected_user_group_id
+        FROM [guacamole_user_group_permission]
+        WHERE
+            <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"   value="entity_id"/>
+                <property name="entityID" value="${entityID}"/>
+                <property name="groups"   value="${groups}"/>
+            </include>
+            AND permission = 'READ'
+    </sql>
+
     <!-- Select names of all readable groups -->
     <select id="selectReadableIdentifiers" resultType="string">
         SELECT [guacamole_entity].name
         FROM [guacamole_user_group]
         JOIN [guacamole_entity] ON [guacamole_user_group].entity_id = [guacamole_entity].entity_id
-        JOIN [guacamole_user_group_permission] ON affected_user_group_id = [guacamole_user_group].user_group_id
         WHERE
-            <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="[guacamole_user_group_permission].entity_id"/>
-                <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
-            </include>
+            [guacamole_user_group].user_group_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.usergroup.UserGroupMapper.getReadableIDs">
+                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"   value="effectiveGroups"/>
+                </include>
+            )
             AND [guacamole_entity].type = 'USER_GROUP'
-            AND permission = 'READ'
     </select>
 
     <!-- Select multiple groups by name -->
@@ -110,19 +135,18 @@
             disabled
         FROM [guacamole_user_group]
         JOIN [guacamole_entity] ON [guacamole_user_group].entity_id = [guacamole_entity].entity_id
-        JOIN [guacamole_user_group_permission] ON affected_user_group_id = [guacamole_user_group].user_group_id
         WHERE [guacamole_entity].name IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
             </foreach>
             AND [guacamole_entity].type = 'USER_GROUP'
-            AND <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="[guacamole_user_group_permission].entity_id"/>
-                <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
-            </include>
-            AND permission = 'READ';
+            AND [guacamole_user_group].user_group_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.usergroup.UserGroupMapper.getReadableIDs">
+                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"   value="effectiveGroups"/>
+                </include>
+            );
 
         SELECT
             [guacamole_user_group_attribute].user_group_id,
@@ -131,19 +155,18 @@
         FROM [guacamole_user_group_attribute]
         JOIN [guacamole_user_group] ON [guacamole_user_group].user_group_id = [guacamole_user_group_attribute].user_group_id
         JOIN [guacamole_entity] ON [guacamole_user_group].entity_id = [guacamole_entity].entity_id
-        JOIN [guacamole_user_group_permission] ON affected_user_group_id = [guacamole_user_group].user_group_id
         WHERE [guacamole_entity].name IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
             </foreach>
             AND [guacamole_entity].type = 'USER_GROUP'
-            AND <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="[guacamole_user_group_permission].entity_id"/>
-                <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
-            </include>
-            AND permission = 'READ';
+            AND  [guacamole_user_group].user_group_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.usergroup.UserGroupMapper.getReadableIDs">
+                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"   value="effectiveGroups"/>
+                </include>
+            );
 
     </select>
 
