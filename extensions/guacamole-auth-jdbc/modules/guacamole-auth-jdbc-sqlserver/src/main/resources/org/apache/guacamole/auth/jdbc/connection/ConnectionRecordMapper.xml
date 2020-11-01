@@ -168,31 +168,27 @@
         LEFT JOIN [guacamole_connection]            ON [guacamole_connection_history].connection_id = [guacamole_connection].connection_id
         LEFT JOIN [guacamole_user]                  ON [guacamole_connection_history].user_id       = [guacamole_user].user_id
 
-        <!-- Restrict to readable connections -->
-        JOIN [guacamole_connection_permission] ON
-                [guacamole_connection_history].connection_id = [guacamole_connection_permission].connection_id
-            AND <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="[guacamole_connection_permission].entity_id"/>
-                <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
-            </include>
-            AND [guacamole_connection_permission].permission = 'READ'
-
-        <!-- Restrict to readable users -->
-        JOIN [guacamole_user_permission] ON
-                [guacamole_connection_history].user_id = [guacamole_user_permission].affected_user_id
-            AND <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="[guacamole_user_permission].entity_id"/>
-                <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
-            </include>
-            AND [guacamole_user_permission].permission = 'READ'
-
         <!-- Search terms -->
         <where>
             
+            <!-- Restrict to readable connections -->
+            [guacamole_connection_history].connection_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.connection.ConnectionMapper.getReadableIDs">
+                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"   value="effectiveGroups"/>
+                </include>
+            )
+
+            <!-- Restrict to readable users -->
+            AND [guacamole_connection_history].user_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.user.UserMapper.getReadableIDs">
+                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"   value="effectiveGroups"/>
+                </include>
+            )
+
             <if test="identifier != null">
-                [guacamole_connection_history].connection_id = #{identifier,jdbcType=INTEGER}
+                AND [guacamole_connection_history].connection_id = #{identifier,jdbcType=INTEGER}
             </if>
             
             <foreach collection="terms" item="term" open=" AND " separator=" AND ">
