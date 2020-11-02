@@ -20,9 +20,9 @@
 package org.apache.guacamole.auth.cas;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.GuacamoleException;
@@ -34,12 +34,19 @@ import org.apache.guacamole.auth.cas.form.CASTicketField;
 import org.apache.guacamole.auth.cas.ticket.TicketValidationService;
 import org.apache.guacamole.auth.cas.user.CASAuthenticatedUser;
 import org.apache.guacamole.language.TranslatableMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service providing convenience functions for the CAS AuthenticationProvider
  * implementation.
  */
 public class AuthenticationProviderService {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
 
     /**
      * Service for retrieving CAS configuration information.
@@ -52,12 +59,6 @@ public class AuthenticationProviderService {
      */
     @Inject
     private TicketValidationService ticketService;
-
-    /**
-     * Provider for AuthenticatedUser objects.
-     */
-    @Inject
-    private Provider<CASAuthenticatedUser> authenticatedUserProvider;
 
     /**
      * Returns an AuthenticatedUser representing the user authenticated by the
@@ -82,11 +83,13 @@ public class AuthenticationProviderService {
         if (request != null) {
             String ticket = request.getParameter(CASTicketField.PARAMETER_NAME);
             if (ticket != null) {
-                Map<String, String> tokens = ticketService.validateTicket(ticket, credentials);
+                CASAuthenticatedUser authenticatedUser =
+                    ticketService.validateTicket(ticket, credentials);
                 String username = credentials.getUsername();
                 if (username != null) {
-                    CASAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-                    authenticatedUser.init(username, credentials, tokens);
+                    Map<String, String> tokens = authenticatedUser.getTokens();
+                    Set<String> effectiveGroups = authenticatedUser.getEffectiveUserGroups();
+                    authenticatedUser.init(username, credentials, tokens, effectiveGroups);
                     return authenticatedUser;
                 }
             }
