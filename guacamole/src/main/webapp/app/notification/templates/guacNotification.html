@@ -1,4 +1,5 @@
-<div class="notification" ng-class="notification.className">
+<form class="notification" ng-class="notification.className"
+      ng-submit="notification.formSubmitCallback()">
 
     <!-- Notification title -->
     <div ng-show="notification.title" class="title-bar">
@@ -11,6 +12,15 @@
         <p ng-show="notification.text" class="text"
            translate="{{notification.text.key}}"
            translate-values="{{notification.text.variables}}"></p>
+
+        <!-- Arbitrary parameters -->
+        <div class="parameters" ng-show="notification.forms">
+            <guac-form
+                namespace="notification.formNamespace"
+                content="notification.forms"
+                model="notification.formModel"
+                model-only="true"></guac-form>
+        </div>
 
         <!-- Current progress -->
         <div class="progress" ng-show="notification.progress"><div class="bar" ng-show="progressPercent" ng-style="{'width': progressPercent + '%'}"></div><div
