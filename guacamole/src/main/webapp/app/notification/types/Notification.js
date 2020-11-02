@@ -58,6 +58,41 @@ angular.module('notification').factory('Notification', [function defineNotificat
         this.text = template.text;
 
         /**
+         * The translation namespace of the translation strings that will
+         * be generated for all fields within the notification. This namespace
+         * is absolutely required if form fields will be included in the
+         * notification.
+         *
+         * @type String
+         */
+        this.formNamespace = template.formNamespace;
+
+        /**
+         * Optional form content to display. This may be a form, an array of
+         * forms, or a simple array of fields.
+         *
+         * @type Form[]|Form|Field[]|Field
+         */
+        this.forms = template.forms;
+
+        /**
+         * The object which will receive all field values. Each field value
+         * will be assigned to the property of this object having the same
+         * name.
+         *
+         * @type Object.<String, String>
+         */
+        this.formModel = template.model;
+
+        /**
+         * The function to invoke when the form is submitted, if form fields
+         * are present within the notification.
+         *
+         * @type Function
+         */
+        this.formSubmitCallback = template.formSubmitCallback;
+
+        /**
          * An array of all actions available to the user in response to this
          * notification.
          *

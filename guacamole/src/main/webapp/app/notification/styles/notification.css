@@ -101,3 +101,44 @@
 .notification .progress .text {
     position: relative;
 }
+
+.notification .parameters {
+    width: 100%;
+}
+
+.notification .parameters .fields {
+    display: table;
+    width: 100%;
+}
+
+.notification .parameters .fields .labeled-field {
+    display: table-row;
+}
+
+.notification .parameters .fields .field-header,
+.notification .parameters .fields .form-field {
+    text-align: left;
+    display: table-cell;
+    padding: .125em;
+    vertical-align: top;
+}
+
+.notification .parameters .fields .field-header {
+    padding-right: 1em;
+}
+
+.notification .parameters .fields .field-header {
+    width: 0;
+}
+
+.notification .parameters .fields .form-field {
+    width: 100%;
+}
+
+.notification .parameters input[type=text],
+.notification .parameters input[type=email],
+.notification .parameters input[type=number],
+.notification .parameters input[type=password],
+.notification .parameters textarea {
+    max-width: 100%;
+}

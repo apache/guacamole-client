@@ -732,8 +732,14 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         return $scope.client && $scope.client.clientState.tunnelUnstable;
     };
 
-    // Show status dialog when connection status changes
-    $scope.$watch('client.clientState.connectionState', function clientStateChanged(connectionState) {
+    /**
+     * Notifies the user that the connection state has changed.
+     *
+     * @param {String} connectionState
+     *     The current connection state, as defined by
+     *     ManagedClientState.ConnectionState.
+     */
+    var notifyConnectionState = function notifyConnectionState(connectionState) {
 
         // Hide any existing status
         guacNotification.showStatus(false);
@@ -834,6 +840,105 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Hide status for all other states
         else
             guacNotification.showStatus(false);
+
+    };
+
+    /**
+     * Prompts the user to enter additional connection parameters. If the
+     * protocol and associated parameters of the underlying connection are not
+     * yet known, this function has no effect and should be re-invoked once
+     * the parameters are known.
+     *
+     * @param {Object.<String, String>} requiredParameters
+     *     The set of all parameters requested by the server via "required"
+     *     instructions, where each object key is the name of a requested
+     *     parameter and each value is the current value entered by the user.
+     */
+    var notifyParametersRequired = function notifyParametersRequired(requiredParameters) {
+
+        /**
+         * Action which submits the current set of parameter values, requesting
+         * that the connection continue.
+         */
+        var SUBMIT_PARAMETERS = {
+            name      : "CLIENT.ACTION_CONTINUE",
+            className : "button",
+            callback  : function submitParameters() {
+                if ($scope.client) {
+                    var params = $scope.client.requiredParameters;
+                    $scope.client.requiredParameters = null;
+                    ManagedClient.sendArguments($scope.client, params);
+                }
+            }
+        };
+
+        /**
+         * Action which cancels submission of additional parameters and
+         * disconnects from the current connection.
+         */
+        var CANCEL_PARAMETER_SUBMISSION = {
+            name      : "CLIENT.ACTION_CANCEL",
+            className : "button",
+            callback  : function cancelSubmission() {
+                $scope.client.requiredParameters = null;
+                $scope.disconnect();
+            }
+        };
+
+        // Attempt to prompt for parameters only if the parameters that apply
+        // to the underlying connection are known
+        if (!$scope.client.protocol || !$scope.client.forms)
+            return;
+
+        // Hide any existing status
+        guacNotification.showStatus(false);
+
+        // Prompt for parameters
+        guacNotification.showStatus({
+            formNamespace : Protocol.getNamespace($scope.client.protocol),
+            forms : $scope.client.forms,
+            formModel : requiredParameters,
+            formSubmitCallback : SUBMIT_PARAMETERS.callback,
+            actions : [ SUBMIT_PARAMETERS, CANCEL_PARAMETER_SUBMISSION ]
+        });
+
+    };
+
+    /**
+     * Returns whether the given connection state allows for submission of
+     * connection parameters via "argv" instructions.
+     *
+     * @param {String} connectionState
+     *     The connection state to test, as defined by
+     *     ManagedClientState.ConnectionState.
+     *
+     * @returns {boolean}
+     *     true if the given connection state allows submission of connection
+     *     parameters via "argv" instructions, false otherwise.
+     */
+    var canSubmitParameters = function canSubmitParameters(connectionState) {
+        return (connectionState === ManagedClientState.ConnectionState.WAITING ||
+                connectionState === ManagedClientState.ConnectionState.CONNECTED);
+    };
+
+    // Show status dialog when connection status changes
+    $scope.$watchGroup([
+        'client.clientState.connectionState',
+        'client.requiredParameters',
+        'client.protocol',
+        'client.forms'
+    ], function clientStateChanged(newValues) {
+
+        var connectionState = newValues[0];
+        var requiredParameters = newValues[1];
+
+        // Prompt for parameters only if parameters can actually be submitted
+        if (requiredParameters && canSubmitParameters(connectionState))
+            notifyParametersRequired(requiredParameters);
+
+        // Otherwise, just show general connection state
+        else
+            notifyConnectionState(connectionState);
 
     });
 

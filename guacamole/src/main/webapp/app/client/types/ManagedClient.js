@@ -167,6 +167,16 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         });
 
         /**
+         * The current state of all parameters requested by the server via
+         * "required" instructions, where each object key is the name of a
+         * requested parameter and each value is the current value entered by
+         * the user or null if no parameters are currently being requested.
+         *
+         * @type Object.<String, String>
+         */
+        this.requiredParameters = null;
+
+        /**
          * All uploaded files. As files are uploaded, their progress can be
          * observed through the elements of this array. It is intended that
          * this array be manipulated externally as needed.
@@ -578,6 +588,16 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             });
         };
 
+        // Handle any received prompts
+        client.onrequired = function onrequired(parameters) {
+            $rootScope.$apply(function promptUser() {
+                managedClient.requiredParameters = {};
+                angular.forEach(parameters, function populateParameter(name) {
+                    managedClient.requiredParameters[name] = '';
+                });
+            });
+        };
+
         // Manage the client display
         managedClient.managedDisplay = ManagedDisplay.getInstance(client.getDisplay());
 
@@ -734,6 +754,29 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         var managedArgument = managedClient.arguments[name];
         if (managedArgument && ManagedArgument.setValue(managedArgument, value))
             delete managedClient.arguments[name];
+    };
+
+    /**
+     * Sends the given connection parameter values using "argv" streams,
+     * updating the behavior of the connection in real-time if the server is
+     * expecting or requiring these parameters.
+     *
+     * @param {ManagedClient} managedClient
+     *     The ManagedClient instance associated with the active connection
+     *     being modified.
+     *
+     * @param {Object.<String, String>} values
+     *     The set of values to attempt to assign to corresponding connection
+     *     parameters, where each object key is the connection parameter being
+     *     set.
+     */
+    ManagedClient.sendArguments = function sendArguments(managedClient, values) {
+        angular.forEach(values, function sendArgument(value, name) {
+            var stream = managedClient.client.createArgumentValueStream("text/plain", name);
+            var writer = new Guacamole.StringWriter(stream);
+            writer.sendText(value);
+            writer.sendEnd();
+        });
     };
 
     /**
