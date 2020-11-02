@@ -40,7 +40,16 @@ public enum GuacamoleProtocolCapability {
      * {@link GuacamoleProtocolVersion#VERSION_1_1_0}.
      */
     PROTOCOL_VERSION_DETECTION(GuacamoleProtocolVersion.VERSION_1_1_0),
-    
+
+    /**
+     * Support for the "required" instruction. The "required" instruction
+     * allows the server to explicitly request connection parameters from the
+     * client without which the connection cannot continue, such as user
+     * credentials. Support for this instruction was introduced in
+     * {@link GuacamoleProtocolVersion#VERSION_1_3_0}.
+     */
+    REQUIRED_INSTRUCTION(GuacamoleProtocolVersion.VERSION_1_3_0),
+
     /**
      * Support for the "timezone" handshake instruction. The "timezone"
      * instruction allows the client to request that the server forward their
