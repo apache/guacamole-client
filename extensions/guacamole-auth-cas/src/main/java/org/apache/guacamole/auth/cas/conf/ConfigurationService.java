@@ -85,4 +85,40 @@ public class ConfigurationService {
         return environment.getProperty(CASGuacamoleProperties.CAS_CLEARPASS_KEY);
     }
 
+    /**
+     * Returns the attribute used to determine group memberships
+     * in CAS, or null if not defined.
+     *
+     * @return
+     *     The attribute name used to determine group memberships in CAS,
+     *     null if not defined.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public String getGroupAttribute() throws GuacamoleException {
+        return environment.getProperty(CASGuacamoleProperties.CAS_GROUP_ATTRIBUTE);
+    }
+
+    /**
+     * Returns the full DN specification used to format group DN's in CAS,
+     * or null if not defined.
+     * If CAS is backed by LDAP, it will return an LDAP DN, such as
+     * CN=foo,OU=bar,DC=example,DC=com.  This DN specification may be set to
+     * CN=%s,OU=bar,DC=example,DC=com and given the example above, would result
+     * in a group called "foo".  CAS backed by something other than LDAP would
+     * likely not need this.
+     *
+     * @return
+     *     The DN format specification.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public String getGroupDnFormat() throws GuacamoleException {
+        return environment.getProperty(CASGuacamoleProperties.CAS_GROUP_DN_FORMAT);
+    }
+
+
+
 }
