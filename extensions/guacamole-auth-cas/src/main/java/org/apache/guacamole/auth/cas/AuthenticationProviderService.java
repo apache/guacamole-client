@@ -85,13 +85,7 @@ public class AuthenticationProviderService {
             if (ticket != null) {
                 CASAuthenticatedUser authenticatedUser =
                     ticketService.validateTicket(ticket, credentials);
-                String username = credentials.getUsername();
-                if (username != null) {
-                    Map<String, String> tokens = authenticatedUser.getTokens();
-                    Set<String> effectiveGroups = authenticatedUser.getEffectiveUserGroups();
-                    authenticatedUser.init(username, credentials, tokens, effectiveGroups);
-                    return authenticatedUser;
-                }
+                return authenticatedUser;
             }
         }
 

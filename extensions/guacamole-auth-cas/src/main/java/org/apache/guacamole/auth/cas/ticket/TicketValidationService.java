@@ -157,10 +157,11 @@ public class TicketValidationService {
                         CAS_ATTRIBUTE_TOKEN_PREFIX);
                 Object value = attr.getValue();
                 if (value != null) {
-                    tokens.put(tokenName, value.toString());
+                    String attrValue = value.toString();
+                    tokens.put(tokenName, attrValue);
                     if (attr.getKey().equals(groupAttribute)) {
-                        String valueWithoutBrackets = value.toString().substring(1,value.toString().length()-1);
-                        Matcher matcher = pattern.matcher(valueWithoutBrackets);
+                        Matcher matcher =
+                            pattern.matcher(attrValue.substring(1,attrValue.length()-1));
                         while (matcher.find()) {
                             effectiveGroups.add(matcher.group(1));
                         }
@@ -169,6 +170,7 @@ public class TicketValidationService {
             }
 
             CASAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+            authenticatedUser.init(username, credentials, tokens, effectiveGroups);
             return authenticatedUser;
         } 
         catch (TicketValidationException e) {
