@@ -39,16 +39,15 @@
         FROM guacamole_user_group_member
         JOIN guacamole_entity ON guacamole_entity.entity_id = guacamole_user_group_member.member_entity_id
         JOIN guacamole_user ON guacamole_user.entity_id = guacamole_entity.entity_id
-        JOIN guacamole_user_permission ON affected_user_id = guacamole_user.user_id
         WHERE
-            <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="guacamole_user_permission.entity_id"/>
-                <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
-            </include>
+            guacamole_user.user_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.user.UserMapper.getReadableIDs">
+                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"   value="effectiveGroups"/>
+                </include>
+            )
             AND guacamole_user_group_member.user_group_id = #{parent.objectID,jdbcType=INTEGER}
             AND guacamole_entity.type = 'USER'
-            AND permission = 'READ'
     </select>
 
     <!-- Delete member users by name -->

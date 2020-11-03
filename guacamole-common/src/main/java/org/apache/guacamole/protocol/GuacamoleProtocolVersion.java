@@ -47,10 +47,17 @@ public class GuacamoleProtocolVersion {
     public static final GuacamoleProtocolVersion VERSION_1_1_0 = new GuacamoleProtocolVersion(1, 1, 0);
 
     /**
+     * Protocol version 1.3.0, which introduces the "required" instruction
+     * allowing the server to explicitly request connection parameters from the
+     * client.
+     */
+    public static final GuacamoleProtocolVersion VERSION_1_3_0 = new GuacamoleProtocolVersion(1, 3, 0);
+
+    /**
      * The most recent version of the Guacamole protocol at the time this
      * version of GuacamoleProtocolVersion was built.
      */
-    public static final GuacamoleProtocolVersion LATEST = VERSION_1_1_0;
+    public static final GuacamoleProtocolVersion LATEST = VERSION_1_3_0;
     
     /**
      * A regular expression that matches the VERSION_X_Y_Z pattern, where

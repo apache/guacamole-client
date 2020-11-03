@@ -22,8 +22,6 @@ package org.apache.guacamole.rest.connection;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -32,8 +30,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.net.auth.Connection;
-import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.rest.directory.DirectoryView;
@@ -43,13 +41,16 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
-import org.apache.guacamole.rest.history.APIConnectionRecord;
+import org.apache.guacamole.net.auth.simple.SimpleActivityRecordSet;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.rest.directory.DirectoryObjectResource;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.directory.DirectoryResource;
 import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
+import org.apache.guacamole.rest.history.ConnectionHistoryResource;
 import org.apache.guacamole.rest.sharingprofile.APISharingProfile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A REST resource which abstracts the operations available on an existing
@@ -59,6 +60,11 @@ import org.apache.guacamole.rest.sharingprofile.APISharingProfile;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ConnectionResource extends DirectoryObjectResource<Connection, APIConnection> {
 
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ConnectionResource.class);
+    
     /**
      * The UserContext associated with the Directory which contains the
      * Connection exposed by this resource.
@@ -150,18 +156,29 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
      * @throws GuacamoleException
      *     If an error occurs while retrieving the connection history.
      */
-    @GET
+    @SuppressWarnings("deprecation")
     @Path("history")
-    public List<APIConnectionRecord> getConnectionHistory()
+    public ConnectionHistoryResource getConnectionHistory()
             throws GuacamoleException {
 
-        // Retrieve the requested connection's history
-        List<APIConnectionRecord> apiRecords = new ArrayList<APIConnectionRecord>();
-        for (ConnectionRecord record : connection.getHistory())
-            apiRecords.add(new APIConnectionRecord(record));
-
-        // Return the converted history
-        return apiRecords;
+        // Try the current getConnectionHistory() method, first, for connection history.
+        try {
+            return new ConnectionHistoryResource(connection.getConnectionHistory());
+        }
+        catch (GuacamoleUnsupportedException e) {
+            logger.debug("Call to getConnectionHistory() is unsupported, falling back to getHistory().", e);
+        }
+        
+        // Fall back to the deprecated getHistory() method.
+        try {
+            return new ConnectionHistoryResource(new SimpleActivityRecordSet<>(connection.getHistory()));
+        }
+        catch (GuacamoleUnsupportedException e) {
+            logger.debug("Call to getHistory() is unsupported, no connection history records will be returned.", e);
+        }
+        
+        // If all fails, return an empty connection history set.
+        return new ConnectionHistoryResource(new SimpleActivityRecordSet<>());
 
     }
 
@@ -184,7 +201,7 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
 
         // Produce subset of all SharingProfiles, containing only those which
         // are associated with this connection
-        Directory<SharingProfile> sharingProfiles = new DirectoryView<SharingProfile>(
+        Directory<SharingProfile> sharingProfiles = new DirectoryView<>(
             userContext.getSharingProfileDirectory(),
             connection.getSharingProfileIdentifiers()
         );

@@ -34,7 +34,7 @@
     <!-- Select all permissions for a given entity -->
     <select id="select" resultMap="UserGroupPermissionResultMap">
 
-        SELECT
+        SELECT DISTINCT
             #{entity.entityID,jdbcType=INTEGER} AS entity_id,
             permission,
             affected_entity.name AS affected_name

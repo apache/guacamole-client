@@ -48,7 +48,7 @@ public abstract class ModeledActivityRecordSet<RecordType extends ActivityRecord
      * strings within the collection will be excluded from the results.
      */
     private final Set<ActivityRecordSearchTerm> requiredContents =
-            new HashSet<ActivityRecordSearchTerm>();
+            new HashSet<>();
     
     /**
      * The maximum number of history records that should be returned by a call
@@ -62,7 +62,7 @@ public abstract class ModeledActivityRecordSet<RecordType extends ActivityRecord
      * properties.
      */
     private final List<ActivityRecordSortPredicate> sortPredicates =
-            new ArrayList<ActivityRecordSortPredicate>();
+            new ArrayList<>();
 
     /**
      * Retrieves the history records matching the given criteria. Retrieves up
