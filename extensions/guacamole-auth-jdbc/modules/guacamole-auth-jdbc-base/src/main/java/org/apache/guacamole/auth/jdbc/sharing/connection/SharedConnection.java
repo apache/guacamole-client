@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.jdbc.sharing.connection;
 import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
@@ -31,7 +30,6 @@ import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
-import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
@@ -150,12 +148,6 @@ public class SharedConnection implements Connection {
     @Override
     public Date getLastActive() {
         return null;
-    }
-
-    @Override
-    public List<? extends ConnectionRecord> getHistory()
-            throws GuacamoleException {
-        return Collections.<ConnectionRecord>emptyList();
     }
 
     @Override

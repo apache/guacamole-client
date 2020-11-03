@@ -21,7 +21,6 @@ package org.apache.guacamole.net.auth;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -85,18 +84,7 @@ public abstract class AbstractUser extends AbstractIdentifiable
     public Date getLastActive() {
         return null;
     }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation simply an immutable, empty list. Implementations
-     * that wish to expose user login history should override this function.
-     */
-    @Override
-    public List<ActivityRecord> getHistory() throws GuacamoleException {
-        return Collections.emptyList();
-    }
-
+    
     /**
      * {@inheritDoc}
      *

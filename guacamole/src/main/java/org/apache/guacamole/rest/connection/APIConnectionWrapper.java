@@ -19,15 +19,13 @@
 
 package org.apache.guacamole.rest.connection;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
-import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
@@ -123,24 +121,19 @@ public class APIConnectionWrapper implements Connection {
     }
 
     @Override
-    public Set<String> getSharingProfileIdentifiers() {
-        throw new UnsupportedOperationException("Operation not supported.");
+    public Set<String> getSharingProfileIdentifiers() throws GuacamoleException {
+        throw new GuacamoleUnsupportedException("Operation not supported.");
     }
 
     @Override
     public GuacamoleTunnel connect(GuacamoleClientInformation info,
             Map<String, String> tokens) throws GuacamoleException {
-        throw new UnsupportedOperationException("Operation not supported.");
+        throw new GuacamoleUnsupportedException("Operation not supported.");
     }
 
     @Override
     public Date getLastActive() {
         return null;
-    }
-
-    @Override
-    public List<? extends ConnectionRecord> getHistory() throws GuacamoleException {
-        return Collections.<ConnectionRecord>emptyList();
     }
     
 }

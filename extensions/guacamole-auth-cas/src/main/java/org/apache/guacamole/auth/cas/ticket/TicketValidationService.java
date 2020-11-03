@@ -93,7 +93,7 @@ public class TicketValidationService {
      *     password values in.
      *
      * @return
-     *     The CASAuthenticatedUser instance returned by the CAS server.
+     *     A CASAuthenticatedUser instance containing the ticket data returned by the CAS server.
      *
      * @throws GuacamoleException
      *     If the ID ticket is not valid or guacamole.properties could
@@ -140,15 +140,15 @@ public class TicketValidationService {
             String groupTemplate = "";
             if (groupDnFormat != null) {
                 // if CAS is backended to LDAP, groups come in as RFC4514 DN
-                // syntax.  If cas-group-dn-format is set, this strips
-                // an entry such as "CN=Foo,OU=Bar,DC=example,DC=com" to
-                // "Foo"
+                // syntax.  If cas-group-dn-format is set, this strips an
+                // entry such as "CN=Foo,OU=Bar,DC=example,DC=com" to "Foo"
                 groupTemplate = groupDnFormat.replace("%s","([A-Za-z0-9_\\(\\)\\-\\.\\s+]+)");
                 // the underlying parser aggregates all instances of the same
                 // attribute, so we need to be able to parse them out
                 groupTemplate=groupTemplate+",*\\s*";
-            } else {
-               groupTemplate = "([A-Za-z0-9_\\(\\)\\-\\.\\s+]+,*\\s*)";
+            }
+            else {
+                groupTemplate = "([A-Za-z0-9_\\(\\)\\-\\.\\s+]+,*\\s*)";
             }
             Pattern pattern = Pattern.compile(groupTemplate);
 

@@ -83,9 +83,7 @@ public class AuthenticationProviderService {
         if (request != null) {
             String ticket = request.getParameter(CASTicketField.PARAMETER_NAME);
             if (ticket != null) {
-                CASAuthenticatedUser authenticatedUser =
-                    ticketService.validateTicket(ticket, credentials);
-                return authenticatedUser;
+                return ticketService.validateTicket(ticket, credentials);
             }
         }
 

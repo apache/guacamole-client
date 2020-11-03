@@ -105,25 +105,32 @@
         FROM guacamole_user_history
 
         <!-- Search terms -->
-        <foreach collection="terms" item="term"
-                 open="WHERE " separator=" AND ">
-            (
+        <where>
+            
+            <if test="username != null">
+                guacamole_user_history.username = #{username,jdbcType=VARCHAR}
+            </if>
+            
+            <foreach collection="terms" item="term" open=" AND " separator=" AND ">
+                (
 
-                guacamole_user_history.user_id IN (
-                    SELECT user_id
-                    FROM guacamole_user
-                    JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
-                    WHERE
-                            POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
-                        AND guacamole_entity.type = 'USER'),
+                    guacamole_user_history.user_id IN (
+                        SELECT user_id
+                        FROM guacamole_user
+                        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+                        WHERE
+                                POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
+                            AND guacamole_entity.type = 'USER'),
+                    )
+
+                    <if test="term.startDate != null and term.endDate != null">
+                        OR start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP}
+                    </if>
+
                 )
-
-                <if test="term.startDate != null and term.endDate != null">
-                    OR start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP}
-                </if>
-
-            )
-        </foreach>
+            </foreach>
+            
+        </where>
 
         <!-- Bind sort property enum values for sake of readability -->
         <bind name="START_DATE" value="@org.apache.guacamole.net.auth.ActivityRecordSet$SortableProperty@START_DATE"/>
@@ -153,36 +160,41 @@
             guacamole_user_history.end_date
         FROM guacamole_user_history
 
-        <!-- Restrict to readable users -->
-        JOIN guacamole_user_permission ON
-                guacamole_user_history.user_id       = guacamole_user_permission.affected_user_id
-            AND <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="guacamole_user_permission.entity_id"/>
-                <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
-            </include>
-            AND guacamole_user_permission.permission = 'READ'
-
         <!-- Search terms -->
-        <foreach collection="terms" item="term"
-                 open="WHERE " separator=" AND ">
-            (
+        <where>
 
-                guacamole_user_history.user_id IN (
-                    SELECT user_id
-                    FROM guacamole_user
-                    JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
-                    WHERE
-                            POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
-                        AND guacamole_entity.type = 'USER'
-                )
-
-                <if test="term.startDate != null and term.endDate != null">
-                    OR start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP}
-                </if>
-
+            <!-- Restrict to readable users -->
+            guacamole_connection_history.user_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.user.UserMapper.getReadableIDs">
+                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"   value="effectiveGroups"/>
+                </include>
             )
-        </foreach>
+            
+            <if test="username != null">
+                AND guacamole_entity.name = #{username,jdbcType=VARCHAR}
+            </if>
+            
+            <foreach collection="terms" item="term" open=" AND " separator=" AND ">
+                (
+
+                    guacamole_user_history.user_id IN (
+                        SELECT user_id
+                        FROM guacamole_user
+                        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+                        WHERE
+                                POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
+                            AND guacamole_entity.type = 'USER'
+                    )
+
+                    <if test="term.startDate != null and term.endDate != null">
+                        OR start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP}
+                    </if>
+
+                )
+            </foreach>
+            
+        </where>
 
         <!-- Bind sort property enum values for sake of readability -->
         <bind name="START_DATE" value="@org.apache.guacamole.net.auth.ActivityRecordSet$SortableProperty@START_DATE"/>

@@ -1,0 +1,11 @@
+{
+
+    "DATA_SOURCE_CAS" : {
+        "NAME" : "Backend d'inici de sessió unificat (SSO) CAS"
+    },
+
+    "LOGIN" : {
+        "INFO_CAS_REDIRECT_PENDING"  : "Espereu, redireccionant a l'autenticació CAS ..."
+    }
+
+}

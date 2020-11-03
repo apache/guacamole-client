@@ -24,7 +24,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.auth.simple.SimpleActivityRecordSet;
 
 /**
  * A REST resource for retrieving and managing the history records of Guacamole
@@ -64,7 +66,12 @@ public class HistoryResource {
      */
     @Path("connections")
     public ConnectionHistoryResource getConnectionHistory() throws GuacamoleException {
-        return new ConnectionHistoryResource(userContext.getConnectionHistory());
+        try {
+            return new ConnectionHistoryResource(userContext.getConnectionHistory());
+        }
+        catch (GuacamoleUnsupportedException e) {
+            return new ConnectionHistoryResource(new SimpleActivityRecordSet<>());
+        }
     }
 
     /**
@@ -81,7 +88,12 @@ public class HistoryResource {
      */
     @Path("users")
     public UserHistoryResource getUserHistory() throws GuacamoleException {
-        return new UserHistoryResource(userContext.getUserHistory());
+        try {
+            return new UserHistoryResource(userContext.getUserHistory());
+        }
+        catch (GuacamoleUnsupportedException e) {
+            return new UserHistoryResource(new SimpleActivityRecordSet<>());
+        }
     }
 
 }

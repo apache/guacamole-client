@@ -60,12 +60,12 @@ public class TokenFilterTest {
         
         assertEquals(
             "value-of-c",
-            tokenFilter.filter("${TOKEN_C:lower}")
+            tokenFilter.filter("${TOKEN_C:LOWER}")
         );
         
         assertEquals(
             "VALUE-OF-C",
-            tokenFilter.filter("${TOKEN_C:upper}")
+            tokenFilter.filter("${TOKEN_C:UPPER}")
         );
         
     }
@@ -83,7 +83,7 @@ public class TokenFilterTest {
         tokenFilter.setToken("TOKEN_B", "value-of-b");
 
         // Create test map
-        Map<Integer, String> map = new HashMap<Integer, String>();
+        Map<Integer, String> map = new HashMap<>();
         map.put(1, "$$${NOPE}hello${TOKEN_A}world${TOKEN_B}$${NOT_A_TOKEN}");
         map.put(2, "${NOPE}hello${TOKEN_A}world${TOKEN_C}");
         map.put(3, null);
