@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-quickconnect</artifactId>
     <packaging>jar</packaging>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
     <name>guacamole-auth-quickconnect</name>
     <url>http://guacamole.apache.org/</url>
 
@@ -188,7 +188,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>1.2.0</version>
+            <version>1.3.0</version>
             <scope>provided</scope>
         </dependency>
 
