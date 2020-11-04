@@ -24,7 +24,8 @@
         "translations/es.json",
         "translations/fr.json",
         "translations/ja.json",
-        "translations/ru.json"
+        "translations/ru.json",
+        "translations/zh.json"
     ]
 
 }
