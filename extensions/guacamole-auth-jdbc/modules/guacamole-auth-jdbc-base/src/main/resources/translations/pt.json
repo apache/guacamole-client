@@ -11,7 +11,7 @@
         "ACTION_CANCEL"             : "Cancelar",
         "ACTION_CLONE"              : "Clonar",
         "ACTION_CONTINUE"           : "Continuar",
-        "ACTION_DELETE"             : "Apagar",
+        "ACTION_DELETE"             : "Remover",
         "ACTION_DELETE_SESSIONS"    : "Fechar sessão",
         "ACTION_DOWNLOAD"           : "Download",
         "ACTION_LOGIN"              : "Entrar",
