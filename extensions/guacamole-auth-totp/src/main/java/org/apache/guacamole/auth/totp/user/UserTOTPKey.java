@@ -167,14 +167,23 @@ public class UserTOTPKey {
     /**
      * Incermetns the number of timesteps between TOTP token and systemtime by one.
      */
-    public void incrementOffset() {
+    public void incrementOffset(int maxOffset) {
         this.offset++;
+        limitOffset(maxOffset);
     }
 
     /**
      * Decrements the number of timesteps between TOTP token and systemtime by one.
      */
-    public void decrementOffset() {
+    public void decrementOffset(int maxOffset) {
         this.offset--;
+        limitOffset(maxOffset);
+    }
+
+    /**
+     * Limits the number of timesteps between TOTP token and systemtime.
+     */
+    public void limitOffset(int maxOffset) {
+        this.offset = Math.min(Math.max(this.offset, maxOffset * -1), maxOffset);
     }
 }

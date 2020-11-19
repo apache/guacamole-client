@@ -296,12 +296,13 @@ public class UserVerificationService {
             boolean verified = false;
             if (code.equals(totp.previous()) && codeService.useCode(username, code)) {
                 verified = true;
-                key.decrementOffset();
+                key.decrementOffset(confService.getMaxOffset());
             } else if (code.equals(totp.generate()) && codeService.useCode(username, code)) {
                 verified = true;
+                key.limitOffset(confService.getMaxOffset());
             } else if (code.equals(totp.next()) && codeService.useCode(username, code)) {
                 verified = true;
-                key.incrementOffset();
+                key.incrementOffset(confService.getMaxOffset());
             }
 
             if (verified) {
