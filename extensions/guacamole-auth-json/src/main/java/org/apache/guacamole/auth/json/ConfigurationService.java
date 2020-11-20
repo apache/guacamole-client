@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.properties.ByteArrayProperty;
 
 /**
  * Service for retrieving configuration information regarding the JSON

@@ -17,12 +17,11 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.json;
+package org.apache.guacamole.properties;
 
 import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
-import org.apache.guacamole.properties.GuacamoleProperty;
 
 /**
  * A GuacamoleProperty whose value is a byte array. The bytes of the byte array
