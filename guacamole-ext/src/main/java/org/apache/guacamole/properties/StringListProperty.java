@@ -17,13 +17,12 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.json;
+package org.apache.guacamole.properties;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.properties.GuacamoleProperty;
 
 /**
  * A GuacamoleProperty whose value is a List of Strings. The string value
