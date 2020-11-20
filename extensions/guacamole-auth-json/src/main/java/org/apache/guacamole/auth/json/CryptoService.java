@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.json;
+package org.apache.guacamole.auth.json;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;

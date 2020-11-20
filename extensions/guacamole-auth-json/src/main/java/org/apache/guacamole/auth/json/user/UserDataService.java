@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.json.user;
+package org.apache.guacamole.auth.json.user;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -35,6 +35,9 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.json.ConfigurationService;
+import org.apache.guacamole.auth.json.CryptoService;
+import org.apache.guacamole.auth.json.RequestValidationService;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.Directory;
@@ -44,9 +47,6 @@ import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
 import org.apache.guacamole.net.auth.simple.SimpleUser;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.glyptodon.guacamole.auth.json.ConfigurationService;
-import org.glyptodon.guacamole.auth.json.CryptoService;
-import org.glyptodon.guacamole.auth.json.RequestValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

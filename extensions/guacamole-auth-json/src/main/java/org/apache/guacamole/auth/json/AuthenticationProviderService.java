@@ -20,18 +20,18 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.json;
+package org.apache.guacamole.auth.json;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.json.user.AuthenticatedUser;
+import org.apache.guacamole.auth.json.user.UserContext;
+import org.apache.guacamole.auth.json.user.UserData;
+import org.apache.guacamole.auth.json.user.UserDataService;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
-import org.glyptodon.guacamole.auth.json.user.AuthenticatedUser;
-import org.glyptodon.guacamole.auth.json.user.UserContext;
-import org.glyptodon.guacamole.auth.json.user.UserData;
-import org.glyptodon.guacamole.auth.json.user.UserDataService;
 
 /**
  * Service providing convenience functions for the JSONAuthenticationProvider.

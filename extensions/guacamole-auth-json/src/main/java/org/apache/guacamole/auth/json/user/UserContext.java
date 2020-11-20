@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.json.user;
+package org.apache.guacamole.auth.json.user;
 
 import com.google.inject.Inject;
 import org.apache.guacamole.net.auth.AbstractUserContext;

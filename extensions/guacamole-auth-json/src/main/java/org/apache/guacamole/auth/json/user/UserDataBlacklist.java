@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.json.user;
+package org.apache.guacamole.auth.json.user;
 
 import java.util.Iterator;
 import java.util.Map;

@@ -20,15 +20,15 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.json;
+package org.apache.guacamole.auth.json;
 
 import com.google.inject.AbstractModule;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.json.connection.ConnectionService;
+import org.apache.guacamole.auth.json.user.UserDataService;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
-import org.glyptodon.guacamole.auth.json.connection.ConnectionService;
-import org.glyptodon.guacamole.auth.json.user.UserDataService;
 
 /**
  * Guice module which configures injections specific to the JSON authentication

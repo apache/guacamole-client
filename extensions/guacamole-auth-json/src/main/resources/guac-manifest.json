@@ -6,7 +6,7 @@
     "namespace" : "guac-json",
 
     "authProviders" : [
-        "org.glyptodon.guacamole.auth.json.JSONAuthenticationProvider"
+        "org.apache.guacamole.auth.json.JSONAuthenticationProvider"
     ],
 
     "translations" : [

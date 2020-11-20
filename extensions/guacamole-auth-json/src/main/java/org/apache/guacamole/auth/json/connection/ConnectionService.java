@@ -46,7 +46,7 @@
  * under the License.
  */
 
-package org.glyptodon.guacamole.auth.json.connection;
+package org.apache.guacamole.auth.json.connection;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -58,6 +58,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.auth.json.user.UserData;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.io.GuacamoleReader;
 import org.apache.guacamole.io.GuacamoleWriter;
@@ -70,7 +71,6 @@ import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
 import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
-import org.glyptodon.guacamole.auth.json.user.UserData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

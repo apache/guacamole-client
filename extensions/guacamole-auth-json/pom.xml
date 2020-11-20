@@ -2,12 +2,12 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.glyptodon.guacamole</groupId>
+    <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-json</artifactId>
     <packaging>jar</packaging>
     <version>1.0.0-1</version>
     <name>guacamole-auth-json</name>
-    <url>http://glyptodon.org/</url>
+    <url>http://guacamole.apache.org/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.json.user;
+package org.apache.guacamole.auth.json.user;
 
 import com.google.inject.Inject;
 import java.util.Collections;
@@ -30,12 +30,12 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.auth.json.connection.ConnectionService;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
-import org.glyptodon.guacamole.auth.json.connection.ConnectionService;
 
 /**
  * Connection implementation which automatically manages related UserData if
