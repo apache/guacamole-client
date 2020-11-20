@@ -32,8 +32,6 @@ import org.slf4j.LoggerFactory;
  * cryptographic signatures. UserData objects stored within this blacklist MUST
  * have an associated expiration timestamp, and will automatically be removed
  * from the blacklist once they have expired.
- *
- * @author Michael Jumper
  */
 public class UserDataBlacklist {
 

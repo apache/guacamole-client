@@ -28,8 +28,6 @@ import org.apache.guacamole.environment.Environment;
 /**
  * Service for retrieving configuration information regarding the JSON
  * authentication provider.
- *
- * @author Michael Jumper
  */
 public class ConfigurationService {
 

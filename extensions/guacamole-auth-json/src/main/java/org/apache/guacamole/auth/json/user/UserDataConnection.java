@@ -39,8 +39,6 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
  * the connection is used. Connections which are marked as single-use will
  * be removed from the given UserData such that only the first connection
  * attempt can succeed.
- *
- * @author Michael Jumper
  */
 public class UserDataConnection implements Connection {
 

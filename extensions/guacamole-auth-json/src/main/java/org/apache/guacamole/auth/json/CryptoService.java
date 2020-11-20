@@ -37,8 +37,6 @@ import org.apache.guacamole.GuacamoleServerException;
 /**
  * Service for handling cryptography-related operations, such as decrypting
  * encrypted data.
- *
- * @author Michael Jumper
  */
 public class CryptoService {
 

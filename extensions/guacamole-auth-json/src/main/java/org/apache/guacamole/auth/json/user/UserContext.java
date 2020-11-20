@@ -30,8 +30,6 @@ import org.apache.guacamole.net.auth.User;
  * An implementation of UserContext specific to the JSONAuthenticationProvider
  * which obtains all data from the encrypted JSON provided during
  * authentication.
- *
- * @author Michael Jumper
  */
 public class UserContext extends AbstractUserContext {
 

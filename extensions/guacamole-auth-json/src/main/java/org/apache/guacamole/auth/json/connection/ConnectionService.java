@@ -49,8 +49,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Service which provides a centralized means of establishing connections,
  * tracking/joining active connections, and retrieving associated data.
- *
- * @author Michael Jumper
  */
 @Singleton
 public class ConnectionService {

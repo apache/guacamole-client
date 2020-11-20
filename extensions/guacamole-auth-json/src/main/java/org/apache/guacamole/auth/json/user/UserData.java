@@ -29,8 +29,6 @@ import org.codehaus.jackson.annotate.JsonProperty;
 /**
  * All data associated with a particular user, as parsed from the JSON supplied
  * within the encrypted blob provided during authentication.
- *
- * @author Michael Jumper
  */
 public class UserData {
 
@@ -62,8 +60,6 @@ public class UserData {
     /**
      * The data associated with a Guacamole connection stored within a UserData
      * object.
-     *
-     * @author Michael Jumper
      */
     public static class Connection {
 

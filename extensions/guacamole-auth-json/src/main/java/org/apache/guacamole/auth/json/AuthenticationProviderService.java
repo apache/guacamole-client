@@ -32,8 +32,6 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsExce
 
 /**
  * Service providing convenience functions for the JSONAuthenticationProvider.
- *
- * @author Michael Jumper
  */
 public class AuthenticationProviderService {
 

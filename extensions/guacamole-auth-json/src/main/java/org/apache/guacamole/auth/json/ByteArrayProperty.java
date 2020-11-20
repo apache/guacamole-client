@@ -28,8 +28,6 @@ import org.apache.guacamole.properties.GuacamoleProperty;
  * A GuacamoleProperty whose value is a byte array. The bytes of the byte array
  * must be represented as a hexadecimal string within the property value. The
  * hexadecimal string is case-insensitive.
- *
- * @author Michael Jumper
  */
 public abstract class ByteArrayProperty implements GuacamoleProperty<byte[]> {
 

@@ -33,8 +33,6 @@ import org.apache.guacamole.net.auth.UserContext;
  * associated with those connections are all determined by the contents of the
  * provided JSON. The JSON itself is authorized by virtue of being properly
  * encrypted with a shared key.
- *
- * @author Michael Jumper
  */
 public class JSONAuthenticationProvider extends AbstractAuthenticationProvider {
 

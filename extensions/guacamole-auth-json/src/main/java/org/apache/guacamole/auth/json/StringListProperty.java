@@ -32,8 +32,6 @@ import org.apache.guacamole.properties.GuacamoleProperty;
  * compatibility with the behavior of Java properties in general, only
  * whitespace at the beginning of each value is ignored; trailing whitespace
  * becomes part of the value.
- *
- * @author Michael Jumper
  */
 public abstract class StringListProperty implements GuacamoleProperty<List<String>> {
 

@@ -49,8 +49,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Service for deriving Guacamole extension API data from UserData objects.
- *
- * @author Michael Jumper
  */
 @Singleton
 public class UserDataService {

@@ -30,8 +30,6 @@ import org.apache.guacamole.net.auth.AuthenticationProvider;
 /**
  * Guice module which configures injections specific to the JSON authentication
  * provider.
- *
- * @author Michael Jumper
  */
 public class JSONAuthenticationProviderModule extends AbstractModule {
 

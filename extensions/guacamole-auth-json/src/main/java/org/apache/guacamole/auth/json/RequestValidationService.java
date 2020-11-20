@@ -30,8 +30,6 @@ import org.springframework.security.web.util.matcher.IpAddressMatcher;
 
 /**
  * Service for testing the validity of received HTTP requests.
- *
- * @author Michael Jumper
  */
 public class RequestValidationService {
 
