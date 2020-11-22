@@ -40,6 +40,12 @@ public class ConfigurationService {
     private static final String DEFAULT_USERNAME_CLAIM_TYPE = "email";
 
     /**
+     * The default claim type to use to retrieve an authenticated user's
+     * groups.
+     */
+    private static final String DEFAULT_GROUPS_CLAIM_TYPE = "groups";
+
+    /**
      * The default space-separated list of OpenID scopes to request.
      */
     private static final String DEFAULT_SCOPE = "openid email profile";
@@ -105,6 +111,18 @@ public class ConfigurationService {
 
         @Override
         public String getName() { return "openid-username-claim-type"; }
+
+    };
+
+    /**
+     * The claim type which contains the authenticated user's groups within
+     * any valid JWT.
+     */
+    private static final StringGuacamoleProperty OPENID_GROUPS_CLAIM_TYPE =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "openid-groups-claim-type"; }
 
     };
 
@@ -290,6 +308,22 @@ public class ConfigurationService {
      */
     public String getUsernameClaimType() throws GuacamoleException {
         return environment.getProperty(OPENID_USERNAME_CLAIM_TYPE, DEFAULT_USERNAME_CLAIM_TYPE);
+    }
+
+    /**
+     * Returns the claim type which contains the authenticated user's groups
+     * within any valid JWT, as configured with guacamole.properties. By
+     * default, this will be "groups".
+     *
+     * @return
+     *     The claim type which contains the authenticated user's groups
+     *     within any valid JWT, as configured with guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public String getGroupsClaimType() throws GuacamoleException {
+        return environment.getProperty(OPENID_GROUPS_CLAIM_TYPE, DEFAULT_GROUPS_CLAIM_TYPE);
     }
 
     /**

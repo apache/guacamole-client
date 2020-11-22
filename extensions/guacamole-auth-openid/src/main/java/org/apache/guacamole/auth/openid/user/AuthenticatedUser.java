@@ -20,14 +20,15 @@
 package org.apache.guacamole.auth.openid.user;
 
 import com.google.inject.Inject;
+import java.util.Set;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
  * An openid-specific implementation of AuthenticatedUser, associating a
- * username and particular set of credentials with the OpenID authentication
- * provider.
+ * username, a particular set of credentials and the groups with the 
+ * OpenID authentication provider.
  */
 public class AuthenticatedUser extends AbstractAuthenticatedUser {
 
@@ -44,6 +45,11 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
     private Credentials credentials;
 
     /**
+     * The groups of the user that was authenticated.
+     */
+    private Set<String> effectiveGroups;
+
+    /**
      * Initializes this AuthenticatedUser using the given username and
      * credentials.
      *
@@ -52,9 +58,13 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
      *
      * @param credentials
      *     The credentials provided when this user was authenticated.
+     *
+     * @param effectiveGroups
+     *     The groups of the user that was authenticated.
      */
-    public void init(String username, Credentials credentials) {
+    public void init(String username, Credentials credentials, Set<String> effectiveGroups) {
         this.credentials = credentials;
+        this.effectiveGroups = effectiveGroups;
         setIdentifier(username);
     }
 
@@ -68,4 +78,8 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
         return credentials;
     }
 
+    @Override
+    public Set<String> getEffectiveUserGroups() {
+        return effectiveGroups;
+    }
 }
