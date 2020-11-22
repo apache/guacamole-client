@@ -20,6 +20,10 @@
 package org.apache.guacamole.auth.openid.token;
 
 import com.google.inject.Inject;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
 import org.apache.guacamole.GuacamoleException;
 import org.jose4j.jwk.HttpsJwks;
@@ -56,23 +60,20 @@ public class TokenValidationService {
     private NonceService nonceService;
 
     /**
-     * Validates and parses the given ID token, returning the username contained
-     * therein, as defined by the username claim type given in
-     * guacamole.properties. If the username claim type is missing or the ID
-     * token is invalid, null is returned.
+     * Validates the given ID token, returning the JwtClaims contained therein.
+     * If the ID token is invalid, null is returned.
      *
      * @param token
-     *     The ID token to validate and parse.
+     *     The ID token to validate.
      *
      * @return
-     *     The username contained within the given ID token, or null if the ID
-     *     token is not valid or the username claim type is missing,
+     *     The JWT claims contained within the given ID token if it passes tests,
+     *     or null if the token is not valid.
      *
      * @throws GuacamoleException
      *     If guacamole.properties could not be parsed.
      */
-    public String processUsername(String token) throws GuacamoleException {
-
+    public JwtClaims validateToken(String token) throws GuacamoleException {
         // Validating the token requires a JWKS key resolver
         HttpsJwks jwks = new HttpsJwks(confService.getJWKSEndpoint().toString());
         HttpsJwksVerificationKeyResolver resolver = new HttpsJwksVerificationKeyResolver(jwks);
@@ -89,52 +90,115 @@ public class TokenValidationService {
                 .build();
 
         try {
-
-            String usernameClaim = confService.getUsernameClaimType();
-
             // Validate JWT
             JwtClaims claims = jwtConsumer.processToClaims(token);
 
             // Verify a nonce is present
             String nonce = claims.getStringClaimValue("nonce");
-            if (nonce == null) {
+            if (nonce != null) {
+                // Verify that we actually generated the nonce, and that it has not
+                // already been used
+                if (nonceService.isValid(nonce)) {
+                    // nonce is valid, consider claims valid
+                    return claims;
+                }
+                else {
+                    logger.info("Rejected OpenID token with invalid/old nonce.");
+                }
+            }
+            else {
                 logger.info("Rejected OpenID token without nonce.");
-                return null;
             }
+        }
+        // Log any failures to validate/parse the JWT
+        catch (MalformedClaimException e) {
+            logger.info("Rejected OpenID token with malformed claim: {}", e.getMessage());
+            logger.debug("Malformed claim within received JWT.", e);
+        }
+        catch (InvalidJwtException e) {
+            logger.info("Rejected invalid OpenID token: {}", e.getMessage());
+            logger.debug("Invalid JWT received.", e);
+        }
 
-            // Verify that we actually generated the nonce, and that it has not
-            // already been used
-            if (!nonceService.isValid(nonce)) {
-                logger.debug("Rejected OpenID token with invalid/old nonce.");
-                return null;
+        return null;
+    }
+
+    /**
+     * Parses the given JwtClaims, returning the username contained
+     * therein, as defined by the username claim type given in
+     * guacamole.properties. If the username claim type is missing or 
+     * is invalid, null is returned.
+     *
+     * @param claims
+     *     A valid JwtClaims to extract the username from.
+     *
+     * @return
+     *     The username contained within the given JwtClaims, or null if the
+     *     claim is not valid or the username claim type is missing,
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties could not be parsed.
+     */
+    public String processUsername(JwtClaims claims) throws GuacamoleException {
+        String usernameClaim = confService.getUsernameClaimType();
+
+        if (claims != null) {
+            try {
+                // Pull username from claims
+                String username = claims.getStringClaimValue(usernameClaim);
+                if (username != null)
+                    return username;
             }
-
-            // Pull username from claims
-            String username = claims.getStringClaimValue(usernameClaim);
-            if (username != null)
-                return username;
+            catch (MalformedClaimException e) {
+                logger.info("Rejected OpenID token with malformed claim: {}", e.getMessage());
+                logger.debug("Malformed claim within received JWT.", e);
+            }
 
             // Warn if username was not present in token, as it likely means
             // the system is not set up correctly
             logger.warn("Username claim \"{}\" missing from token. Perhaps the "
                     + "OpenID scope and/or username claim type are "
                     + "misconfigured?", usernameClaim);
-
-        }
-
-        // Log any failures to validate/parse the JWT
-        catch (InvalidJwtException e) {
-            logger.info("Rejected invalid OpenID token: {}", e.getMessage());
-            logger.debug("Invalid JWT received.", e);
-        }
-        catch (MalformedClaimException e) {
-            logger.info("Rejected OpenID token with malformed claim: {}", e.getMessage());
-            logger.debug("Malformed claim within received JWT.", e);
         }
 
         // Could not retrieve username from JWT
         return null;
-
     }
 
+    /**
+     * Parses the given JwtClaims, returning the groups contained
+     * therein, as defined by the groups claim type given in
+     * guacamole.properties. If the groups claim type is missing or
+     * is invalid, an empty set is returned.
+     *
+     * @param claims
+     *     A valid JwtClaims to extract groups from.
+     *
+     * @return
+     *     A Set of String representing the groups the user is member of
+     *     from the OpenID provider point of view, or an empty Set if
+     *     claim is not valid or the groups claim type is missing,
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties could not be parsed.
+     */
+    public Set<String> processGroups(JwtClaims claims) throws GuacamoleException {
+        String groupsClaim = confService.getGroupsClaimType();
+
+        if (claims != null) {
+            try {
+                // Pull groups from claims
+                List<String> oidcGroups = claims.getStringListClaimValue(groupsClaim);
+                if (oidcGroups != null && !oidcGroups.isEmpty())
+                    return Collections.unmodifiableSet(new HashSet<>(oidcGroups));
+            }   
+            catch (MalformedClaimException e) {
+                logger.info("Rejected OpenID token with malformed claim: {}", e.getMessage());
+                logger.debug("Malformed claim within received JWT.", e);
+            }
+        }
+
+        // Could not retrieve groups from JWT
+        return Collections.emptySet();
+    }
 }
