@@ -80,6 +80,36 @@ angular.module('rest').factory('tunnelService', ['$injector',
     };
 
     /**
+     * Makes a request to the REST API to retrieve the underlying protocol of
+     * the connection associated with a particular tunnel, returning a promise
+     * that provides a @link{Protocol} object if successful.
+     *
+     * @param {String} tunnel
+     *     The UUID of the tunnel associated with the Guacamole connection
+     *     whose underlying protocol is being retrieved.
+     *
+     * @returns {Promise.<Protocol>}
+     *     A promise which will resolve with a @link{Protocol} object upon
+     *     success.
+     */
+    service.getProtocol = function getProtocol(tunnel) {
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Retrieve the protocol details of the specified tunnel
+        return requestService({
+            method  : 'GET',
+            url     : 'api/session/tunnels/' + encodeURIComponent(tunnel)
+                        + '/protocol',
+            params  : httpParameters
+        });
+
+    };
+
+    /**
      * Retrieves the set of sharing profiles that the current user can use to
      * share the active connection of the given tunnel.
      *
