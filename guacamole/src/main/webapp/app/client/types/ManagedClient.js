@@ -386,7 +386,16 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                     status.code);
             });
         };
-        
+
+        // Pull protocol-specific information from tunnel once tunnel UUID is
+        // known
+        tunnel.onuuid = function tunnelAssignedUUID(uuid) {
+            tunnelService.getProtocol(uuid).then(function protocolRetrieved(protocol) {
+                managedClient.protocol = protocol.name;
+                managedClient.forms = protocol.connectionForms;
+            }, requestService.WARN);
+        };
+
         // Update connection state as tunnel state changes
         tunnel.onstatechange = function tunnelStateChanged(state) {
             $rootScope.$evalAsync(function updateTunnelState() {
@@ -612,14 +621,9 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
         // If using a connection, pull connection name and protocol information
         if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION) {
-            $q.all({
-                connection : connectionService.getConnection(clientIdentifier.dataSource, clientIdentifier.id),
-                protocols  : schemaService.getProtocols(clientIdentifier.dataSource)
-            })
-            .then(function dataRetrieved(values) {
-                managedClient.name = managedClient.title = values.connection.name;
-                managedClient.protocol = values.connection.protocol;
-                managedClient.forms = values.protocols[values.connection.protocol].connectionForms;
+            connectionService.getConnection(clientIdentifier.dataSource, clientIdentifier.id)
+            .then(function connectionRetrieved(connection) {
+                managedClient.name = managedClient.title = connection.name;
             }, requestService.WARN);
         }
         
@@ -640,14 +644,9 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                 // Attempt to retrieve connection details only if the
                 // underlying connection is known
                 if (activeConnection.connectionIdentifier) {
-                    $q.all({
-                        connection : connectionService.getConnection(clientIdentifier.dataSource, activeConnection.connectionIdentifier),
-                        protocols  : schemaService.getProtocols(clientIdentifier.dataSource)
-                    })
-                    .then(function dataRetrieved(values) {
-                        managedClient.name = managedClient.title = values.connection.name;
-                        managedClient.protocol = values.connection.protocol;
-                        managedClient.forms = values.protocols[values.connection.protocol].connectionForms;
+                    connectionService.getConnection(clientIdentifier.dataSource, activeConnection.connectionIdentifier)
+                    .then(function connectionRetrieved(connection) {
+                        managedClient.name = managedClient.title = connection.name;
                     }, requestService.WARN);
                 }
 
