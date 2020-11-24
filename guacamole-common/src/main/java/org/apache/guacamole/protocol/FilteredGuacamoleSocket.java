@@ -19,21 +19,16 @@
 
 package org.apache.guacamole.protocol;
 
-import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.io.GuacamoleReader;
 import org.apache.guacamole.io.GuacamoleWriter;
+import org.apache.guacamole.net.DelegatingGuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleSocket;
 
 /**
  * Implementation of GuacamoleSocket which allows individual instructions to be
  * intercepted, overridden, etc.
  */
-public class FilteredGuacamoleSocket implements GuacamoleSocket {
-
-    /**
-     * Wrapped GuacamoleSocket.
-     */
-    private final GuacamoleSocket socket;
+public class FilteredGuacamoleSocket extends DelegatingGuacamoleSocket {
 
     /**
      * A reader for the wrapped GuacamoleSocket which may be filtered.
@@ -58,7 +53,8 @@ public class FilteredGuacamoleSocket implements GuacamoleSocket {
      *                    instructions, if any.
      */
     public FilteredGuacamoleSocket(GuacamoleSocket socket, GuacamoleFilter readFilter, GuacamoleFilter writeFilter) {
-        this.socket = socket;
+
+        super(socket);
 
         // Apply filter to reader
         if (readFilter != null)
@@ -84,14 +80,4 @@ public class FilteredGuacamoleSocket implements GuacamoleSocket {
         return writer;
     }
 
-    @Override
-    public void close() throws GuacamoleException {
-        socket.close();
-    }
-
-    @Override
-    public boolean isOpen() {
-        return socket.isOpen();
-    }
-    
 }
