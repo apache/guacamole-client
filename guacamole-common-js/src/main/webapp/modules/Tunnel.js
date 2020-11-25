@@ -74,6 +74,20 @@ Guacamole.Tunnel = function() {
     };
 
     /**
+     * Changes the stored UUID that uniquely identifies this tunnel, firing the
+     * onuuid event if a handler has been defined.
+     *
+     * @private
+     * @param {String} uuid
+     *     The new state of this tunnel.
+     */
+    this.setUUID = function setUUID(uuid) {
+        this.uuid = uuid;
+        if (this.onuuid)
+            this.onuuid(uuid);
+    };
+
+    /**
      * Returns whether this tunnel is currently connected.
      *
      * @returns {Boolean}
@@ -118,6 +132,15 @@ Guacamole.Tunnel = function() {
      * @type {String}
      */
     this.uuid = null;
+
+    /**
+     * Fired when the UUID that uniquely identifies this tunnel is known.
+     *
+     * @event
+     * @param {String}
+     *     The UUID uniquely identifying this tunnel.
+     */
+    this.onuuid = null;
 
     /**
      * Fired whenever an error is encountered by the tunnel.
@@ -706,7 +729,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
             reset_timeout();
 
             // Get UUID from response
-            tunnel.uuid = connect_xmlhttprequest.responseText;
+            tunnel.setUUID(connect_xmlhttprequest.responseText);
 
             // Mark as open
             tunnel.setState(Guacamole.Tunnel.State.OPEN);
@@ -1019,7 +1042,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
                         // Associate tunnel UUID if received
                         if (opcode === Guacamole.Tunnel.INTERNAL_DATA_OPCODE)
-                            tunnel.uuid = elements[0];
+                            tunnel.setUUID(elements[0]);
 
                         // Tunnel is now open and UUID is available
                         tunnel.setState(Guacamole.Tunnel.State.OPEN);
@@ -1155,11 +1178,18 @@ Guacamole.ChainedTunnel = function(tunnelChain) {
          * @private
          */
         function commit_tunnel() {
+
             tunnel.onstatechange = chained_tunnel.onstatechange;
             tunnel.oninstruction = chained_tunnel.oninstruction;
             tunnel.onerror = chained_tunnel.onerror;
-            chained_tunnel.uuid = tunnel.uuid;
+            tunnel.onuuid = chained_tunnel.onuuid;
+
+            // Assign UUID if already known
+            if (tunnel.uuid)
+                chained_tunnel.setUUID(tunnel.uuid);
+
             committedTunnel = tunnel;
+
         }
 
         // Wrap own onstatechange within current tunnel

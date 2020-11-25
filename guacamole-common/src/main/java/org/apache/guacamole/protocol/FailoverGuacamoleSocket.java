@@ -28,7 +28,7 @@ import org.apache.guacamole.GuacamoleUpstreamNotFoundException;
 import org.apache.guacamole.GuacamoleUpstreamTimeoutException;
 import org.apache.guacamole.GuacamoleUpstreamUnavailableException;
 import org.apache.guacamole.io.GuacamoleReader;
-import org.apache.guacamole.io.GuacamoleWriter;
+import org.apache.guacamole.net.DelegatingGuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * constructor, allowing a different socket to be substituted prior to
  * fulfilling the connection.
  */
-public class FailoverGuacamoleSocket implements GuacamoleSocket {
+public class FailoverGuacamoleSocket extends DelegatingGuacamoleSocket {
 
     /**
      * Logger for this class.
@@ -53,11 +53,6 @@ public class FailoverGuacamoleSocket implements GuacamoleSocket {
      * to store if no explicit limit is provided.
      */
     private static final int DEFAULT_INSTRUCTION_QUEUE_LIMIT = 131072;
-
-    /**
-     * The wrapped socket being used.
-     */
-    private final GuacamoleSocket socket;
 
     /**
      * Queue of all instructions read while this FailoverGuacamoleSocket was
@@ -158,6 +153,8 @@ public class FailoverGuacamoleSocket implements GuacamoleSocket {
             final int instructionQueueLimit)
             throws GuacamoleException, GuacamoleUpstreamException {
 
+        super(socket);
+
         int totalQueueSize = 0;
 
         GuacamoleInstruction instruction;
@@ -188,8 +185,6 @@ public class FailoverGuacamoleSocket implements GuacamoleSocket {
                 break;
 
         }
-
-        this.socket = socket;
 
     }
 
@@ -230,7 +225,7 @@ public class FailoverGuacamoleSocket implements GuacamoleSocket {
 
         @Override
         public boolean available() throws GuacamoleException {
-            return !instructionQueue.isEmpty() || socket.getReader().available();
+            return !instructionQueue.isEmpty() || getDelegateSocket().getReader().available();
         }
 
         @Override
@@ -244,7 +239,7 @@ public class FailoverGuacamoleSocket implements GuacamoleSocket {
                 return instruction.toString().toCharArray();
             }
 
-            return socket.getReader().read();
+            return getDelegateSocket().getReader().read();
 
         }
 
@@ -258,7 +253,7 @@ public class FailoverGuacamoleSocket implements GuacamoleSocket {
             if (!instructionQueue.isEmpty())
                 return instructionQueue.remove();
 
-            return socket.getReader().readInstruction();
+            return getDelegateSocket().getReader().readInstruction();
 
         }
 
@@ -269,19 +264,4 @@ public class FailoverGuacamoleSocket implements GuacamoleSocket {
         return queuedReader;
     }
 
-    @Override
-    public GuacamoleWriter getWriter() {
-        return socket.getWriter();
-    }
-
-    @Override
-    public void close() throws GuacamoleException {
-        socket.close();
-    }
-
-    @Override
-    public boolean isOpen() {
-        return socket.isOpen();
-    }
-    
 }

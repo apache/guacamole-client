@@ -92,8 +92,7 @@ public class GuacamoleConfiguration implements Serializable {
 
     /**
      * Sets the ID of the connection being joined, if any. If no connection
-     * is being joined, this value must be omitted, and the protocol must be
-     * set instead.
+     * is being joined, this value must be omitted.
      *
      * @param connectionID The ID of the connection being joined.
      */
@@ -103,15 +102,34 @@ public class GuacamoleConfiguration implements Serializable {
 
     /**
      * Returns the name of the protocol to be used.
-     * @return The name of the protocol to be used.
+     *
+     * @return
+     *     The name of the protocol to be used.
      */
     public String getProtocol() {
         return protocol;
     }
 
     /**
-     * Sets the name of the protocol to be used.
-     * @param protocol The name of the protocol to be used.
+     * Sets the name of the protocol to be used. If no connection is being
+     * joined (a new connection is being established), this value must be set.
+     *
+     * <p>If a connection is being joined, <strong>this value should still be
+     * set</strong> to ensure that protocol-specific responses like the
+     * "required" and "argv" instructions can be understood in their proper
+     * context by other code that may consume this GuacamoleConfiguration like
+     * {@link ConfiguredGuacamoleSocket}.
+     *
+     * <p>If this value is unavailable or remains unset, it is still possible
+     * to join an established connection using
+     * {@link #setConnectionID(java.lang.String)}, however protocol-specific
+     * responses like the "required" and "argv" instructions might not be
+     * possible to handle correctly if the underlying protocol is not made
+     * available through some other means to the client receiving those
+     * responses.
+     *
+     * @param protocol
+     *    The name of the protocol to be used.
      */
     public void setProtocol(String protocol) {
         this.protocol = protocol;
