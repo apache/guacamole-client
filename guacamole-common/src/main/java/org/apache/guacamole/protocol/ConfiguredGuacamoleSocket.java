@@ -24,6 +24,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.io.GuacamoleReader;
 import org.apache.guacamole.io.GuacamoleWriter;
+import org.apache.guacamole.net.DelegatingGuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleSocket;
 
 /**
@@ -36,12 +37,7 @@ import org.apache.guacamole.net.GuacamoleSocket;
  * this GuacamoleSocket from manually controlling the initial protocol
  * handshake.
  */
-public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
-
-    /**
-     * The wrapped socket.
-     */
-    private GuacamoleSocket socket;
+public class ConfiguredGuacamoleSocket extends DelegatingGuacamoleSocket {
 
     /**
      * The configuration to use when performing the Guacamole protocol
@@ -125,7 +121,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
             GuacamoleConfiguration config,
             GuacamoleClientInformation info) throws GuacamoleException {
 
-        this.socket = socket;
+        super(socket);
         this.config = config;
 
         // Get reader and writer
@@ -268,23 +264,8 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
     }
 
     @Override
-    public GuacamoleWriter getWriter() {
-        return socket.getWriter();
-    }
-
-    @Override
-    public GuacamoleReader getReader() {
-        return socket.getReader();
-    }
-
-    @Override
-    public void close() throws GuacamoleException {
-        socket.close();
-    }
-
-    @Override
-    public boolean isOpen() {
-        return socket.isOpen();
+    public String getProtocol() {
+        return getConfiguration().getProtocol();
     }
 
 }
