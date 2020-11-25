@@ -206,9 +206,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      * will be joined rather than establishing an entirely new connection. If
      * a sharing profile is provided, the parameters associated with that
      * sharing profile will be used to define the access provided to the user
-     * accessing the shared connection. If tokens are used in the connection
-     * parameter values of the sharing profile, credentials from the given user
-     * will be substituted appropriately.
+     * accessing the shared connection.
      *
      * @param connection
      *     The connection that the user is connecting to.
