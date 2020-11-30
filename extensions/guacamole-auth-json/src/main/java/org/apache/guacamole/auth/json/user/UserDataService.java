@@ -64,9 +64,9 @@ public class UserDataService {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     /**
-     * Blacklist of single-use user data objects which have already been used.
+     * Denylist of single-use user data objects which have already been used.
      */
-    private final UserDataBlacklist blacklist = new UserDataBlacklist();
+    private final UserDataDenylist denylist = new UserDataDenylist();
 
     /**
      * Service for retrieving configuration information regarding the
@@ -201,8 +201,8 @@ public class UserDataService {
             if (userData.isExpired())
                 return null;
 
-            // Reject if data is single-use and already present in the blacklist
-            if (userData.isSingleUse() && !blacklist.add(userData, correctSignature))
+            // Reject if data is single-use and already present in the denylist
+            if (userData.isSingleUse() && !denylist.add(userData, correctSignature))
                 return null;
 
             return userData;

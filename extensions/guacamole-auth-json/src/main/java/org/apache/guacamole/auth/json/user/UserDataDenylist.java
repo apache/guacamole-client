@@ -28,35 +28,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Atomic blacklist of UserData objects, stored by their associated
- * cryptographic signatures. UserData objects stored within this blacklist MUST
+ * Atomic denylist of UserData objects, stored by their associated
+ * cryptographic signatures. UserData objects stored within this denylist MUST
  * have an associated expiration timestamp, and will automatically be removed
- * from the blacklist once they have expired.
+ * from the denylist once they have expired.
  */
-public class UserDataBlacklist {
+public class UserDataDenylist {
 
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(UserDataBlacklist.class);
+    private final Logger logger = LoggerFactory.getLogger(UserDataDenylist.class);
 
     /**
-     * All blacklisted UserData objects, stored by their associated
+     * All denylisted UserData objects, stored by their associated
      * cryptographic signatures. NOTE: Each key into this map is the hex
      * string produced by encoding the binary signature using DatatypeConverter.
      * A byte[] cannot be used directly.
      */
-    private final ConcurrentMap<String, UserData> blacklist =
+    private final ConcurrentMap<String, UserData> denylist =
             new ConcurrentHashMap<String, UserData>();
 
     /**
-     * Removes all expired UserData objects from the blacklist. This will
-     * automatically be invoked whenever new UserData is added to the blacklist.
+     * Removes all expired UserData objects from the denylist. This will
+     * automatically be invoked whenever new UserData is added to the denylist.
      */
     public void removeExpired() {
 
-        // Remove expired data from blacklist
-        Iterator<Map.Entry<String, UserData>> current = blacklist.entrySet().iterator();
+        // Remove expired data from denylist
+        Iterator<Map.Entry<String, UserData>> current = denylist.entrySet().iterator();
         while (current.hasNext()) {
 
             // Remove entry from map if its associated with expired data
@@ -69,20 +69,20 @@ public class UserDataBlacklist {
     }
 
     /**
-     * Adds the given UserData to the blacklist, storing it according to the
+     * Adds the given UserData to the denylist, storing it according to the
      * provided cryptographic signature. The UserData MUST have an associated
      * expiration timestamp. If any UserData objects already within the
-     * blacklist have expired, they will automatically be removed when this
+     * denylist have expired, they will automatically be removed when this
      * function is invoked.
      *
      * @param data
-     *     The UserData to store within the blacklist.
+     *     The UserData to store within the denylist.
      *
      * @param signature
      *     The cryptographic signature associated with the UserData.
      *
      * @return
-     *     true if the UserData was not already blacklisted and has
+     *     true if the UserData was not already denylisted and has
      *     successfully been added, false otherwise.
      */
     public boolean add(UserData data, byte[] signature) {
@@ -97,13 +97,13 @@ public class UserDataBlacklist {
         // Remove any expired entries
         removeExpired();
 
-        // Expired user data is implicitly blacklisted
+        // Expired user data is implicitly denylisted
         if (data.isExpired())
             return false;
 
-        // Add to blacklist only if not already present
+        // Add to denylist only if not already present
         String signatureHex = DatatypeConverter.printHexBinary(signature);
-        return blacklist.putIfAbsent(signatureHex, data) == null;
+        return denylist.putIfAbsent(signatureHex, data) == null;
 
     }
 
