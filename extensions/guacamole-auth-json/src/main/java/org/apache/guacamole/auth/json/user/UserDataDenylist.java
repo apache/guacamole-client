@@ -46,8 +46,7 @@ public class UserDataDenylist {
      * string produced by encoding the binary signature using DatatypeConverter.
      * A byte[] cannot be used directly.
      */
-    private final ConcurrentMap<String, UserData> denylist =
-            new ConcurrentHashMap<String, UserData>();
+    private final ConcurrentMap<String, UserData> denylist = new ConcurrentHashMap<>();
 
     /**
      * Removes all expired UserData objects from the denylist. This will

@@ -78,7 +78,7 @@ public class RequestValidationService {
         }
 
         // Build matchers for each trusted network
-        Collection<IpAddressMatcher> matchers = new ArrayList<IpAddressMatcher>(trustedNetworks.size());
+        Collection<IpAddressMatcher> matchers = new ArrayList<>(trustedNetworks.size());
         for (String network : trustedNetworks)
             matchers.add(new IpAddressMatcher(network));
 

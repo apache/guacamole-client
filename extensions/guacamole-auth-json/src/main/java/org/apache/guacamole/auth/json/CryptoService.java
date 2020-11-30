@@ -147,22 +147,12 @@ public class CryptoService {
         }
 
         // Rethrow all decryption failures identically
-        catch (InvalidAlgorithmParameterException e) {
-            throw new GuacamoleServerException(e);
-        }
-        catch (NoSuchAlgorithmException e) {
-            throw new GuacamoleServerException(e);
-        }
-        catch (NoSuchPaddingException e) {
-            throw new GuacamoleServerException(e);
-        }
-        catch (InvalidKeyException e) {
-            throw new GuacamoleServerException(e);
-        }
-        catch (IllegalBlockSizeException e) {
-            throw new GuacamoleServerException(e);
-        }
-        catch (BadPaddingException e) {
+        catch (InvalidAlgorithmParameterException
+                | NoSuchAlgorithmException
+                | NoSuchPaddingException
+                | InvalidKeyException
+                | IllegalBlockSizeException
+                | BadPaddingException e) {
             throw new GuacamoleServerException(e);
         }
 
@@ -200,13 +190,7 @@ public class CryptoService {
         }
 
         // Rethrow all signature failures identically
-        catch (NoSuchAlgorithmException e) {
-            throw new GuacamoleServerException(e);
-        }
-        catch (InvalidKeyException e) {
-            throw new GuacamoleServerException(e);
-        }
-        catch (IllegalStateException e) {
+        catch (NoSuchAlgorithmException | InvalidKeyException | IllegalStateException e) {
             throw new GuacamoleServerException(e);
         }
 

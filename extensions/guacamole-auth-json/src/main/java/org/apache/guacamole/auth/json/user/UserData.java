@@ -342,7 +342,7 @@ public class UserData {
      *     connection.
      */
     public void setConnections(Map<String, Connection> connections) {
-        this.connections = new ConcurrentHashMap<String, Connection>(connections);
+        this.connections = new ConcurrentHashMap<>(connections);
     }
 
     /**
