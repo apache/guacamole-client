@@ -36,7 +36,7 @@ public class RequestValidationService {
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(RequestValidationService.class);
+    private static final Logger logger = LoggerFactory.getLogger(RequestValidationService.class);
 
     /**
      * Service for retrieving configuration information regarding the

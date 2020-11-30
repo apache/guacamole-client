@@ -38,7 +38,7 @@ public class UserDataDenylist {
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(UserDataDenylist.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserDataDenylist.class);
 
     /**
      * All denylisted UserData objects, stored by their associated

@@ -56,7 +56,7 @@ public class UserDataService {
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(UserDataService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserDataService.class);
 
     /**
      * ObjectMapper for deserializing UserData objects.

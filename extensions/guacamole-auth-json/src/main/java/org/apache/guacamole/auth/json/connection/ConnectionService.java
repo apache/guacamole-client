@@ -56,7 +56,7 @@ public class ConnectionService {
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(ConnectionService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConnectionService.class);
 
     /**
      * The Guacamole server environment.
