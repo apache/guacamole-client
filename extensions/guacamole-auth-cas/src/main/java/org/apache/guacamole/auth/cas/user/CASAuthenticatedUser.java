@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.cas.user;
 import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -51,6 +52,11 @@ public class CASAuthenticatedUser extends AbstractAuthenticatedUser {
     private Map<String, String> tokens;
 
     /**
+     * The unique identifiers of all user groups which this user is a member of.
+     */
+    private Set<String> effectiveGroups;
+
+    /**
      * Initializes this AuthenticatedUser using the given username and
      * credentials, and an empty map of parameter tokens.
      *
@@ -61,7 +67,7 @@ public class CASAuthenticatedUser extends AbstractAuthenticatedUser {
      *     The credentials provided when this user was authenticated.
      */
     public void init(String username, Credentials credentials) {
-        this.init(username, credentials, Collections.emptyMap());
+        this.init(username, credentials, Collections.emptyMap(), Collections.emptySet());
     }
     
     /**
@@ -79,9 +85,10 @@ public class CASAuthenticatedUser extends AbstractAuthenticatedUser {
      *     as tokens when connections are established with this user.
      */
     public void init(String username, Credentials credentials,
-            Map<String, String> tokens) {
+            Map<String, String> tokens, Set<String> effectiveGroups) {
         this.credentials = credentials;
         this.tokens = Collections.unmodifiableMap(tokens);
+        this.effectiveGroups = effectiveGroups;
         setIdentifier(username.toLowerCase());
     }
 
@@ -105,6 +112,11 @@ public class CASAuthenticatedUser extends AbstractAuthenticatedUser {
     @Override
     public Credentials getCredentials() {
         return credentials;
+    }
+
+    @Override
+    public Set<String> getEffectiveUserGroups() {
+        return effectiveGroups;
     }
 
 }

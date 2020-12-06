@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.cas.conf;
 
 import org.apache.guacamole.properties.URIGuacamoleProperty;
+import org.apache.guacamole.properties.StringGuacamoleProperty;
 
 /**
  * Provides properties required for use of the CAS authentication provider.
@@ -68,5 +69,28 @@ public class CASGuacamoleProperties {
         public String getName() { return "cas-clearpass-key"; }
 
     };
+  
+    /**
+     * The attribute used for group membership
+     * example:  memberOf  (case sensitive)
+     */
+    public static final StringGuacamoleProperty CAS_GROUP_ATTRIBUTE =
+            new StringGuacamoleProperty() {
 
+        @Override
+        public String getName() { return "cas-group-attribute"; }
+
+    };
+
+    /**
+     * The name of the attribute used for group membership, such as "memberOf".
+     * This attribute is case sensitive.
+     */
+    public static final StringGuacamoleProperty CAS_GROUP_DN_FORMAT =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "cas-group-dn-format"; }
+
+    };
 }
