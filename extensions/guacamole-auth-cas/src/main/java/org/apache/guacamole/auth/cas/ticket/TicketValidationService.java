@@ -31,13 +31,12 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.HashSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
@@ -81,6 +80,40 @@ public class TicketValidationService {
     private Provider<CASAuthenticatedUser> authenticatedUserProvider;
 
     /**
+     * Converts the given CAS attribute value object (whose type is variable)
+     * to a Set of String values. If the value is already a Collection of some
+     * kind, its values are converted to Strings and returned as the members of
+     * the Set. If the value is not already a Collection, it is assumed to be a
+     * single value, converted to a String, and used as the sole member of the
+     * set.
+     *
+     * @param obj
+     *     The CAS attribute value to convert to a Set of Strings.
+     *
+     * @return
+     *     A Set of all String values contained within the given CAS attribute
+     *     value.
+     */
+    private Set<String> toStringSet(Object obj) {
+
+        // Consider null to represent no provided values
+        if (obj == null)
+            return Collections.emptySet();
+
+        // If the provided object is already a Collection, produce a Collection
+        // where we know for certain that all values are Strings
+        if (obj instanceof Collection) {
+            return ((Collection<?>) obj).stream()
+                    .map(Object::toString)
+                    .collect(Collectors.toSet());
+        }
+
+        // Otherwise, assume we have only a single value
+        return Collections.singleton(obj.toString());
+
+    }
+
+    /**
      * Validates and parses the given ID ticket, returning a map of all
      * available tokens for the given user based on attributes provided by the
      * CAS server.  If the ticket is invalid an exception is thrown.
@@ -102,80 +135,70 @@ public class TicketValidationService {
     public CASAuthenticatedUser validateTicket(String ticket,
             Credentials credentials) throws GuacamoleException {
 
-        // Retrieve the configured CAS URL, establish a ticket validator,
-        // and then attempt to validate the supplied ticket.  If that succeeds,
-        // grab the principal returned by the validator.
+        // Create a ticket validator that uses the configured CAS URL
         URI casServerUrl = confService.getAuthorizationEndpoint();
         Cas20ProxyTicketValidator validator = new Cas20ProxyTicketValidator(casServerUrl.toString());
         validator.setAcceptAnyProxy(true);
         validator.setEncoding("UTF-8");
+
+        // Attempt to validate the supplied ticket
+        Assertion assertion;
         try {
-            Map<String, String> tokens = new HashMap<>();
-            Set<String> effectiveGroups = new HashSet<>();
             URI confRedirectURI = confService.getRedirectURI();
-            Assertion a = validator.validate(ticket, confRedirectURI.toString());
-            AttributePrincipal principal =  a.getPrincipal();
-            Map<String, Object> ticketAttrs =
-                    new HashMap<>(principal.getAttributes());
-
-            // Retrieve username and set the credentials.
-            String username = principal.getName();
-            if (username == null)
-                throw new GuacamoleSecurityException("No username provided by CAS.");
-            
-            credentials.setUsername(username);
-
-            // Retrieve password, attempt decryption, and set credentials.
-            Object credObj = ticketAttrs.remove("credential");
-            if (credObj != null) {
-                String clearPass = decryptPassword(credObj.toString());
-                if (clearPass != null && !clearPass.isEmpty())
-                    credentials.setPassword(clearPass);
-            }
-            
-            // Convert remaining attributes that have values to Strings
-            String groupAttribute = confService.getGroupAttribute();
-            // Use cas-member-attribute to retrieve and set group memberships
-            String groupDnFormat = confService.getGroupDnFormat();
-            String groupTemplate = "";
-            if (groupDnFormat != null) {
-                // if CAS is backended to LDAP, groups come in as RFC4514 DN
-                // syntax.  If cas-group-dn-format is set, this strips an
-                // entry such as "CN=Foo,OU=Bar,DC=example,DC=com" to "Foo"
-                groupTemplate = groupDnFormat.replace("%s","([A-Za-z0-9_\\(\\)\\-\\.\\s+]+)");
-                // the underlying parser aggregates all instances of the same
-                // attribute, so we need to be able to parse them out
-                groupTemplate=groupTemplate+",*\\s*";
-            }
-            else {
-                groupTemplate = "([A-Za-z0-9_\\(\\)\\-\\.\\s+]+,*\\s*)";
-            }
-            Pattern pattern = Pattern.compile(groupTemplate);
-
-            for (Entry <String, Object> attr : ticketAttrs.entrySet()) {
-                String tokenName = TokenName.canonicalize(attr.getKey(),
-                        CAS_ATTRIBUTE_TOKEN_PREFIX);
-                Object value = attr.getValue();
-                if (value != null) {
-                    String attrValue = value.toString();
-                    tokens.put(tokenName, attrValue);
-                    if (attr.getKey().equals(groupAttribute)) {
-                        Matcher matcher =
-                            pattern.matcher(attrValue.substring(1,attrValue.length()-1));
-                        while (matcher.find()) {
-                            effectiveGroups.add(matcher.group(1));
-                        }
-                    }
-                }
-            }
-
-            CASAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-            authenticatedUser.init(username, credentials, tokens, effectiveGroups);
-            return authenticatedUser;
-        } 
+            assertion = validator.validate(ticket, confRedirectURI.toString());
+        }
         catch (TicketValidationException e) {
             throw new GuacamoleException("Ticket validation failed.", e);
         }
+
+        // Pull user principal and associated attributes
+        AttributePrincipal principal =  assertion.getPrincipal();
+        Map<String, Object> ticketAttrs = new HashMap<>(principal.getAttributes());
+
+        // Retrieve user identity from principal
+        String username = principal.getName();
+        if (username == null)
+            throw new GuacamoleSecurityException("No username provided by CAS.");
+
+        // Update credentials with username provided by CAS for sake of
+        // ${GUAC_USERNAME} token
+        credentials.setUsername(username);
+
+        // Retrieve password, attempt decryption, and set credentials.
+        Object credObj = ticketAttrs.remove("credential");
+        if (credObj != null) {
+            String clearPass = decryptPassword(credObj.toString());
+            if (clearPass != null && !clearPass.isEmpty())
+                credentials.setPassword(clearPass);
+        }
+
+        Set<String> effectiveGroups;
+
+        // Parse effective groups from principal attributes if a specific
+        // group attribute has been configured
+        String groupAttribute = confService.getGroupAttribute();
+        if (groupAttribute != null) {
+            effectiveGroups = toStringSet(ticketAttrs.get(groupAttribute)).stream()
+                    .map(confService.getGroupParser()::parse)
+                    .collect(Collectors.toSet());
+        }
+
+        // Otherwise, assume no effective groups
+        else
+            effectiveGroups = Collections.emptySet();
+
+        // Convert remaining attributes that have values to Strings
+        Map<String, String> tokens = new HashMap<>(ticketAttrs.size());
+        ticketAttrs.forEach((key, value) -> {
+            if (value != null) {
+                String tokenName = TokenName.canonicalize(key, CAS_ATTRIBUTE_TOKEN_PREFIX);
+                tokens.put(tokenName, value.toString());
+            }
+        });
+
+        CASAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+        authenticatedUser.init(username, credentials, tokens, effectiveGroups);
+        return authenticatedUser;
 
     }
 

@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.cas.conf;
 
+import org.apache.guacamole.auth.cas.group.GroupFormat;
+import org.apache.guacamole.properties.EnumGuacamoleProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
@@ -71,8 +73,8 @@ public class CASGuacamoleProperties {
     };
   
     /**
-     * The attribute used for group membership
-     * example:  memberOf  (case sensitive)
+     * The name of the CAS attribute used for group membership, such as
+     * "memberOf". This attribute is case sensitive.
      */
     public static final StringGuacamoleProperty CAS_GROUP_ATTRIBUTE =
             new StringGuacamoleProperty() {
@@ -83,14 +85,37 @@ public class CASGuacamoleProperties {
     };
 
     /**
-     * The name of the attribute used for group membership, such as "memberOf".
-     * This attribute is case sensitive.
+     * The format used by CAS to represent group names. Possible formats are
+     * "plain" (simple text names) or "ldap" (fully-qualified LDAP DNs).
      */
-    public static final StringGuacamoleProperty CAS_GROUP_DN_FORMAT =
+    public static final EnumGuacamoleProperty<GroupFormat> CAS_GROUP_FORMAT =
+            new EnumGuacamoleProperty<GroupFormat>(GroupFormat.class) {
+
+        @Override
+        public String getName() { return "cas-group-format"; }
+
+    };
+
+    /**
+     * The LDAP base DN to require for all CAS groups.
+     */
+    public static final LdapNameGuacamoleProperty CAS_GROUP_LDAP_BASE_DN =
+            new LdapNameGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "cas-group-ldap-base-dn"; }
+
+    };
+
+    /**
+     * The LDAP attribute to require for the names of CAS groups.
+     */
+    public static final StringGuacamoleProperty CAS_GROUP_LDAP_ATTRIBUTE =
             new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "cas-group-dn-format"; }
+        public String getName() { return "cas-group-ldap-attribute"; }
 
     };
+
 }
