@@ -21,8 +21,6 @@ package org.apache.guacamole.auth.cas;
 
 import com.google.inject.Inject;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.GuacamoleException;
@@ -34,19 +32,12 @@ import org.apache.guacamole.auth.cas.form.CASTicketField;
 import org.apache.guacamole.auth.cas.ticket.TicketValidationService;
 import org.apache.guacamole.auth.cas.user.CASAuthenticatedUser;
 import org.apache.guacamole.language.TranslatableMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Service providing convenience functions for the CAS AuthenticationProvider
  * implementation.
  */
 public class AuthenticationProviderService {
-
-    /**
-     * Logger for this class.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
 
     /**
      * Service for retrieving CAS configuration information.
