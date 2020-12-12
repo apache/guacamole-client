@@ -678,6 +678,10 @@ END
     set_property            "cas-authorization-endpoint"       "$CAS_AUTHORIZATION_ENDPOINT"
     set_property            "cas-redirect-uri"                 "$CAS_REDIRECT_URI"
     set_optional_property   "cas-clearpass-key"                "$CAS_CLEARPASS_KEY"
+    set_optional_property   "cas-group-attribute"              "$CAS_GROUP_ATTRIBUTE"
+    set_optional_property   "cas-group-format"                 "$CAS_GROUP_FORMAT"
+    set_optional_property   "cas-group-ldap-base-dn"           "$CAS_GROUP_LDAP_BASE_DN"
+    set_optional_property   "cas-group-ldap-attribute"         "$CAS_GROUP_LDAP_ATTRIBUTE"
 
     # Add required .jar files to GUACAMOLE_EXT
     ln -s /opt/guacamole/cas/guacamole-auth-*.jar   "$GUACAMOLE_EXT"
