@@ -1,0 +1,12 @@
+{
+
+    "DATA_SOURCE_CAS" : {
+        "NAME" : "CAS SSO后端"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_TICKET"        : "",
+        "INFO_CAS_REDIRECT_PENDING"  : "请稍候，正在重定向到CAS验证..."
+    }
+
+}

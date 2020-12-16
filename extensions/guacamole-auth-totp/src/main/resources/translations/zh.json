@@ -1,0 +1,34 @@
+{
+
+    "DATA_SOURCE_TOTP" : {
+        "NAME" : "TOTP TFA后端"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_TOTP" : ""
+    },
+
+    "TOTP" : {
+
+        "ACTION_HIDE_DETAILS" : "隐藏",
+        "ACTION_SHOW_DETAILS" : "显示",
+
+        "FIELD_HEADER_ALGORITHM"  : "算法:",
+        "FIELD_HEADER_DIGITS"     : "位数:",
+        "FIELD_HEADER_INTERVAL"   : "间隔:",
+        "FIELD_HEADER_SECRET_KEY" : "密钥:",
+
+        "FIELD_PLACEHOLDER_CODE" : "授权码",
+
+        "INFO_CODE_REQUIRED"       : "请输入您的授权码以验证您的身份。",
+        "INFO_ENROLL_REQUIRED"     : "您的帐户已启用多因素身份验证。",
+        "INFO_VERIFICATION_FAILED" : "验证失败， 请重试。",
+
+        "HELP_ENROLL_BARCODE" : "要完成注册过程，请使用手机或设备上的two-factor验证程序扫描下面的条形码。",
+        "HELP_ENROLL_VERIFY"  : "扫描条形码后，输入显示的{DIGITS}-数字授权码以验证注册是否成功。",
+
+        "SECTION_HEADER_DETAILS" : "详情:"
+
+    }
+
+}
