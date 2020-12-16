@@ -1,0 +1,12 @@
+{
+
+    "DATA_SOURCE_OPENID" : {
+        "NAME" : "OpenID SSO后端"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_ID_TOKEN" : "",
+        "INFO_REDIRECT_PENDING" : "请稍候，正在重定向到身份提供者..."
+    }
+
+}
