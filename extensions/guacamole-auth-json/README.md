@@ -151,14 +151,20 @@ For example, if you have a file called `auth.json` containing the following:
                 "protocol" : "rdp",
                 "parameters" : {
                     "hostname" : "10.10.209.63",
-                    "port" : "3389"
+                    "port" : "3389",
+                    "ignore-cert": "true",
+                    "recording-path": "/recordings",
+                    "recording-name": "My-Connection-${GUAC_USERNAME}-${GUAC_DATE}-${GUAC_TIME}"
                 }
             },
             "My OTHER Connection" : {
                 "protocol" : "rdp",
                 "parameters" : {
                     "hostname" : "10.10.209.64",
-                    "port" : "3389"
+                    "port" : "3389",
+                    "ignore-cert": "true",
+                    "recording-path": "/recordings",
+                    "recording-name": "My-OTHER-Connection-${GUAC_USERNAME}-${GUAC_DATE}-${GUAC_TIME}"
                 }
             }
         }
@@ -170,17 +176,22 @@ and you run:
 
 You will receive the following output:
 
-    le2Ug6YIo4perD2GV17QtWvOdfSemVDDtCOdRYJlbdUf3fhN+63LpQa1RDkzU7Zc
-    DW3+OtyTCBGQ7OLO+HpG6pHNom76BXpmnHSRx1UdQ3WVZelPUXEDzxe74aN6DUP9
-    G9isXhBMdLUhZwEJf4k4Gpzt9MHAH5PufSKq3DO1UHnrRjdGbKKddug2BcuDrwJM
-    UJf1tRX9CAEC11/gWEwrHDOhH/abeyeDyElbaEG/oOY8EdoFNYgUsjI2x31OpCuB
-    sEv7FOFafL05wEoIFv0/pPft0DHk7GuvHBBCqXuK98yMEo3d0zD5D+IsOY8Rmm1+
-    0CoWkX22mqyRQMFS2fTp/fClCN4QLb0aNn+unweTimd2SXN9cjREmZknXf7Tj8oU
-    /FNXc37i0HEfG5aVgp5znMCwwRAOFnFhLqG3K2yaTRE+hLNBxltIjLfFmNG5TZZA
-    gUdKyuegsOd0KS5iHdW6tPI01AwfRO9y2z20t3flsgDp50EGWjT2/TTA5Nkjnnjk
-    JXNzCOfM7DCI/ioEz6Ga140qXfOX/g8SGiukpwt+j0ANI573TdVt7nsp7MZX2qKg
-    2GcoNqjBqQxqpqI5ZYz4KVfD4cYu8KDZ9MiFMzbUwwKNSzYxiep1KJwiG0HQThHg
-    oX2FJYOFCFcinQgGkUOaBJK1K0bo1ouaBSe4iGPjd54=
+    A2Pf5Kpmm97I2DT1PifIrfU6q3yzoGcIbNXEd60WNangT8DAVjAl6luaqwhBJnCK
+    uqcf9ZZlRo3uDxTHvUM3eq1YvdghL0GbosOn8Mn38j2ydOMk+Cd15a8ggb4/ddt/
+    yIBK4DxrN7MNbouZ091KYtXC6m20E6sGzLy676BlMSg1cmsENRIihOynsSLSCvo0
+    diif6H7T+ZuIqF7B5SW+adGfMaHlfknlIvSpLGHhrIP4aMYE/ZU2vYNg8ez27sCS
+    wDBWu5lERtfCYFyU4ysjRU5Hyov+yKa+O7jcRYpw3N+fHbCg7/dxVNW07qNOKssv
+    pzUciGvDPUCPpa02WmPJNEBowwQireO1952/MNAI77cW2UepbljD/bwOiZl2THJz
+    LrENo7K5acimBa+EjWEesgn7lx/WTCF3zxR6TH1CWrQM8Et1aUK1Nf8K11xEQbTy
+    klyaNtCmTfyahRZ/fUPxDNrdJVpPOSELkf7RJO5tOdK/FFIFIbze3ZUyXgRq+pHY
+    owpgOmudDBTBlxhXiONdutRI/RZbFM/7GBMdmI8AR/401OCV3nsI4jLhukjMXH3V
+    f3pQg+xKMhi/QExHhDk8VTNYk7GurK4vgehn7HQ0oSGh8pGcmxB6W43cz+hyn6VQ
+    On6i90cSnIhRO8SysZt332LwJCDm7I+lBLaI8NVHU6bnAY1Axx5oH3YTKc4qzHls
+    HEAFYLkD6aHMvHkF3b798CMravjxiJV3m7hsXDbaFN6AFhn8GIkMRRrjuevfZ+q9
+    enWN14s24vt5OVg69DljzALobUNKUXFx69SR8EpSBvUcKq8s/OgbDpFvKbwsDY57
+    HGT4T0CuRIA0TGUI075uerKBNApVhuBA1BmWJIrI4JXw5MuX6pdBe+MYccO3vfo+
+    /frazj8rHdkDa/IbueMbvq+1ozV2+UuxrbaTrV2i4jSRgd74U0QzOh9e8Q0i7vOi
+    l3hnIfOfg+v1oULmZmJSeiAYWxeGvPptp+n7rNFqHGM=
 
 The resulting base64 data above, if submitted using the `data` parameter to
 Guacamole, will authenticate a user and grant them access to the connections
