@@ -180,7 +180,7 @@ public class UserDataConnection implements Connection {
         }
 
         // Perform connection operation
-        return connectionService.connect(connection, info);
+        return connectionService.connect(connection, info, tokens);
 
     }
 
