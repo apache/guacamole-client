@@ -184,3 +184,11 @@ if [ -f extensions/guacamole-auth-cas/target/*.tar.gz ]; then
     "*.jar"
 fi
 
+#
+# Copy json auth extension if it was built
+#
+
+if [ -f extensions/guacamole-auth-json/target/guacamole-auth-json*.jar ]; then
+    mkdir -p "$DESTINATION/json"
+    cp extensions/guacamole-auth-json/target/guacamole-auth-json*.jar "$DESTINATION/json"
+fi

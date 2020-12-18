@@ -688,6 +688,19 @@ END
 }
 
 ##
+## Adds properties to guacamole.properties which configure the json
+## authentication provider.
+##
+associate_json() {
+    # Update config file
+    set_property          "json-secret-key"        "$JSON_SECRET_KEY"
+    set_optional_property "json-trusted-networks"  "$JSON_TRUSTED_NETWORKS"
+
+    # Add required .jar files to GUACAMOLE_EXT
+    ln -s /opt/guacamole/json/guacamole-auth-*.jar "$GUACAMOLE_EXT"
+}
+
+##
 ## Starts Guacamole under Tomcat, replacing the current process with the
 ## Tomcat process. As the current process will be replaced, this MUST be the
 ## last function run within the script.
@@ -837,6 +850,11 @@ fi
 # Use CAS if specified.
 if [ -n "$CAS_AUTHORIZATION_ENDPOINT" ]; then
     associate_cas
+fi
+
+# Use json-auth if specified.
+if [ -n "$JSON_SECRET_KEY" ]; then
+    associate_json
 fi
 
 # Set logback level if specified
