@@ -151,6 +151,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- JAXB -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.2.2</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Guacamole Java API -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
