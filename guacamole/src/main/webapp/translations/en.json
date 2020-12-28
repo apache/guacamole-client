@@ -531,6 +531,7 @@
         "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcast address for WoL packet:",
         "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC address of the remote host:",
         "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP port for WoL packet: ",
         "FIELD_HEADER_WOL_WAIT_TIME"      : "Host boot wait time:",
         
 
@@ -627,6 +628,7 @@
         "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcast address for WoL packet:",
         "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC address of the remote host:",
         "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP port for WoL packet:",
         "FIELD_HEADER_WOL_WAIT_TIME"      : "Host boot wait time:",
 
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
@@ -709,6 +711,7 @@
         "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcast address for WoL packet:",
         "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC address of the remote host:",
         "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP port for WoL packet:",
         "FIELD_HEADER_WOL_WAIT_TIME"      : "Host boot wait time:",
 
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
@@ -798,6 +801,7 @@
         "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcast address for WoL packet:",
         "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC address of the remote host:",
         "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP port for WoL packet:",
         "FIELD_HEADER_WOL_WAIT_TIME"      : "Host boot wait time:",
 
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",

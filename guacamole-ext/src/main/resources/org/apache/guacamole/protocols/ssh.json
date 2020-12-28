@@ -220,6 +220,10 @@
                     "type" : "TEXT"
                 },
                 {
+                    "name" : "wol-udp-port",
+                    "type" : "NUMERIC"
+                },
+                {
                     "name" : "wol-wait-time",
                     "type" : "NUMERIC"
                 }
