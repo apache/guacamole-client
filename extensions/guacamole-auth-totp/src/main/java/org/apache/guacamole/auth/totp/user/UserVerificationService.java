@@ -166,7 +166,7 @@ public class UserVerificationService {
 
         // Get mutable set of attributes
         User self = context.self();
-        Map<String, String> attributes = new HashMap<String, String>();
+        Map<String, String> attributes = new HashMap<>();
 
         // Set/overwrite current TOTP key state
         attributes.put(TOTPUser.TOTP_KEY_SECRET_ATTRIBUTE_NAME, BASE32.encode(key.getSecret()));
