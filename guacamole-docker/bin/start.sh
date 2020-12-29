@@ -231,6 +231,10 @@ END
         set_property "mysql-ssl-client-password" "$MYSQL_SSL_CLIENT_PASSWORD"
     fi
 
+    set_optional_property             \
+        "mysql-auto-create-accounts"  \
+        "$MYSQL_AUTO_CREATE_ACCOUNTS"
+
     # Add required .jar files to GUACAMOLE_LIB and GUACAMOLE_EXT
     ln -s /opt/guacamole/mysql/mysql-connector-*.jar "$GUACAMOLE_LIB"
     ln -s /opt/guacamole/mysql/guacamole-auth-*.jar "$GUACAMOLE_EXT"
@@ -388,6 +392,10 @@ END
     elif [ -n "$POSTGRES_SSL_KEY_PASSWORD" ]; then
         set_property "postgresql-ssl-key-password" "$POSTGRES_SSL_KEY_PASSWORD"
     fi
+
+    set_optional_property                  \
+        "postgresql-auto-create-accounts"  \
+        "$POSTGRESQL_AUTO_CREATE_ACCOUNTS"
 
     # Add required .jar files to GUACAMOLE_LIB and GUACAMOLE_EXT
     ln -s /opt/guacamole/postgresql/postgresql-*.jar "$GUACAMOLE_LIB"
