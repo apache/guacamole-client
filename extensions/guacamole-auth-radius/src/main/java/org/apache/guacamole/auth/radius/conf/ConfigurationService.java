@@ -21,6 +21,8 @@ package org.apache.guacamole.auth.radius.conf;
 
 import com.google.inject.Inject;
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
@@ -326,6 +328,39 @@ public class ConfigurationService {
         
         return authProtocol;
         
+    }
+    
+    /**
+     * Returns the InetAddress containing the NAS IP address that should be
+     * used to identify this RADIUS client when communicating with the RADIUS
+     * server. If no explicit configuration of this property is defined
+     * in guacamole.properties, it falls back to attempting to determine the
+     * IP address using Java's built-in mechanisms for querying local addresses.
+     * 
+     * @return
+     *     The InetAddress corresponding to the NAS IP address specified in
+     *     guacamole.properties, or the IP determined by querying the address
+     *     of the server on which Guacamole is running.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be parsed, or if the InetAddress
+     *     for the NAS IP cannot be read or determined from the system.
+     */
+    public InetAddress getRadiusNasIp() throws GuacamoleException {
+        try {
+            String nasIpStr = environment.getProperty(RadiusGuacamoleProperties.RADIUS_NAS_IP);
+            
+            // If property is specified and non-empty, attempt to return converted address.
+            if (!(nasIpStr == null && nasIpStr.isEmpty()))
+                return InetAddress.getByName(nasIpStr);
+            
+            // By default, return the address of the server.
+            return InetAddress.getLocalHost();
+                
+        }
+        catch (UnknownHostException e) {
+            throw new GuacamoleServerException("Unknown host specified for NAS IP.", e);
+        }
     }
 
 }
