@@ -8,8 +8,8 @@
             <!-- Central portion of view -->
             <div class="client-body" guac-touch-drag="clientDrag" guac-touch-pinch="clientPinch">
 
-                <!-- Client for current connection -->
-                <guac-client client="client"></guac-client>
+                <!-- All connections in current display -->
+                <guac-tiled-clients clients="clients"></guac-tiled-clients>
 
                 <!-- All other active connections -->
                 <div id="other-connections">

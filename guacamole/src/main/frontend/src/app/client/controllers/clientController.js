@@ -279,20 +279,37 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     /**
      * The client which should be attached to the client UI.
      *
-     * @type ManagedClient
+     * @type ManagedClient[]
      */
-    $scope.client = guacClientManager.getManagedClient($routeParams.id, $routeParams.params);
+    $scope.clients = (function getClients() {
+
+        var clients = [];
+
+        var ids = $routeParams.id.split(/[ +]/);
+        ids.forEach(function addClient(id) {
+            clients.push(guacClientManager.getManagedClient(id, $routeParams.params));
+        });
+
+        return clients;
+
+    })();
 
     /**
-     * All active clients which are not the current client ($scope.client).
+     * All active clients which are not any current client ($scope.clients).
      * Each key is the ID of the connection used by that client.
      *
      * @type Object.<String, ManagedClient>
      */
     $scope.otherClients = (function getOtherClients(clients) {
+
         var otherClients = angular.extend({}, clients);
-        delete otherClients[$scope.client.id];
+
+        $scope.clients.forEach(function removeActiveCLient(client) {
+            delete otherClients[client.id];
+        });
+
         return otherClients;
+
     })(guacClientManager.getManagedClients());
 
     /**
@@ -526,7 +543,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             $scope.menu.connectionParameters = ManagedClient.getArgumentModel($scope.client);
 
         // Disable client keyboard if the menu is shown
-        $scope.client.clientProperties.keyboardEnabled = !menuShown;
+        angular.forEach($scope.clients, function updateKeyboardEnabled(client) {
+            client.clientProperties.keyboardEnabled = !menuShown;
+        });
 
     });
 
@@ -731,7 +750,15 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      *     otherwise.
      */
     $scope.isConnectionUnstable = function isConnectionUnstable() {
-        return $scope.client && $scope.client.clientState.tunnelUnstable;
+
+        var unstable = false;
+
+        angular.forEach($scope.clients, function checkStability(client) {
+            unstable |= client.clientState.tunnelUnstable;
+        });
+
+        return unstable;
+
     };
 
     /**

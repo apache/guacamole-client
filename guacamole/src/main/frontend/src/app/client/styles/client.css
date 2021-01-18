@@ -103,7 +103,7 @@ body.client {
     flex: 0 0 auto;
 }
 
-.client-view .client-body .main {
+.client-view .client-body .tiled-client-list {
 
     position: absolute;
     left: 0;

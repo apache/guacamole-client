@@ -69,12 +69,20 @@ angular.module('client').factory('ClientProperties', ['$injector', function defi
         this.maxScale = template.maxScale || 3;
 
         /**
-         * Whether or not the client should listen to keyboard events.
+         * Whether this client should listen to keyboard events that it
+         * receives.
          * 
          * @type Boolean
          */
         this.keyboardEnabled = template.keyboardEnabled || true;
-        
+
+        /**
+         * Whether this client should receive keyboard events.
+         *
+         * @type Boolean
+         */
+        this.focused = template.focused || false;
+
         /**
          * Whether translation of touch to mouse events should emulate an
          * absolute pointer device, or a relative pointer device.
