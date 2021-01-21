@@ -66,14 +66,17 @@
         "ERROR_CONTAINS_USERNAME"      : "ユーザ名にパスワードを含んでいます。",
         "ERROR_REQUIRES_DIGIT"         : "パスワードには数字を含めてください。",
         "ERROR_REQUIRES_MULTIPLE_CASE" : "パスワードにはアルファベットの大文字・小文字を含めてください。",
-        "ERROR_REQUIRES_NON_ALNUM"     : "パスワードには記号を含めてください。"
+        "ERROR_REQUIRES_NON_ALNUM"     : "パスワードには記号を含めてください。",
+        "ERROR_REUSED"                 : "このパスワードはすでに使用されています。過去に使用したことのある {HISTORY_SIZE}回前までのパスワードは再利用しないでください。",
+        "ERROR_TOO_SHORT"              : "パスワードは {LENGTH} 文字以上の長さで設定してください。",
+        "ERROR_TOO_YOUNG"              : "このアカウントのパスワードは最近更新されました。 パスワードの再設定は {WAIT} 日以上経ってから行ってください。"
 
     },
 
     "USER_ATTRIBUTES" : {
 
         "FIELD_HEADER_DISABLED"            : "ログインの無効化:",
-        "FIELD_HEADER_EXPIRED"             : "パスワードの期限:",
+        "FIELD_HEADER_EXPIRED"             : "パスワード変更の強制:",
         "FIELD_HEADER_ACCESS_WINDOW_END"   : "指定した時刻からアクセスを禁止する:",
         "FIELD_HEADER_ACCESS_WINDOW_START" : "指定した時刻からアクセスを許可する:",
         "FIELD_HEADER_TIMEZONE"            : "ユーザのタイムゾーン:",
