@@ -457,7 +457,7 @@
         "FIELD_HEADER_CONSOLE"         : "관리자 콘솔:",
         "FIELD_HEADER_CONSOLE_AUDIO"   : "콘솔 내 오디오 지원:",
         "FIELD_HEADER_CREATE_DRIVE_PATH" : "드라이브 자동 생성:",
-        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "레코딩 경로 자동 생성:",
         "FIELD_HEADER_DISABLE_AUDIO"   : "오디오 비활성화:",
         "FIELD_HEADER_DISABLE_AUTH"    : "인증 비활성화:",
         "FIELD_HEADER_DISABLE_COPY"    : "원격 데스크탑으로 부터의 복사 비활성화:",
@@ -530,7 +530,7 @@
         "FIELD_HEADER_WOL_WAIT_TIME"      : "호스트 부트 대기 시간:",
         
 
-        "FIELD_OPTION_COLOR_DEPTH_16"    : "낮은 색심도 (16-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "로우 컬러 (16-bit)",
         "FIELD_OPTION_COLOR_DEPTH_24"    : "트루 컬러 (24-bit)",
         "FIELD_OPTION_COLOR_DEPTH_32"    : "트루 컬러 (32-bit)",
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",
