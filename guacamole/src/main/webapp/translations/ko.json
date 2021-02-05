@@ -542,9 +542,9 @@
 
         "FIELD_OPTION_SECURITY_ANY"   : "Any",
         "FIELD_OPTION_SECURITY_EMPTY" : "",
-        "FIELD_OPTION_SECURITY_NLA"   : "NLA (Network Level Authentication)",
-        "FIELD_OPTION_SECURITY_RDP"   : "RDP encryption",
-        "FIELD_OPTION_SECURITY_TLS"   : "TLS encryption",
+        "FIELD_OPTION_SECURITY_NLA"   : "NLA (네트워크 수준 인증)",
+        "FIELD_OPTION_SECURITY_RDP"   : "RDP 암호화",
+        "FIELD_OPTION_SECURITY_TLS"   : "TLS 암호화",
         "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
 
         "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Swiss German (Qwertz)",
@@ -568,18 +568,18 @@
 
         "NAME" : "RDP",
 
-        "SECTION_HEADER_AUTHENTICATION"     : "Authentication",
-        "SECTION_HEADER_BASIC_PARAMETERS"   : "Basic Settings",
-        "SECTION_HEADER_CLIPBOARD"          : "Clipboard",
-        "SECTION_HEADER_DEVICE_REDIRECTION" : "Device Redirection",
-        "SECTION_HEADER_DISPLAY"            : "Display",
-        "SECTION_HEADER_GATEWAY"            : "Remote Desktop Gateway",
-        "SECTION_HEADER_LOAD_BALANCING"     : "Load Balancing",
-        "SECTION_HEADER_NETWORK"            : "Network",
-        "SECTION_HEADER_PERFORMANCE"        : "Performance",
+        "SECTION_HEADER_AUTHENTICATION"     : "인증",
+        "SECTION_HEADER_BASIC_PARAMETERS"   : "기본 설정",
+        "SECTION_HEADER_CLIPBOARD"          : "클립보드",
+        "SECTION_HEADER_DEVICE_REDIRECTION" : "디바이스 리다이렉션",
+        "SECTION_HEADER_DISPLAY"            : "디스플레이",
+        "SECTION_HEADER_GATEWAY"            : "원격 데스크탑 게이트웨이",
+        "SECTION_HEADER_LOAD_BALANCING"     : "부하 분산(Load Balancing)",
+        "SECTION_HEADER_NETWORK"            : "네트워크",
+        "SECTION_HEADER_PERFORMANCE"        : "성능",
         "SECTION_HEADER_PRECONNECTION_PDU"  : "Preconnection PDU / Hyper-V",
-        "SECTION_HEADER_RECORDING"          : "Screen Recording",
-        "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
+        "SECTION_HEADER_RECORDING"          : "스크린 레코드",
+        "SECTION_HEADER_REMOTEAPP"          : "리모트 앱",
         "SECTION_HEADER_SFTP"               : "SFTP",
         "SECTION_HEADER_WOL"                : "Wake-on-LAN (WoL)"
 
@@ -587,8 +587,8 @@
 
     "PROTOCOL_SSH" : {
 
-        "FIELD_HEADER_BACKSPACE"    : "Backspace key sends:",
-        "FIELD_HEADER_COLOR_SCHEME" : "Color scheme:",
+        "FIELD_HEADER_BACKSPACE"    : "<Backspace> 키가 보내는 문자:",
+        "FIELD_HEADER_COLOR_SCHEME" : "색상 구성표:",
         "FIELD_HEADER_COMMAND"      : "Execute command:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
