@@ -29,6 +29,15 @@
 
         "SECTION_HEADER_DETAILS" : "Details:"
 
+    },
+    
+    "USER_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_RESET"         : "Clear TOTP secret:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_CONFIRMED" : "TOTP key confirmed:",
+        
+        "SECTION_HEADER_TOTP_CONFIG_FORM" : "Configure TOTP"
+        
     }
 
 }
