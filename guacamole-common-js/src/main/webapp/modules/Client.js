@@ -365,6 +365,39 @@ Guacamole.Client = function(tunnel) {
     };
 
     /**
+     * Sends a touch event having the properties provided by the given touch
+     * state.
+     *
+     * @param {Guacamole.Touch.State} touchState
+     *     The state of the touch contact to send in the touch event.
+     *
+     * @param {Boolean} [applyDisplayScale=false]
+     *     Whether the provided touch state uses local display units, rather
+     *     than remote display units, and should be scaled to match the
+     *     {@link Guacamole.Display}.
+     */
+    this.sendTouchState = function sendTouchState(touchState, applyDisplayScale) {
+
+        // Do not send requests if not connected
+        if (!isConnected())
+            return;
+
+        var x = touchState.x;
+        var y = touchState.y;
+
+        // Translate for display units if requested
+        if (applyDisplayScale) {
+            x /= display.getScale();
+            y /= display.getScale();
+        }
+
+        tunnel.sendMessage('touch', touchState.id, Math.floor(x), Math.floor(y),
+            Math.floor(touchState.radiusX), Math.floor(touchState.radiusY),
+            touchState.angle, touchState.force);
+
+    };
+
+    /**
      * Allocates an available stream index and creates a new
      * Guacamole.OutputStream using that index, associating the resulting
      * stream with this Guacamole.Client. Note that this stream will not yet
@@ -664,6 +697,20 @@ Guacamole.Client = function(tunnel) {
     this.onvideo = null;
 
     /**
+     * Fired when the remote client is explicitly declaring the level of
+     * multi-touch support provided by a particular display layer.
+     *
+     * @event
+     * @param {Guacamole.Display.VisibleLayer} layer
+     *     The layer whose multi-touch support level is being declared.
+     *
+     * @param {Number} touches
+     *     The maximum number of simultaneous touches supported by the given
+     *     layer, where 0 indicates that touch events are not supported at all.
+     */
+    this.onmultitouch = null;
+
+    /**
      * Fired when the current value of a connection parameter is being exposed
      * by the server.
      *
@@ -839,6 +886,14 @@ Guacamole.Client = function(tunnel) {
 
         "miter-limit": function(layer, value) {
             display.setMiterLimit(layer, parseFloat(value));
+        },
+
+        "multi-touch" : function layerSupportsMultiTouch(layer, value) {
+
+            // Process "multi-touch" property only for true visible layers (not off-screen buffers)
+            if (guac_client.onmultitouch && layer instanceof Guacamole.Display.VisibleLayer)
+                guac_client.onmultitouch(layer, parseInt(value));
+
         }
 
     };
