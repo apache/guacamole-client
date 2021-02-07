@@ -186,29 +186,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
             };
 
             /**
-             * Sends the given mouse state to the current client.
-             *
-             * @param {Guacamole.Mouse.State} mouseState The mouse state to
-             *                                           send.
-             */
-            var sendScaledMouseState = function sendScaledMouseState(mouseState) {
-
-                // Scale event by current scale
-                var scaledState = new Guacamole.Mouse.State(
-                        mouseState.x / display.getScale(),
-                        mouseState.y / display.getScale(),
-                        mouseState.left,
-                        mouseState.middle,
-                        mouseState.right,
-                        mouseState.up,
-                        mouseState.down);
-
-                // Send mouse event
-                client.sendMouseState(scaledState);
-
-            };
-
-            /**
              * Handles a mouse event originating from the user's actual mouse.
              * This differs from handleEmulatedMouseState() in that the
              * software mouse cursor must be shown only if the user's browser
@@ -226,7 +203,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 // Send mouse state, show cursor if necessary
                 display.showCursor(!localCursor);
-                sendScaledMouseState(mouseState);
+                client.sendMouseState(mouseState, true);
 
             };
 
@@ -251,7 +228,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 // Send mouse state, ensure cursor is visible
                 scrollToMouse(mouseState);
-                sendScaledMouseState(mouseState);
+                client.sendMouseState(mouseState, true);
 
             };
 

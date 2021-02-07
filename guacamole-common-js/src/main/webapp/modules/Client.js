@@ -323,19 +323,33 @@ Guacamole.Client = function(tunnel) {
      * Sends a mouse event having the properties provided by the given mouse
      * state.
      * 
-     * @param {Guacamole.Mouse.State} mouseState The state of the mouse to send
-     *                                           in the mouse event.
+     * @param {Guacamole.Mouse.State} mouseState
+     *     The state of the mouse to send in the mouse event.
+     *
+     * @param {Boolean} [applyDisplayScale=false]
+     *     Whether the provided mouse state uses local display units, rather
+     *     than remote display units, and should be scaled to match the
+     *     {@link Guacamole.Display}.
      */
-    this.sendMouseState = function(mouseState) {
+    this.sendMouseState = function sendMouseState(mouseState, applyDisplayScale) {
 
         // Do not send requests if not connected
         if (!isConnected())
             return;
 
+        var x = mouseState.x;
+        var y = mouseState.y;
+
+        // Translate for display units if requested
+        if (applyDisplayScale) {
+            x /= display.getScale();
+            y /= display.getScale();
+        }
+
         // Update client-side cursor
         display.moveCursor(
-            Math.floor(mouseState.x),
-            Math.floor(mouseState.y)
+            Math.floor(x),
+            Math.floor(y)
         );
 
         // Build mask
@@ -347,7 +361,7 @@ Guacamole.Client = function(tunnel) {
         if (mouseState.down)   buttonMask |= 16;
 
         // Send message
-        tunnel.sendMessage("mouse", Math.floor(mouseState.x), Math.floor(mouseState.y), buttonMask);
+        tunnel.sendMessage("mouse", Math.floor(x), Math.floor(y), buttonMask);
     };
 
     /**
