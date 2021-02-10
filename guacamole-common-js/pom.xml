@@ -135,7 +135,29 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
 
+            <!-- Unit test using Jasmin and PhantomJS -->
+            <plugin>
+                <groupId>com.github.searls</groupId>
+                <artifactId>jasmine-maven-plugin</artifactId>
+                <version>2.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <phantomjs>
+                        <version>2.1.1</version>
+                    </phantomjs>
+                    <sourceIncludes>
+                        <sourceInclude>**/*.min.js</sourceInclude>
+                    </sourceIncludes>
+                    <jsSrcDir>${project.build.directory}/${project.build.finalName}</jsSrcDir>
+                </configuration>
             </plugin>
 
         </plugins>
