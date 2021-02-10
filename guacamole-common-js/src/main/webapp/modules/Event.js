@@ -183,6 +183,30 @@ Guacamole.Event.Target = function Target() {
     };
 
     /**
+     * Registers a listener for events having the given types, as dictated by
+     * the {@link Guacamole.Event#type type} property of {@link Guacamole.Event}
+     * provided to {@link Guacamole.Event.Target#dispatch dispatch()}.
+     * <p>
+     * Invoking this function is equivalent to manually invoking
+     * {@link Guacamole.Event.Target#on on()} for each of the provided types.
+     *
+     * @param {String[]} types
+     *     The unique names of the event types to associate with the given
+     *     listener.
+     *
+     * @param {Guacamole.Event.Target~listener} listener
+     *     The function to invoke when an event having any of the given types
+     *     is dispatched. The {@link Guacamole.Event} object provided to
+     *     {@link Guacamole.Event.Target#dispatch dispatch()} will be passed to
+     *     this function, along with the dispatching Guacamole.Event.Target.
+     */
+    this.onEach = function onEach(types, listener) {
+        types.forEach(function addListener(type) {
+            this.on(type, listener);
+        }, this);
+    };
+
+    /**
      * Dispatches the given event, invoking all event handlers registered with
      * this Guacamole.Event.Target for that event's
      * {@link Guacamole.Event#type type}.
@@ -207,10 +231,11 @@ Guacamole.Event.Target = function Target() {
 
     /**
      * Unregisters a listener that was previously registered with
-     * {@link Guacamole.Event.Target#on on()}. If no such listener was
+     * {@link Guacamole.Event.Target#on on()} or
+     * {@link Guacamole.Event.Target#onEach onEach()}. If no such listener was
      * registered, this function has no effect. If multiple copies of the same
      * listener were registered, the first listener still registered will be
-     * removerd.
+     * removed.
      *
      * @param {String} type
      *     The unique name of the event type handled by the listener being
@@ -218,7 +243,8 @@ Guacamole.Event.Target = function Target() {
      *
      * @param {Guacamole.Event.Target~listener} listener
      *     The listener function previously provided to
-     *     {@link Guacamole.Event.Target#on on()}.
+     *     {@link Guacamole.Event.Target#on on()}or
+     *     {@link Guacamole.Event.Target#onEach onEach()}.
      *
      * @returns {Boolean}
      *     true if the specified listener was removed, false otherwise.
@@ -237,6 +263,42 @@ Guacamole.Event.Target = function Target() {
         }
 
         return false;
+
+    };
+
+    /**
+     * Unregisters listeners that were previously registered with
+     * {@link Guacamole.Event.Target#on on()} or
+     * {@link Guacamole.Event.Target#onEach onEach()}. If no such listeners
+     * were registered, this function has no effect. If multiple copies of the
+     * same listener were registered for the same event type, the first
+     * listener still registered will be removed.
+     * <p>
+     * Invoking this function is equivalent to manually invoking
+     * {@link Guacamole.Event.Target#off off()} for each of the provided types.
+     *
+     * @param {String[]} types
+     *     The unique names of the event types handled by the listeners being
+     *     removed.
+     *
+     * @param {Guacamole.Event.Target~listener} listener
+     *     The listener function previously provided to
+     *     {@link Guacamole.Event.Target#on on()} or
+     *     {@link Guacamole.Event.Target#onEach onEach()}.
+     *
+     * @returns {Boolean}
+     *     true if any of the specified listeners were removed, false
+     *     otherwise.
+     */
+    this.offEach = function offEach(types, listener) {
+
+        var changed = false;
+
+        types.forEach(function removeListener(type) {
+            changed |= this.off(type, listener);
+        }, this);
+
+        return changed;
 
     };
 
