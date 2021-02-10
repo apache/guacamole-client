@@ -204,6 +204,15 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         this.shareLinks = template.shareLinks || {};
 
         /**
+         * The number of simultaneous touch contacts supported by the remote
+         * desktop. Unless explicitly declared otherwise by the remote desktop
+         * after connecting, this will be 0 (multi-touch unsupported).
+         *
+         * @type Number
+         */
+        this.multiTouchSupport = template.multiTouchSupport || 0;
+
+        /**
          * The current state of the Guacamole client (idle, connecting,
          * connected, terminated with error, etc.).
          * 
@@ -576,6 +585,11 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                 };
             }
 
+        };
+
+        // Update level of multi-touch support when known
+        client.onmultitouch = function multiTouchSupportDeclared(layer, touches) {
+            managedClient.multiTouchSupport = touches;
         };
 
         // Update title when a "name" instruction is received

@@ -120,6 +120,14 @@ angular.module('client').directive('guacClient', [function guacClient() {
             var touchPad = new Guacamole.Mouse.Touchpad(displayContainer);
 
             /**
+             * Guacamole touch event handling object, wrapped around the main
+             * client dislay.
+             *
+             * @type Guacamole.Touch
+             */
+            var touch = new Guacamole.Touch(displayContainer);
+
+            /**
              * Updates the scale of the attached Guacamole.Client based on current window
              * size and "auto-fit" setting.
              */
@@ -232,6 +240,27 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             };
 
+            /**
+             * Handles a touch event originating from the user's device.
+             *
+             * @param {Guacamole.Touch.Event} touchEvent
+             *     The touch event.
+             */
+            var handleTouchEvent = function handleTouchEvent(event) {
+
+                // Do not attempt to handle touch state changes if the client
+                // or display are not yet available
+                if (!client || !display)
+                    return;
+
+                event.preventDefault();
+
+                // Send touch state, hiding local cursor
+                display.showCursor(false);
+                client.sendTouchState(event.state, true);
+
+            };
+
             // Attach any given managed client
             $scope.$watch('client', function attachManagedClient(managedClient) {
 
@@ -287,39 +316,42 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     localCursor = mouse.setCursor(cursor.canvas, cursor.x, cursor.y);
             });
 
-            // Swap mouse emulation modes depending on absolute mode flag
-            $scope.$watch('client.clientProperties.emulateAbsoluteMouse',
-                function mouseEmulationModeChanged(emulateAbsoluteMouse) {
+            // Update touch event handling depending on remote multi-touch
+            // support and mouse emulation mode
+            $scope.$watchGroup([
+                    'client.multiTouchSupport',
+                    'client.clientProperties.emulateAbsoluteMouse'
+                ], function touchBehaviorChanged(emulateAbsoluteMouse) {
 
-                var newMode, oldMode;
+                // Clear existing event handling
+                touch.offEach(['touchstart', 'touchmove', 'touchend'], handleTouchEvent);
 
-                // Switch to touchscreen if absolute
-                if (emulateAbsoluteMouse) {
-                    newMode = touchScreen;
-                    oldMode = touchPad;
+                touchScreen.onmousedown =
+                touchScreen.onmouseup =
+                touchScreen.onmousemove = null;
+
+                touchPad.onmousedown =
+                touchPad.onmouseup =
+                touchPad.onmousemove = null;
+
+                // Directly forward local touch events
+                if ($scope.client.multiTouchSupport)
+                    touch.onEach(['touchstart', 'touchmove', 'touchend'], handleTouchEvent);
+
+                // Switch to touchscreen if mouse emulation is required and
+                // absolute mouse emulation is preferred
+                else if ($scope.client.clientProperties.emulateAbsoluteMouse) {
+                    touchScreen.onmousedown =
+                    touchScreen.onmouseup   =
+                    touchScreen.onmousemove = handleEmulatedMouseState;
                 }
 
-                // Switch to touchpad if not absolute (relative)
+                // Use touchpad for mouse emulation if absolute mouse emulation
+                // is not preferred
                 else {
-                    newMode = touchPad;
-                    oldMode = touchScreen;
-                }
-
-                // Set applicable mouse emulation object, unset the old one
-                if (newMode) {
-
-                    // Clear old handlers and copy state to new emulation mode
-                    if (oldMode) {
-                        oldMode.onmousedown = oldMode.onmouseup = oldMode.onmousemove = null;
-                        newMode.currentState.x = oldMode.currentState.x;
-                        newMode.currentState.y = oldMode.currentState.y;
-                    }
-
-                    // Handle emulated events only from the new emulation mode
-                    newMode.onmousedown =
-                    newMode.onmouseup   =
-                    newMode.onmousemove = handleEmulatedMouseState;
-
+                    touchPad.onmousedown =
+                    touchPad.onmouseup   =
+                    touchPad.onmousemove = handleEmulatedMouseState;
                 }
 
             });
