@@ -124,8 +124,6 @@ angular.module('touch').directive('guacTouchDrag', [function guacTouchDrag() {
             element.addEventListener("touchmove", function dragTouchMove(e) {
                 if (e.touches.length === 1) {
 
-                    e.stopPropagation();
-
                     // Get touch location
                     var x = e.touches[0].clientX;
                     var y = e.touches[0].clientY;
@@ -162,8 +160,6 @@ angular.module('touch').directive('guacTouchDrag', [function guacTouchDrag() {
             element.addEventListener("touchend", function dragTouchEnd(e) {
 
                 if (startX && startY && e.touches.length === 0) {
-
-                    e.stopPropagation();
 
                     // Signal end of drag gesture
                     if (inProgress && guacTouchDrag) {

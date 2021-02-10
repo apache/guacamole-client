@@ -159,8 +159,6 @@ angular.module('touch').directive('guacTouchPinch', [function guacTouchPinch() {
             element.addEventListener("touchmove", function pinchTouchMove(e) {
                 if (e.touches.length === 2) {
 
-                    e.stopPropagation();
-
                     // Calculate current zoom level
                     currentLength = pinchDistance(e);
 
@@ -187,8 +185,6 @@ angular.module('touch').directive('guacTouchPinch', [function guacTouchPinch() {
             element.addEventListener("touchend", function pinchTouchEnd(e) {
 
                 if (startLength && e.touches.length < 2) {
-
-                    e.stopPropagation();
 
                     // Notify of pinch end
                     if (guacTouchPinch) {
