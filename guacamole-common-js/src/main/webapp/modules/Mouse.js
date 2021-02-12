@@ -65,10 +65,7 @@ Guacamole.Mouse = function(element) {
      * 
      * @type {Guacamole.Mouse.State}
      */
-    this.currentState = new Guacamole.Mouse.State(
-        0, 0, 
-        false, false, false, false, false
-    );
+    this.currentState = new Guacamole.Mouse.State();
 
     /**
      * Fired whenever the user presses a mouse button down over the element
@@ -395,109 +392,114 @@ Guacamole.Mouse = function(element) {
 };
 
 /**
- * Simple container for properties describing the state of a mouse.
- * 
+ * The current state of a mouse, including position and buttons.
+ *
  * @constructor
- * @param {Number} x The X position of the mouse pointer in pixels.
- * @param {Number} y The Y position of the mouse pointer in pixels.
- * @param {Boolean} left Whether the left mouse button is pressed. 
- * @param {Boolean} middle Whether the middle mouse button is pressed. 
- * @param {Boolean} right Whether the right mouse button is pressed. 
- * @param {Boolean} up Whether the up mouse button is pressed (the fourth
- *                     button, usually part of a scroll wheel). 
- * @param {Boolean} down Whether the down mouse button is pressed (the fifth
- *                       button, usually part of a scroll wheel). 
+ * @augments Guacamole.Position
+ * @param {Guacamole.Mouse.State|Object} [template={}]
+ *     The object whose properties should be copied within the new
+ *     Guacamole.Mouse.State.
  */
-Guacamole.Mouse.State = function(x, y, left, middle, right, up, down) {
+Guacamole.Mouse.State = function State(template) {
 
     /**
-     * Reference to this Guacamole.Mouse.State.
+     * Returns the template object that would be provided to the
+     * Guacamole.Mouse.State constructor to produce a new Guacamole.Mouse.State
+     * object with the properties specified. The order and type of arguments
+     * used by this function are identical to those accepted by the
+     * Guacamole.Mouse.State constructor of Apache Guacamole 1.3.0 and older.
+     *
      * @private
+     * @param {Number} x
+     *     The X position of the mouse pointer in pixels.
+     *
+     * @param {Number} y
+     *     The Y position of the mouse pointer in pixels.
+     *
+     * @param {Boolean} left
+     *     Whether the left mouse button is pressed.
+     *
+     * @param {Boolean} middle
+     *     Whether the middle mouse button is pressed.
+     *
+     * @param {Boolean} right
+     *     Whether the right mouse button is pressed.
+     *
+     * @param {Boolean} up
+     *     Whether the up mouse button is pressed (the fourth button, usually
+     *     part of a scroll wheel).
+     *
+     * @param {Boolean} down
+     *     Whether the down mouse button is pressed (the fifth button, usually
+     *     part of a scroll wheel).
+     *
+     * @return {Object}
+     *     The equivalent template object that would be passed to the new
+     *     Guacamole.Mouse.State constructor.
      */
-    var guac_state = this;
+    var legacyConstructor = function legacyConstructor(x, y, left, middle, right, up, down) {
+        return {
+            x      : x,
+            y      : y,
+            left   : left,
+            middle : middle,
+            right  : right,
+            up     : up,
+            down   : down
+        };
+    };
 
-    /**
-     * The current X position of the mouse pointer.
-     * @type {Number}
-     */
-    this.x = x;
+    // Accept old-style constructor, as well
+    if (arguments.length > 1)
+        template = legacyConstructor.apply(this, arguments);
+    else
+        template = template || {};
 
-    /**
-     * The current Y position of the mouse pointer.
-     * @type {Number}
-     */
-    this.y = y;
+    Guacamole.Position.call(this, template);
 
     /**
      * Whether the left mouse button is currently pressed.
+     *
      * @type {Boolean}
+     * @default false
      */
-    this.left = left;
+    this.left = template.left || false;
 
     /**
      * Whether the middle mouse button is currently pressed.
+     *
      * @type {Boolean}
+     * @default false
      */
-    this.middle = middle;
+    this.middle = template.middle || false;
 
     /**
      * Whether the right mouse button is currently pressed.
+     *
      * @type {Boolean}
+     * @default false
      */
-    this.right = right;
+    this.right = template.right || false;
 
     /**
      * Whether the up mouse button is currently pressed. This is the fourth
      * mouse button, associated with upward scrolling of the mouse scroll
      * wheel.
+     *
      * @type {Boolean}
+     * @default false
      */
-    this.up = up;
+    this.up = template.up || false;
 
     /**
      * Whether the down mouse button is currently pressed. This is the fifth 
      * mouse button, associated with downward scrolling of the mouse scroll
      * wheel.
+     *
      * @type {Boolean}
+     * @default false
      */
-    this.down = down;
-
-    /**
-     * Updates the position represented within this state object by the given
-     * element and clientX/clientY coordinates (commonly available within event
-     * objects). Position is translated from clientX/clientY (relative to
-     * viewport) to element-relative coordinates.
-     * 
-     * @param {Element} element The element the coordinates should be relative
-     *                          to.
-     * @param {Number} clientX The X coordinate to translate, viewport-relative.
-     * @param {Number} clientY The Y coordinate to translate, viewport-relative.
-     */
-    this.fromClientPosition = function(element, clientX, clientY) {
-    
-        guac_state.x = clientX - element.offsetLeft;
-        guac_state.y = clientY - element.offsetTop;
-
-        // This is all JUST so we can get the mouse position within the element
-        var parent = element.offsetParent;
-        while (parent && !(parent === document.body)) {
-            guac_state.x -= parent.offsetLeft - parent.scrollLeft;
-            guac_state.y -= parent.offsetTop  - parent.scrollTop;
-
-            parent = parent.offsetParent;
-        }
-
-        // Element ultimately depends on positioning within document body,
-        // take document scroll into account. 
-        if (parent) {
-            var documentScrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft;
-            var documentScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-
-            guac_state.x -= parent.offsetLeft - documentScrollLeft;
-            guac_state.y -= parent.offsetTop  - documentScrollTop;
-        }
-
-    };
+    this.down = template.down || false;
 
 };
 
@@ -543,10 +545,7 @@ Guacamole.Mouse.Touchpad = function(element) {
      * 
      * @type {Guacamole.Mouse.State}
      */
-    this.currentState = new Guacamole.Mouse.State(
-        0, 0, 
-        false, false, false, false, false
-    );
+    this.currentState = new Guacamole.Mouse.State();
 
     /**
      * Fired whenever a mouse button is effectively pressed. This can happen
@@ -850,10 +849,7 @@ Guacamole.Mouse.Touchscreen = function(element) {
      *
      * @type {Guacamole.Mouse.State}
      */
-    this.currentState = new Guacamole.Mouse.State(
-        0, 0,
-        false, false, false, false, false
-    );
+    this.currentState = new Guacamole.Mouse.State();
 
     /**
      * Fired whenever a mouse button is effectively pressed. This can happen

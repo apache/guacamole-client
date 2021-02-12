@@ -463,6 +463,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Zoom and pan client via pinch gestures
     $scope.clientPinch = function clientPinch(inProgress, startLength, currentLength, centerX, centerY) {
 
+        // Do not handle pinch gestures if they would conflict with remote
+        // handling of similar gestures
+        if ($scope.client.multiTouchSupport > 1)
+            return false;
+
         // Do not handle pinch gestures while relative mouse is in use
         if (!$scope.client.clientProperties.emulateAbsoluteMouse)
             return false;

@@ -115,6 +115,11 @@
                     "type"  : "TIMEZONE"
                 },
                 {
+                    "name"    : "enable-touch",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"    : "console",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
@@ -344,6 +349,11 @@
                 },
                 {
                     "name"  : "recording-exclude-mouse",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-exclude-touch",
                     "type"  : "BOOLEAN",
                     "options" : [ "true" ]
                 },
