@@ -23,23 +23,27 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
 
 /**
  * The exception thrown when the Guacamole server explicitly sends an error
- * command to the client. The error message and status code reflect the arguments
- * of the error command as determined by the server.
+ * instruction to the client. The error message and status code reflect the arguments
+ * of the error instruction as determined by the server.
  */
-public class GuacamoleServerErrorCommandException extends GuacamoleServerException {
+public class GuacamoleServerErrorInstructionException extends GuacamoleServerException {
     /**
      * The Guacamole protocol status code, as determined by the server;
      */
     private final GuacamoleStatus status;
 
     /**
-     * Creates a new GuacamoleServerException with the given message and status.
+     * Creates a new GuacamoleServerErrorInstructionException with the given
+     * message and status.
      *
-     * @param message The error message, as determined by the server where the error
-     *               originated.
-     * @param status The status code, as determined by the server where the error originated.
+     * @param message
+     *     A human readable description of the exception that occurred.
+     *
+     * @param status
+     *     The status code, as determined by the server from which the
+     *     instruction originated.
      */
-    public GuacamoleServerErrorCommandException(String message, GuacamoleStatus status) {
+    public GuacamoleServerErrorInstructionException(String message, GuacamoleStatus status) {
         super(message);
         this.status = status;
     }
