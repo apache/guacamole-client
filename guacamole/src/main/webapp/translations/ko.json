@@ -827,7 +827,7 @@
 
     "SETTINGS" : {
 
-        "SECTION_HEADER_SETTINGS" : "Settings"
+        "SECTION_HEADER_SETTINGS" : "설정"
 
     },
 
@@ -842,16 +842,16 @@
 
         "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_CONNECTION_HISTORY" : "History records for past connections are listed here and can be sorted by clicking the column headers. To search for specific records, enter a filter string and click \"Search\". Only records which match the provided filter string will be listed.",
+        "HELP_CONNECTION_HISTORY" : "과거 연결 기록은 여기에 나열되며 열 헤더 (column header)를 클릭하여 정렬할 수 있습니다. 특정 기록을 검색하려면, 필터 문자열을 입력하고 \"검색\"을 클릭하십시오. 제공된 필터 문자열과 일치하는 기록만 나열됩니다.",
 
         "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
-        "INFO_NO_HISTORY"                  : "No matching records",
+        "INFO_NO_HISTORY"                  : "일치하는 기록 없음",
 
-        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Connection name",
-        "TABLE_HEADER_SESSION_DURATION"        : "Duration",
-        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Remote host",
-        "TABLE_HEADER_SESSION_STARTDATE"       : "Start time",
-        "TABLE_HEADER_SESSION_USERNAME"        : "Username",
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "연결 이름",
+        "TABLE_HEADER_SESSION_DURATION"        : "기간",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "원격 호스트",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "시작 시간",
+        "TABLE_HEADER_SESSION_USERNAME"        : "유저 이름",
 
         "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
 
@@ -860,19 +860,19 @@
     "SETTINGS_CONNECTIONS" : {
 
         "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_NEW_CONNECTION"       : "New Connection",
-        "ACTION_NEW_CONNECTION_GROUP" : "New Group",
-        "ACTION_NEW_SHARING_PROFILE"  : "New Sharing Profile",
+        "ACTION_NEW_CONNECTION"       : "새 연결",
+        "ACTION_NEW_CONNECTION_GROUP" : "새 그룹",
+        "ACTION_NEW_SHARING_PROFILE"  : "새 공유 프로필",
 
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
-        "HELP_CONNECTIONS"   : "Click or tap on a connection below to manage that connection. Depending on your access level, connections can be added and deleted, and their properties (protocol, hostname, port, etc.) can be changed.",
+		"HELP_CONNECTIONS"   : "아래 연결을 클릭하거나 탭하여 해당 연결을 관리합니다. 엑세스 레벨에 따라 연결을 추가하고 삭제할 수 있으며, 속성(프로토콜, 호스트 이름, 포트 등)을 변경할 수 있습니다.",
         
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 
-        "SECTION_HEADER_CONNECTIONS"     : "Connections"
+        "SECTION_HEADER_CONNECTIONS"     : "연결"
 
     },
 
@@ -887,40 +887,40 @@
         "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
-        "FIELD_HEADER_LANGUAGE"           : "Display language:",
-        "FIELD_HEADER_PASSWORD"           : "Password:",
-        "FIELD_HEADER_PASSWORD_OLD"       : "Current Password:",
-        "FIELD_HEADER_PASSWORD_NEW"       : "New Password:",
-        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Confirm New Password:",
-        "FIELD_HEADER_TIMEZONE"           : "Timezone:",
-        "FIELD_HEADER_USERNAME"           : "Username:",
+        "FIELD_HEADER_LANGUAGE"           : "표시 언어:",
+        "FIELD_HEADER_PASSWORD"           : "패스워드:",
+        "FIELD_HEADER_PASSWORD_OLD"       : "현재 패스워드:",
+        "FIELD_HEADER_PASSWORD_NEW"       : "새 패스워드:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "새 패스워드 확인:",
+        "FIELD_HEADER_TIMEZONE"           : "시간대:",
+        "FIELD_HEADER_USERNAME"           : "유저 이름:",
         
-        "HELP_DEFAULT_INPUT_METHOD" : "The default input method determines how keyboard events are received by Guacamole. Changing this setting may be necessary when using a mobile device, or when typing through an IME. This setting can be overridden on a per-connection basis within the Guacamole menu.",
-        "HELP_DEFAULT_MOUSE_MODE"   : "The default mouse emulation mode determines how the remote mouse will behave in new connections with respect to touches. This setting can be overridden on a per-connection basis within the Guacamole menu.",
+        "HELP_DEFAULT_INPUT_METHOD" : "기본 입력 방법은 키보드 이벤트가 Guacamole에 의해 수신되는 방법을 결정합니다. 모바일 장치를 사용하거나 IME를 통해 입력할 때 이 설정을 변경해야 할 수도 있습니다. 이 세팅은 Guacamole 메뉴 내에서 연결마다 재정의할 수 있습니다.",
+        "HELP_DEFAULT_MOUSE_MODE"   : "기본 마우스 에뮬레이션 방법은 원격 마우스가 터치와 관련해서 새 연결에서 어떻게 작동할지 결정합니다. 이 세팅은 Guacamole 메뉴 내에서 연결마다 재정의할 수 있습니다.",
         "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
         "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
         "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
-        "HELP_LOCALE"               : "Options below are related to the locale of the user and will impact how various parts of the interface are displayed.",
+        "HELP_LOCALE"               : "아래의 옵션은 사용자의 지역과 관련이 있으며 인터페이스의 여러 부분이 표시되는 방법에 영향을 줄 것입니다.",
         "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
         "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
-        "HELP_UPDATE_PASSWORD"      : "If you wish to change your password, enter your current password and the desired new password below, and click \"Update Password\". The change will take effect immediately.",
+        "HELP_UPDATE_PASSWORD"      : "패스워드를 변경하려면 현재 패스워드와 새 패스워드를 아래에 입력하고, \"패스워드 변경\"을 클릭하십시오. 변경사항은 즉시 적용될 것입니다.",
 
-        "INFO_PASSWORD_CHANGED" : "Password changed.",
+        "INFO_PASSWORD_CHANGED" : "패스워드가 변경되었습니다.",
 
         "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
         "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
         "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
 
-        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Default Input Method",
-        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Default Mouse Emulation Mode",
-        "SECTION_HEADER_UPDATE_PASSWORD"      : "Change Password"
+        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "기본 입력 방법",
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "기본 마우스 에뮬레이션 방법",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "패스워드 변경"
 
     },
 
     "SETTINGS_USERS" : {
 
         "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_NEW_USER"      : "New User",
+        "ACTION_NEW_USER"      : "새 유저",
 
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
@@ -928,21 +928,21 @@
 
         "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_USERS" : "Click or tap on a user below to manage that user. Depending on your access level, users can be added and deleted, and their passwords can be changed.",
+        "HELP_USERS" : "아래 유저를 클릭하거나 탭하여 해당 유저를 관리합니다. 엑세스 레벨에 따라 유저를 추가하고 삭제할 수 있으며, 패스워드를 변경할 수 있습니다.",
 
-        "SECTION_HEADER_USERS"       : "Users",
+        "SECTION_HEADER_USERS"       : "유저",
 
-        "TABLE_HEADER_FULL_NAME"   : "Full name",
-        "TABLE_HEADER_LAST_ACTIVE" : "Last active",
-        "TABLE_HEADER_ORGANIZATION" : "Organization",
-        "TABLE_HEADER_USERNAME"    : "Username"
+        "TABLE_HEADER_FULL_NAME"   : "전체 이름",
+        "TABLE_HEADER_LAST_ACTIVE" : "마지막 활성",
+        "TABLE_HEADER_ORGANIZATION" : "조직",
+        "TABLE_HEADER_USERNAME"    : "유저 이름"
 
     },
 
     "SETTINGS_USER_GROUPS" : {
 
         "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_NEW_USER_GROUP" : "New Group",
+        "ACTION_NEW_USER_GROUP" : "새 그룹",
 
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
@@ -950,11 +950,11 @@
 
         "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_USER_GROUPS" : "Click or tap on a group below to manage that group. Depending on your access level, groups can be added and deleted, and their member users and groups can be changed.",
+        "HELP_USER_GROUPS" : "아래 그룹을 클릭하거나 탭하여 해당 그룹을 관리합니다. 엑세스 레벨에 따라 그룹을 추가하고 삭제할 수 있으며, 구성원 유저들과 그룹을 변경할 수 있습니다.",
 
-        "SECTION_HEADER_USER_GROUPS" : "Groups",
+        "SECTION_HEADER_USER_GROUPS" : "그룹",
 
-        "TABLE_HEADER_USER_GROUP_NAME" : "Group Name"
+        "TABLE_HEADER_USER_GROUP_NAME" : "그룹 이름"
 
     },
 
@@ -962,36 +962,36 @@
         
         "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
-        "ACTION_DELETE"      : "Kill Sessions",
+        "ACTION_DELETE"      : "세션 종료",
         
-        "DIALOG_HEADER_CONFIRM_DELETE" : "Kill Sessions",
+        "DIALOG_HEADER_CONFIRM_DELETE" : "세션 종료",
         "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
         
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
         
         "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_SESSIONS" : "This page will be populated with currently-active connections. The connections listed and the ability to kill those connections is dependent upon your access level. If you wish to kill one or more sessions, check the box next to those sessions and click \"Kill Sessions\". Killing a session will immediately disconnect the user from the associated connection.",
+		"HELP_SESSIONS" : "이 페이지는 현재 활성화된 연결로 이루어져 있습니다. 세션을 하나 이상 종료하려면, 해당 세션 옆의 체크 박스를 선택하고 \"세션 종료\"를 클릭하십시오. 세션을 종료하면 관련된 유저의 연결이 즉시 끊어질 것입니다.",
         
-        "INFO_NO_SESSIONS" : "No active sessions",
+        "INFO_NO_SESSIONS" : "활성 세션 없음",
 
-        "SECTION_HEADER_SESSIONS" : "Active Sessions",
+        "SECTION_HEADER_SESSIONS" : "활성 세션",
         
-        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Connection name",
-        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Remote host",
-        "TABLE_HEADER_SESSION_STARTDATE"       : "Active since",
-        "TABLE_HEADER_SESSION_USERNAME"        : "Username",
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "연결 이름",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "원격 호스트",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "활성화된 시간",
+        "TABLE_HEADER_SESSION_USERNAME"        : "유저 이름",
         
-        "TEXT_CONFIRM_DELETE" : "Are you sure you want to kill all selected sessions? The users using these sessions will be immediately disconnected."
+        "TEXT_CONFIRM_DELETE" : "선택한 세션을 모두 종료하시겠습니까? 이 세션을 사용 중인 유저의 연결이 즉시 끊어질 것입니다."
 
     },
 
     "USER_ATTRIBUTES" : {
 
-        "FIELD_HEADER_GUAC_EMAIL_ADDRESS"       : "Email address:",
-        "FIELD_HEADER_GUAC_FULL_NAME"           : "Full name:",
-        "FIELD_HEADER_GUAC_ORGANIZATION"        : "Organization:",
-        "FIELD_HEADER_GUAC_ORGANIZATIONAL_ROLE" : "Role:"
+        "FIELD_HEADER_GUAC_EMAIL_ADDRESS"       : "이메일 주소:",
+        "FIELD_HEADER_GUAC_FULL_NAME"           : "전체 이름:",
+        "FIELD_HEADER_GUAC_ORGANIZATION"        : "조직:",
+        "FIELD_HEADER_GUAC_ORGANIZATIONAL_ROLE" : "역할:"
 
     },
 
