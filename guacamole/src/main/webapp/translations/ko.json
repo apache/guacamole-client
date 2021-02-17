@@ -827,7 +827,7 @@
 
     "SETTINGS" : {
 
-        "SECTION_HEADER_SETTINGS" : "세팅"
+        "SECTION_HEADER_SETTINGS" : "설정"
 
     },
 
@@ -842,7 +842,7 @@
 
         "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_CONNECTION_HISTORY" : "과거 연결 기록은 여기에 나열되며 열 헤더를 클릭하여 정렬할 수 있습니다. 특정 기록을 검색하려면, 필터 문자열을 입력하고 \"검색\"을 클릭하십시오. 제공된 필터 문자열과 일치하는 기록만 나열됩니다.",
+        "HELP_CONNECTION_HISTORY" : "과거 연결 기록은 여기에 나열되며 열 헤더 (column header)를 클릭하여 정렬할 수 있습니다. 특정 기록을 검색하려면, 필터 문자열을 입력하고 \"검색\"을 클릭하십시오. 제공된 필터 문자열과 일치하는 기록만 나열됩니다.",
 
         "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
         "INFO_NO_HISTORY"                  : "일치하는 기록 없음",
