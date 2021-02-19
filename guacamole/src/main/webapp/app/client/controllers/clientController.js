@@ -220,11 +220,25 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         remaining: 15
     };
 
-    // Catch window or tab closing (ctrl-w) and prompt the user
-    var ctrlwlistener = function onBeforeUnload(e) {
-            e.preventDefault();
-            e.returnValue = '';
-     };
+    /**
+     * Catch window or tab closing (ctrl-w) and prompt the user if there is an active connection
+     *
+     * @param {Event} e
+     * @returns {undefined}
+     */
+    var windowCloseListener = function onBeforeUnload(e) {
+        var managedClient = $scope.client;
+        if (managedClient) {
+
+            // Get current connection state
+            var connectionState = managedClient.clientState.connectionState;
+
+            // If connected, prompt to close
+            if (connectionState === ManagedClientState.ConnectionState.CONNECTED)
+                e.preventDefault();
+                e.returnValue = '';
+        }
+    };
 
     /**
      * Menu-specific properties.
@@ -807,9 +821,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Tunnel error
         else if (connectionState === ManagedClientState.ConnectionState.TUNNEL_ERROR) {
-            // Stop intercepting window close
-            $window.removeEventListener('beforeunload', ctrlwlistener, false);
-
             // Determine translation name of error
             var errorName = (status in TUNNEL_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
 
@@ -831,9 +842,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Disconnected
         else if (connectionState === ManagedClientState.ConnectionState.DISCONNECTED) {
-            // Stop intercepting window close
-            $window.removeEventListener('beforeunload', ctrlwlistener, false);
-
             notifyConnectionClosed({
                 title   : "CLIENT.DIALOG_HEADER_DISCONNECTED",
                 text    : {
@@ -846,7 +854,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Hide status and sync local clipboard once connected
         else if (connectionState === ManagedClientState.ConnectionState.CONNECTED) {
             // Start intercepting ctrl-w / window close
-            $window.addEventListener('beforeunload', ctrlwlistener, false);
+            $window.addEventListener('beforeunload', windowCloseListener, false);
 
             // Sync with local clipboard
             clipboardService.getLocalClipboard().then(function clipboardRead(data) {
