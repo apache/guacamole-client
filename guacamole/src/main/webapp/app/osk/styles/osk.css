@@ -117,7 +117,10 @@
 .guac-keyboard.guac-keyboard-modifier-caps .guac-keyboard-key-caps,
 
 /* Active super */
-.guac-keyboard.guac-keyboard-modifier-super .guac-keyboard-key-super {
+.guac-keyboard.guac-keyboard-modifier-super .guac-keyboard-key-super,
+
+/* Active latin */
+.guac-keyboard.guac-keyboard-modifier-lat .guac-keyboard-key-latin {
     background: #882;
     border-color: #DD4;
 }
@@ -132,13 +135,16 @@
 }
 
 .guac-keyboard .guac-keyboard-group.guac-keyboard-alpha,
-.guac-keyboard .guac-keyboard-group.guac-keyboard-movement {
+.guac-keyboard .guac-keyboard-group.guac-keyboard-movement,
+.guac-keyboard .guac-keyboard-group.guac-keyboard-function,
+.guac-keyboard .guac-keyboard-group.guac-keyboard-virtual {
     display: inline-block;
     text-align: center;
     vertical-align: top;
 }
 
-.guac-keyboard .guac-keyboard-group.guac-keyboard-main {
+.guac-keyboard .guac-keyboard-group.guac-keyboard-main,
+.guac-keyboard .guac-keyboard-group.guac-keyboard-top {
 
     /* IE10 */
     display: -ms-flexbox;
@@ -167,7 +173,8 @@
 
 }
 
-.guac-keyboard .guac-keyboard-group.guac-keyboard-movement {
+.guac-keyboard .guac-keyboard-group.guac-keyboard-movement,
+.guac-keyboard .guac-keyboard-group.guac-keyboard-virtual {
     -ms-flex: 1 1 auto;
     -moz-box-flex: 1;
     -webkit-box-flex: 1;
@@ -189,6 +196,9 @@
 .guac-keyboard:not(.guac-keyboard-modifier-alt-gr)
 .guac-keyboard-cap.guac-keyboard-requires-alt-gr,
 
+.guac-keyboard:not(.guac-keyboard-modifier-lat)
+.guac-keyboard-cap.guac-keyboard-requires-lat,
+
 /* Hide keycaps NOT requiring modifiers which ARE currently active, where that
    modifier is used to determine which cap is displayed for the current key. */
 .guac-keyboard.guac-keyboard-modifier-shift
@@ -201,7 +211,11 @@
 
 .guac-keyboard.guac-keyboard-modifier-alt-gr
 .guac-keyboard-key.guac-keyboard-uses-alt-gr
-.guac-keyboard-cap:not(.guac-keyboard-requires-alt-gr) {
+.guac-keyboard-cap:not(.guac-keyboard-requires-alt-gr),
+
+.guac-keyboard.guac-keyboard-modifier-lat
+.guac-keyboard-key.guac-keyboard-uses-lat
+.guac-keyboard-cap:not(.guac-keyboard-requires-lat) {
 
     display: none;
     
