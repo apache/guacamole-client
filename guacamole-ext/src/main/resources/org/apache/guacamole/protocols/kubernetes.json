@@ -45,6 +45,10 @@
                 {
                     "name" : "container",
                     "type" : "TEXT"
+                },
+                {
+                    "name" : "exec-command",
+                    "type" : "TEXT"
                 }
             ]
         },
