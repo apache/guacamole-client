@@ -118,6 +118,8 @@
                         <exclude>CONTRIBUTING</exclude>
                         <exclude>**/README.md</exclude>
                         <exclude>extensions/**/*</exclude>
+                        <exclude>**/*.json</exclude>
+                        <exclude>doc/**/html/*.html</exclude>
                     </excludes>
                 </configuration>
 
