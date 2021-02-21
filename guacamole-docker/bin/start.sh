@@ -716,9 +716,15 @@ associate_json() {
 ##
 start_guacamole() {
 
+    # User-only writable CATALINA_BASE
+    export CATALINA_BASE=$HOME/tomcat
+    for dir in logs temp webapps work; do
+        mkdir -p $CATALINA_BASE/$dir
+    done
+    cp -R /usr/local/tomcat/conf $CATALINA_BASE
+
     # Install webapp
-    rm -Rf /usr/local/tomcat/webapps/${WEBAPP_CONTEXT:-guacamole}
-    ln -sf /opt/guacamole/guacamole.war /usr/local/tomcat/webapps/${WEBAPP_CONTEXT:-guacamole}.war
+    ln -sf /opt/guacamole/guacamole.war $CATALINA_BASE/webapps/${WEBAPP_CONTEXT:-guacamole}.war
 
     # Start tomcat
     cd /usr/local/tomcat
