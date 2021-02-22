@@ -65,7 +65,7 @@ Guacamole.StringReader = function(stream) {
      * 
      * @private
      * @param {ArrayBuffer} buffer Arbitrary UTF-8 data.
-     * @return {String} A decoded Unicode string.
+     * @return {string} A decoded Unicode string.
      */
     function __decode_utf8(buffer) {
 

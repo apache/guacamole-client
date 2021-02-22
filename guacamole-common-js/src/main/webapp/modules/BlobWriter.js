@@ -67,7 +67,7 @@ Guacamole.BlobWriter = function BlobWriter(stream) {
      * @param {Number} end
      *     The ending offset of the slice, in bytes, exclusive.
      *
-     * @returns {Blob}
+     * @returns {!Blob}
      *     A Blob containing the data within the given Blob starting at
      *     <code>start</code> and ending at <code>end - 1</code>.
      */

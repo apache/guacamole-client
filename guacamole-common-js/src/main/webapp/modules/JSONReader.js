@@ -58,7 +58,7 @@ Guacamole.JSONReader = function guacamoleJSONReader(stream) {
     /**
      * Returns the current length of this Guacamole.JSONReader, in characters.
      *
-     * @return {Number}
+     * @return {!Number}
      *     The current length of this Guacamole.JSONReader.
      */
     this.getLength = function getLength() {

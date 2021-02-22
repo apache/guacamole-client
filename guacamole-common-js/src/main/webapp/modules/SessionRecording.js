@@ -215,7 +215,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * @param {Number} timestamp
      *     The timestamp to convert to a relative timestamp.
      *
-     * @returns {Number}
+     * @returns {number}
      *     The difference in milliseconds between the given timestamp and the
      *     first frame of the recording, or zero if no frames yet exist.
      */
@@ -506,7 +506,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
     /**
      * Returns whether playback is currently in progress.
      *
-     * @returns {Boolean}
+     * @returns {boolean}
      *     true if playback is currently in progress, false otherwise.
      */
     this.isPlaying = function isPlaying() {

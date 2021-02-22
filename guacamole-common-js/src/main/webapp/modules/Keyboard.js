@@ -181,7 +181,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          * Returns the number of milliseconds elapsed since this event was
          * received.
          *
-         * @return {Number} The number of milliseconds elapsed since this
+         * @return {!Number} The number of milliseconds elapsed since this
          *                  event was received.
          */
         this.getAge = function() {
@@ -693,7 +693,7 @@ Guacamole.Keyboard = function Keyboard(element) {
      * @param {Number} keysym
      *     The keysym to check.
      *
-     * @returns {Boolean}
+     * @returns {boolean}
      *     true if the given keysym corresponds to a printable character,
      *     false otherwise.
      */
@@ -778,7 +778,7 @@ Guacamole.Keyboard = function Keyboard(element) {
      * @param {String} keyIdentifier
      *     The legacy keyIdentifier from a browser keydown/keyup event.
      *
-     * @returns {Boolean}
+     * @returns {boolean}
      *     true if the keyIdentifier looks sane, false if the keyIdentifier
      *     appears incorrectly derived or is missing entirely.
      */
@@ -1046,7 +1046,7 @@ Guacamole.Keyboard = function Keyboard(element) {
      * inspection of other key events.
      *
      * @private
-     * @returns {Boolean}
+     * @returns {boolean}
      *     true if all currently pressed keys were implicitly pressed, false
      *     otherwise.
      */
@@ -1263,7 +1263,7 @@ Guacamole.Keyboard = function Keyboard(element) {
      * @param {Event} e
      *     The Event to mark.
      *
-     * @returns {Boolean}
+     * @returns {boolean}
      *     true if the given Event was successfully marked, false if the given
      *     Event was already marked.
      */
@@ -1487,7 +1487,7 @@ Guacamole.Keyboard.ModifierState = function() {
  * Returns the modifier state applicable to the keyboard event given.
  * 
  * @param {KeyboardEvent} e The keyboard event to read.
- * @returns {Guacamole.Keyboard.ModifierState} The current state of keyboard
+ * @returns {!Guacamole.Keyboard.ModifierState} The current state of keyboard
  *                                             modifiers.
  */
 Guacamole.Keyboard.ModifierState.fromKeyboardEvent = function(e) {
