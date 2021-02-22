@@ -394,6 +394,7 @@
         "FIELD_HEADER_CONTAINER"       : "Container name:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Automatically create recording path:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
+        "FIELD_HEADER_EXEC_COMMAND"    : "Command (exec):",
         "FIELD_HEADER_FONT_NAME"       : "Font name:",
         "FIELD_HEADER_FONT_SIZE"       : "Font size:",
         "FIELD_HEADER_HOSTNAME"        : "Hostname:",
