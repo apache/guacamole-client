@@ -440,13 +440,13 @@
 
         "NAME" : "Kubernetes",
 
-        "SECTION_HEADER_AUTHENTICATION" : "Authentication",
-        "SECTION_HEADER_BEHAVIOR"       : "Terminal behavior",
-        "SECTION_HEADER_CONTAINER"      : "Container",
-        "SECTION_HEADER_DISPLAY"        : "Display",
-        "SECTION_HEADER_RECORDING"      : "Screen Recording",
-        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)",
-        "SECTION_HEADER_NETWORK"        : "Network"
+        "SECTION_HEADER_AUTHENTICATION" : "인증",
+        "SECTION_HEADER_BEHAVIOR"       : "터미널 동작",
+        "SECTION_HEADER_CONTAINER"      : "컨테이너",
+        "SECTION_HEADER_DISPLAY"        : "디스플레이",
+        "SECTION_HEADER_RECORDING"      : "스크린 레코드",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript(텍스트 세션 레코드)",
+        "SECTION_HEADER_NETWORK"        : "네트워크"
 
     },
 
