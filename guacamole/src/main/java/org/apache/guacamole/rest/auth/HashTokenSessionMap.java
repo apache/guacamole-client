@@ -113,9 +113,14 @@ public class HashTokenSessionMap implements TokenSessionMap {
         public SessionEvictionTask(long sessionTimeout) {
             this.sessionTimeout = sessionTimeout;
         }
-        
-        @Override
-        public void run() {
+
+        /**
+         * Iterates through all active sessions, evicting those sessions which
+         * are beyond the session timeout. Internal errors which would
+         * otherwise stop the session eviction process are caught, logged, and
+         * the process is allowed to proceed.
+         */
+        private void evictExpiredSessions() {
 
             // Get start time of session check time
             long sessionCheckStart = System.currentTimeMillis();
@@ -129,18 +134,29 @@ public class HashTokenSessionMap implements TokenSessionMap {
                 Map.Entry<String, GuacamoleSession> entry = entries.next();
                 GuacamoleSession session = entry.getValue();
 
-                // Do not expire sessions which are active
-                if (session.hasTunnels())
-                    continue;
+                try {
 
-                // Get elapsed time since last access
-                long age = sessionCheckStart - session.getLastAccessedTime();
+                    // Do not expire sessions which are active
+                    if (session.hasTunnels())
+                        continue;
 
-                // If session is too old, evict it and check the next one
-                if (age >= sessionTimeout) {
-                    logger.debug("Session \"{}\" has timed out.", entry.getKey());
-                    entries.remove();
-                    session.invalidate();
+                    // Get elapsed time since last access
+                    long age = sessionCheckStart - session.getLastAccessedTime();
+
+                    // If session is too old, evict it and check the next one
+                    if (age >= sessionTimeout) {
+                        logger.debug("Session \"{}\" has timed out.", entry.getKey());
+                        entries.remove();
+                        session.invalidate();
+                    }
+
+                }
+                catch (Throwable t) {
+                    logger.error("An unexpected internal error prevented a "
+                            + "session from being invalidated. This should "
+                            + "NOT happen and is likely a bug. Depending on "
+                            + "the nature of the failure, the session may "
+                            + "still be valid.", t);
                 }
 
             }
@@ -149,6 +165,27 @@ public class HashTokenSessionMap implements TokenSessionMap {
             logger.debug("Session check completed in {} ms.",
                     System.currentTimeMillis() - sessionCheckStart);
             
+        }
+
+        @Override
+        public void run() {
+
+            // The evictExpiredSessions() function should already
+            // automatically handle and log all unexpected internal errors,
+            // but wrap the entire call in a try/catch plus additional logging
+            // to ensure that absolutely no errors can result in the entire
+            // thread dying
+            try {
+                evictExpiredSessions();
+            }
+            catch (Throwable t) {
+                logger.error("An unexpected internal error prevented the "
+                        + "session eviction task from completing "
+                        + "successfully. This should NOT happen and is likely "
+                        + "a bug. Sessions that should have expired may "
+                        + "remain valid.", t);
+            }
+
         }
 
     }
