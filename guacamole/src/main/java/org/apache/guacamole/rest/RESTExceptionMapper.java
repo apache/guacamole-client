@@ -19,9 +19,10 @@
 
 package org.apache.guacamole.rest;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -82,6 +83,10 @@ public class RESTExceptionMapper implements ExceptionMapper<Throwable> {
     
     @Override
     public Response toResponse(Throwable t) {
+
+        // Pass WebApplicationException responses through untouched
+        if (t instanceof WebApplicationException)
+            return ((WebApplicationException) t).getResponse();
         
         // Ensure any associated session is invalidated if unauthorized 
         if (t instanceof GuacamoleUnauthorizedException) {

@@ -20,10 +20,10 @@
 package org.apache.guacamole.rest.auth;
 
 import com.google.common.io.BaseEncoding;
-import com.google.inject.Inject;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;

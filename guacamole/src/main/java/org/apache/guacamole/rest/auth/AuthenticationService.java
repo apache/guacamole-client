@@ -19,10 +19,10 @@
 
 package org.apache.guacamole.rest.auth;
 
-import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.guacamole.GuacamoleException;

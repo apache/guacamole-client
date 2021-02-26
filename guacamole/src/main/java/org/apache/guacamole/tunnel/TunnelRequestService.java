@@ -19,10 +19,10 @@
 
 package org.apache.guacamole.tunnel;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleSession;

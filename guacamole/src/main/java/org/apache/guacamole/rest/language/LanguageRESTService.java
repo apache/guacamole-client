@@ -19,8 +19,8 @@
 
 package org.apache.guacamole.rest.language;
 
-import com.google.inject.Inject;
 import java.util.Map;
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
