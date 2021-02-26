@@ -72,7 +72,7 @@ public class SessionRESTService {
 
         // Return a resource exposing the retrieved session
         GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
-        return sessionResourceFactory.create(session);
+        return sessionResourceFactory.create(authToken, session);
 
     }
 
