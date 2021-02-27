@@ -55,7 +55,7 @@ public class RequestSizeFilter implements ContainerRequestFilter {
      * The default maximum number of bytes to accept within the entity body of
      * any particular REST request.
      */
-    private final long DEFAULT_MAX_REQUEST_SIZE = 2097152;
+    private static final long DEFAULT_MAX_REQUEST_SIZE = 2097152;
 
     /**
      * The maximum number of bytes to accept within the entity body of any
