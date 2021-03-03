@@ -269,8 +269,8 @@
         "FIELD_HEADER_NAME"     : "이름:",
         "FIELD_HEADER_TYPE"     : "타입:",
 
-        "NAME_TYPE_BALANCING"       : "밸런싱",
-        "NAME_TYPE_ORGANIZATIONAL"  : "조직 구성",
+        "NAME_TYPE_BALANCING"       : "부하 분산",
+        "NAME_TYPE_ORGANIZATIONAL"  : "조직",
 
         "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "연결 그룹 편집",
 
