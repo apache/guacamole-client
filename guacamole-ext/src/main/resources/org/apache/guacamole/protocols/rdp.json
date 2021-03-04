@@ -148,6 +148,11 @@
                     "options" : [ "", "8", "16", "24", "32" ]
                 },
                 {
+                    "name"    : "force-lossless",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"    : "resize-method",
                     "type"    : "ENUM",
                     "options" : [ "", "reconnect", "display-update" ]
