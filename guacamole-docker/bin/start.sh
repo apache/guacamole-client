@@ -742,7 +742,7 @@ enable_remote_ip_valve() {
 	${GUACAMOLE_PROXY_BY_HEADER:+remoteIpProxiesHeader=\"$GUACAMOLE_PROXY_BY_HEADER\"} \
 	${GUACAMOLE_PROXY_PROTOCOL_HEADER:+protocolHeader=\"$GUACAMOLE_PROXY_PROTOCOL_HEADER\"} \
 	/>\n\1</Host>|" \
-	/usr/local/tomcat/conf/server.xml
+	$CATALINA_BASE/conf/server.xml
 }
 
 ##
@@ -758,6 +758,11 @@ start_guacamole() {
         mkdir -p $CATALINA_BASE/$dir
     done
     cp -R /usr/local/tomcat/conf $CATALINA_BASE
+
+    # Set up Tomcat RemoteIPValve
+    if [ "$REMOTE_IP_VALVE_ENABLED" = "true" ]; then
+        enable_remote_ip_valve
+    fi
 
     # Install webapp
     ln -sf /opt/guacamole/guacamole.war $CATALINA_BASE/webapps/${WEBAPP_CONTEXT:-guacamole}.war
@@ -829,11 +834,6 @@ fi
 # Update config file
 set_property "guacd-hostname" "$GUACD_HOSTNAME"
 set_property "guacd-port"     "$GUACD_PORT"
-
-# Set up Tomcat RemoteIPValve
-if [ "$REMOTE_IP_VALVE_ENABLED" = "true" ]; then
-    enable_remote_ip_valve
-fi
 
 #
 # Track which authentication backends are installed
