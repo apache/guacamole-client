@@ -714,35 +714,51 @@ associate_json() {
 ## Upstream documentation: https://tomcat.apache.org/tomcat-8.5-doc/api/org/apache/catalina/valves/RemoteIpValve.html
 ##
 enable_remote_ip_valve() {
-    # Use Tomcat defaults if optional variables have not been provided
+    # Add <Valve> element
+    xmlstarlet edit --inplace \
+        --insert '/Server/Service/Engine/Host/*' --type elem -n Valve \
+        --insert '/Server/Service/Engine/Host/Valve[not(@className)]' --type attr -n className -v org.apache.catalina.valves.RemoteIpValve \
+        $CATALINA_BASE/conf/server.xml
+
+    # Allowed IPs
     if [ -z "$GUACAMOLE_PROXY_ALLOWED_IPS_REGEX" ]; then
     	echo "Using default Tomcat allowed IPs regex"
-    fi
-    if [ -z "$GUACAMOLE_PROXY_IP_HEADER" ]; then
-        echo "Using default Tomcat proxy IP header"
-    fi
-    if [ -z "$GUACAMOLE_PROXY_PROTOCOL_HEADER" ]; then
-        echo "Using default Tomcat proxy protocol header"
-    fi
-    if [ -z "$GUACAMOLE_PROXY_BY_HEADER" ]; then
-        echo "Using default Tomcat proxy forwarded by header"
+    else
+        xmlstarlet edit --inplace \
+            --insert '/Server/Service/Engine/Host/Valve[@className="org.apache.catalina.valves.RemoteIpValve"]' \
+            --type attr -n internalProxies -v "$GUACAMOLE_PROXY_ALLOWED_IPS_REGEX" \
+            $CATALINA_BASE/conf/server.xml
     fi
 
-    # Build the new Tomcat configuration inplace
-    ## Explaination:
-    ## The initial regex ((\s)+)</Host>
-    ## Matches the spaces before </Host> as \1 and individual spaces as \2, ...
-    ## The replacement will be located at \1\2\2 (original + 2 spaces)
-    ## ${VAR:+expr} expressions yield either empty (thus using Tomcat's default) or our setting
-    ## The last line restores the configuration file original tag at its original indentation
-    sed -i "s|^\(\(\s\)\+\)</Host>|\1\2\2<Valve \
-	className=\"org.apache.catalina.valves.RemoteIpValve\" \
-	${GUACAMOLE_PROXY_ALLOWED_IPS_REGEX:+internalProxies=\"$GUACAMOLE_PROXY_ALLOWED_IPS_REGEX\"} \
-	${GUACAMOLE_PROXY_IP_HEADER:+remoteIpHeader=\"$GUACAMOLE_PROXY_IP_HEADER\"} \
-	${GUACAMOLE_PROXY_BY_HEADER:+remoteIpProxiesHeader=\"$GUACAMOLE_PROXY_BY_HEADER\"} \
-	${GUACAMOLE_PROXY_PROTOCOL_HEADER:+protocolHeader=\"$GUACAMOLE_PROXY_PROTOCOL_HEADER\"} \
-	/>\n\1</Host>|" \
-	$CATALINA_BASE/conf/server.xml
+    # X-Forwarded-For
+    if [ -z "$GUACAMOLE_PROXY_IP_HEADER" ]; then
+        echo "Using default Tomcat proxy IP header"
+    else
+        xmlstarlet edit --inplace \
+            --insert "/Server/Service/Engine/Host/Valve[@className='org.apache.catalina.valves.RemoteIpValve']" \
+            --type attr -n remoteIpHeader -v "$GUACAMOLE_PROXY_IP_HEADER" \
+            $CATALINA_BASE/conf/server.xml
+    fi
+
+    # X-Forwarded-Proto
+    if [ -z "$GUACAMOLE_PROXY_PROTOCOL_HEADER" ]; then
+        echo "Using default Tomcat proxy protocol header"
+    else
+        xmlstarlet edit --inplace \
+            --insert "/Server/Service/Engine/Host/Valve[@className='org.apache.catalina.valves.RemoteIpValve']" \
+            --type attr -n protocolHeader -v "$GUACAMOLE_PROXY_PROTOCOL_HEADER" \
+            $CATALINA_BASE/conf/server.xml
+    fi
+
+    # X-Forwarded-By
+    if [ -z "$GUACAMOLE_PROXY_BY_HEADER" ]; then
+        echo "Using default Tomcat proxy forwarded by header"
+    else
+        xmlstarlet edit --inplace \
+            --insert "/Server/Service/Engine/Host/Valve[@className='org.apache.catalina.valves.RemoteIpValve']" \
+            --type attr -n remoteIpProxiesHeader -v "$GUACAMOLE_PROXY_BY_HEADER" \
+            $CATALINA_BASE/conf/server.xml
+    fi
 }
 
 ##
