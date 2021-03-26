@@ -86,34 +86,6 @@
     <build>
         <plugins>
 
-            <!-- Assembly plugin - for easy distribution -->
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.3</version>
-
-                <!-- Build project archive -->
-                <configuration>
-                    <finalName>${project.artifactId}-${project.version}</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <tarLongFileMode>gnu</tarLongFileMode>
-                    <descriptors>
-                        <descriptor>project-assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
-
-                <!-- Bind archive build to package phase -->
-                <executions>
-                    <execution>
-                        <id>make-source-archive</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-
-            </plugin>
-
             <!-- Verify format using Apache RAT -->
             <plugin>
                 <groupId>org.apache.rat</groupId>
