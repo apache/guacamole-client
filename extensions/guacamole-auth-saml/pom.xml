@@ -30,6 +30,13 @@
     <name>guacamole-auth-saml</name>
     <url>http://guacamole.apache.org/</url>
 
+    <parent>
+        <groupId>org.apache.guacamole</groupId>
+        <artifactId>guacamole-client</artifactId>
+        <version>1.3.0</version>
+        <relativePath>../../</relativePath>
+    </parent>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

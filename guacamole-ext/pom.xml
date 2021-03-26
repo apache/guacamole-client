@@ -30,6 +30,13 @@
     <name>guacamole-ext</name>
     <url>http://guacamole.apache.org/</url>
 
+    <parent>
+        <groupId>org.apache.guacamole</groupId>
+        <artifactId>guacamole-client</artifactId>
+        <version>1.3.0</version>
+        <relativePath>../</relativePath>
+    </parent>
+
     <description>
         The Java API for extending the main Guacamole web application. This
         is not needed for authoring a new Guacamole-based web application.
@@ -151,14 +158,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- JAXB -->
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.2.2</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Guacamole Java API -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
@@ -175,11 +174,16 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Guava Base Libraries -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+
         <!-- Jackson for JSON support -->
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.2</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
 
     </dependencies>

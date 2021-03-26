@@ -30,6 +30,13 @@
     <name>guacamole-common-js</name>
     <url>http://guacamole.apache.org/</url>
 
+    <parent>
+        <groupId>org.apache.guacamole</groupId>
+        <artifactId>guacamole-client</artifactId>
+        <version>1.3.0</version>
+        <relativePath>../</relativePath>
+    </parent>
+
     <description>
         The base JavaScript API of the Guacamole project, providing JavaScript
         support for the Guacamole stack, including a full client

@@ -19,14 +19,17 @@
 
 package org.apache.guacamole.rest.sharingprofile;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.Map;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.apache.guacamole.net.auth.SharingProfile;
 
 /**
  * The external representation used by the REST API for sharing profiles.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(value=Include.NON_NULL)
 public class APISharingProfile {
 
     /**

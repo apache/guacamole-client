@@ -19,6 +19,10 @@
 
 package org.apache.guacamole.extension;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -29,10 +33,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.ServletContext;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.JsonNodeFactory;
-import org.codehaus.jackson.node.ObjectNode;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.StringSetProperty;
@@ -178,17 +178,17 @@ public class LanguageResourceService {
 
         // Create mutable copy of original
         ObjectNode newNode = JsonNodeFactory.instance.objectNode();
-        Iterator<String> fieldNames = original.getFieldNames();
+        Iterator<String> fieldNames = original.fieldNames();
         while (fieldNames.hasNext()) {
             String fieldName = fieldNames.next();
-            newNode.put(fieldName, original.get(fieldName));
+            newNode.set(fieldName, original.get(fieldName));
         }
 
         // Merge each field
-        fieldNames = overlay.getFieldNames();
+        fieldNames = overlay.fieldNames();
         while (fieldNames.hasNext()) {
             String fieldName = fieldNames.next();
-            newNode.put(fieldName, mergeTranslations(original.get(fieldName), overlay.get(fieldName)));
+            newNode.set(fieldName, mergeTranslations(original.get(fieldName), overlay.get(fieldName)));
         }
 
         return newNode;
@@ -425,7 +425,7 @@ public class LanguageResourceService {
                 
                 // Attempt to read language name from node
                 String languageName;
-                if (nameNode == null || (languageName = nameNode.getTextValue()) == null) {
+                if (nameNode == null || (languageName = nameNode.textValue()) == null) {
                     logger.warn("Root-level \"" + LANGUAGE_DISPLAY_NAME_KEY + "\" string missing or invalid in language \"{}\"", languageKey);
                     languageName = languageKey;
                 }

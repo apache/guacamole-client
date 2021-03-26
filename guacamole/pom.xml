@@ -30,6 +30,13 @@
     <name>guacamole</name>
     <url>http://guacamole.apache.org/</url>
 
+    <parent>
+        <groupId>org.apache.guacamole</groupId>
+        <artifactId>guacamole-client</artifactId>
+        <version>1.3.0</version>
+        <relativePath>../</relativePath>
+    </parent>
+
     <description>
         The Guacamole web application, providing authentication and an HTML5
         remote desktop client.
@@ -252,17 +259,14 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.7</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
-            <version>1.7.7</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
         </dependency>
 
         <!-- Guacamole Extension API -->
@@ -440,38 +444,32 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>4.2.3</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-assistedinject</artifactId>
-            <version>4.2.3</version>
         </dependency>
-        
-        <!-- Guice Servlet -->
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-servlet</artifactId>
-            <version>4.2.3</version>
         </dependency>
         
         <!-- Jersey - JAX-RS Implementation -->
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet-core</artifactId>
-            <version>2.31</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.inject</groupId>
             <artifactId>jersey-hk2</artifactId>
-            <version>2.31</version>
         </dependency>
-
-        <!-- Guice bridge for HK2 - the dependency injection framework integrated with Jersey 2.x -->
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>guice-bridge</artifactId>
-            <version>2.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
         </dependency>
         
         <!-- JSR-250 annotations -->
@@ -481,27 +479,10 @@
             <version>1.0</version>
         </dependency>
         
-        <!-- Jackson for JSON support -->
-        <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-json-jackson</artifactId>
-            <version>2.31</version>
-
-            <!-- Exclude StAX API, which is part of Java 6 -->
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.xml.stream</groupId>
-                    <artifactId>stax-api</artifactId>
-                </exclusion>
-            </exclusions>
-
-        </dependency>
-        
         <!-- Guava Base Libraries -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>27.0.1-jre</version>
         </dependency>
 
         <!-- JSTZ for TimeZone Detection -->

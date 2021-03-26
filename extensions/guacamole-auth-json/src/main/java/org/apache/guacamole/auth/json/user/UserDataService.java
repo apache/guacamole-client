@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.json.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.BaseEncoding;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
@@ -30,7 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.DatatypeConverter;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.json.ConfigurationService;
 import org.apache.guacamole.auth.json.CryptoService;
@@ -43,7 +44,6 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
 import org.apache.guacamole.net.auth.simple.SimpleUser;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,7 +142,7 @@ public class UserDataService {
             // Decrypt using defined encryption key
             byte[] decrypted = cryptoService.decrypt(
                 cryptoService.createEncryptionKey(confService.getSecretKey()),
-                DatatypeConverter.parseBase64Binary(base64)
+                BaseEncoding.base64().decode(base64)
             );
 
             // Abort if decrypted value cannot possibly have a signature AND data

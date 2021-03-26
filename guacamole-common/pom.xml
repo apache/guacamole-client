@@ -30,6 +30,13 @@
     <name>guacamole-common</name>
     <url>http://guacamole.apache.org/</url>
 
+    <parent>
+        <groupId>org.apache.guacamole</groupId>
+        <artifactId>guacamole-client</artifactId>
+        <version>1.3.0</version>
+        <relativePath>../</relativePath>
+    </parent>
+
     <description>
         The base Java API of the Guacamole project, providing Java support for
         the Guacamole stack.
@@ -157,7 +164,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.7</version>
         </dependency>
 
         <!-- JUnit -->

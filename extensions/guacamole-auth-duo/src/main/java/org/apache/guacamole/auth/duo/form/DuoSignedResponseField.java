@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.duo.form;
 
 import org.apache.guacamole.form.Field;
-import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * A custom field type which uses the DuoWeb API to produce a signed response
@@ -81,8 +80,7 @@ public class DuoSignedResponseField extends Field {
      * @return
      *     The hostname of the DuoWeb API endpoint.
      */
-    @JsonProperty("apiHost")
-    public String getAPIHost() {
+    public String getApiHost() {
         return apiHost;
     }
 

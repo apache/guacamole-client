@@ -19,16 +19,17 @@
 
 package org.apache.guacamole.rest.usergroup;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.Map;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.apache.guacamole.net.auth.UserGroup;
 
 /**
  * A simple UserGroup to expose through the REST endpoints.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+@JsonInclude(value=Include.NON_NULL)
 public class APIUserGroup {
 
     /**
