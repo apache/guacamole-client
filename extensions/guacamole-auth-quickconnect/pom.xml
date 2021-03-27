@@ -80,6 +80,18 @@
                 </executions>
             </plugin>
 
+            <!-- Automatically generate LICENSE and NOTICE -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-license-files</id>
+                        <phase>generate-resources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Assembly plugin - for easy distribution -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -161,7 +173,6 @@
                 <configuration>
                     <excludes>
                         <exclude>**/*.json</exclude>
-                        <exclude>src/licenses/**/*</exclude>
                         <exclude>src/main/resources/templates/*.html</exclude>
                     </excludes>
                 </configuration>
@@ -203,12 +214,10 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>3.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-multibindings</artifactId>
-            <version>3.0</version>
         </dependency>
 
         <!-- Jersey - JAX-RS Implementation -->

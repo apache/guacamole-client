@@ -1,0 +1,1 @@
+org.webjars.npm:simonwep__pickr:jar:1.2.6

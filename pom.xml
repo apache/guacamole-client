@@ -31,15 +31,23 @@
     <url>http://guacamole.apache.org/</url>
 
     <properties>
+
+        <!-- Core properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Dependency versions -->
         <guava.version>30.1-jre</guava.version>
         <guice.version>4.2.3</guice.version>
-        <guice-bridge.version>2.6.1</guice-bridge.version>
+        <hk2.version>2.6.1</hk2.version>
         <jackson.version>2.10.1</jackson.version>
         <jersey.version>2.31</jersey.version>
         <junit.version>5.6.0</junit.version>
         <logback.version>1.2.3</logback.version>
         <slf4j.version>1.7.30</slf4j.version>
+
+        <!-- Build control -->
+        <skipLicenseGeneration>false</skipLicenseGeneration>
+
     </properties>
 
     <modules>
@@ -99,6 +107,7 @@
                         <exclude>**/README.md</exclude>
                         <exclude>extensions/**/*</exclude>
                         <exclude>**/*.json</exclude>
+                        <exclude>doc/licenses/*/**/*</exclude>
                         <exclude>doc/**/html/*.html</exclude>
                     </excludes>
                 </configuration>
@@ -116,7 +125,51 @@
 
             </plugin>
 
+            <!-- Define a "rootlocation" property that can be used to reference
+                the location of the main guacamole-client directory -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>define-project-root</id>
+                        <goals>
+                            <goal>rootlocation</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
+
+        <!-- Provide "generate-license-files" execution for convenience -->
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <executions>
+                        <execution>
+                            <id>generate-license-files</id>
+                            <phase>none</phase>
+                            <configuration>
+                                <executable>${rootlocation}/doc/licenses/generate-license-files.sh</executable>
+                                <arguments>
+                                    <argument>${project.build.directory}/licenses</argument>
+                                </arguments>
+                                <skip>${skipLicenseGeneration}</skip>
+                            </configuration>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
     </build>
 
     <dependencyManagement>
@@ -165,7 +218,7 @@
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>guice-bridge</artifactId>
-                <version>${guice-bridge.version}</version>
+                <version>${hk2.version}</version>
             </dependency>
 
             <!-- Jackson JSON mapper -->

@@ -65,7 +65,7 @@
         <!-- Licenses -->
         <fileSet>
             <outputDirectory></outputDirectory>
-            <directory>src/licenses</directory>
+            <directory>target/licenses</directory>
         </fileSet>
 
         <!-- MySQL schema scripts -->

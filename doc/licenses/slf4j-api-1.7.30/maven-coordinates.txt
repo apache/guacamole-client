@@ -1,0 +1,2 @@
+org.slf4j:jul-to-slf4j:jar:1.7.30
+org.slf4j:slf4j-api:jar:1.7.30

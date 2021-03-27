@@ -139,6 +139,18 @@
                 </executions>
             </plugin>
 
+            <!-- Automatically generate LICENSE and NOTICE -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-license-files</id>
+                        <phase>generate-resources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Assembly plugin - for easy distribution -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>

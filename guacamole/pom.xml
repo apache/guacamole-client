@@ -80,6 +80,18 @@
                 </configuration>
             </plugin>
 
+            <!-- Automatically generate LICENSE and NOTICE -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-license-files</id>
+                        <phase>generate-resources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -100,7 +112,7 @@
 
                         <!-- Include all licenses within META-INF -->
                         <resource>
-                            <directory>src/licenses</directory>
+                            <directory>${project.build.directory}/licenses</directory>
                             <targetPath>META-INF</targetPath>
                         </resource>
 
@@ -470,6 +482,23 @@
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
+            <exclusions>
+
+                <!-- Use newer 1.2.2 version required by Jakarta JAXB, rather
+                than 1.2.1 version specified by Jackson -->
+                <exclusion>
+                    <groupId>jakarta.activation</groupId>
+                    <artifactId>jakarta.activation-api</artifactId>
+                </exclusion>
+
+                <!-- Use newer 2.3.3 version required by Jersey, rather than
+                2.3.2 version specified by Jackson -->
+                <exclusion>
+                    <groupId>jakarta.xml.bind</groupId>
+                    <artifactId>jakarta.xml.bind-api</artifactId>
+                </exclusion>
+
+            </exclusions>
         </dependency>
         
         <!-- JSR-250 annotations -->
