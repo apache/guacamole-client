@@ -219,10 +219,26 @@
             <artifactId>jradius-core</artifactId>
             <version>1.1.5</version>
             <exclusions>
+
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+
+                <!-- Rely on Guacamole's existing use of logback rather than log4j -->
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+
             </exclusions>
         </dependency>
 
@@ -238,6 +254,14 @@
             <groupId>net.jradius</groupId>
             <artifactId>jradius-extended</artifactId>
             <version>1.1.5</version>
+        </dependency>
+
+        <!-- Force single, specific version commons-logging (multiple
+            dependencies reference multiple versions of this). -->
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
         </dependency>
 
     </dependencies>
