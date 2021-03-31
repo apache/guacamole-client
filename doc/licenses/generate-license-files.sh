@@ -327,8 +327,6 @@ EOF
             echo >> "$OUTPUT_DIR/LICENSE"
             trim_file "$LICENSE_FILE" >> "$OUTPUT_DIR/LICENSE"
         fi
-    else
-        error "No recognizable license file within $LICENSE_INFO_DIR"
     fi
 
     # Copy NOTICE, if provided
