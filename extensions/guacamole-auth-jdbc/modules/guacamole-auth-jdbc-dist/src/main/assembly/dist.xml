@@ -36,6 +36,7 @@
         <!-- MySQL extension .jar -->
         <dependencySet>
             <outputDirectory>mysql</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
             <includes>
                 <include>org.apache.guacamole:guacamole-auth-jdbc-mysql</include>
             </includes>
@@ -44,6 +45,7 @@
         <!-- PostgreSQL extension .jar -->
         <dependencySet>
             <outputDirectory>postgresql</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
             <includes>
                 <include>org.apache.guacamole:guacamole-auth-jdbc-postgresql</include>
             </includes>
@@ -52,6 +54,7 @@
         <!-- SQL Server extension .jar -->
         <dependencySet>
             <outputDirectory>sqlserver</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
             <includes>
                 <include>org.apache.guacamole:guacamole-auth-jdbc-sqlserver</include>
             </includes>
