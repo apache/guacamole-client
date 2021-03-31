@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.quickconnect;
 
+import com.google.inject.Inject;
 import java.util.Collections;
 import org.apache.guacamole.auth.quickconnect.rest.QuickConnectREST;
 import org.apache.guacamole.GuacamoleException;
@@ -45,32 +46,29 @@ public class QuickConnectUserContext extends AbstractUserContext {
     /**
      * The AuthenticationProvider that created this UserContext.
      */
-    private final AuthenticationProvider authProvider;
+    @Inject
+    private AuthenticationProvider authProvider;
 
     /**
      * Reference to the user whose permissions dictate the configurations
      * accessible within this UserContext.
      */
-    private final User self;
+    private User self;
 
     /**
      * The Directory with access to all connections within the root group
      * associated with this UserContext.
      */
-    private final QuickConnectDirectory connectionDirectory;
+    @Inject
+    private QuickConnectDirectory connectionDirectory;
 
     /**
      * The root connection group.
      */
-    private final ConnectionGroup rootGroup;
+    private ConnectionGroup rootGroup;
 
     /**
-     * Construct a QuickConnectUserContext using the authProvider and
-     * the username.
-     *
-     * @param authProvider
-     *     The authentication provider module instantiating this
-     *     this class.
+     * Initialize a QuickConnectUserContext using the provided username.
      *
      * @param username
      *     The name of the user logging in that will be associated
@@ -80,8 +78,7 @@ public class QuickConnectUserContext extends AbstractUserContext {
      *     If errors occur initializing the ConnectionGroup,
      *     ConnectionDirectory, or User.
      */
-    public QuickConnectUserContext(AuthenticationProvider authProvider,
-            String username) throws GuacamoleException {
+    public void init(String username) throws GuacamoleException {
 
         // Initialize the rootGroup to a QuickConnectionGroup with a
         // single root identifier.
@@ -91,7 +88,7 @@ public class QuickConnectUserContext extends AbstractUserContext {
         );
 
         // Initialize the connection directory
-        this.connectionDirectory = new QuickConnectDirectory(this.rootGroup);
+        this.connectionDirectory.init(this.rootGroup);
 
         // Initialize the user to a SimpleUser with the provided username,
         // no connections, and the single root group.
@@ -108,9 +105,6 @@ public class QuickConnectUserContext extends AbstractUserContext {
             }
 
         };
-
-        // Set the authProvider to the calling authProvider object.
-        this.authProvider = authProvider;
 
     }
 

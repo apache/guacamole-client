@@ -200,15 +200,3 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
-
-==============================================================================
-
-
-Google Guice (https://github.com/google/guice)
-----------------------------------------------
-
-    Version: 3.0
-    From: 'Google Inc.' (http://www.google.com/)
-    License(s):
-        Apache v2.0 (bundled/guice-3.0/COPYING)

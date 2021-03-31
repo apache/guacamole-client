@@ -25,9 +25,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleServerException;
@@ -55,7 +54,48 @@ public class QCParser {
      * THe regex group of the password.
      */
     private static final int PASSWORD_GROUP = 2;
-
+    
+    /**
+     * The list of parameters that are allowed to be placed into a configuration
+     * by this parser. If not defined, all parameters will be allowed unless
+     * explicitly denied.
+     */
+    private final List<String> allowedParams;
+    
+    /**
+     * The list of parameters that are explicitly denied from being placed into
+     * a configuration by this parser.
+     */
+    private final List<String> deniedParams;
+    
+    /**
+     * Create a new instance of the QCParser class, with the provided allowed
+     * and denied parameter lists, if any.
+     * 
+     * @param allowedParams
+     *     A list of parameters that are allowed to be parsed and placed into
+     *     a connection configuration, or null or empty if all parameters are
+     *     allowed.
+     * 
+     * @param deniedParams 
+     *     A list of parameters, if any, that should be explicitly denied from
+     *     being placed into a connection configuration.
+     */
+    public QCParser(List<String> allowedParams, List<String> deniedParams) {
+        this.allowedParams = allowedParams;
+        this.deniedParams = deniedParams;
+    }
+    
+    /**
+     * Create a new instance of the QCParser class, initializing the allowed
+     * and denied parameter lists to empty lists, which means all parameters
+     * will be allowed and none will be denied.
+     */
+    public QCParser() {
+        this.allowedParams = Collections.emptyList();
+        this.deniedParams = Collections.emptyList();
+    }
+    
     /**
      * Parse out a URI string and get a GuacamoleConfiguration
      * from that string, or an exception if the parsing fails.
@@ -70,7 +110,7 @@ public class QCParser {
      * @throws GuacamoleException
      *     If an error occurs parsing the URI.
      */
-    public static GuacamoleConfiguration getConfiguration(String uri)
+    public GuacamoleConfiguration getConfiguration(String uri)
             throws GuacamoleException {
 
         // Parse the provided String into a URI object.
@@ -104,77 +144,68 @@ public class QCParser {
                     "QUICKCONNECT.ERROR_NO_PROTOCOL");
 
         // Check for provided port number
-        if (port > 0)
+        if (port > 0 && paramIsAllowed("port"))
             qcConfig.setParameter("port", Integer.toString(port));
 
         // Check for provided host, or throw an error if not present
-        if (host != null && !host.isEmpty())
+        if (host != null && !host.isEmpty() && paramIsAllowed("hostname"))
             qcConfig.setParameter("hostname", host);
         else
             throw new TranslatableGuacamoleClientException("No host specified.",
                     "QUICKCONNECT.ERROR_NO_HOST");
 
         // Look for extra query parameters and parse them out.
-        if (query != null && !query.isEmpty()) {
-            try {
-                Map<String, String> queryParams = parseQueryString(query);
-                if (queryParams != null)
-                    for (Map.Entry<String, String> entry: queryParams.entrySet())
-                        qcConfig.setParameter(entry.getKey(), entry.getValue());
-            }
-            catch (UnsupportedEncodingException e) {
-                throw new GuacamoleServerException("Unexpected lack of UTF-8 encoding support.", e);
-            }
-        }
+        if (query != null && !query.isEmpty())
+            parseQueryString(query, qcConfig);
 
         // Look for the username and password and parse them out.
-        if (userInfo != null && !userInfo.isEmpty()) {
-
-            try {
+        if (userInfo != null && !userInfo.isEmpty())
                 parseUserInfo(userInfo, qcConfig);
-            }
-            catch (UnsupportedEncodingException e) {
-                throw new GuacamoleServerException("Unexpected lack of UTF-8 encoding support.", e);
-            }
-        }
 
         return qcConfig;
         
     }
 
     /**
-     * Parse the given string for parameter key/value pairs and return
-     * a map with the parameters.
+     * Parse the given string for parameter key/value pairs and update the
+     * provided GuacamoleConfiguration object with the parsed values, checking
+     * to make sure that the parser is allowed to provide the requested
+     * parameters.
      *
      * @param queryStr
      *     The query string to parse for key/value pairs.
      *
-     * @return
-     *     A map with the key/value pairs.
+     * @param config
+     *     The GuacamoleConfiguration object that should be updated with the
+     *     parsed parameters.
      *
-     * @throws UnsupportedEncodingException
-     *     If Java lacks UTF-8 support.
+     * @throws GuacamoleException
+     *     If Java unexpectedly lacks UTF-8 support.
      */
-    public static Map<String, String> parseQueryString(String queryStr)
-            throws UnsupportedEncodingException {
+    private void parseQueryString(String queryStr, GuacamoleConfiguration config)
+            throws GuacamoleException {
 
         // Split the query string into the pairs
         List<String> paramList = Arrays.asList(queryStr.split("&"));
-        Map<String, String> parameters = new HashMap<String,String>();
 
         // Loop through key/value pairs and put them in the Map.
         for (String param : paramList) {
             String[] paramArray = param.split("=", 2);
-            parameters.put(URLDecoder.decode(paramArray[0], "UTF-8"),
-                           URLDecoder.decode(paramArray[1], "UTF-8"));
+            try {
+                String paramName = URLDecoder.decode(paramArray[0], "UTF-8");
+                String paramValue = URLDecoder.decode(paramArray[1], "UTF-8");
+                if (paramIsAllowed(paramName))
+                    config.setParameter(paramName, paramValue);
+            }
+            catch (UnsupportedEncodingException e) {
+                throw new GuacamoleServerException("Unexpected lack of UTF-8 encoding support.", e);
+            }
         }
-
-        return parameters;
     }
 
     /**
-     * Parse the given string for username and password values,
-     * and, if values are present, decode them and set them in
+     * Parse the given string for username and password values, and, if values
+     * are present and allowed by the configuration, decode them and set them in
      * the provided GuacamoleConfiguration object.
      *
      * @param userInfo
@@ -184,12 +215,12 @@ public class QCParser {
      *     The GuacamoleConfiguration object to store the username
      *     and password in.
      *
-     * @throws UnsupportedEncodingException
-     *     If Java lacks UTF-8 support.
+     * @throws GuacamoleException
+     *     If Java unexpectedly lacks UTF-8 support.
      */
-    public static void parseUserInfo(String userInfo, 
+    private void parseUserInfo(String userInfo, 
             GuacamoleConfiguration config)
-            throws UnsupportedEncodingException {
+            throws GuacamoleException {
 
         Matcher userinfoMatcher = userinfoPattern.matcher(userInfo);
 
@@ -197,13 +228,25 @@ public class QCParser {
             String username = userinfoMatcher.group(USERNAME_GROUP);
             String password = userinfoMatcher.group(PASSWORD_GROUP);
 
-            if (username != null && !username.isEmpty())
-                config.setParameter("username",
-                        URLDecoder.decode(username, "UTF-8"));
+            if (username != null && !username.isEmpty() && paramIsAllowed("username")) {
+                try {
+                    config.setParameter("username",
+                            URLDecoder.decode(username, "UTF-8"));
+                }
+                catch (UnsupportedEncodingException e) {
+                    throw new GuacamoleServerException("Unexpected lack of UTF-8 encoding support.", e);
+                }
+            }
 
-            if (password != null && !password.isEmpty())
-                config.setParameter("password",
-                        URLDecoder.decode(password, "UTF-8"));
+            if (password != null && !password.isEmpty() && paramIsAllowed("password")) {
+                try {
+                    config.setParameter("password",
+                            URLDecoder.decode(password, "UTF-8"));
+                }
+                catch (UnsupportedEncodingException e) {
+                    throw new GuacamoleServerException("Unexpected lack of UTF-8 encoding support.", e);
+                }
+            }
         }
 
     }
@@ -223,7 +266,7 @@ public class QCParser {
      * @throws GuacamoleException
      *     If an error occurs getting items in the configuration.
      */
-    public static String getName(GuacamoleConfiguration config)
+    public String getName(GuacamoleConfiguration config)
             throws GuacamoleException {
 
         if (config == null)
@@ -251,6 +294,37 @@ public class QCParser {
         name.append("/");
 
         return name.toString();
+    }
+    
+    /**
+     * For a given parameter, check to make sure the parameter is allowed to be
+     * used in the connection configuration, first by checking to see if
+     * allowed parameters are defined and the given parameter is present, then
+     * by checking for explicitly denied parameters. Returns false if the
+     * configuration prevents the parameter from being used, otherwise true.
+     * 
+     * @param param
+     *     The name of the parameter to check.
+     * 
+     * @return 
+     *     False if the configuration prevents the parameter from being used,
+     *     otherwise true.
+     */
+    private boolean paramIsAllowed(String param) {
+        
+        // If allowed parameters are defined and not empty,
+        // check to see if this parameter is allowed.
+        if (allowedParams != null && !allowedParams.isEmpty() && !allowedParams.contains(param))
+            return false;
+        
+        // If denied parameters are defined and not empty,
+        // check to see if this parameter is denied.
+        if (deniedParams != null && !deniedParams.isEmpty() && deniedParams.contains(param))
+            return false;
+        
+        // By default, the parameter is allowed.
+        return true;
+        
     }
 
 }
