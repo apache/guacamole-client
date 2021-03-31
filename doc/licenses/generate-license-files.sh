@@ -223,7 +223,7 @@ single_result() {
 ##
 license_file() {
     DIR="$1"
-    find "$DIR" -type f \
+    find "$DIR" -mindepth 1 \
             -a \! -iname "*notice*" \
             -a \! -name "maven-coordinates.txt" \
             -a \! -name "README" \
@@ -339,7 +339,7 @@ EOF
 
     # Include verbatim copy of license information
     mkdir -p "$OUTPUT_DIR/bundled/"
-    cp -r "$LICENSE_INFO_DIR" "$OUTPUT_DIR/bundled/"
+    cp -Lr "$LICENSE_INFO_DIR" "$OUTPUT_DIR/bundled/"
 
     # Add README describing nature of the "bundled/" directory
     cat > "$OUTPUT_DIR/bundled/README" <<EOF
