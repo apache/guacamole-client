@@ -319,6 +319,7 @@
                                 <configuration>
                                     <finalName>${project.artifactId}-${project.version}</finalName>
                                     <appendAssemblyId>false</appendAssemblyId>
+                                    <tarLongFileMode>posix</tarLongFileMode>
                                     <descriptors>
                                         <descriptor>src/main/assembly/dist.xml</descriptor>
                                     </descriptors>
