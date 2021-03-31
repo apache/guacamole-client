@@ -200,67 +200,10 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
-
-==============================================================================
-
-APACHE GUACAMOLE SUBCOMPONENTS
-
-Apache Guacamole includes a number of subcomponents with separate copyright
-notices and license terms. Your use of these subcomponents is subject to the
-terms and conditions of the following licenses.
-
-
-AOP Alliance (http://aopalliance.sourceforge.net/)
---------------------------------------------------
-
-    Version: 1.0
-    From: 'AOP Alliance' (http://aopalliance.sourceforge.net/members.html)
-    License(s):
-        Public Domain (bundled/aopalliance-1.0/LICENSE)
-
-
-BouncyCastle Crypto (https://www.bouncycastle.org/java.html)
-------------------------------------------------------------
-
-    Version: 1.44
-    From: 'The Legion of Bouncy Caslte' (https://www.bouncycastle.org)
-    License(s):
-        The Bouncy Castle License (bundled/bouncycastle-1.44/LICENSE
-
-
-Google Guice (https://github.com/google/guice)
-----------------------------------------------
-
-    Version: 3.0
-    From: 'Google Inc.' (http://www.google.com/)
-    License(s):
-        Apache v2.0 (bundled/guice-3.0/COPYING)
-
-
-Guava: Google Core Libraries for Java (https://github.com/google/guava)
------------------------------------------------------------------------
-
-    Version: 27.0.1-jre
-    From: 'Google Inc.' (http://www.google.com/)
-    License(s):
-        Apache v2.0 (bundled/guava-27.0.1-jre/COPYING)
-
-
-JRadius (https://github.com/coova/jradius)
-------------------------------------------
-
-    Version: 1.1.5
-    From: 'Coova Technologies, LLC' (https://coova.github.io)
-    License(s):
-        LGPL-2.1 (bundled/jradius-1.1.5/LICENSE)
-
-
-JSR-330 / Dependency Injection for Java (http://code.google.com/p/atinject/)
-----------------------------------------------------------------------------
-
-    Version: 1
-    From: 'JSR-330 Expert Group' (https://jcp.org/en/jsr/detail?id=330)
-    License(s):
-        Apache v2.0 (bundled/javax.inject-1/LICENSE-2.0.txt)
-
+   
+ APACHE COMMONS POOL DERIVATIVE WORKS:
+   
+   The LinkedBlockingDeque implementation is based on an implementation written by
+   Doug Lea with assistance from members of JCP JSR-166 Expert Group and released
+   to the public domain, as explained at
+   http://creativecommons.org/licenses/publicdomain

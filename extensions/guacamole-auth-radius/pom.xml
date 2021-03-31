@@ -127,7 +127,6 @@
                 </executions>
             </plugin>
 
-
             <!-- Copy dependencies prior to packaging -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -145,6 +144,40 @@
                             <outputDirectory>${project.build.directory}/classes</outputDirectory>
                             <excludes>META-INF/*.SF,META-INF/*.DSA</excludes>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Automatically generate LICENSE and NOTICE -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-license-files</id>
+                        <phase>generate-resources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Assembly plugin - for easy distribution -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <finalName>${project.artifactId}-${project.version}</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptors>
+                        <descriptor>src/main/assembly/dist.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-dist-archive</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
