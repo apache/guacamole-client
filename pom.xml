@@ -65,31 +65,13 @@
         <module>guacamole-common-js</module>
 
         <!-- Authentication extensions -->
-        <module>extensions/guacamole-auth-cas</module>
-        <module>extensions/guacamole-auth-duo</module>
-        <module>extensions/guacamole-auth-header</module>
-        <module>extensions/guacamole-auth-jdbc</module>
-        <module>extensions/guacamole-auth-json</module>
-        <module>extensions/guacamole-auth-ldap</module>
-        <module>extensions/guacamole-auth-openid</module>
-        <module>extensions/guacamole-auth-quickconnect</module>
-        <module>extensions/guacamole-auth-saml</module>
-        <module>extensions/guacamole-auth-totp</module>
+        <module>extensions</module>
 
         <!-- Example web applications using the Guacamole APIs -->
         <module>doc/guacamole-example</module>
         <module>doc/guacamole-playback-example</module>
 
     </modules>
-
-    <profiles>
-        <profile>
-            <id>lgpl-extensions</id>
-            <modules>
-                <module>extensions/guacamole-auth-radius</module>
-            </modules>
-        </profile>
-    </profiles>
 
     <build>
         <plugins>
@@ -98,31 +80,28 @@
             <plugin>
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
-                <version>0.12</version>
-
-                <configuration>
-                    <excludes>
-                        <exclude>.dockerignore</exclude>
-                        <exclude>CONTRIBUTING</exclude>
-                        <exclude>**/README.md</exclude>
-                        <exclude>extensions/**/*</exclude>
-                        <exclude>**/*.json</exclude>
-                        <exclude>doc/licenses/*/**/*</exclude>
-                        <exclude>doc/**/html/*.html</exclude>
-                    </excludes>
-                </configuration>
-
-                <!-- Bind RAT to validate phase -->
+                <version>0.13</version>
                 <executions>
                     <execution>
-                        <id>validate</id>
+                        <id>validate-licenses</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
+                        <configuration>
+                            <excludesFile>${basedir}/.ratignore</excludesFile>
+                            <excludes>
+                                <exclude>.dockerignore</exclude>
+                                <exclude>.ratignore</exclude>
+                                <exclude>**/*.md</exclude>
+                                <exclude>**/*.json</exclude>
+                                <exclude>**/templates/*.html</exclude>
+                                <exclude>src/licenses/**/*</exclude>
+                                <exclude>target/**/*</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
                 </executions>
-
             </plugin>
 
             <!-- Define a "rootlocation" property that can be used to reference
@@ -143,9 +122,36 @@
 
         </plugins>
 
-        <!-- Provide "generate-license-files" execution for convenience -->
         <pluginManagement>
             <plugins>
+
+                <!-- Java code within guacamole-client is written to be
+                    compatible with Java 8 and should not produce ANY compiler
+                    warnings -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                        <compilerArgs>
+                            <arg>-Xlint:all</arg>
+                            <arg>-Werror</arg>
+                        </compilerArgs>
+                        <fork>true</fork>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <configuration>
+                        <source>8</source>
+                    </configuration>
+                </plugin>
+
+                <!-- Provide "generate-license-files" execution for automatic
+                    generation of LICENSE and NOTICE files -->
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
@@ -167,6 +173,15 @@
                         </execution>
                     </executions>
                 </plugin>
+
+                <!-- Explicitly use latest version of Maven surefire plugin
+                    (https://issues.apache.org/jira/browse/SUREFIRE-1588) -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M5</version>
+                </plugin>
+
             </plugins>
         </pluginManagement>
 
@@ -283,5 +298,41 @@
 
         </dependencies>
     </dependencyManagement>
+
+    <profiles>
+
+        <!-- Automatically build distribution archive if dist.xml assembly is present -->
+        <profile>
+            <id>build-dist-archive</id>
+            <activation>
+                <file><exists>src/main/assembly/dist.xml</exists></file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <executions>
+                            <execution>
+                                <id>make-dist-archive</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <finalName>${project.artifactId}-${project.version}</finalName>
+                                    <appendAssemblyId>false</appendAssemblyId>
+                                    <descriptors>
+                                        <descriptor>src/main/assembly/dist.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
 
 </project>
