@@ -162,19 +162,31 @@ public class TokenFilter {
         tokenValues.clear();
         tokenValues.putAll(tokens);
     }
-    
+
     /**
      * Filters the given string, replacing any tokens with their corresponding
-     * values.
+     * values. Handling of undefined tokens depends on the value given for the
+     * strict flag.
      *
      * @param input
      *     The string to filter.
      *
+     * @param strict
+     *     Whether to disallow tokens which lack values from existing in the
+     *     string. If true, an exception will be thrown if any tokens in the
+     *     string lack corresponding values. If false, tokens which lack values
+     *     will be interpreted as literals.
+     *
      * @return
      *     A copy of the input string, with any tokens replaced with their
      *     corresponding values.
+     *
+     * @throws GuacamoleTokenUndefinedException
+     *     If the strict flag is set to true and at least one token in the
+     *     given string has no corresponding value.
      */
-    public String filter(String input) {
+    private String filter(String input, boolean strict)
+            throws GuacamoleTokenUndefinedException {
 
         StringBuilder output = new StringBuilder();
         Matcher tokenMatcher = tokenPattern.matcher(input);
@@ -209,10 +221,20 @@ public class TokenFilter {
                 String tokenName = tokenMatcher.group(TOKEN_NAME_GROUP);
                 String tokenValue = getToken(tokenName);
 
-                // If token is unknown, interpret as literal
+                // If token is unknown, interpretation depends on whether
+                // strict mode is enabled
                 if (tokenValue == null) {
+
+                    // Fail outright if strict mode is enabled
+                    if (strict)
+                        throw new GuacamoleTokenUndefinedException("Token "
+                                + "has no defined value.", tokenName);
+
+                    // If strict mode is NOT enabled, simply interpret as
+                    // a literal
                     String notToken = tokenMatcher.group(TOKEN_GROUP);
                     output.append(notToken);
+
                 }
 
                 // Otherwise, check for modifiers and substitute value appropriately
@@ -247,19 +269,71 @@ public class TokenFilter {
 
             // Update last regex match
             endOfLastMatch = tokenMatcher.end();
-            
+
         }
 
         // Append any remaining non-token text
         output.append(input.substring(endOfLastMatch));
-        
+
         return output.toString();
-       
+
+    }
+
+    /**
+     * Filters the given string, replacing any tokens with their corresponding
+     * values. Any tokens present in the given string which lack values will
+     * be interpreted as literals.
+     *
+     * @param input
+     *     The string to filter.
+     *
+     * @return
+     *     A copy of the input string, with any tokens replaced with their
+     *     corresponding values.
+     */
+    public String filter(String input) {
+
+        // Filter with strict mode disabled (should always succeed)
+        try {
+            return filter(input, false);
+        }
+
+        // GuacamoleTokenUndefinedException cannot be thrown when strict mode
+        // is disabled
+        catch (GuacamoleTokenUndefinedException e) {
+            throw new IllegalStateException("filter() threw "
+                    + "GuacamoleTokenUndefinedException despite strict mode "
+                    + "being disabled.");
+        }
+
+    }
+
+    /**
+     * Filters the given string, replacing any tokens with their corresponding
+     * values. If any token in the given string has no defined value within
+     * this TokenFilter, a GuacamoleTokenUndefinedException will be thrown.
+     *
+     * @param input
+     *     The string to filter.
+     *
+     * @return
+     *     A copy of the input string, with any tokens replaced with their
+     *     corresponding values.
+     *
+     * @throws GuacamoleTokenUndefinedException
+     *     If at least one token in the given string has no corresponding
+     *     value.
+     */
+    public String filterStrict(String input)
+            throws GuacamoleTokenUndefinedException {
+        return filter(input, true);
     }
 
     /**
      * Given an arbitrary map containing String values, replace each non-null
-     * value with the corresponding filtered value.
+     * value with the corresponding filtered value. Any tokens present in the
+     * values of the given map which lack defined values within this
+     * TokenFilter will be interpreted as literals.
      *
      * @param map
      *     The map whose values should be filtered.
@@ -273,6 +347,34 @@ public class TokenFilter {
             String value = entry.getValue();
             if (value != null)
                 entry.setValue(filter(value));
+
+        }
+
+    }
+
+    /**
+     * Given an arbitrary map containing String values, replace each non-null
+     * value with the corresponding filtered value. If any token in any string
+     * has no defined value within this TokenFilter, a
+     * GuacamoleTokenUndefinedException will be thrown.
+     *
+     * @param map
+     *     The map whose values should be filtered.
+     *
+     * @throws GuacamoleTokenUndefinedException
+     *     If at least one token in at least one string has no corresponding
+     *     value.
+     */
+    public void filterValuesStrict(Map<?, String> map)
+            throws GuacamoleTokenUndefinedException {
+
+        // For each map entry
+        for (Map.Entry<?, String> entry : map.entrySet()) {
+
+            // If value is non-null, filter value through this TokenFilter
+            String value = entry.getValue();
+            if (value != null)
+                entry.setValue(filterStrict(value));
             
         }
         

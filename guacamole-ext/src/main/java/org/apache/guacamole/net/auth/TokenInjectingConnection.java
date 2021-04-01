@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
@@ -38,6 +39,22 @@ public class TokenInjectingConnection extends DelegatingConnection {
     private final Map<String, String> tokens;
 
     /**
+     * Returns the tokens which should be added to an in-progress call to
+     * connect(). If not overridden, this function will return the tokens
+     * provided when this instance of TokenInjectingConnection was created.
+     *
+     * @return
+     *     The tokens which should be added to the in-progress call to
+     *     connect().
+     *
+     * @throws GuacamoleException
+     *     If the applicable tokens cannot be generated.
+     */
+    protected Map<String, String> getTokens() throws GuacamoleException {
+        return tokens;
+    }
+
+    /**
      * Wraps the given Connection, automatically adding the given tokens to
      * each invocation of connect(). Any additional tokens which have the same
      * name as existing tokens will override the existing values.
@@ -54,13 +71,26 @@ public class TokenInjectingConnection extends DelegatingConnection {
         this.tokens = tokens;
     }
 
+    /**
+     * Wraps the given Connection such that the additional parameter tokens
+     * returned by getTokens() are included with each invocation of connect().
+     * Any additional tokens which have the same name as existing tokens will
+     * override the existing values.
+     *
+     * @param connection
+     *     The Connection to wrap.
+     */
+    public TokenInjectingConnection(Connection connection) {
+        this(connection, Collections.<String, String>emptyMap());
+    }
+
     @Override
     public GuacamoleTunnel connect(GuacamoleClientInformation info,
             Map<String, String> tokens) throws GuacamoleException {
 
         // Apply provided tokens over those given to connect()
         tokens = new HashMap<>(tokens);
-        tokens.putAll(this.tokens);
+        tokens.putAll(getTokens());
 
         return super.connect(info, tokens);
 

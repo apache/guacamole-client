@@ -83,8 +83,13 @@ public class TokenInjectingUserContext extends DelegatingUserContext {
      * @return
      *     The tokens which should be added to the in-progress call to
      *     connect().
+     *
+     * @throws GuacamoleException
+     *     If the tokens applicable to the given connection cannot be
+     *     generated.
      */
-    protected Map<String, String> getTokens(Connection connection) {
+    protected Map<String, String> getTokens(Connection connection)
+            throws GuacamoleException {
         return tokens;
     }
 
@@ -100,8 +105,13 @@ public class TokenInjectingUserContext extends DelegatingUserContext {
      * @return
      *     The tokens which should be added to the in-progress call to
      *     connect().
+     *
+     * @throws GuacamoleException
+     *     If the tokens applicable to the given connection group cannot be
+     *     generated.
      */
-    protected Map<String, String> getTokens(ConnectionGroup connectionGroup) {
+    protected Map<String, String> getTokens(ConnectionGroup connectionGroup)
+            throws GuacamoleException {
         return tokens;
     }
 
@@ -112,7 +122,14 @@ public class TokenInjectingUserContext extends DelegatingUserContext {
 
             @Override
             protected ConnectionGroup decorate(ConnectionGroup object) throws GuacamoleException {
-                return new TokenInjectingConnectionGroup(object, getTokens(object));
+                return new TokenInjectingConnectionGroup(object) {
+
+                    @Override
+                    protected Map<String, String> getTokens() throws GuacamoleException {
+                        return TokenInjectingUserContext.this.getTokens(object);
+                    }
+
+                };
             }
 
             @Override
@@ -130,7 +147,14 @@ public class TokenInjectingUserContext extends DelegatingUserContext {
 
             @Override
             protected Connection decorate(Connection object) throws GuacamoleException {
-                return new TokenInjectingConnection(object, getTokens(object));
+                return new TokenInjectingConnection(object) {
+
+                    @Override
+                    protected Map<String, String> getTokens() throws GuacamoleException {
+                        return TokenInjectingUserContext.this.getTokens(object);
+                    }
+
+                };
             }
 
             @Override
