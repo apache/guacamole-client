@@ -19,11 +19,11 @@
 
 package org.apache.guacamole.auth.json.user;
 
+import com.google.common.io.BaseEncoding;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import javax.xml.bind.DatatypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +101,7 @@ public class UserDataDenylist {
             return false;
 
         // Add to denylist only if not already present
-        String signatureHex = DatatypeConverter.printHexBinary(signature);
+        String signatureHex = BaseEncoding.base16().encode(signature);
         return denylist.putIfAbsent(signatureHex, data) == null;
 
     }

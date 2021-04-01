@@ -19,9 +19,9 @@
 
 package org.apache.guacamole.extension;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collection;
 import java.util.Map;
-import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * Java representation of the JSON manifest contained within every Guacamole

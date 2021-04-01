@@ -1,0 +1,4 @@
+com.google.inject.extensions:guice-assistedinject:jar:4.2.3
+com.google.inject.extensions:guice-multibindings:jar:4.2.3
+com.google.inject.extensions:guice-servlet:jar:4.2.3
+com.google.inject:guice:jar:4.2.3

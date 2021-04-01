@@ -19,14 +19,15 @@
 
 package org.apache.guacamole.form;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.ArrayList;
 import java.util.Collection;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  * Information which describes logical set of fields.
  */
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+@JsonInclude(value=Include.NON_NULL)
 public class Form {
 
     /**

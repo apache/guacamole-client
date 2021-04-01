@@ -31,7 +31,23 @@
     <url>http://guacamole.apache.org/</url>
 
     <properties>
+
+        <!-- Core properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Dependency versions -->
+        <guava.version>30.1-jre</guava.version>
+        <guice.version>4.2.3</guice.version>
+        <hk2.version>2.6.1</hk2.version>
+        <jackson.version>2.10.1</jackson.version>
+        <jersey.version>2.31</jersey.version>
+        <junit.version>5.6.0</junit.version>
+        <logback.version>1.2.3</logback.version>
+        <slf4j.version>1.7.30</slf4j.version>
+
+        <!-- Build control -->
+        <skipLicenseGeneration>false</skipLicenseGeneration>
+
     </properties>
 
     <modules>
@@ -49,16 +65,7 @@
         <module>guacamole-common-js</module>
 
         <!-- Authentication extensions -->
-        <module>extensions/guacamole-auth-cas</module>
-        <module>extensions/guacamole-auth-duo</module>
-        <module>extensions/guacamole-auth-header</module>
-        <module>extensions/guacamole-auth-jdbc</module>
-        <module>extensions/guacamole-auth-json</module>
-        <module>extensions/guacamole-auth-ldap</module>
-        <module>extensions/guacamole-auth-openid</module>
-        <module>extensions/guacamole-auth-quickconnect</module>
-        <module>extensions/guacamole-auth-saml</module>
-        <module>extensions/guacamole-auth-totp</module>
+        <module>extensions</module>
 
         <!-- Example web applications using the Guacamole APIs -->
         <module>doc/guacamole-example</module>
@@ -66,77 +73,290 @@
 
     </modules>
 
-    <profiles>
-        <profile>
-            <id>lgpl-extensions</id>
-            <modules>
-                <module>extensions/guacamole-auth-radius</module>
-            </modules>
-        </profile>
-    </profiles>
-
     <build>
         <plugins>
-
-            <!-- Assembly plugin - for easy distribution -->
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.3</version>
-
-                <!-- Build project archive -->
-                <configuration>
-                    <finalName>${project.artifactId}-${project.version}</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <tarLongFileMode>gnu</tarLongFileMode>
-                    <descriptors>
-                        <descriptor>project-assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
-
-                <!-- Bind archive build to package phase -->
-                <executions>
-                    <execution>
-                        <id>make-source-archive</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-
-            </plugin>
 
             <!-- Verify format using Apache RAT -->
             <plugin>
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
-                <version>0.12</version>
-
-                <configuration>
-                    <excludes>
-                        <exclude>.dockerignore</exclude>
-                        <exclude>CONTRIBUTING</exclude>
-                        <exclude>**/README.md</exclude>
-                        <exclude>extensions/**/*</exclude>
-                        <exclude>**/*.json</exclude>
-                        <exclude>doc/**/html/*.html</exclude>
-                    </excludes>
-                </configuration>
-
-                <!-- Bind RAT to validate phase -->
+                <version>0.13</version>
                 <executions>
                     <execution>
-                        <id>validate</id>
+                        <id>validate-licenses</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
+                        <configuration>
+                            <excludesFile>${basedir}/.ratignore</excludesFile>
+                            <excludes>
+                                <exclude>.dockerignore</exclude>
+                                <exclude>.ratignore</exclude>
+                                <exclude>**/*.md</exclude>
+                                <exclude>**/*.json</exclude>
+                                <exclude>**/templates/*.html</exclude>
+                                <exclude>src/licenses/**/*</exclude>
+                                <exclude>target/**/*</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
                 </executions>
+            </plugin>
 
+            <!-- Define a "rootlocation" property that can be used to reference
+                the location of the main guacamole-client directory -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>define-project-root</id>
+                        <goals>
+                            <goal>rootlocation</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Automatically generate list of runtime dependencies -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <id>list-runtime-dependencies</id>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <excludeReactor>false</excludeReactor>
+                            <excludeGroupIds>org.apache.guacamole</excludeGroupIds>
+                            <outputFile>${project.build.directory}/runtime-dependencies.txt</outputFile>
+                        </configuration>
+                        <goals>
+                            <goal>list</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
+
+        <pluginManagement>
+            <plugins>
+
+                <!-- Java code within guacamole-client is written to be
+                    compatible with Java 8 and should not produce ANY compiler
+                    warnings -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                        <compilerArgs>
+                            <arg>-Xlint:all</arg>
+                            <arg>-Werror</arg>
+                        </compilerArgs>
+                        <fork>true</fork>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <configuration>
+                        <source>8</source>
+                    </configuration>
+                </plugin>
+
+                <!-- Provide "generate-license-files" execution for automatic
+                    generation of LICENSE and NOTICE files -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <executions>
+                        <execution>
+                            <id>generate-license-files</id>
+                            <phase>none</phase>
+                            <configuration>
+                                <executable>${rootlocation}/doc/licenses/generate-license-files.sh</executable>
+                                <arguments>
+                                    <argument>${project.build.directory}/runtime-dependencies.txt</argument>
+                                    <argument>${project.build.directory}/licenses</argument>
+                                </arguments>
+                                <skip>${skipLicenseGeneration}</skip>
+                            </configuration>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Explicitly use latest version of Maven surefire plugin
+                    (https://issues.apache.org/jira/browse/SUREFIRE-1588) -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M5</version>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+
     </build>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Guava utility library -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <!-- Guice dependency injection -->
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-assistedinject</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-multibindings</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-servlet</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+        
+            <!-- Jersey JAX-RS implementation -->
+            <dependency>
+                <groupId>org.glassfish.jersey.containers</groupId>
+                <artifactId>jersey-container-servlet-core</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.inject</groupId>
+                <artifactId>jersey-hk2</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>guice-bridge</artifactId>
+                <version>${hk2.version}</version>
+            </dependency>
+
+            <!-- Jackson JSON mapper -->
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
+                <version>${jersey.version}</version>
+
+                <!-- Exclude StAX API, which is part of Java 6 -->
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.xml.stream</groupId>
+                        <artifactId>stax-api</artifactId>
+                    </exclusion>
+                </exclusions>
+
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <!-- Logging -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+
+            <!-- JUnit -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <profiles>
+
+        <!-- Automatically build distribution archive if dist.xml assembly is present -->
+        <profile>
+            <id>build-dist-archive</id>
+            <activation>
+                <file><exists>src/main/assembly/dist.xml</exists></file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <executions>
+                            <execution>
+                                <id>make-dist-archive</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <finalName>${project.artifactId}-${project.version}</finalName>
+                                    <appendAssemblyId>false</appendAssemblyId>
+                                    <tarLongFileMode>posix</tarLongFileMode>
+                                    <descriptors>
+                                        <descriptor>src/main/assembly/dist.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
 
 </project>

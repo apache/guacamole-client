@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.properties;
 
-import javax.xml.bind.DatatypeConverter;
+import com.google.common.io.BaseEncoding;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 
@@ -39,7 +39,7 @@ public abstract class ByteArrayProperty implements GuacamoleProperty<byte[]> {
 
         // Return value parsed from hex
         try {
-            return DatatypeConverter.parseHexBinary(value);
+            return BaseEncoding.base16().decode(value);
         }
 
         // Fail parse if hex invalid

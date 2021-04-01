@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.environment;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
@@ -27,7 +28,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;

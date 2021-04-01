@@ -19,8 +19,9 @@
 
 package org.apache.guacamole.form;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.Collection;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  * Represents an arbitrary field, such as an HTTP parameter, the parameter of a
@@ -30,7 +31,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  * either through the web application itself (see FormService.js) or through
  * extensions.
  */
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+@JsonInclude(value=Include.NON_NULL)
 public class Field {
 
     /**
