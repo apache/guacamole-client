@@ -260,8 +260,8 @@ trim_file() {
     FILENAME="$1"
 
     # Find line number of first and last non-blank lines
-    FIRST_LINE="`awk '/[^[:space:]]/ {print NR; exit}' "$FILENAME"`"
-    LAST_LINE="`awk '/[^[:space:]]/ {last=NR} END {print last}' "$FILENAME"`"
+    FIRST_LINE="`awk '/[^\t ]/ {print NR; exit}' "$FILENAME"`"
+    LAST_LINE="`awk '/[^\t ]/ {last=NR} END {print last}' "$FILENAME"`"
 
     # Print the contents of the file between those lines, inclusive
     awk "NR==$FIRST_LINE,NR==$LAST_LINE" "$FILENAME"
