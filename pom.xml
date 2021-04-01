@@ -120,6 +120,28 @@
                 </executions>
             </plugin>
 
+            <!-- Automatically generate list of runtime dependencies -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <id>list-runtime-dependencies</id>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <excludeReactor>false</excludeReactor>
+                            <excludeGroupIds>org.apache.guacamole</excludeGroupIds>
+                            <outputFile>${project.build.directory}/runtime-dependencies.txt</outputFile>
+                        </configuration>
+                        <goals>
+                            <goal>list</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
 
         <pluginManagement>
@@ -163,6 +185,7 @@
                             <configuration>
                                 <executable>${rootlocation}/doc/licenses/generate-license-files.sh</executable>
                                 <arguments>
+                                    <argument>${project.build.directory}/runtime-dependencies.txt</argument>
                                     <argument>${project.build.directory}/licenses</argument>
                                 </arguments>
                                 <skip>${skipLicenseGeneration}</skip>
