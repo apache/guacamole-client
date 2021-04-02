@@ -52,10 +52,6 @@
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-multibindings</artifactId>
-        </dependency>
 
         <!-- Java servlet API -->
         <dependency>
@@ -77,7 +73,7 @@
         <dependency>
             <groupId>com.onelogin</groupId>
             <artifactId>java-saml</artifactId>
-            <version>2.5.0</version>
+            <version>2.6.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
