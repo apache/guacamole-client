@@ -65,7 +65,6 @@
             <!-- Assemble JS files into single .zip -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.3</version>
                 <configuration>
                     <appendAssemblyId>false</appendAssemblyId>
                     <descriptors>
@@ -77,7 +76,7 @@
                         <id>make-zip</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>attached</goal>
+                            <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -85,9 +84,8 @@
 
             <!-- JS/CSS Minification Plugin -->
             <plugin>
-                <groupId>com.samaxes.maven</groupId>
+                <groupId>com.github.buckelieg</groupId>
                 <artifactId>minify-maven-plugin</artifactId>
-                <version>1.6.1</version>
                 <executions>
                     <execution>
                         <id>default-minify</id>
