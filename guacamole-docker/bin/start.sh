@@ -547,7 +547,7 @@ associate_openid() {
     if [ -z "$OPENID_AUTHORIZATION_ENDPOINT" ] || \
        [ -z "$OPENID_JWKS_ENDPOINT" ]          || \
        [ -z "$OPENID_ISSUER" ]                 || \
-       [ -z "$OPENID_CLIENT_ID" ]              || \          
+       [ -z "$OPENID_CLIENT_ID" ]              || \
        [ -z "$OPENID_REDIRECT_URI" ]
     then
         cat <<END
