@@ -75,7 +75,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.6</version>
+                <version>3.3.1</version>
                 <configuration>
 
                     <webResources>
@@ -123,7 +123,7 @@
             <plugin>
                 <groupId>com.keithbranton.mojo</groupId>
                 <artifactId>angular-maven-plugin</artifactId>
-                <version>0.3.2</version>
+                <version>0.3.4</version>
                 <executions>
                     <execution>
                         <phase>generate-resources</phase>
@@ -142,9 +142,8 @@
 
             <!-- JS/CSS Minification Plugin -->
             <plugin>
-                <groupId>com.samaxes.maven</groupId>
+                <groupId>com.github.buckelieg</groupId>
                 <artifactId>minify-maven-plugin</artifactId>
-                <version>1.7.5</version>
                 <executions>
                     <execution>
                         <id>default-cli</id>
