@@ -91,7 +91,7 @@ FATAL: Missing required environment variables
 -------------------------------------------------------------------------------
 If using a MySQL database, you must provide each of the following
 environment variables or their corresponding Docker secrets by appending _FILE
-to the environment variable, and setting the value to the path of the 
+to the environment variable, and setting the value to the path of the
 corresponding secret:
 
     MYSQL_USER         The user to authenticate as when connecting to
@@ -158,7 +158,7 @@ END
         mysql_missing_vars
         exit 1;
     fi
-    
+
     if [ -n "$MYSQL_PASSWORD_FILE" ]; then
         set_property "mysql-password" "`cat "$MYSQL_PASSWORD_FILE"`"
     elif [ -n "$MYSQL_PASSWORD" ]; then
@@ -248,7 +248,7 @@ FATAL: Missing required environment variables
 -------------------------------------------------------------------------------
 If using a PostgreSQL database, you must provide each of the following
 environment variables or their corresponding Docker secrets by appending _FILE
-to the environment variable, and setting the value to the path of the 
+to the environment variable, and setting the value to the path of the
 corresponding secret:
 
     POSTGRES_USER      The user to authenticate as when connecting to
@@ -315,7 +315,7 @@ END
         postgres_missing_vars
         exit 1;
     fi
-    
+
     if [ -n "$POSTGRES_PASSWORD_FILE" ]; then
         set_property "postgresql-password" "`cat "$POSTGRES_PASSWORD_FILE"`"
     elif [ -n "$POSTGRES_PASSWORD" ]; then
@@ -470,13 +470,13 @@ FATAL: Missing required environment variables
 If using RADIUS server, you must provide each of the following environment
 variables:
 
-    RADIUS_SHARED_SECRET   The shared secret to use when talking to the 
+    RADIUS_SHARED_SECRET   The shared secret to use when talking to the
                            RADIUS server.
 
-    RADIUS_AUTH_PROTOCOL   The authentication protocol to use when talking 
+    RADIUS_AUTH_PROTOCOL   The authentication protocol to use when talking
                            to the RADIUS server.
-                           Supported values are: 
-                             pap, chap, mschapv1, mschapv2, eap-md5, 
+                           Supported values are:
+                             pap, chap, mschapv1, mschapv2, eap-md5,
                              eap-tls and eap-ttls.
 END
         exit 1;
@@ -485,7 +485,7 @@ END
     # Verify provided files do exist and are readable
     if [ -n "$RADIUS_KEY_FILE" -a ! -r "$RADIUS_KEY_FILE" ]; then
        cat <<END
-FATAL: Provided file RADIUS_KEY_FILE=$RADIUS_KEY_FILE does not exist 
+FATAL: Provided file RADIUS_KEY_FILE=$RADIUS_KEY_FILE does not exist
        or is not readable!
 -------------------------------------------------------------------------------
 If you provide key or CA files you need to mount those into the container and
@@ -495,7 +495,7 @@ END
     fi
     if [ -n "$RADIUS_CA_FILE" -a ! -r "$RADIUS_CA_FILE" ]; then
        cat <<END
-FATAL: Provided file RADIUS_CA_FILE=$RADIUS_CA_FILE does not exist 
+FATAL: Provided file RADIUS_CA_FILE=$RADIUS_CA_FILE does not exist
        or is not readable!
 -------------------------------------------------------------------------------
 If you provide key or CA files you need to mount those into the container and
@@ -547,7 +547,7 @@ associate_openid() {
     if [ -z "$OPENID_AUTHORIZATION_ENDPOINT" ] || \
        [ -z "$OPENID_JWKS_ENDPOINT" ]          || \
        [ -z "$OPENID_ISSUER" ]                 || \
-       [ -z "$OPENID_CLIENT_ID" ]              || \          
+       [ -z "$OPENID_CLIENT_ID" ]              || \
        [ -z "$OPENID_REDIRECT_URI" ]
     then
         cat <<END
@@ -559,19 +559,19 @@ environment variables:
     OPENID_AUTHORIZATION_ENDPOINT   The authorization endpoint (URI) of the OpenID service.
 
     OPENID_JWKS_ENDPOINT            The endpoint (URI) of the JWKS service which defines
-                                    how received ID tokens (JSON Web Tokens or JWTs) 
+                                    how received ID tokens (JSON Web Tokens or JWTs)
                                     shall be validated.
 
     OPENID_ISSUER                   The issuer to expect for all received ID tokens.
 
-    OPENID_CLIENT_ID                The OpenID client ID which should be submitted 
-                                    to the OpenID service when necessary. 
-                                    This value is typically provided to you by the OpenID 
+    OPENID_CLIENT_ID                The OpenID client ID which should be submitted
+                                    to the OpenID service when necessary.
+                                    This value is typically provided to you by the OpenID
                                     service when OpenID credentials are generated for your application.
 
-    OPENID_REDIRECT_URI             The URI that should be submitted to the OpenID service such that 
-                                    they can redirect the authenticated user back to Guacamole after 
-                                    the authentication process is complete. This must be the full URL 
+    OPENID_REDIRECT_URI             The URI that should be submitted to the OpenID service such that
+                                    they can redirect the authenticated user back to Guacamole after
+                                    the authentication process is complete. This must be the full URL
                                     that a user would enter into their browser to access Guacamole.
 END
         exit 1;
@@ -623,14 +623,14 @@ associate_duo() {
         cat <<END
 FATAL: Missing required environment variables
 -------------------------------------------------------------------------------
-If using the Duo authentication extension, you must provide each of the 
+If using the Duo authentication extension, you must provide each of the
 following environment variables:
 
     DUO_API_HOSTNAME        The hostname of the Duo API endpoint.
 
     DUO_INTEGRATION_KEY     The integration key provided for Guacamole by Duo.
 
-    DUO_SECRET_KEY          The secret key provided for Guacamole by Duo. 
+    DUO_SECRET_KEY          The secret key provided for Guacamole by Duo.
 
     DUO_APPLICATION_KEY     An arbitrary, random key.
                             This value must be at least 40 characters.
@@ -840,8 +840,8 @@ FATAL: No authentication configured
 -------------------------------------------------------------------------------
 The Guacamole Docker container needs at least one authentication mechanism in
 order to function, such as a MySQL database, PostgreSQL database, LDAP
-directory or RADIUS server. Please specify at least the MYSQL_DATABASE or 
-POSTGRES_DATABASE environment variables, or check Guacamole's Docker 
+directory or RADIUS server. Please specify at least the MYSQL_DATABASE or
+POSTGRES_DATABASE environment variables, or check Guacamole's Docker
 documentation regarding configuring LDAP and/or custom extensions.
 END
     exit 1;
