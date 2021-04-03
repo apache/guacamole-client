@@ -146,13 +146,14 @@
             <version>1.1.5</version>
             <exclusions>
 
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
+                <!-- Force consistent versions of Apache Commons libraries (see below) -->
                 <exclusion>
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections</artifactId>
                 </exclusion>
 
                 <!-- Rely on Guacamole's existing use of logback rather than log4j -->
@@ -182,12 +183,17 @@
             <version>1.1.5</version>
         </dependency>
 
-        <!-- Force single, specific version commons-logging (multiple
-            dependencies reference multiple versions of this). -->
+        <!-- Force single, specific versions of Apache Commons libraries
+            (multiple dependencies reference multiple versions of these). -->
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2</version>
         </dependency>
 
     </dependencies>

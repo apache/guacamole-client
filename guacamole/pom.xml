@@ -436,23 +436,31 @@
             <artifactId>jersey-media-json-jackson</artifactId>
             <exclusions>
 
-                <!-- Use newer 1.2.2 version required by Jakarta JAXB, rather
-                than 1.2.1 version specified by Jackson -->
+                <!-- Use newer 2.12.2 version required by Guacamole, rather
+                than 2.11.3 version required by Jersey (see below) -->
                 <exclusion>
-                    <groupId>jakarta.activation</groupId>
-                    <artifactId>jakarta.activation-api</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
                 </exclusion>
-
-                <!-- Use newer 2.3.3 version required by Jersey, rather than
-                2.3.2 version specified by Jackson -->
                 <exclusion>
-                    <groupId>jakarta.xml.bind</groupId>
-                    <artifactId>jakarta.xml.bind-api</artifactId>
+                    <groupId>com.fasterxml.jackson.module</groupId>
+                    <artifactId>jackson-module-jaxb-annotations</artifactId>
                 </exclusion>
 
             </exclusions>
         </dependency>
-        
+
+        <!-- Force newer version of Jackson, rather than slightly older version
+            specified by Jersey -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+        </dependency>
+
         <!-- JSR-250 annotations -->
         <dependency>
             <groupId>javax.annotation</groupId>
