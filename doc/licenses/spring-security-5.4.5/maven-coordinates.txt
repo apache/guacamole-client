@@ -1,0 +1,2 @@
+org.springframework.security:spring-security-core:jar:5.4.5
+org.springframework.security:spring-security-web:jar:5.4.5
