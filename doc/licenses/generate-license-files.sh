@@ -45,6 +45,15 @@
 # OUTPUT_DIRECTORY is the directory in which the LICENSE and NOTICE files
 # should be written.
 #
+# Ignoring license errors
+# -----------------------
+#
+# By default, this script will exit with a non-zero exit code if any license
+# errors are encountered, failing the build. If this is undesirable (dependency
+# changes are being tested, a full list of all license errors across all
+# projects is needed, etc.), set the IGNORE_LICENSE_ERRORS environment variable
+# to "true".
+#
 # Structure of license information
 # --------------------------------
 #
@@ -359,6 +368,12 @@ for EXCLUDED_FILE in README maven-coordinates.txt; do
     rm -f "$OUTPUT_DIR/bundled"/*/"$EXCLUDED_FILE"
 done
 
-# Fail if any errors occurred
-[ "`cat "$HAS_ERRORS"`" != "1" ] && info "Dependency licenses processed successfully."
+# Fail if any errors occured unless explicitly configured to ignore errors with
+# the IGNORE_LICENSE_ERRORS environment variable
+if [ "`cat "$HAS_ERRORS"`" = "1" ]; then
+    [ "$IGNORE_LICENSE_ERRORS" = "true" ] || exit 1
+    info "Ignoring above license errors (IGNORE_LICENSE_ERRORS was set to \"$IGNORE_LICENSE_ERRORS\")."
+else
+    info "Dependency licenses processed successfully."
+fi
 

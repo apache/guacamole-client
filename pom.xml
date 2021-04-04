@@ -45,8 +45,11 @@
         <logback.version>1.2.3</logback.version>
         <slf4j.version>1.7.30</slf4j.version>
 
-        <!-- Build control -->
-        <skipLicenseGeneration>false</skipLicenseGeneration>
+        <!-- Set to "true" to ignore errors that occur during automatic LICENSE
+            file generation (such as non-existent license documentation) as
+            well as errors that occur during the RAT check (such as incorrect
+            or missing license headers). -->
+        <ignoreLicenseErrors>false</ignoreLicenseErrors>
 
     </properties>
 
@@ -99,6 +102,7 @@
                                 <exclude>src/licenses/**/*</exclude>
                                 <exclude>target/**/*</exclude>
                             </excludes>
+                            <skip>${ignoreLicenseErrors}</skip>
                         </configuration>
                     </execution>
                 </executions>
@@ -202,7 +206,9 @@
                                     <argument>${project.build.directory}/runtime-dependencies.txt</argument>
                                     <argument>${project.build.directory}/licenses</argument>
                                 </arguments>
-                                <skip>${skipLicenseGeneration}</skip>
+                                <environmentVariables>
+                                    <IGNORE_LICENSE_ERRORS>${ignoreLicenseErrors}</IGNORE_LICENSE_ERRORS>
+                                </environmentVariables>
                             </configuration>
                             <goals>
                                 <goal>exec</goal>
