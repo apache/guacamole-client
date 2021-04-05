@@ -513,13 +513,9 @@ public class ExtensionModule extends ServletModule {
         // Load initial language resources from servlet context
         languageResourceService.addLanguageResources(getServletContext());
 
-        // Init JavaScript resources with base guacamole.min.js
+        // Init JavaScript and CSS resources from extensions
         Collection<Resource> javaScriptResources = new ArrayList<Resource>();
-        javaScriptResources.add(new WebApplicationResource(getServletContext(), "/guacamole.min.js"));
-
-        // Init CSS resources with base guacamole.min.css
         Collection<Resource> cssResources = new ArrayList<Resource>();
-        cssResources.add(new WebApplicationResource(getServletContext(), "/guacamole.min.css"));
 
         // Load all extensions
         final Set<String> toleratedAuthProviders = getToleratedAuthenticationProviders();

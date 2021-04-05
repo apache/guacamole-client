@@ -99,6 +99,7 @@
                                 <exclude>.ratignore</exclude>
                                 <exclude>**/*.md</exclude>
                                 <exclude>**/*.json</exclude>
+                                <exclude>**/node_modules/**/*</exclude>
                                 <exclude>**/templates/*.html</exclude>
                                 <exclude>src/licenses/**/*</exclude>
                                 <exclude>target/**/*</exclude>

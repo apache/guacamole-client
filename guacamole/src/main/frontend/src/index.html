@@ -27,7 +27,7 @@
         <link rel="icon" type="image/png" href="images/logo-64.png"/>
         <link rel="icon" type="image/png" sizes="144x144" href="images/logo-144.png"/>
         <link rel="apple-touch-icon" type="image/png" href="images/logo-144.png"/>
-        <link rel="stylesheet" type="text/css" href="webjars/simonwep__pickr/1.2.6/dist/themes/monolith.min.css"/>
+        <link rel="stylesheet" type="text/css" href="guacamole.min.css?v=${project.version}">
         <link rel="stylesheet" type="text/css" href="app.css?v=${project.version}">
         <title ng-bind="page.title | translate"></title>
     </head>
@@ -71,36 +71,8 @@
         <!-- Reformat URL for AngularJS if query parameters are present -->
         <script type="text/javascript" src="relocateParameters.js"></script>
 
-        <!-- Utility libraries -->
-        <script type="text/javascript" src="webjars/jquery/3.3.1/dist/jquery.min.js"></script>
-        <script type="text/javascript" src="webjars/lodash/4.17.10/dist/lodash.min.js"></script>
-
-        <!-- AngularJS -->
-        <script type="text/javascript" src="webjars/angular/1.6.9/angular.min.js"></script>
-        <script type="text/javascript" src="webjars/angular-route/1.6.9/angular-route.min.js"></script>
-        <script type="text/javascript" src="webjars/angular-touch/1.6.9/angular-touch.min.js"></script>
-
-        <!-- Internationalization -->
-        <script type="text/javascript" src="webjars/messageformat/1.0.2/messageformat.min.js"></script>
-        <script type="text/javascript" src="webjars/angular-translate/2.16.0/angular-translate.min.js"></script>
-        <script type="text/javascript" src="webjars/angular-translate-interpolation-messageformat/2.16.0/angular-translate-interpolation-messageformat.min.js"></script>
-        <script type="text/javascript" src="webjars/angular-translate-loader-static-files/2.16.0/angular-translate-loader-static-files.min.js"></script>
-
-        <!-- JSTZ -->
-        <script type="text/javascript" src="webjars/jstz/1.0.10/dist/jstz.min.js"></script>
-
-        <!-- Pickr (color picker) -->
-        <script type="text/javascript" src="webjars/simonwep__pickr/1.2.6/dist/pickr.es5.min.js"></script>
-
-        <!-- Polyfills for the "datalist" element, Blob and the FileSaver API -->
-        <script type="text/javascript" src="webjars/blob-polyfill/1.0.20150320/Blob.js"></script>
-        <script type="text/javascript" src="webjars/datalist-polyfill/1.14.0/datalist-polyfill.min.js"></script>
-        <script type="text/javascript" src="webjars/filesaver/1.3.3/FileSaver.min.js"></script>
-
-        <!-- Allow arbitrary ordering of Angular module creation and retrieval -->
-        <script type="text/javascript" src="webjars/angular-module-shim/0.0.4/angular-module-shim.js"></script>
-
         <!-- Web application -->
+        <script type="text/javascript" src="guacamole.min.js?v=${project.version}"></script>
         <script type="text/javascript" src="app.js?v=${project.version}"></script>
 
     </body>

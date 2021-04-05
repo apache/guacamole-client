@@ -16,3 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+/**
+ * @fileoverview External APIs referenced by the source of the Guacamole webapp
+ * and its dependencies.
+ * @externs
+ */
+
+// guacamole-common-js
+const Guacamole = {};
+
+// Web Storage API
+const localStorage = {};
+
+// matchMedia() function of Window object
+const matchMedia = function matchMedia(str) {}
+
