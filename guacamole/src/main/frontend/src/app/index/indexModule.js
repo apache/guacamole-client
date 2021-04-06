@@ -17,10 +17,21 @@
  * under the License.
  */
 
+require('angular-module-shim.js');
+require('relocateParameters.js');
+
+require('angular-translate-interpolation-messageformat');
+require('angular-translate-loader-static-files');
+
 /**
  * The module for the root of the application.
  */
 angular.module('index', [
+
+    require('angular-route'),
+    require('angular-touch'),
+    require('angular-translate'),
+
     'auth',
     'client',
     'clipboard',
@@ -28,11 +39,16 @@ angular.module('index', [
     'login',
     'manage',
     'navigation',
-    'ngRoute',
-    'ngTouch',
     'notification',
-    'pascalprecht.translate',
     'rest',
     'settings',
+
     'templates-main'
+
 ]);
+
+// Recursively pull in all other JavaScript and CSS files as requirements (just
+// like old minify-maven-plugin build)
+const context = require.context('../', true, /.*\.(css|js)$/);
+context.keys().forEach(key => context(key));
+

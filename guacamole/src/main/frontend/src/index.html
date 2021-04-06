@@ -27,8 +27,15 @@
         <link rel="icon" type="image/png" href="images/logo-64.png"/>
         <link rel="icon" type="image/png" sizes="144x144" href="images/logo-144.png"/>
         <link rel="apple-touch-icon" type="image/png" href="images/logo-144.png"/>
-        <link rel="stylesheet" type="text/css" href="guacamole.min.css?v=${project.version}">
+
+        <!-- Web application CSS (bundled by Webpack) -->
+        <% for (var index in htmlWebpackPlugin.files.css) { %>
+        <link rel="stylesheet" type="text/css" href="<%= htmlWebpackPlugin.files.css[index] %>"/>
+        <% } %>
+
+        <!-- Extension CSS (must be able to override webapp CSS) -->
         <link rel="stylesheet" type="text/css" href="app.css?v=${project.version}">
+
         <title ng-bind="page.title | translate"></title>
     </head>
     <body ng-class="page.bodyClassName">
@@ -68,11 +75,20 @@
             </div>
         </div>
 
-        <!-- Reformat URL for AngularJS if query parameters are present -->
-        <script type="text/javascript" src="relocateParameters.js"></script>
+        <!-- Core libraries that MUST be available at the global level (for use
+        by extensions) -->
+        <script type="text/javascript" src="guacamole-common-js/all.min.js"></script>
+        <script type="text/javascript" src="jquery.min.js"></script>
+        <script type="text/javascript" src="lodash.min.js"></script>
+        <script type="text/javascript" src="angular.min.js"></script>
 
-        <!-- Web application -->
-        <script type="text/javascript" src="guacamole.min.js?v=${project.version}"></script>
+        <!-- Web application (bundled by Webpack) -->
+        <% for (var index in htmlWebpackPlugin.files.js) { %>
+        <script type="text/javascript" src="<%= htmlWebpackPlugin.files.js[index] %>"></script>
+        <% } %>
+        <script type="text/javascript" src="templates.js"></script>
+
+        <!-- Extension JavaScript -->
         <script type="text/javascript" src="app.js?v=${project.version}"></script>
 
     </body>

@@ -20,7 +20,7 @@
 /**
  * Provides the ClientIdentifier class definition.
  */
-angular.module('client').factory('ClientIdentifier', ['$injector',
+angular.module('navigation').factory('ClientIdentifier', ['$injector',
     function defineClientIdentifier($injector) {
 
     // Required services

@@ -17,6 +17,8 @@
  * under the License.
  */
 
+import '@simonwep/pickr/dist/themes/monolith.min.css'
+
 /**
  * A service for prompting the user to choose a color using the "Pickr" color
  * picker. As the Pickr color picker might not be available if the JavaScript
