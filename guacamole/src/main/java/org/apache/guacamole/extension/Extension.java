@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -149,7 +149,7 @@ public class Extension {
             return Collections.<String, Resource>emptyMap();
 
         // Add classpath resource for each path provided
-        Map<String, Resource> resources = new HashMap<String, Resource>(paths.size());
+        Map<String, Resource> resources = new LinkedHashMap<>(paths.size());
         for (String path : paths)
             resources.put(path, new ClassPathResource(classLoader, mimetype, path));
 
@@ -178,7 +178,7 @@ public class Extension {
             return Collections.<String, Resource>emptyMap();
 
         // Add classpath resource for each path/mimetype pair provided
-        Map<String, Resource> resources = new HashMap<String, Resource>(resourceTypes.size());
+        Map<String, Resource> resources = new LinkedHashMap<>(resourceTypes.size());
         for (Map.Entry<String, String> resource : resourceTypes.entrySet()) {
 
             // Get path and mimetype from entry
