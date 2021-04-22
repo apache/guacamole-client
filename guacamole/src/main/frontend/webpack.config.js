@@ -22,6 +22,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ClosureWebpackPlugin = require('closure-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const DependencyListPlugin = require('./plugins/dependency-list-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack');
@@ -143,6 +144,10 @@ module.exports = {
             filename: 'guacamole.[contenthash].css',
             chunkFilename: '[id].guacamole.[contenthash].css'
         }),
+
+        // List all bundled node modules for sake of automatic LICENSE file
+        // generation / sanity checks
+        new DependencyListPlugin(),
 
         // Automatically require used modules
         new webpack.ProvidePlugin({
