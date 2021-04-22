@@ -127,6 +127,8 @@ module.exports = {
         // Copy core libraries for global inclusion
         new CopyPlugin([
             { from: 'angular/angular.min.js' },
+            { from: 'blob-polyfill/Blob.js' },
+            { from: 'datalist-polyfill/datalist-polyfill.min.js' },
             { from: 'jquery/dist/jquery.min.js' },
             { from: 'lodash/lodash.min.js' }
         ], {
