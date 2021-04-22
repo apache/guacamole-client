@@ -80,7 +80,7 @@ module.exports = {
 
             // Minify using Google Closure Compiler
             new ClosureWebpackPlugin({ mode: 'STANDARD' }, {
-                languageIn: 'ECMASCRIPT6',
+                languageIn: 'ECMASCRIPT_2020',
                 languageOut: 'ECMASCRIPT5',
                 compilationLevel: 'SIMPLE'
             }),
