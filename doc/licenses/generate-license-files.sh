@@ -28,7 +28,7 @@
 # generate-license-files.sh
 # -------------------------
 #
-# Automatically iterates through the provided runtime dependencies of the Maven
+# Automatically iterates through the provided runtime dependencies of the
 # project in the current directory, creating new LICENSE and NOTICE files which
 # contain all the license information of bundled dependencies, as well as any
 # required notices.
@@ -40,10 +40,13 @@
 #
 #     path/to/generate-license-files.sh DEPENDENCY_LIST OUTPUT_DIRECTORY
 #
-# where DEPENDENCY_LIST is the list of Maven dependencies to consider when
-# generating LICENSE and NOTICE (as produced by "mvn dependency:list") and
-# OUTPUT_DIRECTORY is the directory in which the LICENSE and NOTICE files
-# should be written.
+# where DEPENDENCY_LIST is the list of dependencies to consider when generating
+# LICENSE and NOTICE (as produced by "mvn dependency:list" or our
+# DependencyListPlugin for Webpack) and OUTPUT_DIRECTORY is the directory in
+# which the LICENSE and NOTICE files should be written.
+#
+# If DEPENDENCY_LIST is a directory, all normal files within the directory will
+# be concatenated to produce the list.
 #
 # Ignoring license errors
 # -----------------------
@@ -69,22 +72,22 @@
 # License information for the bundled runtime dependencies of all subprojects
 # is included in the subdirectories of the "doc/licenses/" directory of the
 # main guacamole-client source tree. Each subdirectory is associated with a
-# single, logical dependency, with the Maven coordinatees of that dependency
-# listed in the "maven-coordinates.txt" file within that subdirectory. There
-# may be multiple coordinates associated with a dependency, in which case each
+# single, logical dependency, with the coordinates of that dependency listed in
+# the "dep-coordinates.txt" file within that subdirectory. There may be
+# multiple coordinates associated with a dependency, in which case each
 # relevant set of coordinates should be listed on its own line.
 #
-# For dependencies that are not associated with Maven coordinates, the licenses
-# of those dependencies should instead be documented within subdirectories of
-# the "src/licenses/bundled/" directory of the relevant subproject.
+# For dependencies that are not associated with coordinates that can be
+# automatically deteremined, the licenses of those dependencies should instead
+# be documented within subdirectories of the "src/licenses/bundled/" directory
+# of the relevant subproject.
 #
 # Regardless of whether a dependency is documented within the top-level
-# guacamole-client project (Maven dependencies) or within the relevant
-# subproject (non-Maven dependencies), the subdirectory for each dependency
-# must contain a "README" file describing the dependency, the version used, the
-# copyright holder(s), and the license. Examples of the formatting expected for
-# these README files can be found within the existing dependency license
-# directories.
+# guacamole-client project or within the relevant subproject, the subdirectory
+# for each dependency must contain a "README" file describing the dependency,
+# the version used, the copyright holder(s), and the license. Examples of the
+# formatting expected for these README files can be found within the existing
+# dependency license directories.
 #
 # Files that contain the word "notice", regardless of case, are considered by
 # this script to be the notice file mentioned within the Apache License, and
@@ -141,16 +144,16 @@ OUTPUT_DIR="$2"
 ## guacamole-client source tree, a error is printed to STDERR.
 ##
 ## The license information directories for dependencies that are not pulled in
-## by Maven (subdirectories of the "src/licenses/bundled/" directory within the
-## current project) will also be included, if any.
+## automatically (subdirectories of the "src/licenses/bundled/" directory
+## within the current project) will also be included, if any.
 ##
 list_dependency_license_info() {
 
     # List the license directories of all runtime dependencies, as dictated by
-    # the "maven-coordinates.txt" files included within those directores
-    grep -o '[^: ]*:[^: ]*:[^: ]*:[^: ]*' | while read DEPENDENCY; do
+    # the "dep-coordinates.txt" files included within those directories
+    sed 's/^[[:space:]]\+//' | grep -o '^[^: ]\+\(:[^: ]*\)\{1,3\}' | while read DEPENDENCY; do
 
-        if ! grep -l "$DEPENDENCY[[:space:]]*$" "$LICENSES_DIR"/*/maven-coordinates.txt; then
+        if ! grep -l "$DEPENDENCY[[:space:]]*$" "$LICENSES_DIR"/*/dep-coordinates.txt; then
             error "License information missing for $DEPENDENCY"
         fi
 
@@ -158,7 +161,7 @@ list_dependency_license_info() {
         dirname "$LICENSE_INFO_COORDS_FILE"
     done
 
-    # Include license directories for all dependencies not pulled in by Maven
+    # Include license directories for all dependencies not pulled in automatically
     if [ -d ./src/licenses/bundled/ ]; then
         find src/licenses/bundled/ -mindepth 1 -maxdepth 1 -type d
     fi
@@ -232,7 +235,7 @@ license_file() {
     DIR="$1"
     find "$DIR" -mindepth 1 \
             -a \! -iname "*notice*" \
-            -a \! -name "maven-coordinates.txt" \
+            -a \! -name "dep-coordinates.txt" \
             -a \! -name "README" \
         | if ! single_result; then
            error "Multiple license files found within $DIR"
@@ -306,7 +309,8 @@ cp "$BASEDIR/NOTICE" "$OUTPUT_DIR/"
 #
 
 PREAMBLE_ADDED=0
-list_dependency_license_info < "$DEPENDENCY_LIST" | sort_dependency_license_info | \
+find "$DEPENDENCY_LIST" -type f -exec cat '{}' + | \
+    list_dependency_license_info | sort_dependency_license_info | \
     while read LICENSE_INFO_DIR; do
 
     # Add subcomponent license preamble if not already added
@@ -363,8 +367,8 @@ EOF
 done
 
 # Do not double-bundle the information contained in the README files (it's
-# already in LICENSE), nor internal mappings like maven-coordinates.txt
-for EXCLUDED_FILE in README maven-coordinates.txt; do
+# already in LICENSE), nor internal mappings like dep-coordinates.txt
+for EXCLUDED_FILE in README dep-coordinates.txt; do
     rm -f "$OUTPUT_DIR/bundled"/*/"$EXCLUDED_FILE"
 done
 
