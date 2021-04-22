@@ -1,0 +1,3 @@
+angular-translate-interpolation-messageformat:2.18.4
+angular-translate-loader-static-files:2.18.4
+angular-translate:2.18.4

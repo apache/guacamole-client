@@ -1,1 +1,0 @@
-org.webjars.bower:lodash:jar:4.17.10
