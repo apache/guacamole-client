@@ -344,7 +344,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
             method: 'DELETE',
             url: 'api/tokens/' + token
         }).then(function() {
-            return logoutEventTarget.dispatch(Guacamole.Event('guacLogout'));
+            return logoutEventTarget.dispatch(new Guacamole.Event('guacLogout'));
         });
 
     };
