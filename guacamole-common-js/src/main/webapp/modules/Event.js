@@ -151,7 +151,7 @@ Guacamole.Event.Target = function Target() {
 
     /**
      * All listeners (callback functions) registered for each event type passed
-     * to {@link Guacamole.Event.Targer#on on()}.
+     * to {@link Guacamole.Event.Target#on on()}.
      *
      * @private
      * @type {Object.<String, Guacamole.Event.Target~listener[]>}
