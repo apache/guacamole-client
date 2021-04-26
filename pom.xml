@@ -42,6 +42,7 @@
         <jackson.version>2.12.2</jackson.version>
         <jersey.version>2.34</jersey.version>
         <junit.version>5.7.1</junit.version>
+        <junit4.version>4.13.2</junit4.version>
         <logback.version>1.2.3</logback.version>
         <slf4j.version>1.7.30</slf4j.version>
 
@@ -370,7 +371,7 @@
                 <version>${logback.version}</version>
             </dependency>
 
-            <!-- JUnit -->
+            <!-- JUnit v5 -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
@@ -385,6 +386,14 @@
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
                 <version>${junit.version}</version>
+            </dependency>
+
+            <!-- JUnit v4 -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit4.version}</version>
+                <scope>test</scope>
             </dependency>
 
         </dependencies>
