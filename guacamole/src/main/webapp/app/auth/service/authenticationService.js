@@ -49,8 +49,54 @@ angular.module('auth').factory('authenticationService', ['$injector',
     var $rootScope          = $injector.get('$rootScope');
     var localStorageService = $injector.get('localStorageService');
     var requestService      = $injector.get('requestService');
+    var $q                  = $injector.get('$q');
 
     var service = {};
+
+    /**
+     * Logout {@link Guacamole.Event.Target} for custom logout event hooks.
+     * 
+     * Any event handlers that return a Promise will be 'Guaranteed' to finish
+     * before the logout refresh happens.
+     */
+    var logoutEventTarget = function LogoutPromiseTarget($q) {
+
+        Guacamole.Event.Target(this);
+
+        /**
+         * Override the default dispatch method to return an overall
+         * promise that encompasses the promises that the handler functions
+         * return.
+         *
+         * @param {Guacamole.Event} event
+         *     The event to dispatch.
+         * 
+         * @returns {Promise}
+         *     Returns a Promise that will trigger after all Promise handlers
+         *     have resolved/rejected
+         */
+        this.dispatch = function dispatch(event) {
+
+            // Invoke any relevant legacy handler for the event
+            event.invokeLegacyHandler(this);
+
+            // Invoke all registered listeners
+            var relevantListeners = listeners[event.type];
+            var promises = [];
+            if (relevantListeners) {
+                for (var i = 0; i < relevantListeners.length; i++) {
+                    promises.push(
+                        $q.all(function(resolve, reject) {
+                            relevantListeners[i](event, this, resolve, reject)
+                        })
+                    );
+                }
+            }
+
+            return $q.all(promises);
+
+        };
+    }($q)
 
     /**
      * The most recent authentication result, or null if no authentication
@@ -297,6 +343,8 @@ angular.module('auth').factory('authenticationService', ['$injector',
         return requestService({
             method: 'DELETE',
             url: 'api/tokens/' + token
+        }).then(function() {
+            return logoutEventTarget.dispatch(Guacamole.Event('guacLogout'));
         });
 
     };
