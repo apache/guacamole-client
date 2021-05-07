@@ -52,10 +52,6 @@
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-multibindings</artifactId>
-        </dependency>
 
         <!-- Java servlet API -->
         <dependency>
@@ -77,13 +73,24 @@
         <dependency>
             <groupId>com.onelogin</groupId>
             <artifactId>java-saml</artifactId>
-            <version>2.5.0</version>
+            <version>2.6.0</version>
             <exclusions>
+
+                <!-- Force consistent version of commons-codec (see below) -->
                 <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
                 </exclusion>
+
             </exclusions>
+        </dependency>
+
+        <!-- Force single, specific version of commons-codec (multiple
+            dependencies reference multiple versions of this). -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.15</version>
         </dependency>
 
     </dependencies>

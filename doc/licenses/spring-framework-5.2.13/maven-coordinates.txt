@@ -1,0 +1,7 @@
+org.springframework:spring-aop:jar:5.2.13.RELEASE
+org.springframework:spring-beans:jar:5.2.13.RELEASE
+org.springframework:spring-context:jar:5.2.13.RELEASE
+org.springframework:spring-core:jar:5.2.13.RELEASE
+org.springframework:spring-expression:jar:5.2.13.RELEASE
+org.springframework:spring-jcl:jar:5.2.13.RELEASE
+org.springframework:spring-web:jar:5.2.13.RELEASE

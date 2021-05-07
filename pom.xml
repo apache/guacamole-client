@@ -36,17 +36,21 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Dependency versions -->
-        <guava.version>30.1-jre</guava.version>
-        <guice.version>4.2.3</guice.version>
+        <guava.version>30.1.1-jre</guava.version>
+        <guice.version>5.0.1</guice.version>
         <hk2.version>2.6.1</hk2.version>
-        <jackson.version>2.10.1</jackson.version>
-        <jersey.version>2.31</jersey.version>
-        <junit.version>5.6.0</junit.version>
+        <jackson.version>2.12.2</jackson.version>
+        <jersey.version>2.34</jersey.version>
+        <junit.version>5.7.1</junit.version>
+        <junit4.version>4.13.2</junit4.version>
         <logback.version>1.2.3</logback.version>
         <slf4j.version>1.7.30</slf4j.version>
 
-        <!-- Build control -->
-        <skipLicenseGeneration>false</skipLicenseGeneration>
+        <!-- Set to "true" to ignore errors that occur during automatic LICENSE
+            file generation (such as non-existent license documentation) as
+            well as errors that occur during the RAT check (such as incorrect
+            or missing license headers). -->
+        <ignoreLicenseErrors>false</ignoreLicenseErrors>
 
     </properties>
 
@@ -99,6 +103,7 @@
                                 <exclude>src/licenses/**/*</exclude>
                                 <exclude>target/**/*</exclude>
                             </excludes>
+                            <skip>${ignoreLicenseErrors}</skip>
                         </configuration>
                     </execution>
                 </executions>
@@ -137,6 +142,27 @@
                         </configuration>
                         <goals>
                             <goal>list</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Automatically verify build sanity -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M3</version>
+                <executions>
+                    <execution>
+                        <id>enforce</id>
+                        <configuration>
+                            <rules>
+                                <dependencyConvergence/>
+                                <requireUpperBoundDeps/>
+                            </rules>
+                        </configuration>
+                        <goals>
+                            <goal>enforce</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -181,7 +207,9 @@
                                     <argument>${project.build.directory}/runtime-dependencies.txt</argument>
                                     <argument>${project.build.directory}/licenses</argument>
                                 </arguments>
-                                <skip>${skipLicenseGeneration}</skip>
+                                <environmentVariables>
+                                    <IGNORE_LICENSE_ERRORS>${ignoreLicenseErrors}</IGNORE_LICENSE_ERRORS>
+                                </environmentVariables>
                             </configuration>
                             <goals>
                                 <goal>exec</goal>
@@ -269,11 +297,6 @@
             </dependency>
             <dependency>
                 <groupId>com.google.inject.extensions</groupId>
-                <artifactId>guice-multibindings</artifactId>
-                <version>${guice.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.inject.extensions</groupId>
                 <artifactId>guice-servlet</artifactId>
                 <version>${guice.version}</version>
             </dependency>
@@ -317,7 +340,17 @@
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-jaxb-annotations</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
 
@@ -338,7 +371,7 @@
                 <version>${logback.version}</version>
             </dependency>
 
-            <!-- JUnit -->
+            <!-- JUnit v5 -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
@@ -353,6 +386,14 @@
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
                 <version>${junit.version}</version>
+            </dependency>
+
+            <!-- JUnit v4 -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit4.version}</version>
+                <scope>test</scope>
             </dependency>
 
         </dependencies>

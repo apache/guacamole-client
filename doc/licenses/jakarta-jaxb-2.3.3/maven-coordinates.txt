@@ -1,1 +1,0 @@
-jakarta.xml.bind:jakarta.xml.bind-api:jar:2.3.3

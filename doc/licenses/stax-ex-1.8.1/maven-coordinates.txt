@@ -1,1 +1,0 @@
-org.jvnet.staxex:stax-ex:jar:1.8.1

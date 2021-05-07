@@ -89,8 +89,44 @@
                 </executions>
             </plugin>
 
+            <!-- Verify that SLF4J is *NEVER* bundled within extensions (it
+                will conflict with the version bundled with the webapp) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>never-bundle-slf4j</id>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>org.slf4j:*:*:*:compile</exclude>
+                                        <exclude>org.slf4j:*:*:*:runtime</exclude>
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
+
+    <dependencies>
+
+        <!-- SLF4J is always available via the webapp -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+    </dependencies>
 
     <profiles>
 
