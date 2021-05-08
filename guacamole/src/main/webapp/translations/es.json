@@ -307,6 +307,13 @@
         "TEXT_CONFIRM_DELETE" : "Los usuarios no se pueden restaurar despues de haberlos eliminado. ¿Esta seguro de querer eliminar este usuario?"
 
     },
+
+    "PROTOCOL_COMMON" : {
+        "SECTION_HEADER_AUTORECONNECT"              : "Comportamiento de auto-reconexión",
+        "FIELD_HEADER_AUTORECONNECT_DISABLE"        : "Deshabilitar:",
+        "FIELD_HEADER_AUTORECONNECT_MAXRETRIES"     : "Numero máximo de ciclos:",
+        "FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS"   : "Tiempo de espera (Segundos):"
+    },
     
     "PROTOCOL_RDP" : {
 
@@ -366,6 +373,9 @@
         "FIELD_HEADER_STATIC_CHANNELS" : "Nombres de Canales estáticos:",
         "FIELD_HEADER_USERNAME"        : "Usuario:",
         "FIELD_HEADER_WIDTH"           : "Ancho:",
+        "FIELD_HEADER_AUTORECONNECT_DISABLE"      : "@:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_DISABLE",
+        "FIELD_HEADER_AUTORECONNECT_MAXRETRIES"   : "@:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_MAXRETRIES",
+        "FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS" : "@:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS",
 
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Color (16-bit)",
         "FIELD_OPTION_COLOR_DEPTH_24"    : "Color (24-bit)",
@@ -408,7 +418,8 @@
         "SECTION_HEADER_PRECONNECTION_PDU"  : "Preconexión PDU / Hyper-V",
         "SECTION_HEADER_RECORDING"          : "Grabación de pantalla",
         "SECTION_HEADER_REMOTEAPP"          : "Aplicación remota",
-        "SECTION_HEADER_SFTP"               : "SFTP"
+        "SECTION_HEADER_SFTP"               : "SFTP",
+        "SECTION_HEADER_AUTORECONNECT"      : "@:PROTOCOL_COMMON.SECTION_HEADER_AUTORECONNECT"
 
     },
 
@@ -434,6 +445,9 @@
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "Directorio raiz del navegador de ficheros:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Nombre script escritura:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Ruta script escritura:",
+        "FIELD_HEADER_AUTORECONNECT_DISABLE"        : "@:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_DISABLE",
+        "FIELD_HEADER_AUTORECONNECT_MAXRETRIES"     : "@:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_MAXRETRIES",
+        "FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS"   : "@:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Negro sobre blanco",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -466,7 +480,8 @@
         "SECTION_HEADER_RECORDING"      : "Grabación de pantalla",
         "SECTION_HEADER_SESSION"        : "Sesión / Entorno",
         "SECTION_HEADER_TYPESCRIPT"     : "Script de Escritura (Grabación sesión texto)",
-        "SECTION_HEADER_SFTP"           : "SFTP"
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_AUTORECONNECT"  : "@:PROTOCOL_COMMON.SECTION_HEADER_AUTORECONNECT"
 
     },
 
@@ -487,6 +502,9 @@
         "FIELD_HEADER_RECORDING_PATH" : "Ruta grabación:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Nombre script escritura:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Ruta script escritura:",
+        "FIELD_HEADER_AUTORECONNECT_DISABLE"        : "@:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_DISABLE",
+        "FIELD_HEADER_AUTORECONNECT_MAXRETRIES"     : "@:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_MAXRETRIES",
+        "FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS"   : "@:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Negro sobre blanco",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -517,7 +535,8 @@
         "SECTION_HEADER_DISPLAY"        : "Mostrar",
         "SECTION_HEADER_RECORDING"      : "Grabación pantalla",
         "SECTION_HEADER_TYPESCRIPT"     : "Script de escritura (Próxima sesión de grabación)",
-        "SECTION_HEADER_NETWORK"        : "Red"
+        "SECTION_HEADER_NETWORK"        : "Red",
+        "SECTION_HEADER_AUTORECONNECT"  : "@:PROTOCOL_COMMON.SECTION_HEADER_AUTORECONNECT"
 
     },
 
@@ -549,6 +568,9 @@
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Directorio raiz del navegador de ficheros:",
         "FIELD_HEADER_SFTP_USERNAME"              : "Usuario:",
         "FIELD_HEADER_SWAP_RED_BLUE"    : "Invertir componentes rojo/azul:",
+        "FIELD_HEADER_AUTORECONNECT_DISABLE"      : "@:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_DISABLE",
+        "FIELD_HEADER_AUTORECONNECT_MAXRETRIES"   : "@:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_MAXRETRIES",
+        "FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS" : "@:PROTOCOL_COMMON.FIELD_HEADER_AUTORECONNECT_WAIT_SECONDS",
 
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 colores",
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Color bajo(16-bit)",
@@ -575,7 +597,8 @@
         "SECTION_HEADER_NETWORK"        : "Red",
         "SECTION_HEADER_RECORDING"      : "Grabación pantalla",
         "SECTION_HEADER_REPEATER"       : "Repetidor VNC",
-        "SECTION_HEADER_SFTP"           : "SFTP"
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_AUTORECONNECT"  : "@:PROTOCOL_COMMON.SECTION_HEADER_AUTORECONNECT"
 
     },
 

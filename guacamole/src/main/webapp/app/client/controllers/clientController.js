@@ -44,6 +44,16 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var requestService         = $injector.get('requestService');
     var tunnelService          = $injector.get('tunnelService');
     var userPageService        = $injector.get('userPageService');
+	
+	/**
+	 * Counter and limiter for maximum auto-reconnect attempts that we should 
+	 * automatically try to establish a connection when CLIENT_AUTO_RECONNECT or 
+	 * TUNNEL_AUTO_RECONNECT error types occur.
+	 *
+	 * @type Number
+	 */
+	var AUTO_RECONNECT_TRY     = 0;
+	var AUTO_RECONNECT_MAXTRY  = 4;
 
     /**
      * The minimum number of pixels a drag gesture must move to result in the
@@ -781,7 +791,13 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             var errorName = (status in CLIENT_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
 
             // Determine whether the reconnect countdown applies
-            var countdown = (status in CLIENT_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
+            if (status in CLIENT_AUTO_RECONNECT && AUTO_RECONNECT_TRY < AUTO_RECONNECT_MAXTRY ) {
+                var countdown = RECONNECT_COUNTDOWN;
+                AUTO_RECONNECT_TRY++;
+            } else {
+                var countdown = null;
+                AUTO_RECONNECT_TRY = 0;
+            }
 
             // Show error status
             notifyConnectionClosed({
@@ -803,7 +819,13 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             var errorName = (status in TUNNEL_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
 
             // Determine whether the reconnect countdown applies
-            var countdown = (status in TUNNEL_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
+            if (status in TUNNEL_AUTO_RECONNECT && AUTO_RECONNECT_TRY < AUTO_RECONNECT_MAXTRY ) {
+                var countdown = RECONNECT_COUNTDOWN;
+                AUTO_RECONNECT_TRY++;
+            } else {
+                var countdown = null;
+                AUTO_RECONNECT_TRY = 0;
+            }
 
             // Show error status
             notifyConnectionClosed({
@@ -839,6 +861,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
             // Hide status notification
             guacNotification.showStatus(false);
+            // Reset auto-reconnect attempts counter
+            AUTO_RECONNECT_TRY = 0;
 
         }
 

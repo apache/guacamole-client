@@ -227,6 +227,25 @@
                     "type" : "NUMERIC"
                 }
             ]
+        },
+
+		{
+            "name"   : "autoreconnect",
+            "fields" : [
+                {
+                    "name"    : "autoreconnect-disable",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name" : "autoreconnect-maxretries",
+                    "type" : "NUMERIC"
+                },
+                {
+                    "name" : "autoreconnect-wait-seconds",
+                    "type" : "NUMERIC"
+                }
+            ]
         }
 
     ],
