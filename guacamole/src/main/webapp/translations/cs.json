@@ -457,7 +457,9 @@
         "FIELD_HEADER_DISABLE_AUDIO"              : "Zakázat zvuk:",
         "FIELD_HEADER_DISABLE_AUTH"               : "Zakázat ověřování:",
         "FIELD_HEADER_DISABLE_COPY"               : "Zakázat kopírování ze vzdálené plochy:",
+        "FIELD_HEADER_DISABLE_DOWNLOAD"           : "Zakázat stahování souborů:",
         "FIELD_HEADER_DISABLE_PASTE"              : "Zakázat vkládání z klienta:",
+        "FIELD_HEADER_DISABLE_UPLOAD"             : "Zakázat nahrávání souborů:",
         "FIELD_HEADER_DOMAIN"                     : "Doména:",
         "FIELD_HEADER_DPI"                        : "Rozlišení (DPI):",
         "FIELD_HEADER_DRIVE_NAME"                 : "Název jednotky:",
@@ -503,6 +505,7 @@
         "FIELD_HEADER_SECURITY"                   : "Bezpečnostní mód:",
         "FIELD_HEADER_SERVER_LAYOUT"              : "Rozložení klávesnice:",
         "FIELD_HEADER_SFTP_DIRECTORY"             : "Výchozí složka pro uložení záznamu:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Zakázat stahování souborů:",
         "FIELD_HEADER_SFTP_HOST_KEY"              : "Veřejný klíč hosta (Base64):",
         "FIELD_HEADER_SFTP_HOSTNAME"              : "Jméno hostitele:",
         "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "SFTP keepalive interval:",
@@ -511,11 +514,16 @@
         "FIELD_HEADER_SFTP_PORT"                  : "Port:",
         "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Privátní klíč:",
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Souborový prohlížeč kořenové složky:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Zakázat nahrávání souborů:",
         "FIELD_HEADER_SFTP_USERNAME"              : "Uživatelské jméno:",
         "FIELD_HEADER_STATIC_CHANNELS"            : "Názvy statických kanálů:",
         "FIELD_HEADER_TIMEZONE"                   : "Časová zóna:",
         "FIELD_HEADER_USERNAME"                   : "Uživatelské jméno:",
         "FIELD_HEADER_WIDTH"                      : "Šířka:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR"         : "Vysílací adresa pro paket WoL:",
+        "FIELD_HEADER_WOL_MAC_ADDR"               : "MAC adresa vzdáleného hosta:",
+        "FIELD_HEADER_WOL_SEND_PACKET"            : "Odeslat paket WoL:",
+        "FIELD_HEADER_WOL_WAIT_TIME"              : "Čekací doba potřebná pro spuštení hosta:",
 
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Nízké barvy (16-bitů)",
         "FIELD_OPTION_COLOR_DEPTH_24"    : "Opravdové barvy (24-bitů)",
@@ -527,11 +535,12 @@
         "FIELD_OPTION_RESIZE_METHOD_EMPTY"          : "",
         "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "Znovu připojit",
 
-        "FIELD_OPTION_SECURITY_ANY"   : "Jakýkoliv",
-        "FIELD_OPTION_SECURITY_EMPTY" : "",
-        "FIELD_OPTION_SECURITY_NLA"   : "NLA (Ověřování na úrovni sítě)",
-        "FIELD_OPTION_SECURITY_RDP"   : "Šifrování RDP",
-        "FIELD_OPTION_SECURITY_TLS"   : "Šifrování TLS",
+        "FIELD_OPTION_SECURITY_ANY"       : "Jakýkoliv",
+        "FIELD_OPTION_SECURITY_EMPTY"     : "",
+        "FIELD_OPTION_SECURITY_NLA"       : "NLA (Ověřování na úrovni sítě)",
+        "FIELD_OPTION_SECURITY_RDP"       : "Šifrování RDP",
+        "FIELD_OPTION_SECURITY_TLS"       : "Šifrování TLS",
+        "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
 
         "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ"    : "Švícarská Němčina (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ"    : "Němčina (Qwertz)",
@@ -566,7 +575,8 @@
         "SECTION_HEADER_PRECONNECTION_PDU"  : "Preconnection PDU / Hyper-V",
         "SECTION_HEADER_RECORDING"          : "Záznam obrazovky",
         "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
-        "SECTION_HEADER_SFTP"               : "SFTP"
+        "SECTION_HEADER_SFTP"               : "SFTP",
+        "SECTION_HEADER_WOL"                : "Wake-on-LAN (WoL)"
 
     },
 
@@ -598,11 +608,17 @@
         "FIELD_HEADER_RECORDING_NAME"           : "Název záznamu:",
         "FIELD_HEADER_RECORDING_PATH"           : "Cesta pro záznam:",
         "FIELD_HEADER_SERVER_ALIVE_INTERVAL"    : "Serverový keepalive interval:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"    : "Zakázat stahování souborů:",
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"      : "Souborový prohlížeč kořenové složky:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"      : "Zakázat nahrávání souborů:",
         "FIELD_HEADER_TERMINAL_TYPE"            : "Typ terminálu:",
         "FIELD_HEADER_TIMEZONE"                 : "Časová zóna ($TZ):",
         "FIELD_HEADER_TYPESCRIPT_NAME"          : "Jméno strojopisu:",
         "FIELD_HEADER_TYPESCRIPT_PATH"          : "Cesta ke strojopisu:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR"       : "Vysílací adresa pro paket WoL:",
+        "FIELD_HEADER_WOL_MAC_ADDR"             : "MAC adresa vzdáleného hosta:",
+        "FIELD_HEADER_WOL_SEND_PACKET"          : "Odeslat paket WoL:",
+        "FIELD_HEADER_WOL_WAIT_TIME"            : "Čekací doba potřebná pro spuštení hosta:",
 
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
         "FIELD_OPTION_BACKSPACE_8"     : "Zpět (Ctrl-H)",
@@ -648,7 +664,8 @@
         "SECTION_HEADER_RECORDING"      : "Záznam obrazovky",
         "SECTION_HEADER_SESSION"        : "Sezení / prostředí",
         "SECTION_HEADER_TYPESCRIPT"     : "Strojopis (textový záznam sezení)",
-        "SECTION_HEADER_SFTP"           : "SFTP"
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
 
     },
 
@@ -680,6 +697,10 @@
         "FIELD_HEADER_TERMINAL_TYPE"            : "Typ terminálu:",
         "FIELD_HEADER_TYPESCRIPT_NAME"          : "Jméno strojopisu:",
         "FIELD_HEADER_TYPESCRIPT_PATH"          : "Cesta ke strojopisu:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR"       : "Vysílací adresa pro paket WoL:",
+        "FIELD_HEADER_WOL_MAC_ADDR"             : "MAC adresa vzdáleného hosta:",
+        "FIELD_HEADER_WOL_SEND_PACKET"          : "Odeslat paket WoL:",
+        "FIELD_HEADER_WOL_WAIT_TIME"            : "Čekací doba potřebná pro spuštení hosta:",
 
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
         "FIELD_OPTION_BACKSPACE_8"     : "Zpět (Ctrl-H)",
@@ -723,7 +744,8 @@
         "SECTION_HEADER_DISPLAY"        : "Zobrazení",
         "SECTION_HEADER_RECORDING"      : "Záznam obrazovky",
         "SECTION_HEADER_TYPESCRIPT"     : "Strojopis (textový záznam sezení)",
-        "SECTION_HEADER_NETWORK"        : "Síť"
+        "SECTION_HEADER_NETWORK"        : "Síť",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
 
     },
 
@@ -751,6 +773,7 @@
         "FIELD_HEADER_RECORDING_NAME"             : "Název záznamu:",
         "FIELD_HEADER_RECORDING_PATH"             : "Cesta pro záznam:",
         "FIELD_HEADER_SFTP_DIRECTORY"             : "Výchozí složka pro uložení záznamu:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Zakázat stahování souborů:",
         "FIELD_HEADER_SFTP_HOST_KEY"              : "Veřejný klíč hosta (Base64):",
         "FIELD_HEADER_SFTP_HOSTNAME"              : "Jméno hostitele:",
         "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "SFTP keepalive interval:",
@@ -759,8 +782,13 @@
         "FIELD_HEADER_SFTP_PORT"                  : "Port:",
         "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Privátní klíč:",
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Souborový prohlížeč kořenové složky:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Zakázat nahrávání souborů:",
         "FIELD_HEADER_SFTP_USERNAME"              : "Uživatelské jméno:",
         "FIELD_HEADER_SWAP_RED_BLUE"              : "Přehodit červené/modré komponenty:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR"         : "Vysílací adresa pro paket WoL:",
+        "FIELD_HEADER_WOL_MAC_ADDR"               : "MAC adresa vzdáleného hosta:",
+        "FIELD_HEADER_WOL_SEND_PACKET"            : "Odeslat paket WoL:",
+        "FIELD_HEADER_WOL_WAIT_TIME"              : "Čekací doba potřebná pro spuštení hosta:",
 
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 barev",
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Nízké barvy (16-bitů)",
@@ -787,7 +815,8 @@
         "SECTION_HEADER_NETWORK"        : "Síť",
         "SECTION_HEADER_RECORDING"      : "Záznam obrazovky",
         "SECTION_HEADER_REPEATER"       : "VNC opakovač",
-        "SECTION_HEADER_SFTP"           : "SFTP"
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
 
     },
 
