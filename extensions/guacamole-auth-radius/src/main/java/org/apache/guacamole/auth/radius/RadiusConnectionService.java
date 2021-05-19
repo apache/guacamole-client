@@ -209,7 +209,7 @@ public class RadiusConnectionService {
             AttributeList radAttrs = new AttributeList();
             radAttrs.add(new Attr_UserName(username));
             radAttrs.add(new Attr_ClientIPAddress(InetAddress.getByName(clientAddress)));
-            radAttrs.add(new Attr_NASIPAddress(InetAddress.getLocalHost()));
+            radAttrs.add(new Attr_NASIPAddress(confService.getRadiusNasIp()));
             radAttrs.add(new Attr_NASPortType(Attr_NASPortType.Virtual));
             if (state != null && state.length > 0)
                 radAttrs.add(new Attr_State(state));
