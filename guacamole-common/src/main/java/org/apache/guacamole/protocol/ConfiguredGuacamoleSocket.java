@@ -20,6 +20,7 @@
 package org.apache.guacamole.protocol;
 
 import java.util.List;
+import org.apache.guacamole.GuacamoleConnectionClosedException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.io.GuacamoleReader;
@@ -132,11 +133,18 @@ public class ConfiguredGuacamoleSocket extends DelegatingGuacamoleSocket {
      * Respects server control instructions that are allowed during the handshake
      * phase, namely {@code error} and {@code disconnect}.
      *
-     * @param reader The reader to read instructions from.
-     * @param opcode The opcode of the instruction we are expecting.
-     * @return The instruction having the given opcode.
-     * @throws GuacamoleException If an error occurs while reading, or if
-     *                            the expected instruction is not read.
+     * @param reader
+     *     The reader to read instructions from.
+     *
+     * @param opcode
+     *     The opcode of the instruction we are expecting.
+     *
+     * @return
+     *     The instruction having the given opcode.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while reading, or if the expected instruction is
+     *     not read.
      */
     private GuacamoleInstruction expect(GuacamoleReader reader, String opcode)
         throws GuacamoleException {
@@ -146,9 +154,11 @@ public class ConfiguredGuacamoleSocket extends DelegatingGuacamoleSocket {
         if (instruction == null)
             throw new GuacamoleServerException("End of stream while waiting for \"" + opcode + "\".");
 
-        // Handle server control instructions
+        // Report connection closure if server explicitly disconnects
         if ("disconnect".equals(instruction.getOpcode()))
-            throw new GuacamoleServerException("Server disconnected while waiting for \"" + opcode + "\".");
+            throw new GuacamoleConnectionClosedException("Server disconnected while waiting for \"" + opcode + "\".");
+
+        // Pass through any received errors as GuacamoleExceptions
         if ("error".equals(instruction.getOpcode()))
             handleReceivedError(instruction);
 
