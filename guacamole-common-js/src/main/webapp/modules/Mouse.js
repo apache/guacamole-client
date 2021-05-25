@@ -118,20 +118,14 @@ Guacamole.Mouse = function(element) {
      */
     var scroll_delta = 0;
 
-    function cancelEvent(e) {
-        e.stopPropagation();
-        if (e.preventDefault) e.preventDefault();
-        e.returnValue = false;
-    }
-
     // Block context menu so right-click gets sent properly
     element.addEventListener("contextmenu", function(e) {
-        cancelEvent(e);
+        Guacamole.Event.DOMEvent.cancelEvent(e);
     }, false);
 
     element.addEventListener("mousemove", function(e) {
 
-        cancelEvent(e);
+        Guacamole.Event.DOMEvent.cancelEvent(e);
 
         // If ignoring events, decrement counter
         if (ignore_mouse) {
@@ -148,7 +142,7 @@ Guacamole.Mouse = function(element) {
 
     element.addEventListener("mousedown", function(e) {
 
-        cancelEvent(e);
+        Guacamole.Event.DOMEvent.cancelEvent(e);
 
         // Do not handle if ignoring events
         if (ignore_mouse)
@@ -173,7 +167,7 @@ Guacamole.Mouse = function(element) {
 
     element.addEventListener("mouseup", function(e) {
 
-        cancelEvent(e);
+        Guacamole.Event.DOMEvent.cancelEvent(e);
 
         // Do not handle if ignoring events
         if (ignore_mouse)
@@ -209,7 +203,7 @@ Guacamole.Mouse = function(element) {
             target = target.parentNode;
         }
 
-        cancelEvent(e);
+        Guacamole.Event.DOMEvent.cancelEvent(e);
 
         // Release all buttons
         if (guac_mouse.currentState.left
@@ -232,7 +226,7 @@ Guacamole.Mouse = function(element) {
 
     // Override selection on mouse event element.
     element.addEventListener("selectstart", function(e) {
-        cancelEvent(e);
+        Guacamole.Event.DOMEvent.cancelEvent(e);
     }, false);
 
     // Ignore all pending mouse events when touch events are the apparent source
@@ -319,7 +313,7 @@ Guacamole.Mouse = function(element) {
 
         }
 
-        cancelEvent(e);
+        Guacamole.Event.DOMEvent.cancelEvent(e);
 
     }
 

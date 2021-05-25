@@ -126,6 +126,20 @@ Guacamole.Event.DOMEvent = function DOMEvent(type, events) {
 };
 
 /**
+ * Convenience function for cancelling all further processing of a given DOM
+ * event. Invoking this function prevents the default behavior of the event and
+ * stops any further propagation.
+ *
+ * @param {Event} event
+ *     The DOM event to cancel.
+ */
+Guacamole.Event.DOMEvent.cancelEvent = function cancelEvent(event) {
+    event.stopPropagation();
+    if (event.preventDefault) event.preventDefault();
+    event.returnValue = false;
+};
+
+/**
  * An object which can dispatch {@link Guacamole.Event} objects. Listeners
  * registered with {@link Guacamole.Event.Target#on on()} will automatically
  * be invoked based on the type of {@link Guacamole.Event} passed to
