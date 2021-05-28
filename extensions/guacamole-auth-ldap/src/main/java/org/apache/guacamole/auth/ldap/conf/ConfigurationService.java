@@ -171,7 +171,25 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the DN that should be used when searching for the DNs of users
+     * Returns the type of bind that will be used when locating the user who
+     * is attempting to authenticate in the LDAP directory.  The default, if
+     * not specified, is SEARCH, but will fall back to DERIVED if a search
+     * account is not specified..
+     * 
+     * @return
+     *     The configured LDAP bind type from guacamole.properties, or
+     *     SEARCH if not configured.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be parsed.
+     */
+    public BindType getBindType() throws GuacamoleException {
+        return environment.getProperty(LDAPGuacamoleProperties.LDAP_BIND_TYPE,
+                BindType.SEARCH);
+    }
+    
+    /**
+     * Returns the login that should be used when searching for the DNs of users
      * attempting to authenticate. If no such search should be performed, null
      * is returned.
      *
@@ -183,7 +201,7 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public Dn getSearchBindDN() throws GuacamoleException {
+    public String getSearchBindDN() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_SEARCH_BIND_DN
         );

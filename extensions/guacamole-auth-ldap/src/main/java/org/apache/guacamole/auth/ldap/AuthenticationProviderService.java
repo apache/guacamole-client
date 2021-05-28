@@ -107,6 +107,9 @@ public class AuthenticationProviderService {
      *
      * @param username
      *     The username of the user whose corresponding DN should be returned.
+     * 
+     * @param password
+     *     The password of the user whose corresponding DN should be returned.
      *
      * @return
      *     The DN which corresponds to the user having the given username.
@@ -115,24 +118,36 @@ public class AuthenticationProviderService {
      *     If required properties are missing, and thus the user DN cannot be
      *     determined.
      */
-    private Dn getUserBindDN(String username) throws GuacamoleException {
+    private Dn getUserBindDN(String username, String password)
+            throws GuacamoleException {
 
-        // If a search DN is provided, search the LDAP directory for the DN
-        // corresponding to the given username
-        Dn searchBindDN = confService.getSearchBindDN();
-        if (searchBindDN != null) {
+        LdapNetworkConnection searchConnection = null;
+        
+        switch (confService.getBindType()) {
+            
+            case DIRECT:
+                searchConnection = ldapService.bindAs(username, password);
+                break;
+            
+            case ANONYMOUS:
+                searchConnection = ldapService.bindAnonymous();
+                break;
+                
+            case DERIVED:
+                return userService.deriveUserDN(username);
+            
+            default:
+                String searchBindLogon = confService.getSearchBindDN();
+                if (searchBindLogon != null)
+                    searchConnection = ldapService.bindAs(searchBindLogon, 
+                            confService.getSearchBindPassword());
+                
+                else
+                    return userService.deriveUserDN(username);
+        }
 
-            // Create an LDAP connection using the search account
-            LdapNetworkConnection searchConnection = ldapService.bindAs(
-                searchBindDN,
-                confService.getSearchBindPassword()
-            );
-
-            // Warn of failure to find
-            if (searchConnection == null) {
-                logger.error("Unable to bind using search DN \"{}\"", searchBindDN);
-                return null;
-            }
+        // If we have a non-null connection, attempt to locate the account.
+        if (searchConnection != null) {
 
             try {
 
@@ -158,9 +173,10 @@ public class AuthenticationProviderService {
             }
 
         }
-
-        // Otherwise, derive user DN from base DN
-        return userService.deriveUserDN(username);
+        
+        throw new GuacamoleInvalidCredentialsException("Unable to locate user \""
+                + username + "\" in LDAP directory.",
+                CredentialsInfo.USERNAME_PASSWORD);
 
     }
 
@@ -196,14 +212,15 @@ public class AuthenticationProviderService {
                     + " authentication provider.", CredentialsInfo.USERNAME_PASSWORD);
         }
         
-        Dn bindDn = getUserBindDN(username);
+        Dn bindDn = getUserBindDN(username, password);
         if (bindDn == null || bindDn.isEmpty()) {
             throw new GuacamoleInvalidCredentialsException("Unable to determine"
                     + " DN of user " + username, CredentialsInfo.USERNAME_PASSWORD);
         }
         
         // Attempt bind
-        LdapNetworkConnection ldapConnection = ldapService.bindAs(bindDn, password);
+        LdapNetworkConnection ldapConnection =
+                ldapService.bindAs(bindDn.getName(), password);
         if (ldapConnection == null)
             throw new GuacamoleInvalidCredentialsException("Invalid login.",
                     CredentialsInfo.USERNAME_PASSWORD);
@@ -315,7 +332,8 @@ public class AuthenticationProviderService {
         if (authenticatedUser instanceof LDAPAuthenticatedUser) {
 
             Dn bindDn = ((LDAPAuthenticatedUser) authenticatedUser).getBindDn();
-            LdapNetworkConnection ldapConnection = ldapService.bindAs(bindDn, credentials.getPassword());
+            LdapNetworkConnection ldapConnection =
+                    ldapService.bindAs(bindDn.getName(), credentials.getPassword());
             if (ldapConnection == null) {
                 logger.debug("LDAP bind succeeded for \"{}\" during "
                         + "authentication but failed during data retrieval.",
