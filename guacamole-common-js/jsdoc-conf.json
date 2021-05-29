@@ -5,5 +5,10 @@
     "opts" : {
         "recurse" : true,
         "destination" : "target/site/jsdoc"
+    },
+    "templates" : {
+        "default" : {
+            "useLongnameInNav" : true
+        }
     }
 }
