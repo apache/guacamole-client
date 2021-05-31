@@ -90,3 +90,29 @@ Guacamole.Position = function Position(template) {
     };
 
 };
+
+/**
+ * Returns a new {@link Guacamole.Position} representing the relative position
+ * of the given clientX/clientY coordinates within the given element. The
+ * clientX and clientY coordinates are relative to the browser viewport and are
+ * commonly available within JavaScript event objects. The final position is
+ * translated to  coordinates that are relative the given element.
+ *
+ * @param {Element} element
+ *     The element the coordinates should be relative to.
+ *
+ * @param {Number} clientX
+ *     The viewport-relative X coordinate to translate.
+ *
+ * @param {Number} clientY
+ *     The viewport-relative Y coordinate to translate.
+ *
+ * @returns {Guacamole.Position}
+ *     A new Guacamole.Position representing the relative position of the given
+ *     client coordinates.
+ */
+Guacamole.Position.fromClientPosition = function fromClientPosition(element, clientX, clientY) {
+    var position = new Guacamole.Position();
+    position.fromClientPosition(element, clientX, clientY);
+    return position;
+};

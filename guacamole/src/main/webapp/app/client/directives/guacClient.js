@@ -195,23 +195,26 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             /**
              * Handles a mouse event originating from the user's actual mouse.
-             * This differs from handleEmulatedMouseState() in that the
+             * This differs from handleEmulatedMouseEvent() in that the
              * software mouse cursor must be shown only if the user's browser
              * does not support explicitly setting the hardware mouse cursor.
              *
-             * @param {Guacamole.Mouse.State} mouseState
-             *     The current state of the user's hardware mouse.
+             * @param {Guacamole.Mouse.MouseEvent} event
+             *     The mouse event to handle.
              */
-            var handleMouseState = function handleMouseState(mouseState) {
+            var handleMouseEvent = function handleMouseEvent(event) {
 
                 // Do not attempt to handle mouse state changes if the client
                 // or display are not yet available
                 if (!client || !display)
                     return;
 
+                event.stopPropagation();
+                event.preventDefault();
+
                 // Send mouse state, show cursor if necessary
                 display.showCursor(!localCursor);
-                client.sendMouseState(mouseState, true);
+                client.sendMouseState(event.state, true);
 
             };
 
@@ -221,22 +224,25 @@ angular.module('client').directive('guacClient', [function guacClient() {
              * the software mouse cursor must always be shown (as the emulated
              * mouse device will not have its own cursor).
              *
-             * @param {Guacamole.Mouse.State} mouseState
-             *     The current state of the user's emulated (touch) mouse.
+             * @param {Guacamole.Mouse.MouseEvent} event
+             *     The mouse event to handle.
              */
-            var handleEmulatedMouseState = function handleEmulatedMouseState(mouseState) {
+            var handleEmulatedMouseEvent = function handleEmulatedMouseEvent(event) {
 
                 // Do not attempt to handle mouse state changes if the client
                 // or display are not yet available
                 if (!client || !display)
                     return;
 
+                event.stopPropagation();
+                event.preventDefault();
+
                 // Ensure software cursor is shown
                 display.showCursor(true);
 
                 // Send mouse state, ensure cursor is visible
-                scrollToMouse(mouseState);
-                client.sendMouseState(mouseState, true);
+                scrollToMouse(event.state);
+                client.sendMouseState(event.state, true);
 
             };
 
@@ -325,14 +331,8 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 // Clear existing event handling
                 touch.offEach(['touchstart', 'touchmove', 'touchend'], handleTouchEvent);
-
-                touchScreen.onmousedown =
-                touchScreen.onmouseup =
-                touchScreen.onmousemove = null;
-
-                touchPad.onmousedown =
-                touchPad.onmouseup =
-                touchPad.onmousemove = null;
+                touchScreen.offEach(['mousedown', 'mousemove', 'mouseup'], handleEmulatedMouseEvent);
+                touchPad.offEach(['mousedown', 'mousemove', 'mouseup'], handleEmulatedMouseEvent);
 
                 // Directly forward local touch events
                 if ($scope.client.multiTouchSupport)
@@ -340,19 +340,13 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 // Switch to touchscreen if mouse emulation is required and
                 // absolute mouse emulation is preferred
-                else if ($scope.client.clientProperties.emulateAbsoluteMouse) {
-                    touchScreen.onmousedown =
-                    touchScreen.onmouseup   =
-                    touchScreen.onmousemove = handleEmulatedMouseState;
-                }
+                else if ($scope.client.clientProperties.emulateAbsoluteMouse)
+                    touchScreen.onEach(['mousedown', 'mousemove', 'mouseup'], handleEmulatedMouseEvent);
 
                 // Use touchpad for mouse emulation if absolute mouse emulation
                 // is not preferred
-                else {
-                    touchPad.onmousedown =
-                    touchPad.onmouseup   =
-                    touchPad.onmousemove = handleEmulatedMouseState;
-                }
+                else
+                    touchPad.onEach(['mousedown', 'mousemove', 'mouseup'], handleEmulatedMouseEvent);
 
             });
 
@@ -406,20 +400,16 @@ angular.module('client').directive('guacClient', [function guacClient() {
             };
 
             // Ensure focus is regained via mousedown before forwarding event
-            mouse.onmousedown = function(mouseState) {
-                document.body.focus();
-                handleMouseState(mouseState);
-            };
+            mouse.on('mousedown', document.body.focus.bind(document.body));
 
-            // Forward mouseup / mousemove events untouched
-            mouse.onmouseup   =
-            mouse.onmousemove = handleMouseState;
+            // Forward all mouse events
+            mouse.onEach(['mousedown', 'mousemove', 'mouseup'], handleMouseEvent);
 
             // Hide software cursor when mouse leaves display
-            mouse.onmouseout = function() {
+            mouse.on('mouseout', function() {
                 if (!display) return;
                 display.showCursor(false);
-            };
+            });
 
             // Update remote clipboard if local clipboard changes
             $scope.$on('guacClipboard', function onClipboard(event, data) {

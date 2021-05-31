@@ -63,11 +63,9 @@
             // Mouse
             var mouse = new Guacamole.Mouse(guac.getDisplay().getElement());
 
-            mouse.onmousedown = 
-            mouse.onmouseup   =
-            mouse.onmousemove = function(mouseState) {
-                guac.sendMouseState(mouseState);
-            };
+            mouse.onEach(['mousedown', 'mouseup', 'mousemove'], function sendMouseEvent(e) {
+                guac.sendMouseState(e.state);
+            });
 
             // Keyboard
             var keyboard = new Guacamole.Keyboard(document);

@@ -79,10 +79,10 @@ Guacamole.Event = function Event(type) {
 };
 
 /**
- * A {@link Guacamole.Event} that relates to one or more DOM events. Continued
- * propagation and default behavior of the related DOM events may be prevented
- * with {@link Guacamole.Event.DOMEvent#stopPropagation stopPropagation()} and
- * {@link Guacamole.Event.DOMEvent#preventDefault preventDefault()}
+ * A {@link Guacamole.Event} that may relate to one or more DOM events.
+ * Continued propagation and default behavior of the related DOM events may be
+ * prevented with {@link Guacamole.Event.DOMEvent#stopPropagation stopPropagation()}
+ * and {@link Guacamole.Event.DOMEvent#preventDefault preventDefault()}
  * respectively.
  *
  * @constructor
@@ -91,8 +91,8 @@ Guacamole.Event = function Event(type) {
  * @param {String} type
  *     The unique name of this event type.
  *
- * @param {Event[]} events
- *     The DOM events that are related to this event. Future calls to
+ * @param {Event|Event[]} [events=[]]
+ *     The DOM events that are related to this event, if any. Future calls to
  *     {@link Guacamole.Event.DOMEvent#preventDefault preventDefault()} and
  *     {@link Guacamole.Event.DOMEvent#stopPropagation stopPropagation()} will
  *     affect these events.
@@ -100,6 +100,13 @@ Guacamole.Event = function Event(type) {
 Guacamole.Event.DOMEvent = function DOMEvent(type, events) {
 
     Guacamole.Event.call(this, type);
+
+    // Default to empty array
+    events = events || [];
+
+    // Automatically wrap non-array single Event in an array
+    if (!Array.isArray(events))
+        events = [ events ];
 
     /**
      * Requests that the default behavior of related DOM events be prevented.
@@ -123,6 +130,20 @@ Guacamole.Event.DOMEvent = function DOMEvent(type, events) {
         });
     };
 
+};
+
+/**
+ * Convenience function for cancelling all further processing of a given DOM
+ * event. Invoking this function prevents the default behavior of the event and
+ * stops any further propagation.
+ *
+ * @param {Event} event
+ *     The DOM event to cancel.
+ */
+Guacamole.Event.DOMEvent.cancelEvent = function cancelEvent(event) {
+    event.stopPropagation();
+    if (event.preventDefault) event.preventDefault();
+    event.returnValue = false;
 };
 
 /**
