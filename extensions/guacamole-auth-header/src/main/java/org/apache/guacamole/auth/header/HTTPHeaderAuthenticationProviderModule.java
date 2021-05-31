@@ -56,7 +56,7 @@ public class HTTPHeaderAuthenticationProviderModule extends AbstractModule {
             throws GuacamoleException {
 
         // Get local environment
-        this.environment = new LocalEnvironment();
+        this.environment = LocalEnvironment.getInstance();
 
         // Store associated auth provider
         this.authProvider = authProvider;

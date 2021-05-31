@@ -24,6 +24,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Stage;
 import com.google.inject.servlet.GuiceServletContextListener;
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.inject.Inject;
@@ -33,6 +34,8 @@ import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.extension.ExtensionModule;
 import org.apache.guacamole.log.LogModule;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
+import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.FileGuacamoleProperties;
 import org.apache.guacamole.rest.RESTServiceModule;
 import org.apache.guacamole.rest.auth.HashTokenSessionMap;
 import org.apache.guacamole.rest.auth.TokenSessionMap;
@@ -87,6 +90,18 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
     private final Logger logger = LoggerFactory.getLogger(GuacamoleServletContextListener.class);
 
     /**
+     * A property that determines whether environment variables are evaluated
+     * to override properties specified in guacamole.properties.
+     */
+    private static final BooleanGuacamoleProperty ENABLE_ENVIRONMENT_PROPERTIES =
+        new BooleanGuacamoleProperty() {
+            @Override
+            public String getName() {
+                return "enable-environment-properties";
+            }
+        };
+
+    /**
      * The Guacamole server environment.
      */
     private Environment environment;
@@ -111,15 +126,37 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
 
+        environment = LocalEnvironment.getInstance();
+
+        // Read configuration information from GUACAMOLE_HOME/guacamole.properties
         try {
-            environment = new LocalEnvironment();
-            sessionMap = new HashTokenSessionMap(environment);
+            File guacProperties = new File(environment.getGuacamoleHome(), "guacamole.properties");
+            environment.addGuacamoleProperties(new FileGuacamoleProperties(guacProperties));
+            logger.info("Read configuration parameters from \"{}\".", guacProperties);
         }
         catch (GuacamoleException e) {
             logger.error("Unable to read guacamole.properties: {}", e.getMessage());
             logger.debug("Error reading guacamole.properties.", e);
-            throw new RuntimeException(e);
         }
+
+        // For any values not defined in GUACAMOLE_HOME/guacamole.properties,
+        // read from system environment if "enable-environment-properties" is
+        // set to "true"
+        try {
+            if (environment.getProperty(ENABLE_ENVIRONMENT_PROPERTIES, false)) {
+                environment.addGuacamoleProperties(new SystemEnvironmentGuacamoleProperties());
+                logger.info("Additional configuration parameters may be read "
+                        + "from environment variables.");
+            }
+        }
+        catch (GuacamoleException e) {
+            logger.error("Unable to configure support for environment properties: {}", e.getMessage());
+            logger.debug("Error reading \"{}\" property from guacamole.properties.", ENABLE_ENVIRONMENT_PROPERTIES.getName(), e);
+        }
+
+        // Now that at least the main guacamole.properties source of
+        // configuration information is available, initialize the session map
+        sessionMap = new HashTokenSessionMap(environment);
 
         // NOTE: The superclass implementation of contextInitialized() is
         // expected to invoke getInjector(), hence the need to call AFTER

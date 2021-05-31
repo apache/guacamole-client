@@ -20,25 +20,23 @@
 package org.apache.guacamole.auth.jdbc;
 
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
+import org.apache.guacamole.environment.DelegatingEnvironment;
+import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.ibatis.session.SqlSession;
 
 /**
  * A JDBC-specific implementation of Environment that defines generic properties
  * intended for use within JDBC based authentication providers.
  */
-public abstract class JDBCEnvironment extends LocalEnvironment {
+public abstract class JDBCEnvironment extends DelegatingEnvironment {
     
     /**
      * Constructs a new JDBCEnvironment using an underlying LocalEnviroment to
      * read properties from the file system.
-     * 
-     * @throws GuacamoleException
-     *     If an error occurs while setting up the underlying LocalEnvironment.
      */
-    public JDBCEnvironment() throws GuacamoleException {
-        super();
+    public JDBCEnvironment() {
+        super(LocalEnvironment.getInstance());
     }
 
     /**
@@ -167,5 +165,31 @@ public abstract class JDBCEnvironment extends LocalEnvironment {
      *     If guacamole.properties cannot be parsed.
      */
     public abstract boolean autoCreateAbsentAccounts() throws GuacamoleException;
+
+    /**
+     * Returns the username that should be used when authenticating with the
+     * database containing the Guacamole authentication tables.
+     *
+     * @return
+     *     The username for the database.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the property value, or if the
+     *     value was not set, as this property is required.
+     */
+    public abstract String getUsername() throws GuacamoleException;
+
+    /**
+     * Returns the password that should be used authenticating with the
+     * database containing the Guacamole authentication tables.
+     *
+     * @return
+     *     The password for the database.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the property value, or if the
+     *     value was not set, as this property is required.
+     */
+    public abstract String getPassword() throws GuacamoleException;
 
 }

@@ -64,8 +64,6 @@ public class PostgreSQLAuthenticationProviderModule implements Module {
         myBatisProperties.setProperty("JDBC.host", environment.getPostgreSQLHostname());
         myBatisProperties.setProperty("JDBC.port", String.valueOf(environment.getPostgreSQLPort()));
         myBatisProperties.setProperty("JDBC.schema", environment.getPostgreSQLDatabase());
-        myBatisProperties.setProperty("JDBC.username", environment.getPostgreSQLUsername());
-        myBatisProperties.setProperty("JDBC.password", environment.getPostgreSQLPassword());
         myBatisProperties.setProperty("JDBC.autoCommit", "false");
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");

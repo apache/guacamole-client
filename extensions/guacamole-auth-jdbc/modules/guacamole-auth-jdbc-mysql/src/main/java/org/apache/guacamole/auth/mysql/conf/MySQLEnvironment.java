@@ -241,34 +241,14 @@ public class MySQLEnvironment extends JDBCEnvironment {
     public String getMySQLDatabase() throws GuacamoleException {
         return getRequiredProperty(MySQLGuacamoleProperties.MYSQL_DATABASE);
     }
-    
-    /**
-     * Returns the username that should be used when authenticating with the
-     * MySQL database containing the Guacamole authentication tables.
-     * 
-     * @return
-     *     The username for the MySQL database.
-     *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value, or if the
-     *     value was not set, as this property is required.
-     */
-    public String getMySQLUsername() throws GuacamoleException {
+
+    @Override
+    public String getUsername() throws GuacamoleException {
         return getRequiredProperty(MySQLGuacamoleProperties.MYSQL_USERNAME);
     }
     
-    /**
-     * Returns the password that should be used when authenticating with the
-     * MySQL database containing the Guacamole authentication tables.
-     * 
-     * @return
-     *     The password for the MySQL database.
-     *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value, or if the
-     *     value was not set, as this property is required.
-     */
-    public String getMySQLPassword() throws GuacamoleException {
+    @Override
+    public String getPassword() throws GuacamoleException {
         return getRequiredProperty(MySQLGuacamoleProperties.MYSQL_PASSWORD);
     }
 

@@ -63,25 +63,13 @@ public class FileAuthenticationProvider extends SimpleAuthenticationProvider {
     /**
      * Guacamole server environment.
      */
-    private final Environment environment;
+    private final Environment environment = LocalEnvironment.getInstance();
 
     /**
      * The filename to use for the user mapping.
      */
     public static final String USER_MAPPING_FILENAME = "user-mapping.xml";
     
-    /**
-     * Creates a new FileAuthenticationProvider that authenticates users against
-     * simple, monolithic XML file.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
-     */
-    public FileAuthenticationProvider() throws GuacamoleException {
-        environment = new LocalEnvironment();
-    }
-
     @Override
     public String getIdentifier() {
         return "default";

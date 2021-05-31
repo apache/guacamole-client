@@ -69,8 +69,6 @@ public class SQLServerAuthenticationProviderModule implements Module {
         myBatisProperties.setProperty("JDBC.host", environment.getSQLServerHostname());
         myBatisProperties.setProperty("JDBC.port", String.valueOf(environment.getSQLServerPort()));
         myBatisProperties.setProperty("JDBC.schema", environment.getSQLServerDatabase());
-        myBatisProperties.setProperty("JDBC.username", environment.getSQLServerUsername());
-        myBatisProperties.setProperty("JDBC.password", environment.getSQLServerPassword());
         
         myBatisProperties.setProperty("JDBC.autoCommit", "false");
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");

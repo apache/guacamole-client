@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.jdbc;
 
 import com.google.inject.Scopes;
+import javax.sql.DataSource;
 import org.apache.guacamole.auth.jdbc.user.ModeledUserContext;
 import org.apache.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
@@ -90,7 +91,6 @@ import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMemberUserMapper;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupParentUserGroupMapper;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupService;
 import org.mybatis.guice.MyBatisModule;
-import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
 import org.apache.guacamole.auth.jdbc.user.UserParentUserGroupMapper;
 
 /**
@@ -121,7 +121,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
     protected void initialize() {
         
         // Datasource
-        bindDataSourceProviderType(PooledDataSourceProvider.class);
+        bind(DataSource.class).to(DynamicallyAuthenticatedDataSource.class);
         
         // Transaction factory
         bindTransactionFactoryType(JdbcTransactionFactory.class);

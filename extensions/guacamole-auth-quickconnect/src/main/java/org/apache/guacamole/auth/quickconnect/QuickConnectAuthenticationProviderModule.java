@@ -57,7 +57,7 @@ public class QuickConnectAuthenticationProviderModule extends AbstractModule {
             AuthenticationProvider authProvider) throws GuacamoleException {
 
         // Get local environment
-        this.environment = new LocalEnvironment();
+        this.environment = LocalEnvironment.getInstance();
 
         // Store associated auth provider
         this.authProvider = authProvider;

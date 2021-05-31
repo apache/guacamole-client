@@ -63,7 +63,7 @@ public class RadiusAuthenticationProviderModule extends AbstractModule {
             throws GuacamoleException {
 
         // Get local environment
-        this.environment = new LocalEnvironment();
+        this.environment = LocalEnvironment.getInstance();
         
         // Check for MD4 requirement
         RadiusAuthenticationProtocol authProtocol = environment.getProperty(RadiusGuacamoleProperties.RADIUS_AUTH_PROTOCOL);

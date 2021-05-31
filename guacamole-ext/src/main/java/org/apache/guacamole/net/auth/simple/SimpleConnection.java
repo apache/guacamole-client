@@ -202,7 +202,7 @@ public class SimpleConnection extends AbstractConnection {
             throws GuacamoleException {
 
         // Retrieve proxy configuration from environment
-        Environment environment = new LocalEnvironment();
+        Environment environment = LocalEnvironment.getInstance();
         GuacamoleProxyConfiguration proxyConfig = environment.getDefaultGuacamoleProxyConfiguration();
 
         // Get guacd connection parameters

@@ -232,34 +232,14 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     public String getPostgreSQLDatabase() throws GuacamoleException {
         return getRequiredProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_DATABASE);
     }
-    
-    /**
-     * Returns the username that should be used when authenticating with the
-     * PostgreSQL database containing the Guacamole authentication tables.
-     * 
-     * @return
-     *     The username for the PostgreSQL database.
-     *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value, or if the
-     *     value was not set, as this property is required.
-     */
-    public String getPostgreSQLUsername() throws GuacamoleException {
+
+    @Override
+    public String getUsername() throws GuacamoleException {
         return getRequiredProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_USERNAME);
     }
-    
-    /**
-     * Returns the password that should be used when authenticating with the
-     * PostgreSQL database containing the Guacamole authentication tables.
-     * 
-     * @return
-     *     The password for the PostgreSQL database.
-     *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the property value, or if the
-     *     value was not set, as this property is required.
-     */
-    public String getPostgreSQLPassword() throws GuacamoleException {
+
+    @Override
+    public String getPassword() throws GuacamoleException {
         return getRequiredProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_PASSWORD);
     }
     
