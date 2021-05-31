@@ -459,6 +459,7 @@ CREATE TABLE `guacamole_system_permission` (
                     'CREATE_SHARING_PROFILE',
                     'CREATE_USER',
                     'CREATE_USER_GROUP',
+                    'AUDIT',
                     'ADMINISTER') NOT NULL,
 
   PRIMARY KEY (`entity_id`,`permission`),
