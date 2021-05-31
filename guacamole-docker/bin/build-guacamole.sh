@@ -166,6 +166,21 @@ if [ -f extensions/guacamole-auth-duo/target/*.tar.gz ]; then
 fi
 
 #
+# Copy Saml auth extension if it was built
+#
+
+if [ -f extensions/guacamole-auth-saml/target/*.tar.gz ]; then
+    mkdir -p "$DESTINATION/saml"
+    tar -xzf extensions/guacamole-auth-saml/target/*.tar.gz \
+        -C "$DESTINATION/duo/"                             \
+        --wildcards                                        \
+        --no-anchored                                      \
+        --no-wildcards-match-slash                         \
+        --strip-components=1                               \
+        "*.jar"
+fi
+
+#
 # Copy header auth extension if it was built
 #
 
