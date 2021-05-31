@@ -744,6 +744,46 @@ END
 
 }
 
+## Adds properties to guacamole.properties which select the SAML
+## authentication provider, and configure it to connect to the specified SAML
+## provider.
+##
+associate_saml() {
+
+    # Verify required parameters are present
+    if [ -z "$SAML_IDP_METADATA_URL" ]
+    then
+        cat <<END
+FATAL: Missing required environment variables
+-------------------------------------------------------------------------------
+If using an openid authentication, you must provide each of the following
+environment variables:
+
+    SAML_IDP_METADATA_URL           The URI of the XML metadata file that from the SAML Identity
+                                    Provider
+END
+        exit 1;
+    fi
+
+    # Update config file
+    set_property          "saml-idp-metadata-url"            "$SAML_IDP_METADATA_URL"
+    set_optional_property "saml-idp-url"                     "$SAML_IDP_URL"
+    set_optional_property "saml-entity-id"                   "$SAML_ENTITY_ID"
+	set_optional_property "saml-callback-url"                "$SAML_CALLBACK_URL"
+	set_optional_property "saml-strict"                      "$SAML_STRICT"
+	set_optional_property "saml-debug"                       "$SAML_DEBUG"
+	set_optional_property "saml-compress-request"            "$SAML_COMPRESS_REQUEST"
+	set_optional_property "saml-compress-response"           "$SAML_COMPRESS_RESPONSE"
+	set_optional_property "saml-group-attribute"             "SAML_GROUP_ATTRIBUTE"
+
+    # Add required .jar files to GUACAMOLE_EXT
+    # "1-{}" make it sorted as a first provider (only authentication)
+    # so it can work together with the database providers (authorization)
+    find /opt/guacamole/saml/ -name "*.jar" | awk -F/ '{print $NF}' | \
+    xargs -I '{}' ln -s "/opt/guacamole/saml/{}" "${GUACAMOLE_EXT}/1-{}"
+
+}
+
 ##
 ## Adds properties to guacamole.properties which configure the TOTP two-factor
 ## authentication mechanism.
@@ -991,6 +1031,12 @@ fi
 if [ -n "$OPENID_AUTHORIZATION_ENDPOINT" ]; then
     associate_openid
     INSTALLED_AUTH="$INSTALLED_AUTH openid"
+fi
+
+# Use SAML if specified
+if [ -n "$SAML_IDP_METADATA_URL" ]; then
+    associate_saml
+    INSTALLED_AUTH="$INSTALLED_AUTH saml"
 fi
 
 #
