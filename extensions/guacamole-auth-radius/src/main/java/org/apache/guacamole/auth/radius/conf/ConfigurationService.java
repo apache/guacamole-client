@@ -351,7 +351,7 @@ public class ConfigurationService {
             String nasIpStr = environment.getProperty(RadiusGuacamoleProperties.RADIUS_NAS_IP);
             
             // If property is specified and non-empty, attempt to return converted address.
-            if (!(nasIpStr == null && nasIpStr.isEmpty()))
+            if (nasIpStr != null && !nasIpStr.isEmpty())
                 return InetAddress.getByName(nasIpStr);
             
             // By default, return the address of the server.
