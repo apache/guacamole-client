@@ -33,6 +33,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     // Required services
     var $location              = $injector.get('$location');
+    var $log                   = $injector.get('$log');
     var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
     var clipboardService       = $injector.get('clipboardService');
@@ -1005,9 +1006,29 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         className : 'danger disconnect',
         callback  : $scope.disconnect
     };
+    
+    /**
+     * Action that locks the keyboard using the Keyboard Lock API within the
+     * current client, and then closes the menu.
+     */
+    var KEYBOARD_LOCK_MENU_ACTION = {
+        name      : 'CLIENT.ACTION_KEYBOARD_LOCK',
+        callback  : function keyboardLock() {
+            if ('keyboard' in navigator && 'lock' in navigator.keyboard) {
+                $log.debug('>>>KEYBOARD LOCK<<< Keyboard lock is supported!');
+                await document.documentElement.requestFullscreen();
+                navigator.keyboard.lock();
+                $scope.menu.shown = false;
+            }
+            else {
+                $log.debug('>>>KEYBOARD LOCK<<< Keyboard lock is unsupported!')
+            }
+        }
+    };
 
     // Set client-specific menu actions
-    $scope.clientMenuActions = [ DISCONNECT_MENU_ACTION ];
+    $scope.clientMenuActions = [ DISCONNECT_MENU_ACTION,
+        KEYBOARD_LOCK_MENU_ACTION ];
 
     /**
      * @borrows Protocol.getNamespace
