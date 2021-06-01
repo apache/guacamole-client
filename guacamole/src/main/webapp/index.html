@@ -31,7 +31,7 @@
         <link rel="stylesheet" type="text/css" href="app.css?v=${project.version}">
         <title ng-bind="page.title | translate"></title>
     </head>
-    <body ng-class="page.bodyClassName">
+    <body ng-class="page.bodyClassName" ng-attr-dir="{{ 'DIRECTION' | translate }}">
 
         <div ng-if="!fatalError">
 

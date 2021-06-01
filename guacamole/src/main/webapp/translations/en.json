@@ -2,6 +2,8 @@
     
     "NAME" : "English",
     
+    "DIRECTION" : "ltr",
+    
     "APP" : {
 
         "NAME"    : "Apache Guacamole",
