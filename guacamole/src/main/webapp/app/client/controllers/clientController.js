@@ -33,6 +33,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     // Required services
     var $location              = $injector.get('$location');
+    var $window                = $injector.get('$window');
     var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
     var clipboardService       = $injector.get('clipboardService');
@@ -217,6 +218,26 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         text: "CLIENT.TEXT_RECONNECT_COUNTDOWN",
         callback: RECONNECT_ACTION.callback,
         remaining: 15
+    };
+
+    /**
+     * Catch window or tab closing (ctrl-w) and prompt the user if there is an active connection
+     *
+     * @param {Event} e
+     * @returns {undefined}
+     */
+    var windowCloseListener = function onBeforeUnload(e) {
+        var managedClient = $scope.client;
+        if (managedClient) {
+
+            // Get current connection state
+            var connectionState = managedClient.clientState.connectionState;
+
+            // If connected, prompt to close
+            if (connectionState === ManagedClientState.ConnectionState.CONNECTED)
+                e.preventDefault();
+                e.returnValue = '';
+        }
     };
 
     /**
@@ -776,6 +797,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Client error
         else if (connectionState === ManagedClientState.ConnectionState.CLIENT_ERROR) {
+            // Stop intercepting window close
+            $window.removeEventListener('beforeunload', ctrlwlistener, false);
 
             // Determine translation name of error
             var errorName = (status in CLIENT_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
@@ -798,7 +821,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Tunnel error
         else if (connectionState === ManagedClientState.ConnectionState.TUNNEL_ERROR) {
-
             // Determine translation name of error
             var errorName = (status in TUNNEL_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
 
@@ -831,6 +853,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Hide status and sync local clipboard once connected
         else if (connectionState === ManagedClientState.ConnectionState.CONNECTED) {
+            // Start intercepting ctrl-w / window close
+            $window.addEventListener('beforeunload', windowCloseListener, false);
 
             // Sync with local clipboard
             clipboardService.getLocalClipboard().then(function clipboardRead(data) {
