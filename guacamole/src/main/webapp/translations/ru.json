@@ -13,6 +13,7 @@
         "ACTION_DOWNLOAD"           : "Скачать",
         "ACTION_LOGIN"              : "Вход",
         "ACTION_LOGOUT"             : "Выход",
+        "ACTION_FULLSCREEN"         : "Полноэкранный",
         "ACTION_MANAGE_CONNECTIONS" : "Подключения",
         "ACTION_MANAGE_PREFERENCES" : "Настройки",
         "ACTION_MANAGE_SETTINGS"    : "Опции",
@@ -828,6 +829,7 @@
     "USER_MENU" : {
 
         "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_FULLSCREEN"         : "@:APP.ACTION_FULLSCREEN",
         "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
         "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
         "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",

@@ -47,6 +47,7 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
             var User = $injector.get('User');
 
             // Get required services
+            var $log                  = $injector.get('$log');
             var $location             = $injector.get('$location');
             var $route                = $injector.get('$route');
             var authenticationService = $injector.get('authenticationService');
@@ -135,6 +136,23 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
             };
 
             /**
+             * Toggles fullscreen for the Guacamole page.
+             */
+            $scope.fullscreen = function fullscreen() {
+                var fullscreenElem = !!(document.fullscreenElement 
+                    || document.msFullscreenElement
+                    || document.mozFullScreenElement
+                    || document.webkitFullscreenElement);
+
+                if (!fullscreenElem) {
+                    document.documentElement.requestFullscreen();
+                }
+                else {
+                    document.exitFullscreen();
+                }
+            };
+
+            /**
              * Logs out the current user, redirecting them to back to the root
              * after logout completes.
              */
@@ -147,6 +165,15 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
                     else
                         $route.reload();
                 });
+            };
+
+            /**
+             * Action which requests fullscreen for the Guacamole page.
+             */
+            var FULLSCREEN_ACTION = {
+                name      : 'USER_MENU.ACTION_FULLSCREEN',
+                className : 'fullscreen',
+                callback  : $scope.fullscreen
             };
 
             /**
@@ -163,6 +190,36 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
              * All available actions for the current user.
              */
             $scope.actions = [ LOGOUT_ACTION ];
+
+            // Initialize fullscreen functions
+            var docElem = document.documentElement;
+            var requestFullscreen = docElem.requestFullscreen
+                || docElem.mozRequestFullScreen
+                || docElem.webkitRequestFullscreen
+                || docElem.msRequestFullscreen;
+            var exitFullscreen = document.exitFullscreen
+                || document.mozCancelFullScreen
+                || document.webkitExitFullscreen
+                || document.msExitFullscreen;
+
+            if (!!requestFullscreen && !!exitFullscreen) {
+                // Bind browser-specific fullscreen functions
+                if (!docElem.requestFullscreen) {
+                    docElem.requestFullscreen = (requestFullscreen).bind(docElem);
+                }
+                if (!document.exitFullscreen) {
+                    document.exitFullscreen = (exitFullscreen).bind(document);
+                }
+
+                /**
+                 * Add fullscreen action for the current user.
+                 */
+                 $scope.actions.unshift( FULLSCREEN_ACTION );
+
+            }
+            else {
+                $log.warn('Fullscreen not available on this device');
+            }
 
         }] // end controller
 

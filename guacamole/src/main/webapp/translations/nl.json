@@ -12,6 +12,7 @@
         "ACTION_DELETE_SESSIONS"    : "Verwijder Sessies",
         "ACTION_LOGIN"              : "Inloggen",
         "ACTION_LOGOUT"             : "Uitloggen",
+        "ACTION_FULLSCREEN"         : "Volledig scherm",
         "ACTION_MANAGE_CONNECTIONS" : "Verbindingen",
         "ACTION_MANAGE_PREFERENCES" : "Voorkeuren",
         "ACTION_MANAGE_SETTINGS"    : "Instellingen",
@@ -678,6 +679,7 @@
     "USER_MENU" : {
 
         "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_FULLSCREEN"         : "@:APP.ACTION_FULLSCREEN",
         "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
         "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
         "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",

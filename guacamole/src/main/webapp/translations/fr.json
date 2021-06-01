@@ -13,6 +13,7 @@
         "ACTION_DOWNLOAD"           : "Télécharger",
         "ACTION_LOGIN"              : "Se connecter",
         "ACTION_LOGOUT"             : "Se déconnecter",
+        "ACTION_FULLSCREEN"         : "Plein écran",
         "ACTION_MANAGE_CONNECTIONS" : "Connexions",
         "ACTION_MANAGE_PREFERENCES" : "Préférences",
         "ACTION_MANAGE_SETTINGS"    : "Paramètres",
@@ -992,6 +993,7 @@
     "USER_MENU" : {
 
         "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_FULLSCREEN"         : "@:APP.ACTION_FULLSCREEN",
         "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
         "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
         "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
