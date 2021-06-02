@@ -29,7 +29,6 @@ require('angular-translate-loader-static-files');
 angular.module('index', [
 
     require('angular-route'),
-    require('angular-touch'),
     require('angular-translate'),
 
     'auth',

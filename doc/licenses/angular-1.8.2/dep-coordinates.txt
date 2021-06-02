@@ -1,3 +1,2 @@
 angular-route:1.8.2
-angular-touch:1.8.2
 angular:1.8.2
