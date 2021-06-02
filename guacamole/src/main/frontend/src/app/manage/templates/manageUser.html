@@ -25,17 +25,17 @@
                 <tr>
                     <th>{{'MANAGE_USER.FIELD_HEADER_USERNAME' | translate}}</th>
                     <td>
-                        <input ng-show="canEditUsername()" ng-model="user.username" type="text"/>
+                        <input ng-show="canEditUsername()" ng-model="user.username" type="text">
                         <span  ng-hide="canEditUsername()">{{user.username}}</span>
                     </td>
                 </tr>
                 <tr>
                     <th>{{'MANAGE_USER.FIELD_HEADER_PASSWORD' | translate}}</th>
-                    <td><input ng-model="user.password" type="password" /></td>
+                    <td><input ng-model="user.password" type="password"></td>
                 </tr>
                 <tr>
                     <th>{{'MANAGE_USER.FIELD_HEADER_PASSWORD_AGAIN' | translate}}</th>
-                    <td><input ng-model="passwordMatch" type="password" /></td>
+                    <td><input ng-model="passwordMatch" type="password"></td>
                 </tr>
             </table>
         </div>

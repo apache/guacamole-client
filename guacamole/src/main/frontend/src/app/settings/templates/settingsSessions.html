@@ -35,7 +35,7 @@
         <tbody>
             <tr ng-repeat="wrapper in wrapperPage" class="session">
                 <td class="select-session">
-                    <input ng-change="wrapperSelectionChange(wrapper)" type="checkbox" ng-model="wrapper.checked" />
+                    <input ng-change="wrapperSelectionChange(wrapper)" type="checkbox" ng-model="wrapper.checked">
                 </td>
                 <td><guac-user-item username="wrapper.activeConnection.username"></guac-user-item></td>
                 <td>{{wrapper.startDate}}</td>

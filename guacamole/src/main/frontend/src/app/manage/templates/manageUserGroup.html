@@ -24,7 +24,7 @@
                 <tr>
                     <th>{{'MANAGE_USER_GROUP.FIELD_HEADER_USER_GROUP_NAME' | translate}}</th>
                     <td>
-                        <input ng-show="canEditIdentifier()" ng-model="userGroup.identifier" type="text"/>
+                        <input ng-show="canEditIdentifier()" ng-model="userGroup.identifier" type="text">
                         <span  ng-hide="canEditIdentifier()">{{userGroup.identifier}}</span>
                     </td>
                 </tr>

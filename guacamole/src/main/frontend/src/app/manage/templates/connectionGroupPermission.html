@@ -5,7 +5,7 @@
 
     <!-- Permission checkbox -->
     <input type="checkbox" ng-model="context.getPermissionFlags().connectionGroupPermissions.READ[item.identifier]"
-                           ng-change="context.connectionGroupPermissionChanged(item.identifier)"/>
+                           ng-change="context.connectionGroupPermissionChanged(item.identifier)">
 
     <!-- Connection group name -->
     <span class="name">{{item.name}}</span>

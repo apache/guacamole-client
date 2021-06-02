@@ -5,7 +5,7 @@
 
     <!-- Permission checkbox -->
     <input type="checkbox" ng-model="context.getPermissionFlags().connectionPermissions.READ[item.identifier]"
-                           ng-change="context.connectionPermissionChanged(item.identifier)"/>
+                           ng-change="context.connectionPermissionChanged(item.identifier)">
 
     <!-- Connection name -->
     <span class="name">{{item.name}}</span>
