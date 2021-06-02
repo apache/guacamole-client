@@ -4,7 +4,7 @@
         "build": "webpack --progress"
     },
     "dependencies": {
-        "@simonwep/pickr": "1.8.0",
+        "@simonwep/pickr": "1.8.1",
         "angular": "1.8.2",
         "angular-route": "1.8.2",
         "angular-templatecache-webpack-plugin": "^1.0.1",
