@@ -202,7 +202,7 @@ angular.module('form').provider('colorPickerService', function colorPickerServic
          *     selectColor(), false otherwise.
          */
         service.isAvailable = function isAvailable() {
-            return !!pickr;
+            return pickrInitComplete;
         };
 
         /**
