@@ -185,6 +185,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
             bodyClassName : 'client',
             templateUrl   : 'app/client/templates/client.html',
             controller    : 'clientController',
+            reloadOnUrl   : false,
             resolve       : { updateCurrentToken: updateCurrentToken }
         })
 

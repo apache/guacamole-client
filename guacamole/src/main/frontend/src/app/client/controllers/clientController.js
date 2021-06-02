@@ -156,18 +156,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      *
      * @type ManagedClient[]
      */
-    $scope.clients = (function getClients() {
-
-        var clients = [];
-
-        var ids = $routeParams.id.split(/[ +]/);
-        ids.forEach(function addClient(id) {
-            clients.push(guacClientManager.getManagedClient(id));
-        });
-
-        return clients;
-
-    })();
+    $scope.clients = [];
 
     /**
      * All active clients which are not any current client ($scope.clients).
@@ -175,17 +164,34 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      *
      * @type Object.<String, ManagedClient>
      */
-    $scope.otherClients = (function getOtherClients(clients) {
+    $scope.otherClients = {};
 
-        var otherClients = angular.extend({}, clients);
+    /**
+     * Reloads the contents of $scope.clients and $scope.otherClients to
+     * reflect the client IDs currently listed in the URL.
+     */
+    var updateAttachedClients = function updateAttachedClients() {
 
-        $scope.clients.forEach(function removeActiveCLient(client) {
-            delete otherClients[client.id];
+        var ids = $routeParams.id.split(/[ +]/);
+
+        $scope.clients = [];
+        $scope.otherClients = angular.extend({}, guacClientManager.getManagedClients());
+
+        // Separate active clients by whether they should be displayed within
+        // the current view
+        ids.forEach(function groupClients(id) {
+            $scope.clients.push(guacClientManager.getManagedClient(id));
+            delete $scope.otherClients[id];
         });
 
-        return otherClients;
+    };
 
-    })(guacClientManager.getManagedClients());
+    // Init sets of clients based on current URL ...
+    updateAttachedClients();
+
+    // ... and re-initialize those sets if the URL has changed without
+    // reloading the route
+    $scope.$on('$routeUpdate', updateAttachedClients);
 
     /**
      * The root connection groups of the connection hierarchy that should be
