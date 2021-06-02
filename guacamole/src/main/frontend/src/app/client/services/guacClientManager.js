@@ -96,22 +96,17 @@ angular.module('client').factory('guacClientManager', ['$injector',
      * @param {String} id
      *     The ID of the connection whose ManagedClient should be retrieved.
      *     
-     * @param {String} [connectionParameters]
-     *     Any additional HTTP parameters to pass while connecting. This
-     *     parameter only has an effect if a new connection is established as
-     *     a result of this function call.
-     * 
      * @returns {ManagedClient}
      *     The ManagedClient associated with the connection having the given
      *     ID.
      */
-    service.replaceManagedClient = function replaceManagedClient(id, connectionParameters) {
+    service.replaceManagedClient = function replaceManagedClient(id) {
 
         // Disconnect any existing client
         service.removeManagedClient(id);
 
         // Set new client
-        return storedManagedClients()[id] = ManagedClient.getInstance(id, connectionParameters);
+        return storedManagedClients()[id] = ManagedClient.getInstance(id);
 
     };
 
@@ -123,22 +118,17 @@ angular.module('client').factory('guacClientManager', ['$injector',
      * @param {String} id
      *     The ID of the connection whose ManagedClient should be retrieved.
      *     
-     * @param {String} [connectionParameters]
-     *     Any additional HTTP parameters to pass while connecting. This
-     *     parameter only has an effect if a new connection is established as
-     *     a result of this function call.
-     * 
      * @returns {ManagedClient}
      *     The ManagedClient associated with the connection having the given
      *     ID.
      */
-    service.getManagedClient = function getManagedClient(id, connectionParameters) {
+    service.getManagedClient = function getManagedClient(id) {
 
         var managedClients = storedManagedClients();
 
         // Create new managed client if it doesn't already exist
         if (!(id in managedClients))
-            managedClients[id] = ManagedClient.getInstance(id, connectionParameters);
+            managedClients[id] = ManagedClient.getInstance(id);
 
         // Return existing client
         return managedClients[id];

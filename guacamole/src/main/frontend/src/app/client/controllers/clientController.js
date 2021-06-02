@@ -201,7 +201,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         name      : "CLIENT.ACTION_RECONNECT",
         className : "reconnect button",
         callback  : function reconnectCallback() {
-            $scope.client = guacClientManager.replaceManagedClient($routeParams.id, $routeParams.params);
+            $scope.client = guacClientManager.replaceManagedClient($routeParams.id);
             guacNotification.showStatus(false);
         }
     };
@@ -287,7 +287,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         var ids = $routeParams.id.split(/[ +]/);
         ids.forEach(function addClient(id) {
-            clients.push(guacClientManager.getManagedClient(id, $routeParams.params));
+            clients.push(guacClientManager.getManagedClient(id));
         });
 
         return clients;
