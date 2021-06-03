@@ -42,7 +42,6 @@ import org.apache.guacamole.rest.user.UserModule;
 import org.apache.guacamole.rest.usergroup.UserGroupModule;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
-import org.webjars.servlet.WebjarsServlet;
 
 /**
  * A Guice Module to set up the servlet mappings and authentication-specific
@@ -99,10 +98,6 @@ public class RESTServiceModule extends ServletModule {
             ServletProperties.JAXRS_APPLICATION_CLASS,
             GuacamoleApplication.class.getName()
         ));
-
-        // Serve Webjar JavaScript dependencies
-        bind(WebjarsServlet.class).in(Scopes.SINGLETON);
-        serve("/webjars/*").with(WebjarsServlet.class);
 
     }
 

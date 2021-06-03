@@ -46,6 +46,10 @@
         <logback.version>1.2.3</logback.version>
         <slf4j.version>1.7.30</slf4j.version>
 
+        <!-- The directory that should receive all generated dependency lists
+            (for LICENSE generation) -->
+        <dependency.list.directory>${project.build.directory}/dependencies</dependency.list.directory>
+
         <!-- Set to "true" to ignore errors that occur during automatic LICENSE
             file generation (such as non-existent license documentation) as
             well as errors that occur during the RAT check (such as incorrect
@@ -99,6 +103,7 @@
                                 <exclude>.ratignore</exclude>
                                 <exclude>**/*.md</exclude>
                                 <exclude>**/*.json</exclude>
+                                <exclude>**/node_modules/**/*</exclude>
                                 <exclude>**/templates/*.html</exclude>
                                 <exclude>src/licenses/**/*</exclude>
                                 <exclude>target/**/*</exclude>
@@ -125,20 +130,20 @@
                 </executions>
             </plugin>
 
-            <!-- Automatically generate list of runtime dependencies -->
+            <!-- Automatically generate list of Maven runtime dependencies -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.1.2</version>
                 <executions>
                     <execution>
-                        <id>list-runtime-dependencies</id>
+                        <id>list-maven-runtime-dependencies</id>
                         <phase>generate-resources</phase>
                         <configuration>
                             <includeScope>runtime</includeScope>
                             <excludeReactor>false</excludeReactor>
                             <excludeGroupIds>org.apache.guacamole</excludeGroupIds>
-                            <outputFile>${project.build.directory}/runtime-dependencies.txt</outputFile>
+                            <outputFile>${dependency.list.directory}/maven-runtime-dependencies.txt</outputFile>
                         </configuration>
                         <goals>
                             <goal>list</goal>
@@ -204,7 +209,7 @@
                             <configuration>
                                 <executable>${rootlocation}/doc/licenses/generate-license-files.sh</executable>
                                 <arguments>
-                                    <argument>${project.build.directory}/runtime-dependencies.txt</argument>
+                                    <argument>${dependency.list.directory}</argument>
                                     <argument>${project.build.directory}/licenses</argument>
                                 </arguments>
                                 <environmentVariables>
@@ -230,6 +235,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>3.3.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

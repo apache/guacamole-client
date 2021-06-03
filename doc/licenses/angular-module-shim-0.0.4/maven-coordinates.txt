@@ -1,1 +1,0 @@
-org.webjars.bower:angular-module-shim:jar:0.0.4

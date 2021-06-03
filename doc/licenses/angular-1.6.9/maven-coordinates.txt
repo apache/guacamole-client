@@ -1,3 +1,0 @@
-org.webjars.bower:angular-route:jar:1.6.9
-org.webjars.bower:angular-touch:jar:1.6.9
-org.webjars.bower:angular:jar:1.6.9
