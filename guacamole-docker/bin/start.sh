@@ -774,7 +774,7 @@ END
     set_optional_property "saml-debug"                       "$SAML_DEBUG"
     set_optional_property "saml-compress-request"            "$SAML_COMPRESS_REQUEST"
     set_optional_property "saml-compress-response"           "$SAML_COMPRESS_RESPONSE"
-    set_optional_property "saml-group-attribute"             "SAML_GROUP_ATTRIBUTE"
+    set_optional_property "saml-group-attribute"             "$SAML_GROUP_ATTRIBUTE"
 
     # Add required .jar files to GUACAMOLE_EXT
     # "1-{}" make it sorted as a first provider (only authentication)
@@ -1101,4 +1101,3 @@ fi
 #
 
 start_guacamole
-
