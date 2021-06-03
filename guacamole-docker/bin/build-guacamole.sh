@@ -172,7 +172,7 @@ fi
 if [ -f extensions/guacamole-auth-saml/target/*.tar.gz ]; then
     mkdir -p "$DESTINATION/saml"
     tar -xzf extensions/guacamole-auth-saml/target/*.tar.gz \
-        -C "$DESTINATION/duo/"                             \
+        -C "$DESTINATION/saml/"                             \
         --wildcards                                        \
         --no-anchored                                      \
         --no-wildcards-match-slash                         \
