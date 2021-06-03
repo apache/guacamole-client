@@ -36,6 +36,7 @@
             <useDefaultExcludes>true</useDefaultExcludes>
             <excludes>
                 <exclude>**/*.log</exclude>
+                <exclude>**/node_modules/**</exclude>
                 <exclude>**/${project.build.directory}/**</exclude>
             </excludes>
         </fileSet>
