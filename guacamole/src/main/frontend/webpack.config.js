@@ -117,8 +117,10 @@ module.exports = {
 
         // Copy static files to dist/
         new CopyPlugin([
+            { from: 'app/**/*' },
             { from: 'fonts/**/*' },
             { from: 'images/**/*' },
+            { from: 'layouts/**/*' },
             { from: 'translations/**/*' }
         ], {
             context: 'src/'
