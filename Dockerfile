@@ -50,7 +50,7 @@ RUN /opt/guacamole/bin/build-guacamole.sh "$BUILD_DIR" /opt/guacamole "$BUILD_PR
 # For the runtime image, we start with the official Tomcat distribution
 FROM tomcat:${TOMCAT_VERSION}-${TOMCAT_JRE}
 
-# Install XMLStarlet for server.conf alterations
+# Install XMLStarlet for server.xml alterations
 RUN apt-get update -qq && apt-get install -y xmlstarlet
 
 # This is where the build artifacts go in the runtime image
