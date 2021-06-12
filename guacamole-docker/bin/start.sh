@@ -721,42 +721,42 @@ enable_remote_ip_valve() {
         $CATALINA_BASE/conf/server.xml
 
     # Allowed IPs
-    if [ -z "$GUACAMOLE_PROXY_ALLOWED_IPS_REGEX" ]; then
-    	echo "Using default Tomcat allowed IPs regex"
+    if [ -z "$PROXY_ALLOWED_IPS_REGEX" ]; then
+        echo "Using default Tomcat allowed IPs regex"
     else
         xmlstarlet edit --inplace \
             --insert '/Server/Service/Engine/Host/Valve[@className="org.apache.catalina.valves.RemoteIpValve"]' \
-            --type attr -n internalProxies -v "$GUACAMOLE_PROXY_ALLOWED_IPS_REGEX" \
+            --type attr -n internalProxies -v "$PROXY_ALLOWED_IPS_REGEX" \
             $CATALINA_BASE/conf/server.xml
     fi
 
     # X-Forwarded-For
-    if [ -z "$GUACAMOLE_PROXY_IP_HEADER" ]; then
+    if [ -z "$PROXY_IP_HEADER" ]; then
         echo "Using default Tomcat proxy IP header"
     else
         xmlstarlet edit --inplace \
             --insert "/Server/Service/Engine/Host/Valve[@className='org.apache.catalina.valves.RemoteIpValve']" \
-            --type attr -n remoteIpHeader -v "$GUACAMOLE_PROXY_IP_HEADER" \
+            --type attr -n remoteIpHeader -v "$PROXY_IP_HEADER" \
             $CATALINA_BASE/conf/server.xml
     fi
 
     # X-Forwarded-Proto
-    if [ -z "$GUACAMOLE_PROXY_PROTOCOL_HEADER" ]; then
+    if [ -z "$PROXY_PROTOCOL_HEADER" ]; then
         echo "Using default Tomcat proxy protocol header"
     else
         xmlstarlet edit --inplace \
             --insert "/Server/Service/Engine/Host/Valve[@className='org.apache.catalina.valves.RemoteIpValve']" \
-            --type attr -n protocolHeader -v "$GUACAMOLE_PROXY_PROTOCOL_HEADER" \
+            --type attr -n protocolHeader -v "$PROXY_PROTOCOL_HEADER" \
             $CATALINA_BASE/conf/server.xml
     fi
 
     # X-Forwarded-By
-    if [ -z "$GUACAMOLE_PROXY_BY_HEADER" ]; then
+    if [ -z "$PROXY_BY_HEADER" ]; then
         echo "Using default Tomcat proxy forwarded by header"
     else
         xmlstarlet edit --inplace \
             --insert "/Server/Service/Engine/Host/Valve[@className='org.apache.catalina.valves.RemoteIpValve']" \
-            --type attr -n remoteIpProxiesHeader -v "$GUACAMOLE_PROXY_BY_HEADER" \
+            --type attr -n remoteIpProxiesHeader -v "$PROXY_BY_HEADER" \
             $CATALINA_BASE/conf/server.xml
     fi
 }
