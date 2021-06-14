@@ -40,6 +40,17 @@
     </head>
     <body ng-cloak translate-cloak ng-class="page.bodyClassName" ng-switch="applicationState">
 
+        <!-- Manually logged-out -->
+        <div class="logged-out-modal" ng-switch-when="loggedOut">
+            <guac-modal>
+                <p translate="APP.INFO_LOGGED_OUT"></p>
+                <p>
+                    <button translate="APP.ACTION_LOGIN_AGAIN" ng-disabled="reAuthenticating"
+                            ng-click="reAuthenticate()"></button>
+                </p>
+            </guac-modal>
+        </div>
+
         <!-- Absolute fatal error -->
         <div class="fatal-page-error-modal" ng-switch-when="fatalError">
             <guac-modal>

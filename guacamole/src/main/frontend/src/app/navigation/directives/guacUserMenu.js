@@ -140,13 +140,7 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
              */
             $scope.logout = function logout() {
                 authenticationService.logout()
-                ['catch'](requestService.IGNORE)
-                ['finally'](function logoutComplete() {
-                    if ($location.path() !== '/')
-                        $location.url('/');
-                    else
-                        $route.reload();
-                });
+                ['catch'](requestService.IGNORE);
             };
 
             /**

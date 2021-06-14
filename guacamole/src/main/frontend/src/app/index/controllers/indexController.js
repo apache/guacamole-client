@@ -25,6 +25,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
     // Required services
     var $document        = $injector.get('$document');
+    var $route           = $injector.get('$route');
     var $window          = $injector.get('$window');
     var clipboardService = $injector.get('clipboardService');
     var guacNotification = $injector.get('guacNotification');
@@ -49,6 +50,13 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
      * @type TranslatableMessage
      */
     $scope.loginHelpText = null;
+
+    /**
+     * Whether the user has selected to log back in after having logged out.
+     *
+     * @type boolean
+     */
+    $scope.reAuthenticating = false;
 
     /**
      * The credentials that the authentication service is has already accepted,
@@ -93,6 +101,11 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
          * not yet settled into any specific state.
          */
         LOADING : 'loading',
+
+        /**
+         * The user has manually logged out.
+         */
+        LOGGED_OUT : 'loggedOut',
 
         /**
          * The application has fully loaded and the user has logged in
@@ -254,6 +267,13 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
         $scope.fatalError = error;
 
+    });
+
+    // Replace the overall user interface with an informational message if the
+    // user has manually logged out
+    $scope.$on('guacLogout', function loggedOut() {
+        $scope.applicationState = ApplicationState.LOGGED_OUT;
+        $scope.reAuthenticating = false;
     });
 
     // Ensure new pages always start with clear keyboard state
