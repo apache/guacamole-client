@@ -17,21 +17,8 @@
  * under the License.
  */
 
-.fatal-page-error-outer {
-    display: table;
-    height: 100%;
-    width: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
+.fatal-page-error-modal guac-modal {
     z-index: 30;
-}
-
-.fatal-page-error-middle {
-    width: 100%;
-    text-align: center;
-    display: table-cell;
-    vertical-align: middle;
 }
 
 .fatal-page-error {
