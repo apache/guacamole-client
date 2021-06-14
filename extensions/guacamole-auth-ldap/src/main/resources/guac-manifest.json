@@ -3,7 +3,7 @@
     "guacamoleVersion" : "1.3.0",
 
     "name"      : "LDAP Authentication",
-    "namespace" : "guac-ldap",
+    "namespace" : "ldap",
 
     "authProviders" : [
         "org.apache.guacamole.auth.ldap.LDAPAuthenticationProvider"

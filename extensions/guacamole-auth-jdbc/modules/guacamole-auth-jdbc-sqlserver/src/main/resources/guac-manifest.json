@@ -3,7 +3,7 @@
     "guacamoleVersion" : "1.3.0",
 
     "name"      : "SQLServer Authentication",
-    "namespace" : "guac-sqlserver",
+    "namespace" : "sqlserver",
 
     "authProviders" : [
         "org.apache.guacamole.auth.sqlserver.SQLServerAuthenticationProvider",

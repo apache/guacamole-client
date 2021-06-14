@@ -3,7 +3,7 @@
     "guacamoleVersion" : "1.3.0",
 
     "name"      : "Encrypted JSON Authentication",
-    "namespace" : "guac-json",
+    "namespace" : "json",
 
     "authProviders" : [
         "org.apache.guacamole.auth.json.JSONAuthenticationProvider"
