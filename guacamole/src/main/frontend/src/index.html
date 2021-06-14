@@ -43,11 +43,13 @@
         <!-- Manually logged-out -->
         <div class="logged-out-modal" ng-switch-when="loggedOut">
             <guac-modal>
-                <p translate="APP.INFO_LOGGED_OUT"></p>
-                <p>
-                    <button translate="APP.ACTION_LOGIN_AGAIN" ng-disabled="reAuthenticating"
-                            ng-click="reAuthenticate()"></button>
-                </p>
+                <div class="notification">
+                    <p translate="APP.INFO_LOGGED_OUT"></p>
+                    <p>
+                        <button translate="APP.ACTION_LOGIN_AGAIN" ng-disabled="reAuthenticating"
+                                ng-click="reAuthenticate()"></button>
+                    </p>
+                </div>
             </guac-modal>
         </div>
 

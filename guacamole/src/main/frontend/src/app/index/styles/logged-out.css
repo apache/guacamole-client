@@ -21,3 +21,9 @@
     background: white;
     z-index: 20;
 }
+
+.logged-out-modal .notification {
+    display: inline-block;
+    max-width: 3in;
+    width: 100%;
+}
