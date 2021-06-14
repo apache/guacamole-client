@@ -56,6 +56,11 @@ public class Extension {
     private static final String MANIFEST_NAME = "guac-manifest.json";
 
     /**
+     * The extension .jar file.
+     */
+    private final File file;
+
+    /**
      * The parsed manifest file of this extension, describing the location of
      * resources within the extension.
      */
@@ -357,6 +362,9 @@ public class Extension {
      */
     public Extension(final ClassLoader parent, final File file) throws GuacamoleException {
 
+        // Associate extension abstraction with original file
+        this.file = file;
+
         try {
 
             // Open extension
@@ -425,6 +433,16 @@ public class Extension {
             largeIcon = new ClassPathResource(classLoader, "image/png", manifest.getLargeIcon());
         else
             largeIcon = null;
+    }
+
+    /**
+     * Returns the .jar file containing this Guacamole extension.
+     *
+     * @return
+     *     The extension .jar file.
+     */
+    public File getFile() {
+        return file;
     }
 
     /**
