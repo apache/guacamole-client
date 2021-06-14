@@ -254,7 +254,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
 
     /**
      * Makes a request to revoke an authentication token using the token REST
-     * API endpoint, returning a promise succeeds only if the token was
+     * API endpoint, returning a promise that succeeds only if the token was
      * successfully revoked.
      *
      * @param {string} token
@@ -295,7 +295,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
 
     /**
      * Makes a request to logout a user using the token REST API endpoint,
-     * returning a promise succeeds only if the logout operation was
+     * returning a promise that succeeds only if the logout operation was
      * successful.
      * 
      * @returns {Promise}
