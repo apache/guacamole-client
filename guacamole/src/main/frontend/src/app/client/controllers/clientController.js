@@ -167,10 +167,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         className : "logout button",
         callback  : function logoutCallback() {
             authenticationService.logout()
-            ['catch'](requestService.IGNORE)
-            ['finally'](function logoutComplete() {
-                $location.url('/');
-            });
+            ['catch'](requestService.IGNORE);
         }
     };
 

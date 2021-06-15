@@ -18,8 +18,8 @@
  */
 
 .notification {
-    border: 1px solid rgba(0, 0, 0, 0.125);
-    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.125);
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
     background: white;
     color: black;
 }

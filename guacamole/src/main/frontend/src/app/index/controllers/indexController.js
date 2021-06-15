@@ -25,6 +25,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
     // Required services
     var $document        = $injector.get('$document');
+    var $route           = $injector.get('$route');
     var $window          = $injector.get('$window');
     var clipboardService = $injector.get('clipboardService');
     var guacNotification = $injector.get('guacNotification');
@@ -51,6 +52,13 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $scope.loginHelpText = null;
 
     /**
+     * Whether the user has selected to log back in after having logged out.
+     *
+     * @type boolean
+     */
+    $scope.reAuthenticating = false;
+
+    /**
      * The credentials that the authentication service is has already accepted,
      * pending additional credentials, if any. If the user is logged in, or no
      * credentials have been accepted, this will be null. If credentials have
@@ -68,6 +76,51 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
      * @type Field[]
      */
     $scope.expectedCredentials = null;
+
+    /**
+     * Possible overall states of the client side of the web application.
+     *
+     * @enum {string}
+     */
+    var ApplicationState = {
+
+        /**
+         * The application has fully loaded but is awaiting credentials from
+         * the user before proceeding.
+         */
+        AWAITING_CREDENTIALS : 'awaitingCredentials',
+
+        /**
+         * A fatal error has occurred that will prevent the client side of the
+         * application from functioning properly.
+         */
+        FATAL_ERROR : 'fatalError',
+
+        /**
+         * The application has just started within the user's browser and has
+         * not yet settled into any specific state.
+         */
+        LOADING : 'loading',
+
+        /**
+         * The user has manually logged out.
+         */
+        LOGGED_OUT : 'loggedOut',
+
+        /**
+         * The application has fully loaded and the user has logged in
+         */
+        READY : 'ready'
+
+    };
+
+    /**
+     * The current overall state of the client side of the application.
+     * Possible values are defined by {@link ApplicationState}.
+     *
+     * @type string
+     */
+    $scope.applicationState = ApplicationState.LOADING;
 
     /**
      * Basic page-level information.
@@ -103,7 +156,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
         // Do not handle key events if not logged in or if a notification is
         // shown
-        if ($scope.expectedCredentials || guacNotification.getStatus())
+        if ($scope.applicationState !== ApplicationState.READY || guacNotification.getStatus())
             return true;
 
         // Warn of pending keydown
@@ -122,7 +175,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
         // Do not handle key events if not logged in or if a notification is
         // shown
-        if ($scope.expectedCredentials || guacNotification.getStatus())
+        if ($scope.applicationState !== ApplicationState.READY || guacNotification.getStatus())
             return;
 
         // Warn of pending keyup
@@ -168,32 +221,59 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
     }, true);
 
+    /**
+     * Reloads the current route and controller, effectively forcing
+     * reauthentication. If the user is not logged in, this will result in
+     * the login screen appearing.
+     */
+    $scope.reAuthenticate = function reAuthenticate() {
+        $scope.reAuthenticating = true;
+        $route.reload();
+    };
+
     // Display login screen if a whole new set of credentials is needed
     $scope.$on('guacInvalidCredentials', function loginInvalid(event, parameters, error) {
+
+        $scope.applicationState = ApplicationState.AWAITING_CREDENTIALS;
         $scope.page.title = 'APP.NAME';
         $scope.page.bodyClassName = '';
+
         $scope.loginHelpText = null;
         $scope.acceptedCredentials = {};
         $scope.expectedCredentials = error.expected;
-        $scope.fatalError = null;
+
     });
 
     // Prompt for remaining credentials if provided credentials were not enough
     $scope.$on('guacInsufficientCredentials', function loginInsufficient(event, parameters, error) {
+
+        $scope.applicationState = ApplicationState.AWAITING_CREDENTIALS;
         $scope.page.title = 'APP.NAME';
         $scope.page.bodyClassName = '';
+
         $scope.loginHelpText = error.translatableMessage;
         $scope.acceptedCredentials = parameters;
         $scope.expectedCredentials = error.expected;
-        $scope.fatalError = null;
+
     });
 
     // Replace absolutely all content with an error message if the page itself
     // cannot be displayed due to an error
     $scope.$on('guacFatalPageError', function fatalPageError(error) {
+
+        $scope.applicationState = ApplicationState.FATAL_ERROR;
         $scope.page.title = 'APP.NAME';
         $scope.page.bodyClassName = '';
+
         $scope.fatalError = error;
+
+    });
+
+    // Replace the overall user interface with an informational message if the
+    // user has manually logged out
+    $scope.$on('guacLogout', function loggedOut() {
+        $scope.applicationState = ApplicationState.LOGGED_OUT;
+        $scope.reAuthenticating = false;
     });
 
     // Ensure new pages always start with clear keyboard state
@@ -209,10 +289,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
             // Clear login screen if route change was successful (and thus
             // login was either successful or not required)
-            $scope.loginHelpText = null;
-            $scope.acceptedCredentials = null;
-            $scope.expectedCredentials = null;
-            $scope.fatalError = null;
+            $scope.applicationState = ApplicationState.READY;
 
             // Set title
             var title = current.$$route.title;

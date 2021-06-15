@@ -175,7 +175,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
 
                 // If an old token existed, request that the token be revoked
                 if (currentToken) {
-                    service.logout().catch(angular.noop)
+                    service.revokeToken(currentToken).catch(angular.noop);
                 }
 
                 // Notify of login and new token
@@ -253,6 +253,24 @@ angular.module('auth').factory('authenticationService', ['$injector',
     };
 
     /**
+     * Makes a request to revoke an authentication token using the token REST
+     * API endpoint, returning a promise that succeeds only if the token was
+     * successfully revoked.
+     *
+     * @param {string} token
+     *     The authentication token to revoke.
+     *
+     * @returns {Promise}
+     *     A promise which succeeds only if the token was successfully revoked.
+     */
+    service.revokeToken = function revokeToken(token) {
+        return requestService({
+            method: 'DELETE',
+            url: 'api/tokens/' + token
+        });
+    };
+
+    /**
      * Makes a request to authenticate a user using the token REST API endpoint
      * with a username and password, ignoring any currently-stored token, 
      * returning a promise that succeeds only if the login operation was
@@ -276,8 +294,8 @@ angular.module('auth').factory('authenticationService', ['$injector',
     };
 
     /**
-     * Makes a request to logout a user using the login REST API endpoint, 
-     * returning a promise succeeds only if the logout operation was
+     * Makes a request to logout a user using the token REST API endpoint,
+     * returning a promise that succeeds only if the logout operation was
      * successful.
      * 
      * @returns {Promise}
@@ -294,10 +312,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
         $rootScope.$broadcast('guacLogout', token);
 
         // Delete old token
-        return requestService({
-            method: 'DELETE',
-            url: 'api/tokens/' + token
-        });
+        return service.revokeToken(token);
 
     };
 

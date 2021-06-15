@@ -38,41 +38,48 @@
 
         <title ng-bind="page.title | translate"></title>
     </head>
-    <body ng-class="page.bodyClassName">
+    <body ng-cloak translate-cloak ng-class="page.bodyClassName" ng-switch="applicationState">
 
-        <div ng-if="!fatalError">
-
-            <!-- Content for logged-in users -->
-            <div ng-if="!expectedCredentials">
-
-                <!-- Global status/error dialog -->
-                <div ng-class="{shown: guacNotification.getStatus()}" class="status-outer">
-                    <div class="status-middle">
-                        <guac-notification notification="guacNotification.getStatus()"></guac-notification>
-                    </div>
+        <!-- Manually logged-out -->
+        <div class="logged-out-modal" ng-switch-when="loggedOut">
+            <guac-modal>
+                <div class="notification">
+                    <p translate="APP.INFO_LOGGED_OUT"></p>
+                    <p>
+                        <button translate="APP.ACTION_LOGIN_AGAIN" ng-disabled="reAuthenticating"
+                                ng-click="reAuthenticate()"></button>
+                    </p>
                 </div>
-
-                <div id="content" ng-view>
-                </div>
-
-            </div>
-
-            <!-- Login screen for logged-out users -->
-            <guac-login ng-show="expectedCredentials"
-                        help-text="loginHelpText"
-                        form="expectedCredentials"
-                        values="acceptedCredentials"></guac-login>
-
+            </guac-modal>
         </div>
 
         <!-- Absolute fatal error -->
-        <div ng-if="fatalError" ng-class="{shown: fatalError}" class="fatal-page-error-outer">
-            <div class="fatal-page-error-middle">
+        <div class="fatal-page-error-modal" ng-switch-when="fatalError">
+            <guac-modal>
                 <div class="fatal-page-error">
                     <h1 translate="APP.DIALOG_HEADER_ERROR"></h1>
                     <p translate="APP.ERROR_PAGE_UNAVAILABLE"></p>
                 </div>
+            </guac-modal>
+        </div>
+
+        <!-- Login screen for logged-out users -->
+        <guac-login ng-switch-when="awaitingCredentials"
+                    help-text="loginHelpText"
+                    form="expectedCredentials"
+                    values="acceptedCredentials"></guac-login>
+
+        <!-- Content for logged-in users -->
+        <div ng-switch-default>
+
+            <!-- Global status/error dialog -->
+            <guac-modal class="global-status-modal" ng-if="guacNotification.getStatus()">
+                <guac-notification notification="guacNotification.getStatus()"></guac-notification>
+            </guac-modal>
+
+            <div id="content" ng-view>
             </div>
+
         </div>
 
         <!-- Polyfills -->

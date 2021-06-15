@@ -17,26 +17,13 @@
  * under the License.
  */
 
-.global-status-modal guac-modal {
-    background: rgba(0, 0, 0, 0.5);
-}
-
-.global-status-modal .notification {
-
-    width: 75%;
-    max-width: 5in;
-    margin-left: auto;
-    margin-right: auto;
-    overflow: auto;
-
-    text-align: left;
-    
-}
-
-.global-status-modal .notification .body {
-    margin: 1.25em;
-}
-
-.global-status-modal .notification .buttons {
-    margin: 1em;
-}
+/**
+ * A directive for displaying arbitrary modal content.
+ */
+angular.module('notification').directive('guacModal', [function guacModal() {
+    return {
+        restrict: 'E',
+        templateUrl: 'app/notification/templates/guacModal.html',
+        transclude: true
+    };
+}]);
