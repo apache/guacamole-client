@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +41,6 @@ import org.apache.guacamole.properties.StringSetProperty;
 import org.apache.guacamole.resource.Resource;
 import org.apache.guacamole.resource.ResourceServlet;
 import org.apache.guacamole.resource.SequenceResource;
-import org.apache.guacamole.resource.WebApplicationResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,6 +101,22 @@ public class ExtensionModule extends ServletModule {
         @Override
         public String getName() {
             return "skip-if-unavailable";
+        }
+
+    };
+
+    /**
+     * A comma-separated list of the namespaces of all extensions that should
+     * be loaded in a specific order. The special value "*" can be used in
+     * lieu of a namespace to represent all extensions that are not listed. All
+     * extensions explicitly listed will be sorted in the order given, while
+     * all extensions not explicitly listed will be sorted by their filenames.
+     */
+    public static final ExtensionOrderProperty EXTENSION_PRIORITY = new ExtensionOrderProperty() {
+
+        @Override
+        public String getName() {
+            return "extension-priority";
         }
 
     };
@@ -395,8 +411,100 @@ public class ExtensionModule extends ServletModule {
     }
 
     /**
+     * Returns a comparator that sorts extensions by their desired load order,
+     * as dictated by the "extension-priority" property and their filenames.
+     *
+     * @return
+     *     A comparator that sorts extensions by their desired load order.
+     */
+    private Comparator<Extension> getExtensionLoadOrder() {
+
+        // Parse desired sort order of extensions
+        try {
+            return environment.getProperty(EXTENSION_PRIORITY, ExtensionOrderProperty.DEFAULT_COMPARATOR);
+        }
+
+        // Sort by filename if the desired order cannot be read
+        catch (GuacamoleException e) {
+            logger.warn("The list of extensions specified via the \"{}\" property could not be parsed: {}", EXTENSION_PRIORITY.getName(), e.getMessage());
+            logger.debug("Unable to parse \"{}\" property.", EXTENSION_PRIORITY.getName(), e);
+            return ExtensionOrderProperty.DEFAULT_COMPARATOR;
+        }
+
+    }
+
+    /**
+     * Returns a list of all installed extensions in the order they should be
+     * loaded. Extension load order is dictated by the "extension-priority"
+     * property and by extension filename. Each extension within
+     * GUACAMOLE_HOME/extensions is read and validated, but not fully loaded.
+     * It is the responsibility of the caller to continue the load process with
+     * the extensions in the returned list.
+     *
+     * @return
+     *     A list of all installed extensions, ordered by load priority.
+     */
+    private List<Extension> getExtensions() {
+
+        // Retrieve and validate extensions directory
+        File extensionsDir = new File(environment.getGuacamoleHome(), EXTENSIONS_DIRECTORY);
+        if (!extensionsDir.isDirectory())
+            return Collections.emptyList();
+
+        // Retrieve list of all extension files within extensions directory
+        File[] extensionFiles = extensionsDir.listFiles(new FileFilter() {
+
+            @Override
+            public boolean accept(File file) {
+                return file.isFile() && file.getName().endsWith(EXTENSION_SUFFIX);
+            }
+
+        });
+
+        // Verify contents are accessible
+        if (extensionFiles == null) {
+            logger.warn("Although GUACAMOLE_HOME/" + EXTENSIONS_DIRECTORY + " exists, its contents cannot be read.");
+            return Collections.emptyList();
+        }
+
+        // Read (but do not fully load) each extension within the extension
+        // directory
+        List<Extension> extensions = new ArrayList<>(extensionFiles.length);
+        for (File extensionFile : extensionFiles) {
+
+            logger.debug("Reading extension: \"{}\"", extensionFile.getName());
+
+            try {
+
+                // Load extension from file
+                Extension extension = new Extension(getParentClassLoader(), extensionFile);
+
+                // Validate Guacamole version of extension
+                if (!isCompatible(extension.getGuacamoleVersion())) {
+                    logger.debug("Declared Guacamole version \"{}\" of extension \"{}\" is not compatible with this version of Guacamole.",
+                            extension.getGuacamoleVersion(), extensionFile.getName());
+                    throw new GuacamoleServerException("Extension \"" + extension.getName() + "\" is not "
+                            + "compatible with this version of Guacamole.");
+                }
+
+                extensions.add(extension);
+
+            }
+            catch (GuacamoleException e) {
+                logger.error("Extension \"{}\" could not be loaded: {}", extensionFile.getName(), e.getMessage());
+                logger.debug("Unable to load extension.", e);
+            }
+
+        }
+
+        extensions.sort(getExtensionLoadOrder());
+        return extensions;
+
+    }
+
+    /**
      * Loads all extensions within the GUACAMOLE_HOME/extensions directory, if
-     * any, adding their static resource to the given resoure collections.
+     * any, adding their static resource to the given resource collections.
      *
      * @param javaScriptResources
      *     A modifiable collection of static JavaScript resources which may
@@ -420,84 +528,57 @@ public class ExtensionModule extends ServletModule {
             Collection<Resource> cssResources,
             Set<String> toleratedAuthProviders) {
 
-        // Retrieve and validate extensions directory
-        File extensionsDir = new File(environment.getGuacamoleHome(), EXTENSIONS_DIRECTORY);
-        if (!extensionsDir.isDirectory())
-            return;
+        // Advise of current extension load order and how the order may be
+        // changed
+        List<Extension> extensions = getExtensions();
+        if (extensions.size() > 1) {
+            logger.info("Multiple extensions are installed and will be "
+                    + "loaded in order of decreasing priority:");
 
-        // Retrieve list of all extension files within extensions directory
-        File[] extensionFiles = extensionsDir.listFiles(new FileFilter() {
-
-            @Override
-            public boolean accept(File file) {
-                return file.isFile() && file.getName().endsWith(EXTENSION_SUFFIX);
+            for (Extension extension : extensions) {
+                logger.info(" - [{}] \"{}\" ({})", extension.getNamespace(),
+                        extension.getName(), extension.getFile());
             }
 
-        });
-
-        // Verify contents are accessible
-        if (extensionFiles == null) {
-            logger.warn("Although GUACAMOLE_HOME/" + EXTENSIONS_DIRECTORY + " exists, its contents cannot be read.");
-            return;
+            logger.info("To change this order, set the \"{}\" property or "
+                    + "rename the extension files. The default priority of "
+                    + "extensions is dictated by the sort order of their "
+                    + "filenames.", EXTENSION_PRIORITY.getName());
         }
 
-        // Sort files lexicographically
-        Arrays.sort(extensionFiles);
+        // Load all extensions
+        for (Extension extension : extensions) {
 
-        // Load each extension within the extension directory
-        for (File extensionFile : extensionFiles) {
+            // Add any JavaScript / CSS resources
+            javaScriptResources.addAll(extension.getJavaScriptResources().values());
+            cssResources.addAll(extension.getCSSResources().values());
 
-            logger.debug("Loading extension: \"{}\"", extensionFile.getName());
+            // Attempt to load all authentication providers
+            bindAuthenticationProviders(extension.getAuthenticationProviderClasses(), toleratedAuthProviders);
 
-            try {
+            // Attempt to load all listeners
+            bindListeners(extension.getListenerClasses());
 
-                // Load extension from file
-                Extension extension = new Extension(getParentClassLoader(), extensionFile);
+            // Add any translation resources
+            serveLanguageResources(extension.getTranslationResources());
 
-                // Validate Guacamole version of extension
-                if (!isCompatible(extension.getGuacamoleVersion())) {
-                    logger.debug("Declared Guacamole version \"{}\" of extension \"{}\" is not compatible with this version of Guacamole.",
-                            extension.getGuacamoleVersion(), extensionFile.getName());
-                    throw new GuacamoleServerException("Extension \"" + extension.getName() + "\" is not "
-                            + "compatible with this version of Guacamole.");
-                }
+            // Add all HTML patch resources
+            patchResourceService.addPatchResources(extension.getHTMLResources().values());
 
-                // Add any JavaScript / CSS resources
-                javaScriptResources.addAll(extension.getJavaScriptResources().values());
-                cssResources.addAll(extension.getCSSResources().values());
+            // Add all static resources under namespace-derived prefix
+            String staticResourcePrefix = "/app/ext/" + extension.getNamespace() + "/";
+            serveStaticResources(staticResourcePrefix, extension.getStaticResources());
 
-                // Attempt to load all authentication providers
-                bindAuthenticationProviders(extension.getAuthenticationProviderClasses(), toleratedAuthProviders);
+            // Serve up the small favicon if provided
+            if(extension.getSmallIcon() != null)
+                serve("/images/logo-64.png").with(new ResourceServlet(extension.getSmallIcon()));
 
-                // Attempt to load all listeners
-                bindListeners(extension.getListenerClasses());
+            // Serve up the large favicon if provided
+            if(extension.getLargeIcon()!= null)
+                serve("/images/logo-144.png").with(new ResourceServlet(extension.getLargeIcon()));
 
-                // Add any translation resources
-                serveLanguageResources(extension.getTranslationResources());
-
-                // Add all HTML patch resources
-                patchResourceService.addPatchResources(extension.getHTMLResources().values());
-
-                // Add all static resources under namespace-derived prefix
-                String staticResourcePrefix = "/app/ext/" + extension.getNamespace() + "/";
-                serveStaticResources(staticResourcePrefix, extension.getStaticResources());
-
-                // Serve up the small favicon if provided
-                if(extension.getSmallIcon() != null)
-                    serve("/images/logo-64.png").with(new ResourceServlet(extension.getSmallIcon()));
-
-                // Serve up the large favicon if provided
-                if(extension.getLargeIcon()!= null)
-                    serve("/images/logo-144.png").with(new ResourceServlet(extension.getLargeIcon()));
-
-                // Log successful loading of extension by name
-                logger.info("Extension \"{}\" loaded.", extension.getName());
-
-            }
-            catch (GuacamoleException e) {
-                logger.error("Extension \"{}\" could not be loaded: {}", extensionFile.getName(), e.getMessage());
-                logger.debug("Unable to load extension.", e);
-            }
+            // Log successful loading of extension by name
+            logger.info("Extension \"{}\" ({}) loaded.", extension.getName(), extension.getNamespace());
 
         }
 

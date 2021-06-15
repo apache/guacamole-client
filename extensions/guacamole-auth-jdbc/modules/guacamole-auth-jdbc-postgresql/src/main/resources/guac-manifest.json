@@ -3,7 +3,7 @@
     "guacamoleVersion" : "1.3.0",
 
     "name"      : "PostgreSQL Authentication",
-    "namespace" : "guac-postgresql",
+    "namespace" : "postgresql",
 
     "authProviders" : [
         "org.apache.guacamole.auth.postgresql.PostgreSQLAuthenticationProvider",
