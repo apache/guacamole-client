@@ -62,8 +62,9 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
     /**
      * Object which serves as a surrogate interface, encapsulating a Guacamole
-     * client while it is active, allowing it to be detached and reattached
-     * from different client views.
+     * client while it is active, allowing it to be maintained in the
+     * background. One or more ManagedClients are grouped within
+     * ManagedClientGroups before being attached to the client view.
      * 
      * @constructor
      * @param {ManagedClient|Object} [template={}]

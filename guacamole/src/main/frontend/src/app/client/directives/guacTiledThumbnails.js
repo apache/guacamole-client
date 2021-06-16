@@ -18,22 +18,22 @@
  */
 
 /**
- * A directive which displays one or more Guacamole clients in an evenly-tiled
- * view. The number of rows and columns used for the arrangement of tiles is
- * automatically determined by the number of clients present.
+ * A directive for displaying a group of Guacamole clients as a non-interactive
+ * thumbnail of tiled client displays.
  */
-angular.module('client').directive('guacTiledClients', [function guacTiledClients() {
+angular.module('client').directive('guacTiledThumbnails', [function guacTiledThumbnails() {
 
     var directive = {
         restrict: 'E',
-        templateUrl: 'app/client/templates/guacTiledClients.html',
+        replace: true,
+        templateUrl: 'app/client/templates/guacTiledThumbnails.html'
     };
 
     directive.scope = {
 
         /**
-         * The group of Guacamole clients that should be displayed in an
-         * evenly-tiled grid arrangement.
+         * The group of clients to display as a thumbnail of tiled client
+         * displays.
          *
          * @type ManagedClientGroup
          */
@@ -42,38 +42,7 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
     };
 
     directive.controller = ['$scope', '$injector', '$element',
-            function guacTiledClientsController($scope, $injector, $element) {
-
-        /**
-         * Assigns keyboard focus to the given client, allowing that client to
-         * receive and handle keyboard events. Multiple clients may have
-         * keyboard focus simultaneously.
-         *
-         * @param {ManagedClient} client
-         *     The client that should receive keyboard focus.
-         */
-        $scope.assignFocus = function assignFocus(client) {
-
-            // Clear focus of all other clients
-            $scope.clientGroup.clients.forEach(client => {
-                client.clientProperties.focused = false;
-            });
-
-            client.clientProperties.focused = true;
-
-        };
-
-        /**
-         * Returns whether multiple clients are currently shown within the
-         * tiled grid.
-         *
-         * @returns {Boolean}
-         *     true if two or more clients are currently present, false
-         *     otherwise.
-         */
-        $scope.hasMultipleClients = function hasMultipleClients() {
-            return $scope.clientGroup && $scope.clientGroup.clients.length > 1;
-        };
+            function guacTiledThumbnailsController($scope, $injector, $element) {
 
        /**
          * Returns the CSS width that should be applied to each tile to

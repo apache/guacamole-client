@@ -9,12 +9,7 @@
             <div class="client-body" guac-touch-drag="clientDrag" guac-touch-pinch="clientPinch">
 
                 <!-- All connections in current display -->
-                <guac-tiled-clients clients="clients"></guac-tiled-clients>
-
-                <!-- All other active connections -->
-                <div id="other-connections">
-                    <guac-client-panel clients="otherClients"></guac-client-panel>
-                </div>
+                <guac-tiled-clients client-group="clientGroup"></guac-tiled-clients>
 
             </div>
 
@@ -52,9 +47,9 @@
 
             <!-- Stationary header -->
             <div class="header">
-                <h2 ng-hide="rootConnectionGroups">{{client.name}}</h2>
+                <h2 ng-hide="rootConnectionGroups">{{ getName(clientGroup) }}</h2>
                 <h2 class="connection-select-menu" ng-show="rootConnectionGroups">
-                    <guac-menu menu-title="client.name" interactive="true">
+                    <guac-menu menu-title="getName(clientGroup)" interactive="true">
                         <div class="all-connections">
                             <guac-group-list-filter connection-groups="rootConnectionGroups"
                                 filtered-connection-groups="filteredRootConnectionGroups"

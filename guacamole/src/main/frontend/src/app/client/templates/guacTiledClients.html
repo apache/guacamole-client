@@ -1,12 +1,12 @@
 <ul class="tiled-client-list" ng-class="{  'multiple-clients' : hasMultipleClients() }">
 
     <li class="client-tile"
-        ng-repeat="client in clients"
+        ng-repeat="client in clientGroup.clients"
         ng-style="{ 'width' : getTileWidth(), 'height' : getTileHeight() }"
         ng-class="{ 'focused' : client.clientProperties.focused }"
         ng-click="assignFocus(client)">
 
-        <h3>{{ getClientTitle(client) }}</h3>
+        <h3>{{ client.title }}</h3>
         <guac-client client="client"></guac-client>
 
         <!-- Client-specific status/error dialog -->

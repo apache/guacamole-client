@@ -26,6 +26,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Required types
     var ConnectionGroup    = $injector.get('ConnectionGroup');
     var ManagedClient      = $injector.get('ManagedClient');
+    var ManagedClientGroup = $injector.get('ManagedClientGroup');
     var ManagedClientState = $injector.get('ManagedClientState');
     var ManagedFilesystem  = $injector.get('ManagedFilesystem');
     var Protocol           = $injector.get('Protocol');
@@ -152,37 +153,66 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
 
     /**
-     * The client which should be attached to the client UI.
+     * The set of clients that should be attached to the client UI. This will
+     * be immediately initialized by a call to updateAttachedClients() below.
      *
-     * @type ManagedClient[]
+     * @type ManagedClientGroup[]
      */
-    $scope.clients = [];
+    $scope.clientGroup = null;
 
     /**
-     * All active clients which are not any current client ($scope.clients).
-     * Each key is the ID of the connection used by that client.
-     *
-     * @type Object.<String, ManagedClient>
+     * @borrows ManagedClientGroup.getName
      */
-    $scope.otherClients = {};
+    $scope.getName = ManagedClientGroup.getName;
 
     /**
-     * Reloads the contents of $scope.clients and $scope.otherClients to
-     * reflect the client IDs currently listed in the URL.
+     * Reloads the contents of $scope.clientGroup to reflect the client IDs
+     * currently listed in the URL.
      */
     var updateAttachedClients = function updateAttachedClients() {
 
-        var ids = $routeParams.id.split(/[ +]/);
+        var previousClients = $scope.clientGroup ? $scope.clientGroup.clients.slice() : [];
+        detachCurrentGroup();
 
-        $scope.clients = [];
-        $scope.otherClients = angular.extend({}, guacClientManager.getManagedClients());
+        $scope.clientGroup = guacClientManager.getManagedClientGroup($routeParams.id);
+        $scope.clientGroup.attached = true;
 
-        // Separate active clients by whether they should be displayed within
-        // the current view
-        ids.forEach(function groupClients(id) {
-            $scope.clients.push(guacClientManager.getManagedClient(id));
-            delete $scope.otherClients[id];
-        });
+        // Ensure menu is closed if updated view is not a modification of the
+        // current view (has no clients in common). The menu should remain open
+        // only while the current view is being modified, not when navigating
+        // to an entirely different view.
+        if (_.isEmpty(_.intersection(previousClients, $scope.clientGroup.clients)))
+            $scope.menu.shown = false;
+
+    };
+
+    /**
+     * Detaches the ManagedClientGroup currently attached to the client
+     * interface via $scope.clientGroup such that the interface can be safely
+     * cleaned up or another ManagedClientGroup can take its place.
+     */
+    var detachCurrentGroup = function detachCurrentGroup() {
+
+        var managedClientGroup = $scope.clientGroup;
+        if (managedClientGroup) {
+
+            // Flag group as detached
+            managedClientGroup.attached = false;
+
+            // Remove all disconnected clients from management (the user has
+            // seen their status)
+            _.filter(managedClientGroup.clients, client => {
+
+                var connectionState = client.clientState.connectionState;
+                return connectionState === ManagedClientState.ConnectionState.DISCONNECTED
+                 || connectionState === ManagedClientState.ConnectionState.TUNNEL_ERROR
+                 || connectionState === ManagedClientState.ConnectionState.CLIENT_ERROR;
+
+            }).forEach(client => {
+                guacClientManager.removeManagedClient(client.id);
+            });
+
+        }
 
     };
 
@@ -424,7 +454,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             $scope.menu.connectionParameters = ManagedClient.getArgumentModel($scope.client);
 
         // Disable client keyboard if the menu is shown
-        angular.forEach($scope.clients, function updateKeyboardEnabled(client) {
+        angular.forEach($scope.clientGroup.clients, function updateKeyboardEnabled(client) {
             client.clientProperties.keyboardEnabled = !menuShown;
         });
 
@@ -606,15 +636,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      *     otherwise.
      */
     $scope.isConnectionUnstable = function isConnectionUnstable() {
-
-        var unstable = false;
-
-        angular.forEach($scope.clients, function checkStability(client) {
-            unstable |= client.clientState.tunnelUnstable;
-        });
-
-        return unstable;
-
+        return _.findIndex($scope.clientGroup.clients, client => client.clientState.tunnelUnstable) !== -1;
     };
 
 
@@ -830,22 +852,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     // Clean up when view destroyed
     $scope.$on('$destroy', function clientViewDestroyed() {
-
-        // Remove client from client manager if no longer connected
-        var managedClient = $scope.client;
-        if (managedClient) {
-
-            // Get current connection state
-            var connectionState = managedClient.clientState.connectionState;
-
-            // If disconnected, remove from management
-            if (connectionState === ManagedClientState.ConnectionState.DISCONNECTED
-             || connectionState === ManagedClientState.ConnectionState.TUNNEL_ERROR
-             || connectionState === ManagedClientState.ConnectionState.CLIENT_ERROR)
-                guacClientManager.removeManagedClient(managedClient.id);
-
-        }
-
+        detachCurrentGroup();
     });
 
 }]);

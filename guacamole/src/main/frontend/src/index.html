@@ -80,6 +80,11 @@
             <div id="content" ng-view>
             </div>
 
+            <!-- All active connections -->
+            <div id="other-connections">
+                <guac-client-panel client-groups="getManagedClientGroups()"></guac-client-panel>
+            </div>
+
         </div>
 
         <!-- Polyfills -->

@@ -24,11 +24,12 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         function indexController($scope, $injector) {
 
     // Required services
-    var $document        = $injector.get('$document');
-    var $route           = $injector.get('$route');
-    var $window          = $injector.get('$window');
-    var clipboardService = $injector.get('clipboardService');
-    var guacNotification = $injector.get('guacNotification');
+    var $document         = $injector.get('$document');
+    var $route            = $injector.get('$route');
+    var $window           = $injector.get('$window');
+    var clipboardService  = $injector.get('clipboardService');
+    var guacNotification  = $injector.get('guacNotification');
+    var guacClientManager = $injector.get('guacClientManager');
 
     /**
      * The error that prevents the current page from rendering at all. If no
@@ -42,6 +43,14 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
      * The notification service.
      */
     $scope.guacNotification = guacNotification;
+
+    /**
+     * All currently-active connections, grouped into their corresponding
+     * tiled views.
+     *
+     * @type ManagedClientGroup[]
+     */
+    $scope.getManagedClientGroups = guacClientManager.getManagedClientGroups;
 
     /**
      * The message to display to the user as instructions for the login

@@ -20,7 +20,7 @@
 #other-connections .client-panel {
 
     display: none;
-    position: absolute;
+    position: fixed;
     right: 0;
     bottom: 0;
 
