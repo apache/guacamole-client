@@ -92,6 +92,7 @@
     background: black;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 
+    animation: 0.1s linear 0s popin;
     opacity: 0.5;
     transition: opacity 0.25s;
 

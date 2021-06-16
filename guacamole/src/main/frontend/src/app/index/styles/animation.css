@@ -48,3 +48,12 @@
     from { opacity: 1; }
     to   { opacity: 0; }
 }
+
+/**
+ * popin: Increase in size and opacity from invisibly tiny and transparent to
+ * full size and opaque.
+ */
+@keyframes popin {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); }
+}
