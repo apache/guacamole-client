@@ -87,7 +87,7 @@
                            translate="CLIENT.HELP_SHARE_LINK"
                            translate-values="{LINKS : getShareLinkCount()}"></p>
                         <table>
-                            <tr ng-repeat="link in client.shareLinks | toArray | orderBy: value.name">
+                            <tr ng-repeat="link in focusedClient.shareLinks | toArray | orderBy: value.name">
                                 <th>{{link.value.name}}</th>
                                 <td><a href="{{link.value.href}}" target="_blank">{{link.value.href}}</a></td>
                             </tr>
@@ -105,19 +105,19 @@
                 </div>
 
                 <!-- Devices -->
-                <div class="menu-section" id="devices" ng-show="client.filesystems.length">
+                <div class="menu-section" id="devices" ng-if="focusedClient.filesystems.length">
                     <h3>{{'CLIENT.SECTION_HEADER_DEVICES' | translate}}</h3>
                     <div class="content">
-                        <div class="device filesystem" ng-repeat="filesystem in client.filesystems" ng-click="showFilesystemMenu(filesystem)">
+                        <div class="device filesystem" ng-repeat="filesystem in focusedClient.filesystems" ng-click="showFilesystemMenu(filesystem)">
                             {{filesystem.name}}
                         </div>
                     </div>
                 </div>
 
                 <!-- Connection parameters which may be modified while the connection is open -->
-                <div class="menu-section connection-parameters" id="connection-settings" ng-show="client.protocol">
-                    <guac-form namespace="getProtocolNamespace(client.protocol)"
-                               content="client.forms"
+                <div class="menu-section connection-parameters" id="connection-settings" ng-if="focusedClient.protocol">
+                    <guac-form namespace="getProtocolNamespace(focusedClient.protocol)"
+                               content="focusedClient.forms"
                                model="menu.connectionParameters"
                                model-only="true"></guac-form>
                 </div>

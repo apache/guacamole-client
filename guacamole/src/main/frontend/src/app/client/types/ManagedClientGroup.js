@@ -20,7 +20,7 @@
 /**
  * Provides the ManagedClientGroup class used by the guacClientManager service.
  */
-angular.module('client').factory('ManagedClientGroup', [function defineManagedClientGroup() {
+angular.module('client').factory('ManagedClientGroup', ['$injector', function defineManagedClientGroup($injector) {
 
     /**
      * Object which serves as a grouping of ManagedClients. Each
@@ -201,7 +201,15 @@ angular.module('client').factory('ManagedClientGroup', [function defineManagedCl
      *     ManagedClientGroup.
      */
     ManagedClientGroup.getName = function getName(group) {
-        return _.filter(group.clients, (client => !!client.name)).map(client => client.name).join(', ') || '...';
+
+        // Generate a name from ONLY the focused clients, unless there are no
+        // focused clients
+        var relevantClients = _.filter(group.clients, client => client.clientProperties.focused);
+        if (!relevantClients.length)
+            relevantClients = group.clients;
+
+        return _.filter(relevantClients, (client => !!client.name)).map(client => client.name).join(', ') || '...';
+
     };
 
     return ManagedClientGroup;

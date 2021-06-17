@@ -29,14 +29,6 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
         scope: {
 
             /**
-             * The client whose file transfers should be managed by this
-             * directive.
-             *
-             * @type ManagedClient
-             */
-            client : '=',
-
-            /**
              * @type ManagedFilesystem
              */
             filesystem : '='
@@ -116,7 +108,7 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
              *     The file to download.
              */
             $scope.downloadFile = function downloadFile(file) {
-                ManagedFilesystem.downloadFile($scope.client, $scope.filesystem, file.streamName);
+                ManagedFilesystem.downloadFile($scope.filesystem, file.streamName);
             };
 
             /**

@@ -156,9 +156,19 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     $scope.applyParameterChanges = function applyParameterChanges() {
         angular.forEach($scope.menu.connectionParameters, function sendArgv(value, name) {
-            ManagedClient.setArgument($scope.client, name, value);
+            if ($scope.focusedClient)
+                ManagedClient.setArgument($scope.focusedClient, name, value);
         });
     };
+
+    /**
+     * The currently-focused client within the current ManagedClientGroup. If
+     * there is no current group, no client is focused, or multiple clients are
+     * focused, this will be null.
+     *
+     * @type ManagedClient
+     */
+    $scope.focusedClient = null;
 
     /**
      * The set of clients that should be attached to the client UI. This will
@@ -172,6 +182,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * @borrows ManagedClientGroup.getName
      */
     $scope.getName = ManagedClientGroup.getName;
+
+    /**
+     * @borrows ManagedClientGroup.getTitle
+     */
+    $scope.getTitle = ManagedClientGroup.getTitle;
 
     /**
      * Reloads the contents of $scope.clientGroup to reflect the client IDs
@@ -230,6 +245,27 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // ... and re-initialize those sets if the URL has changed without
     // reloading the route
     $scope.$on('$routeUpdate', updateAttachedClients);
+
+    /**
+     * Returns the currently-focused ManagedClient. If there is no such client,
+     * or multiple clients are focused, null is returned.
+     *
+     * @returns {ManagedClient}
+     *     The currently-focused client, or null if there are no focused
+     *     clients or if multiple clients are focused.
+     */
+    $scope.getFocusedClient = function getFocusedClient() {
+
+        var managedClientGroup = $scope.clientGroup;
+        if (managedClientGroup) {
+            var focusedClients = _.filter(managedClientGroup.clients, client => client.clientProperties.focused);
+            if (focusedClients.length === 1)
+                return focusedClients[0];
+        }
+
+        return null;
+
+    };
 
     /**
      * The root connection groups of the connection hierarchy that should be
@@ -456,11 +492,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             $scope.applyParameterChanges();
         }
 
-        // Obtain snapshot of current editable connection parameters when menu
-        // is opened
-        else if (menuShown)
-            $scope.menu.connectionParameters = ManagedClient.getArgumentModel($scope.client);
-
         // Disable client keyboard if the menu is shown
         angular.forEach($scope.clientGroup.clients, function updateKeyboardEnabled(client) {
             client.clientProperties.keyboardEnabled = !menuShown;
@@ -468,8 +499,25 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
+    // Automatically track and cache the currently-focused client
+    $scope.$watch('getFocusedClient()', function focusedClientChanged(client) {
+
+        // Apply any parameter changes when focus is changing (as
+        // applyParameterChanges() depends on the value of focusedClient, this
+        // must be called BEFORE updating focusedClient
+        $scope.applyParameterChanges();
+
+        $scope.focusedClient = client;
+
+        // Update available connection parameters, if there is a focused
+        // client
+        $scope.menu.connectionParameters = $scope.focusedClient ?
+            ManagedClient.getArgumentModel($scope.focusedClient) : {};
+
+    });
+
     // Update page icon when thumbnail changes
-    $scope.$watch('client.thumbnail.canvas', function thumbnailChanged(canvas) {
+    $scope.$watch('focusedClient.thumbnail.canvas', function thumbnailChanged(canvas) {
         iconService.setIcons(canvas);
     });
 
@@ -487,7 +535,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     });
 
     // Pull sharing profiles once the tunnel UUID is known
-    $scope.$watch('client.tunnel.uuid', function retrieveSharingProfiles(uuid) {
+    $scope.$watch('focusedClient.tunnel.uuid', function retrieveSharingProfiles(uuid) {
 
         // Only pull sharing profiles if tunnel UUID is actually available
         if (!uuid)
@@ -510,7 +558,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      *     The sharing profile to use to generate the sharing link.
      */
     $scope.share = function share(sharingProfile) {
-        ManagedClient.createShareLink($scope.client, sharingProfile);
+        if ($scope.focusedClient)
+            ManagedClient.createShareLink($scope.focusedClient, sharingProfile);
     };
 
     /**
@@ -521,7 +570,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      *     link, false otherwise.
      */
     $scope.isShared = function isShared() {
-        return ManagedClient.isShared($scope.client);
+        return !!$scope.focusedClient && ManagedClient.isShared($scope.focusedClient);
     };
 
     /**
@@ -534,9 +583,12 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     $scope.getShareLinkCount = function getShareLinkCount() {
 
+        if (!$scope.focusedClient)
+            return 0;
+
         // Count total number of links within the ManagedClient's share link map
         var linkCount = 0;
-        for (var dummy in $scope.client.shareLinks)
+        for (var dummy in $scope.focusedClient.shareLinks)
             linkCount++;
 
         return linkCount;
@@ -625,7 +677,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     });
 
     // Update page title when client title changes
-    $scope.$watch('client.title', function clientTitleChanged(title) {
+    $scope.$watch('getTitle(clientGroup)', function clientTitleChanged(title) {
         $scope.page.title = title;
     });
 
@@ -678,13 +730,17 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
 
     /**
-     * Immediately disconnects the currently-connected client, if any.
+     * Immediately disconnects all currently-focused clients, if any.
      */
     $scope.disconnect = function disconnect() {
 
         // Disconnect if client is available
-        if ($scope.client)
-            $scope.client.client.disconnect();
+        if ($scope.clientGroup) {
+            $scope.clientGroup.clients.forEach(client => {
+                if (client.clientProperties.focused)
+                    client.client.disconnect();
+            });
+        }
 
         // Hide menu
         $scope.menu.shown = false;
@@ -804,13 +860,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     $scope.uploadFiles = function uploadFiles(files) {
 
-        // Ignore file uploads if no attached client
-        if (!$scope.client)
-            return;
-
         // Upload each file
         for (var i = 0; i < files.length; i++)
-            ManagedClient.uploadFile($scope.client, files[i], $scope.filesystemMenuContents);
+            ManagedClient.uploadFile($scope.filesystemMenuContents.client, files[i], $scope.filesystemMenuContents);
 
     };
 
