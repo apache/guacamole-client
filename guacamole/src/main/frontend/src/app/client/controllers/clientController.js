@@ -121,6 +121,14 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         inputMethod : preferenceService.preferences.inputMethod,
 
         /**
+         * Whether translation of touch to mouse events should emulate an
+         * absolute pointer device, or a relative pointer device.
+         *
+         * @type Boolean
+         */
+        emulateAbsoluteMouse : preferenceService.preferences.emulateAbsoluteMouse,
+
+        /**
          * The current scroll state of the menu.
          *
          * @type ScrollState
