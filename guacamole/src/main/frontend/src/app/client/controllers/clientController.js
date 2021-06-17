@@ -460,12 +460,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
-    // Update last used timestamp when the active client changes
-    $scope.$watch('client', function clientChanged(client) {
-        if (client)
-            client.lastUsed = new Date().getTime();
-    });
-
     // Update page icon when thumbnail changes
     $scope.$watch('client.thumbnail.canvas', function thumbnailChanged(canvas) {
         iconService.setIcons(canvas);

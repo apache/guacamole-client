@@ -84,16 +84,6 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         this.id = template.id;
 
         /**
-         * The time that the connection was last brought to the foreground of
-         * the current tab, as the number of milliseconds elapsed since
-         * midnight of January 1, 1970 UTC. If the connection has not yet been
-         * viewed, this will be 0.
-         *
-         * @type Number
-         */
-        this.lastUsed = template.lastUsed || 0;
-
-        /**
          * The actual underlying Guacamole client.
          *
          * @type Guacamole.Client
