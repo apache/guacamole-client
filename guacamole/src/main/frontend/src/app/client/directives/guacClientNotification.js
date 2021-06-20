@@ -305,23 +305,6 @@ angular.module('client').directive('guacClientNotification', [function guacClien
                 });
             }
 
-            // Hide status and sync local clipboard once connected
-            else if (connectionState === ManagedClientState.ConnectionState.CONNECTED) {
-
-                // TODO: Move clipboard sync elsewhere
-
-                // Sync with local clipboard
-                /*
-                clipboardService.getLocalClipboard().then(function clipboardRead(data) {
-                    $scope.$broadcast('guacClipboard', data);
-                }, angular.noop);
-                */
-
-                // Hide status notification
-                $scope.status = false;
-
-            }
-
             // Hide status for all other states
             else
                 $scope.status = false;

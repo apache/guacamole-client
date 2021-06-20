@@ -207,6 +207,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         if (_.isEmpty(_.intersection(previousClients, $scope.clientGroup.clients)))
             $scope.menu.shown = false;
 
+        // Update newly-attached clients with current contents of clipboard
+        clipboardService.resyncClipboard();
+
     };
 
     /**
@@ -340,15 +343,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * @type Object.<Number, Number>
      */
     var substituteKeysPressed = {};
-
-    /**
-     * Map of all currently pressed keys (by keysym) to the clipboard contents
-     * received from the remote desktop while those keys were pressed. All keys
-     * not currently pressed will not have entries within this map.
-     *
-     * @type Object.<Number, ClipboardData>
-     */
-    var clipboardDataFromKey = {};
 
     /*
      * Check to see if all currently pressed keys are in the set of menu keys.
@@ -486,11 +480,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Update client state/behavior as visibility of the Guacamole menu changes
     $scope.$watch('menu.shown', function menuVisibilityChanged(menuShown, menuShownPreviousState) {
         
-        // Send clipboard and argument value data once menu is hidden
-        if (!menuShown && menuShownPreviousState) {
-            $scope.$broadcast('guacClipboard', $scope.client.clipboardData);
+        // Send any argument value data once menu is hidden
+        if (!menuShown && menuShownPreviousState)
             $scope.applyParameterChanges();
-        }
 
         // Disable client keyboard if the menu is shown
         angular.forEach($scope.clientGroup.clients, function updateKeyboardEnabled(client) {
@@ -519,19 +511,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Update page icon when thumbnail changes
     $scope.$watch('focusedClient.thumbnail.canvas', function thumbnailChanged(canvas) {
         iconService.setIcons(canvas);
-    });
-
-    // Watch clipboard for new data, associating it with any pressed keys
-    $scope.$watch('client.clipboardData', function clipboardChanged(data) {
-
-        // Sync local clipboard as long as the menu is not open
-        if (!$scope.menu.shown)
-            clipboardService.setLocalClipboard(data)['catch'](angular.noop);
-
-        // Associate new clipboard data with any currently-pressed key
-        for (var keysym in keysCurrentlyPressed)
-            clipboardDataFromKey[keysym] = data;
-
     });
 
     // Pull sharing profiles once the tunnel UUID is known
@@ -651,15 +630,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
-    // Update pressed keys as they are released, synchronizing the clipboard
-    // with any data that appears to have come from those key presses
+    // Update pressed keys as they are released
     $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
-
-        // Sync local clipboard with any clipboard data received while this
-        // key was pressed (if any) as long as the menu is not open
-        var clipboardData = clipboardDataFromKey[keysym];
-        if (clipboardData && !$scope.menu.shown)
-            clipboardService.setLocalClipboard(clipboardData)['catch'](angular.noop);
 
         // Deal with substitute key presses
         if (substituteKeysPressed[keysym]) {
@@ -669,10 +641,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         }
 
         // Mark key as released
-        else {
-            delete clipboardDataFromKey[keysym];
+        else
             delete keysCurrentlyPressed[keysym];
-        }
 
     });
 

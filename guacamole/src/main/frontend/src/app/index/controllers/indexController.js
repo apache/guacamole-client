@@ -208,25 +208,15 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         keyboard.reset();
     });
 
-    /**
-     * Checks whether the clipboard data has changed, firing a new
-     * "guacClipboard" event if it has.
-     */
-    var checkClipboard = function checkClipboard() {
-        clipboardService.getLocalClipboard().then(function clipboardRead(data) {
-            $scope.$broadcast('guacClipboard', data);
-        }, angular.noop);
-    };
-
     // Attempt to read the clipboard if it may have changed
-    $window.addEventListener('load',  checkClipboard, true);
-    $window.addEventListener('copy',  checkClipboard);
-    $window.addEventListener('cut',   checkClipboard);
+    $window.addEventListener('load',  clipboardService.resyncClipboard, true);
+    $window.addEventListener('copy',  clipboardService.resyncClipboard);
+    $window.addEventListener('cut',   clipboardService.resyncClipboard);
     $window.addEventListener('focus', function focusGained(e) {
 
         // Only recheck clipboard if it's the window itself that gained focus
         if (e.target === $window)
-            checkClipboard();
+            clipboardService.resyncClipboard();
 
     }, true);
 

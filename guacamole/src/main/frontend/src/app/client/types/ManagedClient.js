@@ -42,6 +42,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var $window                 = $injector.get('$window');
     var activeConnectionService = $injector.get('activeConnectionService');
     var authenticationService   = $injector.get('authenticationService');
+    var clipboardService        = $injector.get('clipboardService');
     var connectionGroupService  = $injector.get('connectionGroupService');
     var connectionService       = $injector.get('connectionService');
     var preferenceService       = $injector.get('preferenceService');
@@ -145,16 +146,6 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * @type ManagedClientThumbnail
          */
         this.thumbnail = template.thumbnail;
-
-        /**
-         * The current clipboard contents.
-         *
-         * @type ClipboardData
-         */
-        this.clipboardData = template.clipboardData || new ClipboardData({
-            type : 'text/plain',
-            data : ''
-        });
 
         /**
          * The current state of all parameters requested by the server via
@@ -448,9 +439,10 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                         ManagedClientState.setConnectionState(managedClient.clientState,
                             ManagedClientState.ConnectionState.CONNECTED);
 
-                        // Send any clipboard data already provided
-                        if (managedClient.clipboardData)
-                            ManagedClient.setClipboard(managedClient, managedClient.clipboardData);
+                        // Sync current clipboard data
+                        clipboardService.getClipboard().then((data) => {
+                            ManagedClient.setClipboard(managedClient, data);
+                        }, angular.noop);
 
                         // Begin streaming audio input if possible
                         requestAudioStream(client);
@@ -545,12 +537,11 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
                 // Set clipboard contents once stream is finished
                 reader.onend = function textComplete() {
-                    $rootScope.$apply(function updateClipboard() {
-                        managedClient.clipboardData = new ClipboardData({
-                            type : mimetype,
-                            data : data
-                        });
-                    });
+                    clipboardService.setClipboard(new ClipboardData({
+                        source : managedClient.id,
+                        type : mimetype,
+                        data : data
+                    }), managedClient)['catch'](angular.noop);
                 };
 
             }
@@ -559,12 +550,11 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             else {
                 reader = new Guacamole.BlobReader(stream, mimetype);
                 reader.onend = function blobComplete() {
-                    $rootScope.$apply(function updateClipboard() {
-                        managedClient.clipboardData = new ClipboardData({
-                            type : mimetype,
-                            data : reader.getBlob()
-                        });
-                    });
+                    clipboardService.setClipboard(new ClipboardData({
+                        source : managedClient.id,
+                        type : mimetype,
+                        data : reader.getBlob()
+                    }), managedClient)['catch'](angular.noop);
                 };
             }
 
@@ -693,7 +683,9 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
     /**
      * Sends the given clipboard data over the given Guacamole client, setting
-     * the contents of the remote clipboard to the data provided.
+     * the contents of the remote clipboard to the data provided. If the given
+     * clipboard data was originally received from that client, the data is
+     * ignored and this function has no effect.
      *
      * @param {ManagedClient} managedClient
      *     The ManagedClient over which the given clipboard data is to be sent.
@@ -702,6 +694,10 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      *     The clipboard data to send.
      */
     ManagedClient.setClipboard = function setClipboard(managedClient, data) {
+
+        // Ignore clipboard data that was received from this connection
+        if (data.source === managedClient.id)
+            return;
 
         var writer;
 

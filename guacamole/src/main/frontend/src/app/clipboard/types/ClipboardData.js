@@ -37,6 +37,15 @@ angular.module('clipboard').factory('ClipboardData', [function defineClipboardDa
         template = template || {};
 
         /**
+         * The ID of the ManagedClient handling the remote desktop connection
+         * that originated this clipboard data, or null if the data originated
+         * from the clipboard editor or local clipboard.
+         *
+         * @type {string}
+         */
+        this.source = template.source;
+
+        /**
          * The mimetype of the data currently stored within the clipboard.
          *
          * @type String

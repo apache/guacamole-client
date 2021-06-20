@@ -18,17 +18,31 @@
  */
 
 /**
- * A service for accessing local clipboard data.
+ * A service for maintaining and accessing clipboard data. If possible, this
+ * service will leverage the local clipboard. If the local clipboard is not
+ * available, an internal in-memory clipboard will be used instead.
  */
 angular.module('clipboard').factory('clipboardService', ['$injector',
         function clipboardService($injector) {
 
     // Get required services
-    var $q      = $injector.get('$q');
-    var $window = $injector.get('$window');
+    var $q                    = $injector.get('$q');
+    var $window               = $injector.get('$window');
+    var $rootScope            = $injector.get('$rootScope');
+    var sessionStorageFactory = $injector.get('sessionStorageFactory');
 
     // Required types
     var ClipboardData = $injector.get('ClipboardData');
+
+    /**
+     * Getter/setter which retrieves or sets the current stored clipboard
+     * contents. The stored clipboard contents are strictly internal to
+     * Guacamole, and may not reflect the local clipboard if local clipboard
+     * access is unavailable.
+     *
+     * @type Function
+     */
+    var storedClipboardData = sessionStorageFactory.create(new ClipboardData());
 
     var service = {};
 
@@ -175,7 +189,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      *     A promise that will resolve if setting the clipboard was successful,
      *     and will reject if it failed.
      */
-    service.setLocalClipboard = function setLocalClipboard(data) {
+    var setLocalClipboard = function setLocalClipboard(data) {
 
         var deferred = $q.defer();
 
@@ -423,7 +437,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      *     if getting the clipboard was successful, and will reject if it
      *     failed.
      */
-    service.getLocalClipboard = function getLocalClipboard() {
+    var getLocalClipboard = function getLocalClipboard() {
 
         // If the clipboard is already being read, do not overlap the read
         // attempts; instead share the result across all requests
@@ -546,6 +560,68 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
 
         return pendingRead;
 
+    };
+
+    /**
+     * Returns the current value of the internal clipboard shared across all
+     * active Guacamole connections running within the current browser tab. If
+     * access to the local clipboard is available, the internal clipboard is
+     * first synchronized with the current local clipboard contents. If access
+     * to the local clipboard is unavailable, only the internal clipboard will
+     * be used.
+     *
+     * @return {Promise.<ClipboardData>}
+     *     A promise that will resolve with the contents of the internal
+     *     clipboard, first retrieving those contents from the local clipboard
+     *     if permission to do so has been granted. This promise is always
+     *     resolved.
+     */
+    service.getClipboard = function getClipboard() {
+        return getLocalClipboard().then((data) => storedClipboardData(data), () => storedClipboardData());
+    };
+
+    /**
+     * Sets the content of the internal clipboard shared across all active
+     * Guacamole connections running within the current browser tab. If
+     * access to the local clipboard is available, the local clipboard is
+     * first set to the provided clipboard content. If access to the local
+     * clipboard is unavailable, only the internal clipboard will be used. A
+     * "guacClipboard" event will be broadcast with the assigned data once the
+     * operation has completed.
+     *
+     * @param {ClipboardData} data
+     *     The data to assign to the clipboard.
+     *
+     * @return {Promise}
+     *     A promise that will resolve after the clipboard content has been
+     *     set. This promise is always resolved.
+     */
+    service.setClipboard = function setClipboard(data) {
+        return setLocalClipboard(data).finally(() => {
+
+            // Update internal clipboard and broadcast event notifying of
+            // updated contents
+            storedClipboardData(data);
+            $rootScope.$broadcast('guacClipboard', data);
+
+            // Ensure promise is resolved (this function may be called from
+            // the promise rejection handler)
+            return data;
+
+        });
+    };
+
+    /**
+     * Resynchronizes the local and internal clipboards, setting the contents
+     * of the internal clipboard to that of the local clipboard (if local
+     * clipboard access is granted) and broadcasting a "guacClipboard" event
+     * with the current internal clipboard contents for consumption by external
+     * components like the "guacClient" directive.
+     */
+    service.resyncClipboard = function resyncClipboard() {
+        service.getClipboard().then(function clipboardRead(data) {
+            return service.setClipboard(data);
+        }, angular.noop);
     };
 
     return service;
