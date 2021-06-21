@@ -24,6 +24,7 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Properties;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.ibatis.datasource.pooled.PooledDataSource;
 import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
@@ -71,6 +72,70 @@ public class DynamicallyAuthenticatedDataSource extends PooledDataSource {
 
         });
 
+    }
+
+    @Override
+    @Inject(optional=true)
+    public void setPoolPingConnectionsNotUsedFor(
+            @Named("mybatis.pooled.pingConnectionsNotUsedFor") int milliseconds) {
+        super.setPoolPingConnectionsNotUsedFor(milliseconds);
+    }
+
+    @Override
+    @Inject(optional=true)
+    public void setPoolPingEnabled(@Named("mybatis.pooled.pingEnabled") boolean poolPingEnabled) {
+        super.setPoolPingEnabled(poolPingEnabled);
+    }
+
+    @Override
+    @Inject(optional=true)
+    public void setPoolPingQuery(@Named("mybatis.pooled.pingQuery") String poolPingQuery) {
+        super.setPoolPingQuery(poolPingQuery);
+    }
+
+    @Override
+    @Inject(optional=true)
+    public void setPoolTimeToWait(@Named("mybatis.pooled.timeToWait") int poolTimeToWait) {
+        super.setPoolTimeToWait(poolTimeToWait);
+    }
+
+    @Override
+    @Inject(optional=true)
+    public void setPoolMaximumCheckoutTime(
+            @Named("mybatis.pooled.maximumCheckoutTime") int poolMaximumCheckoutTime) {
+        super.setPoolMaximumCheckoutTime(poolMaximumCheckoutTime);
+    }
+
+    @Override
+    @Inject(optional=true)
+    public void setPoolMaximumIdleConnections(
+            @Named("mybatis.pooled.maximumIdleConnections") int poolMaximumIdleConnections) {
+        super.setPoolMaximumIdleConnections(poolMaximumIdleConnections);
+    }
+
+    @Override
+    @Inject(optional=true)
+    public void setPoolMaximumActiveConnections(
+            @Named("mybatis.pooled.maximumActiveConnections") int poolMaximumActiveConnections) {
+        super.setPoolMaximumActiveConnections(poolMaximumActiveConnections);
+    }
+
+    @Override
+    @Inject(optional=true)
+    public void setDriverProperties(@Named("JDBC.driverProperties") Properties driverProps) {
+        super.setDriverProperties(driverProps);
+    }
+
+    @Override
+    @Inject(optional=true)
+    public void setDefaultAutoCommit(@Named("JDBC.autoCommit") boolean defaultAutoCommit) {
+        super.setDefaultAutoCommit(defaultAutoCommit);
+    }
+
+    @Override
+    @Inject(optional=true)
+    public void setLoginTimeout(@Named("JDBC.loginTimeout") int loginTimeout) {
+        super.setLoginTimeout(loginTimeout);
     }
 
 }
