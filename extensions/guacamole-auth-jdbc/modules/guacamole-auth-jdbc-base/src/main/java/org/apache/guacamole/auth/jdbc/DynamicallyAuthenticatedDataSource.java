@@ -28,6 +28,8 @@ import java.util.Properties;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.ibatis.datasource.pooled.PooledDataSource;
 import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Pooled DataSource implementation which dynamically retrieves the database
@@ -36,6 +38,11 @@ import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
  */
 @Singleton
 public class DynamicallyAuthenticatedDataSource extends PooledDataSource {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(DynamicallyAuthenticatedDataSource.class);
 
     /**
      * Creates a new DynamicallyAuthenticatedDataSource which dynamically
@@ -63,6 +70,7 @@ public class DynamicallyAuthenticatedDataSource extends PooledDataSource {
             @Override
             public Connection getConnection() throws SQLException {
                 try {
+                    logger.debug("Creating new database connection for pool.");
                     return super.getConnection(environment.getUsername(), environment.getPassword());
                 }
                 catch (GuacamoleException e) {
