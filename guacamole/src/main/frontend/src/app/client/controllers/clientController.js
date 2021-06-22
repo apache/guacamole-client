@@ -106,14 +106,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         shown : false,
 
         /**
-         * Whether the Guacamole display should be scaled to fit the browser
-         * window.
-         *
-         * @type Boolean
-         */
-        autoFit : true,
-
-        /**
          * The currently selected input method. This may be any of the values
          * defined within preferenceService.inputMethods.
          *
@@ -507,7 +499,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         currentScale = Math.min(currentScale, $scope.client.clientProperties.maxScale);
 
         // Update scale based on pinch distance
-        $scope.menu.autoFit = false;
         $scope.client.clientProperties.autoFit = false;
         $scope.client.clientProperties.scale = currentScale;
 
@@ -712,42 +703,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     $scope.isConnectionUnstable = function isConnectionUnstable() {
         return _.findIndex($scope.clientGroup.clients, client => client.clientState.tunnelUnstable) !== -1;
-    };
-
-
-    $scope.zoomIn = function zoomIn() {
-        $scope.menu.autoFit = false;
-        $scope.client.clientProperties.autoFit = false;
-        $scope.client.clientProperties.scale += 0.1;
-    };
-    
-    $scope.zoomOut = function zoomOut() {
-        $scope.client.clientProperties.autoFit = false;
-        $scope.client.clientProperties.scale -= 0.1;
-    };
-
-    /**
-     * When zoom is manually set by entering a value
-     * into the controller, this method turns off autoFit,
-     * both in the menu and the clientProperties.
-     */
-    $scope.zoomSet = function zoomSet() {
-        $scope.menu.autoFit = false;
-        $scope.client.clientProperties.autoFit = false;
-    };
-    
-    $scope.changeAutoFit = function changeAutoFit() {
-        if ($scope.menu.autoFit && $scope.client.clientProperties.minScale) {
-            $scope.client.clientProperties.autoFit = true;
-        }
-        else {
-            $scope.client.clientProperties.autoFit = false;
-            $scope.client.clientProperties.scale = 1; 
-        }
-    };
-    
-    $scope.autoFitDisabled = function() {
-        return $scope.client.clientProperties.minZoom >= 1;
     };
 
     /**

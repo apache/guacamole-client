@@ -115,44 +115,6 @@
     text-align: center;
 }
 
-#guac-menu #zoom-out,
-#guac-menu #zoom-in,
-#guac-menu #zoom-state {
-    display: inline-block;
-    vertical-align: middle;
-}
-
-#guac-menu #zoom-out,
-#guac-menu #zoom-in {
-    max-width: 3em;
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 2em;
-    margin: 0.5em;
-    cursor: pointer;
-}
-
-#guac-menu #zoom-out img,
-#guac-menu #zoom-in img {
-    max-width: 100%;
-    opacity: 0.5;
-}
-
-#guac-menu #zoom-out:hover,
-#guac-menu #zoom-in:hover {
-    border: 1px solid rgba(0, 0, 0, 1);
-    background: #CDA;
-}
-
-#guac-menu #zoom-out:hover img,
-#guac-menu #zoom-in:hover img {
-    opacity: 1;
-}
-
-#guac-menu #zoom-state {
-    font-size: 2em;
-}
-
 #guac-menu #devices .device {
 
     padding: 1em;
