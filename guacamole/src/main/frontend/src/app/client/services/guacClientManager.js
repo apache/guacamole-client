@@ -95,8 +95,20 @@ angular.module('client').factory('guacClientManager', ['$injector',
 
         // Remove client from all groups
         managedClientGroups.forEach(group => {
-            _.remove(group.clients, client => (client.id === id));
-            ManagedClientGroup.recalculateTiles(group);
+            var removed = _.remove(group.clients, client => (client.id === id));
+            if (removed.length) {
+
+                // Reset focus state if client is being removed from a group
+                // that isn't currently attached (focus may otherwise be
+                // retained and result in a newly added connection unexpectedly
+                // sharing focus)
+                if (!group.attached)
+                    removed.forEach(client => { client.clientProperties.focused = false; });
+
+                // Recalculate group grid if number of clients is changing
+                ManagedClientGroup.recalculateTiles(group);
+
+            }
         });
 
         // Remove any groups that are now empty
