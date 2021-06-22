@@ -33,6 +33,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var ScrollState        = $injector.get('ScrollState');
 
     // Required services
+    var $location              = $injector.get('$location');
     var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
     var clipboardService       = $injector.get('clipboardService');
@@ -189,6 +190,49 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.getTitle = ManagedClientGroup.getTitle;
 
     /**
+     * Arbitrary context that should be exposed to the guacGroupList directive
+     * displaying the dropdown list of available connections within the
+     * Guacamole menu.
+     */
+    $scope.connectionListContext = {
+
+        /**
+         * The set of clients desired within the current view. For each client
+         * that should be present within the current view, that client's ID
+         * will map to "true" here.
+         *
+         * @type {Object.<string, boolean>}
+         */
+        attachedClients : {},
+
+        /**
+         * Notifies that the client with the given ID has been added or
+         * removed from the set of clients desired within the current view,
+         * and the current view should be updated accordingly.
+         *
+         * @param {string} id
+         *     The ID of the client that was added or removed from the current
+         *     view.
+         */
+        updateAttachedClients : function updateAttachedClients(id) {
+
+            // Deconstruct current path into corresponding client IDs
+            var ids = ManagedClientGroup.getClientIdentifiers($routeParams.id);
+
+            // Add/remove ID as requested
+            if ($scope.connectionListContext.attachedClients[id])
+                ids.push(id);
+            else
+                _.pull(ids, id);
+
+            // Reconstruct path, updating attached clients via change in route
+            $location.path('/client/' + encodeURIComponent(ManagedClientGroup.getIdentifier(ids)));
+
+        }
+
+    };
+
+    /**
      * Reloads the contents of $scope.clientGroup to reflect the client IDs
      * currently listed in the URL.
      */
@@ -199,6 +243,13 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         $scope.clientGroup = guacClientManager.getManagedClientGroup($routeParams.id);
         $scope.clientGroup.attached = true;
+
+        // Store current set of attached clients for later use within the
+        // Guacamole menu
+        $scope.connectionListContext.attachedClients = {};
+        $scope.clientGroup.clients.forEach((client) => {
+            $scope.connectionListContext.attachedClients[client.id] = true;
+        });
 
         // Ensure menu is closed if updated view is not a modification of the
         // current view (has no clients in common). The menu should remain open

@@ -97,18 +97,26 @@ angular.module('client').factory('ManagedClientGroup', ['$injector', function de
     };
 
     /**
-     * Returns the unique ID representing the given ManagedClientGroup. The ID
-     * of each ManagedClientGroup consists simply of the IDs of all its
-     * ManagedClients, separated by periods.
+     * Returns the unique ID representing the given ManagedClientGroup or set
+     * of client IDs. The ID of a ManagedClientGroup consists simply of the
+     * IDs of all its ManagedClients, separated by periods.
      *
-     * @param {ManagedClientGroup} group
-     *     The ManagedClientGroup to determine the ID of.
+     * @param {ManagedClientGroup|string[]} group
+     *     The ManagedClientGroup or array of client IDs to determine the
+     *     ManagedClientGroup ID of.
      *
      * @returns {string}
-     *     The unique ID representing the given ManagedClientGroup.
+     *     The unique ID representing the given ManagedClientGroup, or the
+     *     unique ID that would represent a ManagedClientGroup containing the
+     *     clients with the given IDs.
      */
     ManagedClientGroup.getIdentifier = function getIdentifier(group) {
-        return _.map(group.clients, client => client.id).join('.');
+
+        if (!_.isArray(group))
+            group = _.map(group.clients, client => client.id);
+
+        return group.join('.');
+
     };
 
     /**

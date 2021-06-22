@@ -55,3 +55,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.connection-select-menu .menu-dropdown .menu-contents .caption .connection,
+.connection-select-menu .menu-dropdown .menu-contents .caption .connection-group {
+    display: inline-block;
+}
