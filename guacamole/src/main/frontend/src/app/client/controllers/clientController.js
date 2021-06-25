@@ -400,111 +400,31 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         return true;
     }
 
-    // Hide menu when the user swipes from the right
+    // Show menu if the user swipes from the left, hide menu when the user
+    // swipes from the right, scroll menu while visible
     $scope.menuDrag = function menuDrag(inProgress, startX, startY, currentX, currentY, deltaX, deltaY) {
 
-        // Hide menu if swipe gesture is detected
-        if (Math.abs(currentY - startY)  <  MENU_DRAG_VERTICAL_TOLERANCE
-                  && startX   - currentX >= MENU_DRAG_DELTA)
-            $scope.menu.shown = false;
+        if ($scope.menu.shown) {
 
-        // Scroll menu by default
-        else {
-            $scope.menu.scrollState.left -= deltaX;
-            $scope.menu.scrollState.top -= deltaY;
+            // Hide menu if swipe-from-right gesture is detected
+            if (Math.abs(currentY - startY)  <  MENU_DRAG_VERTICAL_TOLERANCE
+                      && startX   - currentX >= MENU_DRAG_DELTA)
+                $scope.menu.shown = false;
+
+            // Scroll menu by default
+            else {
+                $scope.menu.scrollState.left -= deltaX;
+                $scope.menu.scrollState.top -= deltaY;
+            }
+
         }
 
-        return false;
-
-    };
-
-    // Update menu or client based on dragging gestures
-    $scope.clientDrag = function clientDrag(inProgress, startX, startY, currentX, currentY, deltaX, deltaY) {
-
-        // Show menu if the user swipes from the left
-        if (startX <= MENU_DRAG_MARGIN) {
-
+        // Show menu if swipe-from-left gesture is detected
+        else if (startX <= MENU_DRAG_MARGIN) {
             if (Math.abs(currentY - startY) <  MENU_DRAG_VERTICAL_TOLERANCE
                       && currentX - startX  >= MENU_DRAG_DELTA)
                 $scope.menu.shown = true;
-
         }
-
-        // Scroll display if absolute mouse is in use
-        else if ($scope.client.clientProperties.emulateAbsoluteMouse) {
-            $scope.client.clientProperties.scrollLeft -= deltaX;
-            $scope.client.clientProperties.scrollTop -= deltaY;
-        }
-
-        return false;
-
-    };
-
-    /**
-     * If a pinch gesture is in progress, the scale of the client display when
-     * the pinch gesture began.
-     *
-     * @type Number
-     */
-    var initialScale = null;
-
-    /**
-     * If a pinch gesture is in progress, the X coordinate of the point on the
-     * client display that was centered within the pinch at the time the
-     * gesture began.
-     * 
-     * @type Number
-     */
-    var initialCenterX = 0;
-
-    /**
-     * If a pinch gesture is in progress, the Y coordinate of the point on the
-     * client display that was centered within the pinch at the time the
-     * gesture began.
-     * 
-     * @type Number
-     */
-    var initialCenterY = 0;
-
-    // Zoom and pan client via pinch gestures
-    $scope.clientPinch = function clientPinch(inProgress, startLength, currentLength, centerX, centerY) {
-
-        // Do not handle pinch gestures if they would conflict with remote
-        // handling of similar gestures
-        if ($scope.client.multiTouchSupport > 1)
-            return false;
-
-        // Do not handle pinch gestures while relative mouse is in use
-        if (!$scope.client.clientProperties.emulateAbsoluteMouse)
-            return false;
-
-        // Stop gesture if not in progress
-        if (!inProgress) {
-            initialScale = null;
-            return false;
-        }
-
-        // Set initial scale if gesture has just started
-        if (!initialScale) {
-            initialScale   = $scope.client.clientProperties.scale;
-            initialCenterX = (centerX + $scope.client.clientProperties.scrollLeft) / initialScale;
-            initialCenterY = (centerY + $scope.client.clientProperties.scrollTop)  / initialScale;
-        }
-
-        // Determine new scale absolutely
-        var currentScale = initialScale * currentLength / startLength;
-
-        // Fix scale within limits - scroll will be miscalculated otherwise
-        currentScale = Math.max(currentScale, $scope.client.clientProperties.minScale);
-        currentScale = Math.min(currentScale, $scope.client.clientProperties.maxScale);
-
-        // Update scale based on pinch distance
-        $scope.client.clientProperties.autoFit = false;
-        $scope.client.clientProperties.scale = currentScale;
-
-        // Scroll display to keep original pinch location centered within current pinch
-        $scope.client.clientProperties.scrollLeft = initialCenterX * currentScale - centerX;
-        $scope.client.clientProperties.scrollTop  = initialCenterY * currentScale - centerY;
 
         return false;
 

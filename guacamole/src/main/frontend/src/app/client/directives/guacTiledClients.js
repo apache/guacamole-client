@@ -37,7 +37,15 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
          *
          * @type ManagedClientGroup
          */
-        clientGroup : '='
+        clientGroup : '=',
+
+        /**
+         * Whether translation of touch to mouse events should emulate an
+         * absolute pointer device, or a relative pointer device.
+         *
+         * @type boolean
+         */
+        emulateAbsoluteMouse : '='
 
     };
 

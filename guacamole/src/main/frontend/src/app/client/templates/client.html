@@ -6,10 +6,13 @@
         <div class="client-view-content">
 
             <!-- Central portion of view -->
-            <div class="client-body" guac-touch-drag="clientDrag" guac-touch-pinch="clientPinch">
+            <div class="client-body" guac-touch-drag="hiddenMenuDrag">
 
                 <!-- All connections in current display -->
-                <guac-tiled-clients client-group="clientGroup"></guac-tiled-clients>
+                <guac-tiled-clients
+                    client-group="clientGroup"
+                    emulate-absolute-mouse="menu.emulateAbsoluteMouse">
+                </guac-tiled-clients>
 
             </div>
 
@@ -78,7 +81,7 @@
             </div>
 
             <!-- Scrollable body -->
-            <div class="menu-body" guac-touch-drag="menuDrag" guac-scroll="menu.scrollState">
+            <div class="menu-body" guac-touch-drag="visibleMenuDrag" guac-scroll="menu.scrollState">
 
                 <!-- Connection sharing -->
                 <div class="menu-section" id="share-links" ng-show="isShared()">
