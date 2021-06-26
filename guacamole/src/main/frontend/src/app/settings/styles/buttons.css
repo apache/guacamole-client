@@ -45,17 +45,17 @@ a.button.add-connection-group::before {
 }
 
 a.button.add-user::before {
-    background-image: url('images/action-icons/guac-user-add.png');
+    background-image: url('images/action-icons/guac-user-add.svg');
 }
 
 a.button.add-user-group::before {
-    background-image: url('images/action-icons/guac-user-group-add.png');
+    background-image: url('images/action-icons/guac-user-group-add.svg');
 }
 
 a.button.add-connection::before {
-    background-image: url('images/action-icons/guac-monitor-add.png');
+    background-image: url('images/action-icons/guac-monitor-add.svg');
 }
 
 a.button.add-connection-group::before {
-    background-image: url('images/action-icons/guac-group-add.png');
+    background-image: url('images/action-icons/guac-group-add.svg');
 }

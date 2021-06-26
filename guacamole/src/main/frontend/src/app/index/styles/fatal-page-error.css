@@ -38,7 +38,7 @@
 .fatal-page-error h1::before {
     content: ' ';
     display: inline-block;
-    background: url('images/warning.png');
+    background: url('images/warning.svg');
     background-repeat: no-repeat;
     height: 1em;
     width: 1em;

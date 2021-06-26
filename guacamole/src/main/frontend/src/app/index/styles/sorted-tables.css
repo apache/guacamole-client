@@ -52,10 +52,10 @@ table.sorted th.sort-primary:after {
     background-size: 1em 1em;
     background-position: right center;
     background-repeat: no-repeat;
-    background-image: url('images/arrows/down.png');
+    background-image: url('images/arrows/down.svg');
 
 }
 
 table.sorted th.sort-primary.sort-descending:after {
-    background-image: url('images/arrows/up.png');
+    background-image: url('images/arrows/up.svg');
 }

@@ -138,7 +138,7 @@
 }
 
 #guac-menu #devices .device.filesystem {
-    background-image: url('images/drive.png');
+    background-image: url('images/drive.svg');
 }
 
 #guac-menu #share-links {
