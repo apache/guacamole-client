@@ -57,6 +57,33 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
         var ManagedClientGroup = $injector.get('ManagedClientGroup');
 
         /**
+         * Returns the currently-focused ManagedClient. If there is no such
+         * client, or multiple clients are focused, null is returned.
+         *
+         * @returns {ManagedClient}
+         *     The currently-focused client, or null if there are no focused
+         *     clients or if multiple clients are focused.
+         */
+        var getFocusedClient = function getFocusedClient() {
+
+            var managedClientGroup = $scope.clientGroup;
+            if (managedClientGroup) {
+                var focusedClients = _.filter(managedClientGroup.clients, client => client.clientProperties.focused);
+                if (focusedClients.length === 1)
+                    return focusedClients[0];
+            }
+
+            return null;
+
+        };
+
+        // Re-initialize the reference to the currently-focused client when a
+        // new client group is set
+        $scope.$watch('clientGroup', function clientGroupChanged() {
+            $scope.$emit('guacClientFocused', getFocusedClient());
+        });
+
+        /**
          * Returns a callback for guacClick that assigns or updates keyboard
          * focus to the given client, allowing that client to receive and
          * handle keyboard events. Multiple clients may have keyboard focus
@@ -109,6 +136,10 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
                     });
 
                 }
+
+                // Update reference to single focused client after focus has
+                // changed
+                $scope.$emit('guacClientFocused', getFocusedClient());
 
             };
         };

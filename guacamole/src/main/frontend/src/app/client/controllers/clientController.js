@@ -145,12 +145,16 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     /**
      * Applies any changes to connection parameters made by the user within the
-     * Guacamole menu.
+     * Guacamole menu to the given ManagedClient. If no client is supplied,
+     * this function has no effect.
+     *
+     * @param {ManagedClient} client
+     *     The client to apply parameter changes to.
      */
-    $scope.applyParameterChanges = function applyParameterChanges() {
+    $scope.applyParameterChanges = function applyParameterChanges(client) {
         angular.forEach($scope.menu.connectionParameters, function sendArgv(value, name) {
-            if ($scope.focusedClient)
-                ManagedClient.setArgument($scope.focusedClient, name, value);
+            if (client)
+                ManagedClient.setArgument(client, name, value);
         });
     };
 
@@ -293,27 +297,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.$on('$routeUpdate', updateAttachedClients);
 
     /**
-     * Returns the currently-focused ManagedClient. If there is no such client,
-     * or multiple clients are focused, null is returned.
-     *
-     * @returns {ManagedClient}
-     *     The currently-focused client, or null if there are no focused
-     *     clients or if multiple clients are focused.
-     */
-    $scope.getFocusedClient = function getFocusedClient() {
-
-        var managedClientGroup = $scope.clientGroup;
-        if (managedClientGroup) {
-            var focusedClients = _.filter(managedClientGroup.clients, client => client.clientProperties.focused);
-            if (focusedClients.length === 1)
-                return focusedClients[0];
-        }
-
-        return null;
-
-    };
-
-    /**
      * The root connection groups of the connection hierarchy that should be
      * presented to the user for selecting a different connection, as a map of
      * data source identifier to the root connection group of that data
@@ -444,7 +427,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         
         // Send any argument value data once menu is hidden
         if (!menuShown && menuShownPreviousState)
-            $scope.applyParameterChanges();
+            $scope.applyParameterChanges($scope.focusedClient);
 
         // Disable client keyboard if the menu is shown
         angular.forEach($scope.clientGroup.clients, function updateKeyboardEnabled(client) {
@@ -454,19 +437,19 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     });
 
     // Automatically track and cache the currently-focused client
-    $scope.$watch('getFocusedClient()', function focusedClientChanged(client) {
+    $scope.$on('guacClientFocused', function focusedClientChanged(event, newFocusedClient) {
 
-        // Apply any parameter changes when focus is changing (as
-        // applyParameterChanges() depends on the value of focusedClient, this
-        // must be called BEFORE updating focusedClient
-        $scope.applyParameterChanges();
+        var oldFocusedClient = $scope.focusedClient;
+        $scope.focusedClient = newFocusedClient;
 
-        $scope.focusedClient = client;
+        // Apply any parameter changes when focus is changing
+        if (oldFocusedClient)
+            $scope.applyParameterChanges(oldFocusedClient);
 
         // Update available connection parameters, if there is a focused
         // client
-        $scope.menu.connectionParameters = $scope.focusedClient ?
-            ManagedClient.getArgumentModel($scope.focusedClient) : {};
+        $scope.menu.connectionParameters = newFocusedClient ?
+            ManagedClient.getArgumentModel(newFocusedClient) : {};
 
     });
 
