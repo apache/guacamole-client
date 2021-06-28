@@ -36,6 +36,14 @@
     align-items:         center;
 }
 
+.transfer-manager h3 {
+    margin: 0.25em;
+    font-size: 1em;
+    margin-bottom: 0;
+    opacity: 0.5;
+    text-align: center;
+}
+
 .transfer-manager .transfers {
     display: table;
     padding: 0.25em;

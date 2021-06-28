@@ -261,6 +261,21 @@ angular.module('client').factory('ManagedClientGroup', ['$injector', function de
         }
     };
 
+    /**
+     * Returns whether the given ManagedClientGroup contains more than one
+     * client.
+     *
+     * @param {ManagedClientGroup} group
+     *     The ManagedClientGroup to test.
+     *
+     * @returns {boolean}
+     *     true if two or more clients are currently present in the given
+     *     group, false otherwise.
+     */
+    ManagedClientGroup.hasMultipleClients = function hasMultipleClients(group) {
+        return group && group.clients.length > 1;
+    };
+
     return ManagedClientGroup;
 
 }]);

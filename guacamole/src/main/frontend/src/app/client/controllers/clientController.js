@@ -171,7 +171,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * The set of clients that should be attached to the client UI. This will
      * be immediately initialized by a call to updateAttachedClients() below.
      *
-     * @type ManagedClientGroup[]
+     * @type ManagedClientGroup
      */
     $scope.clientGroup = null;
 
@@ -748,20 +748,20 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
 
     /**
-     * Determines whether the attached client has associated file transfers,
-     * regardless of those file transfers' state.
+     * Determines whether the attached client group has any associated file
+     * transfers, regardless of those file transfers' state.
      *
      * @returns {Boolean}
      *     true if there are any file transfers associated with the
-     *     attached client, false otherise.
+     *     attached client group, false otherise.
      */
     $scope.hasTransfers = function hasTransfers() {
 
-        // There are no file transfers if there is no client
-        if (!$scope.client)
+        // There are no file transfers if there is no client group
+        if (!$scope.clientGroup)
             return false;
 
-        return !!$scope.client.uploads.length;
+        return _.findIndex($scope.clientGroup.clients, ManagedClient.hasTransfers) !== -1;
 
     };
 

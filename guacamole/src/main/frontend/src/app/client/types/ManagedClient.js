@@ -853,6 +853,18 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     };
 
     /**
+     * Returns whether the given client has any associated file transfers,
+     * regardless of those file transfers' state.
+     *
+     * @returns {boolean}
+     *     true if there are any file transfers associated with the
+     *     given client, false otherise.
+     */
+    ManagedClient.hasTransfers = function hasTransfers(client) {
+        return !!(client && client.uploads && client.uploads.length);
+    };
+
+    /**
      * Store the thumbnail of the given managed client within the connection
      * history under its associated ID. If the client is not connected, this
      * function has no effect.

@@ -145,18 +145,11 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
         };
 
         /**
-         * Returns whether multiple clients are currently shown within the
-         * tiled grid.
-         *
-         * @returns {Boolean}
-         *     true if two or more clients are currently present, false
-         *     otherwise.
+         * @borrows ManagedClientGroup.hasMultipleClients
          */
-        $scope.hasMultipleClients = function hasMultipleClients() {
-            return $scope.clientGroup && $scope.clientGroup.clients.length > 1;
-        };
+        $scope.hasMultipleClients = ManagedClientGroup.hasMultipleClients;
 
-       /**
+        /**
          * Returns the CSS width that should be applied to each tile to
          * achieve an even arrangement.
          *
