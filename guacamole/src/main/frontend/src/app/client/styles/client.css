@@ -127,3 +127,11 @@ body.client {
     padding-left: 2.5em;
     background-image: url('images/x.svg');
 }
+
+.client .drop-pending .display {
+    background: #3161a9;
+}
+
+.client .drop-pending .display > *{
+    opacity: 0.5;
+}

@@ -532,26 +532,62 @@ angular.module('client').directive('guacClient', [function guacClient() {
             if ($scope.client.clientProperties.focused)
                 client.sendKeyEvent(0, keysym);
         });
-        
+
         /**
-         * Ignores the given event.
-         * 
-         * @param {Event} e The event to ignore.
+         * Whether a drag/drop operation is currently in progress (the user has
+         * dragged a file over the Guacamole connection but has not yet
+         * dropped it).
+         *
+         * @type boolean
          */
-        function ignoreEvent(e) {
-           e.preventDefault();
-           e.stopPropagation();
-        }
-
-        // Handle and ignore dragenter/dragover
-        displayContainer.addEventListener("dragenter", ignoreEvent, false);
-        displayContainer.addEventListener("dragover",  ignoreEvent, false);
-
-        // File drop event handler
-        displayContainer.addEventListener("drop", function(e) {
+        $scope.dropPending = false;
+            
+        /**
+         * Displays a visual indication that dropping the file currently
+         * being dragged is possible. Further propogation and default behavior
+         * of the given event is automatically prevented.
+         * 
+         * @param {Event} e
+         *     The event related to the in-progress drag/drop operation.
+         */
+        var notifyDragStart = function notifyDragStart(e) {
 
             e.preventDefault();
             e.stopPropagation();
+
+            $scope.$apply(() => {
+                $scope.dropPending = true;
+            });
+
+        };
+
+        /**
+         * Removes the visual indication that dropping the file currently
+         * being dragged is possible. Further propogation and default behavior
+         * of the given event is automatically prevented.
+         * 
+         * @param {Event} e
+         *     The event related to the end of the former drag/drop operation.
+         */
+        var notifyDragEnd = function notifyDragEnd(e) {
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            $scope.$apply(() => {
+                $scope.dropPending = false;
+            });
+
+        };
+
+        main.addEventListener('dragenter', notifyDragStart, false);
+        main.addEventListener('dragover',  notifyDragStart, false);
+        main.addEventListener('dragleave', notifyDragEnd,   false);
+
+        // File drop event handler
+        main.addEventListener('drop', function(e) {
+
+            notifyDragEnd(e);
 
             // Ignore file drops if no attached client
             if (!$scope.client)
