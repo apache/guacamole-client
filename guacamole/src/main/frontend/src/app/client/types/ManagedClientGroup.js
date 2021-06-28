@@ -255,8 +255,13 @@ angular.module('client').factory('ManagedClientGroup', ['$injector', function de
         var current = 0;
         for (var row = 0; row < group.rows; row++) {
             for (var column = 0; column < group.columns; column++) {
+
                 callback(group.clients[current], row, column, current);
                 current++;
+
+                if (current >= group.clients.length)
+                    return;
+
             }
         }
     };
