@@ -52,23 +52,64 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
     directive.controller = ['$scope', '$injector', '$element',
             function guacTiledClientsController($scope, $injector, $element) {
 
+        // Required types
+        var ManagedClientGroup = $injector.get('ManagedClientGroup');
+
         /**
-         * Assigns keyboard focus to the given client, allowing that client to
-         * receive and handle keyboard events. Multiple clients may have
-         * keyboard focus simultaneously.
+         * Returns a callback for guacClick that assigns or updates keyboard
+         * focus to the given client, allowing that client to receive and
+         * handle keyboard events. Multiple clients may have keyboard focus
+         * simultaneously.
          *
          * @param {ManagedClient} client
          *     The client that should receive keyboard focus.
+         *
+         * @return {guacClick~callback}
+         *     The callback that guacClient should invoke when the given client
+         *     has been clicked.
          */
-        $scope.assignFocus = function assignFocus(client) {
+        $scope.getFocusAssignmentCallback = function getFocusAssignmentCallback(client) {
+            return (shift, ctrl) => {
 
-            // Clear focus of all other clients
-            $scope.clientGroup.clients.forEach(client => {
-                client.clientProperties.focused = false;
-            });
+                // Clear focus of all other clients if not selecting multiple
+                if (!shift && !ctrl) {
+                    $scope.clientGroup.clients.forEach(client => {
+                        client.clientProperties.focused = false;
+                    });
+                }
 
-            client.clientProperties.focused = true;
+                client.clientProperties.focused = true;
 
+                // Fill in any gaps if performing rectangular multi-selection
+                // via shift-click
+                if (shift) {
+
+                    var minRow = $scope.clientGroup.rows - 1;
+                    var minColumn = $scope.clientGroup.columns - 1;
+                    var maxRow = 0;
+                    var maxColumn = 0;
+
+                    // Determine extents of selected area
+                    ManagedClientGroup.forEach($scope.clientGroup, (client, row, column) => {
+                        if (client.clientProperties.focused) {
+                            minRow = Math.min(minRow, row);
+                            minColumn = Math.min(minColumn, column);
+                            maxRow = Math.max(maxRow, row);
+                            maxColumn = Math.max(maxColumn, column);
+                        }
+                    });
+
+                    ManagedClientGroup.forEach($scope.clientGroup, (client, row, column) => {
+                        client.clientProperties.focused =
+                                row >= minRow
+                             && row <= maxRow
+                             && column >= minColumn
+                             && column <= maxColumn;
+                    });
+
+                }
+
+            };
         };
 
         /**

@@ -220,6 +220,47 @@ angular.module('client').factory('ManagedClientGroup', ['$injector', function de
 
     };
 
+    /**
+     * A callback that is invoked for a ManagedClient within a ManagedClientGroup.
+     *
+     * @callback ManagedClientGroup~clientCallback
+     * @param {ManagedClient} client
+     *     The relevant ManagedClient.
+     *
+     * @param {number} row
+     *     The row number of the client within the tiled grid, where 0 is the
+     *     first row.
+     *
+     * @param {number} column
+     *     The column number of the client within the tiled grid, where 0 is
+     *     the first column.
+     *
+     * @param {number} index
+     *     The index of the client within the relevant
+     *     {@link ManagedClientGroup#clients} array.
+     */
+
+    /**
+     * Loops through each of the clients associated with the given
+     * ManagedClientGroup, invoking the given callback for each client.
+     *
+     * @param {ManagedClientGroup} group
+     *     The ManagedClientGroup to loop through.
+     *
+     * @param {ManagedClientGroup~clientCallback} callback
+     *     The callback to invoke for each of the clients within the given
+     *     ManagedClientGroup.
+     */
+    ManagedClientGroup.forEach = function forEach(group, callback) {
+        var current = 0;
+        for (var row = 0; row < group.rows; row++) {
+            for (var column = 0; column < group.columns; column++) {
+                callback(group.clients[current], row, column, current);
+                current++;
+            }
+        }
+    };
+
     return ManagedClientGroup;
 
 }]);
