@@ -462,8 +462,10 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.$watch('focusedClient.tunnel.uuid', function retrieveSharingProfiles(uuid) {
 
         // Only pull sharing profiles if tunnel UUID is actually available
-        if (!uuid)
+        if (!uuid) {
+            $scope.sharingProfiles = {};
             return;
+        }
 
         // Pull sharing profiles for the current connection
         tunnelService.getSharingProfiles(uuid)
