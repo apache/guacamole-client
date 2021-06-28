@@ -3,10 +3,13 @@
     <li class="client-tile"
         ng-repeat="client in clientGroup.clients"
         ng-style="{ 'width' : getTileWidth(), 'height' : getTileHeight() }"
-        ng-class="{ 'focused' : client.clientProperties.focused }"
+        ng-class="{
+            'focused' : client.clientProperties.focused,
+            'shared'  : isShared(client)
+        }"
         guac-click="getFocusAssignmentCallback(client)">
 
-        <h3>{{ client.title }}</h3>
+        <h3><img class="client-tile-shared-indicator" src="images/share-white.svg"> {{ client.title }}</h3>
         <guac-client client="client" emulate-absolute-mouse="emulateAbsoluteMouse"></guac-client>
 
         <!-- Client-specific status/error dialog -->

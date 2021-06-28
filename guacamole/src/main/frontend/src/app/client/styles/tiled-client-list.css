@@ -58,3 +58,12 @@
 .tiled-client-list li.client-tile .main {
     flex: 1;
 }
+
+.tiled-client-list .client-tile-shared-indicator {
+    display: none;
+    max-height: 1em;
+}
+
+.tiled-client-list .shared .client-tile-shared-indicator {
+    display: inline;
+}

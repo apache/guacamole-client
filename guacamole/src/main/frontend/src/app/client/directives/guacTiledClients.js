@@ -53,6 +53,7 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
             function guacTiledClientsController($scope, $injector, $element) {
 
         // Required types
+        var ManagedClient      = $injector.get('ManagedClient');
         var ManagedClientGroup = $injector.get('ManagedClientGroup');
 
         /**
@@ -144,6 +145,21 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
          */
         $scope.getTileHeight = function getTileHeight() {
             return Math.floor(100 / $scope.clientGroup.rows) + '%';
+        };
+
+        /**
+         * Returns whether the given ManagedClient has any associated share
+         * links.
+         *
+         * @param {ManagedClient} client
+         *     The ManagedClient to test.
+         *
+         * @returns {Boolean}
+         *     true if the given ManagedClient has at least one associated
+         *     share link, false otherwise.
+         */
+        $scope.isShared = function isShared(client) {
+            return ManagedClient.isShared(client);
         };
 
     }];
