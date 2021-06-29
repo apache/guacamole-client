@@ -66,14 +66,6 @@ angular.module('client').factory('ClientProperties', ['$injector', function defi
         this.maxScale = template.maxScale || 3;
 
         /**
-         * Whether this client should listen to keyboard events that it
-         * receives.
-         * 
-         * @type Boolean
-         */
-        this.keyboardEnabled = template.keyboardEnabled || true;
-
-        /**
          * Whether this client should receive keyboard events.
          *
          * @type Boolean

@@ -352,16 +352,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.sharingProfiles = {};
 
     /**
-     * Map of all currently pressed keys by keysym. If a particular key is
-     * currently pressed, the value stored under that key's keysym within this
-     * map will be true. All keys not currently pressed will not have entries
-     * within this map.
-     *
-     * @type Object.<Number, Boolean>
-     */
-    var keysCurrentlyPressed = {};
-
-    /**
      * Map of all substituted key presses.  If one key is pressed in place of another
      * the value of the substituted key is stored in an object with the keysym of
      * the original key.
@@ -370,18 +360,32 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     var substituteKeysPressed = {};
 
-    /*
-     * Check to see if all currently pressed keys are in the set of menu keys.
+    /**
+     * Returns whether the shortcut for showing/hiding the Guacamole menu
+     * (Ctrl+Alt+Shift) has been pressed.
+     *
+     * @param {Guacamole.Keyboard} keyboard
+     *     The Guacamole.Keyboard object tracking the local keyboard state.
+     *
+     * @returns {boolean}
+     *     true if Ctrl+Alt+Shift has been pressed, false otherwise.
      */  
-    function checkMenuModeActive() {
-        for(var keysym in keysCurrentlyPressed) {
-            if(!MENU_KEYS[keysym]) {
-                return false;
-            }
-        }
-        
-        return true;
-    }
+    var isMenuShortcutPressed = function isMenuShortcutPressed(keyboard) {
+
+        // Ctrl+Alt+Shift has NOT been pressed if any key is currently held
+        // down that isn't Ctrl, Alt, or Shift
+        if (_.findKey(keyboard.pressed, (val, keysym) => !MENU_KEYS[keysym]))
+            return false;
+
+        // Verify that one of each required key is held, regardless of
+        // left/right location on the keyboard
+        return !!(
+                _.findKey(SHIFT_KEYS, (val, keysym) => keyboard.pressed[keysym])
+             && _.findKey(ALT_KEYS,   (val, keysym) => keyboard.pressed[keysym])
+             && _.findKey(CTRL_KEYS,  (val, keysym) => keyboard.pressed[keysym])
+        );
+
+    };
 
     // Show menu if the user swipes from the left, hide menu when the user
     // swipes from the right, scroll menu while visible
@@ -428,11 +432,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Send any argument value data once menu is hidden
         if (!menuShown && menuShownPreviousState)
             $scope.applyParameterChanges($scope.focusedClient);
-
-        // Disable client keyboard if the menu is shown
-        angular.forEach($scope.clientGroup.clients, function updateKeyboardEnabled(client) {
-            client.clientProperties.keyboardEnabled = !menuShown;
-        });
 
     });
 
@@ -521,51 +520,49 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     };
 
-    // Track pressed keys, opening the Guacamole menu after Ctrl+Alt+Shift, or
-    // send Ctrl-Alt-Delete when Ctrl-Alt-End is pressed.
-    $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
+    // Opening the Guacamole menu after Ctrl+Alt+Shift, preventing those
+    // keypresses from reaching any Guacamole client
+    $scope.$on('guacBeforeKeydown', function incomingKeydown(event, keysym, keyboard) {
 
-        // Record key as pressed
-        keysCurrentlyPressed[keysym] = true;   
+        // Toggle menu if menu shortcut (Ctrl+Alt+Shift) is pressed
+        if (isMenuShortcutPressed(keyboard)) {
         
-        var currentKeysPressedKeys = Object.keys(keysCurrentlyPressed);
-
-        // If only menu keys are pressed, and we have one keysym from each group,
-        // and one of the keys is being released, show the menu. 
-        if (checkMenuModeActive()) {
+            // Don't send this key event through to the client, and release
+            // all other keys involved in performing this shortcut
+            event.preventDefault();
+            keyboard.reset();
             
-            // Check that there is a key pressed for each of the required key classes
-            if (!_.isEmpty(_.pick(SHIFT_KEYS, currentKeysPressedKeys)) &&
-                !_.isEmpty(_.pick(ALT_KEYS, currentKeysPressedKeys)) &&
-                !_.isEmpty(_.pick(CTRL_KEYS, currentKeysPressedKeys))
-            ) {
-        
-                // Don't send this key event through to the client
-                event.preventDefault();
-                
-                // Reset the keys pressed
-                keysCurrentlyPressed = {};
-                keyboard.reset();
-                
-                // Toggle the menu
-                $scope.$apply(function() {
-                    $scope.menu.shown = !$scope.menu.shown;
-                });
-            }
+            // Toggle the menu
+            $scope.$apply(function() {
+                $scope.menu.shown = !$scope.menu.shown;
+            });
+
         }
+
+        // Prevent all keydown events while menu is open
+        else if ($scope.menu.shown)
+            event.preventDefault();
+
+    });
+
+    // Prevent all keyup events while menu is open
+    $scope.$on('guacBeforeKeyup', function incomingKeyup(event, keysym, keyboard) {
+        if ($scope.menu.shown)
+            event.preventDefault();
+    });
+
+    // Send Ctrl-Alt-Delete when Ctrl-Alt-End is pressed.
+    $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
 
         // If one of the End keys is pressed, and we have a one keysym from each
         // of Ctrl and Alt groups, send Ctrl-Alt-Delete.
-        if (END_KEYS[keysym] &&
-            !_.isEmpty(_.pick(ALT_KEYS, currentKeysPressedKeys)) &&
-            !_.isEmpty(_.pick(CTRL_KEYS, currentKeysPressedKeys))
+        if (END_KEYS[keysym]
+            && _.findKey(ALT_KEYS,  (val, keysym) => keyboard.pressed[keysym])
+            && _.findKey(CTRL_KEYS, (val, keysym) => keyboard.pressed[keysym])
         ) {
 
             // Don't send this event through to the client.
             event.preventDefault();
-
-            // Remove the original key press
-            delete keysCurrentlyPressed[keysym];
 
             // Record the substituted key press so that it can be
             // properly dealt with later.
@@ -586,10 +583,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             $scope.$broadcast('guacSyntheticKeyup', substituteKeysPressed[keysym]);
             delete substituteKeysPressed[keysym];
         }
-
-        // Mark key as released
-        else
-            delete keysCurrentlyPressed[keysym];
 
     });
 
