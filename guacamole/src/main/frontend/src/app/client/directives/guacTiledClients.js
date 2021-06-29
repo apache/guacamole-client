@@ -150,26 +150,9 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
         $scope.hasMultipleClients = ManagedClientGroup.hasMultipleClients;
 
         /**
-         * Returns the CSS width that should be applied to each tile to
-         * achieve an even arrangement.
-         *
-         * @returns {String}
-         *     The CSS width that should be applied to each tile.
+         * @borrows ManagedClientGroup.getTileGridCSS
          */
-        $scope.getTileWidth = function getTileWidth() {
-            return Math.floor(100 / $scope.clientGroup.columns) + '%';
-        };
-
-        /**
-         * Returns the CSS height that should be applied to each tile to
-         * achieve an even arrangement.
-         *
-         * @returns {String}
-         *     The CSS height that should be applied to each tile.
-         */
-        $scope.getTileHeight = function getTileHeight() {
-            return Math.floor(100 / $scope.clientGroup.rows) + '%';
-        };
+        $scope.getTileGridCSS = ManagedClientGroup.getTileGridCSS;
 
         /**
          * Returns whether the given ManagedClient has any associated share

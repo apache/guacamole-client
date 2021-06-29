@@ -1,12 +1,14 @@
-<ul class="tiled-client-list" ng-class="{  'multiple-clients' : hasMultipleClients(clientGroup) }">
+<ul class="tiled-client-list"
+    ng-class="{  'multiple-clients' : hasMultipleClients(clientGroup) }"
+    ng-attr-style="{{ getTileGridCSS(clientGroup) }}">
 
     <li class="client-tile"
         ng-repeat="client in clientGroup.clients"
-        ng-style="{ 'width' : getTileWidth(), 'height' : getTileHeight() }"
         ng-class="{
             'focused' : client.clientProperties.focused,
             'shared'  : isShared(client)
         }"
+        ng-attr-style="{{ getTileGridCSS(clientGroup, $index) }}"
         guac-click="getFocusAssignmentCallback(client)">
 
         <h3 class="client-tile-name"><img class="client-tile-shared-indicator" src="images/share-white.svg"> {{ client.title }}</h3>

@@ -281,6 +281,51 @@ angular.module('client').factory('ManagedClientGroup', ['$injector', function de
         return group && group.clients.length > 1;
     };
 
+    /**
+     * Returns the CSS that should used to achieve a proper grid arrangement
+     * of the client tiles represented by the given ManagedClientGroup. The
+     * CSS should be assigned to the element displaying the given
+     * ManagedClientGroup or, if an index is provided, the element representing
+     * the client having the given index within the group.
+     *
+     * NOTE: Much of this is unnecessary if support for IE is dropped. When
+     * that is eventually unavoidable (migration to Angular), this can be
+     * simplified.
+     *
+     * @param {ManagedClientGroup} group
+     *     The ManagedClientGroup to determine CSS for.
+     *
+     * @param {number} [index]
+     *     The index of the relevant client within the group, if not producing
+     *     CSS for the group itself.
+     *
+     * @returns {string}
+     *     The CSS that should be assigned to the element representing the
+     *     given group or, if an index is provided, the CSS that should be
+     *     assigned to the element representing the client having the given
+     *     index within the group.
+     */
+    ManagedClientGroup.getTileGridCSS = function getTileGridCSS(group, index) {
+
+        // Produce CSS defining a regular grid if no specific client is
+        // requested
+        if (arguments.length <= 1)
+            return 'display: -ms-grid;'
+                 + 'display: grid;'
+                 + '-ms-grid-rows: (1fr)[' + group.rows + '];'
+                 + 'grid-template-rows: repeat(' + group.rows + ', 1fr);'
+                 + '-ms-grid-columns: (1fr)[' + group.columns + '];'
+                 + 'grid-template-columns: repeat(' + group.columns + ', 1fr);';
+
+        // For IE10+, the row/column coordinates of each child of a grid
+        // layout must be explicitly defined
+        var row = Math.floor(index / group.columns);
+        var column = index - row * group.columns;
+        return '-ms-grid-row: ' + (row + 1) + ';'
+             + '-ms-grid-column: ' + (column + 1) + ';';
+
+    };
+
     return ManagedClientGroup;
 
 }]);
