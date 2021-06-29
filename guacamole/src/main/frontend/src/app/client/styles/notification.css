@@ -39,7 +39,7 @@
 }
 
 .client-status-modal .notification {
-    background: rgba(80, 80, 80, 0.4);
+    background: rgba(40, 40, 40, 0.75);
     color: white;
     width: 100%;
     max-width: 100%;
@@ -49,7 +49,7 @@
 }
 
 .client-status-modal .notification.error {
-    background: rgba(255, 0, 0, 0.44);
+    background: rgba(112, 9, 8, 0.75)
 }
 
 .client-status-modal .notification .title-bar {
