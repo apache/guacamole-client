@@ -349,7 +349,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
                 className : "button",
                 callback  : function cancelSubmission() {
                     $scope.client.requiredParameters = null;
-                    $scope.disconnect();
+                    $scope.client.client.disconnect();
                 }
             };
 
