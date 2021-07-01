@@ -70,7 +70,7 @@
                     values="acceptedCredentials"></guac-login>
 
         <!-- Content for logged-in users -->
-        <div ng-switch-default>
+        <div ng-switch-when="ready">
 
             <!-- Global status/error dialog -->
             <guac-modal class="global-status-modal" ng-if="guacNotification.getStatus()">
