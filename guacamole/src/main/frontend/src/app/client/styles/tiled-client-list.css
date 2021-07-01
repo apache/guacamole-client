@@ -72,6 +72,7 @@
 .tiled-client-list .client-tile-shared-indicator {
     display: none;
     max-height: 1em;
+    height: 100%;
 }
 
 .tiled-client-list .shared .client-tile-shared-indicator {

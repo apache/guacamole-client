@@ -36,7 +36,7 @@
 
 .client-zoom .client-zoom-out img,
 .client-zoom .client-zoom-in img {
-    max-width: 100%;
+    width: 100%;
     opacity: 0.5;
 }
 

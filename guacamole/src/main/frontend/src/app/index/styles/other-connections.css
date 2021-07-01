@@ -161,6 +161,7 @@
 #other-connections button.close-other-connection img {
     background: #A43;
     border-radius: 18px;
+    width: 100%;
     max-width: 18px;
     padding: 3px;
 }
