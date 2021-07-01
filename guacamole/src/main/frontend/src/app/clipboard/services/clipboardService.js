@@ -597,16 +597,12 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      *     set. This promise is always resolved.
      */
     service.setClipboard = function setClipboard(data) {
-        return setLocalClipboard(data).finally(() => {
+        return setLocalClipboard(data)['catch'](angular.noop).finally(() => {
 
             // Update internal clipboard and broadcast event notifying of
             // updated contents
             storedClipboardData(data);
             $rootScope.$broadcast('guacClipboard', data);
-
-            // Ensure promise is resolved (this function may be called from
-            // the promise rejection handler)
-            return data;
 
         });
     };
