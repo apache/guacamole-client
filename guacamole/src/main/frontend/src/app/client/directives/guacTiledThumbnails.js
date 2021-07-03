@@ -44,27 +44,31 @@ angular.module('client').directive('guacTiledThumbnails', [function guacTiledThu
     directive.controller = ['$scope', '$injector', '$element',
             function guacTiledThumbnailsController($scope, $injector, $element) {
 
-       /**
-         * Returns the CSS width that should be applied to each tile to
-         * achieve an even arrangement.
-         *
-         * @returns {String}
-         *     The CSS width that should be applied to each tile.
-         */
-        $scope.getTileWidth = function getTileWidth() {
-            return Math.floor(100 / $scope.clientGroup.columns) + '%';
-        };
+        // Required types
+        var ManagedClientGroup = $injector.get('ManagedClientGroup');
 
         /**
-         * Returns the CSS height that should be applied to each tile to
-         * achieve an even arrangement.
-         *
-         * @returns {String}
-         *     The CSS height that should be applied to each tile.
+         * The overall height of the thumbnail view of the tiled grid of
+         * clients within the client group, in pixels. This value is
+         * intentionally based off a snapshot of the current browser size at
+         * the time the directive comes into existence to ensure the contents
+         * of the thumbnail are familiar in appearance and aspect ratio.
          */
-        $scope.getTileHeight = function getTileHeight() {
-            return Math.floor(100 / $scope.clientGroup.rows) + '%';
-        };
+        $scope.height = Math.min(window.innerHeight, 128);
+
+        /**
+         * The overall width of the thumbnail view of the tiled grid of
+         * clients within the client group, in pixels. This value is
+         * intentionally based off a snapshot of the current browser size at
+         * the time the directive comes into existence to ensure the contents
+         * of the thumbnail are familiar in appearance and aspect ratio.
+         */
+        $scope.width = window.innerWidth / window.innerHeight * $scope.height;
+
+        /**
+         * @borrows ManagedClientGroup.getClientGrid
+         */
+        $scope.getClientGrid = ManagedClientGroup.getClientGrid;
 
     }];
 

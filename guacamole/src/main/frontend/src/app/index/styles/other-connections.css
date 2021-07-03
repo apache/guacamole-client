@@ -102,11 +102,6 @@
 
 }
 
-#other-connections .client-panel-connection .thumbnail-main img {
-    max-width: none;
-    max-height: 128px;
-}
-
 #other-connections .client-panel-connection a[href]::before {
 
     display: block;
