@@ -1,6 +1,4 @@
-<div class="tiled-client-grid"
-    ng-class="{  'multiple-clients' : hasMultipleClients(clientGroup) }">
-
+<div class="tiled-client-grid">
     <div class="tiled-client-row" ng-repeat="clientRow in getClientGrid(clientGroup)">
         <div class="tiled-client-cell" ng-repeat="client in clientRow">
 
@@ -10,7 +8,10 @@
                     'shared'  : isShared(client)
                 }"
                 guac-click="getFocusAssignmentCallback(client)">
-                <h3 class="client-tile-name"><img class="client-tile-shared-indicator" src="images/share-white.svg"> {{ client.title }}</h3>
+                <h3 class="client-tile-name" ng-if="hasMultipleClients(clientGroup)">
+                    <img class="client-tile-shared-indicator" src="images/share-white.svg">
+                    {{ client.title }}
+                </h3>
                 <guac-client client="client" emulate-absolute-mouse="emulateAbsoluteMouse"></guac-client>
 
                 <!-- Client-specific status/error dialog -->
@@ -19,5 +20,4 @@
 
         </div>
     </div>
-
 </div>

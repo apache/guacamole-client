@@ -80,19 +80,6 @@
     padding: 0 0.25em;
     font-size: 0.8em;
     color: white;
-    display: none;
-}
-
-.tiled-client-grid.multiple-clients .client-tile .client-tile-name {
-    display: block;
-}
-
-.tiled-client-grid.multiple-clients .client-tile {
-    border: 1px solid #444;
-}
-
-.tiled-client-grid .client-tile.focused {
-    border-color: #3161a9;
 }
 
 .tiled-client-grid .client-tile.focused .client-tile-name {
