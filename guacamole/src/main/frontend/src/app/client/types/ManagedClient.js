@@ -241,19 +241,27 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      * @param {ClientIdentifier} identifier
      *     The identifier representing the connection or group to connect to.
      *
+     * @param {number} [width]
+     *     The optimal display width, in local CSS pixels. If omitted, the
+     *     browser window width will be used.
+     *
+     * @param {number} [height]
+     *     The optimal display height, in local CSS pixels. If omitted, the
+     *     browser window height will be used.
+     *
      * @returns {Promise.<String>}
      *     A promise which resolves with the string of connection parameters to
      *     be passed to the Guacamole client, once the string is ready.
      */
-    var getConnectString = function getConnectString(identifier) {
+    var getConnectString = function getConnectString(identifier, width, height) {
 
         var deferred = $q.defer();
 
         // Calculate optimal width/height for display
         var pixel_density = $window.devicePixelRatio || 1;
         var optimal_dpi = pixel_density * 96;
-        var optimal_width = $window.innerWidth * pixel_density;
-        var optimal_height = $window.innerHeight * pixel_density;
+        var optimal_width = width * pixel_density;
+        var optimal_height = height * pixel_density;
 
         // Build base connect string
         var connectString =
@@ -324,8 +332,9 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     };
 
     /**
-     * Creates a new ManagedClient, connecting it to the specified connection
-     * or group.
+     * Creates a new ManagedClient representing the specified connection or
+     * connection group. The ManagedClient will not initially be connected,
+     * and must be explicitly connected by invoking ManagedClient.connect().
      *
      * @param {String} id
      *     The ID of the connection or group to connect to. This String must be
@@ -333,7 +342,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      *     ClientIdentifier.toString().
      *
      * @returns {ManagedClient}
-     *     A new ManagedClient instance which is connected to the connection or
+     *     A new ManagedClient instance which represents the connection or
      *     connection group having the given ID.
      */
     ManagedClient.getInstance = function getInstance(id) {
@@ -424,8 +433,10 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                             ManagedClientState.ConnectionState.IDLE);
                         break;
 
-                    // Ignore "connecting" state
-                    case 1: // Connecting
+                    // Conneccting
+                    case 1:
+                        ManagedClientState.setConnectionState(managedClient.clientState,
+                            ManagedClientState.ConnectionState.CONNECTING);
                         break;
 
                     // Connected + waiting
@@ -600,11 +611,8 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         // Parse connection details from ID
         var clientIdentifier = ClientIdentifier.fromString(id);
 
-        // Connect the Guacamole client
-        getConnectString(clientIdentifier)
-        .then(function connectClient(connectString) {
-            client.connect(connectString);
-        });
+        // Defer actually connecting the Guacamole client until
+        // ManagedClient.connect() is explicitly invoked
 
         // If using a connection, pull connection name and protocol information
         if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION) {
@@ -641,6 +649,40 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         }
 
         return managedClient;
+
+    };
+
+    /**
+     * Connects the given ManagedClient instance to its associated connection
+     * or connection group. If the ManagedClient has already been connected,
+     * including if connected but subsequently disconnected, this function has
+     * no effect.
+     *
+     * @param {ManagedClient} managedClient
+     *     The ManagedClient to connect.
+     *
+     * @param {number} [width]
+     *     The optimal display width, in local CSS pixels. If omitted, the
+     *     browser window width will be used.
+     *
+     * @param {number} [height]
+     *     The optimal display height, in local CSS pixels. If omitted, the
+     *     browser window height will be used.
+     */
+    ManagedClient.connect = function connect(managedClient, width, height) {
+
+        // Ignore if already connected
+        if (managedClient.clientState.connectionState !== ManagedClientState.ConnectionState.IDLE)
+            return;
+
+        // Parse connection details from ID
+        var clientIdentifier = ClientIdentifier.fromString(managedClient.id);
+
+        // Connect the Guacamole client
+        getConnectString(clientIdentifier, width, height)
+        .then(function connectClient(connectString) {
+            managedClient.client.connect(connectString);
+        });
 
     };
 

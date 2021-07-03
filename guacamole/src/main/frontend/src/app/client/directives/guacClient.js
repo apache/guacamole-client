@@ -281,6 +281,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
             if (!managedClient)
                 return;
 
+            // Connect, if not already connected
+            ManagedClient.connect(managedClient, main.offsetWidth, main.offsetHeight);
+
             // Get Guacamole client instance
             client = managedClient.client;
 
