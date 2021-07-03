@@ -282,47 +282,48 @@ angular.module('client').factory('ManagedClientGroup', ['$injector', function de
     };
 
     /**
-     * Returns the CSS that should used to achieve a proper grid arrangement
-     * of the client tiles represented by the given ManagedClientGroup. The
-     * CSS should be assigned to the element displaying the given
-     * ManagedClientGroup or, if an index is provided, the element representing
-     * the client having the given index within the group.
-     *
-     * NOTE: Much of this is unnecessary if support for IE is dropped. When
-     * that is eventually unavoidable (migration to Angular), this can be
-     * simplified.
+     * Returns a two-dimensional array of all ManagedClients within the given
+     * group, arranged in the grid defined by {@link ManagedClientGroup#rows}
+     * and {@link ManagedClientGroup#columns}. If any grid cell lacks a
+     * corresponding client (because the number of clients does not divide
+     * evenly into a grid), that cell will be null.
+     * 
+     * For the sake of AngularJS scope watches, the results of calling this
+     * function are cached and will always favor modifying an existing array
+     * over creating a new array, even for nested arrays.
      *
      * @param {ManagedClientGroup} group
-     *     The ManagedClientGroup to determine CSS for.
+     *     The ManagedClientGroup defining the tiled grid arrangement of
+     *     ManagedClients.
      *
-     * @param {number} [index]
-     *     The index of the relevant client within the group, if not producing
-     *     CSS for the group itself.
-     *
-     * @returns {string}
-     *     The CSS that should be assigned to the element representing the
-     *     given group or, if an index is provided, the CSS that should be
-     *     assigned to the element representing the client having the given
-     *     index within the group.
+     * @returns {ManagedClient[][]}
+     *     A two-dimensional array of all ManagedClients within the given
+     *     group.
      */
-    ManagedClientGroup.getTileGridCSS = function getTileGridCSS(group, index) {
+    ManagedClientGroup.getClientGrid = function getClientGrid(group) {
 
-        // Produce CSS defining a regular grid if no specific client is
-        // requested
-        if (arguments.length <= 1)
-            return 'display: -ms-grid;'
-                 + 'display: grid;'
-                 + '-ms-grid-rows: (1fr)[' + group.rows + '];'
-                 + 'grid-template-rows: repeat(' + group.rows + ', 1fr);'
-                 + '-ms-grid-columns: (1fr)[' + group.columns + '];'
-                 + 'grid-template-columns: repeat(' + group.columns + ', 1fr);';
+        var index = 0;
 
-        // For IE10+, the row/column coordinates of each child of a grid
-        // layout must be explicitly defined
-        var row = Math.floor(index / group.columns);
-        var column = index - row * group.columns;
-        return '-ms-grid-row: ' + (row + 1) + ';'
-             + '-ms-grid-column: ' + (column + 1) + ';';
+        // Operate on cached copy of grid
+        var clientGrid = group._grid || (group._grid = []);
+
+        // Delete any rows in excess of the required size
+        clientGrid.splice(group.rows);
+
+        for (var row = 0; row < group.rows; row++) {
+
+            // Prefer to use existing column arrays, deleting any columns in
+            // excess of the required size
+            var currentRow = clientGrid[row] || (clientGrid[row] = []);
+            currentRow.splice(group.columns);
+
+            for (var column = 0; column < group.columns; column++) {
+                currentRow[column] = group.clients[index++] || null;
+            }
+
+        }
+
+        return clientGrid;
 
     };
 

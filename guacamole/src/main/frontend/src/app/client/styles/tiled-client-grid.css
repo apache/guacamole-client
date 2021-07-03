@@ -17,13 +17,50 @@
  * under the License.
  */
 
-.tiled-client-list {
-    padding: 0;
-    margin: 0;
-    line-height: 0;
+/*
+ * Overall tiled grid layout.
+ */
+
+.tiled-client-grid {
+    width: 100%;
+    height: 100%;
 }
 
-.tiled-client-list li.client-tile {
+.tiled-client-grid,
+.tiled-client-grid .tiled-client-row,
+.tiled-client-grid .tiled-client-cell,
+.tiled-client-grid .client-tile {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+
+.tiled-client-grid {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+.tiled-client-grid .tiled-client-row {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+}
+
+/*
+ * Rendering of individual clients within tiles.
+ */
+
+.tiled-client-grid .client-tile {
     position: relative;
     display: -webkit-box;
     display: -webkit-flex;
@@ -37,7 +74,7 @@
     line-height: 1.5;
 }
 
-.tiled-client-list li.client-tile .client-tile-name {
+.tiled-client-grid .client-tile .client-tile-name {
     margin: 0;
     background: #444;
     padding: 0 0.25em;
@@ -46,35 +83,35 @@
     display: none;
 }
 
-.tiled-client-list.multiple-clients li.client-tile .client-tile-name {
+.tiled-client-grid.multiple-clients .client-tile .client-tile-name {
     display: block;
 }
 
-.tiled-client-list.multiple-clients li.client-tile {
+.tiled-client-grid.multiple-clients .client-tile {
     border: 1px solid #444;
 }
 
-.tiled-client-list li.client-tile.focused {
+.tiled-client-grid .client-tile.focused {
     border-color: #3161a9;
 }
 
-.tiled-client-list li.client-tile.focused .client-tile-name {
+.tiled-client-grid .client-tile.focused .client-tile-name {
     background-color: #3161a9;
 }
 
-.tiled-client-list li.client-tile .main {
+.tiled-client-grid .client-tile .main {
     -webkit-box-flex: 1;
     -webkit-flex: 1;
     -ms-flex: 1;
     flex: 1;
 }
 
-.tiled-client-list .client-tile-shared-indicator {
+.tiled-client-grid .client-tile-shared-indicator {
     display: none;
     max-height: 1em;
     height: 100%;
 }
 
-.tiled-client-list .shared .client-tile-shared-indicator {
+.tiled-client-grid .shared .client-tile-shared-indicator {
     display: inline;
 }

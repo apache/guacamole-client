@@ -150,24 +150,14 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
         $scope.hasMultipleClients = ManagedClientGroup.hasMultipleClients;
 
         /**
-         * @borrows ManagedClientGroup.getTileGridCSS
+         * @borrows ManagedClientGroup.getClientGrid
          */
-        $scope.getTileGridCSS = ManagedClientGroup.getTileGridCSS;
+        $scope.getClientGrid = ManagedClientGroup.getClientGrid;
 
         /**
-         * Returns whether the given ManagedClient has any associated share
-         * links.
-         *
-         * @param {ManagedClient} client
-         *     The ManagedClient to test.
-         *
-         * @returns {Boolean}
-         *     true if the given ManagedClient has at least one associated
-         *     share link, false otherwise.
+         * @borrows ManagedClient.isShared
          */
-        $scope.isShared = function isShared(client) {
-            return ManagedClient.isShared(client);
-        };
+        $scope.isShared = ManagedClient.isShared;
 
     }];
 

@@ -1,22 +1,23 @@
-<ul class="tiled-client-list"
-    ng-class="{  'multiple-clients' : hasMultipleClients(clientGroup) }"
-    ng-attr-style="{{ getTileGridCSS(clientGroup) }}">
+<div class="tiled-client-grid"
+    ng-class="{  'multiple-clients' : hasMultipleClients(clientGroup) }">
 
-    <li class="client-tile"
-        ng-repeat="client in clientGroup.clients"
-        ng-class="{
-            'focused' : client.clientProperties.focused,
-            'shared'  : isShared(client)
-        }"
-        ng-attr-style="{{ getTileGridCSS(clientGroup, $index) }}"
-        guac-click="getFocusAssignmentCallback(client)">
+    <div class="tiled-client-row" ng-repeat="clientRow in getClientGrid(clientGroup)">
+        <div class="tiled-client-cell" ng-repeat="client in clientRow">
 
-        <h3 class="client-tile-name"><img class="client-tile-shared-indicator" src="images/share-white.svg"> {{ client.title }}</h3>
-        <guac-client client="client" emulate-absolute-mouse="emulateAbsoluteMouse"></guac-client>
+            <div class="client-tile" ng-if="client"
+                ng-class="{
+                    'focused' : client.clientProperties.focused,
+                    'shared'  : isShared(client)
+                }"
+                guac-click="getFocusAssignmentCallback(client)">
+                <h3 class="client-tile-name"><img class="client-tile-shared-indicator" src="images/share-white.svg"> {{ client.title }}</h3>
+                <guac-client client="client" emulate-absolute-mouse="emulateAbsoluteMouse"></guac-client>
 
-        <!-- Client-specific status/error dialog -->
-        <guac-client-notification client="client"></guac-client-notification>
+                <!-- Client-specific status/error dialog -->
+                <guac-client-notification client="client"></guac-client-notification>
+            </div>
 
-    </li>
+        </div>
+    </div>
 
-</ul>
+</div>
