@@ -281,9 +281,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
             if (!managedClient)
                 return;
 
-            // Connect, if not already connected
-            ManagedClient.connect(managedClient, main.offsetWidth, main.offsetHeight);
-
             // Get Guacamole client instance
             client = managedClient.client;
 
@@ -301,7 +298,10 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 return false;
             };
 
-            // Size of newly-attached client may be different
+            // Connect and update interface to match required size, deferring
+            // connecting until a future element resize if the main element
+            // size (desired display size) is not known and thus can't be sent
+            // during the handshake
             $scope.mainElementResized();
 
         });
@@ -386,12 +386,23 @@ angular.module('client').directive('guacClient', [function guacClient() {
             if(autoFit)
                 $scope.client.clientProperties.scale = $scope.client.clientProperties.minScale;
         });
-        
-        // If the element is resized, attempt to resize client
+
+        /**
+         * Sends the current size of the main element (the display container)
+         * to the Guacamole server, requesting that the remote display be
+         * resized. If the Guacamole client is not yet connected, it will be
+         * connected and the current size will sent through the initial
+         * handshake. If the size of the main element is not yet known, this
+         * function may need to be invoked multiple times until the size is
+         * known and the client may be connected.
+         */
         $scope.mainElementResized = function mainElementResized() {
 
             // Send new display size, if changed
-            if (client && display) {
+            if (client && display && main.offsetWidth && main.offsetHeight) {
+
+                // Connect, if not already connected
+                ManagedClient.connect($scope.client, main.offsetWidth, main.offsetHeight);
 
                 var pixelDensity = $window.devicePixelRatio || 1;
                 var width  = main.offsetWidth  * pixelDensity;
