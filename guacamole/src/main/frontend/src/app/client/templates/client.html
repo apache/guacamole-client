@@ -47,7 +47,7 @@
 
     <!-- Menu -->
     <div class="menu" ng-class="{open: menu.shown}" id="guac-menu">
-        <div class="menu-content" ng-if="menu.shown">
+        <div class="menu-content" ng-if="menu.shown" guac-touch-drag="menuDrag">
 
             <!-- Stationary header -->
             <div class="header">
