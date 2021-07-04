@@ -552,7 +552,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                         source : managedClient.id,
                         type : mimetype,
                         data : data
-                    }), managedClient)['catch'](angular.noop);
+                    }))['catch'](angular.noop);
                 };
 
             }
@@ -565,7 +565,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                         source : managedClient.id,
                         type : mimetype,
                         data : reader.getBlob()
-                    }), managedClient)['catch'](angular.noop);
+                    }))['catch'](angular.noop);
                 };
             }
 
