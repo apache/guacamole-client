@@ -80,6 +80,7 @@
     padding: 0 0.25em;
     font-size: 0.8em;
     color: white;
+    z-index: 30;
 }
 
 .tiled-client-grid .client-tile.focused .client-tile-name {
