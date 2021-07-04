@@ -32,6 +32,7 @@ guac-modal {
     left: 0;
     top: 0;
     z-index: 10;
+    overflow: hidden;
 }
 
 guac-modal .modal-contents {
