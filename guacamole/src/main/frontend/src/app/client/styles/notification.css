@@ -73,8 +73,23 @@
     background: rgba(255, 255, 255, 0.5);
 }
 
+.client-status-modal .notification .parameters {
+    width: 100%;
+    max-width: 5in;
+    margin: 0 auto;
+}
+
 .client-status-modal .notification .parameters h3,
 .client-status-modal .notification .parameters .password-field .toggle-password {
     display: none;
 }
 
+.client-status-modal .notification .parameters input[type=email],
+.client-status-modal .notification .parameters input[type=number],
+.client-status-modal .notification .parameters input[type=password],
+.client-status-modal .notification .parameters input[type=text],
+.client-status-modal .notification .parameters textarea {
+    background: transparent;
+    border: 2px solid white;
+    color: white; 
+}
