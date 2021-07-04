@@ -94,6 +94,7 @@
     font-size: 0.8em;
     color: white;
     z-index: 30;
+    min-height: 1.5em;
 
 }
 
