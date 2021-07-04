@@ -8,9 +8,14 @@
                     'shared'  : isShared(client)
                 }"
                 guac-click="getFocusAssignmentCallback(client)">
-                <h3 class="client-tile-name" ng-if="hasMultipleClients(clientGroup)">
+                <h3 class="client-tile-header" ng-if="hasMultipleClients(clientGroup)">
                     <img class="client-tile-shared-indicator" src="images/share-white.svg">
-                    {{ client.title }}
+                    <span class="client-tile-name">{{ client.title }}</span>
+                    <img ng-click="onClose({ '$client' : client })"
+                         class="client-tile-disconnect"
+                         ng-attr-alt="{{ 'CLIENT.ACTION_DISCONNECT' | translate }}"
+                         ng-attr-title="{{ 'CLIENT.ACTION_DISCONNECT' | translate }}"
+                         src="images/x.svg">
                 </h3>
                 <guac-client client="client" emulate-absolute-mouse="emulateAbsoluteMouse"></guac-client>
 

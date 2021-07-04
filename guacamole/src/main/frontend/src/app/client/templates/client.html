@@ -10,6 +10,7 @@
 
                 <!-- All connections in current display -->
                 <guac-tiled-clients
+                    on-close="closeClientTile($client)"
                     client-group="clientGroup"
                     emulate-absolute-mouse="menu.emulateAbsoluteMouse">
                 </guac-tiled-clients>

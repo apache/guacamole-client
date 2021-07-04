@@ -32,6 +32,16 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
     directive.scope = {
 
         /**
+         * The function to invoke when the "close" button in the header of a
+         * client tile is clicked. The ManagedClient that is closed will be
+         * made available to the Angular expression defining the callback as
+         * "$client".
+         *
+         * @type function
+         */
+        onClose : '&',
+
+        /**
          * The group of Guacamole clients that should be displayed in an
          * evenly-tiled grid arrangement.
          *

@@ -211,20 +211,35 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
          *     view.
          */
         updateAttachedClients : function updateAttachedClients(id) {
-
-            // Deconstruct current path into corresponding client IDs
-            var ids = ManagedClientGroup.getClientIdentifiers($routeParams.id);
-
-            // Add/remove ID as requested
-            if ($scope.connectionListContext.attachedClients[id])
-                ids.push(id);
-            else
-                _.pull(ids, id);
-
-            // Reconstruct path, updating attached clients via change in route
-            $location.path('/client/' + encodeURIComponent(ManagedClientGroup.getIdentifier(ids)));
-
+            $scope.addRemoveClient(id, !$scope.connectionListContext.attachedClients[id]);
         }
+
+    };
+
+    /**
+     * Adds or removes the client with the given ID from the set of clients
+     * within the current view, updating the current URL accordingly.
+     *
+     * @param {string} id
+     *     The ID of the client to add or remove from the current view.
+     *
+     * @param {boolean} [remove=false]
+     *     Whether the specified client should be added (false) or removed
+     *     (true).
+     */
+    $scope.addRemoveClient = function addRemoveClient(id, remove) {
+
+        // Deconstruct current path into corresponding client IDs
+        var ids = ManagedClientGroup.getClientIdentifiers($routeParams.id);
+
+        // Add/remove ID as requested
+        if (remove)
+            _.pull(ids, id);
+        else
+            ids.push(id);
+
+        // Reconstruct path, updating attached clients via change in route
+        $location.path('/client/' + encodeURIComponent(ManagedClientGroup.getIdentifier(ids)));
 
     };
 
@@ -232,7 +247,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * Reloads the contents of $scope.clientGroup to reflect the client IDs
      * currently listed in the URL.
      */
-    var updateAttachedClients = function updateAttachedClients() {
+    var reparseRoute = function reparseRoute() {
 
         var previousClients = $scope.clientGroup ? $scope.clientGroup.clients.slice() : [];
         detachCurrentGroup();
@@ -290,11 +305,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
 
     // Init sets of clients based on current URL ...
-    updateAttachedClients();
+    reparseRoute();
 
     // ... and re-initialize those sets if the URL has changed without
     // reloading the route
-    $scope.$on('$routeUpdate', updateAttachedClients);
+    $scope.$on('$routeUpdate', reparseRoute);
 
     /**
      * The root connection groups of the connection hierarchy that should be
@@ -619,6 +634,18 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Hide menu
         $scope.menu.shown = false;
 
+    };
+
+    /**
+     * Disconnects the given ManagedClient, removing it from the current
+     * view.
+     *
+     * @param {ManagedClient} client
+     *     The client to disconnect.
+     */
+    $scope.closeClientTile = function closeClientTile(client) {
+        $scope.addRemoveClient(client.id, true);
+        guacClientManager.removeManagedClient(client.id);
     };
 
     /**
