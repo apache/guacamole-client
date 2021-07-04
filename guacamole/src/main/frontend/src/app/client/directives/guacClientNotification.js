@@ -407,6 +407,23 @@ angular.module('client').directive('guacClientNotification', [function guacClien
 
         });
 
+        /**
+         * Prevents the default behavior of the given AngularJS event if a
+         * notification is currently shown and the client is focused.
+         *
+         * @param {event} e
+         *     The AngularJS event to selectively prevent.
+         */
+        var preventDefaultDuringNotification = function preventDefaultDuringNotification(e) {
+            if ($scope.status && $scope.client.clientProperties.focused)
+                e.preventDefault();
+        };
+
+        // Block internal handling of key events (by the client) if a
+        // notification is visible
+        $scope.$on('guacBeforeKeydown', preventDefaultDuringNotification);
+        $scope.$on('guacBeforeKeyup', preventDefaultDuringNotification);
+
     }];
 
     return directive;
