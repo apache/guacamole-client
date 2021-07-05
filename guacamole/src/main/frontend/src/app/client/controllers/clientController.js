@@ -452,8 +452,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Update client state/behavior as visibility of the Guacamole menu changes
     $scope.$watch('menu.shown', function menuVisibilityChanged(menuShown, menuShownPreviousState) {
 
-        // Update available connection parameters, if there is a focused
-        // client
+        // Re-update available connection parameters, if there is a focused
+        // client (parameter information may not have been available at the
+        // time focus changed)
         if (menuShown)
             $scope.menu.connectionParameters = $scope.focusedClient ?
                 ManagedClient.getArgumentModel($scope.focusedClient) : {};
@@ -473,6 +474,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Apply any parameter changes when focus is changing
         if (oldFocusedClient)
             $scope.applyParameterChanges(oldFocusedClient);
+
+        // Update available connection parameters, if there is a focused
+        // client
+        $scope.menu.connectionParameters = newFocusedClient ?
+            ManagedClient.getArgumentModel(newFocusedClient) : {};
 
     });
 
