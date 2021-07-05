@@ -39,6 +39,16 @@ angular.module('client').factory('ManagedClientGroup', ['$injector', function de
         template = template || {};
 
         /**
+         * The time that this group was last brought to the foreground of
+         * the current tab, as the number of milliseconds elapsed since
+         * midnight of January 1, 1970 UTC. If the group has not yet been
+         * viewed, this will be 0.
+         *
+         * @type Number
+         */
+        this.lastUsed = template.lastUsed || 0;
+
+        /**
          * Whether this ManagedClientGroup is currently attached to the client
          * interface (true) or is running in the background (false).
          *

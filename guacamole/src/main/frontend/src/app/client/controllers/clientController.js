@@ -307,6 +307,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         if (managedClientGroup) {
             $scope.clientGroup = managedClientGroup;
             $scope.clientGroup.attached = true;
+            $scope.clientGroup.lastUsed = new Date().getTime();
         }
 
     };

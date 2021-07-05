@@ -6,7 +6,7 @@
 
     <!-- List of connection thumbnails -->
     <ul class="client-panel-connection-list">
-        <li ng-repeat="clientGroup in clientGroups"
+        <li ng-repeat="clientGroup in clientGroups | orderBy: '-lastUsed'"
             ng-if="!clientGroup.attached"
             ng-class="{ 'needs-attention' : hasStatusUpdate(clientGroup) }"
             class="client-panel-connection">
