@@ -250,10 +250,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var reparseRoute = function reparseRoute() {
 
         var previousClients = $scope.clientGroup ? $scope.clientGroup.clients.slice() : [];
-        detachCurrentGroup();
 
-        $scope.clientGroup = guacClientManager.getManagedClientGroup($routeParams.id);
-        $scope.clientGroup.attached = true;
+        // Replace existing group with new group
+        setAttachedGroup(guacClientManager.getManagedClientGroup($routeParams.id));
 
         // Store current set of attached clients for later use within the
         // Guacamole menu
@@ -275,21 +274,21 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
 
     /**
-     * Detaches the ManagedClientGroup currently attached to the client
-     * interface via $scope.clientGroup such that the interface can be safely
-     * cleaned up or another ManagedClientGroup can take its place.
+     * Replaces the ManagedClientGroup currently attached to the client
+     * interface via $scope.clientGroup with the given ManagedClientGroup,
+     * safely cleaning up after the previous group. If no ManagedClientGroup is
+     * provided, the existing group is simply removed.
+     *
+     * @param {ManagedClientGroup} [managedClientGroup]
+     *     The ManagedClientGroup to attach to the interface, if any.
      */
-    var detachCurrentGroup = function detachCurrentGroup() {
+    var setAttachedGroup = function setAttachedGroup(managedClientGroup) {
 
-        var managedClientGroup = $scope.clientGroup;
-        if (managedClientGroup) {
-
-            // Flag group as detached
-            managedClientGroup.attached = false;
+        if ($scope.clientGroup) {
 
             // Remove all disconnected clients from management (the user has
             // seen their status)
-            _.filter(managedClientGroup.clients, client => {
+            _.filter($scope.clientGroup.clients, client => {
 
                 var connectionState = client.clientState.connectionState;
                 return connectionState === ManagedClientState.ConnectionState.DISCONNECTED
@@ -300,6 +299,14 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
                 guacClientManager.removeManagedClient(client.id);
             });
 
+            // Flag group as detached
+            $scope.clientGroup.attached = false;
+
+        }
+
+        if (managedClientGroup) {
+            $scope.clientGroup = managedClientGroup;
+            $scope.clientGroup.attached = true;
         }
 
     };
@@ -807,7 +814,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     // Clean up when view destroyed
     $scope.$on('$destroy', function clientViewDestroyed() {
-        detachCurrentGroup();
+        setAttachedGroup(null);
     });
 
 }]);
