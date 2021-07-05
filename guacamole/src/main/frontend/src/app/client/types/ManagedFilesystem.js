@@ -170,6 +170,10 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
      * and human-readable name. Upon creation, a request to populate the
      * contents of the root directory will be automatically dispatched.
      *
+     * @param {ManagedClient} client
+     *     The client that originally received the "filesystem" instruction
+     *     that resulted in the creation of this ManagedFilesystem.
+     *
      * @param {Guacamole.Object} object
      *     The Guacamole.Object defining the filesystem.
      *

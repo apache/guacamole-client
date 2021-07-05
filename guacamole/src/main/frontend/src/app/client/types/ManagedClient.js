@@ -591,7 +591,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         // Handle any received filesystem objects
         client.onfilesystem = function fileSystemReceived(object, name) {
             $rootScope.$apply(function exposeFilesystem() {
-                managedClient.filesystems.push(ManagedFilesystem.getInstance(object, name));
+                managedClient.filesystems.push(ManagedFilesystem.getInstance(managedClient, object, name));
             });
         };
 
