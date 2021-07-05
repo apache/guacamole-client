@@ -74,7 +74,7 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
          *     The currently-focused client, or null if there are no focused
          *     clients or if multiple clients are focused.
          */
-        var getFocusedClient = function getFocusedClient() {
+        $scope.getFocusedClient = function getFocusedClient() {
 
             var managedClientGroup = $scope.clientGroup;
             if (managedClientGroup) {
@@ -87,10 +87,9 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
 
         };
 
-        // Re-initialize the reference to the currently-focused client when a
-        // new client group is set
-        $scope.$watch('clientGroup', function clientGroupChanged() {
-            $scope.$emit('guacClientFocused', getFocusedClient());
+        // Notify whenever identify of currently-focused client changes
+        $scope.$watch('getFocusedClient()', function focusedClientChanged(focusedClient) {
+            $scope.$emit('guacClientFocused', focusedClient);
         });
 
         /**
@@ -146,10 +145,6 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
                     });
 
                 }
-
-                // Update reference to single focused client after focus has
-                // changed
-                $scope.$emit('guacClientFocused', getFocusedClient());
 
             };
         };

@@ -470,10 +470,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         var oldFocusedClient = $scope.focusedClient;
         $scope.focusedClient = newFocusedClient;
 
-        // Ignore if focus is not actually changing
-        if (oldFocusedClient === newFocusedClient)
-            return;
-
         // Apply any parameter changes when focus is changing
         if (oldFocusedClient)
             $scope.applyParameterChanges(oldFocusedClient);
