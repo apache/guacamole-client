@@ -235,6 +235,15 @@ angular.module('client').factory('guacClientManager', ['$injector',
      */
     service.getManagedClientGroup = function getManagedClientGroup(id) {
 
+        var managedClientGroups = storedManagedClientGroups();
+        var existingGroup = _.find(managedClientGroups, (group) => {
+            return id === ManagedClientGroup.getIdentifier(group);
+        });
+
+        // Prefer to return the existing group if it exactly matches
+        if (existingGroup)
+            return existingGroup;
+
         var clients = [];
         var clientIds = ManagedClientGroup.getClientIdentifiers(id);
 
@@ -253,7 +262,6 @@ angular.module('client').factory('guacClientManager', ['$injector',
             clients : clients
         });
 
-        var managedClientGroups = storedManagedClientGroups();
         managedClientGroups.push(group);
         return group;
 
