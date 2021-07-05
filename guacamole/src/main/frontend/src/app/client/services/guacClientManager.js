@@ -253,14 +253,12 @@ angular.module('client').factory('guacClientManager', ['$injector',
             clients.push(service.getManagedClient(id));
         });
 
-        // Focus the first client if there are no clients focused
-        if (clients.length >= 1 && _.findIndex(clients, client => client.clientProperties.focused) === -1) {
-            clients[0].clientProperties.focused = true;
-        }
-
         var group = new ManagedClientGroup({
             clients : clients
         });
+
+        // Focus the first client if there are no clients focused
+        ManagedClientGroup.verifyFocus(group);
 
         managedClientGroups.push(group);
         return group;

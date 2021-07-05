@@ -337,6 +337,23 @@ angular.module('client').factory('ManagedClientGroup', ['$injector', function de
 
     };
 
+    /**
+     * Verifies that focus is assigned to at least one client in the given
+     * group. If no client has focus, focus is assigned to the first client in
+     * the group.
+     *
+     * @param {ManagedClientGroup} group
+     *     The group to verify.
+     */
+    ManagedClientGroup.verifyFocus = function verifyFocus(group) {
+
+        // Focus the first client if there are no clients focused
+        if (group.clients.length >= 1 && _.findIndex(group.clients, client => client.clientProperties.focused) === -1) {
+            group.clients[0].clientProperties.focused = true;
+        }
+
+    };
+
     return ManagedClientGroup;
 
 }]);

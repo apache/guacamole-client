@@ -653,8 +653,14 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      *     The client to disconnect.
      */
     $scope.closeClientTile = function closeClientTile(client) {
+
         $scope.addRemoveClient(client.id, true);
         guacClientManager.removeManagedClient(client.id);
+
+        // Ensure at least one client has focus (the only client with
+        // focus may just have been removed)
+        ManagedClientGroup.verifyFocus($scope.clientGroup);
+
     };
 
     /**
