@@ -33,7 +33,7 @@ angular.module('client').factory('ManagedClientGroup', ['$injector', function de
      *     The object whose properties should be copied within the new
      *     ManagedClientGroup.
      */
-    var ManagedClientGroup = function ManagedClientGroup(template) {
+    const ManagedClientGroup = function ManagedClientGroup(template) {
 
         // Use empty object by default
         template = template || {};
@@ -97,7 +97,7 @@ angular.module('client').factory('ManagedClientGroup', ['$injector', function de
      */
     ManagedClientGroup.recalculateTiles = function recalculateTiles(group) {
 
-        var recalculated = new ManagedClientGroup({
+        const recalculated = new ManagedClientGroup({
             clients : group.clients
         });
 
@@ -222,7 +222,7 @@ angular.module('client').factory('ManagedClientGroup', ['$injector', function de
 
         // Generate a name from ONLY the focused clients, unless there are no
         // focused clients
-        var relevantClients = _.filter(group.clients, client => client.clientProperties.focused);
+        let relevantClients = _.filter(group.clients, client => client.clientProperties.focused);
         if (!relevantClients.length)
             relevantClients = group.clients;
 
@@ -262,9 +262,9 @@ angular.module('client').factory('ManagedClientGroup', ['$injector', function de
      *     ManagedClientGroup.
      */
     ManagedClientGroup.forEach = function forEach(group, callback) {
-        var current = 0;
-        for (var row = 0; row < group.rows; row++) {
-            for (var column = 0; column < group.columns; column++) {
+        let current = 0;
+        for (let row = 0; row < group.rows; row++) {
+            for (let column = 0; column < group.columns; column++) {
 
                 callback(group.clients[current], row, column, current);
                 current++;
@@ -312,22 +312,22 @@ angular.module('client').factory('ManagedClientGroup', ['$injector', function de
      */
     ManagedClientGroup.getClientGrid = function getClientGrid(group) {
 
-        var index = 0;
+        let index = 0;
 
         // Operate on cached copy of grid
-        var clientGrid = group._grid || (group._grid = []);
+        const clientGrid = group._grid || (group._grid = []);
 
         // Delete any rows in excess of the required size
         clientGrid.splice(group.rows);
 
-        for (var row = 0; row < group.rows; row++) {
+        for (let row = 0; row < group.rows; row++) {
 
             // Prefer to use existing column arrays, deleting any columns in
             // excess of the required size
-            var currentRow = clientGrid[row] || (clientGrid[row] = []);
+            const currentRow = clientGrid[row] || (clientGrid[row] = []);
             currentRow.splice(group.columns);
 
-            for (var column = 0; column < group.columns; column++) {
+            for (let column = 0; column < group.columns; column++) {
                 currentRow[column] = group.clients[index++] || null;
             }
 

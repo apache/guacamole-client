@@ -24,26 +24,26 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         function clientController($scope, $routeParams, $injector) {
 
     // Required types
-    var ConnectionGroup    = $injector.get('ConnectionGroup');
-    var ManagedClient      = $injector.get('ManagedClient');
-    var ManagedClientGroup = $injector.get('ManagedClientGroup');
-    var ManagedClientState = $injector.get('ManagedClientState');
-    var ManagedFilesystem  = $injector.get('ManagedFilesystem');
-    var Protocol           = $injector.get('Protocol');
-    var ScrollState        = $injector.get('ScrollState');
+    const ConnectionGroup    = $injector.get('ConnectionGroup');
+    const ManagedClient      = $injector.get('ManagedClient');
+    const ManagedClientGroup = $injector.get('ManagedClientGroup');
+    const ManagedClientState = $injector.get('ManagedClientState');
+    const ManagedFilesystem  = $injector.get('ManagedFilesystem');
+    const Protocol           = $injector.get('Protocol');
+    const ScrollState        = $injector.get('ScrollState');
 
     // Required services
-    var $location              = $injector.get('$location');
-    var authenticationService  = $injector.get('authenticationService');
-    var connectionGroupService = $injector.get('connectionGroupService');
-    var clipboardService       = $injector.get('clipboardService');
-    var dataSourceService      = $injector.get('dataSourceService');
-    var guacClientManager      = $injector.get('guacClientManager');
-    var iconService            = $injector.get('iconService');
-    var preferenceService      = $injector.get('preferenceService');
-    var requestService         = $injector.get('requestService');
-    var tunnelService          = $injector.get('tunnelService');
-    var userPageService        = $injector.get('userPageService');
+    const $location              = $injector.get('$location');
+    const authenticationService  = $injector.get('authenticationService');
+    const connectionGroupService = $injector.get('connectionGroupService');
+    const clipboardService       = $injector.get('clipboardService');
+    const dataSourceService      = $injector.get('dataSourceService');
+    const guacClientManager      = $injector.get('guacClientManager');
+    const iconService            = $injector.get('iconService');
+    const preferenceService      = $injector.get('preferenceService');
+    const requestService         = $injector.get('requestService');
+    const tunnelService          = $injector.get('tunnelService');
+    const userPageService        = $injector.get('userPageService');
 
     /**
      * The minimum number of pixels a drag gesture must move to result in the
@@ -230,7 +230,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.addRemoveClient = function addRemoveClient(id, remove) {
 
         // Deconstruct current path into corresponding client IDs
-        var ids = ManagedClientGroup.getClientIdentifiers($routeParams.id);
+        const ids = ManagedClientGroup.getClientIdentifiers($routeParams.id);
 
         // Add/remove ID as requested
         if (remove)
@@ -247,9 +247,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * Reloads the contents of $scope.clientGroup to reflect the client IDs
      * currently listed in the URL.
      */
-    var reparseRoute = function reparseRoute() {
+    const reparseRoute = function reparseRoute() {
 
-        var previousClients = $scope.clientGroup ? $scope.clientGroup.clients.slice() : [];
+        const previousClients = $scope.clientGroup ? $scope.clientGroup.clients.slice() : [];
 
         // Replace existing group with new group
         setAttachedGroup(guacClientManager.getManagedClientGroup($routeParams.id));
@@ -282,7 +282,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * @param {ManagedClientGroup} [managedClientGroup]
      *     The ManagedClientGroup to attach to the interface, if any.
      */
-    var setAttachedGroup = function setAttachedGroup(managedClientGroup) {
+    const setAttachedGroup = function setAttachedGroup(managedClientGroup) {
 
         if ($scope.clientGroup) {
 
@@ -290,7 +290,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             // seen their status)
             _.filter($scope.clientGroup.clients, client => {
 
-                var connectionState = client.clientState.connectionState;
+                const connectionState = client.clientState.connectionState;
                 return connectionState === ManagedClientState.ConnectionState.DISCONNECTED
                  || connectionState === ManagedClientState.ConnectionState.TUNNEL_ERROR
                  || connectionState === ManagedClientState.ConnectionState.CLIENT_ERROR;
@@ -393,7 +393,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * @returns {boolean}
      *     true if Ctrl+Alt+Shift has been pressed, false otherwise.
      */  
-    var isMenuShortcutPressed = function isMenuShortcutPressed(keyboard) {
+    const isMenuShortcutPressed = function isMenuShortcutPressed(keyboard) {
 
         // Ctrl+Alt+Shift has NOT been pressed if any key is currently held
         // down that isn't Ctrl, Alt, or Shift
@@ -468,7 +468,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Automatically track and cache the currently-focused client
     $scope.$on('guacClientFocused', function focusedClientChanged(event, newFocusedClient) {
 
-        var oldFocusedClient = $scope.focusedClient;
+        const oldFocusedClient = $scope.focusedClient;
         $scope.focusedClient = newFocusedClient;
 
         // Apply any parameter changes when focus is changing
@@ -543,7 +543,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Count total number of links within the ManagedClient's share link map
         var linkCount = 0;
-        for (var dummy in $scope.focusedClient.shareLinks)
+        for (const dummy in $scope.focusedClient.shareLinks)
             linkCount++;
 
         return linkCount;

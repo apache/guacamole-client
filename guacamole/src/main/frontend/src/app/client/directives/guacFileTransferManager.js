@@ -41,9 +41,9 @@ angular.module('client').directive('guacFileTransferManager', [function guacFile
         controller: ['$scope', '$injector', function guacFileTransferManagerController($scope, $injector) {
 
             // Required types
-            var ManagedClient            = $injector.get('ManagedClient');
-            var ManagedClientGroup       = $injector.get('ManagedClientGroup');
-            var ManagedFileTransferState = $injector.get('ManagedFileTransferState');
+            const ManagedClient            = $injector.get('ManagedClient');
+            const ManagedClientGroup       = $injector.get('ManagedClientGroup');
+            const ManagedFileTransferState = $injector.get('ManagedFileTransferState');
 
             /**
              * Determines whether the given file transfer state indicates an

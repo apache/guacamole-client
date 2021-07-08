@@ -48,21 +48,21 @@ angular.module('element').directive('guacClick', [function guacClick() {
              *
              * @type guacClick~callback
              */
-            var guacClick = $scope.$eval($attrs.guacClick);
+            const guacClick = $scope.$eval($attrs.guacClick);
 
             /**
              * The element which will register the click.
              *
              * @type Element
              */
-            var element = $element[0];
+            const element = $element[0];
 
             /**
              * Whether either Shift key is currently pressed.
              *
              * @type boolean
              */
-            var shift = false;
+            let shift = false;
 
             /**
              * Whether either Ctrl key is currently pressed. To allow the
@@ -71,7 +71,7 @@ angular.module('element').directive('guacClick', [function guacClick() {
              *
              * @type boolean
              */
-            var ctrl = false;
+            let ctrl = false;
 
             /**
              * Updates the state of the {@link shift} and {@link ctrl} flags
@@ -81,7 +81,7 @@ angular.module('element').directive('guacClick', [function guacClick() {
              * @param {Guacamole.Keyboard} keyboard
              *     The Guacamole.Keyboard instance to read key states from.
              */
-            var updateModifiers = function updateModifiers(keyboard) {
+            const updateModifiers = function updateModifiers(keyboard) {
 
                 shift = !!(
                         keyboard.pressed[0xFFE1] // Left shift

@@ -26,13 +26,13 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
         function clipboardService($injector) {
 
     // Get required services
-    var $q                    = $injector.get('$q');
-    var $window               = $injector.get('$window');
-    var $rootScope            = $injector.get('$rootScope');
-    var sessionStorageFactory = $injector.get('sessionStorageFactory');
+    const $q                    = $injector.get('$q');
+    const $window               = $injector.get('$window');
+    const $rootScope            = $injector.get('$rootScope');
+    const sessionStorageFactory = $injector.get('sessionStorageFactory');
 
     // Required types
-    var ClipboardData = $injector.get('ClipboardData');
+    const ClipboardData = $injector.get('ClipboardData');
 
     /**
      * Getter/setter which retrieves or sets the current stored clipboard
@@ -42,7 +42,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      *
      * @type Function
      */
-    var storedClipboardData = sessionStorageFactory.create(new ClipboardData());
+    const storedClipboardData = sessionStorageFactory.create(new ClipboardData());
 
     var service = {};
 
@@ -189,7 +189,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      *     A promise that will resolve if setting the clipboard was successful,
      *     and will reject if it failed.
      */
-    var setLocalClipboard = function setLocalClipboard(data) {
+    const setLocalClipboard = function setLocalClipboard(data) {
 
         var deferred = $q.defer();
 
@@ -437,7 +437,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      *     if getting the clipboard was successful, and will reject if it
      *     failed.
      */
-    var getLocalClipboard = function getLocalClipboard() {
+    const getLocalClipboard = function getLocalClipboard() {
 
         // If the clipboard is already being read, do not overlap the read
         // attempts; instead share the result across all requests

@@ -24,7 +24,7 @@
  */
 angular.module('client').directive('guacTiledClients', [function guacTiledClients() {
 
-    var directive = {
+    const directive = {
         restrict: 'E',
         templateUrl: 'app/client/templates/guacTiledClients.html',
     };
@@ -63,8 +63,8 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
             function guacTiledClientsController($scope, $injector, $element) {
 
         // Required types
-        var ManagedClient      = $injector.get('ManagedClient');
-        var ManagedClientGroup = $injector.get('ManagedClientGroup');
+        const ManagedClient      = $injector.get('ManagedClient');
+        const ManagedClientGroup = $injector.get('ManagedClientGroup');
 
         /**
          * Returns the currently-focused ManagedClient. If there is no such
@@ -76,9 +76,9 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
          */
         $scope.getFocusedClient = function getFocusedClient() {
 
-            var managedClientGroup = $scope.clientGroup;
+            const managedClientGroup = $scope.clientGroup;
             if (managedClientGroup) {
-                var focusedClients = _.filter(managedClientGroup.clients, client => client.clientProperties.focused);
+                const focusedClients = _.filter(managedClientGroup.clients, client => client.clientProperties.focused);
                 if (focusedClients.length === 1)
                     return focusedClients[0];
             }
@@ -121,10 +121,10 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
                 // via shift-click
                 if (shift) {
 
-                    var minRow = $scope.clientGroup.rows - 1;
-                    var minColumn = $scope.clientGroup.columns - 1;
-                    var maxRow = 0;
-                    var maxColumn = 0;
+                    let minRow = $scope.clientGroup.rows - 1;
+                    let minColumn = $scope.clientGroup.columns - 1;
+                    let maxRow = 0;
+                    let maxColumn = 0;
 
                     // Determine extents of selected area
                     ManagedClientGroup.forEach($scope.clientGroup, (client, row, column) => {

@@ -24,12 +24,12 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         function indexController($scope, $injector) {
 
     // Required services
-    var $document         = $injector.get('$document');
-    var $route            = $injector.get('$route');
-    var $window           = $injector.get('$window');
-    var clipboardService  = $injector.get('clipboardService');
-    var guacNotification  = $injector.get('guacNotification');
-    var guacClientManager = $injector.get('guacClientManager');
+    const $document         = $injector.get('$document');
+    const $route            = $injector.get('$route');
+    const $window           = $injector.get('$window');
+    const clipboardService  = $injector.get('clipboardService');
+    const guacNotification  = $injector.get('guacNotification');
+    const guacClientManager = $injector.get('guacClientManager');
 
     /**
      * The error that prevents the current page from rendering at all. If no

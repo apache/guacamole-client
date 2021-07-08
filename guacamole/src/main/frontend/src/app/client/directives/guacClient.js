@@ -22,7 +22,7 @@
  */
 angular.module('client').directive('guacClient', [function guacClient() {
 
-    var directive = {
+    const directive = {
         restrict: 'E',
         replace: true,
         templateUrl: 'app/client/templates/guacClient.html'
@@ -51,31 +51,31 @@ angular.module('client').directive('guacClient', [function guacClient() {
         function guacClientController($scope, $injector, $element) {
 
         // Required types
-        var ManagedClient = $injector.get('ManagedClient');
+        const ManagedClient = $injector.get('ManagedClient');
             
         // Required services
-        var $window = $injector.get('$window');
+        const $window = $injector.get('$window');
             
         /**
          * Whether the local, hardware mouse cursor is in use.
          * 
          * @type Boolean
          */
-        var localCursor = false;
+        let localCursor = false;
 
         /**
          * The current Guacamole client instance.
          * 
          * @type Guacamole.Client 
          */
-        var client = null;
+        let client = null;
 
         /**
          * The display of the current Guacamole client instance.
          * 
          * @type Guacamole.Display
          */
-        var display = null;
+        let display = null;
 
         /**
          * The element associated with the display of the current
@@ -83,21 +83,21 @@ angular.module('client').directive('guacClient', [function guacClient() {
          *
          * @type Element
          */
-        var displayElement = null;
+        let displayElement = null;
 
         /**
          * The element which must contain the Guacamole display element.
          *
          * @type Element
          */
-        var displayContainer = $element.find('.display')[0];
+        const displayContainer = $element.find('.display')[0];
 
         /**
          * The main containing element for the entire directive.
          * 
          * @type Element
          */
-        var main = $element[0];
+        const main = $element[0];
 
         /**
          * Guacamole mouse event object, wrapped around the main client
@@ -105,7 +105,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
          *
          * @type Guacamole.Mouse
          */
-        var mouse = new Guacamole.Mouse(displayContainer);
+        const mouse = new Guacamole.Mouse(displayContainer);
 
         /**
          * Guacamole absolute mouse emulation object, wrapped around the
@@ -113,7 +113,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
          *
          * @type Guacamole.Mouse.Touchscreen
          */
-        var touchScreen = new Guacamole.Mouse.Touchscreen(displayContainer);
+        const touchScreen = new Guacamole.Mouse.Touchscreen(displayContainer);
 
         /**
          * Guacamole relative mouse emulation object, wrapped around the
@@ -121,7 +121,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
          *
          * @type Guacamole.Mouse.Touchpad
          */
-        var touchPad = new Guacamole.Mouse.Touchpad(displayContainer);
+        const touchPad = new Guacamole.Mouse.Touchpad(displayContainer);
 
         /**
          * Guacamole touch event handling object, wrapped around the main
@@ -129,13 +129,13 @@ angular.module('client').directive('guacClient', [function guacClient() {
          *
          * @type Guacamole.Touch
          */
-        var touch = new Guacamole.Touch(displayContainer);
+        const touch = new Guacamole.Touch(displayContainer);
 
         /**
          * Updates the scale of the attached Guacamole.Client based on current window
          * size and "auto-fit" setting.
          */
-        var updateDisplayScale = function updateDisplayScale() {
+        const updateDisplayScale = function updateDisplayScale() {
 
             if (!display) return;
 
@@ -163,19 +163,19 @@ angular.module('client').directive('guacClient', [function guacClient() {
          * @param {Guacamole.Mouse.State} mouseState The current mouse
          *                                           state.
          */
-        var scrollToMouse = function scrollToMouse(mouseState) {
+        const scrollToMouse = function scrollToMouse(mouseState) {
 
             // Determine mouse position within view
-            var mouse_view_x = mouseState.x + displayContainer.offsetLeft - main.scrollLeft;
-            var mouse_view_y = mouseState.y + displayContainer.offsetTop  - main.scrollTop;
+            const mouse_view_x = mouseState.x + displayContainer.offsetLeft - main.scrollLeft;
+            const mouse_view_y = mouseState.y + displayContainer.offsetTop  - main.scrollTop;
 
             // Determine viewport dimensions
-            var view_width  = main.offsetWidth;
-            var view_height = main.offsetHeight;
+            const view_width  = main.offsetWidth;
+            const view_height = main.offsetHeight;
 
             // Determine scroll amounts based on mouse position relative to document
 
-            var scroll_amount_x;
+            let scroll_amount_x;
             if (mouse_view_x > view_width)
                 scroll_amount_x = mouse_view_x - view_width;
             else if (mouse_view_x < 0)
@@ -183,7 +183,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
             else
                 scroll_amount_x = 0;
 
-            var scroll_amount_y;
+            let scroll_amount_y;
             if (mouse_view_y > view_height)
                 scroll_amount_y = mouse_view_y - view_height;
             else if (mouse_view_y < 0)
@@ -206,7 +206,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
          * @param {Guacamole.Mouse.MouseEvent} event
          *     The mouse event to handle.
          */
-        var handleMouseEvent = function handleMouseEvent(event) {
+        const handleMouseEvent = function handleMouseEvent(event) {
 
             // Do not attempt to handle mouse state changes if the client
             // or display are not yet available
@@ -231,7 +231,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
          * @param {Guacamole.Mouse.MouseEvent} event
          *     The mouse event to handle.
          */
-        var handleEmulatedMouseEvent = function handleEmulatedMouseEvent(event) {
+        const handleEmulatedMouseEvent = function handleEmulatedMouseEvent(event) {
 
             // Do not attempt to handle mouse state changes if the client
             // or display are not yet available
@@ -256,7 +256,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
          * @param {Guacamole.Touch.Event} touchEvent
          *     The touch event.
          */
-        var handleTouchEvent = function handleTouchEvent(event) {
+        const handleTouchEvent = function handleTouchEvent(event) {
 
             // Do not attempt to handle touch state changes if the client
             // or display are not yet available
@@ -404,9 +404,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 // Connect, if not already connected
                 ManagedClient.connect($scope.client, main.offsetWidth, main.offsetHeight);
 
-                var pixelDensity = $window.devicePixelRatio || 1;
-                var width  = main.offsetWidth  * pixelDensity;
-                var height = main.offsetHeight * pixelDensity;
+                const pixelDensity = $window.devicePixelRatio || 1;
+                const width  = main.offsetWidth  * pixelDensity;
+                const height = main.offsetHeight * pixelDensity;
 
                 if (display.getWidth() !== width || display.getHeight() !== height)
                     client.sendSize(width, height);
@@ -436,7 +436,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
          *
          * @type Number
          */
-        var initialScale = null;
+        let initialScale = null;
 
         /**
          * If a pinch gesture is in progress, the X coordinate of the point on the
@@ -445,7 +445,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
          * 
          * @type Number
          */
-        var initialCenterX = 0;
+        let initialCenterX = 0;
 
         /**
          * If a pinch gesture is in progress, the Y coordinate of the point on the
@@ -454,7 +454,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
          * 
          * @type Number
          */
-        var initialCenterY = 0;
+        let initialCenterY = 0;
 
         // Zoom and pan client via pinch gestures
         $scope.clientPinch = function clientPinch(inProgress, startLength, currentLength, centerX, centerY) {
@@ -484,7 +484,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
             }
 
             // Determine new scale absolutely
-            var currentScale = initialScale * currentLength / startLength;
+            let currentScale = initialScale * currentLength / startLength;
 
             // Fix scale within limits - scroll will be miscalculated otherwise
             currentScale = Math.max(currentScale, $scope.client.clientProperties.minScale);
@@ -564,7 +564,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
          * @param {Event} e
          *     The event related to the in-progress drag/drop operation.
          */
-        var notifyDragStart = function notifyDragStart(e) {
+        const notifyDragStart = function notifyDragStart(e) {
 
             e.preventDefault();
             e.stopPropagation();
@@ -583,7 +583,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
          * @param {Event} e
          *     The event related to the end of the former drag/drop operation.
          */
-        var notifyDragEnd = function notifyDragEnd(e) {
+        const notifyDragEnd = function notifyDragEnd(e) {
 
             e.preventDefault();
             e.stopPropagation();
@@ -608,8 +608,8 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 return;
 
             // Upload each file 
-            var files = e.dataTransfer.files;
-            for (var i=0; i<files.length; i++)
+            const files = e.dataTransfer.files;
+            for (let i = 0; i < files.length; i++)
                 ManagedClient.uploadFile($scope.client, files[i]);
 
         }, false);

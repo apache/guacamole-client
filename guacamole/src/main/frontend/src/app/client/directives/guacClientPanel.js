@@ -25,12 +25,12 @@
 angular.module('client').directive('guacClientPanel', ['$injector', function guacClientPanel($injector) {
 
     // Required services
-    var guacClientManager     = $injector.get('guacClientManager');
-    var sessionStorageFactory = $injector.get('sessionStorageFactory');
+    const guacClientManager     = $injector.get('guacClientManager');
+    const sessionStorageFactory = $injector.get('sessionStorageFactory');
 
     // Required types
-    var ManagedClientGroup = $injector.get('ManagedClientGroup');
-    var ManagedClientState = $injector.get('ManagedClientState');
+    const ManagedClientGroup = $injector.get('ManagedClientGroup');
+    const ManagedClientState = $injector.get('ManagedClientState');
 
     /**
      * Getter/setter for the boolean flag controlling whether the client panel

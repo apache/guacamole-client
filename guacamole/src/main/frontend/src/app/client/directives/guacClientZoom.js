@@ -23,7 +23,7 @@
  */
 angular.module('client').directive('guacClientZoom', [function guacClientZoom() {
 
-    var directive = {
+    const directive = {
         restrict: 'E',
         replace: true,
         templateUrl: 'app/client/templates/guacClientZoom.html'

@@ -27,10 +27,10 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
     function guacClipboard($injector) {
 
     // Required types
-    var ClipboardData = $injector.get('ClipboardData');
+    const ClipboardData = $injector.get('ClipboardData');
 
     // Required services
-    var clipboardService = $injector.get('clipboardService');
+    const clipboardService = $injector.get('clipboardService');
 
     /**
      * Configuration object for the guacClipboard directive.
@@ -78,7 +78,7 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
          *     The ClipboardData to display within the clipboard editor for
          *     editing.
          */
-        var updateClipboardEditor = function updateClipboardEditor(data) {
+        const updateClipboardEditor = function updateClipboardEditor(data) {
 
             // If the clipboard data is a string, render it as text
             if (typeof data.data === 'string')

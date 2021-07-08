@@ -23,7 +23,7 @@
  */
 angular.module('client').directive('guacTiledThumbnails', [function guacTiledThumbnails() {
 
-    var directive = {
+    const directive = {
         restrict: 'E',
         replace: true,
         templateUrl: 'app/client/templates/guacTiledThumbnails.html'
@@ -45,7 +45,7 @@ angular.module('client').directive('guacTiledThumbnails', [function guacTiledThu
             function guacTiledThumbnailsController($scope, $injector, $element) {
 
         // Required types
-        var ManagedClientGroup = $injector.get('ManagedClientGroup');
+        const ManagedClientGroup = $injector.get('ManagedClientGroup');
 
         /**
          * The overall height of the thumbnail view of the tiled grid of

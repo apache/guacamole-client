@@ -24,12 +24,12 @@ angular.module('client').factory('guacClientManager', ['$injector',
         function guacClientManager($injector) {
 
     // Required types
-    var ManagedClient      = $injector.get('ManagedClient');
-    var ManagedClientGroup = $injector.get('ManagedClientGroup');
+    const ManagedClient      = $injector.get('ManagedClient');
+    const ManagedClientGroup = $injector.get('ManagedClientGroup');
 
     // Required services
-    var $window               = $injector.get('$window');
-    var sessionStorageFactory = $injector.get('sessionStorageFactory');
+    const $window               = $injector.get('$window');
+    const sessionStorageFactory = $injector.get('sessionStorageFactory');
 
     var service = {};
 
@@ -63,7 +63,7 @@ angular.module('client').factory('guacClientManager', ['$injector',
      *
      * @type Function
      */
-    var storedManagedClientGroups = sessionStorageFactory.create([], function destroyClientGroupStorage() {
+    const storedManagedClientGroups = sessionStorageFactory.create([], function destroyClientGroupStorage() {
 
         // Disconnect all clients when storage is destroyed
         service.clear();
@@ -89,13 +89,13 @@ angular.module('client').factory('guacClientManager', ['$injector',
      * @param {string} id
      *     The ID of the ManagedClient to remove.
      */
-    var ungroupManagedClient = function ungroupManagedClient(id) {
+    const ungroupManagedClient = function ungroupManagedClient(id) {
 
-        var managedClientGroups = storedManagedClientGroups();
+        const managedClientGroups = storedManagedClientGroups();
 
         // Remove client from all groups
         managedClientGroups.forEach(group => {
-            var removed = _.remove(group.clients, client => (client.id === id));
+            const removed = _.remove(group.clients, client => (client.id === id));
             if (removed.length) {
 
                 // Reset focus state if client is being removed from a group
@@ -165,20 +165,20 @@ angular.module('client').factory('guacClientManager', ['$injector',
      */
     service.replaceManagedClient = function replaceManagedClient(id) {
 
-        var managedClients = storedManagedClients();
-        var managedClientGroups = storedManagedClientGroups();
+        const managedClients = storedManagedClients();
+        const managedClientGroups = storedManagedClientGroups();
 
         // Remove client if it exists
         if (id in managedClients) {
 
-            var hadFocus = managedClients[id].clientProperties.focused;
+            const hadFocus = managedClients[id].clientProperties.focused;
             managedClients[id].client.disconnect();
             delete managedClients[id];
             
             // Remove client from all groups
             managedClientGroups.forEach(group => {
 
-                var index = _.findIndex(group.clients, client => (client.id === id));
+                const index = _.findIndex(group.clients, client => (client.id === id));
                 if (index === -1)
                     return;
 
@@ -235,8 +235,8 @@ angular.module('client').factory('guacClientManager', ['$injector',
      */
     service.getManagedClientGroup = function getManagedClientGroup(id) {
 
-        var managedClientGroups = storedManagedClientGroups();
-        var existingGroup = _.find(managedClientGroups, (group) => {
+        const managedClientGroups = storedManagedClientGroups();
+        const existingGroup = _.find(managedClientGroups, (group) => {
             return id === ManagedClientGroup.getIdentifier(group);
         });
 
@@ -244,8 +244,8 @@ angular.module('client').factory('guacClientManager', ['$injector',
         if (existingGroup)
             return existingGroup;
 
-        var clients = [];
-        var clientIds = ManagedClientGroup.getClientIdentifiers(id);
+        const clients = [];
+        const clientIds = ManagedClientGroup.getClientIdentifiers(id);
 
         // Separate active clients by whether they should be displayed within
         // the current view
@@ -253,7 +253,7 @@ angular.module('client').factory('guacClientManager', ['$injector',
             clients.push(service.getManagedClient(id));
         });
 
-        var group = new ManagedClientGroup({
+        const group = new ManagedClientGroup({
             clients : clients
         });
 
@@ -279,17 +279,17 @@ angular.module('client').factory('guacClientManager', ['$injector',
      */
     service.removeManagedClientGroup = function removeManagedClientGroup(id) {
 
-        var managedClients = storedManagedClients();
-        var managedClientGroups = storedManagedClientGroups();
+        const managedClients = storedManagedClients();
+        const managedClientGroups = storedManagedClientGroups();
 
         // Remove all matching groups (there SHOULD only be one)
-        var removed = _.remove(managedClientGroups, (group) => ManagedClientGroup.getIdentifier(group) === id);
+        const removed = _.remove(managedClientGroups, (group) => ManagedClientGroup.getIdentifier(group) === id);
 
         // Disconnect all clients associated with the removed group(s)
         removed.forEach((group) => {
             group.clients.forEach((client) => {
 
-                var id = client.id;
+                const id = client.id;
                 if (managedClients[id]) {
                     managedClients[id].client.disconnect();
                     delete managedClients[id];

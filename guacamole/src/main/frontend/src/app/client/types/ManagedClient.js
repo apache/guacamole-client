@@ -24,34 +24,34 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     function defineManagedClient($rootScope, $injector) {
 
     // Required types
-    var ClientProperties       = $injector.get('ClientProperties');
-    var ClientIdentifier       = $injector.get('ClientIdentifier');
-    var ClipboardData          = $injector.get('ClipboardData');
-    var ManagedArgument        = $injector.get('ManagedArgument');
-    var ManagedClientState     = $injector.get('ManagedClientState');
-    var ManagedClientThumbnail = $injector.get('ManagedClientThumbnail');
-    var ManagedDisplay         = $injector.get('ManagedDisplay');
-    var ManagedFilesystem      = $injector.get('ManagedFilesystem');
-    var ManagedFileUpload      = $injector.get('ManagedFileUpload');
-    var ManagedShareLink       = $injector.get('ManagedShareLink');
+    const ClientProperties       = $injector.get('ClientProperties');
+    const ClientIdentifier       = $injector.get('ClientIdentifier');
+    const ClipboardData          = $injector.get('ClipboardData');
+    const ManagedArgument        = $injector.get('ManagedArgument');
+    const ManagedClientState     = $injector.get('ManagedClientState');
+    const ManagedClientThumbnail = $injector.get('ManagedClientThumbnail');
+    const ManagedDisplay         = $injector.get('ManagedDisplay');
+    const ManagedFilesystem      = $injector.get('ManagedFilesystem');
+    const ManagedFileUpload      = $injector.get('ManagedFileUpload');
+    const ManagedShareLink       = $injector.get('ManagedShareLink');
 
     // Required services
-    var $document               = $injector.get('$document');
-    var $q                      = $injector.get('$q');
-    var $rootScope              = $injector.get('$rootScope');
-    var $window                 = $injector.get('$window');
-    var activeConnectionService = $injector.get('activeConnectionService');
-    var authenticationService   = $injector.get('authenticationService');
-    var clipboardService        = $injector.get('clipboardService');
-    var connectionGroupService  = $injector.get('connectionGroupService');
-    var connectionService       = $injector.get('connectionService');
-    var preferenceService       = $injector.get('preferenceService');
-    var requestService          = $injector.get('requestService');
-    var tunnelService           = $injector.get('tunnelService');
-    var guacAudio               = $injector.get('guacAudio');
-    var guacHistory             = $injector.get('guacHistory');
-    var guacImage               = $injector.get('guacImage');
-    var guacVideo               = $injector.get('guacVideo');
+    const $document               = $injector.get('$document');
+    const $q                      = $injector.get('$q');
+    const $rootScope              = $injector.get('$rootScope');
+    const $window                 = $injector.get('$window');
+    const activeConnectionService = $injector.get('activeConnectionService');
+    const authenticationService   = $injector.get('authenticationService');
+    const clipboardService        = $injector.get('clipboardService');
+    const connectionGroupService  = $injector.get('connectionGroupService');
+    const connectionService       = $injector.get('connectionService');
+    const preferenceService       = $injector.get('preferenceService');
+    const requestService          = $injector.get('requestService');
+    const tunnelService           = $injector.get('tunnelService');
+    const guacAudio               = $injector.get('guacAudio');
+    const guacHistory             = $injector.get('guacHistory');
+    const guacImage               = $injector.get('guacImage');
+    const guacVideo               = $injector.get('guacVideo');
 
     /**
      * The minimum amount of time to wait between updates to the client
@@ -253,18 +253,18 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      *     A promise which resolves with the string of connection parameters to
      *     be passed to the Guacamole client, once the string is ready.
      */
-    var getConnectString = function getConnectString(identifier, width, height) {
+    const getConnectString = function getConnectString(identifier, width, height) {
 
-        var deferred = $q.defer();
+        const deferred = $q.defer();
 
         // Calculate optimal width/height for display
-        var pixel_density = $window.devicePixelRatio || 1;
-        var optimal_dpi = pixel_density * 96;
-        var optimal_width = width * pixel_density;
-        var optimal_height = height * pixel_density;
+        const pixel_density = $window.devicePixelRatio || 1;
+        const optimal_dpi = pixel_density * 96;
+        const optimal_width = width * pixel_density;
+        const optimal_height = height * pixel_density;
 
         // Build base connect string
-        var connectString =
+        let connectString =
               "token="             + encodeURIComponent(authenticationService.getCurrentToken())
             + "&GUAC_DATA_SOURCE=" + encodeURIComponent(identifier.dataSource)
             + "&GUAC_ID="          + encodeURIComponent(identifier.id)
@@ -676,7 +676,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             return;
 
         // Parse connection details from ID
-        var clientIdentifier = ClientIdentifier.fromString(managedClient.id);
+        const clientIdentifier = ClientIdentifier.fromString(managedClient.id);
 
         // Connect the Guacamole client
         getConnectString(clientIdentifier, width, height)

@@ -24,7 +24,7 @@
  */
 angular.module('client').directive('guacClientNotification', [function guacClientNotification() {
 
-    var directive = {
+    const directive = {
         restrict: 'E',
         replace: true,
         templateUrl: 'app/client/templates/guacClientNotification.html'
@@ -45,16 +45,16 @@ angular.module('client').directive('guacClientNotification', [function guacClien
         function guacClientNotificationController($scope, $injector, $element) {
    
         // Required types
-        var ManagedClient      = $injector.get('ManagedClient');
-        var ManagedClientState = $injector.get('ManagedClientState');
-        var Protocol           = $injector.get('Protocol');
+        const ManagedClient      = $injector.get('ManagedClient');
+        const ManagedClientState = $injector.get('ManagedClientState');
+        const Protocol           = $injector.get('Protocol');
 
         // Required services
-        var $location              = $injector.get('$location');
-        var authenticationService  = $injector.get('authenticationService');
-        var guacClientManager      = $injector.get('guacClientManager');
-        var requestService         = $injector.get('requestService');
-        var userPageService        = $injector.get('userPageService');
+        const $location              = $injector.get('$location');
+        const authenticationService  = $injector.get('authenticationService');
+        const guacClientManager      = $injector.get('guacClientManager');
+        const requestService         = $injector.get('requestService');
+        const userPageService        = $injector.get('userPageService');
 
         /**
          * A Notification object describing the client status to display as a
@@ -70,7 +70,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
          * code not present in this list will be represented by the "DEFAULT"
          * translation.
          */
-        var CLIENT_ERRORS = {
+        const CLIENT_ERRORS = {
             0x0201: true,
             0x0202: true,
             0x0203: true,
@@ -89,7 +89,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
          * All error codes for which automatic reconnection is appropriate when a
          * client error occurs.
          */
-        var CLIENT_AUTO_RECONNECT = {
+        const CLIENT_AUTO_RECONNECT = {
             0x0200: true,
             0x0202: true,
             0x0203: true,
@@ -104,7 +104,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
          * code not present in this list will be represented by the "DEFAULT"
          * translation.
          */
-        var TUNNEL_ERRORS = {
+        const TUNNEL_ERRORS = {
             0x0201: true,
             0x0202: true,
             0x0203: true,
@@ -122,7 +122,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
          * All error codes for which automatic reconnection is appropriate when a
          * tunnel error occurs.
          */
-        var TUNNEL_AUTO_RECONNECT = {
+        const TUNNEL_AUTO_RECONNECT = {
             0x0200: true,
             0x0202: true,
             0x0203: true,
@@ -134,7 +134,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
         /**
          * Action which logs out from Guacamole entirely.
          */
-        var LOGOUT_ACTION = {
+        const LOGOUT_ACTION = {
             name      : "CLIENT.ACTION_LOGOUT",
             className : "logout button",
             callback  : function logoutCallback() {
@@ -147,7 +147,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
          * Action which returns the user to the home screen. If the home page has
          * not yet been determined, this will be null.
          */
-        var NAVIGATE_HOME_ACTION = null;
+        let NAVIGATE_HOME_ACTION = null;
 
         // Assign home page action once user's home page has been determined
         userPageService.getHomePage()
@@ -169,7 +169,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
         /**
          * Action which replaces the current client with a newly-connected client.
          */
-        var RECONNECT_ACTION = {
+        const RECONNECT_ACTION = {
             name      : "CLIENT.ACTION_RECONNECT",
             className : "reconnect button",
             callback  : function reconnectCallback() {
@@ -182,7 +182,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
          * The reconnect countdown to display if an error or status warrants an
          * automatic, timed reconnect.
          */
-        var RECONNECT_COUNTDOWN = {
+        const RECONNECT_COUNTDOWN = {
             text: "CLIENT.TEXT_RECONNECT_COUNTDOWN",
             callback: RECONNECT_ACTION.callback,
             remaining: 15
@@ -200,7 +200,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
          *     The status notification to show, as would be accepted by
          *     guacNotification.showStatus().
          */
-        var notifyConnectionClosed = function notifyConnectionClosed(status) {
+        const notifyConnectionClosed = function notifyConnectionClosed(status) {
 
             // Re-authenticate to verify auth status at end of connection
             authenticationService.updateCurrentToken($location.search())
@@ -220,7 +220,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
          *     The current connection state, as defined by
          *     ManagedClientState.ConnectionState.
          */
-        var notifyConnectionState = function notifyConnectionState(connectionState) {
+        const notifyConnectionState = function notifyConnectionState(connectionState) {
 
             // Hide any existing status
             $scope.status = false;
@@ -230,14 +230,14 @@ angular.module('client').directive('guacClientNotification', [function guacClien
                 return;
 
             // Build array of available actions
-            var actions;
+            let actions;
             if (NAVIGATE_HOME_ACTION)
                 actions = [ NAVIGATE_HOME_ACTION, RECONNECT_ACTION, LOGOUT_ACTION ];
             else
                 actions = [ RECONNECT_ACTION, LOGOUT_ACTION ];
 
             // Get any associated status code
-            var status = $scope.client.clientState.statusCode;
+            const status = $scope.client.clientState.statusCode;
 
             // Connecting 
             if (connectionState === ManagedClientState.ConnectionState.CONNECTING
@@ -254,10 +254,10 @@ angular.module('client').directive('guacClientNotification', [function guacClien
             else if (connectionState === ManagedClientState.ConnectionState.CLIENT_ERROR) {
 
                 // Determine translation name of error
-                var errorName = (status in CLIENT_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
+                const errorName = (status in CLIENT_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
 
                 // Determine whether the reconnect countdown applies
-                var countdown = (status in CLIENT_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
+                const countdown = (status in CLIENT_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
 
                 // Show error status
                 notifyConnectionClosed({
@@ -276,10 +276,10 @@ angular.module('client').directive('guacClientNotification', [function guacClien
             else if (connectionState === ManagedClientState.ConnectionState.TUNNEL_ERROR) {
 
                 // Determine translation name of error
-                var errorName = (status in TUNNEL_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
+                const errorName = (status in TUNNEL_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
 
                 // Determine whether the reconnect countdown applies
-                var countdown = (status in TUNNEL_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
+                const countdown = (status in TUNNEL_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
 
                 // Show error status
                 notifyConnectionClosed({
@@ -322,18 +322,18 @@ angular.module('client').directive('guacClientNotification', [function guacClien
          *     instructions, where each object key is the name of a requested
          *     parameter and each value is the current value entered by the user.
          */
-        var notifyParametersRequired = function notifyParametersRequired(requiredParameters) {
+        const notifyParametersRequired = function notifyParametersRequired(requiredParameters) {
 
             /**
              * Action which submits the current set of parameter values, requesting
              * that the connection continue.
              */
-            var SUBMIT_PARAMETERS = {
+            const SUBMIT_PARAMETERS = {
                 name      : "CLIENT.ACTION_CONTINUE",
                 className : "button",
                 callback  : function submitParameters() {
                     if ($scope.client) {
-                        var params = $scope.client.requiredParameters;
+                        const params = $scope.client.requiredParameters;
                         $scope.client.requiredParameters = null;
                         ManagedClient.sendArguments($scope.client, params);
                     }
@@ -344,7 +344,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
              * Action which cancels submission of additional parameters and
              * disconnects from the current connection.
              */
-            var CANCEL_PARAMETER_SUBMISSION = {
+            const CANCEL_PARAMETER_SUBMISSION = {
                 name      : "CLIENT.ACTION_CANCEL",
                 className : "button",
                 callback  : function cancelSubmission() {
@@ -381,7 +381,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
          *     true if the given connection state allows submission of connection
          *     parameters via "argv" instructions, false otherwise.
          */
-        var canSubmitParameters = function canSubmitParameters(connectionState) {
+        const canSubmitParameters = function canSubmitParameters(connectionState) {
             return (connectionState === ManagedClientState.ConnectionState.WAITING ||
                     connectionState === ManagedClientState.ConnectionState.CONNECTED);
         };
@@ -394,8 +394,8 @@ angular.module('client').directive('guacClientNotification', [function guacClien
             'client.forms'
         ], function clientStateChanged(newValues) {
 
-            var connectionState = newValues[0];
-            var requiredParameters = newValues[1];
+            const connectionState = newValues[0];
+            const requiredParameters = newValues[1];
 
             // Prompt for parameters only if parameters can actually be submitted
             if (requiredParameters && canSubmitParameters(connectionState))
@@ -414,7 +414,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
          * @param {event} e
          *     The AngularJS event to selectively prevent.
          */
-        var preventDefaultDuringNotification = function preventDefaultDuringNotification(e) {
+        const preventDefaultDuringNotification = function preventDefaultDuringNotification(e) {
             if ($scope.status && $scope.client.clientProperties.focused)
                 e.preventDefault();
         };
