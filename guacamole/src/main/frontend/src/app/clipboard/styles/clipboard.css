@@ -47,7 +47,7 @@
     display: block;
     margin: 0 auto;
     border: 1px solid black;
-    background: url('images/checker.png');
+    background: url('images/checker.svg');
 }
 
 .clipboard-service-target {

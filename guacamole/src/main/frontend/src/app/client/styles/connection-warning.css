@@ -48,7 +48,7 @@
     height: 100%;
     margin: 0 0.375em;
 
-    background: url('images/warning.png');
+    background: url('images/warning.svg');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;

@@ -18,16 +18,19 @@
  */
 
 /**
- * A directive provides an editor whose contents are exposed via a
- * ClipboardData object via the "data" attribute. If this data should also be
- * synced to the local clipboard, or sent via a connected Guacamole client
- * using a "guacClipboard" event, it is up to external code to do so.
+ * A directive provides an editor for the clipboard content maintained by
+ * clipboardService. Changes to the clipboard by clipboardService will
+ * automatically be reflected in the editor, and changes in the editor will
+ * automatically be reflected in the clipboard by clipboardService.
  */
 angular.module('clipboard').directive('guacClipboard', ['$injector',
     function guacClipboard($injector) {
 
     // Required types
-    var ClipboardData = $injector.get('ClipboardData');
+    const ClipboardData = $injector.get('ClipboardData');
+
+    // Required services
+    const clipboardService = $injector.get('clipboardService');
 
     /**
      * Configuration object for the guacClipboard directive.
@@ -38,20 +41,6 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
         restrict    : 'E',
         replace     : true,
         templateUrl : 'app/clipboard/templates/guacClipboard.html'
-    };
-
-    // Scope properties exposed by the guacClipboard directive
-    config.scope = {
-
-        /**
-         * The data to display within the field provided by this directive. This
-         * data will modified or replaced when the user manually alters the
-         * contents of the field.
-         *
-         * @type ClipboardData
-         */
-        data : '='
-
     };
 
     // guacClipboard directive controller
@@ -75,12 +64,27 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
         var updateClipboardData = function updateClipboardData() {
 
             // Read contents of clipboard textarea
-            $scope.$evalAsync(function assignClipboardText() {
-                $scope.data = new ClipboardData({
-                    type : 'text/plain',
-                    data : element.value
-                });
-            });
+            clipboardService.setClipboard(new ClipboardData({
+                type : 'text/plain',
+                data : element.value
+            }));
+
+        };
+
+        /**
+         * Updates the contents of the clipboard editor to the given data.
+         *
+         * @param {ClipboardData} data
+         *     The ClipboardData to display within the clipboard editor for
+         *     editing.
+         */
+        const updateClipboardEditor = function updateClipboardEditor(data) {
+
+            // If the clipboard data is a string, render it as text
+            if (typeof data.data === 'string')
+                element.value = data.data;
+
+            // Ignore other data types for now
 
         };
 
@@ -89,17 +93,15 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
         element.addEventListener('input', updateClipboardData);
         element.addEventListener('change', updateClipboardData);
 
-        // Watch clipboard for new data, updating the clipboard textarea as
-        // necessary
-        $scope.$watch('data', function clipboardDataChanged(data) {
+        // Update remote clipboard if local clipboard changes
+        $scope.$on('guacClipboard', function clipboardChanged(event, data) {
+            updateClipboardEditor(data);
+        });
 
-            // If the clipboard data is a string, render it as text
-            if (typeof data.data === 'string')
-                element.value = data.data;
-
-            // Ignore other data types for now
-
-        }); // end $scope.data watch
+        // Init clipboard editor with current clipboard contents
+        clipboardService.getClipboard().then((data) => {
+            updateClipboardEditor(data);
+        }, angular.noop);
 
     }];
 

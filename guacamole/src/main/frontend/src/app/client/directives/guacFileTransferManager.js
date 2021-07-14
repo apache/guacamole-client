@@ -28,12 +28,12 @@ angular.module('client').directive('guacFileTransferManager', [function guacFile
         scope: {
 
             /**
-             * The client whose file transfers should be managed by this
+             * The client group whose file transfers should be managed by this
              * directive.
              * 
-             * @type ManagerClient
+             * @type ManagedClientGroup
              */
-            client : '='
+            clientGroup : '='
 
         },
 
@@ -41,7 +41,9 @@ angular.module('client').directive('guacFileTransferManager', [function guacFile
         controller: ['$scope', '$injector', function guacFileTransferManagerController($scope, $injector) {
 
             // Required types
-            var ManagedFileTransferState = $injector.get('ManagedFileTransferState');
+            const ManagedClient            = $injector.get('ManagedClient');
+            const ManagedClientGroup       = $injector.get('ManagedClientGroup');
+            const ManagedFileTransferState = $injector.get('ManagedFileTransferState');
 
             /**
              * Determines whether the given file transfer state indicates an
@@ -74,16 +76,28 @@ angular.module('client').directive('guacFileTransferManager', [function guacFile
              */
             $scope.clearCompletedTransfers = function clearCompletedTransfers() {
 
-                // Nothing to clear if no client attached
-                if (!$scope.client)
+                // Nothing to clear if no client group attached
+                if (!$scope.clientGroup)
                     return;
 
                 // Remove completed uploads
-                $scope.client.uploads = $scope.client.uploads.filter(function isUploadInProgress(upload) {
-                    return isInProgress(upload.transferState);
+                $scope.clientGroup.clients.forEach(client =>  {
+                    client.uploads = client.uploads.filter(function isUploadInProgress(upload) {
+                        return isInProgress(upload.transferState);
+                    });
                 });
 
             };
+
+            /**
+             * @borrows ManagedClientGroup.hasMultipleClients
+             */
+            $scope.hasMultipleClients = ManagedClientGroup.hasMultipleClients;
+
+            /**
+             * @borrows ManagedClient.hasTransfers
+             */
+            $scope.hasTransfers = ManagedClient.hasTransfers;
 
         }]
 

@@ -43,6 +43,14 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
         template = template || {};
 
         /**
+         * The client that originally received the "filesystem" instruction
+         * that resulted in the creation of this ManagedFilesystem.
+         *
+         * @type ManagedClient
+         */
+        this.client = template.client;
+
+        /**
          * The Guacamole filesystem object, as received via a "filesystem"
          * instruction.
          *
@@ -162,6 +170,10 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
      * and human-readable name. Upon creation, a request to populate the
      * contents of the root directory will be automatically dispatched.
      *
+     * @param {ManagedClient} client
+     *     The client that originally received the "filesystem" instruction
+     *     that resulted in the creation of this ManagedFilesystem.
+     *
      * @param {Guacamole.Object} object
      *     The Guacamole.Object defining the filesystem.
      *
@@ -171,10 +183,11 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
      * @returns {ManagedFilesystem}
      *     The newly-created ManagedFilesystem.
      */
-    ManagedFilesystem.getInstance = function getInstance(object, name) {
+    ManagedFilesystem.getInstance = function getInstance(client, object, name) {
 
         // Init new filesystem object
         var managedFilesystem = new ManagedFilesystem({
+            client : client,
             object : object,
             name   : name,
             root   : new ManagedFilesystem.File({
@@ -196,9 +209,6 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
      * client and filesystem. The browser will automatically start the
      * download upon completion of this function.
      *
-     * @param {ManagedClient} managedClient
-     *     The ManagedClient from which the file is to be downloaded.
-     *
      * @param {ManagedFilesystem} managedFilesystem
      *     The ManagedFilesystem from which the file is to be downloaded. Any
      *     path information provided must be relative to this filesystem.
@@ -206,7 +216,7 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
      * @param {String} path
      *     The full, absolute path of the file to download.
      */
-    ManagedFilesystem.downloadFile = function downloadFile(managedClient, managedFilesystem, path) {
+    ManagedFilesystem.downloadFile = function downloadFile(managedFilesystem, path) {
 
         // Request download
         managedFilesystem.object.requestInputStream(path, function downloadStreamReceived(stream, mimetype) {
@@ -215,7 +225,7 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
             var filename = path.match(/(.*[\\/])?(.*)/)[2];
 
             // Start download
-            tunnelService.downloadStream(managedClient.tunnel.uuid, stream, mimetype, filename);
+            tunnelService.downloadStream(managedFilesystem.client.tunnel.uuid, stream, mimetype, filename);
 
         });
 

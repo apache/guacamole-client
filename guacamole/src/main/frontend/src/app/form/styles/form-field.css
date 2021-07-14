@@ -38,10 +38,10 @@
 
 /* Icon for unmasking passwords */
 .form-field .password-field input[type=password] ~ .icon.toggle-password {
-    background-image: url('images/action-icons/guac-show-pass.png');
+    background-image: url('images/action-icons/guac-show-pass.svg');
 }
 
 /* Icon for masking passwords */
 .form-field .password-field input[type=text] ~ .icon.toggle-password {
-    background-image: url('images/action-icons/guac-hide-pass.png');
+    background-image: url('images/action-icons/guac-hide-pass.svg');
 }

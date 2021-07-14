@@ -22,7 +22,7 @@
 }
 
 .filter .search-string {
-    background-image: url('images/magnifier.png');
+    background-image: url('images/magnifier.svg');
     background-repeat: no-repeat;
     background-size: 1.75em;
     background-position: 0.25em center;

@@ -37,13 +37,13 @@
 /* Directory / file icons */
 
 .file-browser .normal-file > .caption .icon {
-    background-image: url('images/file.png');
+    background-image: url('images/file.svg');
 }
 
 .file-browser .directory > .caption .icon {
-    background-image: url('images/folder-closed.png');
+    background-image: url('images/folder-closed.svg');
 }
 
 .file-browser .directory.previous > .caption .icon {
-    background-image: url('images/folder-up.png');
+    background-image: url('images/folder-up.svg');
 }

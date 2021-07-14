@@ -12,12 +12,12 @@
 
         <!-- Abbreviated list of only the currently selected objects -->
         <div class="abbreviated-related-objects">
-            <img src="images/arrows/right.png" alt="Expand" class="expand" ng-hide="expanded" ng-click="expand()">
-            <img src="images/arrows/down.png" alt="Collapse" class="collapse" ng-show="expanded" ng-click="collapse()">
+            <img src="images/arrows/right.svg" alt="Expand" class="expand" ng-hide="expanded" ng-click="expand()">
+            <img src="images/arrows/down.svg" alt="Collapse" class="collapse" ng-show="expanded" ng-click="collapse()">
             <p ng-hide="identifiers.length" class="no-related-objects">{{ emptyPlaceholder | translate }}</p>
             <ul>
                 <li ng-repeat="identifier in identifiers | filter: filterString">
-                    <label><img src="images/x-red.png" alt="Remove" class="remove"
+                    <label><img src="images/x-red.svg" alt="Remove" class="remove"
                                 ng-click="removeIdentifier(identifier)"
                                 ng-show="isEditable[identifier]"><span class="identifier">{{ identifier }}</span>
                     </label>

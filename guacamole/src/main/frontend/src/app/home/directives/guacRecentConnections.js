@@ -18,7 +18,8 @@
  */
 
 /**
- * A directive which displays the contents of a connection group.
+ * A directive which displays the recently-accessed connections nested beneath
+ * each of the given connection groups.
  */
 angular.module('home').directive('guacRecentConnections', [function guacRecentConnections() {
 
@@ -44,20 +45,11 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
         controller: ['$scope', '$injector', function guacRecentConnectionsController($scope, $injector) {
 
             // Required types
-            var ActiveConnection = $injector.get('ActiveConnection');
             var ClientIdentifier = $injector.get('ClientIdentifier');
             var RecentConnection = $injector.get('RecentConnection');
 
             // Required services
-            var guacClientManager = $injector.get('guacClientManager');
             var guacHistory       = $injector.get('guacHistory');
-
-            /**
-             * Array of all known and visible active connections.
-             *
-             * @type ActiveConnection[]
-             */
-            $scope.activeConnections = [];
 
             /**
              * Array of all known and visible recently-used connections.
@@ -68,16 +60,12 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
 
             /**
              * Returns whether recent connections are available for display.
-             * Note that, for the sake of this directive, recent connections
-             * include any currently-active connections, even if they are not
-             * yet in the history.
              *
              * @returns {Boolean}
-             *     true if recent (or active) connections are present, false
-             *     otherwise.
+             *     true if recent connections are present, false otherwise.
              */
             $scope.hasRecentConnections = function hasRecentConnections() {
-                return !!($scope.activeConnections.length || $scope.recentConnections.length);
+                return !!$scope.recentConnections.length;
             };
 
             /**
@@ -149,7 +137,6 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
             $scope.$watch("rootGroups", function setRootGroups(rootGroups) {
 
                 // Clear connection arrays
-                $scope.activeConnections = [];
                 $scope.recentConnections = [];
 
                 // Produce collection of visible objects
@@ -160,29 +147,11 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
                     });
                 }
 
-                var managedClients = guacClientManager.getManagedClients();
-
-                // Add all active connections
-                for (var id in managedClients) {
-
-                    // Get corresponding managed client
-                    var client = managedClients[id];
-
-                    // Add active connections for clients with associated visible objects
-                    if (id in visibleObjects) {
-
-                        var object = visibleObjects[id];
-                        $scope.activeConnections.push(new ActiveConnection(object.name, client));
-
-                    }
-
-                }
-
                 // Add any recent connections that are visible
                 guacHistory.recentConnections.forEach(function addRecentConnection(historyEntry) {
 
                     // Add recent connections for history entries with associated visible objects
-                    if (historyEntry.id in visibleObjects && !(historyEntry.id in managedClients)) {
+                    if (historyEntry.id in visibleObjects) {
 
                         var object = visibleObjects[historyEntry.id];
                         $scope.recentConnections.push(new RecentConnection(object.name, historyEntry));

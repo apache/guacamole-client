@@ -24,11 +24,12 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         function indexController($scope, $injector) {
 
     // Required services
-    var $document        = $injector.get('$document');
-    var $route           = $injector.get('$route');
-    var $window          = $injector.get('$window');
-    var clipboardService = $injector.get('clipboardService');
-    var guacNotification = $injector.get('guacNotification');
+    const $document         = $injector.get('$document');
+    const $route            = $injector.get('$route');
+    const $window           = $injector.get('$window');
+    const clipboardService  = $injector.get('clipboardService');
+    const guacNotification  = $injector.get('guacNotification');
+    const guacClientManager = $injector.get('guacClientManager');
 
     /**
      * The error that prevents the current page from rendering at all. If no
@@ -42,6 +43,14 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
      * The notification service.
      */
     $scope.guacNotification = guacNotification;
+
+    /**
+     * All currently-active connections, grouped into their corresponding
+     * tiled views.
+     *
+     * @type ManagedClientGroup[]
+     */
+    $scope.getManagedClientGroups = guacClientManager.getManagedClientGroups;
 
     /**
      * The message to display to the user as instructions for the login
@@ -154,9 +163,8 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     // Broadcast keydown events
     keyboard.onkeydown = function onkeydown(keysym) {
 
-        // Do not handle key events if not logged in or if a notification is
-        // shown
-        if ($scope.applicationState !== ApplicationState.READY || guacNotification.getStatus())
+        // Do not handle key events if not logged in
+        if ($scope.applicationState !== ApplicationState.READY)
             return true;
 
         // Warn of pending keydown
@@ -175,7 +183,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
         // Do not handle key events if not logged in or if a notification is
         // shown
-        if ($scope.applicationState !== ApplicationState.READY || guacNotification.getStatus())
+        if ($scope.applicationState !== ApplicationState.READY)
             return;
 
         // Warn of pending keyup
@@ -199,25 +207,15 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         keyboard.reset();
     });
 
-    /**
-     * Checks whether the clipboard data has changed, firing a new
-     * "guacClipboard" event if it has.
-     */
-    var checkClipboard = function checkClipboard() {
-        clipboardService.getLocalClipboard().then(function clipboardRead(data) {
-            $scope.$broadcast('guacClipboard', data);
-        }, angular.noop);
-    };
-
     // Attempt to read the clipboard if it may have changed
-    $window.addEventListener('load',  checkClipboard, true);
-    $window.addEventListener('copy',  checkClipboard);
-    $window.addEventListener('cut',   checkClipboard);
+    $window.addEventListener('load',  clipboardService.resyncClipboard, true);
+    $window.addEventListener('copy',  clipboardService.resyncClipboard);
+    $window.addEventListener('cut',   clipboardService.resyncClipboard);
     $window.addEventListener('focus', function focusGained(e) {
 
         // Only recheck clipboard if it's the window itself that gained focus
         if (e.target === $window)
-            checkClipboard();
+            clipboardService.resyncClipboard();
 
     }, true);
 

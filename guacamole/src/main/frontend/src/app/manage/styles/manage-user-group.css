@@ -39,11 +39,11 @@
 }
 
 .manage-user-group .page-tabs .page-list li.read-only a[href]:before {
-    background-image: url('images/lock.png');
+    background-image: url('images/lock.svg');
 }
 
 .manage-user-group .page-tabs .page-list li.unlinked a[href]:before {
-    background-image: url('images/plus.png');
+    background-image: url('images/plus.svg');
 }
 
 .manage-user-group .page-tabs .page-list li.unlinked a[href] {
@@ -56,7 +56,7 @@
 }
 
 .manage-user-group .page-tabs .page-list li.linked a[href]:before {
-    background-image: url('images/checkmark.png');
+    background-image: url('images/checkmark.svg');
 }
 
 .manage-user-group .notice.read-only {

@@ -26,7 +26,7 @@
     width: 480px;
     background: #EEE;
     box-shadow: inset -1px 0 2px white, 1px 0 2px black;
-    z-index: 10;
+    z-index: 100;
     -webkit-transition: left 0.125s, opacity 0.125s;
     -moz-transition: left 0.125s, opacity 0.125s;
     -ms-transition: left 0.125s, opacity 0.125s;
@@ -132,27 +132,6 @@
 
 .menu-section ~ .menu-section h3 {
     padding-top: 1em;
-}
-
-.menu-section input.zoom-ctrl {
-    width: 2em;
-    font-size: 1em;
-    padding: 0;
-    background: transparent;
-    border-color: rgba(0, 0, 0, 0.125);
-}
-
-.menu-section div.zoom-ctrl {
-    font-size: 1.5em;
-    display: inline;
-    align-content: center;
-    vertical-align: middle;
-}
-
-.menu-section .zoom-ctrl::-webkit-inner-spin-button,
-.menu-section .zoom-ctrl::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
 }
 
 .menu,

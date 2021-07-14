@@ -8,14 +8,14 @@
 
     <!-- Sent/received files -->
     <div class="transfer-manager-body">
-        <div class="transfers">
-            <guac-file-transfer
-                transfer="upload"
-                ng-repeat="upload in client.uploads">
-            </guac-file-transfer><guac-file-transfer
-                transfer="download"
-                ng-repeat="download in client.downloads">
-            </guac-file-transfer>
+        <div class="transfer-manager-body-section" ng-repeat="client in clientGroup.clients" ng-show="hasTransfers(client)">
+            <h3 ng-show="hasMultipleClients(clientGroup)">{{ client.name }}</h3>
+            <div class="transfers">
+                <guac-file-transfer
+                    transfer="upload"
+                    ng-repeat="upload in client.uploads">
+                </guac-file-transfer>
+            </div>
         </div>
     </div>
 

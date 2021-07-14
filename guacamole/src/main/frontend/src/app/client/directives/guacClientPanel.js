@@ -25,11 +25,12 @@
 angular.module('client').directive('guacClientPanel', ['$injector', function guacClientPanel($injector) {
 
     // Required services
-    var guacClientManager     = $injector.get('guacClientManager');
-    var sessionStorageFactory = $injector.get('sessionStorageFactory');
+    const guacClientManager     = $injector.get('guacClientManager');
+    const sessionStorageFactory = $injector.get('sessionStorageFactory');
 
     // Required types
-    var ManagedClientState = $injector.get('ManagedClientState');
+    const ManagedClientGroup = $injector.get('ManagedClientGroup');
+    const ManagedClientState = $injector.get('ManagedClientState');
 
     /**
      * Getter/setter for the boolean flag controlling whether the client panel
@@ -49,12 +50,12 @@ angular.module('client').directive('guacClientPanel', ['$injector', function gua
         scope: {
 
             /**
-             * The ManagedClient instances associated with the active
+             * The ManagedClientGroup instances associated with the active
              * connections to be displayed within this panel.
              * 
-             * @type ManagedClient[]|Object.<String, ManagedClient>
+             * @type ManagedClientGroup[]
              */
-            clients : '='
+            clientGroups : '='
 
         },
         templateUrl: 'app/client/templates/guacClientPanel.html',
@@ -75,71 +76,68 @@ angular.module('client').directive('guacClientPanel', ['$injector', function gua
             $scope.panelHidden = panelHidden;
 
             /**
-             * Returns whether this panel currently has any clients associated
-             * with it.
+             * Returns whether this panel currently has any client groups
+             * associated with it.
              *
              * @return {Boolean}
-             *     true if at least one client is associated with this panel,
-             *     false otherwise.
+             *     true if at least one client group is associated with this
+             *     panel, false otherwise.
              */
-            $scope.hasClients = function hasClients() {
-                return !!_.find($scope.clients, $scope.isManaged);
+            $scope.hasClientGroups = function hasClientGroups() {
+                return $scope.clientGroups && $scope.clientGroups.length;
             };
 
             /**
-             * Returns whether the status of the given client has changed in a
-             * way that requires the user's attention. This may be due to an
-             * error, or due to a server-initiated disconnect.
+             * @borrows ManagedClientGroup.getIdentifier
+             */
+            $scope.getIdentifier = ManagedClientGroup.getIdentifier;
+
+            /**
+             * @borrows ManagedClientGroup.getTitle
+             */
+            $scope.getTitle = ManagedClientGroup.getTitle;
+
+            /**
+             * Returns whether the status of any client within the given client
+             * group has changed in a way that requires the user's attention.
+             * This may be due to an error, or due to a server-initiated
+             * disconnect.
              *
-             * @param {ManagedClient} client
-             *     The client to test.
+             * @param {ManagedClientGroup} clientGroup
+             *     The client group to test.
              *
              * @returns {Boolean}
              *     true if the given client requires the user's attention,
              *     false otherwise.
              */
-            $scope.hasStatusUpdate = function hasStatusUpdate(client) {
+            $scope.hasStatusUpdate = function hasStatusUpdate(clientGroup) {
+                return _.findIndex(clientGroup.clients, (client) => {
 
-                // Test whether the client has encountered an error
-                switch (client.clientState.connectionState) {
-                    case ManagedClientState.ConnectionState.CONNECTION_ERROR:
-                    case ManagedClientState.ConnectionState.TUNNEL_ERROR:
-                    case ManagedClientState.ConnectionState.DISCONNECTED:
-                        return true;
-                }
+                    // Test whether the client has encountered an error
+                    switch (client.clientState.connectionState) {
+                        case ManagedClientState.ConnectionState.CONNECTION_ERROR:
+                        case ManagedClientState.ConnectionState.TUNNEL_ERROR:
+                        case ManagedClientState.ConnectionState.DISCONNECTED:
+                            return true;
+                    }
 
-                return false;
+                    return false;
 
+                }) !== -1;
             };
 
             /**
-             * Returns whether the given client is currently being managed by
-             * the guacClientManager service.
+             * Initiates an orderly disconnect of all clients within the given
+             * group. The clients are removed from management such that
+             * attempting to connect to any of the same connections will result
+             * in new connections being established, rather than displaying a
+             * notification that the connection has ended.
              *
-             * @param {ManagedClient} client
-             *     The client to test.
-             *
-             * @returns {Boolean}
-             *     true if the given client is being managed by the
-             *     guacClientManager service, false otherwise.
+             * @param {ManagedClientGroup} clientGroup
+             *     The group of clients to disconnect.
              */
-            $scope.isManaged = function isManaged(client) {
-                return !!guacClientManager.getManagedClients()[client.id];
-            };
-
-            /**
-             * Initiates an orderly disconnect of the given client. The client
-             * is removed from management such that attempting to connect to
-             * the same connection will result in a new connection being
-             * established, rather than displaying a notification that the
-             * connection has ended.
-             *
-             * @param {type} client
-             * @returns {undefined}
-             */
-            $scope.disconnect = function disconnect(client) {
-                client.client.disconnect();
-                guacClientManager.removeManagedClient(client.id);
+            $scope.disconnect = function disconnect(clientGroup) {
+                guacClientManager.removeManagedClientGroup(ManagedClientGroup.getIdentifier(clientGroup));
             };
 
             /**

@@ -44,20 +44,6 @@ angular.module('client').directive('guacThumbnail', [function guacThumbnail() {
             var $window = $injector.get('$window');
 
             /**
-             * The optimal thumbnail width, in pixels.
-             *
-             * @type Number
-             */
-            var THUMBNAIL_WIDTH = 320;
-
-            /**
-             * The optimal thumbnail height, in pixels.
-             *
-             * @type Number
-             */
-            var THUMBNAIL_HEIGHT = 240;
-                
-            /**
              * The display of the current Guacamole client instance.
              * 
              * @type Guacamole.Display
@@ -126,32 +112,7 @@ angular.module('client').directive('guacThumbnail', [function guacThumbnail() {
 
             // Update scale when display is resized
             $scope.$watch('client.managedDisplay.size', function setDisplaySize(size) {
-
-                var width;
-                var height;
-
-                // If no display size yet, assume optimal thumbnail size
-                if (!size || size.width === 0 || size.height === 0) {
-                    width  = THUMBNAIL_WIDTH;
-                    height = THUMBNAIL_HEIGHT;
-                }
-
-                // Otherwise, generate size that fits within thumbnail bounds
-                else {
-                    var scale = Math.min(THUMBNAIL_WIDTH / size.width, THUMBNAIL_HEIGHT / size.height, 1);
-                    width  = size.width  * scale;
-                    height = size.height * scale;
-                }
-                
-                // Generate dummy background image
-                var thumbnail = document.createElement("canvas");
-                thumbnail.width  = width;
-                thumbnail.height = height;
-                $scope.thumbnail = thumbnail.toDataURL("image/png");
-
-                // Init display scale
                 $scope.$evalAsync($scope.updateDisplayScale);
-
             });
 
         }]

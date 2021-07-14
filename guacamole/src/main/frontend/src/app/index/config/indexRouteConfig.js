@@ -181,10 +181,11 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
         })
 
         // Client view
-        .when('/client/:id/:params?', {
+        .when('/client/:id', {
             bodyClassName : 'client',
             templateUrl   : 'app/client/templates/client.html',
             controller    : 'clientController',
+            reloadOnUrl   : false,
             resolve       : { updateCurrentToken: updateCurrentToken }
         })
 

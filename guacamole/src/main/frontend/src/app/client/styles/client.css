@@ -103,7 +103,7 @@ body.client {
     flex: 0 0 auto;
 }
 
-.client-view .client-body .main {
+.client-view .client-body .tiled-client-list {
 
     position: absolute;
     left: 0;
@@ -125,5 +125,13 @@ body.client {
     background-size: 1em;
     background-position: 0.75em center;
     padding-left: 2.5em;
-    background-image: url('images/x.png');
+    background-image: url('images/x.svg');
+}
+
+.client .drop-pending .display {
+    background: #3161a9;
+}
+
+.client .drop-pending .display > *{
+    opacity: 0.5;
 }

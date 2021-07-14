@@ -25,11 +25,6 @@ div.thumbnail-main {
     font-size: 0px;
 }
 
-.thumbnail-main img {
-    max-width: 100%;
-}
-
 .thumbnail-main .display {
-    position: absolute;
     pointer-events: none;
 }

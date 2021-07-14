@@ -69,7 +69,7 @@
 .transfer.in-progress .progress {
 
     background-color: #EEE;
-    background-image: url('images/progress.png');
+    background-image: url('images/progress.svg');
 
     background-size: 16px 16px;
     -moz-background-size: 16px 16px;

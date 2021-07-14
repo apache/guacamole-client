@@ -105,30 +105,30 @@ input[type="submit"]:disabled, button:disabled, button.danger:disabled {
 
 .button.logout::before,
 button.logout::before {
-    background-image: url('images/action-icons/guac-logout.png');
+    background-image: url('images/action-icons/guac-logout.svg');
 }
 
 .button.reconnect::before,
 button.reconnect::before {
-    background-image: url('images/circle-arrows.png');
+    background-image: url('images/circle-arrows.svg');
 }
 
 .button.manage::before,
 button.manage::before {
-    background-image: url('images/action-icons/guac-config.png');
+    background-image: url('images/action-icons/guac-config.svg');
 }
 
 .button.back::before,
 button.back::before {
-    background-image: url('images/action-icons/guac-back.png');
+    background-image: url('images/action-icons/guac-back.svg');
 }
 
 .button.home::before,
 button.home::before {
-    background-image: url('images/action-icons/guac-home.png');
+    background-image: url('images/action-icons/guac-home.svg');
 }
 
 .button.change-password::before,
 button.change-password::before {
-    background-image: url('images/action-icons/guac-key.png');
+    background-image: url('images/action-icons/guac-key.svg');
 }

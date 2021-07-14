@@ -24,34 +24,34 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     function defineManagedClient($rootScope, $injector) {
 
     // Required types
-    var ClientProperties       = $injector.get('ClientProperties');
-    var ClientIdentifier       = $injector.get('ClientIdentifier');
-    var ClipboardData          = $injector.get('ClipboardData');
-    var ManagedArgument        = $injector.get('ManagedArgument');
-    var ManagedClientState     = $injector.get('ManagedClientState');
-    var ManagedClientThumbnail = $injector.get('ManagedClientThumbnail');
-    var ManagedDisplay         = $injector.get('ManagedDisplay');
-    var ManagedFilesystem      = $injector.get('ManagedFilesystem');
-    var ManagedFileUpload      = $injector.get('ManagedFileUpload');
-    var ManagedShareLink       = $injector.get('ManagedShareLink');
+    const ClientProperties       = $injector.get('ClientProperties');
+    const ClientIdentifier       = $injector.get('ClientIdentifier');
+    const ClipboardData          = $injector.get('ClipboardData');
+    const ManagedArgument        = $injector.get('ManagedArgument');
+    const ManagedClientState     = $injector.get('ManagedClientState');
+    const ManagedClientThumbnail = $injector.get('ManagedClientThumbnail');
+    const ManagedDisplay         = $injector.get('ManagedDisplay');
+    const ManagedFilesystem      = $injector.get('ManagedFilesystem');
+    const ManagedFileUpload      = $injector.get('ManagedFileUpload');
+    const ManagedShareLink       = $injector.get('ManagedShareLink');
 
     // Required services
-    var $document               = $injector.get('$document');
-    var $q                      = $injector.get('$q');
-    var $rootScope              = $injector.get('$rootScope');
-    var $window                 = $injector.get('$window');
-    var activeConnectionService = $injector.get('activeConnectionService');
-    var authenticationService   = $injector.get('authenticationService');
-    var connectionGroupService  = $injector.get('connectionGroupService');
-    var connectionService       = $injector.get('connectionService');
-    var preferenceService       = $injector.get('preferenceService');
-    var requestService          = $injector.get('requestService');
-    var schemaService           = $injector.get('schemaService');
-    var tunnelService           = $injector.get('tunnelService');
-    var guacAudio               = $injector.get('guacAudio');
-    var guacHistory             = $injector.get('guacHistory');
-    var guacImage               = $injector.get('guacImage');
-    var guacVideo               = $injector.get('guacVideo');
+    const $document               = $injector.get('$document');
+    const $q                      = $injector.get('$q');
+    const $rootScope              = $injector.get('$rootScope');
+    const $window                 = $injector.get('$window');
+    const activeConnectionService = $injector.get('activeConnectionService');
+    const authenticationService   = $injector.get('authenticationService');
+    const clipboardService        = $injector.get('clipboardService');
+    const connectionGroupService  = $injector.get('connectionGroupService');
+    const connectionService       = $injector.get('connectionService');
+    const preferenceService       = $injector.get('preferenceService');
+    const requestService          = $injector.get('requestService');
+    const tunnelService           = $injector.get('tunnelService');
+    const guacAudio               = $injector.get('guacAudio');
+    const guacHistory             = $injector.get('guacHistory');
+    const guacImage               = $injector.get('guacImage');
+    const guacVideo               = $injector.get('guacVideo');
 
     /**
      * The minimum amount of time to wait between updates to the client
@@ -63,8 +63,9 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
     /**
      * Object which serves as a surrogate interface, encapsulating a Guacamole
-     * client while it is active, allowing it to be detached and reattached
-     * from different client views.
+     * client while it is active, allowing it to be maintained in the
+     * background. One or more ManagedClients are grouped within
+     * ManagedClientGroups before being attached to the client view.
      * 
      * @constructor
      * @param {ManagedClient|Object} [template={}]
@@ -82,16 +83,6 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * @type String
          */
         this.id = template.id;
-
-        /**
-         * The time that the connection was last brought to the foreground of
-         * the current tab, as the number of milliseconds elapsed since
-         * midnight of January 1, 1970 UTC. If the connection has not yet been
-         * viewed, this will be 0.
-         *
-         * @type Number
-         */
-        this.lastUsed = template.lastUsed || 0;
 
         /**
          * The actual underlying Guacamole client.
@@ -155,16 +146,6 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * @type ManagedClientThumbnail
          */
         this.thumbnail = template.thumbnail;
-
-        /**
-         * The current clipboard contents.
-         *
-         * @type ClipboardData
-         */
-        this.clipboardData = template.clipboardData || new ClipboardData({
-            type : 'text/plain',
-            data : ''
-        });
 
         /**
          * The current state of all parameters requested by the server via
@@ -260,25 +241,30 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      * @param {ClientIdentifier} identifier
      *     The identifier representing the connection or group to connect to.
      *
-     * @param {String} [connectionParameters]
-     *     Any additional HTTP parameters to pass while connecting.
-     * 
+     * @param {number} [width]
+     *     The optimal display width, in local CSS pixels. If omitted, the
+     *     browser window width will be used.
+     *
+     * @param {number} [height]
+     *     The optimal display height, in local CSS pixels. If omitted, the
+     *     browser window height will be used.
+     *
      * @returns {Promise.<String>}
      *     A promise which resolves with the string of connection parameters to
      *     be passed to the Guacamole client, once the string is ready.
      */
-    var getConnectString = function getConnectString(identifier, connectionParameters) {
+    const getConnectString = function getConnectString(identifier, width, height) {
 
-        var deferred = $q.defer();
+        const deferred = $q.defer();
 
         // Calculate optimal width/height for display
-        var pixel_density = $window.devicePixelRatio || 1;
-        var optimal_dpi = pixel_density * 96;
-        var optimal_width = $window.innerWidth * pixel_density;
-        var optimal_height = $window.innerHeight * pixel_density;
+        const pixel_density = $window.devicePixelRatio || 1;
+        const optimal_dpi = pixel_density * 96;
+        const optimal_width = width * pixel_density;
+        const optimal_height = height * pixel_density;
 
         // Build base connect string
-        var connectString =
+        let connectString =
               "token="             + encodeURIComponent(authenticationService.getCurrentToken())
             + "&GUAC_DATA_SOURCE=" + encodeURIComponent(identifier.dataSource)
             + "&GUAC_ID="          + encodeURIComponent(identifier.id)
@@ -286,8 +272,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             + "&GUAC_WIDTH="       + Math.floor(optimal_width)
             + "&GUAC_HEIGHT="      + Math.floor(optimal_height)
             + "&GUAC_DPI="         + Math.floor(optimal_dpi)
-            + "&GUAC_TIMEZONE="    + encodeURIComponent(preferenceService.preferences.timezone)
-            + (connectionParameters ? '&' + connectionParameters : '');
+            + "&GUAC_TIMEZONE="    + encodeURIComponent(preferenceService.preferences.timezone);
 
         // Add audio mimetypes to connect string
         guacAudio.supported.forEach(function(mimetype) {
@@ -347,22 +332,20 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     };
 
     /**
-     * Creates a new ManagedClient, connecting it to the specified connection
-     * or group.
+     * Creates a new ManagedClient representing the specified connection or
+     * connection group. The ManagedClient will not initially be connected,
+     * and must be explicitly connected by invoking ManagedClient.connect().
      *
      * @param {String} id
      *     The ID of the connection or group to connect to. This String must be
      *     a valid ClientIdentifier string, as would be generated by
      *     ClientIdentifier.toString().
      *
-     * @param {String} [connectionParameters]
-     *     Any additional HTTP parameters to pass while connecting.
-     * 
      * @returns {ManagedClient}
-     *     A new ManagedClient instance which is connected to the connection or
+     *     A new ManagedClient instance which represents the connection or
      *     connection group having the given ID.
      */
-    ManagedClient.getInstance = function getInstance(id, connectionParameters) {
+    ManagedClient.getInstance = function getInstance(id) {
 
         var tunnel;
 
@@ -450,8 +433,10 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                             ManagedClientState.ConnectionState.IDLE);
                         break;
 
-                    // Ignore "connecting" state
-                    case 1: // Connecting
+                    // Conneccting
+                    case 1:
+                        ManagedClientState.setConnectionState(managedClient.clientState,
+                            ManagedClientState.ConnectionState.CONNECTING);
                         break;
 
                     // Connected + waiting
@@ -465,9 +450,10 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                         ManagedClientState.setConnectionState(managedClient.clientState,
                             ManagedClientState.ConnectionState.CONNECTED);
 
-                        // Send any clipboard data already provided
-                        if (managedClient.clipboardData)
-                            ManagedClient.setClipboard(managedClient, managedClient.clipboardData);
+                        // Sync current clipboard data
+                        clipboardService.getClipboard().then((data) => {
+                            ManagedClient.setClipboard(managedClient, data);
+                        }, angular.noop);
 
                         // Begin streaming audio input if possible
                         requestAudioStream(client);
@@ -562,12 +548,11 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
                 // Set clipboard contents once stream is finished
                 reader.onend = function textComplete() {
-                    $rootScope.$apply(function updateClipboard() {
-                        managedClient.clipboardData = new ClipboardData({
-                            type : mimetype,
-                            data : data
-                        });
-                    });
+                    clipboardService.setClipboard(new ClipboardData({
+                        source : managedClient.id,
+                        type : mimetype,
+                        data : data
+                    }))['catch'](angular.noop);
                 };
 
             }
@@ -576,12 +561,11 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             else {
                 reader = new Guacamole.BlobReader(stream, mimetype);
                 reader.onend = function blobComplete() {
-                    $rootScope.$apply(function updateClipboard() {
-                        managedClient.clipboardData = new ClipboardData({
-                            type : mimetype,
-                            data : reader.getBlob()
-                        });
-                    });
+                    clipboardService.setClipboard(new ClipboardData({
+                        source : managedClient.id,
+                        type : mimetype,
+                        data : reader.getBlob()
+                    }))['catch'](angular.noop);
                 };
             }
 
@@ -607,7 +591,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         // Handle any received filesystem objects
         client.onfilesystem = function fileSystemReceived(object, name) {
             $rootScope.$apply(function exposeFilesystem() {
-                managedClient.filesystems.push(ManagedFilesystem.getInstance(object, name));
+                managedClient.filesystems.push(ManagedFilesystem.getInstance(managedClient, object, name));
             });
         };
 
@@ -627,11 +611,8 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         // Parse connection details from ID
         var clientIdentifier = ClientIdentifier.fromString(id);
 
-        // Connect the Guacamole client
-        getConnectString(clientIdentifier, connectionParameters)
-        .then(function connectClient(connectString) {
-            client.connect(connectString);
-        });
+        // Defer actually connecting the Guacamole client until
+        // ManagedClient.connect() is explicitly invoked
 
         // If using a connection, pull connection name and protocol information
         if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION) {
@@ -668,6 +649,40 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         }
 
         return managedClient;
+
+    };
+
+    /**
+     * Connects the given ManagedClient instance to its associated connection
+     * or connection group. If the ManagedClient has already been connected,
+     * including if connected but subsequently disconnected, this function has
+     * no effect.
+     *
+     * @param {ManagedClient} managedClient
+     *     The ManagedClient to connect.
+     *
+     * @param {number} [width]
+     *     The optimal display width, in local CSS pixels. If omitted, the
+     *     browser window width will be used.
+     *
+     * @param {number} [height]
+     *     The optimal display height, in local CSS pixels. If omitted, the
+     *     browser window height will be used.
+     */
+    ManagedClient.connect = function connect(managedClient, width, height) {
+
+        // Ignore if already connected
+        if (managedClient.clientState.connectionState !== ManagedClientState.ConnectionState.IDLE)
+            return;
+
+        // Parse connection details from ID
+        const clientIdentifier = ClientIdentifier.fromString(managedClient.id);
+
+        // Connect the Guacamole client
+        getConnectString(clientIdentifier, width, height)
+        .then(function connectClient(connectString) {
+            managedClient.client.connect(connectString);
+        });
 
     };
 
@@ -710,7 +725,9 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
     /**
      * Sends the given clipboard data over the given Guacamole client, setting
-     * the contents of the remote clipboard to the data provided.
+     * the contents of the remote clipboard to the data provided. If the given
+     * clipboard data was originally received from that client, the data is
+     * ignored and this function has no effect.
      *
      * @param {ManagedClient} managedClient
      *     The ManagedClient over which the given clipboard data is to be sent.
@@ -719,6 +736,10 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      *     The clipboard data to send.
      */
     ManagedClient.setClipboard = function setClipboard(managedClient, data) {
+
+        // Ignore clipboard data that was received from this connection
+        if (data.source === managedClient.id)
+            return;
 
         var writer;
 
@@ -871,6 +892,18 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         // No share links currently exist
         return false;
 
+    };
+
+    /**
+     * Returns whether the given client has any associated file transfers,
+     * regardless of those file transfers' state.
+     *
+     * @returns {boolean}
+     *     true if there are any file transfers associated with the
+     *     given client, false otherise.
+     */
+    ManagedClient.hasTransfers = function hasTransfers(client) {
+        return !!(client && client.uploads && client.uploads.length);
     };
 
     /**

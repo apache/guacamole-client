@@ -22,9 +22,6 @@
  */
 angular.module('client').factory('ClientProperties', ['$injector', function defineClientProperties($injector) {
 
-    // Required services
-    var preferenceService = $injector.get('preferenceService');
-        
     /**
      * Object used for interacting with a guacClient directive.
      * 
@@ -69,19 +66,11 @@ angular.module('client').factory('ClientProperties', ['$injector', function defi
         this.maxScale = template.maxScale || 3;
 
         /**
-         * Whether or not the client should listen to keyboard events.
-         * 
+         * Whether this client should receive keyboard events.
+         *
          * @type Boolean
          */
-        this.keyboardEnabled = template.keyboardEnabled || true;
-        
-        /**
-         * Whether translation of touch to mouse events should emulate an
-         * absolute pointer device, or a relative pointer device.
-         * 
-         * @type Boolean
-         */
-        this.emulateAbsoluteMouse = template.emulateAbsoluteMouse || preferenceService.preferences.emulateAbsoluteMouse;
+        this.focused = template.focused || false;
 
         /**
          * The relative Y coordinate of the scroll offset of the display within

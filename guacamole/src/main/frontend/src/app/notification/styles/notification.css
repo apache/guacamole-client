@@ -74,7 +74,7 @@
 .notification .progress {
 
     width: 100%;
-    background: #C2C2C2 url('images/progress.png');
+    background: #C2C2C2 url('images/progress.svg');
     background-size: 16px 16px;
     -moz-background-size: 16px 16px;
     -webkit-background-size: 16px 16px;

@@ -1,4 +1,8 @@
-<div class="main" guac-resize="mainElementResized">
+<div class="main"
+     ng-class="{ 'drop-pending': dropPending }"
+     guac-resize="mainElementResized"
+     guac-touch-drag="clientDrag"
+     guac-touch-pinch="clientPinch">
 
     <!-- Display -->
     <div class="displayOuter">
