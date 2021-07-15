@@ -38,7 +38,6 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     // Required services
     const $document               = $injector.get('$document');
     const $q                      = $injector.get('$q');
-    const $rootScope              = $injector.get('$rootScope');
     const $window                 = $injector.get('$window');
     const activeConnectionService = $injector.get('activeConnectionService');
     const authenticationService   = $injector.get('authenticationService');
