@@ -61,4 +61,12 @@
 
     </dependencies>
 
+    <build>
+
+        <!-- Dist .tar.gz for guacamole-auth-jdbc should be named after the
+            parent guacamole-auth-jdbc project, not after guacamole-auth-jdbc-dist -->
+        <finalName>${project.parent.artifactId}-${project.parent.version}</finalName>
+
+    </build>
+
 </project>
