@@ -197,6 +197,10 @@ public class ObjectQueryService {
      * @param searchHop
      *     The current level of referral depth for this search, used for
      *     limiting the maximum depth to which referrals can go.
+     * 
+     * @param relevantAttributes
+     *     The attribute(s) relevant to return for this search,
+	 *     if all available should be returned pass null as value.
      *
      * @return
      *     A list of all results accessible to the user currently bound under
@@ -208,7 +212,8 @@ public class ObjectQueryService {
      *     guacamole.properties.
      */
     public List<Entry> search(LdapNetworkConnection ldapConnection,
-            Dn baseDN, ExprNode query, int searchHop) throws GuacamoleException {
+            Dn baseDN, ExprNode query, int searchHop,
+            Collection<String> relevantAttributes) throws GuacamoleException {
 
         // Refuse to follow referrals if limit has been reached
         int maxHops = confService.getMaxReferralHops();
@@ -225,12 +230,15 @@ public class ObjectQueryService {
 
         // Search within subtree of given base DN
         SearchRequest request = ldapService.getSearchRequest(baseDN, query);
-            
+        if (relevantAttributes != null) {
+            request.addAttributes(relevantAttributes.toArray(new String[0]));
+        }
+
         // Produce list of all entries in the search result, automatically
         // following referrals if configured to do so
         List<Entry> entries = new ArrayList<>();
-            
         try (SearchCursor results = ldapConnection.search(request)) {
+
             while (results.next()) {
 
                 // Add entry directly if no referral is involved
@@ -251,7 +259,7 @@ public class ObjectQueryService {
                             try (LdapNetworkConnection referralConnection = ldapService.bindAs(url, ldapConnection)) {
                                 if (referralConnection != null) {
                                     logger.debug("Following referral to \"{}\"...", url);
-                                    entries.addAll(search(referralConnection, baseDN, query, searchHop + 1));
+                                    entries.addAll(search(referralConnection, baseDN, query, searchHop + 1, relevantAttributes));
                                 }
                                 else
                                     logger.debug("Could not bind with LDAP "
@@ -329,7 +337,7 @@ public class ObjectQueryService {
             ExprNode filter, Collection<String> attributes, String attributeValue)
             throws GuacamoleException {
         ExprNode query = generateQuery(filter, attributes, attributeValue);
-        return search(ldapConnection, baseDN, query, 0);
+        return search(ldapConnection, baseDN, query, 0, attributes);
     }
 
     /**
