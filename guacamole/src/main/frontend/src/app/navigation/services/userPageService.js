@@ -298,8 +298,9 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
             // Determine whether the current user needs access to view connection history
             if (
-                    // A user must be a system administrator to view connection records
-                    PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+                    // A user must be a system administrator or auditor to view connection records
+                       PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+                    || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.AUDIT)
             ) {
                 canViewConnectionRecords.push(dataSource);
             }
@@ -312,7 +313,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
             url  : '/settings/sessions'
         }));
 
-        // If user can manage connections, add links for connection management pages
+        // If user can view connection records, add links for connection history pages
         angular.forEach(canViewConnectionRecords, function addConnectionHistoryLink(dataSource) {
             pages.push(new PageDefinition({
                 name : [

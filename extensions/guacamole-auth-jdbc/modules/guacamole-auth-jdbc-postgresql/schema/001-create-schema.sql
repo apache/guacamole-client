@@ -56,6 +56,7 @@ CREATE TYPE guacamole_system_permission_type AS ENUM(
     'CREATE_SHARING_PROFILE',
     'CREATE_USER',
     'CREATE_USER_GROUP',
+    'AUDIT',
     'ADMINISTER'
 );
 

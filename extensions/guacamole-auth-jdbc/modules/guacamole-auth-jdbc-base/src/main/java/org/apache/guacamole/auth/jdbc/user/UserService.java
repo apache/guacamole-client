@@ -636,8 +636,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
         List<ActivityRecordModel> searchResults;
 
-        // Bypass permission checks if the user is privileged
-        if (user.isPrivileged())
+        // Bypass permission checks if the user is privileged or has System-level audit permissions
+        if (user.isPrivileged() || user.getUser().getEffectivePermissions().getSystemPermissions().hasPermission(SystemPermission.Type.AUDIT))
             searchResults = userRecordMapper.search(username, requiredContents,
                     sortPredicates, limit);
 
