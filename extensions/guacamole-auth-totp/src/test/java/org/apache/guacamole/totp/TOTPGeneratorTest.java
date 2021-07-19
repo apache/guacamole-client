@@ -85,7 +85,7 @@ public class TOTPGeneratorTest {
         };
 
         try {
-            final TOTPGenerator totp = new TOTPGenerator(key, TOTPGenerator.Mode.SHA1, 8);
+            final TOTPGenerator totp = new TOTPGenerator(key, 0, TOTPGenerator.Mode.SHA1, 8);
             assertEquals("94287082", totp.generate(59));
             assertEquals("07081804", totp.generate(1111111109));
             assertEquals("14050471", totp.generate(1111111111));
@@ -117,7 +117,7 @@ public class TOTPGeneratorTest {
         };
 
         try {
-            final TOTPGenerator totp = new TOTPGenerator(key, TOTPGenerator.Mode.SHA256, 8);
+            final TOTPGenerator totp = new TOTPGenerator(key, 0, TOTPGenerator.Mode.SHA256, 8);
             assertEquals("46119246", totp.generate(59));
             assertEquals("68084774", totp.generate(1111111109));
             assertEquals("67062674", totp.generate(1111111111));
@@ -151,7 +151,7 @@ public class TOTPGeneratorTest {
         };
 
         try {
-            final TOTPGenerator totp = new TOTPGenerator(key, TOTPGenerator.Mode.SHA512, 8);
+            final TOTPGenerator totp = new TOTPGenerator(key, 0, TOTPGenerator.Mode.SHA512, 8);
             assertEquals("90693936", totp.generate(59));
             assertEquals("25091201", totp.generate(1111111109));
             assertEquals("99943326", totp.generate(1111111111));

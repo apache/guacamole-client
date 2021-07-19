@@ -97,6 +97,11 @@ public class TOTPGenerator {
     private final Key key;
 
     /**
+     * The number of timesteps between TOTP token and systemtime.
+     */
+    private final int offset;
+
+    /**
      * The length of codes to generate, in digits.
      */
     private final int length;
@@ -212,6 +217,9 @@ public class TOTPGenerator {
      * @param key
      *     The shared key to use to generate authentication codes.
      *
+     * @param offset
+     *     The number of timesteps between TOTP token and systemtime.
+     *
      * @param mode
      *     The mode in which the TOTP algorithm should operate.
      *
@@ -234,7 +242,7 @@ public class TOTPGenerator {
      * @throws InvalidKeyException
      *     If the provided key is invalid for the requested TOTP mode.
      */
-    public TOTPGenerator(byte[] key, Mode mode, int length, long startTime,
+    public TOTPGenerator(byte[] key, int offset, Mode mode, int length, long startTime,
             long timeStep) throws InvalidKeyException {
 
         // Validate length is within spec
@@ -243,6 +251,7 @@ public class TOTPGenerator {
                     + "digits and no more than 8 digits.");
 
         this.key = new SecretKeySpec(key, "RAW");
+        this.offset = offset;
         this.mode = mode;
         this.length = length;
         this.startTime = startTime;
@@ -264,6 +273,9 @@ public class TOTPGenerator {
      * @param key
      *     The shared key to use to generate authentication codes.
      *
+     * @param offset
+     *     The number of timesteps between TOTP token and systemtime.
+     *
      * @param mode
      *     The mode in which the TOTP algorithm should operate.
      *
@@ -275,9 +287,9 @@ public class TOTPGenerator {
      * @throws InvalidKeyException
      *     If the provided key is invalid for the requested TOTP mode.
      */
-    public TOTPGenerator(byte[] key, Mode mode, int length)
+    public TOTPGenerator(byte[] key, int offset, Mode mode, int length)
             throws InvalidKeyException {
-        this(key, mode, length, DEFAULT_START_TIME, DEFAULT_TIME_STEP);
+        this(key, offset, mode, length, DEFAULT_START_TIME, DEFAULT_TIME_STEP);
     }
 
     /**
@@ -397,7 +409,7 @@ public class TOTPGenerator {
     public String generate(long time) {
 
         // Calculate HOTP counter value based on provided time
-        long counter = (time - startTime) / timeStep;
+        long counter = (time - startTime) / timeStep + offset;
         byte[] hash = getHMAC(Longs.toByteArray(counter));
 
         // Calculate HOTP value as defined by section 5.2 of RFC 4226:
@@ -455,6 +467,35 @@ public class TOTPGenerator {
      */
     public String previous() {
         return previous(System.currentTimeMillis() / 1000);
+    }
+
+    /**
+     * Returns the TOTP code which would have been generated immediately after
+     * to the code returned by invoking generate() with the given timestamp.
+     *
+     * @param time
+     *     The absolute timestamp to use to generate the TOTP code, in seconds
+     *     since midnight, 1970-01-01, UTC (UNIX epoch).
+     *
+     * @return
+     *     The TOTP code which would have been generated immediately after to
+     *     the the code returned by invoking generate() with the given
+     *     timestamp.
+     */
+    public String next(long time) {
+        return generate(Math.max(startTime, time + timeStep));
+    }
+
+    /**
+     * Returns the TOTP code which would have been generated immediately after
+     * to the code currently being returned by generate().
+     *
+     * @return
+     *     The TOTP code which would have been generated immediately after to
+     *     the code currently being returned by generate().
+     */
+    public String next() {
+        return next(System.currentTimeMillis() / 1000);
     }
 
 }

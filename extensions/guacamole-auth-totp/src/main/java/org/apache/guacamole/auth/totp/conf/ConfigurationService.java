@@ -77,6 +77,18 @@ public class ConfigurationService {
     };
 
     /**
+     * The maximum allowed offset between the gucamole an the TOTP token.
+     * By default, this will be 0.
+     */
+    private static final IntegerGuacamoleProperty TOTP_MAX_OFFSET =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "totp-max-offset"; }
+
+    };
+
+    /**
      * The hash algorithm that should be used to generate TOTP codes. By
      * default, this will be "sha1". Legal values are "sha1", "sha256", and
      * "sha512".
@@ -142,6 +154,22 @@ public class ConfigurationService {
      */
     public int getPeriod() throws GuacamoleException {
         return environment.getProperty(TOTP_PERIOD, 30);
+    }
+
+    /**
+     * Returns the maximun allowed offset between gucamole  and  TOTP token, in
+     * periodes. If not specified, 0 will be used by default.
+     *
+     * @return
+     *     The maximun allowed offset, in periodes.
+     *     At least greater than zero.
+     *
+     * @throws GuacamoleException
+     *     If the "totp-max-offset" property cannot be read from
+     *     guacamole.properties.
+     */
+    public int getMaxOffset() throws GuacamoleException {
+        return Math.max(0, environment.getProperty(TOTP_MAX_OFFSET, 0));
     }
 
     /**
