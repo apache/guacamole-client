@@ -25,7 +25,9 @@ import com.google.inject.Provider;
 import java.security.InvalidKeyException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
@@ -229,6 +231,21 @@ public class UserVerificationService {
         String username = authenticatedUser.getIdentifier();
         if (username.equals(AuthenticatedUser.ANONYMOUS_IDENTIFIER))
             return;
+
+        //Check if user is in the group which does not need TOTP
+        User self = context.self();
+        Set<String> groups = new HashSet<String>();
+        Set<String> groupsSelf = self.getUserGroups().getObjects();
+        Set<String> groupsEffective = authenticatedUser.getEffectiveUserGroups();
+        groups.addAll(groupsEffective);
+        groups.addAll(groupsSelf);
+        String disabledGroup = confService.getDisabledGroup();
+        logger.trace("Disabled-Group: \"{}\", groups: \"{}\", size: \"{}\".", disabledGroup, groups, groups.size());
+        if(disabledGroup != null && groups.contains(disabledGroup)){
+            //Disable TOTP
+            logger.debug("User \"{}\": TOTP disabled by group-membership.", username);
+            return;
+        }
 
         // Ignore users which do not have an associated key
         UserTOTPKey key = getKey(context, username);

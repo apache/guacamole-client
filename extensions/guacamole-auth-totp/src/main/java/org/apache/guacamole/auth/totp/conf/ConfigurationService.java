@@ -53,10 +53,22 @@ public class ConfigurationService {
     };
 
     /**
+     * The group of users which are not enforced to use TOTP. By default,
+     * this will be empty/no one.
+     */
+    private static final StringGuacamoleProperty TOTP_DISABLED_GROUP =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "totp-disabled-group"; }
+
+    };
+
+    /**
      * The number of digits which should be included in each generated TOTP
      * code. By default, this will be 6.
      */
-    private static final IntegerGuacamoleProperty TOTP_DIGITS=
+    private static final IntegerGuacamoleProperty TOTP_DIGITS =
             new IntegerGuacamoleProperty() {
 
         @Override
@@ -102,6 +114,21 @@ public class ConfigurationService {
      */
     public String getIssuer() throws GuacamoleException {
         return environment.getProperty(TOTP_ISSUER, "Apache Guacamole");
+    }
+
+    /**
+     * Returns the human-readable name of the group which have TOTP disabled. If
+     * not specified, all users need to use TOTP.
+     *
+     * @return
+     *     The human-readable name of the group which users have TOTP disabled.
+     *
+     * @throws GuacamoleException
+     *     If the "totp-disabled-group" property cannot be read from
+     *     guacamole.properties.
+     */
+    public String getDisabledGroup() throws GuacamoleException {
+        return environment.getProperty(TOTP_DISABLED_GROUP, null);
     }
 
     /**
