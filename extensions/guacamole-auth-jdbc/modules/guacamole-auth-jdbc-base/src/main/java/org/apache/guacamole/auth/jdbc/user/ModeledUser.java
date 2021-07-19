@@ -30,7 +30,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
@@ -345,16 +344,20 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
     private void putUnrestrictedAttributes(Map<String, String> attributes) {
 
         // Set full name attribute
-        attributes.put(User.Attribute.FULL_NAME, getModel().getFullName());
+        if (attributes.containsKey(User.Attribute.FULL_NAME))
+            attributes.put(User.Attribute.FULL_NAME, getModel().getFullName());
 
         // Set email address attribute
-        attributes.put(User.Attribute.EMAIL_ADDRESS, getModel().getEmailAddress());
+        if (attributes.containsKey(User.Attribute.EMAIL_ADDRESS))
+            attributes.put(User.Attribute.EMAIL_ADDRESS, getModel().getEmailAddress());
 
         // Set organization attribute
-        attributes.put(User.Attribute.ORGANIZATION, getModel().getOrganization());
+        if (attributes.containsKey(User.Attribute.ORGANIZATION))
+            attributes.put(User.Attribute.ORGANIZATION, getModel().getOrganization());
 
         // Set role attribute
-        attributes.put(User.Attribute.ORGANIZATIONAL_ROLE, getModel().getOrganizationalRole());
+        if (attributes.containsKey(User.Attribute.ORGANIZATIONAL_ROLE))
+            attributes.put(User.Attribute.ORGANIZATIONAL_ROLE, getModel().getOrganizationalRole());
 
     }
 
@@ -474,16 +477,20 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
     private void setUnrestrictedAttributes(Map<String, String> attributes) {
 
         // Translate full name attribute
-        getModel().setFullName(TextField.parse(attributes.get(User.Attribute.FULL_NAME)));
+        if (attributes.containsKey(User.Attribute.FULL_NAME))
+            getModel().setFullName(TextField.parse(attributes.get(User.Attribute.FULL_NAME)));
 
         // Translate email address attribute
-        getModel().setEmailAddress(TextField.parse(attributes.get(User.Attribute.EMAIL_ADDRESS)));
+        if (attributes.containsKey(User.Attribute.EMAIL_ADDRESS))
+            getModel().setEmailAddress(TextField.parse(attributes.get(User.Attribute.EMAIL_ADDRESS)));
 
         // Translate organization attribute
-        getModel().setOrganization(TextField.parse(attributes.get(User.Attribute.ORGANIZATION)));
+        if (attributes.containsKey(User.Attribute.ORGANIZATION))
+            getModel().setOrganization(TextField.parse(attributes.get(User.Attribute.ORGANIZATION)));
 
         // Translate role attribute
-        getModel().setOrganizationalRole(TextField.parse(attributes.get(User.Attribute.ORGANIZATIONAL_ROLE)));
+        if (attributes.containsKey(User.Attribute.ORGANIZATIONAL_ROLE))
+            getModel().setOrganizationalRole(TextField.parse(attributes.get(User.Attribute.ORGANIZATIONAL_ROLE)));
 
     }
 
