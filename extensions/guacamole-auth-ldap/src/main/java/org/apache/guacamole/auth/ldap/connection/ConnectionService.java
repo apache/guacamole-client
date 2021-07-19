@@ -41,8 +41,11 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.ldap.ObjectQueryService;
 import org.apache.guacamole.auth.ldap.group.UserGroupService;
 import org.apache.guacamole.auth.ldap.user.LDAPAuthenticatedUser;
+import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Connection;
+import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
+import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration.EncryptionMethod;
 import org.apache.guacamole.net.auth.TokenInjectingConnection;
 import org.apache.guacamole.net.auth.simple.SimpleConnection;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
@@ -59,6 +62,33 @@ public class ConnectionService {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(ConnectionService.class);
+    
+    /**
+     * The name of the LDAP attribute that stores connection configuration
+     * parameters for Guacamole.
+     */
+    public static final String LDAP_ATTRIBUTE_PARAMETER = "guacConfigParameter";
+    
+    /**
+     * The name of the LDAP attribute that stores the protocol for a Guacamole
+     * connection.
+     */
+    public static final String LDAP_ATTRIBUTE_PROTOCOL = "guacConfigProtocol";
+    
+    /**
+     * The name of the LDAP attribute that stores guacd proxy hostname.
+     */
+    public static final String LDAP_ATTRIBUTE_PROXY_HOSTNAME = "guacConfigProxyHostname";
+    
+    /**
+     * The name of the LDAP attribute that stores guacd proxy port..
+     */
+    public static final String LDAP_ATTRIBUTE_PROXY_PORT = "guacConfigProxyPort";
+    
+    /**
+     * The name of the LDAP attribute that stores guacd proxy hostname.
+     */
+    public static final String LDAP_ATTRIBUTE_PROXY_ENCRYPTION = "guacConfigProxyEncryption";
 
     /**
      * Service for retrieving LDAP server configuration information.
@@ -145,18 +175,16 @@ public class ConnectionService {
                     cnName = cn.getString();
                 }
                 catch (LdapInvalidAttributeValueException e) {
-                    logger.error("Invalid value for CN attribute: {}",
-                            e.getMessage());
+                    logger.error("Invalid value for CN attribute: {}", e.getMessage());
                     logger.debug("LDAP exception while getting CN attribute.", e);
                     return null;
                 }
 
                 // Get associated protocol
-                Attribute protocol = entry.get("guacConfigProtocol");
+                Attribute protocol = entry.get(LDAP_ATTRIBUTE_PROTOCOL);
                 if (protocol == null) {
-                    logger.warn("guacConfigGroup \"{}\" is missing the "
-                              + "required \"guacConfigProtocol\" attribute.",
-                            cnName);
+                    logger.warn("guacConfigGroup \"{}\" is missing the required "
+                              + LDAP_ATTRIBUTE_PROTOCOL + " attribute.", cnName);
                     return null;
                 }
 
@@ -166,14 +194,52 @@ public class ConnectionService {
                     config.setProtocol(protocol.getString());
                 }
                 catch (LdapInvalidAttributeValueException e) {
-                    logger.error("Invalid value of the protocol entry: {}",
-                            e.getMessage());
+                    logger.error("Invalid value of the protocol entry: {}", e.getMessage());
                     logger.debug("LDAP exception when getting protocol value.", e);
+                    return null;
+                }
+                
+                // Get proxy configuration, if any
+                GuacamoleProxyConfiguration proxyConfig;
+                try {
+                    
+                    // Get default proxy configuration values
+                    proxyConfig = LocalEnvironment.getInstance().getDefaultGuacamoleProxyConfiguration();
+                    String proxyHostname = proxyConfig.getHostname();
+                    int proxyPort = proxyConfig.getPort();
+                    EncryptionMethod proxyEncryption = proxyConfig.getEncryptionMethod();
+                    
+                    // Get the proxy hostname
+                    Attribute proxyHostAttr = entry.get(LDAP_ATTRIBUTE_PROXY_HOSTNAME);
+                    if (proxyHostAttr != null && proxyHostAttr.size() > 0)
+                        proxyHostname = proxyHostAttr.getString();
+                    
+                    // Get the proxy port
+                    Attribute proxyPortAttr = entry.get(LDAP_ATTRIBUTE_PROXY_PORT);
+                    if (proxyPortAttr != null && proxyPortAttr.size() > 0)
+                        proxyPort = Integer.parseInt(proxyPortAttr.getString());
+                    
+                    // Get the proxy encryption method
+                    Attribute proxyEncryptionAttr = entry.get(LDAP_ATTRIBUTE_PROXY_ENCRYPTION);
+                    if (proxyEncryptionAttr != null && proxyEncryptionAttr.size() > 0)
+                        proxyEncryption = EncryptionMethod.valueOf(proxyEncryptionAttr.getString());
+
+                    // Create a proxy configuration
+                    proxyConfig = new GuacamoleProxyConfiguration(proxyHostname, proxyPort, proxyEncryption);
+                }
+                catch (LdapInvalidAttributeValueException e) {
+                    logger.error("Invalid value in proxy configuration: {}", e.getMessage());
+                    logger.debug("LDAP exception fetching proxy attribute value.", e);
+                    return null;
+                }
+                catch (GuacamoleException e) {
+                    logger.error("Could not retrieve default proxy configuration: {}", e.getMessage());
+                    logger.debug("Guacamole exception fetching default proxy configuration.", e);
                     return null;
                 }
 
                 // Get parameters, if any
-                Attribute parameterAttribute = entry.get("guacConfigParameter");
+                Attribute parameterAttribute = entry.get(LDAP_ATTRIBUTE_PARAMETER);
                 if (parameterAttribute != null) {
 
                     // For each parameter
@@ -183,10 +249,8 @@ public class ConnectionService {
                             parameter = parameterAttribute.getString();
                         }
                         catch (LdapInvalidAttributeValueException e) {
-                            logger.warn("Parameter value not valid for {}: {}",
-                                    cnName, e.getMessage());
-                            logger.debug("LDAP exception when getting parameter value.",
-                                    e);
+                            logger.warn("Parameter value not valid for {}: {}", cnName, e.getMessage());
+                            logger.debug("LDAP exception when getting parameter value.", e);
                             return null;
                         }
                         parameterAttribute.remove(parameter);
@@ -208,7 +272,7 @@ public class ConnectionService {
                 }
 
                 // Store connection using cn for both identifier and name
-                Connection connection = new SimpleConnection(cnName, cnName, config, true);
+                Connection connection = new SimpleConnection(cnName, cnName, proxyConfig, config, true);
                 connection.setParentIdentifier(LDAPAuthenticationProvider.ROOT_CONNECTION_GROUP);
 
                 // Inject LDAP-specific tokens only if LDAP handled user
