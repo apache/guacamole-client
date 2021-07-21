@@ -101,6 +101,63 @@ angular.module('navigation').factory('ClientIdentifier', ['$injector',
     };
 
     /**
+     * Encodes the given value as base64url, a variant of base64 defined by
+     * RFC 4648: https://datatracker.ietf.org/doc/html/rfc4648#section-5.
+     *
+     * The "base64url" variant is identical to standard base64 except that it
+     * uses "-" instead of "+", "_" instead of "/", and padding with "=" is
+     * optional.
+     * 
+     * @param {string} value
+     *     The string value to encode.
+     *
+     * @returns {string}
+     *     The provided string value encoded as unpadded base64url.
+     */
+    var base64urlEncode = function base64urlEncode(value) {
+
+        // Translate padded standard base64 to unpadded base64url
+        return $window.btoa(value).replace(/[+/=]/g,
+            (str) => ({
+                '+' : '-',
+                '/' : '_',
+                '=' : ''
+            })[str]
+        );
+
+    };
+
+    /**
+     * Decodes the given base64url or base64 string. The input string may
+     * contain "=" padding characters, but this is not required.
+     *
+     * @param {string} value
+     *     The base64url or base64 value to decode.
+     *
+     * @returns {string}
+     *     The result of decoding the provided base64url or base64 string.
+     */
+    var base64urlDecode = function base64urlDecode(value) {
+
+        // Add any missing padding (standard base64 requires input strings to
+        // be multiples of 4 in length, padded using '=')
+        value += ([
+            '',
+            '===',
+            '==',
+            '='
+        ])[value.length % 4];
+
+        // Translate padded base64url to padded standard base64
+        return $window.atob(value.replace(/[-_]/g,
+            (str) => ({
+                '-' : '+',
+                '_' : '/'
+            })[str]
+        ));
+    };
+
+    /**
      * Converts the given ClientIdentifier or ClientIdentifier-like object to
      * a String representation. Any object having the same properties as
      * ClientIdentifier may be used, but only those properties will be taken
@@ -115,7 +172,7 @@ angular.module('navigation').factory('ClientIdentifier', ['$injector',
      *     or ClientIdentifier-like object.
      */
     ClientIdentifier.toString = function toString(id) {
-        return $window.btoa([
+        return base64urlEncode([
             id.id,
             id.type,
             id.dataSource
@@ -137,7 +194,7 @@ angular.module('navigation').factory('ClientIdentifier', ['$injector',
     ClientIdentifier.fromString = function fromString(str) {
 
         try {
-            var values = $window.atob(str).split('\0');
+            var values = base64urlDecode(str).split('\0');
             return new ClientIdentifier({
                 id         : values[0],
                 type       : values[1],
