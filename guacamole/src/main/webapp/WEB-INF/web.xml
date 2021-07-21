@@ -28,6 +28,16 @@
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
+    <!-- Request that the browser always revalidate its cached copy of index.html -->
+    <filter>
+        <filter-name>cacheRevalidationFilter</filter-name>
+        <filter-class>org.apache.guacamole.CacheRevalidationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>cacheRevalidationFilter</filter-name>
+        <url-pattern>/index.html</url-pattern>
+    </filter-mapping>
+
     <!-- Route all requests through Guice -->
     <filter>
         <filter-name>guiceFilter</filter-name>
