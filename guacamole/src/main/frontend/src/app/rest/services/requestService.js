@@ -56,6 +56,11 @@ angular.module('rest').factory('requestService', ['$injector',
                 if (response.data)
                     throw new Error(response.data);
 
+                // Fall back to a generic internal error if the request couldn't
+                // even be issued (webapp is down, etc.)
+                else if ('data' in response)
+                    throw new Error({ message : 'Unknown failure sending HTTP request' });
+
                 // The value provided is not actually a response object from
                 // the $http service
                 throw response;
