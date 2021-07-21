@@ -24,6 +24,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="build" content="${guacamole.build.identifier}">
         <link rel="icon" type="image/png" href="images/logo-64.png">
         <link rel="icon" type="image/png" sizes="144x144" href="images/logo-144.png">
         <link rel="apple-touch-icon" type="image/png" href="images/logo-144.png">
@@ -34,7 +35,7 @@
         <% } %>
 
         <!-- Extension CSS (must be able to override webapp CSS) -->
-        <link rel="stylesheet" type="text/css" href="app.css?v=${project.version}">
+        <link rel="stylesheet" type="text/css" href="app.css?b=${guacamole.build.identifier}">
 
         <title ng-bind="page.title | translate"></title>
     </head>
@@ -105,7 +106,7 @@
         <script type="text/javascript" src="templates.js"></script>
 
         <!-- Extension JavaScript -->
-        <script type="text/javascript" src="app.js?v=${project.version}"></script>
+        <script type="text/javascript" src="app.js?b=${guacamole.build.identifier}"></script>
 
     </body>
 </html>

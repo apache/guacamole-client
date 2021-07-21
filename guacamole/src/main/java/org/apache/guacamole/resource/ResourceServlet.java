@@ -68,6 +68,10 @@ public class ResourceServlet extends HttpServlet {
     protected void doHead(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Request that the browser revalidate cached data
+        response.addHeader("Cache-Control", "no-cache");
+        response.addHeader("Pragma", "no-cache");
+
         // Set last modified and content type headers
         response.addDateHeader("Last-Modified", resource.getLastModified());
         response.setContentType(resource.getMimeType());

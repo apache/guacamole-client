@@ -115,19 +115,37 @@
                 </executions>
             </plugin>
 
-            <!-- Define a "rootlocation" property that can be used to reference
-                the location of the main guacamole-client directory -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>3.2.0</version>
                 <executions>
+
+                    <!-- Define a "rootlocation" property that can be used to
+                        reference the location of the main guacamole-client
+                        directory -->
                     <execution>
                         <id>define-project-root</id>
                         <goals>
                             <goal>rootlocation</goal>
                         </goals>
                     </execution>
+
+                    <!-- Define a "guacamole.build.identifier" property that
+                        can be used to uniquely identify the current build
+                        relative to previous builds -->
+                    <execution>
+                        <id>define-build-timestamp</id>
+                        <configuration>
+                            <name>guacamole.build.identifier</name>
+                            <timeSource>build</timeSource>
+                            <pattern>yyyyMMddHHmmss</pattern>
+                        </configuration>
+                        <goals>
+                            <goal>timestamp-property</goal>
+                        </goals>
+                    </execution>
+
                 </executions>
             </plugin>
 
