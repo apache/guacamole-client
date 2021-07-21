@@ -121,7 +121,8 @@ module.exports = {
             { from: 'fonts/**/*' },
             { from: 'images/**/*' },
             { from: 'layouts/**/*' },
-            { from: 'translations/**/*' }
+            { from: 'translations/**/*' },
+            { from: 'verifyCachedVersion.js' }
         ], {
             context: 'src/'
         }),
