@@ -239,7 +239,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             ids.push(id);
 
         // Reconstruct path, updating attached clients via change in route
-        $location.path('/client/' + encodeURIComponent(ManagedClientGroup.getIdentifier(ids)));
+        $location.path('/client/' + ManagedClientGroup.getIdentifier(ids));
 
     };
 
