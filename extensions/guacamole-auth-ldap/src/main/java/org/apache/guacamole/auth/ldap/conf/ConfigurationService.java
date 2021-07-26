@@ -322,6 +322,26 @@ public class ConfigurationService {
     }
 
     /**
+     * Returns the search filter that should be used when querying the
+     * LDAP server for Guacamole groups.  If no filter is specified,
+     * a default of "(objectClass=*)" is used.
+     *
+     * @return
+     *     The search filter that should be used when querying the
+     *     LDAP server for groups that are valid in Guacamole, or
+     *     "(objectClass=*)" if not specified.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public ExprNode getGroupSearchFilter() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_GROUP_SEARCH_FILTER,
+            new PresenceNode("objectClass")
+        );
+    }
+
+    /**
      * Returns the maximum number of seconds to wait for LDAP operations.
      *
      * @return

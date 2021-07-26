@@ -443,6 +443,7 @@ END
     set_optional_property "ldap-user-search-filter"         "$LDAP_USER_SEARCH_FILTER"
     set_optional_property "ldap-config-base-dn"             "$LDAP_CONFIG_BASE_DN"
     set_optional_property "ldap-group-base-dn"              "$LDAP_GROUP_BASE_DN"
+    set_optional_property "ldap-group-search-filter"        "$LDAP_GROUP_SEARCH_FILTER"
     set_optional_property "ldap-member-attribute-type"      "$LDAP_MEMBER_ATTRIBUTE_TYPE"
     set_optional_property "ldap-group-name-attribute"       "$LDAP_GROUP_NAME_ATTRIBUTE"
     set_optional_property "ldap-dereference-aliases"        "$LDAP_DEREFERENCE_ALIASES"

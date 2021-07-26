@@ -28,10 +28,10 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidAttributeValueException;
+import org.apache.directory.api.ldap.model.filter.AndNode;
 import org.apache.directory.api.ldap.model.filter.EqualityNode;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
 import org.apache.directory.api.ldap.model.filter.NotNode;
-import org.apache.directory.api.ldap.model.filter.PresenceNode;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.auth.ldap.conf.ConfigurationService;
@@ -81,16 +81,22 @@ public class UserGroupService {
      */
     private ExprNode getGroupSearchFilter() throws GuacamoleException {
 
+        // Use filter defined by "ldap-group-search-filter" as basis for all
+        // retrieval of user groups
+        ExprNode groupFilter = confService.getGroupSearchFilter();
+
         // Explicitly exclude guacConfigGroup object class only if it should
         // be assumed to be defined (query may fail due to no such object
         // class existing otherwise)
-        if (confService.getConfigurationBaseDN() != null)
-            return new NotNode(new EqualityNode("objectClass","guacConfigGroup"));
+        if (confService.getConfigurationBaseDN() != null) {
+            groupFilter = new AndNode(
+                groupFilter,
+                new NotNode(new EqualityNode<String>("objectClass", "guacConfigGroup"))
+            );
+        }
 
-        // Read any object as a group if LDAP is not being used for connection
-        // storage (guacConfigGroup)
-        return new PresenceNode("objectClass");
-
+        return groupFilter;
+        
     }
 
     /**
