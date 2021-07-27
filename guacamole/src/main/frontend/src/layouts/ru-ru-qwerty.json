@@ -87,10 +87,10 @@
             "modifier" : "alt",
             "keysym"   : 65514
         }],
-        "Super" : [{
-            "title"    : "Super",
-            "modifier" : "super",
-            "keysym"   : 65515
+        "Meta" : [{
+            "title"    : "Meta",
+            "modifier" : "meta",
+            "keysym"   : 65511
         }],
         "Latin" : [{
             "title"    : "Latin",
@@ -499,7 +499,7 @@
                     [ "Tab", "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з", "х", "ъ", "\\" ],
                     [ "Caps",  "ф", "ы", "в", "а", "п", "р", "о", "л", "д", "ж", "э", "Enter" ],
                     [ "LShift", "я", "ч", "с", "м",  "и", "т",  "ь", "б", "ю", "/",  "RShift" ],
-                    [ "LCtrl", "Super", "LAlt",       "Space",        "RAlt", "Menu", "RCtrl" ]
+                    [ "LCtrl", "Meta", "LAlt",        "Space",        "RAlt", "Menu", "RCtrl" ]
 
                 ],
 
@@ -526,7 +526,7 @@
         "RShift" : 3.1,
 
         "LCtrl" : 1.6,
-        "Super" : 1.6,
+        "Meta" : 1.6,
         "LAlt"  : 1.6,
         "Space" : 6.1,
         "RAlt"  : 1.6,
