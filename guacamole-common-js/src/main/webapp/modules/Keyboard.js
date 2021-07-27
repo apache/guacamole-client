@@ -437,8 +437,8 @@ Guacamole.Keyboard = function Keyboard(element) {
         40:  [0xFF54, 0xFF54, 0xFF54, 0xFFB2], // down arrow  / KP 2
         45:  [0xFF63, 0xFF63, 0xFF63, 0xFFB0], // insert      / KP 0
         46:  [0xFFFF, 0xFFFF, 0xFFFF, 0xFFAE], // delete      / KP decimal
-        91:  [0xFFEB], // left window key (hyper_l)
-        92:  [0xFF67], // right window key (menu key?)
+        91:  [0xFFE7], // left windows/command key (meta_l)
+        92:  [0xFFE8], // right window/command key (meta_r)
         93:  null,     // select key
         96:  [0xFFB0], // KP 0
         97:  [0xFFB1], // KP 1
@@ -583,7 +583,7 @@ Guacamole.Keyboard = function Keyboard(element) {
         "UIKeyInputUpArrow": [0xFF52],
         "Up": [0xFF52],
         "Undo": [0xFF65],
-        "Win": [0xFFEB],
+        "Win": [0xFFE7, 0xFFE7, 0xFFE8],
         "Zenkaku": [0xFF28],
         "ZenkakuHankaku": [0xFF2A]
     };
@@ -603,8 +603,8 @@ Guacamole.Keyboard = function Keyboard(element) {
         0xFFE8: true, // Right meta 
         0xFFE9: true, // Left alt
         0xFFEA: true, // Right alt
-        0xFFEB: true, // Left hyper
-        0xFFEC: true  // Right hyper
+        0xFFEB: true, // Left super/hyper
+        0xFFEC: true  // Right super/hyper
     };
 
     /**
@@ -1031,8 +1031,8 @@ Guacamole.Keyboard = function Keyboard(element) {
 
         // Resync state of hyper
         updateModifierState(guac_keyboard.modifiers.hyper, state.hyper, [
-            0xFFEB, // Left hyper
-            0xFFEC  // Right hyper
+            0xFFEB, // Left super/hyper
+            0xFFEC  // Right super/hyper
         ], keyEvent);
 
         // Update state
