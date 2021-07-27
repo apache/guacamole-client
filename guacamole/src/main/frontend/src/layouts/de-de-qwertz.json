@@ -78,7 +78,6 @@
 
         "Menu" : [{
             "title"    : "Menu",
-            "modifier" : "super",
             "keysym"   : 65383
         }],
         "LShift" : [{
@@ -116,10 +115,10 @@
             "modifier" : "alt-gr",
             "keysym"   : 65027
         }],
-        "Super" : [{
-            "title"    : "Super",
-            "modifier" : "super",
-            "keysym"   : 65515
+        "Meta" : [{
+            "title"    : "Meta",
+            "modifier" : "meta",
+            "keysym"   : 65511
         }],
 
         "^" : [
@@ -404,7 +403,7 @@
                     [ "Tab", "q", "w", "e", "r", "t", "z", "u", "i", "o", "p", "ü", "+",   1,  0.6 ],
                     [ "Caps",  "a", "s", "d", "f", "g", "h", "j", "k", "l", "ö", "ä", "#", "Enter" ],
                     [ "LShift", "<", "y", "x", "c", "v",  "b", "n",  "m", ",", ".", "-",  "RShift" ],
-                    [ "LCtrl", "Super", "LAlt",         "Space",          "AltGr", "Menu", "RCtrl" ]
+                    [ "LCtrl", "Meta", "LAlt",          "Space",          "AltGr", "Menu", "RCtrl" ]
 
                 ],
 
@@ -431,7 +430,7 @@
         "RShift" : 2.1,
 
         "LCtrl" : 1.6,
-        "Super" : 1.6,
+        "Meta" : 1.6,
         "LAlt"  : 1.6,
         "Space" : 6.1,
         "AltGr" : 1.6,
