@@ -284,6 +284,10 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     const setAttachedGroup = function setAttachedGroup(managedClientGroup) {
 
+        // Do nothing if group is not actually changing
+        if ($scope.clientGroup === managedClientGroup)
+            return;
+
         if ($scope.clientGroup) {
 
             // Remove all disconnected clients from management (the user has
