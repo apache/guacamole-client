@@ -73,6 +73,10 @@ public class AuthorizeTagHandler implements TagHandler {
             if (encoding.equals("md5"))
                 authorization.setEncoding(Authorization.Encoding.MD5);
 
+            // If "sha256" use SHA-256 hash
+            else if (encoding.equals("sha256"))
+                authorization.setEncoding(Authorization.Encoding.SHA_S56);
+
             // If "plain", use plain text
             else if (encoding.equals("plain"))
                 authorization.setEncoding(Authorization.Encoding.PLAIN_TEXT);
