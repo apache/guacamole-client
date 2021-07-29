@@ -46,7 +46,12 @@ public class Authorization {
         /**
          * Password hashed with MD5.
          */
-        MD5
+        MD5,
+        
+        /**
+         * Passwords hashed with SHA256.
+         */
+        SHA_256
 
     }
 
@@ -205,6 +210,19 @@ public class Authorization {
                         throw new UnsupportedOperationException("Unexpected lack of MD5 support.", e);
                     }
 
+                case SHA_256:
+
+                    try {
+                        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                        String hashedPassword = getHexString(digest.digest(password.getBytes("UTF-8")));
+                        return hashedPassword.equals(this.password.toUpperCase());
+                    }
+                    catch (UnsupportedEncodingException e) {
+                        throw new UnsupportedOperationException("Unexpected lack of UTF-8 support.", e);
+                    }
+                    catch (NoSuchAlgorithmException e) {
+                        throw new UnsupportedOperationException("Unexpected lack of SHA-256 support.", e);
+                    }
             }
 
         } // end validation check
