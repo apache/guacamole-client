@@ -18,7 +18,7 @@
     under the License.
 -->
 <user-mapping>
-	
+
     <!-- Per-user authentication and config information -->
     <authorize username="USERNAME" password="PASSWORD">
         <protocol>vnc</protocol>
@@ -35,7 +35,7 @@
             encoding="md5">
 
         <!-- First authorized connection -->
-    	<connection name="localhost">
+        <connection name="localhost">
             <protocol>vnc</protocol>
             <param name="hostname">localhost</param>
             <param name="port">5901</param>
@@ -43,7 +43,7 @@
         </connection>
 
         <!-- Second authorized connection -->
-		<connection name="otherhost">
+        <connection name="otherhost">
             <protocol>vnc</protocol>
             <param name="hostname">otherhost</param>
             <param name="port">5900</param>
