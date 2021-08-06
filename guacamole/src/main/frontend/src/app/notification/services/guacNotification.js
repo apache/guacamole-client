@@ -77,12 +77,12 @@ angular.module('notification').factory('guacNotification', ['$injector',
      *     'text'       : {
      *         'key' : 'NAMESPACE.SOME_TRANSLATION_KEY'
      *     },
-     *     'actions'    : {
+     *     'actions'    : [{
      *         'name'       : 'reconnect',
      *         'callback'   : function () {
      *             // Reconnection code goes here
      *         }
-     *     }
+     *     }]
      * });
      * 
      * // To hide the status message
