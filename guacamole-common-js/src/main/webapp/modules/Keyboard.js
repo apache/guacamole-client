@@ -1148,6 +1148,26 @@ Guacamole.Keyboard = function Keyboard(element) {
             var keysym = null;
             var accepted_events = [];
 
+            // Defer handling of Meta until it is known to be functioning as a
+            // modifier (it may otherwise actually be an alternative method for
+            // pressing a single key, such as Meta+Left for Home on ChromeOS)
+            if (first.keysym === 0xFFE7 || first.keysym === 0xFFE8) {
+
+                // Defer handling until further events exist to provide context
+                if (eventLog.length === 1)
+                    return null;
+
+                // Ignore keydown of Meta unless immediately followed by a
+                // reliable keyup of the same (it will instead be pressed
+                // implicitly if truly recognized as Meta in conjunction with
+                // another non-Meta keypress)
+                if (quirks.keyupUnreliable || !(eventLog[1] instanceof KeyupEvent) || eventLog[1].keysym !== first.keysym) {
+                    eventLog.pop();
+                    return null;
+                }
+
+            }
+
             // If event itself is reliable, no need to wait for other events
             if (first.reliable) {
                 keysym = first.keysym;
