@@ -31,6 +31,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
+import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Permissions;
@@ -163,7 +164,8 @@ public class ConnectionResource extends DirectoryObjectResource<Connection, APIC
 
         // Try the current getConnectionHistory() method, first, for connection history.
         try {
-            return new ConnectionHistoryResource(connection.getConnectionHistory());
+            return new ConnectionHistoryResource(connection.getConnectionHistory()
+                    .sort(ActivityRecordSet.SortableProperty.START_DATE, true));
         }
         catch (GuacamoleUnsupportedException e) {
             logger.debug("Call to getConnectionHistory() is unsupported, falling back to getHistory().", e);
