@@ -136,13 +136,24 @@ Guacamole.Keyboard = function Keyboard(element) {
      *
      * @private
      * @constructor
+     * @param {Guacamole.Keyboard.ModifierState} [modifiers]
+     *     The state of all local keyboard modifiers at the time this event was
+     *     received.
      */
-    var KeyEvent = function() {
+    var KeyEvent = function KeyEvent(modifiers) {
 
         /**
          * Reference to this key event.
          */
         var key_event = this;
+
+        /**
+         * The state of all local keyboard modifiers at the time this event was
+         * received.
+         *
+         * @type {Guacamole.Keyboard.ModifierState}
+         */
+        this.modifiers = modifiers || new Guacamole.Keyboard.ModifierState();
 
         /**
          * An arbitrary timestamp in milliseconds, indicating this event's
@@ -198,20 +209,30 @@ Guacamole.Keyboard = function Keyboard(element) {
      * @private
      * @constructor
      * @augments Guacamole.Keyboard.KeyEvent
-     * @param {Number} keyCode The JavaScript key code of the key pressed.
-     * @param {String} keyIdentifier The legacy DOM3 "keyIdentifier" of the key
-     *                               pressed, as defined at:
-     *                               http://www.w3.org/TR/2009/WD-DOM-Level-3-Events-20090908/#events-Events-KeyboardEvent
-     * @param {String} key The standard name of the key pressed, as defined at:
-     *                     http://www.w3.org/TR/DOM-Level-3-Events/#events-KeyboardEvent
-     * @param {Number} location The location on the keyboard corresponding to
-     *                          the key pressed, as defined at:
-     *                          http://www.w3.org/TR/DOM-Level-3-Events/#events-KeyboardEvent
+     *
+     * @param {Guacamole.Keyboard.ModifierState} [modifiers]
+     *     The state of all local keyboard modifiers at the time this event was
+     *     received.
+     *
+     * @param {number} keyCode
+     *     The JavaScript key code of the key pressed.
+     *
+     * @param {string} keyIdentifier
+     *     The legacy DOM3 "keyIdentifier" of the key pressed, as defined at:
+     *     http://www.w3.org/TR/2009/WD-DOM-Level-3-Events-20090908/#events-Events-KeyboardEvent
+     *
+     * @param {string} key
+     *     The standard name of the key pressed, as defined at:
+     *     http://www.w3.org/TR/DOM-Level-3-Events/#events-KeyboardEvent
+     *
+     * @param {number} location
+     *     The location on the keyboard corresponding to the key pressed, as
+     *     defined at: http://www.w3.org/TR/DOM-Level-3-Events/#events-KeyboardEvent
      */
-    var KeydownEvent = function(keyCode, keyIdentifier, key, location) {
+    var KeydownEvent = function KeydownEvent(modifiers, keyCode, keyIdentifier, key, location) {
 
         // We extend KeyEvent
-        KeyEvent.apply(this);
+        KeyEvent.call(this, modifiers);
 
         /**
          * The JavaScript key code of the key pressed.
@@ -304,13 +325,14 @@ Guacamole.Keyboard = function Keyboard(element) {
      * @private
      * @constructor
      * @augments Guacamole.Keyboard.KeyEvent
-     * @param {Number} charCode The Unicode codepoint of the character that
-     *                          would be typed by the key pressed.
+     * @param {number} charCode
+     *     The Unicode codepoint of the character that would be typed by the
+     *     key pressed.
      */
-    var KeypressEvent = function(charCode) {
+    var KeypressEvent = function KeypressEvent(modifiers, charCode) {
 
         // We extend KeyEvent
-        KeyEvent.apply(this);
+        KeyEvent.call(this, modifiers);
 
         /**
          * The Unicode codepoint of the character that would be typed by the
@@ -348,10 +370,10 @@ Guacamole.Keyboard = function Keyboard(element) {
      *                          the key released, as defined at:
      *                          http://www.w3.org/TR/DOM-Level-3-Events/#events-KeyboardEvent
      */
-    var KeyupEvent = function(keyCode, keyIdentifier, key, location) {
+    var KeyupEvent = function(modifiers, keyCode, keyIdentifier, key, location) {
 
         // We extend KeyEvent
-        KeyEvent.apply(this);
+        KeyEvent.call(this, modifiers);
 
         /**
          * The JavaScript key code of the key released.
@@ -922,27 +944,28 @@ Guacamole.Keyboard = function Keyboard(element) {
     };
 
     /**
-     * Given the remote and local state of a particular key, resynchronizes the
-     * remote state of that key with the local state through pressing or
+     * Resynchronizes the remote state of the given modifier with its
+     * corresponding local modifier state, as dictated by
+     * {@link KeyEvent#modifiers} within the given key event, by pressing or
      * releasing keysyms.
      *
      * @private
-     * @param {Boolean} remoteState
-     *     Whether the key is currently pressed remotely.
+     * @param {string} modifier
+     *     The name of the {@link Guacamole.Keyboard.ModifierState} property
+     *     being updated.
      *
-     * @param {Boolean} localState
-     *     Whether the key is currently pressed remotely locally. If the state
-     *     of the key is not known, this may be undefined.
-     *
-     * @param {Number[]} keysyms
-     *     The keysyms which represent the key being updated.
+     * @param {number[]} keysyms
+     *     The keysyms which represent the modifier being updated.
      *
      * @param {KeyEvent} keyEvent
      *     Guacamole's current best interpretation of the key event being
      *     processed.
      */
-    var updateModifierState = function updateModifierState(remoteState,
-        localState, keysyms, keyEvent) {
+    var updateModifierState = function updateModifierState(modifier,
+        keysyms, keyEvent) {
+
+        var localState = keyEvent.modifiers[modifier];
+        var remoteState = guac_keyboard.modifiers[modifier];
 
         var i;
 
@@ -987,56 +1010,50 @@ Guacamole.Keyboard = function Keyboard(element) {
     };
 
     /**
-     * Given a keyboard event, updates the local modifier state and remote
-     * key state based on the modifier flags within the event. This function
-     * pays no attention to keycodes.
+     * Given a keyboard event, updates the remote key state to match the local
+     * modifier state and remote based on the modifier flags within the event.
+     * This function pays no attention to keycodes.
      *
      * @private
-     * @param {KeyboardEvent} e
-     *     The keyboard event containing the flags to update.
-     *
      * @param {KeyEvent} keyEvent
      *     Guacamole's current best interpretation of the key event being
      *     processed.
      */
-    var syncModifierStates = function syncModifierStates(e, keyEvent) {
-
-        // Get state
-        var state = Guacamole.Keyboard.ModifierState.fromKeyboardEvent(e);
+    var syncModifierStates = function syncModifierStates(keyEvent) {
 
         // Resync state of alt
-        updateModifierState(guac_keyboard.modifiers.alt, state.alt, [
+        updateModifierState('alt', [
             0xFFE9, // Left alt
             0xFFEA, // Right alt
             0xFE03  // AltGr
         ], keyEvent);
 
         // Resync state of shift
-        updateModifierState(guac_keyboard.modifiers.shift, state.shift, [
+        updateModifierState('shift', [
             0xFFE1, // Left shift
             0xFFE2  // Right shift
         ], keyEvent);
 
         // Resync state of ctrl
-        updateModifierState(guac_keyboard.modifiers.ctrl, state.ctrl, [
+        updateModifierState('ctrl', [
             0xFFE3, // Left ctrl
             0xFFE4  // Right ctrl
         ], keyEvent);
 
         // Resync state of meta
-        updateModifierState(guac_keyboard.modifiers.meta, state.meta, [
+        updateModifierState('meta', [
             0xFFE7, // Left meta
             0xFFE8  // Right meta
         ], keyEvent);
 
         // Resync state of hyper
-        updateModifierState(guac_keyboard.modifiers.hyper, state.hyper, [
+        updateModifierState('hyper', [
             0xFFEB, // Left super/hyper
             0xFFEC  // Right super/hyper
         ], keyEvent);
 
         // Update state
-        guac_keyboard.modifiers = state;
+        guac_keyboard.modifiers = keyEvent.modifiers;
 
     };
 
@@ -1157,14 +1174,17 @@ Guacamole.Keyboard = function Keyboard(element) {
                 if (eventLog.length === 1)
                     return null;
 
-                // Ignore keydown of Meta unless immediately followed by a
-                // reliable keyup of the same (it will instead be pressed
-                // implicitly if truly recognized as Meta in conjunction with
-                // another non-Meta keypress)
-                if (quirks.keyupUnreliable || !(eventLog[1] instanceof KeyupEvent) || eventLog[1].keysym !== first.keysym) {
-                    eventLog.pop();
-                    return null;
+                // Drop keydown if it turns out Meta does not actually apply
+                if (eventLog[1].keysym !== first.keysym) {
+                    if (!eventLog[1].modifiers.meta)
+                        return eventLog.shift();
                 }
+
+                // Drop duplicate keydown events while waiting to determine
+                // whether to acknowledge Meta (browser may repeat keydown
+                // while the key is held)
+                else if (eventLog[1] instanceof KeydownEvent)
+                    return eventLog.shift();
 
             }
 
@@ -1190,6 +1210,8 @@ Guacamole.Keyboard = function Keyboard(element) {
 
             // Fire a key press if valid events were found
             if (accepted_events.length > 0) {
+
+                syncModifierStates(first);
 
                 if (keysym) {
 
@@ -1232,6 +1254,7 @@ Guacamole.Keyboard = function Keyboard(element) {
                 return first;
             }
 
+            syncModifierStates(first);
             return eventLog.shift();
 
         } // end if keyup
@@ -1324,9 +1347,8 @@ Guacamole.Keyboard = function Keyboard(element) {
             if (window.event) keyCode = window.event.keyCode;
             else if (e.which) keyCode = e.which;
 
-            // Fix modifier states
-            var keydownEvent = new KeydownEvent(keyCode, e.keyIdentifier, e.key, getEventLocation(e));
-            syncModifierStates(e, keydownEvent);
+            var modifiers = Guacamole.Keyboard.ModifierState.fromKeyboardEvent(e);
+            var keydownEvent = new KeydownEvent(modifiers, keyCode, e.keyIdentifier, e.key, getEventLocation(e));
 
             // Ignore (but do not prevent) the "composition" keycode sent by some
             // browsers when an IME is in use (see: http://lists.w3.org/Archives/Public/www-dom/2010JulSep/att-0182/keyCode-spec.html)
@@ -1356,8 +1378,8 @@ Guacamole.Keyboard = function Keyboard(element) {
             else if (e.which) charCode = e.which;
 
             // Fix modifier states
-            var keypressEvent = new KeypressEvent(charCode);
-            syncModifierStates(e, keypressEvent);
+            var modifiers = Guacamole.Keyboard.ModifierState.fromKeyboardEvent(e);
+            var keypressEvent = new KeypressEvent(modifiers, charCode);
 
             // Log event
             eventLog.push(keypressEvent);
@@ -1384,8 +1406,8 @@ Guacamole.Keyboard = function Keyboard(element) {
             else if (e.which) keyCode = e.which;
 
             // Fix modifier states
-            var keyupEvent = new KeyupEvent(keyCode, e.keyIdentifier, e.key, getEventLocation(e));
-            syncModifierStates(e, keyupEvent);
+            var modifiers = Guacamole.Keyboard.ModifierState.fromKeyboardEvent(e);
+            var keyupEvent = new KeyupEvent(modifiers, keyCode, e.keyIdentifier, e.key, getEventLocation(e));
 
             // Log event, call for interpretation
             eventLog.push(keyupEvent);
@@ -1500,7 +1522,7 @@ Guacamole.Keyboard.ModifierState = function() {
      * @type {Boolean}
      */
     this.hyper = false;
-    
+
 };
 
 /**
