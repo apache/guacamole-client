@@ -103,7 +103,7 @@ body.client {
     flex: 0 0 auto;
 }
 
-.client-view .client-body .tiled-client-list {
+.client-view .client-body guac-tiled-clients {
 
     position: absolute;
     left: 0;
