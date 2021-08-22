@@ -199,8 +199,8 @@ public class ObjectQueryService {
      *     limiting the maximum depth to which referrals can go.
      * 
      * @param relevantAttributes
-     *     The attribute(s) relevant to return for this search,
-	 *     if all available should be returned pass null as value.
+     *     The attribute(s) relevant to return for this search, or null if all
+     *     available attributes should be returned.
      *
      * @return
      *     A list of all results accessible to the user currently bound under
@@ -230,9 +230,9 @@ public class ObjectQueryService {
 
         // Search within subtree of given base DN
         SearchRequest request = ldapService.getSearchRequest(baseDN, query);
-        if (relevantAttributes != null) {
+        
+        if (relevantAttributes != null)
             request.addAttributes(relevantAttributes.toArray(new String[0]));
-        }
 
         // Produce list of all entries in the search result, automatically
         // following referrals if configured to do so
