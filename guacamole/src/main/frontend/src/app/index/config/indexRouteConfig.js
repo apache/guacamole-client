@@ -136,7 +136,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
         })
 
         // Connection editor
-        .when('/manage/:dataSource/connections/:id?', {
+        .when('/manage/:dataSource/connections/:id*?', {
             title         : 'APP.NAME',
             bodyClassName : 'manage',
             templateUrl   : 'app/manage/templates/manageConnection.html',
@@ -145,7 +145,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
         })
 
         // Sharing profile editor
-        .when('/manage/:dataSource/sharingProfiles/:id?', {
+        .when('/manage/:dataSource/sharingProfiles/:id*?', {
             title         : 'APP.NAME',
             bodyClassName : 'manage',
             templateUrl   : 'app/manage/templates/manageSharingProfile.html',
@@ -154,7 +154,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
         })
 
         // Connection group editor
-        .when('/manage/:dataSource/connectionGroups/:id?', {
+        .when('/manage/:dataSource/connectionGroups/:id*?', {
             title         : 'APP.NAME',
             bodyClassName : 'manage',
             templateUrl   : 'app/manage/templates/manageConnectionGroup.html',
@@ -163,7 +163,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
         })
 
         // User editor
-        .when('/manage/:dataSource/users/:id?', {
+        .when('/manage/:dataSource/users/:id*?', {
             title         : 'APP.NAME',
             bodyClassName : 'manage',
             templateUrl   : 'app/manage/templates/manageUser.html',
@@ -172,7 +172,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
         })
 
         // User group editor
-        .when('/manage/:dataSource/userGroups/:id?', {
+        .when('/manage/:dataSource/userGroups/:id*?', {
             title         : 'APP.NAME',
             bodyClassName : 'manage',
             templateUrl   : 'app/manage/templates/manageUserGroup.html',
