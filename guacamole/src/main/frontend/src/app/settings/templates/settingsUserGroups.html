@@ -10,7 +10,7 @@
         <!-- Form action buttons -->
         <div class="action-buttons">
             <a class="add-user-group button" ng-show="canCreateUserGroups()"
-               href="#/manage/{{getDefaultDataSource()}}/userGroups/">{{'SETTINGS_USER_GROUPS.ACTION_NEW_USER_GROUP' | translate}}</a>
+               href="#/manage/{{getDefaultDataSource() | escape}}/userGroups/">{{'SETTINGS_USER_GROUPS.ACTION_NEW_USER_GROUP' | translate}}</a>
         </div>
 
         <!-- User group filter -->
@@ -32,7 +32,7 @@
         <tbody ng-class="{loading: !isLoaded()}">
             <tr ng-repeat="manageableUserGroup in manageableUserGroupPage" class="user-group">
                 <td class="user-group-name">
-                    <a ng-href="#/manage/{{manageableUserGroup.dataSource}}/userGroups/{{manageableUserGroup.userGroup.identifier}}">
+                    <a ng-href="#/manage/{{manageableUserGroup.dataSource | escape}}/userGroups/{{manageableUserGroup.userGroup.identifier | escape}}">
                         <div class="icon user-group"></div>
                         <span class="name">{{manageableUserGroup.userGroup.identifier}}</span>
                     </a>
