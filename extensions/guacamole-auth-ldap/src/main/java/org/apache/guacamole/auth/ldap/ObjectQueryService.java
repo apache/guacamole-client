@@ -198,9 +198,10 @@ public class ObjectQueryService {
      *     The current level of referral depth for this search, used for
      *     limiting the maximum depth to which referrals can go.
      * 
-     * @param relevantAttributes
-     *     The attribute(s) relevant to return for this search, or null if all
-     *     available attributes should be returned.
+     * @param attributes
+     *     A collection of the names of attributes that should be retrieved
+     *     from LDAP entries returned by the search, or null if all available
+     *     attributes should be returned.
      *
      * @return
      *     A list of all results accessible to the user currently bound under
@@ -213,7 +214,7 @@ public class ObjectQueryService {
      */
     public List<Entry> search(LdapNetworkConnection ldapConnection,
             Dn baseDN, ExprNode query, int searchHop,
-            Collection<String> relevantAttributes) throws GuacamoleException {
+            Collection<String> attributes) throws GuacamoleException {
 
         // Refuse to follow referrals if limit has been reached
         int maxHops = confService.getMaxReferralHops();
@@ -231,8 +232,8 @@ public class ObjectQueryService {
         // Search within subtree of given base DN
         SearchRequest request = ldapService.getSearchRequest(baseDN, query);
         
-        if (relevantAttributes != null)
-            request.addAttributes(relevantAttributes.toArray(new String[0]));
+        if (attributes != null)
+            request.addAttributes(attributes.toArray(new String[0]));
 
         // Produce list of all entries in the search result, automatically
         // following referrals if configured to do so
@@ -259,7 +260,7 @@ public class ObjectQueryService {
                             try (LdapNetworkConnection referralConnection = ldapService.bindAs(url, ldapConnection)) {
                                 if (referralConnection != null) {
                                     logger.debug("Following referral to \"{}\"...", url);
-                                    entries.addAll(search(referralConnection, baseDN, query, searchHop + 1, relevantAttributes));
+                                    entries.addAll(search(referralConnection, baseDN, query, searchHop + 1, attributes));
                                 }
                                 else
                                     logger.debug("Could not bind with LDAP "
@@ -314,15 +315,20 @@ public class ObjectQueryService {
      *     The LDAP filter to apply to reduce the results of the query in
      *     addition to testing the values of the given attributes.
      *
-     * @param attributes
+     * @param filterAttributes
      *     A collection of all attributes to test for equivalence to the given
      *     value, in order of decreasing priority.
      *
-     * @param attributeValue
+     * @param filterValue
      *     The value that should be searched search for within the attributes
      *     of objects within the LDAP directory. If null, the search will test
      *     only for the presence of at least one of the given attributes on
      *     each object, regardless of the value of those attributes.
+     * 
+     * @param attributes
+     *     A collection of the names of attributes that should be retrieved
+     *     from LDAP entries returned by the search, or null if all available
+     *     attributes should be returned.
      *
      * @return
      *     A list of all results accessible to the user currently bound under
@@ -334,9 +340,10 @@ public class ObjectQueryService {
      *     guacamole.properties.
      */
     public List<Entry> search(LdapNetworkConnection ldapConnection, Dn baseDN,
-            ExprNode filter, Collection<String> attributes, String attributeValue)
+            ExprNode filter, Collection<String> filterAttributes, String filterValue,
+            Collection<String> attributes)
             throws GuacamoleException {
-        ExprNode query = generateQuery(filter, attributes, attributeValue);
+        ExprNode query = generateQuery(filter, filterAttributes, filterValue);
         return search(ldapConnection, baseDN, query, 0, attributes);
     }
 

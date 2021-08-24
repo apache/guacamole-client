@@ -20,7 +20,10 @@
 package org.apache.guacamole.auth.ldap.connection;
 
 import com.google.inject.Inject;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import org.apache.directory.api.ldap.model.entry.Attribute;
@@ -77,6 +80,48 @@ public class ConnectionService {
      */
     @Inject
     private UserGroupService userGroupService;
+    
+    /**
+     * The objectClass that is present on any Guacamole connections stored
+     * in LDAP.
+     */
+    public static final String CONNECTION_LDAP_OBJECT_CLASS = "guacConfigGroup";
+    
+    /**
+     * The attribute name that uniquely identifies a Guacamole connection object
+     * in LDAP.
+     */
+    public static final String LDAP_ATTRIBUTE_NAME_ID = "cn";
+    
+    /**
+     * The LDAP attribute name where the Guacamole connection protocol is stored.
+     */
+    public static final String LDAP_ATTRIBUTE_NAME_PROTOCOL = "guacConfigProtocol";
+    
+    /**
+     * The LDAP attribute name that contains any connection parameters.
+     */
+    public static final String LDAP_ATTRIBUTE_NAME_PARAMETER = "guacConfigParameter";
+    
+    /**
+     * The LDAP attribute name that provides group-based access control for
+     * Guacamole connection objects.
+     */
+    public static final String LDAP_ATTRIBUTE_NAME_GROUPS = "seeAlso";
+    
+    /**
+     * A list of all attribute names that could be associated with a Guacamole
+     * connection object in LDAP.
+     */
+    public static final Collection<String> GUAC_CONFIG_LDAP_ATTRIBUTES =
+            Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+                    LDAP_ATTRIBUTE_NAME_ID,
+                    LDAP_ATTRIBUTE_NAME_PROTOCOL,
+                    LDAP_ATTRIBUTE_NAME_PARAMETER,
+                    LDAP_ATTRIBUTE_NAME_GROUPS
+            )));
+            
+            
 
     /**
      * Returns all Guacamole connections accessible to the user currently bound
@@ -126,16 +171,17 @@ public class ConnectionService {
             // and possibly any groups the user is a member of that are
             // referred to in the seeAlso attribute of the guacConfigGroup.
             List<Entry> results = queryService.search(ldapConnection,
-                    configurationBaseDN, connectionSearchFilter, 0, null);
+                    configurationBaseDN, connectionSearchFilter, 0, GUAC_CONFIG_LDAP_ATTRIBUTES);
 
             // Return a map of all readable connections
             return queryService.asMap(results, (entry) -> {
 
                 // Get common name (CN)
-                Attribute cn = entry.get("cn");
+                Attribute cn = entry.get(LDAP_ATTRIBUTE_NAME_ID);
                 
                 if (cn == null) {
-                    logger.warn("guacConfigGroup is missing a cn.");
+                    logger.warn("{} is missing a {}.",
+                            CONNECTION_LDAP_OBJECT_CLASS, LDAP_ATTRIBUTE_NAME_ID);
                     return null;
                 }
                 
@@ -145,18 +191,19 @@ public class ConnectionService {
                     cnName = cn.getString();
                 }
                 catch (LdapInvalidAttributeValueException e) {
-                    logger.error("Invalid value for CN attribute: {}",
-                            e.getMessage());
+                    logger.error("Invalid value for {} attribute: {}",
+                            LDAP_ATTRIBUTE_NAME_ID, e.getMessage());
                     logger.debug("LDAP exception while getting CN attribute.", e);
                     return null;
                 }
 
                 // Get associated protocol
-                Attribute protocol = entry.get("guacConfigProtocol");
+                Attribute protocol = entry.get(LDAP_ATTRIBUTE_NAME_PROTOCOL);
                 if (protocol == null) {
-                    logger.warn("guacConfigGroup \"{}\" is missing the "
-                              + "required \"guacConfigProtocol\" attribute.",
-                            cnName);
+                    logger.warn("{} \"{}\" is missing the "
+                              + "required \"{}\" attribute.",
+                            CONNECTION_LDAP_OBJECT_CLASS,
+                            cnName, LDAP_ATTRIBUTE_NAME_PROTOCOL);
                     return null;
                 }
 
@@ -173,7 +220,7 @@ public class ConnectionService {
                 }
 
                 // Get parameters, if any
-                Attribute parameterAttribute = entry.get("guacConfigParameter");
+                Attribute parameterAttribute = entry.get(LDAP_ATTRIBUTE_NAME_PARAMETER);
                 if (parameterAttribute != null) {
 
                     // For each parameter
@@ -256,7 +303,7 @@ public class ConnectionService {
         AndNode searchFilter = new AndNode();
 
         // Add the prefix to the search filter, prefix filter searches for guacConfigGroups with the userDN as the member attribute value
-        searchFilter.addNode(new EqualityNode("objectClass","guacConfigGroup"));
+        searchFilter.addNode(new EqualityNode("objectClass", CONNECTION_LDAP_OBJECT_CLASS));
         
         // Apply group filters
         OrNode groupFilter = new OrNode();
@@ -268,7 +315,7 @@ public class ConnectionService {
         List<Entry> userGroups = userGroupService.getParentUserGroupEntries(ldapConnection, userDN);
         if (!userGroups.isEmpty()) {
             userGroups.forEach(entry ->
-                groupFilter.addNode(new EqualityNode("seeAlso",entry.getDn().toString()))
+                groupFilter.addNode(new EqualityNode(LDAP_ATTRIBUTE_NAME_GROUPS,entry.getDn().toString()))
             );
         }
 

@@ -22,6 +22,8 @@ package org.apache.guacamole.auth.ldap.user;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import org.apache.directory.api.ldap.model.entry.Entry;
@@ -83,12 +85,15 @@ public class UserService {
             throws GuacamoleException {
 
         // Retrieve all visible user objects
-        Collection<String> attributes = confService.getUsernameAttributes();
+        Collection<String> usernameAttrs = confService.getUsernameAttributes();
+        Collection<String> attributes = new HashSet<>(usernameAttrs);
+        attributes.addAll(confService.getAttributes());
         List<Entry> results = queryService.search(ldapConnection,
                 confService.getUserBaseDN(),
                 confService.getUserSearchFilter(),
-                attributes,
-                null);
+                usernameAttrs,
+                null,
+                attributes);
 
         // Convert retrieved users to map of identifier to Guacamole user object
         return queryService.asMap(results, entry -> {
@@ -142,7 +147,8 @@ public class UserService {
                 confService.getUserBaseDN(),
                 confService.getUserSearchFilter(),
                 confService.getUsernameAttributes(),
-                username);
+                username,
+                Collections.singletonList("dn"));
 
         // Build list of all DNs for retrieved users
         List<Dn> userDNs = new ArrayList<>(results.size());
