@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.mysql.conf;
 
+import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.properties.EnumGuacamoleProperty.PropertyValue;
 
 /**
@@ -31,11 +32,39 @@ public enum MySQLDriver {
      * MySQL driver.
      */
     @PropertyValue("mysql")
-    MYSQL,
+    MYSQL("com.mysql.jdbc.Driver"),
 
     /**
      * MariaDB driver.
      */
     @PropertyValue("mariadb")
-    MARIADB;
+    MARIADB("org.mariadb.jdbc.Driver");
+
+    /**
+     * The name of the JDBC driver class.
+     */
+    private final String driverClass;
+
+    /**
+     * Creates a new MySQLDriver that points to the given Java class as the
+     * entrypoint of the JDBC driver.
+     *
+     * @param classname
+     *     The name of the JDBC driver class.
+     */
+    private MySQLDriver(String classname) {
+        this.driverClass = classname;
+    }
+
+    /**
+     * Returns whether this MySQL JDBC driver is installed and can be found
+     * within the Java classpath.
+     *
+     * @return
+     *     true if this MySQL JDBC driver is installed, false otherwise.
+     */
+    public boolean isInstalled() {
+        return JDBCEnvironment.isClassDefined(driverClass);
+    }
+
 }
