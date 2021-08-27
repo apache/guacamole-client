@@ -192,4 +192,24 @@ public abstract class JDBCEnvironment extends DelegatingEnvironment {
      */
     public abstract String getPassword() throws GuacamoleException;
 
+    /**
+     * Returns whether the given Java class is defined within the classpath.
+     *
+     * @param classname
+     *     The name of the Java class to check.
+     *
+     * @return
+     *     true if the given Java class is present within the classpath, false
+     *     otherwise.
+     */
+    public static boolean isClassDefined(String classname) {
+        try {
+            Class.forName(classname, false, JDBCEnvironment.class.getClassLoader());
+            return true;
+        }
+        catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
 }

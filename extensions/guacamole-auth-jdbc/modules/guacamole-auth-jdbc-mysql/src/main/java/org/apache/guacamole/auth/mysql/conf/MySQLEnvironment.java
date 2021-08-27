@@ -54,9 +54,10 @@ public class MySQLEnvironment extends JDBCEnvironment {
     private static final MySQLVersion MYSQL_SUPPORTS_CTE = new MySQLVersion(8, 0, 1, false);
 
     /**
-     * The default MySQL-compatible driver to use, if not specified.
+     * The default MySQL-compatible driver to use, if not specified and not
+     * automatically detected.
      */
-    private static final MySQLDriver DEFAULT_DRIVER = MySQLDriver.MYSQL;
+    private static final MySQLDriver FALLBACK_DEFAULT_DRIVER = MySQLDriver.MYSQL;
     
     /**
      * The default host to connect to, if MYSQL_HOSTNAME is not specified.
@@ -178,8 +179,10 @@ public class MySQLEnvironment extends JDBCEnvironment {
 
     /**
      * Returns the MySQL driver that will be used to talk to the MySQL-compatible
-     * database server hosting the Guacamole Client database.  If unspecified
-     * a default value of MySQL will be used.
+     * database server hosting the Guacamole database. If unspecified, the
+     * installed MySQL driver will be automatically detected by inspecting the
+     * classes available in the classpath. If automatic detection fails, the
+     * "MySQL Connector/J" driver will be assumed.
      * 
      * @return
      *     The MySQL driver that will be used to communicate with the MySQL-
@@ -189,10 +192,30 @@ public class MySQLEnvironment extends JDBCEnvironment {
      *     If guacamole.properties cannot be parsed.
      */
     public MySQLDriver getMySQLDriver() throws GuacamoleException {
-        return getProperty(
-            MySQLGuacamoleProperties.MYSQL_DRIVER,
-            DEFAULT_DRIVER
-        );
+
+        // Use any explicitly-specified driver
+        MySQLDriver driver = getProperty(MySQLGuacamoleProperties.MYSQL_DRIVER);
+        if (driver != null)
+            return driver;
+
+        // Attempt autodetection based on presence of JDBC driver within
+        // classpath...
+
+        if (MySQLDriver.MARIADB.isInstalled()) {
+            logger.info("Installed JDBC driver for MySQL/MariaDB detected as \"MariaDB Connector/J\".");
+            return MySQLDriver.MARIADB;
+        }
+
+        if (MySQLDriver.MYSQL.isInstalled()) {
+            logger.info("Installed JDBC driver for MySQL/MariaDB detected as \"MySQL Connector/J\".");
+            return MySQLDriver.MYSQL;
+        }
+
+        // Fallback to MySQL Connector/J if nothing can be found
+        logger.warn("JDBC driver for MySQL/MariaDB couuld not be detected "
+                + "and might not be installed. Assuming MySQL Connector/J...");
+        return FALLBACK_DEFAULT_DRIVER;
+
     }
     
     /**
