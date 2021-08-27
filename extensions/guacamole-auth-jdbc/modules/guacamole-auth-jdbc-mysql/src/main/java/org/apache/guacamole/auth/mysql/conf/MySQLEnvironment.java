@@ -25,6 +25,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.TimeZone;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,12 +54,6 @@ public class MySQLEnvironment extends JDBCEnvironment {
      */
     private static final MySQLVersion MYSQL_SUPPORTS_CTE = new MySQLVersion(8, 0, 1, false);
 
-    /**
-     * The default MySQL-compatible driver to use, if not specified and not
-     * automatically detected.
-     */
-    private static final MySQLDriver FALLBACK_DEFAULT_DRIVER = MySQLDriver.MYSQL;
-    
     /**
      * The default host to connect to, if MYSQL_HOSTNAME is not specified.
      */
@@ -181,15 +176,15 @@ public class MySQLEnvironment extends JDBCEnvironment {
      * Returns the MySQL driver that will be used to talk to the MySQL-compatible
      * database server hosting the Guacamole database. If unspecified, the
      * installed MySQL driver will be automatically detected by inspecting the
-     * classes available in the classpath. If automatic detection fails, the
-     * "MySQL Connector/J" driver will be assumed.
+     * classes available in the classpath.
      * 
      * @return
      *     The MySQL driver that will be used to communicate with the MySQL-
      *     compatible server.
      * 
      * @throws GuacamoleException 
-     *     If guacamole.properties cannot be parsed.
+     *     If guacamole.properties cannot be parsed, or if no MySQL-compatible
+     *     JDBC driver is present.
      */
     public MySQLDriver getMySQLDriver() throws GuacamoleException {
 
@@ -211,10 +206,8 @@ public class MySQLEnvironment extends JDBCEnvironment {
             return MySQLDriver.MYSQL;
         }
 
-        // Fallback to MySQL Connector/J if nothing can be found
-        logger.warn("JDBC driver for MySQL/MariaDB couuld not be detected "
-                + "and might not be installed. Assuming MySQL Connector/J...");
-        return FALLBACK_DEFAULT_DRIVER;
+        // No driver found at all
+        throw new GuacamoleServerException("No JDBC driver for MySQL/MariaDB is installed.");
 
     }
     
