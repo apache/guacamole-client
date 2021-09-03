@@ -53,6 +53,9 @@
         <module>guacamole-history-recording-storage</module>
         <module>guacamole-vault</module>
 
+        <!-- Utility extensions -->
+        <module>guacamole-display-statistics</module>
+
     </modules>
 
     <build>
