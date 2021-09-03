@@ -113,6 +113,17 @@ Guacamole.Display = function() {
     this.cursorY = 0;
 
     /**
+     * The number of milliseconds over which display rendering statistics
+     * should be gathered, dispatching {@link #onstatistics} events as those
+     * statistics are available. If set to zero, no statistics will be
+     * gathered.
+     *
+     * @default 0
+     * @type {!number}
+     */
+    this.statisticWindow = 0;
+
+    /**
      * Fired when the default layer (and thus the entire Guacamole display)
      * is resized.
      * 
@@ -141,6 +152,18 @@ Guacamole.Display = function() {
      *     The Y-coordinate of the cursor hotspot.
      */
     this.oncursor = null;
+
+    /**
+     * Fired whenever performance statistics are available for recently-
+     * rendered frames. This event will fire only if {@link #statisticWindow}
+     * is non-zero.
+     *
+     * @event
+     * @param {!Guacamole.Display.Statistics} stats
+     *     An object containing general rendering performance statistics for
+     *     the remote desktop, Guacamole server, and Guacamole client.
+     */
+    this.onstatistics = null;
 
     /**
      * The queue of all pending Tasks. Tasks will be run in order, with new
@@ -186,6 +209,10 @@ Guacamole.Display = function() {
      */
     var syncFlush = function syncFlush() {
 
+        var localTimestamp = 0;
+        var remoteTimestamp = 0;
+
+        var renderedLogicalFrames = 0;
         var rendered_frames = 0;
 
         // Draw all pending frames, if ready
@@ -196,12 +223,19 @@ Guacamole.Display = function() {
                 break;
 
             frame.flush();
+
+            localTimestamp = frame.localTimestamp;
+            remoteTimestamp = frame.remoteTimestamp;
+            renderedLogicalFrames += frame.logicalFrames;
             rendered_frames++;
 
         } 
 
         // Remove rendered frames from array
         frames.splice(0, rendered_frames);
+
+        if (rendered_frames)
+            notifyFlushed(localTimestamp, remoteTimestamp, renderedLogicalFrames);
 
     };
 
@@ -225,8 +259,11 @@ Guacamole.Display = function() {
 
             // Flush the next frame only if it is ready (not awaiting
             // completion of some asynchronous operation like an image load)
-            if (frames[0].isReady())
-                frames.shift().flush();
+            if (frames[0].isReady()) {
+                var frame = frames.shift();
+                frame.flush();
+                notifyFlushed(frame.localTimestamp, frame.remoteTimestamp, frame.logicalFrames);
+            }
 
             // Request yet another animation frame if frames remain to be
             // flushed
@@ -238,6 +275,101 @@ Guacamole.Display = function() {
         // Begin flushing frames if not already waiting to render a frame
         if (!inProgressFrame)
             inProgressFrame = window.requestAnimationFrame(continueFlush);
+
+    };
+
+    /**
+     * Recently-gathered display render statistics, as made available by calls
+     * to notifyFlushed(). The contents of this array will be trimmed to
+     * contain only up to {@link #statisticWindow} milliseconds of statistics.
+     *
+     * @private
+     * @type {Guacamole.Display.Statistics[]}
+     */
+    var statistics = [];
+
+    /**
+     * Notifies that one or more frames have been successfully rendered
+     * (flushed) to the display.
+     *
+     * @private
+     * @param {!number} localTimestamp
+     *     The local timestamp of the point in time at which the most recent,
+     *     flushed frame was received by the display, in milliseconds since the
+     *     Unix Epoch.
+     *
+     * @param {!number} remoteTimestamp
+     *     The remote timestamp of sync instruction associated with the most
+     *     recent, flushed frame received by the display. This timestamp is in
+     *     milliseconds, but is arbitrary, having meaning only relative to
+     *     other timestamps in the same connection.
+     *
+     * @param {!number} logicalFrames
+     *     The number of remote desktop frames that were flushed.
+     */
+    var notifyFlushed = function notifyFlushed(localTimestamp, remoteTimestamp, logicalFrames) {
+
+        // Ignore if statistics are not being gathered
+        if (!guac_display.statisticWindow)
+            return;
+
+        var current = new Date().getTime();
+
+        // Find the first statistic that is still within the configured time
+        // window
+        for (var first = 0; first < statistics.length; first++) {
+            if (current - statistics[first].timestamp <= guac_display.statisticWindow)
+                break;
+        }
+
+        // Remove all statistics except those within the time window
+        statistics.splice(0, first - 1);
+
+        // Record statistics for latest frame
+        statistics.push({
+            localTimestamp : localTimestamp,
+            remoteTimestamp : remoteTimestamp,
+            timestamp : current,
+            frames : logicalFrames
+        });
+
+        // Determine the actual time interval of the available statistics (this
+        // will not perfectly match the configured interval, which is an upper
+        // bound)
+        var statDuration = (statistics[statistics.length - 1].timestamp - statistics[0].timestamp) / 1000;
+
+        // Determine the amount of time that elapsed remotely (within the
+        // remote desktop)
+        var remoteDuration = (statistics[statistics.length - 1].remoteTimestamp - statistics[0].remoteTimestamp) / 1000;
+
+        // Calculate the number of frames that have been rendered locally
+        // within the configured time interval
+        var localFrames = statistics.length;
+
+        // Calculate the number of frames actually received from the remote
+        // desktop by the Guacamole server
+        var remoteFrames = statistics.reduce(function sumFrames(prev, stat) {
+            return prev + stat.frames;
+        }, 0);
+
+        // Calculate the number of frames that the Guacamole server had to
+        // drop or combine with other frames
+        var drops = statistics.reduce(function sumDrops(prev, stat) {
+            return prev + Math.max(0, stat.frames - 1);
+        }, 0);
+
+        // Produce lag and FPS statistics from above raw measurements
+        var stats = new Guacamole.Display.Statistics({
+            processingLag : current - localTimestamp,
+            desktopFps : (remoteDuration && remoteFrames) ? remoteFrames / remoteDuration : null,
+            clientFps : statDuration ? localFrames / statDuration : null,
+            serverFps : remoteDuration ? localFrames / remoteDuration : null,
+            dropRate : remoteDuration ? drops / remoteDuration : null
+        });
+
+        // Notify of availability of new statistics
+        if (guac_display.onstatistics)
+            guac_display.onstatistics(stats);
 
     };
 
@@ -281,8 +413,43 @@ Guacamole.Display = function() {
      *
      * @param {!Task[]} tasks
      *     The set of tasks which must be executed to render this frame.
+     *
+     * @param {number} [timestamp]
+     *     The remote timestamp of sync instruction associated with this frame.
+     *     This timestamp is in milliseconds, but is arbitrary, having meaning
+     *     only relative to other remote timestamps in the same connection. If
+     *     omitted, a compatible but local timestamp will be used instead.
+     *
+     * @param {number} [logicalFrames=0]
+     *     The number of remote desktop frames that were combined to produce
+     *     this frame, or zero if this value is unknown or inapplicable.
      */
-    function Frame(callback, tasks) {
+    var Frame = function Frame(callback, tasks, timestamp, logicalFrames) {
+
+        /**
+         * The local timestamp of the point in time at which this frame was
+         * received by the display, in milliseconds since the Unix Epoch.
+         *
+         * @type {!number}
+         */
+        this.localTimestamp = new Date().getTime();
+
+        /**
+         * The remote timestamp of sync instruction associated with this frame.
+         * This timestamp is in milliseconds, but is arbitrary, having meaning
+         * only relative to other remote timestamps in the same connection.
+         *
+         * @type {!number}
+         */
+        this.remoteTimestamp = timestamp || this.localTimestamp;
+
+        /**
+         * The number of remote desktop frames that were combined to produce
+         * this frame. If unknown or not applicable, this will be zero.
+         *
+         * @type {!number}
+         */
+        this.logicalFrames = logicalFrames || 0;
 
         /**
          * Cancels rendering of this frame and all associated tasks. The
@@ -337,7 +504,7 @@ Guacamole.Display = function() {
 
         };
 
-    }
+    };
 
     /**
      * A container for an task handler. Each operation which must be ordered
@@ -514,11 +681,20 @@ Guacamole.Display = function() {
      * @param {function} [callback]
      *     The function to call when this frame is flushed. This may happen
      *     immediately, or later when blocked tasks become unblocked.
+     *
+     * @param {number} timestamp
+     *     The remote timestamp of sync instruction associated with this frame.
+     *     This timestamp is in milliseconds, but is arbitrary, having meaning
+     *     only relative to other remote timestamps in the same connection.
+     *
+     * @param {number} logicalFrames
+     *     The number of remote desktop frames that were combined to produce
+     *     this frame.
      */
-    this.flush = function(callback) {
+    this.flush = function(callback, timestamp, logicalFrames) {
 
         // Add frame, reset tasks
-        frames.push(new Frame(callback, tasks));
+        frames.push(new Frame(callback, tasks, timestamp, logicalFrames));
         tasks = [];
 
         // Attempt flush
@@ -1938,3 +2114,79 @@ Guacamole.Display.VisibleLayer = function(width, height) {
  * @type {!number}
  */
 Guacamole.Display.VisibleLayer.__next_id = 0;
+
+/**
+ * A set of Guacamole display performance statistics, describing the speed at
+ * which the remote desktop, Guacamole server, and Guacamole client are
+ * rendering frames.
+ *
+ * @constructor
+ * @param {Guacamole.Display.Statistics|Object} [template={}]
+ *     The object whose properties should be copied within the new
+ *     Guacamole.Display.Statistics.
+ */
+Guacamole.Display.Statistics = function Statistics(template) {
+
+    template = template || {};
+
+    /**
+     * The amount of time that the Guacamole client is taking to render
+     * individual frames, in milliseconds, if known. If this value is unknown,
+     * such as if the there are insufficient frame statistics recorded to
+     * calculate this value, this will be null.
+     *
+     * @type {?number}
+     */
+    this.processingLag = template.processingLag;
+
+    /**
+     * The framerate of the remote desktop currently being viewed within the
+     * relevant Gucamole.Display, independent of Guacamole, in frames per
+     * second. This represents the speed at which the remote desktop is
+     * producing frame data for the Guacamole server to consume. If this
+     * value is unknown, such as if the remote desktop server does not actually
+     * define frame boundaries, this will be null.
+     *
+     * @type {?number}
+     */
+    this.desktopFps = template.desktopFps;
+
+    /**
+     * The rate at which the Guacamole server is generating frames for the
+     * Guacamole client to consume, in frames per second. If the Guacamole
+     * server is correctly adjusting for variance in client/browser processing
+     * power, this rate should closely match the client rate, and should remain
+     * independent of any network latency. If this value is unknown, such as if
+     * the there are insufficient frame statistics recorded to calculate this
+     * value, this will be null.
+     *
+     * @type {?number}
+     */
+    this.serverFps = template.serverFps;
+
+    /**
+     * The rate at which the Guacamole client is consuming frames generated by
+     * the Guacamole server, in frames per second. If the Guacamole server is
+     * correctly adjusting for variance in client/browser processing power,
+     * this rate should closely match the server rate, regardless of any
+     * latency on the network between the server and client. If this value is
+     * unknown, such as if the there are insufficient frame statistics recorded
+     * to calculate this value, this will be null.
+     *
+     * @type {?number}
+     */
+    this.clientFps = template.clientFps;
+
+    /**
+     * The rate at which the Guacamole server is dropping or combining frames
+     * received from the remote desktop server to compensate for variance in
+     * client/browser processing power, in frames per second. This value may
+     * also be non-zero if the server is compensating for variances in its own
+     * processing power, or relative slowness in image compression vs. the rate
+     * that inbound frames are received. If this value is unknown, such as if
+     * the remote desktop server does not actually define frame boundaries,
+     * this will be null.
+     */
+    this.dropRate = template.dropRate;
+
+};
