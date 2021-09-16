@@ -23,7 +23,7 @@
 ##
 ## Automatically configures and starts Guacamole under Tomcat. Guacamole's
 ## guacamole.properties file will be automatically generated based on the
-## linked database container (either MySQL or PostgreSQL) and the linked guacd
+## linked database container (either MySQL,PostgreSQL or SQLServer) and the linked guacd
 ## container. The Tomcat process will ultimately replace the process of this
 ## script, running in the foreground until terminated.
 ##
@@ -400,6 +400,142 @@ END
     # Add required .jar files to GUACAMOLE_LIB and GUACAMOLE_EXT
     ln -s /opt/guacamole/postgresql/postgresql-*.jar "$GUACAMOLE_LIB"
     ln -s /opt/guacamole/postgresql/guacamole-auth-*.jar "$GUACAMOLE_EXT"
+
+}
+
+# Print error message regarding missing required variables for SQLServer authentication
+sqlserver_missing_vars() {
+    cat <<END
+FATAL: Missing required environment variables
+-------------------------------------------------------------------------------
+If using a SQLServer database, you must provide each of the following
+environment variables or their corresponding Docker secrets by appending _FILE
+to the environment variable, and setting the value to the path of the
+corresponding secret:
+
+    SQLSERVER_USER     The user to authenticate as when connecting to
+                       SQLServer.
+
+    SQLSERVER_PASSWORD The password to use when authenticating with SQLServer
+                       as SQLSERVER_USER.
+
+    SQLSERVER_DATABASE The name of the SQLServer database to use for Guacamole
+                       authentication.
+END
+    exit 1;
+}
+
+##
+## Adds properties to guacamole.properties which select the SQLServer
+## authentication provider, and configure it to connect to the linked
+## SQLServer container. If a SQLServer database is explicitly specified using
+## the SQLSERVER_HOSTNAME and SQLSERVER_PORT environment variables, that will
+## be used instead of a linked container.
+##
+associate_sqlserver() {
+
+    # Use linked container if specified
+    if [ -n "$SQLSERVER_NAME" ]; then
+        SQLSERVER_HOSTNAME="$SQLSERVER_PORT_1433_TCP_ADDR"
+        SQLSERVER_PORT="$SQLSERVER_PORT_1433_TCP_PORT"
+    fi
+
+    # Use default port if none specified
+    SQLSERVER_PORT="${SQLSERVER_PORT-1433}"
+
+    # Verify required connection information is present
+    if [ -z "$SQLSERVER_HOSTNAME" -o -z "$SQLSERVER_PORT" ]; then
+        cat <<END
+FATAL: Missing SQLSERVER_HOSTNAME or "sqlserver" link.
+-------------------------------------------------------------------------------
+If using a SQLServer database, you must either:
+
+(a) Explicitly link that container with the link named "sqlserver".
+
+(b) If not using a Docker container for SQLServer, explicitly specify the TCP
+    connection to your database using the following environment variables:
+
+    SQLSERVER_HOSTNAME The hostname or IP address of the SQLServer server. If
+                       not using a SQLServer Docker container and
+                       corresponding link, this environment variable is
+                       *REQUIRED*.
+
+    SQLSERVER_PORT     The port on which the SQLServer server is listening for
+                       TCP connections. This environment variable is option. If
+                       omitted, the standard SQLServer port of 1433 will be
+                       used.
+END
+        exit 1;
+    fi
+
+    # Verify that the required Docker secrets are present, else, default to their normal environment variables
+    if [ -n "$SQLSERVER_USER_FILE" ]; then
+        set_property "sqlserver-username" "`cat "$SQLSERVER_USER_FILE"`"
+    elif [ -n "$SQLSERVER_USER" ]; then
+        set_property "sqlserver-username" "$SQLSERVER_USER"
+    else
+        sqlserver_missing_vars
+        exit 1;
+    fi
+
+    if [ -n "$SQLSERVER_PASSWORD_FILE" ]; then
+        set_property "sqlserver-password" "`cat "$SQLSERVER_PASSWORD_FILE"`"
+    elif [ -n "$SQLSERVER_PASSWORD" ]; then
+        set_property "sqlserver-password" "$SQLSERVER_PASSWORD"
+    else
+        sqlserver_missing_vars
+        exit 1;
+    fi
+
+    if [ -n "$SQLSERVER_DATABASE_FILE" ]; then
+        set_property "sqlserver-database" "`cat "$SQLSERVER_DATABASE_FILE"`"
+    elif [ -n "$SQLSERVER_DATABASE" ]; then
+        set_property "sqlserver-database" "$SQLSERVER_DATABASE"
+    else
+        sqlserver_missing_vars
+        exit 1;
+    fi
+
+    # Update config file
+    set_property "sqlserver-hostname" "$SQLSERVER_HOSTNAME"
+    set_property "sqlserver-port"     "$SQLSERVER_PORT"
+    set_property "sqlserver-driver"   "microsoft2005"
+
+    set_optional_property               \
+        "sqlserver-absolute-max-connections" \
+        "$SQLSERVER_ABSOLUTE_MAX_CONNECTIONS"
+
+    set_optional_property                    \
+        "sqlserver-default-max-connections" \
+        "$SQLSERVER_DEFAULT_MAX_CONNECTIONS"
+
+    set_optional_property                          \
+        "sqlserver-default-max-group-connections" \
+        "$SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS"
+
+    set_optional_property                             \
+        "sqlserver-default-max-connections-per-user" \
+        "$SQLSERVER_DEFAULT_MAX_CONNECTIONS_PER_USER"
+
+    set_optional_property                                   \
+        "sqlserver-default-max-group-connections-per-user" \
+        "$SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER"
+
+    set_optional_property          \
+        "sqlserver-user-required" \
+        "$SQLSERVER_USER_REQUIRED"
+
+    set_optional_property                  \
+        "sqlserver-auto-create-accounts"  \
+        "$SQLSERVERQL_AUTO_CREATE_ACCOUNTS"
+
+    set_optional_property      \
+        "sqlserver-instance"  \
+        "$SQLSERVERQL_INSTANCE"
+
+    # Add required .jar files to GUACAMOLE_LIB and GUACAMOLE_EXT
+    ln -s /opt/guacamole/sqlserver/mssql-jdbc-*.jar "$GUACAMOLE_LIB"
+    ln -s /opt/guacamole/sqlserver/guacamole-auth-*.jar "$GUACAMOLE_EXT"
 
 }
 
@@ -813,6 +949,12 @@ if [ -n "$POSTGRES_DATABASE" -o -n "$POSTGRES_DATABASE_FILE" ]; then
     INSTALLED_AUTH="$INSTALLED_AUTH postgres"
 fi
 
+# Use SQLServer if database specified
+if [ -n "$SQLSERVER_DATABASE" -o -n "$SQLSERVER_DATABASE_FILE" ]; then
+    associate_sqlserver
+    INSTALLED_AUTH="$INSTALLED_AUTH sqlserver"
+fi
+
 # Use LDAP directory if specified
 if [ -n "$LDAP_HOSTNAME" ]; then
     associate_ldap
@@ -840,10 +982,11 @@ if [ -z "$INSTALLED_AUTH" -a -z "$GUACAMOLE_HOME_TEMPLATE" ]; then
 FATAL: No authentication configured
 -------------------------------------------------------------------------------
 The Guacamole Docker container needs at least one authentication mechanism in
-order to function, such as a MySQL database, PostgreSQL database, LDAP
-directory or RADIUS server. Please specify at least the MYSQL_DATABASE or
-POSTGRES_DATABASE environment variables, or check Guacamole's Docker
-documentation regarding configuring LDAP and/or custom extensions.
+order to function, such as a MySQL database, PostgreSQL database, SQLServer
+database, LDAP directory or RADIUS server. Please specify at least the
+MYSQL_DATABASE or POSTGRES_DATABASE or SQLSERVER_DATABASE environment variables,
+or check Guacamole's Docker documentation regarding configuring LDAP and/or
+custom extensions.
 END
     exit 1;
 fi

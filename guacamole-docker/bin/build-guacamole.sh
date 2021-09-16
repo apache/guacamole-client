@@ -111,6 +111,20 @@ echo "Downloading PostgreSQL JDBC driver ..."
 curl -L "https://jdbc.postgresql.org/download/postgresql-9.4-1201.jdbc41.jar" > "$DESTINATION/postgresql/postgresql-9.4-1201.jdbc41.jar"
 
 #
+# Download SQL Server JDBC driver
+#
+
+echo "Downloading SQL Server JDBC driver ..."
+curl -L "https://go.microsoft.com/fwlink/?linkid=2168494&clcid=0x409" | \
+tar -xz                        \
+    -C "$DESTINATION/sqlserver/"   \
+    --wildcards                \
+    --no-anchored              \
+    --no-wildcards-match-slash \
+    --strip-components=2       \
+    "mssql-jdbc-*.jre8.jar"
+
+#
 # Copy LDAP auth extension and schema modifications
 #
 
