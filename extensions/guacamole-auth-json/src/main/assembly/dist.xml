@@ -40,6 +40,12 @@
             <directory>target/licenses</directory>
         </fileSet>
 
+        <!-- Include reference implementation -->
+        <fileSet>
+            <outputDirectory>doc</outputDirectory>
+            <directory>doc</directory>
+        </fileSet>
+
         <!-- Include extension .jar -->
         <fileSet>
             <directory>target</directory>
