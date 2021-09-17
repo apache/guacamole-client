@@ -133,11 +133,11 @@ will be in the Tomcat logs, however.
 Reference implementation
 ------------------------
 
-The source includes a shell script, `doc/encrypt-json.sh`, which uses the
-OpenSSL command-line utility to encrypt and sign JSON in the manner that
-guacamole-auth-json requires. It is thoroughly commented and should work well
-as a reference implementation, for testing, and as a point of comparison for
-development. The script is run as:
+The included shell script, `doc/encrypt-json.sh`, uses the OpenSSL command-line
+utility to encrypt and sign JSON in the manner that guacamole-auth-json
+requires. It is thoroughly commented and should work well as a reference
+implementation, for testing, and as a point of comparison for development. The
+script is run as:
 
     $ ./encrypt-json.sh HEX_ENCRYPTION_KEY file-to-sign-and-encrypt.json
 
