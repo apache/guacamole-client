@@ -39,7 +39,7 @@ public abstract class ByteArrayProperty implements GuacamoleProperty<byte[]> {
 
         // Return value parsed from hex
         try {
-            return BaseEncoding.base16().decode(value);
+            return BaseEncoding.base16().decode(value.toUpperCase());
         }
 
         // Fail parse if hex invalid
