@@ -44,7 +44,7 @@ public class DecorationService {
     private List<AuthenticationProvider> authProviders;
 
     /**
-     * Creates a new DecoratedUserContext, invoking the the decorate() function
+     * Creates a new DecoratedUserContext, invoking the decorate() function
      * of all AuthenticationProviders to decorate the provided UserContext.
      * Decoration by each AuthenticationProvider will occur in the order that
      * the AuthenticationProviders were loaded. Only AuthenticationProviders
@@ -94,11 +94,11 @@ public class DecorationService {
     }
 
     /**
-     * Creates a new DecoratedUserContext, invoking the the redecorate()
-     * function of all AuthenticationProviders to reapply decoration. Decoration
-     * by each AuthenticationProvider will occur in the order that the
-     * AuthenticationProviders were loaded. Only AuthenticationProviders which
-     * did not originate the given UserContext will be used.
+     * Creates a new DecoratedUserContext, invoking the redecorate() function
+     * of all AuthenticationProviders to reapply decoration. Decoration by each
+     * AuthenticationProvider will occur in the order that the AuthenticationProviders
+     * were loaded. Only AuthenticationProviders which did not originate the given
+     * UserContext will be used.
      *
      * @param decorated
      *     The DecoratedUserContext associated with an older version of the

@@ -76,11 +76,11 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
     }
 
     /**
-     * Returns the mapper which provides low-level access to the the database
+     * Returns the mapper which provides low-level access to the database
      * models which drive the relation represented by this RelatedObjectSet.
      *
      * @return
-     *     The mapper which provides low-level access to the the database
+     *     The mapper which provides low-level access to the database
      *     models which drive the relation represented by this
      *     RelatedObjectSet.
      */

@@ -205,8 +205,8 @@ Guacamole.Layer = function(width, height) {
      *                   rectangle to fit.
      * @param {Number} y The Y coordinate of the upper-left corner of the
      *                   rectangle to fit.
-     * @param {Number} w The width of the the rectangle to fit.
-     * @param {Number} h The height of the the rectangle to fit.
+     * @param {Number} w The width of the rectangle to fit.
+     * @param {Number} h The height of the rectangle to fit.
      */
     function fitRect(x, y, w, h) {
         

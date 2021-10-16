@@ -160,8 +160,8 @@ public class DecoratedUserContext extends DelegatingUserContext {
     }
 
     /**
-     * Creates a new DecoratedUserContext, invoking the the decorate() function
-     * of the given AuthenticationProvider to decorate the provided, undecorated
+     * Creates a new DecoratedUserContext, invoking the decorate() function of
+     * the given AuthenticationProvider to decorate the provided, undecorated
      * UserContext. If the AuthenticationProvider originated the given
      * UserContext, then the given UserContext is wrapped without any
      * decoration.
@@ -200,7 +200,7 @@ public class DecoratedUserContext extends DelegatingUserContext {
     }
 
     /**
-     * Creates a new DecoratedUserContext, invoking the the decorate() function
+     * Creates a new DecoratedUserContext, invoking the decorate() function
      * of the given AuthenticationProvider to apply an additional layer of
      * decoration to a DecoratedUserContext. If the AuthenticationProvider
      * originated the given UserContext, then the given UserContext is wrapped
@@ -240,12 +240,11 @@ public class DecoratedUserContext extends DelegatingUserContext {
     }
 
     /**
-     * Creates a new DecoratedUserContext, invoking the the redecorate()
-     * function of the given AuthenticationProvider to reapply decoration to the
-     * provided, undecorated UserContext, which has been updated relative to a
-     * past version which was decorated. If the AuthenticationProvider
-     * originated the given UserContext, then the given UserContext is wrapped
-     * without any decoration.
+     * Creates a new DecoratedUserContext, invoking the redecorate() function
+     * of the given AuthenticationProvider to reapply decoration to the provided,
+     * undecorated UserContext, which has been updated relative to a past version
+     * which was decorated. If the AuthenticationProvider originated the given
+     * UserContext, then the given UserContext is wrapped without any decoration.
      *
      * @param decorated
      *     The DecoratedUserContext associated with the older version of the
@@ -281,8 +280,8 @@ public class DecoratedUserContext extends DelegatingUserContext {
     }
 
     /**
-     * Creates a new DecoratedUserContext, invoking the the redecorate()
-     * function of the given AuthenticationProvider to reapply decoration to a
+     * Creates a new DecoratedUserContext, invoking the redecorate() function
+     * of the given AuthenticationProvider to reapply decoration to a
      * DecoratedUserContext which already has at least one layer of decoration
      * applied, and which is associated with a UserContext which was updated
      * relative to a past version which was decorated. If the

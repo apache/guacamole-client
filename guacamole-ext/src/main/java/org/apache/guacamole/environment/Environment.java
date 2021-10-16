@@ -158,8 +158,7 @@ public interface Environment {
      *     connect to guacd.
      *
      * @throws GuacamoleException
-     *     If the the connection information for guacd cannot be
-     *     retrieved.
+     *     If the connection information for guacd cannot be retrieved.
      */
     public GuacamoleProxyConfiguration getDefaultGuacamoleProxyConfiguration()
             throws GuacamoleException;
