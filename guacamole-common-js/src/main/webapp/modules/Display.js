@@ -602,7 +602,7 @@ Guacamole.Display = function() {
      * Draws the image within the given stream at the given coordinates. The
      * image will be loaded automatically, and this and any future operations
      * will wait for the image to finish loading. This function will
-     * automatically choose an approriate method for reading and decoding the
+     * automatically choose an appropriate method for reading and decoding the
      * given image stream, and should be preferred for received streams except
      * where manual decoding of the stream is unavoidable.
      *
