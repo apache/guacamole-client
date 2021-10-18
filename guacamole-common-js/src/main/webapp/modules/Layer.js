@@ -234,7 +234,7 @@ Guacamole.Layer = function(width, height) {
     }
 
     /**
-     * Set to true if this Layer should resize itself to accomodate the
+     * Set to true if this Layer should resize itself to accommodate the
      * dimensions of any drawing operation, and false (the default) otherwise.
      * 
      * Note that setting this property takes effect immediately, and thus may
