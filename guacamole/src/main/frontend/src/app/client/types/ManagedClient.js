@@ -432,7 +432,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                             ManagedClientState.ConnectionState.IDLE);
                         break;
 
-                    // Conneccting
+                    // Connecting
                     case 1:
                         ManagedClientState.setConnectionState(managedClient.clientState,
                             ManagedClientState.ConnectionState.CONNECTING);
@@ -899,7 +899,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      *
      * @returns {boolean}
      *     true if there are any file transfers associated with the
-     *     given client, false otherise.
+     *     given client, false otherwise.
      */
     ManagedClient.hasTransfers = function hasTransfers(client) {
         return !!(client && client.uploads && client.uploads.length);
