@@ -904,7 +904,7 @@ Guacamole.Layer.PLUS  = 0xF;
 
 /**
  * Channel mask for the composite operation "rin".
- * Beware that WebKit-based browsers may leave the contents of the destionation
+ * Beware that WebKit-based browsers may leave the contents of the destination
  * layer where the source layer is transparent, despite the definition of this
  * operation.
  */
@@ -912,7 +912,7 @@ Guacamole.Layer.RIN   = 0x1;
 
 /**
  * Channel mask for the composite operation "in".
- * Beware that WebKit-based browsers may leave the contents of the destionation
+ * Beware that WebKit-based browsers may leave the contents of the destination
  * layer where the source layer is transparent, despite the definition of this
  * operation.
  */
@@ -920,7 +920,7 @@ Guacamole.Layer.IN    = 0x4;
 
 /**
  * Channel mask for the composite operation "out".
- * Beware that WebKit-based browsers may leave the contents of the destionation
+ * Beware that WebKit-based browsers may leave the contents of the destination
  * layer where the source layer is transparent, despite the definition of this
  * operation.
  */
@@ -928,7 +928,7 @@ Guacamole.Layer.OUT   = 0x8;
 
 /**
  * Channel mask for the composite operation "ratop".
- * Beware that WebKit-based browsers may leave the contents of the destionation
+ * Beware that WebKit-based browsers may leave the contents of the destination
  * layer where the source layer is transparent, despite the definition of this
  * operation.
  */
@@ -936,7 +936,7 @@ Guacamole.Layer.RATOP = 0x9;
 
 /**
  * Channel mask for the composite operation "src".
- * Beware that WebKit-based browsers may leave the contents of the destionation
+ * Beware that WebKit-based browsers may leave the contents of the destination
  * layer where the source layer is transparent, despite the definition of this
  * operation.
  */
