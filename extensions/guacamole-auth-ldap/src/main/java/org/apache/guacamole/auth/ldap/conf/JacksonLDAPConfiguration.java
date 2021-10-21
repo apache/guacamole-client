@@ -22,16 +22,13 @@ package org.apache.guacamole.auth.ldap.conf;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
-import org.apache.directory.api.ldap.model.filter.PresenceNode;
 import org.apache.directory.api.ldap.model.message.AliasDerefMode;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleServerException;
 
 /**
  * LDAPConfiguration implementation that is annotated for deserialization by
@@ -190,6 +187,72 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
     @JsonProperty("member-attribute-type")
     private String memberAttributeType;
 
+    /**
+     * The default configuration options for all parameters.
+     */
+    private static final LDAPConfiguration DEFAULT = new DefaultLDAPConfiguration();
+
+    /**
+     * Returns the given value, if non-null. If null, the given default value
+     * is returned.
+     *
+     * @param <T>
+     *     The type of value accepted and returned.
+     *
+     * @param value
+     *     The possibly null value to return if non-null.
+     *
+     * @param defaultValue
+     *     The value to return if the provided value is null.
+     *     
+     * @return
+     *     The provided value, if non-null, otherwise the provided default
+     *     value.
+     */
+    private <T> T withDefault(T value, T defaultValue) {
+        return value != null ? value : defaultValue;
+    }
+
+    /**
+     * Returns the given Integer value as an int, if non-null. If null, the
+     * given int default value is returned. This function is an Integer-specific
+     * variant of {@link #withDefault(java.lang.Object, java.lang.Object)}
+     * which avoids unnecessary boxing/unboxing.
+     *
+     * @param value
+     *     The possibly null value to return if non-null.
+     *
+     * @param defaultValue
+     *     The value to return if the provided value is null.
+     *
+     * @return
+     *     The provided value, if non-null, otherwise the provided default
+     *     value.
+     */
+    private int withDefault(Integer value, int defaultValue) {
+        return value != null ? value : defaultValue;
+    }
+
+    /**
+     * Returns the given Boolean value as an boolean, if non-null. If null, the
+     * given boolean default value is returned. This function is a Boolean-
+     * specific variant of {@link #withDefault(java.lang.Object, java.lang.Object)}
+     * which avoids unnecessary boxing/unboxing.
+     *
+     * @param value
+     *     The possibly null value to return if non-null.
+     *
+     * @param defaultValue
+     *     The value to return if the provided value is null.
+     *
+     * @return
+     *     The provided value, if non-null, otherwise the provided default
+     *     value.
+     */
+    private boolean withDefault(Boolean value, boolean defaultValue) {
+        return value != null ? value : defaultValue;
+    }
+
     @Override
     public String appliesTo(String username) throws GuacamoleException {
 
@@ -204,140 +267,104 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
     }
 
     @Override
-    public String getServerHostname() {
-        return hostname != null ? hostname : "localhost";
+    public String getServerHostname() throws GuacamoleException {
+        return withDefault(hostname, DEFAULT.getServerHostname());
     }
 
     @Override
     public int getServerPort() throws GuacamoleException {
-        return port != null ? port : getEncryptionMethod().DEFAULT_PORT;
+        return withDefault(port, getEncryptionMethod().DEFAULT_PORT);
     }
 
     @Override
-    public List<String> getUsernameAttributes() {
-        return usernameAttributes != null ? usernameAttributes : Collections.singletonList("uid");
+    public List<String> getUsernameAttributes() throws GuacamoleException {
+        return withDefault(usernameAttributes, DEFAULT.getUsernameAttributes());
     }
 
     @Override
     public Dn getUserBaseDN() throws GuacamoleException {
-
-        Dn parsedDn = LDAPGuacamoleProperties.LDAP_USER_BASE_DN.parseValue(userBaseDn);
-        if (parsedDn == null) 
-            throw new GuacamoleServerException("The \"user-base-dn\" property is required for all LDAP servers.");
-
-        return parsedDn;
-
+        return withDefault(LDAPGuacamoleProperties.LDAP_USER_BASE_DN.parseValue(userBaseDn), DEFAULT.getUserBaseDN());
     }
 
     @Override
     public Dn getConfigurationBaseDN() throws GuacamoleException {
-        return LDAPGuacamoleProperties.LDAP_CONFIG_BASE_DN.parseValue(configBaseDn);
+        return withDefault(LDAPGuacamoleProperties.LDAP_CONFIG_BASE_DN.parseValue(configBaseDn), DEFAULT.getConfigurationBaseDN());
     }
 
     @Override
     public List<String> getGroupNameAttributes() throws GuacamoleException {
-        return groupNameAttributes != null ? groupNameAttributes : Collections.singletonList("cn");
+        return withDefault(groupNameAttributes, DEFAULT.getGroupNameAttributes());
     }
 
     @Override
     public Dn getGroupBaseDN() throws GuacamoleException {
-        return LDAPGuacamoleProperties.LDAP_GROUP_BASE_DN.parseValue(groupBaseDn);
+        return withDefault(LDAPGuacamoleProperties.LDAP_GROUP_BASE_DN.parseValue(groupBaseDn), DEFAULT.getGroupBaseDN());
     }
 
     @Override
     public String getSearchBindDN() throws GuacamoleException {
-        return searchBindDn;
+        return withDefault(searchBindDn, DEFAULT.getSearchBindDN());
     }
 
     @Override
     public String getSearchBindPassword() throws GuacamoleException {
-        return searchBindPassword;
+        return withDefault(searchBindPassword, DEFAULT.getSearchBindDN());
     }
 
     @Override
     public EncryptionMethod getEncryptionMethod() throws GuacamoleException {
-
-        EncryptionMethod parsedMethod = LDAPGuacamoleProperties.LDAP_ENCRYPTION_METHOD.parseValue(encryptionMethod);
-        if (parsedMethod == null)
-            return EncryptionMethod.NONE;
-
-        return parsedMethod;
-
+        return withDefault(LDAPGuacamoleProperties.LDAP_ENCRYPTION_METHOD.parseValue(encryptionMethod), DEFAULT.getEncryptionMethod());
     }
 
     @Override
     public int getMaxResults() throws GuacamoleException {
-        return maxSearchResults != null ? maxSearchResults : 1000;
+        return withDefault(maxSearchResults, DEFAULT.getMaxResults());
     }
 
     @Override
     public AliasDerefMode getDereferenceAliases() throws GuacamoleException {
-
-        AliasDerefMode parsedMode = LDAPGuacamoleProperties.LDAP_DEREFERENCE_ALIASES.parseValue(dereferenceAliases);
-        if (parsedMode == null)
-            return AliasDerefMode.NEVER_DEREF_ALIASES;
-
-        return parsedMode;
-
+        return withDefault(LDAPGuacamoleProperties.LDAP_DEREFERENCE_ALIASES.parseValue(dereferenceAliases), DEFAULT.getDereferenceAliases());
     }
 
     @Override
     public boolean getFollowReferrals() throws GuacamoleException {
-        return followReferrals != null ? followReferrals : false;
+        return withDefault(followReferrals, DEFAULT.getFollowReferrals());
     }
 
     @Override
     public int getMaxReferralHops() throws GuacamoleException {
-        return maxReferralHops != null ? maxReferralHops : 5;
+        return withDefault(maxReferralHops, DEFAULT.getMaxReferralHops());
     }
 
     @Override
     public ExprNode getUserSearchFilter() throws GuacamoleException {
-
-        ExprNode parsedFilter = LDAPGuacamoleProperties.LDAP_USER_SEARCH_FILTER.parseValue(userSearchFilter);
-        if (parsedFilter == null)
-            return new PresenceNode("objectClass");
-
-        return parsedFilter;
-
+        return withDefault(LDAPGuacamoleProperties.LDAP_USER_SEARCH_FILTER.parseValue(userSearchFilter), DEFAULT.getUserSearchFilter());
     }
 
     @Override
     public ExprNode getGroupSearchFilter() throws GuacamoleException {
-
-        ExprNode parsedFilter = LDAPGuacamoleProperties.LDAP_GROUP_SEARCH_FILTER.parseValue(groupSearchFilter);
-        if (parsedFilter == null)
-            return new PresenceNode("objectClass");
-
-        return parsedFilter;
-
+        return withDefault(LDAPGuacamoleProperties.LDAP_GROUP_SEARCH_FILTER.parseValue(groupSearchFilter), DEFAULT.getGroupSearchFilter());
     }
 
     @Override
     public int getOperationTimeout() throws GuacamoleException {
-        return operationTimeout != null ? operationTimeout : 30;
+        return withDefault(operationTimeout, DEFAULT.getOperationTimeout());
     }
 
     @Override
     public List<String> getAttributes() throws GuacamoleException {
-        return userAttributes != null ? userAttributes : Collections.<String>emptyList();
+        return withDefault(userAttributes, DEFAULT.getAttributes());
     }
     
     @Override
     public String getMemberAttribute() throws GuacamoleException {
-        return memberAttribute != null ? memberAttribute : "member";
+        return withDefault(memberAttribute, DEFAULT.getMemberAttribute());
     }
 
     @Override
     public MemberAttributeType getMemberAttributeType()
             throws GuacamoleException {
-
-        MemberAttributeType parsedType = LDAPGuacamoleProperties.LDAP_MEMBER_ATTRIBUTE_TYPE.parseValue(memberAttributeType);
-        if (parsedType == null)
-            return MemberAttributeType.DN;
-
-        return parsedType;
-
+        return withDefault(LDAPGuacamoleProperties.LDAP_MEMBER_ATTRIBUTE_TYPE.parseValue(memberAttributeType), DEFAULT.getMemberAttributeType());
     }
 
 }

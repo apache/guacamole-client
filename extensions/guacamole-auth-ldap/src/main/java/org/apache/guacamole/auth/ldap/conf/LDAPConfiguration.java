@@ -49,8 +49,7 @@ public interface LDAPConfiguration {
     String appliesTo(String username) throws GuacamoleException;
     
     /**
-     * Returns the hostname or IP address of the LDAP server. By default, this
-     * will be "localhost".
+     * Returns the hostname or IP address of the LDAP server.
      *
      * @return
      *     The hostname or IP address of the LDAP server.
@@ -76,8 +75,7 @@ public interface LDAPConfiguration {
 
     /**
      * Returns all username attributes which should be used to query and bind
-     * users using the LDAP directory. By default, this will be "uid" - a
-     * common attribute used for this purpose.
+     * users using the LDAP directory.
      *
      * @return
      *     The username attributes which should be used to query and bind users
@@ -118,7 +116,7 @@ public interface LDAPConfiguration {
 
     /**
      * Returns all attributes which should be used to determine the unique
-     * identifier of each user group. By default, this will be "cn".
+     * identifier of each user group.
      *
      * @return
      *     The attributes which should be used to determine the unique
@@ -175,7 +173,7 @@ public interface LDAPConfiguration {
 
     /**
      * Returns the encryption method that should be used when connecting to the
-     * LDAP server. By default, no encryption is used.
+     * LDAP server.
      *
      * @return
      *     The encryption method that should be used when connecting to the
@@ -187,8 +185,7 @@ public interface LDAPConfiguration {
     EncryptionMethod getEncryptionMethod() throws GuacamoleException;
 
     /**
-     * Returns maximum number of results a LDAP query can return. By default,
-     * this will be 1000.
+     * Returns maximum number of results a LDAP query can return.
      *
      * @return
      *     The maximum number of results a LDAP query can return.
@@ -199,8 +196,7 @@ public interface LDAPConfiguration {
     int getMaxResults() throws GuacamoleException;
 
     /**
-     * Returns whether or not LDAP aliases will be dereferenced. By default,
-     * aliases are never dereferenced.
+     * Returns whether or not LDAP aliases will be dereferenced.
      *
      * @return
      *     The LDAP alias dereferencing mode.
@@ -211,8 +207,7 @@ public interface LDAPConfiguration {
     AliasDerefMode getDereferenceAliases() throws GuacamoleException;
 
     /**
-     * Returns whether referrals should be automatically followed. By default,
-     * referrals are not followed.
+     * Returns whether referrals should be automatically followed.
      *
      * @return
      *     Whether referrals should be followed.
@@ -224,8 +219,7 @@ public interface LDAPConfiguration {
     boolean getFollowReferrals() throws GuacamoleException;
 
     /**
-     * Returns the maximum number of referral hops to follow. By default
-     * a maximum of 5 hops is allowed.
+     * Returns the maximum number of referral hops to follow.
      *
      * @return
      *     The maximum number of referral hops to follow.
@@ -237,13 +231,11 @@ public interface LDAPConfiguration {
 
     /**
      * Returns the search filter that should be used when querying the
-     * LDAP server for Guacamole users.  If no filter is specified,
-     * a default of "(objectClass=user)" is returned.
+     * LDAP server for Guacamole users.
      *
      * @return
      *     The search filter that should be used when querying the
-     *     LDAP server for users that are valid in Guacamole, or
-     *     "(objectClass=user)" if not specified.
+     *     LDAP server for users that are valid in Guacamole.
      *
      * @throws GuacamoleException
      *     If the user search filter cannot be retrieved.
@@ -252,13 +244,11 @@ public interface LDAPConfiguration {
 
     /**
      * Returns the search filter that should be used when querying the
-     * LDAP server for Guacamole groups.  If no filter is specified,
-     * a default of "(objectClass=*)" is used.
+     * LDAP server for Guacamole groups.
      *
      * @return
      *     The search filter that should be used when querying the
-     *     LDAP server for groups that are valid in Guacamole, or
-     *     "(objectClass=*)" if not specified.
+     *     LDAP server for groups that are valid in Guacamole.
      *
      * @throws GuacamoleException
      *     If the group search filter cannot be retrieved.
@@ -277,22 +267,22 @@ public interface LDAPConfiguration {
     int getOperationTimeout() throws GuacamoleException;
 
     /**
-     * Returns names for custom LDAP user attributes that should be made
-     * available as parameter tokens. By default, no additional LDAP attributes
-     * will be exposed as parameter tokens.
+     * Returns names of any LDAP user attributes that should be made available
+     * as parameter tokens.
      *
      * @return
      *     A list of all LDAP user attributes that should be made available as
      *     parameter tokens.
      *
      * @throws GuacamoleException
-     *     If the names of custom LDAP user attributes cannot be retrieved.
+     *     If the names of the LDAP user attributes to be exposed as parameter
+     *     tokens cannot be retrieved.
      */
     List<String> getAttributes() throws GuacamoleException;
     
     /**
      * Returns the name of the LDAP attribute used to enumerate members in a
-     * group. By default, this will be "member".
+     * group.
      * 
      * @return
      *     The name of the LDAP attribute to use to enumerate

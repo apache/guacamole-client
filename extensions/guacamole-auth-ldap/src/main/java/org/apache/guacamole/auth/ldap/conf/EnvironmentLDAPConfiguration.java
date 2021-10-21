@@ -19,10 +19,8 @@
 
 package org.apache.guacamole.auth.ldap.conf;
 
-import java.util.Collections;
 import java.util.List;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
-import org.apache.directory.api.ldap.model.filter.PresenceNode;
 import org.apache.directory.api.ldap.model.message.AliasDerefMode;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.guacamole.GuacamoleException;
@@ -38,6 +36,11 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
      * The Guacamole server environment.
      */
     private final Environment environment;
+
+    /**
+     * The default configuration options for all parameters.
+     */
+    private static final LDAPConfiguration DEFAULT = new DefaultLDAPConfiguration();
 
     /**
      * Creates a new EnvironmentLDAPConfiguration that reads its configuration
@@ -59,7 +62,7 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
     public String getServerHostname() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_HOSTNAME,
-            "localhost"
+            DEFAULT.getServerHostname()
         );
     }
 
@@ -75,7 +78,7 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
     public List<String> getUsernameAttributes() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_USERNAME_ATTRIBUTE,
-            Collections.singletonList("uid")
+            DEFAULT.getUsernameAttributes()
         );
     }
 
@@ -89,7 +92,8 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
     @Override
     public Dn getConfigurationBaseDN() throws GuacamoleException {
         return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_CONFIG_BASE_DN
+            LDAPGuacamoleProperties.LDAP_CONFIG_BASE_DN,
+            DEFAULT.getConfigurationBaseDN()
         );
     }
 
@@ -97,28 +101,31 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
     public List<String> getGroupNameAttributes() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_GROUP_NAME_ATTRIBUTE,
-            Collections.singletonList("cn")
+            DEFAULT.getGroupNameAttributes()
         );
     }
 
     @Override
     public Dn getGroupBaseDN() throws GuacamoleException {
         return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_GROUP_BASE_DN
+            LDAPGuacamoleProperties.LDAP_GROUP_BASE_DN,
+            DEFAULT.getGroupBaseDN()
         );
     }
 
     @Override
     public String getSearchBindDN() throws GuacamoleException {
         return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_SEARCH_BIND_DN
+            LDAPGuacamoleProperties.LDAP_SEARCH_BIND_DN,
+            DEFAULT.getSearchBindDN()
         );
     }
 
     @Override
     public String getSearchBindPassword() throws GuacamoleException {
         return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_SEARCH_BIND_PASSWORD
+            LDAPGuacamoleProperties.LDAP_SEARCH_BIND_PASSWORD,
+            DEFAULT.getSearchBindPassword()
         );
     }
 
@@ -126,7 +133,7 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
     public EncryptionMethod getEncryptionMethod() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_ENCRYPTION_METHOD,
-            EncryptionMethod.NONE
+            DEFAULT.getEncryptionMethod()
         );
     }
 
@@ -134,7 +141,7 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
     public int getMaxResults() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_MAX_SEARCH_RESULTS,
-            1000
+            DEFAULT.getMaxResults()
         );
     }
 
@@ -142,7 +149,7 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
     public AliasDerefMode getDereferenceAliases() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_DEREFERENCE_ALIASES,
-            AliasDerefMode.NEVER_DEREF_ALIASES
+            DEFAULT.getDereferenceAliases()
         );
     }
 
@@ -150,7 +157,7 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
     public boolean getFollowReferrals() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_FOLLOW_REFERRALS,
-            false
+            DEFAULT.getFollowReferrals()
         );
     }
 
@@ -158,7 +165,7 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
     public int getMaxReferralHops() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_MAX_REFERRAL_HOPS,
-            5
+            DEFAULT.getMaxReferralHops()
         );
     }
 
@@ -166,7 +173,7 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
     public ExprNode getUserSearchFilter() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_USER_SEARCH_FILTER,
-            new PresenceNode("objectClass")
+            DEFAULT.getUserSearchFilter()
         );
     }
 
@@ -174,7 +181,7 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
     public ExprNode getGroupSearchFilter() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_GROUP_SEARCH_FILTER,
-            new PresenceNode("objectClass")
+            DEFAULT.getGroupSearchFilter()
         );
     }
 
@@ -182,7 +189,7 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
     public int getOperationTimeout() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_OPERATION_TIMEOUT,
-            30
+            DEFAULT.getOperationTimeout()
         );
     }
 
@@ -190,7 +197,7 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
     public List<String> getAttributes() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_USER_ATTRIBUTES,
-            Collections.<String>emptyList()
+            DEFAULT.getAttributes()
         );
     }
     
@@ -198,7 +205,7 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
     public String getMemberAttribute() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_MEMBER_ATTRIBUTE,
-            "member"
+            DEFAULT.getMemberAttribute()
         );
     }
 
@@ -207,7 +214,7 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
             throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_MEMBER_ATTRIBUTE_TYPE,
-            MemberAttributeType.DN
+            DEFAULT.getMemberAttributeType()
         );
     }
 
