@@ -196,7 +196,7 @@ public class AuthenticationProviderService {
             String password) throws GuacamoleException {
 
         // Get relevant LDAP configurations for user
-        Collection<LDAPConfiguration> configs = confService.getLDAPConfigurations(username);
+        Collection<? extends LDAPConfiguration> configs = confService.getLDAPConfigurations(username);
         if (configs.isEmpty()) {
             logger.info("User \"{}\" does not map to any defined LDAP configurations.", username);
             return null;

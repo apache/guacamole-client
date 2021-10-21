@@ -19,17 +19,41 @@
 
 package org.apache.guacamole.auth.ldap.conf;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.inject.Inject;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service for retrieving configuration information regarding LDAP servers.
  */
 public class ConfigurationService {
 
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ConfigurationService.class);
+    
+    /**
+     * ObjectMapper for deserializing YAML.
+     */
+    private final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+
+    /**
+     * The name of the file within GUACAMOLE_HOME that defines each available
+     * LDAP server (if not using guacamole.properties).
+     */
+    private static final String LDAP_SERVERS_YML = "ldap-servers.yml";
+    
     /**
      * The Guacamole server environment.
      */
@@ -54,8 +78,25 @@ public class ConfigurationService {
      *     If the configuration information of the LDAP servers related to the
      *     user having the given username cannot be retrieved due to an error.
      */
-    public Collection<LDAPConfiguration> getLDAPConfigurations(String username) throws GuacamoleException {
+    public Collection<? extends LDAPConfiguration> getLDAPConfigurations(String username) throws GuacamoleException {
+
+        // Read configuration from YAML, if available
+        File ldapServers = new File(environment.getGuacamoleHome(), LDAP_SERVERS_YML);
+        if (ldapServers.exists()) {
+            try {
+                logger.debug("Reading LDAP configuration from \"{}\"...", ldapServers);
+                return mapper.readValue(ldapServers, new TypeReference<Collection<JacksonLDAPConfiguration>>() {});
+            }
+            catch (IOException e) {
+                logger.error("\"{}\" could not be read/parsed: {}", ldapServers, e.getMessage());
+                throw new GuacamoleServerException("Cannot read LDAP configuration from \"" + ldapServers + "\"", e);
+            }
+        }
+
+        // Use guacamole.properties if not using YAML
+        logger.debug("Reading LDAP configuration from guacamole.properties...");
         return Collections.singletonList(new EnvironmentLDAPConfiguration(environment));
+
     }
 
 }
