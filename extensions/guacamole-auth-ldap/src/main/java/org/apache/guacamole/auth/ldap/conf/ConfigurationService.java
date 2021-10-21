@@ -99,8 +99,16 @@ public class ConfigurationService {
             // one concurrent request updates the cache at any given time
             if (currentLastModified > oldLastModified && lastModified.compareAndSet(oldLastModified, currentLastModified)) {
                 try {
+
                     logger.debug("Reading updated LDAP configuration from \"{}\"...", ldapServers);
-                    cachedConfigurations = mapper.readValue(ldapServers, new TypeReference<Collection<JacksonLDAPConfiguration>>() {});
+                    Collection<JacksonLDAPConfiguration> configs = mapper.readValue(ldapServers, new TypeReference<Collection<JacksonLDAPConfiguration>>() {});
+
+                    logger.debug("Reading LDAP configuration defaults from guacamole.properties...");
+                    LDAPConfiguration defaultConfig = new EnvironmentLDAPConfiguration(environment);
+                    configs.forEach((config) -> config.setDefaults(defaultConfig));
+
+                    cachedConfigurations = configs;
+
                 }
                 catch (IOException e) {
                     logger.error("\"{}\" could not be read/parsed: {}", ldapServers, e.getMessage());

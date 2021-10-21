@@ -190,7 +190,7 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
     /**
      * The default configuration options for all parameters.
      */
-    private static final LDAPConfiguration DEFAULT = new DefaultLDAPConfiguration();
+    private LDAPConfiguration defaultConfig = new DefaultLDAPConfiguration();
 
     /**
      * Returns the given value, if non-null. If null, the given default value
@@ -253,6 +253,19 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
         return value != null ? value : defaultValue;
     }
 
+    /**
+     * Sets the LDAPConfiguration that should be used for the default values of
+     * any configuration options omitted from the YAML. If not set, an instance
+     * of {@link DefaultLDAPConfiguration} will be used.
+     *
+     * @param defaultConfig
+     *     The LDAPConfiguration to use for the default values of any omitted
+     *     configuration options.
+     */
+    public void setDefaults(LDAPConfiguration defaultConfig) {
+        this.defaultConfig = defaultConfig;
+    }
+
     @Override
     public String appliesTo(String username) throws GuacamoleException {
 
@@ -268,7 +281,7 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
 
     @Override
     public String getServerHostname() throws GuacamoleException {
-        return withDefault(hostname, DEFAULT.getServerHostname());
+        return withDefault(hostname, defaultConfig.getServerHostname());
     }
 
     @Override
@@ -278,93 +291,93 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
 
     @Override
     public List<String> getUsernameAttributes() throws GuacamoleException {
-        return withDefault(usernameAttributes, DEFAULT.getUsernameAttributes());
+        return withDefault(usernameAttributes, defaultConfig.getUsernameAttributes());
     }
 
     @Override
     public Dn getUserBaseDN() throws GuacamoleException {
-        return withDefault(LDAPGuacamoleProperties.LDAP_USER_BASE_DN.parseValue(userBaseDn), DEFAULT.getUserBaseDN());
+        return withDefault(LDAPGuacamoleProperties.LDAP_USER_BASE_DN.parseValue(userBaseDn), defaultConfig.getUserBaseDN());
     }
 
     @Override
     public Dn getConfigurationBaseDN() throws GuacamoleException {
-        return withDefault(LDAPGuacamoleProperties.LDAP_CONFIG_BASE_DN.parseValue(configBaseDn), DEFAULT.getConfigurationBaseDN());
+        return withDefault(LDAPGuacamoleProperties.LDAP_CONFIG_BASE_DN.parseValue(configBaseDn), defaultConfig.getConfigurationBaseDN());
     }
 
     @Override
     public List<String> getGroupNameAttributes() throws GuacamoleException {
-        return withDefault(groupNameAttributes, DEFAULT.getGroupNameAttributes());
+        return withDefault(groupNameAttributes, defaultConfig.getGroupNameAttributes());
     }
 
     @Override
     public Dn getGroupBaseDN() throws GuacamoleException {
-        return withDefault(LDAPGuacamoleProperties.LDAP_GROUP_BASE_DN.parseValue(groupBaseDn), DEFAULT.getGroupBaseDN());
+        return withDefault(LDAPGuacamoleProperties.LDAP_GROUP_BASE_DN.parseValue(groupBaseDn), defaultConfig.getGroupBaseDN());
     }
 
     @Override
     public String getSearchBindDN() throws GuacamoleException {
-        return withDefault(searchBindDn, DEFAULT.getSearchBindDN());
+        return withDefault(searchBindDn, defaultConfig.getSearchBindDN());
     }
 
     @Override
     public String getSearchBindPassword() throws GuacamoleException {
-        return withDefault(searchBindPassword, DEFAULT.getSearchBindDN());
+        return withDefault(searchBindPassword, defaultConfig.getSearchBindDN());
     }
 
     @Override
     public EncryptionMethod getEncryptionMethod() throws GuacamoleException {
-        return withDefault(LDAPGuacamoleProperties.LDAP_ENCRYPTION_METHOD.parseValue(encryptionMethod), DEFAULT.getEncryptionMethod());
+        return withDefault(LDAPGuacamoleProperties.LDAP_ENCRYPTION_METHOD.parseValue(encryptionMethod), defaultConfig.getEncryptionMethod());
     }
 
     @Override
     public int getMaxResults() throws GuacamoleException {
-        return withDefault(maxSearchResults, DEFAULT.getMaxResults());
+        return withDefault(maxSearchResults, defaultConfig.getMaxResults());
     }
 
     @Override
     public AliasDerefMode getDereferenceAliases() throws GuacamoleException {
-        return withDefault(LDAPGuacamoleProperties.LDAP_DEREFERENCE_ALIASES.parseValue(dereferenceAliases), DEFAULT.getDereferenceAliases());
+        return withDefault(LDAPGuacamoleProperties.LDAP_DEREFERENCE_ALIASES.parseValue(dereferenceAliases), defaultConfig.getDereferenceAliases());
     }
 
     @Override
     public boolean getFollowReferrals() throws GuacamoleException {
-        return withDefault(followReferrals, DEFAULT.getFollowReferrals());
+        return withDefault(followReferrals, defaultConfig.getFollowReferrals());
     }
 
     @Override
     public int getMaxReferralHops() throws GuacamoleException {
-        return withDefault(maxReferralHops, DEFAULT.getMaxReferralHops());
+        return withDefault(maxReferralHops, defaultConfig.getMaxReferralHops());
     }
 
     @Override
     public ExprNode getUserSearchFilter() throws GuacamoleException {
-        return withDefault(LDAPGuacamoleProperties.LDAP_USER_SEARCH_FILTER.parseValue(userSearchFilter), DEFAULT.getUserSearchFilter());
+        return withDefault(LDAPGuacamoleProperties.LDAP_USER_SEARCH_FILTER.parseValue(userSearchFilter), defaultConfig.getUserSearchFilter());
     }
 
     @Override
     public ExprNode getGroupSearchFilter() throws GuacamoleException {
-        return withDefault(LDAPGuacamoleProperties.LDAP_GROUP_SEARCH_FILTER.parseValue(groupSearchFilter), DEFAULT.getGroupSearchFilter());
+        return withDefault(LDAPGuacamoleProperties.LDAP_GROUP_SEARCH_FILTER.parseValue(groupSearchFilter), defaultConfig.getGroupSearchFilter());
     }
 
     @Override
     public int getOperationTimeout() throws GuacamoleException {
-        return withDefault(operationTimeout, DEFAULT.getOperationTimeout());
+        return withDefault(operationTimeout, defaultConfig.getOperationTimeout());
     }
 
     @Override
     public List<String> getAttributes() throws GuacamoleException {
-        return withDefault(userAttributes, DEFAULT.getAttributes());
+        return withDefault(userAttributes, defaultConfig.getAttributes());
     }
     
     @Override
     public String getMemberAttribute() throws GuacamoleException {
-        return withDefault(memberAttribute, DEFAULT.getMemberAttribute());
+        return withDefault(memberAttribute, defaultConfig.getMemberAttribute());
     }
 
     @Override
     public MemberAttributeType getMemberAttributeType()
             throws GuacamoleException {
-        return withDefault(LDAPGuacamoleProperties.LDAP_MEMBER_ATTRIBUTE_TYPE.parseValue(memberAttributeType), DEFAULT.getMemberAttributeType());
+        return withDefault(LDAPGuacamoleProperties.LDAP_MEMBER_ATTRIBUTE_TYPE.parseValue(memberAttributeType), defaultConfig.getMemberAttributeType());
     }
 
 }
