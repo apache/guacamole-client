@@ -67,6 +67,10 @@ public class LDAPConnectionService {
      *     The encryption method that should be used to communicate with the
      *     LDAP server.
      *
+     * @param timeout
+     *     The maximum number of milliseconds to wait for a response from the
+     *     LDAP server.
+     *
      * @return
      *     A new instance of LdapNetworkConnection which uses the given
      *     encryption method to communicate with the LDAP server at the given
@@ -77,11 +81,13 @@ public class LDAPConnectionService {
      *     bug).
      */
     private LdapNetworkConnection createLDAPConnection(String host, int port,
-            EncryptionMethod encryptionMethod) throws GuacamoleException {
+            EncryptionMethod encryptionMethod, int timeout)
+            throws GuacamoleException {
 
         LdapConnectionConfig config = new LdapConnectionConfig();
         config.setLdapHost(host);
         config.setLdapPort(port);
+        config.setTimeout(timeout);
 
         // Map encryption method to proper connection and socket factory
         switch (encryptionMethod) {
@@ -140,7 +146,8 @@ public class LDAPConnectionService {
         return createLDAPConnection(
                 config.getServerHostname(),
                 config.getServerPort(),
-                config.getEncryptionMethod());
+                config.getEncryptionMethod(),
+                config.getNetworkTimeout());
     }
 
     /**
@@ -209,7 +216,8 @@ public class LDAPConnectionService {
         if (port < 1)
             port = encryptionMethod.DEFAULT_PORT;
 
-        return createLDAPConnection(host, port, encryptionMethod);
+        return createLDAPConnection(host, port, encryptionMethod,
+                config.getNetworkTimeout());
 
     }
 

@@ -198,6 +198,11 @@ public class ConnectedLDAPConfiguration implements LDAPConfiguration, AutoClosea
     }
 
     @Override
+    public int getNetworkTimeout() throws GuacamoleException {
+        return config.getNetworkTimeout();
+    }
+
+    @Override
     public List<String> getAttributes() throws GuacamoleException {
         return config.getAttributes();
     }

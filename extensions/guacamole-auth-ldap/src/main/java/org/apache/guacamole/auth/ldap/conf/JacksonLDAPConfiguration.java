@@ -166,6 +166,13 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
     private Integer operationTimeout;
 
     /**
+     * The raw YAML value of {@link LDAPGuacamoleProperties#LDAP_NETWORK_TIMEOUT}.
+     * If not set within the YAML, this will be null.
+     */
+    @JsonProperty("network-timeout")
+    private Integer networkTimeout;
+
+    /**
      * The raw YAML value of {@link LDAPGuacamoleProperties#LDAP_USER_ATTRIBUTES}.
      * If not set within the YAML, this will be null.
      */
@@ -362,6 +369,11 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
     @Override
     public int getOperationTimeout() throws GuacamoleException {
         return withDefault(operationTimeout, defaultConfig.getOperationTimeout());
+    }
+
+    @Override
+    public int getNetworkTimeout() throws GuacamoleException {
+        return withDefault(networkTimeout, defaultConfig.getNetworkTimeout());
     }
 
     @Override

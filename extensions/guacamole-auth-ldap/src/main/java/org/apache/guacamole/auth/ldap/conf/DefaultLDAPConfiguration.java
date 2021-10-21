@@ -126,6 +126,11 @@ public class DefaultLDAPConfiguration implements LDAPConfiguration {
     }
 
     @Override
+    public int getNetworkTimeout() {
+        return 30000;
+    }
+
+    @Override
     public List<String> getAttributes() {
         return Collections.<String>emptyList();
     }

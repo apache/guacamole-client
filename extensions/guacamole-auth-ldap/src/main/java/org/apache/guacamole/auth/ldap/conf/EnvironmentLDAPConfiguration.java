@@ -194,6 +194,14 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
     }
 
     @Override
+    public int getNetworkTimeout() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_NETWORK_TIMEOUT,
+            DEFAULT.getNetworkTimeout()
+        );
+    }
+
+    @Override
     public List<String> getAttributes() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_USER_ATTRIBUTES,

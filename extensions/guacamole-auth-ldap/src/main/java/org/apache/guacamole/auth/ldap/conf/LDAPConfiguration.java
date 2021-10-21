@@ -256,6 +256,19 @@ public interface LDAPConfiguration {
     ExprNode getGroupSearchFilter() throws GuacamoleException;
 
     /**
+     * Returns the maximum number of milliseconds to wait for a response when
+     * communicating with the LDAP server.
+     *
+     * @return
+     *     The maximum number of milliseconds to wait for responses from the
+     *     LDAP server.
+     *
+     * @throws GuacamoleException
+     *     If the LDAP network timeout cannot be retrieved.
+     */
+    int getNetworkTimeout() throws GuacamoleException;
+
+    /**
      * Returns the maximum number of seconds to wait for LDAP operations.
      *
      * @return
