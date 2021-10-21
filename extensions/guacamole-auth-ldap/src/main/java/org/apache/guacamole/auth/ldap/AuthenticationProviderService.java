@@ -35,6 +35,7 @@ import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.ldap.conf.ConfigurationService;
+import org.apache.guacamole.auth.ldap.conf.LDAPConfiguration;
 import org.apache.guacamole.auth.ldap.group.UserGroupService;
 import org.apache.guacamole.auth.ldap.user.LDAPAuthenticatedUser;
 import org.apache.guacamole.auth.ldap.user.LDAPUserContext;
@@ -105,6 +106,9 @@ public class AuthenticationProviderService {
      * or queried from the LDAP server, depending on how LDAP authentication
      * has been configured.
      *
+     * @param config
+     *     The configuration of the LDAP server being queried.
+     *
      * @param username
      *     The username of the user whose corresponding DN should be returned.
      *
@@ -115,18 +119,17 @@ public class AuthenticationProviderService {
      *     If required properties are missing, and thus the user DN cannot be
      *     determined.
      */
-    private Dn getUserBindDN(String username) throws GuacamoleException {
+    private Dn getUserBindDN(LDAPConfiguration config, String username)
+            throws GuacamoleException {
 
         // If a search DN is provided, search the LDAP directory for the DN
         // corresponding to the given username
-        String searchBindLogon = confService.getSearchBindDN();
+        String searchBindLogon = config.getSearchBindDN();
         if (searchBindLogon != null) {
 
             // Create an LDAP connection using the search account
-            LdapNetworkConnection searchConnection = ldapService.bindAs(
-                searchBindLogon,
-                confService.getSearchBindPassword()
-            );
+            LdapNetworkConnection searchConnection = ldapService.bindAs(config,
+                searchBindLogon, config.getSearchBindPassword());
 
             // Warn of failure to find
             if (searchConnection == null) {
@@ -138,7 +141,7 @@ public class AuthenticationProviderService {
             try {
 
                 // Retrieve all DNs associated with the given username
-                List<Dn> userDNs = userService.getUserDNs(searchConnection, username);
+                List<Dn> userDNs = userService.getUserDNs(config, searchConnection, username);
                 if (userDNs.isEmpty())
                     return null;
 
@@ -161,7 +164,7 @@ public class AuthenticationProviderService {
         }
 
         // Otherwise, derive user DN from base DN
-        return userService.deriveUserDN(username);
+        return userService.deriveUserDN(config, username);
 
     }
 
@@ -196,8 +199,15 @@ public class AuthenticationProviderService {
                     "Anonymous bind is not currently allowed by the LDAP"
                     + " authentication provider.", CredentialsInfo.USERNAME_PASSWORD);
         }
-        
-        Dn bindDn = getUserBindDN(username);
+
+        // Get relevant LDAP configuration for user
+        LDAPConfiguration config = confService.getLDAPConfiguration(username);
+        if (config == null) {
+            throw new GuacamoleInvalidCredentialsException("User \"" + username + "\" "
+                    + "does not map to any defined LDAP configuration.", CredentialsInfo.USERNAME_PASSWORD);
+        }
+
+        Dn bindDn = getUserBindDN(config, username);
         if (bindDn == null || bindDn.isEmpty()) {
             throw new GuacamoleInvalidCredentialsException("Unable to determine"
                     + " DN of user " + username, CredentialsInfo.USERNAME_PASSWORD);
@@ -205,7 +215,7 @@ public class AuthenticationProviderService {
         
         // Attempt bind
         LdapNetworkConnection ldapConnection =
-                ldapService.bindAs(bindDn.getName(), password);
+                ldapService.bindAs(config, bindDn.getName(), password);
         if (ldapConnection == null)
             throw new GuacamoleInvalidCredentialsException("Invalid login.",
                     CredentialsInfo.USERNAME_PASSWORD);
@@ -214,13 +224,14 @@ public class AuthenticationProviderService {
 
             // Retrieve group membership of the user that just authenticated
             Set<String> effectiveGroups =
-                    userGroupService.getParentUserGroupIdentifiers(ldapConnection,
-                            bindDn);
+                    userGroupService.getParentUserGroupIdentifiers(config,
+                            ldapConnection, bindDn);
 
             // Return AuthenticatedUser if bind succeeds
             LDAPAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-            authenticatedUser.init(credentials, getAttributeTokens(ldapConnection,
-                    bindDn), effectiveGroups, bindDn);
+            authenticatedUser.init(config, credentials,
+                    getAttributeTokens(config, ldapConnection, bindDn),
+                    effectiveGroups, bindDn);
 
             return authenticatedUser;
 
@@ -240,6 +251,9 @@ public class AuthenticationProviderService {
      * guacamole.properties. If no attributes are specified or none are
      * found on the LDAP user object, an empty map is returned.
      *
+     * @param config
+     *     The configuration of the LDAP server being queried.
+     *
      * @param ldapConnection
      *     LDAP connection to use to read the attributes of the user.
      *
@@ -255,11 +269,11 @@ public class AuthenticationProviderService {
      * @throws GuacamoleException
      *     If an error occurs retrieving the user DN or the attributes.
      */
-    private Map<String, String> getAttributeTokens(LdapNetworkConnection ldapConnection,
-            Dn userDn) throws GuacamoleException {
+    private Map<String, String> getAttributeTokens(LDAPConfiguration config,
+            LdapNetworkConnection ldapConnection, Dn userDn) throws GuacamoleException {
 
         // Get attributes from configuration information
-        List<String> attrList = confService.getAttributes();
+        List<String> attrList = config.getAttributes();
 
         // If there are no attributes there is no reason to search LDAP
         if (attrList.isEmpty())
@@ -316,9 +330,11 @@ public class AuthenticationProviderService {
         Credentials credentials = authenticatedUser.getCredentials();
         if (authenticatedUser instanceof LDAPAuthenticatedUser) {
 
-            Dn bindDn = ((LDAPAuthenticatedUser) authenticatedUser).getBindDn();
-            LdapNetworkConnection ldapConnection =
-                    ldapService.bindAs(bindDn.getName(), credentials.getPassword());
+            LDAPAuthenticatedUser ldapAuthenticatedUser = (LDAPAuthenticatedUser) authenticatedUser;
+            LDAPConfiguration config = ldapAuthenticatedUser.getLDAPConfiguration();
+            Dn bindDn = ldapAuthenticatedUser.getBindDn();
+
+            LdapNetworkConnection ldapConnection = ldapService.bindAs(config, bindDn.getName(), credentials.getPassword());
             if (ldapConnection == null) {
                 logger.debug("LDAP bind succeeded for \"{}\" during "
                         + "authentication but failed during data retrieval.",
@@ -331,7 +347,7 @@ public class AuthenticationProviderService {
 
                 // Build user context by querying LDAP
                 LDAPUserContext userContext = userContextProvider.get();
-                userContext.init(authenticatedUser, ldapConnection);
+                userContext.init(ldapAuthenticatedUser, ldapConnection);
                 return userContext;
 
             }

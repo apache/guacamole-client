@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.guacamole.auth.ldap.conf.LDAPConfiguration;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -64,8 +65,18 @@ public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
     private Dn bindDn;
 
     /**
+     * The configuration of the LDAP server that should be used for all queries
+     * related to this AuthenticatedUser.
+     */
+    private LDAPConfiguration config;
+    
+    /**
      * Initializes this AuthenticatedUser with the given credentials,
      * connection parameter tokens. and set of effective user groups.
+     *
+     * @param config
+     *     The configuration of the LDAP server that should be used for all
+     *     queries related to this AuthenticatedUser.
      *
      * @param credentials
      *     The credentials provided when this user was authenticated.
@@ -81,8 +92,9 @@ public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
      * @param bindDn
      *     The LDAP DN used to bind this user.
      */
-    public void init(Credentials credentials, Map<String, String> tokens,
-            Set<String> effectiveGroups, Dn bindDn) {
+    public void init(LDAPConfiguration config, Credentials credentials,
+            Map<String, String> tokens, Set<String> effectiveGroups, Dn bindDn) {
+        this.config = config;
         this.credentials = credentials;
         this.tokens = Collections.unmodifiableMap(tokens);
         this.effectiveGroups = effectiveGroups;
@@ -114,6 +126,18 @@ public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
         return bindDn;
     }
 
+    /**
+     * Returns the configuration of the LDAP server that should be used for all
+     * queries related to this AuthenticatedUser.
+     *
+     * @return
+     *     The configuration of the LDAP server related to this
+     *     AuthenticatedUser.
+     */
+    public LDAPConfiguration getLDAPConfiguration() {
+        return config;
+    }
+    
     @Override
     public AuthenticationProvider getAuthenticationProvider() {
         return authProvider;
