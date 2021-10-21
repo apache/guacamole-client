@@ -276,6 +276,10 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
     @Override
     public String appliesTo(String username) throws GuacamoleException {
 
+        // Match any user by default
+        if (matchUsernames == null || matchUsernames.isEmpty())
+            return username;
+        
         for (Pattern pattern : matchUsernames) {
             Matcher matcher = pattern.matcher(username);
             if (matcher.matches())
