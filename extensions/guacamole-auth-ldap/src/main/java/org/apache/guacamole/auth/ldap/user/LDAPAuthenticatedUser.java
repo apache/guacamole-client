@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import org.apache.directory.api.ldap.model.name.Dn;
-import org.apache.guacamole.auth.ldap.conf.LDAPConfiguration;
+import org.apache.guacamole.auth.ldap.ConnectedLDAPConfiguration;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -68,11 +68,11 @@ public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
      * The configuration of the LDAP server that should be used for all queries
      * related to this AuthenticatedUser.
      */
-    private LDAPConfiguration config;
+    private ConnectedLDAPConfiguration config;
     
     /**
      * Initializes this AuthenticatedUser with the given credentials,
-     * connection parameter tokens. and set of effective user groups.
+     * connection parameter tokens, and set of effective user groups.
      *
      * @param config
      *     The configuration of the LDAP server that should be used for all
@@ -88,17 +88,14 @@ public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
      * @param effectiveGroups
      *     The unique identifiers of all user groups which affect the
      *     permissions available to this user.
-     * 
-     * @param bindDn
-     *     The LDAP DN used to bind this user.
      */
-    public void init(LDAPConfiguration config, Credentials credentials,
-            Map<String, String> tokens, Set<String> effectiveGroups, Dn bindDn) {
+    public void init(ConnectedLDAPConfiguration config, Credentials credentials,
+            Map<String, String> tokens, Set<String> effectiveGroups) {
         this.config = config;
         this.credentials = credentials;
         this.tokens = Collections.unmodifiableMap(tokens);
         this.effectiveGroups = effectiveGroups;
-        this.bindDn = bindDn;
+        this.bindDn = config.getBindDN();
         setIdentifier(credentials.getUsername());
     }
     
@@ -115,7 +112,7 @@ public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
     public Map<String, String> getTokens() {
         return tokens;
     }
-    
+
     /**
      * Returns the LDAP DN used to bind this user.
      * 
@@ -134,7 +131,7 @@ public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
      *     The configuration of the LDAP server related to this
      *     AuthenticatedUser.
      */
-    public LDAPConfiguration getLDAPConfiguration() {
+    public ConnectedLDAPConfiguration getLDAPConfiguration() {
         return config;
     }
     
@@ -151,6 +148,11 @@ public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
     @Override
     public Set<String> getEffectiveUserGroups() {
         return effectiveGroups;
+    }
+
+    @Override
+    public void invalidate() {
+        config.close();
     }
 
 }

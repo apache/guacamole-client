@@ -35,13 +35,11 @@ import org.apache.directory.api.ldap.model.filter.EqualityNode;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
 import org.apache.directory.api.ldap.model.filter.OrNode;
 import org.apache.directory.api.ldap.model.name.Dn;
-import org.apache.directory.ldap.client.api.LdapConnectionConfig;
-import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.auth.ldap.LDAPAuthenticationProvider;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.auth.ldap.ConnectedLDAPConfiguration;
 import org.apache.guacamole.auth.ldap.ObjectQueryService;
-import org.apache.guacamole.auth.ldap.conf.LDAPConfiguration;
 import org.apache.guacamole.auth.ldap.group.UserGroupService;
 import org.apache.guacamole.auth.ldap.user.LDAPAuthenticatedUser;
 import org.apache.guacamole.net.auth.Connection;
@@ -117,16 +115,11 @@ public class ConnectionService {
             
 
     /**
-     * Returns all Guacamole connections accessible to the user currently bound
-     * under the given LDAP connection.
+     * Returns all Guacamole connections accessible to the given user.
      *
      * @param user
      *     The AuthenticatedUser object associated with the user who is
      *     currently authenticated with Guacamole.
-     *
-     * @param ldapConnection
-     *     The current connection to the LDAP server, associated with the
-     *     current user.
      *
      * @return
      *     All connections accessible to the user currently bound under the
@@ -136,11 +129,11 @@ public class ConnectionService {
      * @throws GuacamoleException
      *     If an error occurs preventing retrieval of connections.
      */
-    public Map<String, Connection> getConnections(LDAPAuthenticatedUser user,
-            LdapNetworkConnection ldapConnection) throws GuacamoleException {
+    public Map<String, Connection> getConnections(LDAPAuthenticatedUser user)
+            throws GuacamoleException {
 
-        LDAPConfiguration ldapConfig = user.getLDAPConfiguration();
-        
+        ConnectedLDAPConfiguration ldapConfig = user.getLDAPConfiguration();
+
         // Do not return any connections if base DN is not specified
         Dn configurationBaseDN = ldapConfig.getConfigurationBaseDN();
         if (configurationBaseDN == null)
@@ -148,24 +141,15 @@ public class ConnectionService {
 
         try {
 
-            // Pull the current user DN from the LDAP connection
-            LdapConnectionConfig ldapConnectionConfig = ldapConnection.getConfig();
-            Dn userDN = new Dn(ldapConnectionConfig.getName());
-
-            // getConnections() will only be called after a connection has been
-            // authenticated (via non-anonymous bind), thus userDN cannot
-            // possibly be null
-            assert(userDN != null);
-
             // Get the search filter for finding connections accessible by the
             // current user
-            ExprNode connectionSearchFilter = getConnectionSearchFilter(user, userDN, ldapConnection);
+            ExprNode connectionSearchFilter = getConnectionSearchFilter(user);
 
             // Find all Guacamole connections for the given user by
             // looking for direct membership in the guacConfigGroup
             // and possibly any groups the user is a member of that are
             // referred to in the seeAlso attribute of the guacConfigGroup.
-            List<Entry> results = queryService.search(ldapConfig, ldapConnection,
+            List<Entry> results = queryService.search(ldapConfig, ldapConfig.getLDAPConnection(),
                     configurationBaseDN, connectionSearchFilter, 0, GUAC_CONFIG_LDAP_ATTRIBUTES);
 
             // Return a map of all readable connections
@@ -271,18 +255,11 @@ public class ConnectionService {
 
     /**
      * Returns an LDAP search filter which queries all connections accessible
-     * by the user having the given DN.
+     * by the given user.
      *
      * @param user
      *     The AuthenticatedUser object associated with the user who is
      *     currently authenticated with Guacamole.
-     *
-     * @param userDN
-     *     DN of the user to search for associated guacConfigGroup connections.
-     *
-     * @param ldapConnection
-     *     LDAP connection to use if additional information must be queried to
-     *     produce the filter, such as groups driving RBAC.
      *
      * @return
      *     An LDAP search filter which queries all guacConfigGroup objects
@@ -294,11 +271,11 @@ public class ConnectionService {
      * @throws GuacamoleException
      *     If an error occurs retrieving the group base DN.
      */
-    private ExprNode getConnectionSearchFilter(LDAPAuthenticatedUser user,
-            Dn userDN, LdapNetworkConnection ldapConnection)
+    private ExprNode getConnectionSearchFilter(LDAPAuthenticatedUser user)
             throws LdapException, GuacamoleException {
 
-        LDAPConfiguration config = user.getLDAPConfiguration();
+        ConnectedLDAPConfiguration config = user.getLDAPConfiguration();
+        Dn userDN = config.getBindDN();
 
         AndNode searchFilter = new AndNode();
 
@@ -312,7 +289,7 @@ public class ConnectionService {
 
         // Additionally filter by group membership if the current user is a
         // member of any user groups
-        List<Entry> userGroups = userGroupService.getParentUserGroupEntries(config, ldapConnection, userDN);
+        List<Entry> userGroups = userGroupService.getParentUserGroupEntries(config, userDN);
         if (!userGroups.isEmpty()) {
             userGroups.forEach(entry ->
                 groupFilter.addNode(new EqualityNode(LDAP_ATTRIBUTE_NAME_GROUPS,entry.getDn().toString()))

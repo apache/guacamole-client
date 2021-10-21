@@ -34,6 +34,7 @@ import org.apache.directory.api.ldap.model.name.Rdn;
 import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.auth.ldap.ConnectedLDAPConfiguration;
 import org.apache.guacamole.auth.ldap.conf.LDAPGuacamoleProperties;
 import org.apache.guacamole.auth.ldap.ObjectQueryService;
 import org.apache.guacamole.auth.ldap.conf.LDAPConfiguration;
@@ -60,16 +61,11 @@ public class UserService {
     private ObjectQueryService queryService;
 
     /**
-     * Returns all Guacamole users accessible to the user currently bound under
-     * the given LDAP connection.
+     * Returns all Guacamole users accessible to the given user.
      *
      * @param user
      *     The AuthenticatedUser object associated with the user who is
      *     currently authenticated with Guacamole.
-     *
-     * @param ldapConnection
-     *     The current connection to the LDAP server, associated with the
-     *     current user.
      *
      * @return
      *     All users accessible to the user currently bound under the given
@@ -79,21 +75,24 @@ public class UserService {
      * @throws GuacamoleException
      *     If an error occurs preventing retrieval of users.
      */
-    public Map<String, User> getUsers(LDAPAuthenticatedUser user,
-            LdapNetworkConnection ldapConnection) throws GuacamoleException {
+    public Map<String, User> getUsers(LDAPAuthenticatedUser user)
+            throws GuacamoleException {
 
-        LDAPConfiguration config = user.getLDAPConfiguration();
+        ConnectedLDAPConfiguration config = user.getLDAPConfiguration();
         
         // Retrieve all visible user objects
         Collection<String> usernameAttrs = config.getUsernameAttributes();
         Collection<String> attributes = new HashSet<>(usernameAttrs);
         attributes.addAll(config.getAttributes());
-        List<Entry> results = queryService.search(config, ldapConnection,
-                config.getUserBaseDN(),
-                config.getUserSearchFilter(),
-                usernameAttrs,
-                null,
-                attributes);
+        List<Entry> results = queryService.search(
+            config,
+            config.getLDAPConnection(),
+            config.getUserBaseDN(),
+            config.getUserSearchFilter(),
+            usernameAttrs,
+            null,
+            attributes
+        );
 
         // Convert retrieved users to map of identifier to Guacamole user object
         return queryService.asMap(results, entry -> {
