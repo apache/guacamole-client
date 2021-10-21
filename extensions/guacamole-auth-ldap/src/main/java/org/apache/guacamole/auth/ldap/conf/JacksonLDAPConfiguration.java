@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.auth.ldap.conf;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import static com.fasterxml.jackson.annotation.JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +44,7 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
      * the LDAP server represented by this configuration.
      */
     @JsonProperty("match-usernames")
+    @JsonFormat(with = ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private List<Pattern> matchUsernames;
     
     /**
@@ -63,6 +66,7 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
      * If not set within the YAML, this will be null.
      */
     @JsonProperty("username-attribute")
+    @JsonFormat(with = ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private List<String> usernameAttributes;
 
     /**
@@ -91,6 +95,7 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
      * If not set within the YAML, this will be null.
      */
     @JsonProperty("group-name-attribute")
+    @JsonFormat(with = ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private List<String> groupNameAttributes;
 
     /**
@@ -168,6 +173,7 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
      * If not set within the YAML, this will be null.
      */
     @JsonProperty("user-attributes")
+    @JsonFormat(with = ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private List<String> userAttributes;
 
     /**
