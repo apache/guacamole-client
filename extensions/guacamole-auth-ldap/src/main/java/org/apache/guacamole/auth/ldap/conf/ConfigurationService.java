@@ -23,10 +23,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicLong;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
@@ -36,6 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Service for retrieving configuration information regarding LDAP servers.
  */
+@Singleton
 public class ConfigurationService {
 
     /**
@@ -53,6 +56,17 @@ public class ConfigurationService {
      * LDAP server (if not using guacamole.properties).
      */
     private static final String LDAP_SERVERS_YML = "ldap-servers.yml";
+
+    /**
+     * The timestamp that the {@link #LDAP_SERVERS_YML} was last modified when
+     * it was read, as would be returned by {@link File#lastModified()}.
+     */
+    private final AtomicLong lastModified = new AtomicLong(0);
+
+    /**
+     * The cached copy of the configuration read from {@link #LDAP_SERVERS_YML}.
+     */
+    private Collection<JacksonLDAPConfiguration> cachedConfigurations = Collections.emptyList();
     
     /**
      * The Guacamole server environment.
@@ -77,14 +91,27 @@ public class ConfigurationService {
         // Read configuration from YAML, if available
         File ldapServers = new File(environment.getGuacamoleHome(), LDAP_SERVERS_YML);
         if (ldapServers.exists()) {
-            try {
-                logger.debug("Reading LDAP configuration from \"{}\"...", ldapServers);
-                return mapper.readValue(ldapServers, new TypeReference<Collection<JacksonLDAPConfiguration>>() {});
+
+            long oldLastModified = lastModified.get();
+            long currentLastModified = ldapServers.lastModified();
+
+            // Update cached copy of YAML if things have changed, ensuring only
+            // one concurrent request updates the cache at any given time
+            if (currentLastModified > oldLastModified && lastModified.compareAndSet(oldLastModified, currentLastModified)) {
+                try {
+                    logger.debug("Reading updated LDAP configuration from \"{}\"...", ldapServers);
+                    cachedConfigurations = mapper.readValue(ldapServers, new TypeReference<Collection<JacksonLDAPConfiguration>>() {});
+                }
+                catch (IOException e) {
+                    logger.error("\"{}\" could not be read/parsed: {}", ldapServers, e.getMessage());
+                    throw new GuacamoleServerException("Cannot read LDAP configuration from \"" + ldapServers + "\"", e);
+                }
             }
-            catch (IOException e) {
-                logger.error("\"{}\" could not be read/parsed: {}", ldapServers, e.getMessage());
-                throw new GuacamoleServerException("Cannot read LDAP configuration from \"" + ldapServers + "\"", e);
-            }
+            else
+                logger.debug("Using cached LDAP configuration from \"{}\".", ldapServers);
+
+            return cachedConfigurations;
+
         }
 
         // Use guacamole.properties if not using YAML
