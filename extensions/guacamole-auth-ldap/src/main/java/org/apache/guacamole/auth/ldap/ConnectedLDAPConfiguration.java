@@ -108,6 +108,11 @@ public class ConnectedLDAPConfiguration implements LDAPConfiguration, AutoClosea
     }
 
     @Override
+    public String appliesTo(String username) throws GuacamoleException {
+        return config.appliesTo(username);
+    }
+
+    @Override
     public String getServerHostname() throws GuacamoleException {
         return config.getServerHostname();
     }

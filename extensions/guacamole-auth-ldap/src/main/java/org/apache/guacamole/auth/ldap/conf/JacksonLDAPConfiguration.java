@@ -22,6 +22,8 @@ package org.apache.guacamole.auth.ldap.conf;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
 import org.apache.directory.api.ldap.model.filter.PresenceNode;
 import org.apache.directory.api.ldap.model.message.AliasDerefMode;
@@ -35,6 +37,13 @@ import org.apache.guacamole.GuacamoleServerException;
  */
 public class JacksonLDAPConfiguration implements LDAPConfiguration {
 
+    /**
+     * The regular expressions that match all users that should be routed to
+     * the LDAP server represented by this configuration.
+     */
+    @JsonProperty("match-usernames")
+    private List<Pattern> matchUsernames;
+    
     /**
      * The raw YAML value of {@link LDAPGuacamoleProperties#LDAP_HOSTNAME}. If
      * not set within the YAML, this will be null.
@@ -174,7 +183,20 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
      */
     @JsonProperty("member-attribute-type")
     private String memberAttributeType;
-    
+
+    @Override
+    public String appliesTo(String username) throws GuacamoleException {
+
+        for (Pattern pattern : matchUsernames) {
+            Matcher matcher = pattern.matcher(username);
+            if (matcher.matches())
+                return matcher.groupCount() >= 1 ? matcher.group(1) : username;
+        }
+
+        return null;
+
+    }
+
     @Override
     public String getServerHostname() {
         return hostname != null ? hostname : "localhost";

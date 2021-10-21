@@ -51,6 +51,11 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
     }
 
     @Override
+    public String appliesTo(String username) throws GuacamoleException {
+        return username;
+    }
+
+    @Override
     public String getServerHostname() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_HOSTNAME,

@@ -195,10 +195,10 @@ public class AuthenticationProviderService {
     private ConnectedLDAPConfiguration getLDAPConfiguration(String username,
             String password) throws GuacamoleException {
 
-        // Get relevant LDAP configurations for user
-        Collection<? extends LDAPConfiguration> configs = confService.getLDAPConfigurations(username);
+        // Get all LDAP server configurations
+        Collection<? extends LDAPConfiguration> configs = confService.getLDAPConfigurations();
         if (configs.isEmpty()) {
-            logger.info("User \"{}\" does not map to any defined LDAP configurations.", username);
+            logger.info("Skipping LDAP authentication as no LDAP servers are configured.");
             return null;
         }
 
@@ -206,8 +206,18 @@ public class AuthenticationProviderService {
         // authentication are successful
         for (LDAPConfiguration config : configs) {
 
+            // Attempt connection only if username matches
+            String translatedUsername = config.appliesTo(username);
+            if (translatedUsername == null) {
+                logger.debug("LDAP server \"{}\" does not match username \"{}\".", config.getServerHostname(), username);
+                continue;
+            }
+
+            logger.debug("LDAP server \"{}\" matched username \"{}\" as \"{}\".",
+                    config.getServerHostname(), username, translatedUsername);
+
             // Derive DN of user within this LDAP server
-            Dn bindDn = getUserBindDN(config, username);
+            Dn bindDn = getUserBindDN(config, translatedUsername);
             if (bindDn == null || bindDn.isEmpty()) {
                 logger.info("Unable to determine DN of user \"{}\" using LDAP "
                         + "server \"{}\". Proceeding with next server...",

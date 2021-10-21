@@ -61,24 +61,18 @@ public class ConfigurationService {
     private Environment environment;
 
     /**
-     * Returns the configuration information for the LDAP servers related to
-     * the user having the given username, if any. If multiple servers are
-     * returned, each should be tried in order until a successful LDAP
-     * connection is established.
-     *
-     * @param username
-     *     The username of the user whose corresponding LDAP server
-     *     configuration should be retrieved.
+     * Returns the configuration information for all configured LDAP servers.
+     * If multiple servers are returned, each should be tried in order until a
+     * successful LDAP connection is established.
      *
      * @return
-     *     The configurations of the LDAP servers related to the user having
-     *     the given username.
+     *     The configurations of all LDAP servers.
      *
      * @throws GuacamoleException
-     *     If the configuration information of the LDAP servers related to the
-     *     user having the given username cannot be retrieved due to an error.
+     *     If the configuration information of the LDAP servers cannot be
+     *     retrieved due to an error.
      */
-    public Collection<? extends LDAPConfiguration> getLDAPConfigurations(String username) throws GuacamoleException {
+    public Collection<? extends LDAPConfiguration> getLDAPConfigurations() throws GuacamoleException {
 
         // Read configuration from YAML, if available
         File ldapServers = new File(environment.getGuacamoleHome(), LDAP_SERVERS_YML);

@@ -32,6 +32,23 @@ import org.apache.guacamole.GuacamoleException;
 public interface LDAPConfiguration {
 
     /**
+     * Tests whether this LDAPConfiguration applies to the user having the
+     * given username. If the configuration applies, the username that should
+     * be used to derive the user's DN is returned.
+     *
+     * @param username
+     *     The username to test.
+     *
+     * @return
+     *     The username that should be used to derive this user's DN, or null
+     *     if the configuration does not apply.
+     *
+     * @throws GuacamoleException
+     *     If an error prevents testing against this configuration.
+     */
+    String appliesTo(String username) throws GuacamoleException;
+    
+    /**
      * Returns the hostname or IP address of the LDAP server. By default, this
      * will be "localhost".
      *
