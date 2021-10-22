@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.ldap.conf;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
@@ -49,7 +51,8 @@ public class ConfigurationService {
     /**
      * ObjectMapper for deserializing YAML.
      */
-    private final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    private final ObjectMapper mapper = new ObjectMapper(new YAMLFactory())
+            .registerModule(new SimpleModule().addDeserializer(Pattern.class, new CaseInsensitivePatternDeserializer()));
 
     /**
      * The name of the file within GUACAMOLE_HOME that defines each available
