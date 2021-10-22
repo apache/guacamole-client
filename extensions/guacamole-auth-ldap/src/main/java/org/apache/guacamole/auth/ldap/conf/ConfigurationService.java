@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,7 +114,6 @@ public class ConfigurationService {
                 }
                 catch (IOException e) {
                     logger.error("\"{}\" could not be read/parsed: {}", ldapServers, e.getMessage());
-                    throw new GuacamoleServerException("Cannot read LDAP configuration from \"" + ldapServers + "\"", e);
                 }
             }
             else
