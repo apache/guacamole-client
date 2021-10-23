@@ -123,6 +123,11 @@ public class UserGroupService {
         if (groupBaseDN == null)
             return Collections.emptyMap();
 
+        // Gather all attributes relevant for a group
+        String memberAttribute = confService.getMemberAttribute();
+        Collection<String> groupAttributes = new HashSet<>(confService.getGroupNameAttributes());
+        groupAttributes.add(memberAttribute);
+
         // Retrieve all visible user groups which are not guacConfigGroups
         Collection<String> attributes = confService.getGroupNameAttributes();
         List<Entry> results = queryService.search(
@@ -130,7 +135,8 @@ public class UserGroupService {
             groupBaseDN,
             getGroupSearchFilter(),
             attributes,
-            null
+            null,
+            groupAttributes
         );
 
         // Convert retrieved user groups to map of identifier to Guacamole
@@ -186,13 +192,15 @@ public class UserGroupService {
         // memberAttribute specified in properties could contain DN or username 
         MemberAttributeType memberAttributeType = confService.getMemberAttributeType();
         String userIDorDN = userDN.toString();
+        Collection<String> userAttributes = confService.getUsernameAttributes();
         if (memberAttributeType == MemberAttributeType.UID) {
             // Retrieve user objects with userDN
             List<Entry> userEntries = queryService.search(
                 ldapConnection,
                 userDN,
                 confService.getUserSearchFilter(),
-                0);
+                0,
+                userAttributes);
             // ... there can surely only be one
             if (userEntries.size() != 1)
                 logger.warn("user DN \"{}\" does not return unique value "
@@ -200,7 +208,6 @@ public class UserGroupService {
             else {
                 // determine unique identifier for user
                 Entry userEntry = userEntries.get(0);
-                Collection<String> userAttributes = confService.getUsernameAttributes();
                 try {
                     userIDorDN = queryService.getIdentifier(userEntry,
                                          userAttributes);
@@ -214,14 +221,20 @@ public class UserGroupService {
             }
         }
 
+        // Gather all attributes relevant for a group
+        String memberAttribute = confService.getMemberAttribute();
+        Collection<String> groupAttributes = new HashSet<>(confService.getGroupNameAttributes());
+        groupAttributes.add(memberAttribute);
+
         // Get all groups the user is a member of starting at the groupBaseDN,
         // excluding guacConfigGroups
         return queryService.search(
             ldapConnection,
             groupBaseDN,
             getGroupSearchFilter(),
-            Collections.singleton(confService.getMemberAttribute()),
-            userIDorDN
+            Collections.singleton(memberAttribute),
+            userIDorDN,
+            groupAttributes
         );
 
     }
