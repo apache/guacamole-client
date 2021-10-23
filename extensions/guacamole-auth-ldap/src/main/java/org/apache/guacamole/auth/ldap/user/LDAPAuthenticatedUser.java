@@ -89,14 +89,14 @@ public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
      *     The unique identifiers of all user groups which affect the
      *     permissions available to this user.
      */
-    public void init(ConnectedLDAPConfiguration config, Credentials credentials,
+    public void init(UserLDAPConfiguration config, Credentials credentials,
             Map<String, String> tokens, Set<String> effectiveGroups) {
         this.config = config;
         this.credentials = credentials;
         this.tokens = Collections.unmodifiableMap(tokens);
         this.effectiveGroups = effectiveGroups;
         this.bindDn = config.getBindDN();
-        setIdentifier(credentials.getUsername());
+        setIdentifier(config.getGuacamoleUsername());
     }
     
     /**

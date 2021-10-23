@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.ldap;
 
+import org.apache.guacamole.auth.ldap.user.UserLDAPConfiguration;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Collection;
@@ -169,30 +170,31 @@ public class AuthenticationProviderService {
     }
 
     /**
-     * Returns a new ConnectedLDAPConfiguration that is connected to an LDAP
-     * server associated with the user having the given username and bound
+     * Returns a new UserLDAPConfiguration that is connected to an LDAP server
+     * associated with the Guacamole user having the given username and bound
      * using the provided password. All LDAP servers associated with the given
      * user are tried until the connection and authentication attempt succeeds.
      * If no LDAP servers are available, or no LDAP servers are associated with
-     * the given user, null is returned.
+     * the given user, null is returned. The Guacamole username will be
+     * internally translated to a fully-qualified LDAP DN according to the
+     * configuration of the LDAP server that is ultimately chosen.
      *
      * @param username
-     *      The username or DN of the user to bind as.
+     *      The username of the Guacamole user to bind as.
      *
      * @param password
      *      The password of the user to bind as.
      *
      * @return
-     *      A new ConnectedLDAPConfiguration which is bound to an LDAP server
-     *      using the provided credentials, or null if no LDAP servers are
-     *      available for the given user or connecting/authenticating has
-     *      failed.
+     *      A new UserLDAPConfiguration which is bound to an LDAP server using
+     *      the provided credentials, or null if no LDAP servers are available
+     *      for the given user or connecting/authenticating has failed.
      *
      * @throws GuacamoleException
      *      If configuration information for the user's LDAP server(s) cannot
      *      be retrieved.
      */
-    private ConnectedLDAPConfiguration getLDAPConfiguration(String username,
+    private UserLDAPConfiguration getLDAPConfiguration(String username,
             String password) throws GuacamoleException {
 
         // Get all LDAP server configurations
@@ -236,7 +238,7 @@ public class AuthenticationProviderService {
 
             // Connection and bind were successful
             logger.info("User \"{}\" was successfully authenticated by LDAP server \"{}\".", username, config.getServerHostname());
-            return new ConnectedLDAPConfiguration(config, bindDn, ldapConnection);
+            return new UserLDAPConfiguration(config, translatedUsername, bindDn, ldapConnection);
 
         }
 
@@ -278,7 +280,7 @@ public class AuthenticationProviderService {
                     + " authentication provider.", CredentialsInfo.USERNAME_PASSWORD);
         }
 
-        ConnectedLDAPConfiguration config = getLDAPConfiguration(username, password);
+        UserLDAPConfiguration config = getLDAPConfiguration(username, password);
         if (config == null)
             throw new GuacamoleInvalidCredentialsException("Invalid login.",
                     CredentialsInfo.USERNAME_PASSWORD);
