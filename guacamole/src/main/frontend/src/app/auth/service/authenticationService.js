@@ -264,10 +264,10 @@ angular.module('auth').factory('authenticationService', ['$injector',
      *     A promise which succeeds only if the token was successfully revoked.
      */
     service.revokeToken = function revokeToken(token) {
-        return requestService({
+        return service.request({
             method: 'DELETE',
-            url: 'api/tokens/' + token
-        });
+            url: 'api/session'
+        }, token);
     };
 
     /**
@@ -303,7 +303,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
      *     successful.
      */
     service.logout = function logout() {
-        
+
         // Clear authentication data
         var token = service.getCurrentToken();
         clearAuthenticationResult();
@@ -406,6 +406,45 @@ angular.module('auth').factory('authenticationService', ['$injector',
 
         // No auth data present
         return [];
+
+    };
+
+    /**
+     * Makes an HTTP request leveraging the requestService(), automatically
+     * including the given authentication token using the "Guacamole-Token"
+     * header. If no token is provided, the user's current authentication token
+     * is used instead. If the user is not logged in, the "Guacamole-Token"
+     * header is simply omitted. The provided configuration object is not
+     * modified by this function.
+     *
+     * @param {Object} object
+     *     A configuration object describing the HTTP request to be made by
+     *     requestService(). As described by requestService(), this object must
+     *     be a configuration object accepted by AngularJS' $http service.
+     *
+     * @param {string} [token]
+     *     The authentication token to pass with the "Guacamole-Token" header.
+     *     If omitted, and the user is logged in, the user's current
+     *     authentication token will be used.
+     *
+     * @returns {Promise.<Object>}
+     *     A promise that will resolve with the data from the HTTP response for
+     *     the underlying requestService() call if successful, or reject with
+     *     an @link{Error} describing the failure.
+     */
+    service.request = function request(object, token) {
+
+        // Attempt to use current token if none is provided
+        token = token || service.getCurrentToken();
+
+        // Add "Guacamole-Token" header if an authentication token is available
+        if (token) {
+            object = _.merge({
+                headers : { 'Guacamole-Token' : token }
+            }, object);
+        }
+
+        return requestService(object);
 
     };
 

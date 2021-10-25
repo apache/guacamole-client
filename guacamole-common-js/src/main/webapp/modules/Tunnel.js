@@ -310,6 +310,25 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
     var extraHeaders = extraTunnelHeaders || {};
 
     /**
+     * The name of the HTTP header containing the session token specific to the
+     * HTTP tunnel implementation.
+     *
+     * @private
+     * @constant
+     * @type {string}
+     */
+    var TUNNEL_TOKEN_HEADER = 'Guacamole-Tunnel-Token';
+
+    /**
+     * The session token currently assigned to this HTTP tunnel. All distinct
+     * HTTP tunnel connections will have their own dedicated session token.
+     *
+     * @private
+     * @type {string}
+     */
+    var tunnelSessionToken = null;
+
+    /**
      * Adds the configured additional headers to the given request.
      *
      * @param {XMLHttpRequest} request
@@ -453,6 +472,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
             message_xmlhttprequest.withCredentials = withCredentials;
             addExtraHeaders(message_xmlhttprequest, extraHeaders);
             message_xmlhttprequest.setRequestHeader("Content-type", "application/octet-stream");
+            message_xmlhttprequest.setRequestHeader(TUNNEL_TOKEN_HEADER, tunnelSessionToken);
 
             // Once response received, send next queued event.
             message_xmlhttprequest.onreadystatechange = function() {
@@ -697,6 +717,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
         // Make request, increment request ID
         var xmlhttprequest = new XMLHttpRequest();
         xmlhttprequest.open("GET", TUNNEL_READ + tunnel.uuid + ":" + (request_id++));
+        xmlhttprequest.setRequestHeader(TUNNEL_TOKEN_HEADER, tunnelSessionToken);
         xmlhttprequest.withCredentials = withCredentials;
         addExtraHeaders(xmlhttprequest, extraHeaders);
         xmlhttprequest.send(null);
@@ -728,8 +749,15 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
 
             reset_timeout();
 
-            // Get UUID from response
+            // Get UUID and HTTP-specific tunnel session token from response
             tunnel.setUUID(connect_xmlhttprequest.responseText);
+            tunnelSessionToken = connect_xmlhttprequest.getResponseHeader(TUNNEL_TOKEN_HEADER);
+
+            // Fail connect attempt if token is not successfully assigned
+            if (!tunnelSessionToken) {
+                close_tunnel(new Guacamole.Status(Guacamole.Status.Code.UPSTREAM_NOT_FOUND));
+                return;
+            }
 
             // Mark as open
             tunnel.setState(Guacamole.Tunnel.State.OPEN);

@@ -58,7 +58,8 @@ class GuacamoleHTTPTunnelMap {
     private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
     /**
-     * Map of all tunnels that are using HTTP, indexed by tunnel UUID.
+     * Map of all tunnels that are using HTTP, indexed by their tunnel-specific
+     * session tokens.
      */
     private final ConcurrentMap<String, GuacamoleHTTPTunnel> tunnelMap =
             new ConcurrentHashMap<String, GuacamoleHTTPTunnel>();
@@ -141,22 +142,22 @@ class GuacamoleHTTPTunnelMap {
     }
 
     /**
-     * Returns the GuacamoleTunnel having the given UUID, wrapped within a
-     * GuacamoleHTTPTunnel. If the no tunnel having the given UUID is
-     * available, null is returned.
+     * Returns the GuacamoleTunnel associated with the given tunnel-specific
+     * session token, wrapped within a GuacamoleHTTPTunnel. If the no tunnel
+     * is associated with the given token, null is returned.
      *
-     * @param uuid
-     *     The UUID of the tunnel to retrieve.
+     * @param tunnelSessionToken
+     *     The tunnel-specific session token of the HTTP tunnel to retrieve.
      *
      * @return
-     *     The GuacamoleTunnel having the given UUID, wrapped within a
-     *     GuacamoleHTTPTunnel, if such a tunnel exists, or null if there is no
-     *     such tunnel.
+     *     The GuacamoleTunnel associated with the given tunnel-specific
+     *     session token, wrapped within a GuacamoleHTTPTunnel, if such a
+     *     tunnel exists, or null if there is no such tunnel.
      */
-    public GuacamoleHTTPTunnel get(String uuid) {
+    public GuacamoleHTTPTunnel get(String tunnelSessionToken) {
 
         // Update the last access time
-        GuacamoleHTTPTunnel tunnel = tunnelMap.get(uuid);
+        GuacamoleHTTPTunnel tunnel = tunnelMap.get(tunnelSessionToken);
         if (tunnel != null)
             tunnel.access();
 
@@ -169,32 +170,34 @@ class GuacamoleHTTPTunnelMap {
      * Registers that a new connection has been established using HTTP via the
      * given GuacamoleTunnel.
      *
-     * @param uuid
-     *     The UUID of the tunnel being added (registered).
+     * @param tunnelSessionToken
+     *     The tunnel-specific session token of the HTTP tunnel being added
+     *     (registered).
      *
      * @param tunnel
      *     The GuacamoleTunnel being registered, its associated connection
      *     having just been established via HTTP.
      */
-    public void put(String uuid, GuacamoleTunnel tunnel) {
-        tunnelMap.put(uuid, new GuacamoleHTTPTunnel(tunnel));
+    public void put(String tunnelSessionToken, GuacamoleTunnel tunnel) {
+        tunnelMap.put(tunnelSessionToken, new GuacamoleHTTPTunnel(tunnel));
     }
 
     /**
-     * Removes the GuacamoleTunnel having the given UUID, if such a tunnel
-     * exists. The original tunnel is returned wrapped within a
-     * GuacamoleHTTPTunnel.
+     * Removes the GuacamoleTunnel associated with the given tunnel-specific
+     * session token, if such a tunnel exists. The original tunnel is returned
+     * wrapped within a GuacamoleHTTPTunnel.
      *
-     * @param uuid
-     *     The UUID of the tunnel to remove (deregister).
+     * @param tunnelSessionToken
+     *     The tunnel-specific session token of the HTTP tunnel to remove
+     *     (deregister).
      *
      * @return
-     *     The GuacamoleTunnel having the given UUID, if such a tunnel exists,
-     *     wrapped within a GuacamoleHTTPTunnel, or null if no such tunnel
-     *     exists and no removal was performed.
+     *     The GuacamoleTunnel having the given tunnel-specific session token,
+     *     if such a tunnel exists, wrapped within a GuacamoleHTTPTunnel, or
+     *     null if no such tunnel exists and no removal was performed.
      */
-    public GuacamoleHTTPTunnel remove(String uuid) {
-        return tunnelMap.remove(uuid);
+    public GuacamoleHTTPTunnel remove(String tunnelSessionToken) {
+        return tunnelMap.remove(tunnelSessionToken);
     }
 
     /**

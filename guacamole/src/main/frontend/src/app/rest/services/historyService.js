@@ -60,10 +60,7 @@ angular.module('rest').factory('historyService', ['$injector',
     service.getConnectionHistory = function getConnectionHistory(dataSource,
         requiredContents, sortPredicates) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
+        var httpParameters = {};
 
         // Filter according to contents if restrictions are specified
         if (requiredContents)
@@ -74,7 +71,7 @@ angular.module('rest').factory('historyService', ['$injector',
             httpParameters.order = sortPredicates;
 
         // Retrieve connection history
-        return requestService({
+        return authenticationService.request({
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/history/connections',
             params  : httpParameters

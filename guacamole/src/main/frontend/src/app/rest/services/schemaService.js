@@ -49,17 +49,11 @@ angular.module('rest').factory('schemaService', ['$injector',
      */
     service.getUserAttributes = function getUserAttributes(dataSource) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve available user attributes
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.schema,
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/userAttributes',
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/userAttributes'
         });
 
     };
@@ -83,17 +77,11 @@ angular.module('rest').factory('schemaService', ['$injector',
      */
     service.getUserGroupAttributes = function getUserGroupAttributes(dataSource) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve available user group attributes
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.schema,
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/userGroupAttributes',
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/userGroupAttributes'
         });
 
     };
@@ -117,17 +105,11 @@ angular.module('rest').factory('schemaService', ['$injector',
      */
     service.getConnectionAttributes = function getConnectionAttributes(dataSource) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve available connection attributes
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.schema,
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/connectionAttributes',
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/connectionAttributes'
         });
 
     };
@@ -151,17 +133,11 @@ angular.module('rest').factory('schemaService', ['$injector',
      */
     service.getSharingProfileAttributes = function getSharingProfileAttributes(dataSource) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve available sharing profile attributes
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.schema,
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/sharingProfileAttributes',
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/sharingProfileAttributes'
         });
 
     };
@@ -185,17 +161,11 @@ angular.module('rest').factory('schemaService', ['$injector',
      */
     service.getConnectionGroupAttributes = function getConnectionGroupAttributes(dataSource) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve available connection group attributes
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.schema,
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/connectionGroupAttributes',
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/connectionGroupAttributes'
         });
 
     };
@@ -216,17 +186,11 @@ angular.module('rest').factory('schemaService', ['$injector',
      */
     service.getProtocols = function getProtocols(dataSource) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve available protocols
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.schema,
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/protocols',
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/protocols'
         });
 
     };
