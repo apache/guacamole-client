@@ -49,17 +49,11 @@ angular.module('rest').factory('sharingProfileService', ['$injector',
      */
     service.getSharingProfile = function getSharingProfile(dataSource, id) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve sharing profile
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.connections,
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/sharingProfiles/' + encodeURIComponent(id),
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/sharingProfiles/' + encodeURIComponent(id)
         });
 
     };
@@ -78,17 +72,11 @@ angular.module('rest').factory('sharingProfileService', ['$injector',
      */
     service.getSharingProfileParameters = function getSharingProfileParameters(dataSource, id) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve sharing profile parameters
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.connections,
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/sharingProfiles/' + encodeURIComponent(id) + '/parameters',
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/sharingProfiles/' + encodeURIComponent(id) + '/parameters'
         });
  
     };
@@ -109,17 +97,11 @@ angular.module('rest').factory('sharingProfileService', ['$injector',
      */
     service.saveSharingProfile = function saveSharingProfile(dataSource, sharingProfile) {
         
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // If sharing profile is new, add it and set the identifier automatically
         if (!sharingProfile.identifier) {
-            return requestService({
+            return authenticationService.request({
                 method  : 'POST',
                 url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/sharingProfiles',
-                params  : httpParameters,
                 data    : sharingProfile
             })
 
@@ -136,10 +118,9 @@ angular.module('rest').factory('sharingProfileService', ['$injector',
 
         // Otherwise, update the existing sharing profile
         else {
-            return requestService({
+            return authenticationService.request({
                 method  : 'PUT',
                 url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/sharingProfiles/' + encodeURIComponent(sharingProfile.identifier),
-                params  : httpParameters,
                 data    : sharingProfile
             })
             
@@ -168,16 +149,10 @@ angular.module('rest').factory('sharingProfileService', ['$injector',
      */
     service.deleteSharingProfile = function deleteSharingProfile(dataSource, sharingProfile) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Delete sharing profile
-        return requestService({
+        return authenticationService.request({
             method  : 'DELETE',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/sharingProfiles/' + encodeURIComponent(sharingProfile.identifier),
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/sharingProfiles/' + encodeURIComponent(sharingProfile.identifier)
         })
 
         // Clear the cache

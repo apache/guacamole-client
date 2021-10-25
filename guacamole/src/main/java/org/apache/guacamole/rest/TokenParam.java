@@ -17,30 +17,18 @@
  * under the License.
  */
 
-package org.apache.guacamole.rest.session;
+package org.apache.guacamole.rest;
 
-import org.apache.guacamole.GuacamoleSession;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Factory which creates resources that expose the contents of a given
- * GuacamoleSession.
+ * Annotation which automatically maps the authentication token used by
+ * Guacamole's REST API, regardless of whether that token is received via an
+ * HTTP header or via a query parameter.
  */
-public interface SessionResourceFactory {
-
-    /**
-     * Creates a new SessionResource which exposes the contents of the
-     * given GuacamoleSession.
-     *
-     * @param token
-     *     The authentication token associated with the given session.
-     *
-     * @param session
-     *     The GuacamoleSession whose contents should be exposed.
-     *
-     * @return
-     *     A new SessionResource which exposes the contents of the given
-     *     GuacamoleSession.
-     */
-    SessionResource create(String token, GuacamoleSession session);
-
-}
+@Target({ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface TokenParam {}

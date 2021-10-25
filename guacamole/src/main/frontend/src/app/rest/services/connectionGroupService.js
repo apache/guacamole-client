@@ -59,17 +59,13 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
         // Use the root connection group ID if no ID is passed in
         connectionGroupID = connectionGroupID || ConnectionGroup.ROOT_IDENTIFIER;
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Add permission filter if specified
+        var httpParameters = {};
         if (permissionTypes)
             httpParameters.permission = permissionTypes;
 
         // Retrieve connection group 
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.connections,
             method  : 'GET',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroupID) + '/tree',
@@ -96,17 +92,11 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
         // Use the root connection group ID if no ID is passed in
         connectionGroupID = connectionGroupID || ConnectionGroup.ROOT_IDENTIFIER;
         
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve connection group
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.connections,
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroupID),
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroupID)
         });
 
     };
@@ -126,17 +116,11 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
      */
     service.saveConnectionGroup = function saveConnectionGroup(dataSource, connectionGroup) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // If connection group is new, add it and set the identifier automatically
         if (!connectionGroup.identifier) {
-            return requestService({
+            return authenticationService.request({
                 method  : 'POST',
                 url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups',
-                params  : httpParameters,
                 data    : connectionGroup
             })
 
@@ -153,10 +137,9 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
 
         // Otherwise, update the existing connection group
         else {
-            return requestService({
+            return authenticationService.request({
                 method  : 'PUT',
                 url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
-                params  : httpParameters,
                 data    : connectionGroup
             })
 
@@ -184,16 +167,10 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
      */
     service.deleteConnectionGroup = function deleteConnectionGroup(dataSource, connectionGroup) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Delete connection group
-        return requestService({
+        return authenticationService.request({
             method  : 'DELETE',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier)
         })
 
         // Clear the cache

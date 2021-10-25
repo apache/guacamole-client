@@ -65,16 +65,10 @@ angular.module('rest').factory('tunnelService', ['$injector',
      */
     service.getTunnels = function getTunnels() {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve tunnels
-        return requestService({
+        return authenticationService.request({
             method  : 'GET',
-            url     : 'api/session/tunnels',
-            params  : httpParameters
+            url     : 'api/session/tunnels'
         });
 
     };
@@ -124,17 +118,11 @@ angular.module('rest').factory('tunnelService', ['$injector',
      */
     service.getSharingProfiles = function getSharingProfiles(tunnel) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve all associated sharing profiles
-        return requestService({
+        return authenticationService.request({
             method  : 'GET',
             url     : 'api/session/tunnels/' + encodeURIComponent(tunnel)
-                        + '/activeConnection/connection/sharingProfiles',
-            params  : httpParameters
+                        + '/activeConnection/connection/sharingProfiles'
         });
 
     };
@@ -160,18 +148,12 @@ angular.module('rest').factory('tunnelService', ['$injector',
      */
     service.getSharingCredentials = function getSharingCredentials(tunnel, sharingProfile) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Generate sharing credentials
-        return requestService({
+        return authenticationService.request({
             method  : 'GET',
             url     : 'api/session/tunnels/' + encodeURIComponent(tunnel)
                         + '/activeConnection/sharingCredentials/'
-                        + encodeURIComponent(sharingProfile),
-            params  : httpParameters
+                        + encodeURIComponent(sharingProfile)
         });
 
     };

@@ -144,17 +144,11 @@ angular.module('rest').factory('membershipService', ['$injector',
      */
     service.getUserGroups = function getUserGroups(dataSource, identifier, group) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve parent groups
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.users,
             method  : 'GET',
-            url     : getUserGroupsResourceURL(dataSource, identifier, group),
-            params  : httpParameters
+            url     : getUserGroupsResourceURL(dataSource, identifier, group)
         });
 
     };
@@ -193,16 +187,10 @@ angular.module('rest').factory('membershipService', ['$injector',
     service.patchUserGroups = function patchUserGroups(dataSource, identifier,
             addToUserGroups, removeFromUserGroups, group) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Update parent user groups
-        return requestService({
+        return authenticationService.request({
             method  : 'PATCH',
             url     : getUserGroupsResourceURL(dataSource, identifier, group),
-            params  : httpParameters,
             data    : getRelatedObjectPatch(addToUserGroups, removeFromUserGroups)
         })
 
@@ -232,17 +220,11 @@ angular.module('rest').factory('membershipService', ['$injector',
      */
     service.getMemberUsers = function getMemberUsers(dataSource, identifier) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve member users
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.users,
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier) + '/memberUsers',
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier) + '/memberUsers'
         });
 
     };
@@ -275,16 +257,10 @@ angular.module('rest').factory('membershipService', ['$injector',
     service.patchMemberUsers = function patchMemberUsers(dataSource, identifier,
             usersToAdd, usersToRemove) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Update member users
-        return requestService({
+        return authenticationService.request({
             method  : 'PATCH',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier) + '/memberUsers',
-            params  : httpParameters,
             data    : getRelatedObjectPatch(usersToAdd, usersToRemove)
         })
 
@@ -316,17 +292,11 @@ angular.module('rest').factory('membershipService', ['$injector',
      */
     service.getMemberUserGroups = function getMemberUserGroups(dataSource, identifier) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve member user groups
-        return requestService({
+        return authenticationService.request({
             cache   : cacheService.users,
             method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier) + '/memberUserGroups',
-            params  : httpParameters
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier) + '/memberUserGroups'
         });
 
     };
@@ -360,16 +330,10 @@ angular.module('rest').factory('membershipService', ['$injector',
     service.patchMemberUserGroups = function patchMemberUserGroups(dataSource,
             identifier, userGroupsToAdd, userGroupsToRemove) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Update member user groups
-        return requestService({
+        return authenticationService.request({
             method  : 'PATCH',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier) + '/memberUserGroups',
-            params  : httpParameters,
             data    : getRelatedObjectPatch(userGroupsToAdd, userGroupsToRemove)
         })
 

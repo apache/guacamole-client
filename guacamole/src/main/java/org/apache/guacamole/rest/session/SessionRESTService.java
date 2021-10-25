@@ -23,10 +23,10 @@ import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSession;
+import org.apache.guacamole.rest.TokenParam;
 import org.apache.guacamole.rest.auth.AuthenticationService;
 
 /**
@@ -67,12 +67,12 @@ public class SessionRESTService {
      *     If the authentication token is invalid.
      */
     @Path("/")
-    public SessionResource getSessionResource(@QueryParam("token") String authToken)
+    public SessionResource getSessionResource(@TokenParam String authToken)
             throws GuacamoleException {
 
         // Return a resource exposing the retrieved session
         GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
-        return sessionResourceFactory.create(session);
+        return sessionResourceFactory.create(authToken, session);
 
     }
 

@@ -21,7 +21,6 @@ package org.apache.guacamole.rest;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -32,6 +31,7 @@ import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
 import org.apache.guacamole.rest.auth.AuthenticationService;
+import org.glassfish.jersey.server.ContainerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,37 +50,20 @@ public class RESTExceptionMapper implements ExceptionMapper<Throwable> {
     private final Logger logger = LoggerFactory.getLogger(RESTExceptionMapper.class);
     
     /**
-     * The HttpServletRequest for the Throwable being intercepted.  Despite this
-     * class being a Singleton, this object will always be scoped with the
-     * current request for the Throwable that is being processed by this class.
+     * The ContainerRequest representing the HTTP request that resulted in the
+     * Throwable being intercepted. Despite this class being a Singleton, this
+     * object will always be scoped with the current request for the Throwable
+     * that is being processed by this class.
      */
     @Context
-    private HttpServletRequest request;
+    private ContainerRequest request;
     
     /**
      * The authentication service associated with the currently active session.
      */
     @Inject
     private AuthenticationService authenticationService;
-    
-    /**
-     * Returns the authentication token that is in use in the current session,
-     * if present, or null if otherwise.
-     *
-     * @return
-     *     The authentication token for the current session, or null if no
-     *     token is present.
-     */
-    private String getAuthenticationToken() {
 
-        String token = request.getParameter("token");
-        if (token != null && !token.isEmpty())
-            return token;
-        
-        return null;
-
-    }
-    
     @Override
     public Response toResponse(Throwable t) {
 
@@ -90,8 +73,7 @@ public class RESTExceptionMapper implements ExceptionMapper<Throwable> {
         
         // Ensure any associated session is invalidated if unauthorized 
         if (t instanceof GuacamoleUnauthorizedException) {
-            String token = getAuthenticationToken();
-            
+            String token = authenticationService.getAuthenticationToken(request);
             if (authenticationService.destroyGuacamoleSession(token))
                 logger.debug("Implicitly invalidated session for token \"{}\"", token);
         }
