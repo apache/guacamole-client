@@ -19,21 +19,57 @@
 
 package org.apache.guacamole.auth.ldap.conf;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import org.apache.directory.api.ldap.model.filter.ExprNode;
-import org.apache.directory.api.ldap.model.filter.PresenceNode;
-import org.apache.directory.api.ldap.model.message.AliasDerefMode;
-import org.apache.directory.api.ldap.model.name.Dn;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Service for retrieving configuration information regarding the LDAP server.
+ * Service for retrieving configuration information regarding LDAP servers.
  */
+@Singleton
 public class ConfigurationService {
 
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ConfigurationService.class);
+    
+    /**
+     * ObjectMapper for deserializing YAML.
+     */
+    private final ObjectMapper mapper = new ObjectMapper(new YAMLFactory())
+            .registerModule(new SimpleModule().addDeserializer(Pattern.class, new CaseInsensitivePatternDeserializer()));
+
+    /**
+     * The name of the file within GUACAMOLE_HOME that defines each available
+     * LDAP server (if not using guacamole.properties).
+     */
+    private static final String LDAP_SERVERS_YML = "ldap-servers.yml";
+
+    /**
+     * The timestamp that the {@link #LDAP_SERVERS_YML} was last modified when
+     * it was read, as would be returned by {@link File#lastModified()}.
+     */
+    private final AtomicLong lastModified = new AtomicLong(0);
+
+    /**
+     * The cached copy of the configuration read from {@link #LDAP_SERVERS_YML}.
+     */
+    private Collection<JacksonLDAPConfiguration> cachedConfigurations = Collections.emptyList();
+    
     /**
      * The Guacamole server environment.
      */
@@ -41,375 +77,56 @@ public class ConfigurationService {
     private Environment environment;
 
     /**
-     * Returns the hostname of the LDAP server as configured with
-     * guacamole.properties. By default, this will be "localhost".
+     * Returns the configuration information for all configured LDAP servers.
+     * If multiple servers are returned, each should be tried in order until a
+     * successful LDAP connection is established.
      *
      * @return
-     *     The hostname of the LDAP server, as configured with
-     *     guacamole.properties.
+     *     The configurations of all LDAP servers.
      *
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
+     *     If the configuration information of the LDAP servers cannot be
+     *     retrieved due to an error.
      */
-    public String getServerHostname() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_HOSTNAME,
-            "localhost"
-        );
-    }
+    public Collection<? extends LDAPConfiguration> getLDAPConfigurations() throws GuacamoleException {
 
-    /**
-     * Returns the port of the LDAP server configured with
-     * guacamole.properties. The default value depends on which encryption
-     * method is being used. For unencrypted LDAP and STARTTLS, this will be
-     * 389. For LDAPS (LDAP over SSL) this will be 636.
-     *
-     * @return
-     *     The port of the LDAP server, as configured with
-     *     guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public int getServerPort() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_PORT,
-            getEncryptionMethod().DEFAULT_PORT
-        );
-    }
+        // Read configuration from YAML, if available
+        File ldapServers = new File(environment.getGuacamoleHome(), LDAP_SERVERS_YML);
+        if (ldapServers.exists()) {
 
-    /**
-     * Returns all username attributes which should be used to query and bind
-     * users using the LDAP directory. By default, this will be "uid" - a
-     * common attribute used for this purpose.
-     *
-     * @return
-     *     The username attributes which should be used to query and bind users
-     *     using the LDAP directory.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public List<String> getUsernameAttributes() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_USERNAME_ATTRIBUTE,
-            Collections.singletonList("uid")
-        );
-    }
+            long oldLastModified = lastModified.get();
+            long currentLastModified = ldapServers.lastModified();
 
-    /**
-     * Returns the base DN under which all Guacamole users will be stored
-     * within the LDAP directory.
-     *
-     * @return
-     *     The base DN under which all Guacamole users will be stored within
-     *     the LDAP directory.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the user base DN
-     *     property is not specified.
-     */
-    public Dn getUserBaseDN() throws GuacamoleException {
-        return environment.getRequiredProperty(
-            LDAPGuacamoleProperties.LDAP_USER_BASE_DN
-        );
-    }
+            // Update cached copy of YAML if things have changed, ensuring only
+            // one concurrent request updates the cache at any given time
+            if (currentLastModified > oldLastModified && lastModified.compareAndSet(oldLastModified, currentLastModified)) {
+                try {
 
-    /**
-     * Returns the base DN under which all Guacamole configurations
-     * (connections) will be stored within the LDAP directory. If Guacamole
-     * configurations will not be stored within LDAP, null is returned.
-     *
-     * @return
-     *     The base DN under which all Guacamole configurations will be stored
-     *     within the LDAP directory, or null if no Guacamole configurations
-     *     will be stored within the LDAP directory.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public Dn getConfigurationBaseDN() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_CONFIG_BASE_DN
-        );
-    }
+                    logger.debug("Reading updated LDAP configuration from \"{}\"...", ldapServers);
+                    Collection<JacksonLDAPConfiguration> configs = mapper.readValue(ldapServers, new TypeReference<Collection<JacksonLDAPConfiguration>>() {});
 
-    /**
-     * Returns all attributes which should be used to determine the unique
-     * identifier of each user group. By default, this will be "cn".
-     *
-     * @return
-     *     The attributes which should be used to determine the unique
-     *     identifier of each group.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public List<String> getGroupNameAttributes() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_GROUP_NAME_ATTRIBUTE,
-            Collections.singletonList("cn")
-        );
-    }
+                    logger.debug("Reading LDAP configuration defaults from guacamole.properties...");
+                    LDAPConfiguration defaultConfig = new EnvironmentLDAPConfiguration(environment);
+                    configs.forEach((config) -> config.setDefaults(defaultConfig));
 
-    /**
-     * Returns the base DN under which all Guacamole role based access control
-     * (RBAC) groups will be stored within the LDAP directory. If RBAC will not
-     * be used, null is returned.
-     *
-     * @return
-     *     The base DN under which all Guacamole RBAC groups will be stored
-     *     within the LDAP directory, or null if RBAC will not be used.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public Dn getGroupBaseDN() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_GROUP_BASE_DN
-        );
-    }
+                    cachedConfigurations = configs;
 
-    /**
-     * Returns the login that should be used when searching for the DNs of users
-     * attempting to authenticate. If no such search should be performed, null
-     * is returned.
-     *
-     * @return
-     *     The DN that should be used when searching for the DNs of users
-     *     attempting to authenticate, or null if no such search should be
-     *     performed.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public String getSearchBindDN() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_SEARCH_BIND_DN
-        );
-    }
+                }
+                catch (IOException e) {
+                    logger.error("\"{}\" could not be read/parsed: {}", ldapServers, e.getMessage());
+                }
+            }
+            else
+                logger.debug("Using cached LDAP configuration from \"{}\".", ldapServers);
 
-    /**
-     * Returns the password that should be used when binding to the LDAP server
-     * using the DN returned by getSearchBindDN(). If no password should be
-     * used, null is returned.
-     *
-     * @return
-     *     The password that should be used when binding to the LDAP server
-     *     using the DN returned by getSearchBindDN(), or null if no password
-     *     should be used.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public String getSearchBindPassword() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_SEARCH_BIND_PASSWORD
-        );
-    }
+            return cachedConfigurations;
 
-    /**
-     * Returns the encryption method that should be used when connecting to the
-     * LDAP server. By default, no encryption is used.
-     *
-     * @return
-     *     The encryption method that should be used when connecting to the
-     *     LDAP server.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public EncryptionMethod getEncryptionMethod() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_ENCRYPTION_METHOD,
-            EncryptionMethod.NONE
-        );
-    }
+        }
 
-    /**
-     * Returns maximum number of results a LDAP query can return,
-     * as configured with guacamole.properties.
-     * By default, this will be 1000.
-     *
-     * @return
-     *     The maximum number of results a LDAP query can return,
-     *     as configured with guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public int getMaxResults() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_MAX_SEARCH_RESULTS,
-            1000
-        );
-    }
+        // Use guacamole.properties if not using YAML
+        logger.debug("Reading LDAP configuration from guacamole.properties...");
+        return Collections.singletonList(new EnvironmentLDAPConfiguration(environment));
 
-    /**
-     * Returns whether or not LDAP aliases will be dereferenced,
-     * as configured with guacamole.properties. The default
-     * behavior if not explicitly defined is to never
-     * dereference them.
-     *
-     * @return
-     *     The behavior for handling dereferencing of aliases
-     *     as configured in guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public AliasDerefMode getDereferenceAliases() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_DEREFERENCE_ALIASES,
-            AliasDerefMode.NEVER_DEREF_ALIASES
-        );
-    }
-
-    /**
-     * Returns the boolean value for whether the connection should
-     * follow referrals or not.  By default, it will not.
-     *
-     * @return
-     *     The boolean value of whether to follow referrals
-     *     as configured in guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public boolean getFollowReferrals() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_FOLLOW_REFERRALS,
-            false
-        );
-    }
-
-    /**
-     * Returns the maximum number of referral hops to follow.  By default
-     * a maximum of 5 hops is allowed.
-     *
-     * @return
-     *     The maximum number of referral hops to follow
-     *     as configured in guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public int getMaxReferralHops() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_MAX_REFERRAL_HOPS,
-            5
-        );
-    }
-
-    /**
-     * Returns the search filter that should be used when querying the
-     * LDAP server for Guacamole users.  If no filter is specified,
-     * a default of "(objectClass=user)" is returned.
-     *
-     * @return
-     *     The search filter that should be used when querying the
-     *     LDAP server for users that are valid in Guacamole, or
-     *     "(objectClass=user)" if not specified.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public ExprNode getUserSearchFilter() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_USER_SEARCH_FILTER,
-            new PresenceNode("objectClass")
-        );
-    }
-
-    /**
-     * Returns the search filter that should be used when querying the
-     * LDAP server for Guacamole groups.  If no filter is specified,
-     * a default of "(objectClass=*)" is used.
-     *
-     * @return
-     *     The search filter that should be used when querying the
-     *     LDAP server for groups that are valid in Guacamole, or
-     *     "(objectClass=*)" if not specified.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public ExprNode getGroupSearchFilter() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_GROUP_SEARCH_FILTER,
-            new PresenceNode("objectClass")
-        );
-    }
-
-    /**
-     * Returns the maximum number of seconds to wait for LDAP operations.
-     *
-     * @return
-     *     The maximum number of seconds to wait for LDAP operations
-     *     as configured in guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public int getOperationTimeout() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_OPERATION_TIMEOUT,
-            30
-        );
-    }
-
-    /**
-     * Returns names for custom LDAP user attributes.  By default no
-     * attributes will be returned.
-     *
-     * @return
-     *     Custom LDAP user attributes as configured in guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public List<String> getAttributes() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_USER_ATTRIBUTES,
-            Collections.<String>emptyList()
-        );
-    }
-    
-    /**
-     * Returns the name of the LDAP attribute used to enumerate
-     * members in a group, or "member" by default.
-     * 
-     * @return
-     *     The name of the LDAP attribute to use to enumerate
-     *     members in a group.
-     * 
-     * @throws GuacamoleException
-     *     If guacamole.properties connect be parsed.
-     */
-    public String getMemberAttribute() throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_MEMBER_ATTRIBUTE,
-            "member"
-        );
-    }
-
-    /**
-     * Returns whether the LDAP attribute used to enumerate members in a group
-     * specifies UID or DN.
-     *
-     * @return
-     *     The type of data contained in the LDAP attribute used to enumerate
-     *     members in a group, as configured in guacamole.properties
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public MemberAttributeType getMemberAttributeType()
-            throws GuacamoleException {
-        return environment.getProperty(
-            LDAPGuacamoleProperties.LDAP_MEMBER_ATTRIBUTE_TYPE,
-            MemberAttributeType.DN
-        );
     }
 
 }

@@ -21,13 +21,11 @@ package org.apache.guacamole.auth.ldap.user;
 
 import com.google.inject.Inject;
 import java.util.Collections;
-import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.auth.ldap.connection.ConnectionService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.ldap.LDAPAuthenticationProvider;
 import org.apache.guacamole.auth.ldap.group.UserGroupService;
 import org.apache.guacamole.net.auth.AbstractUserContext;
-import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
@@ -101,38 +99,32 @@ public class LDAPUserContext extends AbstractUserContext {
     private ConnectionGroup rootGroup;
 
     /**
-     * Initializes this UserContext using the provided AuthenticatedUser and
-     * LdapNetworkConnection.
+     * Initializes this UserContext using the provided AuthenticatedUser.
      *
      * @param user
      *     The AuthenticatedUser representing the user that authenticated. This
-     *     user may have been authenticated by a different authentication
-     *     provider (not LDAP).
-     *
-     * @param ldapConnection
-     *     The connection to the LDAP server to use when querying accessible
-     *     Guacamole users and connections.
+     *     user will always have been authenticated via LDAP, as LDAP data is
+     *     not provided to non-LDAP users.
      *
      * @throws GuacamoleException
      *     If associated data stored within the LDAP directory cannot be
      *     queried due to an error.
      */
-    public void init(AuthenticatedUser user, LdapNetworkConnection ldapConnection)
-            throws GuacamoleException {
+    public void init(LDAPAuthenticatedUser user) throws GuacamoleException {
 
         // Query all accessible users
         userDirectory = new SimpleDirectory<>(
-            userService.getUsers(ldapConnection)
+            userService.getUsers(user)
         );
 
         // Query all accessible user groups
         userGroupDirectory = new SimpleDirectory<>(
-            userGroupService.getUserGroups(ldapConnection)
+            userGroupService.getUserGroups(user)
         );
 
         // Query all accessible connections
         connectionDirectory = new SimpleDirectory<>(
-            connectionService.getConnections(user, ldapConnection)
+            connectionService.getConnections(user)
         );
 
         // Root group contains only connections

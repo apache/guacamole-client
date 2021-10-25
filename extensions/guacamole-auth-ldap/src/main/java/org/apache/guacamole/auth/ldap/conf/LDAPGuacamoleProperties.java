@@ -255,6 +255,17 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
+     * Number of milliseconds to wait for responses from the LDAP server.
+     */
+    public static final IntegerGuacamoleProperty LDAP_NETWORK_TIMEOUT =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ldap-network-timeout"; }
+
+    };
+
+    /**
      * Custom attribute or attributes to query from Guacamole user's record in
      * the LDAP directory.
      */

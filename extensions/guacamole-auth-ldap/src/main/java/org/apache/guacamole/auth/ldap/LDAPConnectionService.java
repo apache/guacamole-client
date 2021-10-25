@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.ldap;
 
-import com.google.inject.Inject;
 import org.apache.directory.api.ldap.model.exception.LdapAuthenticationException;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
@@ -34,8 +33,8 @@ import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
-import org.apache.guacamole.auth.ldap.conf.ConfigurationService;
 import org.apache.guacamole.auth.ldap.conf.EncryptionMethod;
+import org.apache.guacamole.auth.ldap.conf.LDAPConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,12 +47,6 @@ public class LDAPConnectionService {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(LDAPConnectionService.class);
-
-    /**
-     * Service for retrieving LDAP server configuration information.
-     */
-    @Inject
-    private ConfigurationService confService;
 
     /**
      * Creates a new instance of LdapNetworkConnection, configured as required
@@ -74,6 +67,10 @@ public class LDAPConnectionService {
      *     The encryption method that should be used to communicate with the
      *     LDAP server.
      *
+     * @param timeout
+     *     The maximum number of milliseconds to wait for a response from the
+     *     LDAP server.
+     *
      * @return
      *     A new instance of LdapNetworkConnection which uses the given
      *     encryption method to communicate with the LDAP server at the given
@@ -84,11 +81,13 @@ public class LDAPConnectionService {
      *     bug).
      */
     private LdapNetworkConnection createLDAPConnection(String host, int port,
-            EncryptionMethod encryptionMethod) throws GuacamoleException {
+            EncryptionMethod encryptionMethod, int timeout)
+            throws GuacamoleException {
 
         LdapConnectionConfig config = new LdapConnectionConfig();
         config.setLdapHost(host);
         config.setLdapPort(port);
+        config.setTimeout(timeout);
 
         // Map encryption method to proper connection and socket factory
         switch (encryptionMethod) {
@@ -130,6 +129,9 @@ public class LDAPConnectionService {
      * requested, and will not be connected until it is used in an LDAP
      * operation (such as a bind).
      *
+     * @param config
+     *     The configuration of the LDAP server being queried.
+     *
      * @return
      *     A new LdapNetworkConnection instance which has already been
      *     configured to use the encryption method, hostname, and port
@@ -139,12 +141,13 @@ public class LDAPConnectionService {
      *     If an error occurs while parsing guacamole.properties, or if the
      *     requested encryption method is actually not implemented (a bug).
      */
-    private LdapNetworkConnection createLDAPConnection()
+    private LdapNetworkConnection createLDAPConnection(LDAPConfiguration config)
             throws GuacamoleException {
         return createLDAPConnection(
-                confService.getServerHostname(),
-                confService.getServerPort(),
-                confService.getEncryptionMethod());
+                config.getServerHostname(),
+                config.getServerPort(),
+                config.getEncryptionMethod(),
+                config.getNetworkTimeout());
     }
 
     /**
@@ -155,6 +158,9 @@ public class LDAPConnectionService {
      * server. It will not be bound until a bind operation is explicitly
      * requested, and will not be connected until it is used in an LDAP
      * operation (such as a bind).
+     *
+     * @param config
+     *     The configuration of the LDAP server being queried.
      *
      * @param url
      *     The LDAP URL containing the details which should be used to connect
@@ -170,8 +176,8 @@ public class LDAPConnectionService {
      *     method indicated by the URL is known but not actually implemented (a
      *     bug).
      */
-    private LdapNetworkConnection createLDAPConnection(String url)
-            throws GuacamoleException {
+    private LdapNetworkConnection createLDAPConnection(LDAPConfiguration config,
+            String url) throws GuacamoleException {
 
         // Parse provided LDAP URL
         LdapUrl ldapUrl;
@@ -197,7 +203,7 @@ public class LDAPConnectionService {
 
         // Use STARTTLS for otherwise unencrypted ldap:// URLs if the main
         // LDAP connection requires STARTTLS
-        else if (confService.getEncryptionMethod() == EncryptionMethod.STARTTLS) {
+        else if (config.getEncryptionMethod() == EncryptionMethod.STARTTLS) {
             logger.debug("Using STARTTLS for LDAP URL \"{}\" as the main LDAP "
                     + "connection described in guacamole.properties is "
                     + "configured to use STARTTLS.", url);
@@ -210,7 +216,8 @@ public class LDAPConnectionService {
         if (port < 1)
             port = encryptionMethod.DEFAULT_PORT;
 
-        return createLDAPConnection(host, port, encryptionMethod);
+        return createLDAPConnection(host, port, encryptionMethod,
+                config.getNetworkTimeout());
 
     }
 
@@ -329,6 +336,9 @@ public class LDAPConnectionService {
      * hostname, port, and encryption method of the LDAP server are determined
      * from guacamole.properties.
      *
+     * @param config
+     *     The configuration of the LDAP server being queried.
+     *
      * @param bindUser
      *     The DN or UPN of the user to bind as, or null to bind anonymously.
      *
@@ -344,14 +354,17 @@ public class LDAPConnectionService {
      *     If an error occurs while parsing guacamole.properties, or if the
      *     configured encryption method is actually not implemented (a bug).
      */
-    public LdapNetworkConnection bindAs(String bindUser, String password)
-            throws GuacamoleException {
-        return bindAs(createLDAPConnection(), bindUser, password);
+    public LdapNetworkConnection bindAs(LDAPConfiguration config,
+            String bindUser, String password) throws GuacamoleException {
+        return bindAs(createLDAPConnection(config), bindUser, password);
     }
 
     /**
      * Binds to the LDAP server indicated by the given LDAP URL using the
      * credentials that were used to bind an existing LdapNetworkConnection.
+     *
+     * @param config
+     *     The configuration of the LDAP server being queried.
      *
      * @param url
      *     The LDAP URL containing the details which should be used to connect
@@ -370,16 +383,19 @@ public class LDAPConnectionService {
      *     method indicated by the URL is known but not actually implemented (a
      *     bug).
      */
-    public LdapNetworkConnection bindAs(String url,
+    public LdapNetworkConnection bindAs(LDAPConfiguration config, String url,
             LdapNetworkConnection useCredentialsFrom)
             throws GuacamoleException {
-        return bindAs(createLDAPConnection(url), useCredentialsFrom);
+        return bindAs(createLDAPConnection(config, url), useCredentialsFrom);
     }
 
     /**
      * Generate a SearchRequest object using the given Base DN and filter
      * and retrieving other properties from the LDAP configuration service.
-     * 
+     *
+     * @param config
+     *     The configuration of the LDAP server being queried.
+     *
      * @param baseDn
      *     The LDAP Base DN at which to search the search.
      * 
@@ -392,19 +408,19 @@ public class LDAPConnectionService {
      * @throws GuacamoleException
      *     If an error occurs retrieving any of the configuration values.
      */
-    public SearchRequest getSearchRequest(Dn baseDn, ExprNode filter)
-            throws GuacamoleException {
+    public SearchRequest getSearchRequest(LDAPConfiguration config, Dn baseDn,
+            ExprNode filter) throws GuacamoleException {
         
         SearchRequest searchRequest = new SearchRequestImpl();
         searchRequest.setBase(baseDn);
-        searchRequest.setDerefAliases(confService.getDereferenceAliases());
+        searchRequest.setDerefAliases(config.getDereferenceAliases());
         searchRequest.setScope(SearchScope.SUBTREE);
         searchRequest.setFilter(filter);
-        searchRequest.setSizeLimit(confService.getMaxResults());
-        searchRequest.setTimeLimit(confService.getOperationTimeout());
+        searchRequest.setSizeLimit(config.getMaxResults());
+        searchRequest.setTimeLimit(config.getOperationTimeout());
         searchRequest.setTypesOnly(false);
         
-        if (confService.getFollowReferrals())
+        if (config.getFollowReferrals())
             searchRequest.followReferrals();
         
         return searchRequest;
