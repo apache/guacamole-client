@@ -88,12 +88,12 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
     document.body.appendChild(clipboardContent);
 
     /**
-     * Stops the propogation of the given event through the DOM tree. This is
-     * identical to invoking stopPropogation() on the event directly, except
+     * Stops the propagation of the given event through the DOM tree. This is
+     * identical to invoking stopPropagation() on the event directly, except
      * that this function is usable as an event handler itself.
      *
      * @param {Event} e
-     *     The event whose propogation through the DOM tree should be stopped.
+     *     The event whose propagation through the DOM tree should be stopped.
      */
     var stopEventPropagation = function stopEventPropagation(e) {
         e.stopPropagation();

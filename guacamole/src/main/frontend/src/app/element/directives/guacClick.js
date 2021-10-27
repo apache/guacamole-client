@@ -44,7 +44,7 @@ angular.module('element').directive('guacClick', [function guacClick() {
 
             /**
              * The callback to invoke when a click or click-like event is
-             * received on the assocaited element.
+             * received on the associated element.
              *
              * @type guacClick~callback
              */

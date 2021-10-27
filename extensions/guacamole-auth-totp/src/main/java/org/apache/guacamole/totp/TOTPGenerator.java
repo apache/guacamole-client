@@ -438,8 +438,7 @@ public class TOTPGenerator {
      *
      * @return
      *     The TOTP code which would have been generated immediately prior to
-     *     the the code returned by invoking generate() with the given
-     *     timestamp.
+     *     the code returned by invoking generate() with the given timestamp.
      */
     public String previous(long time) {
         return generate(Math.max(startTime, time - timeStep));

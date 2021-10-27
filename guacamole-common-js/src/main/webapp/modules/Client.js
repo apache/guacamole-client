@@ -541,7 +541,7 @@ Guacamole.Client = function(tunnel) {
      */
     this.createObjectOutputStream = function createObjectOutputStream(index, mimetype, name) {
 
-        // Allocate and ssociate stream with object metadata
+        // Allocate and associate stream with object metadata
         var stream = guac_client.createOutputStream();
         tunnel.sendMessage("put", index, stream.index, mimetype, name);
         return stream;
@@ -666,7 +666,7 @@ Guacamole.Client = function(tunnel) {
      *
      * @return {Guacamole.AudioPlayer}
      *     An object which implements the Guacamole.AudioPlayer interface and
-     *     has been initialied to play the data in the provided stream, or null
+     *     has been initialized to play the data in the provided stream, or null
      *     if the built-in audio players of the Guacamole client should be
      *     used.
      */
@@ -690,7 +690,7 @@ Guacamole.Client = function(tunnel) {
      *
      * @return {Guacamole.VideoPlayer}
      *     An object which implements the Guacamole.VideoPlayer interface and
-     *     has been initialied to play the data in the provided stream, or null
+     *     has been initialized to play the data in the provided stream, or null
      *     if the built-in video players of the Guacamole client should be
      *     used.
      */

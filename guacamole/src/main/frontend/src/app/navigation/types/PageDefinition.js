@@ -34,7 +34,7 @@ angular.module('navigation').factory('PageDefinition', [function definePageDefin
     var PageDefinition = function PageDefinition(template) {
 
         /**
-         * The the name of the page, which should be a translation table key.
+         * The name of the page, which should be a translation table key.
          * Alternatively, this may also be a list of names, where the final
          * name represents the page and earlier names represent categorization.
          * Those categorical names may be rendered hierarchically as a system

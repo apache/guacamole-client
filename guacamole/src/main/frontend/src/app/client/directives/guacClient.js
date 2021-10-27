@@ -558,7 +558,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
             
         /**
          * Displays a visual indication that dropping the file currently
-         * being dragged is possible. Further propogation and default behavior
+         * being dragged is possible. Further propagation and default behavior
          * of the given event is automatically prevented.
          * 
          * @param {Event} e
@@ -577,7 +577,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
         /**
          * Removes the visual indication that dropping the file currently
-         * being dragged is possible. Further propogation and default behavior
+         * being dragged is possible. Further propagation and default behavior
          * of the given event is automatically prevented.
          * 
          * @param {Event} e

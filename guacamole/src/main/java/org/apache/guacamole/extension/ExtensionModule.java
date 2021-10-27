@@ -221,7 +221,7 @@ public class ExtensionModule extends ServletModule {
     }
 
     /**
-     * Binds each of the the given AuthenticationProvider classes such that any
+     * Binds each of the given AuthenticationProvider classes such that any
      * service requiring access to the AuthenticationProvider can obtain it via
      * injection.
      *
@@ -277,7 +277,7 @@ public class ExtensionModule extends ServletModule {
     }
 
     /**
-     * Binds each of the the given Listener classes such that any
+     * Binds each of the given Listener classes such that any
      * service requiring access to the Listener can obtain it via
      * injection.
      *
