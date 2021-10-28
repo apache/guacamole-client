@@ -89,7 +89,10 @@ public class MySQLAuthenticationProviderModule implements Module {
         // For compatibility, set legacy useSSL property when SSL is disabled.
         if (sslMode == MySQLSSLMode.DISABLED)
             driverProperties.setProperty("useSSL", "false");
-        
+        // For compatibility, set legacy useSSL property when SSL is eisabled.(Required for mariadb connector/j)
+        else
+            driverProperties.setProperty("useSSL", "true");
+
         // Check other SSL settings and set as required
         File trustStore = environment.getMySQLSSLTrustStore();
         if (trustStore != null)
