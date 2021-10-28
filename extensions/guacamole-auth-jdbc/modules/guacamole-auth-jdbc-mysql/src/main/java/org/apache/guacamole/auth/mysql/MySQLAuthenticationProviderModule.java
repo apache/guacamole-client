@@ -87,9 +87,12 @@ public class MySQLAuthenticationProviderModule implements Module {
         driverProperties.setProperty("sslMode", sslMode.getDriverValue());
         
         // For compatibility, set legacy useSSL property when SSL is disabled.
-        if (sslMode == MySQLSSLMode.DISABLED)
+        if (sslMode == MySQLSSLMode.DISABLED) {
             driverProperties.setProperty("useSSL", "false");
-        
+        } else {
+            driverProperties.setProperty("useSSL", "true");
+        }
+
         // Check other SSL settings and set as required
         File trustStore = environment.getMySQLSSLTrustStore();
         if (trustStore != null)
