@@ -744,6 +744,7 @@ END
 
 }
 
+##
 ## Adds properties to guacamole.properties which select the SAML
 ## authentication provider, and configure it to connect to the specified SAML
 ## provider.
@@ -756,7 +757,7 @@ associate_saml() {
         cat <<END
 FATAL: Missing required environment variables
 -------------------------------------------------------------------------------
-If using an openid authentication, you must provide each of the following
+If using a SAML authentication, you must provide each of the following
 environment variables:
 
     SAML_IDP_METADATA_URL           The URI of the XML metadata file that from the SAML Identity
