@@ -130,6 +130,15 @@ public class ConfigurationService {
 
         }
 
+        // Clear cached YAML if it no longer exists
+        else if (cachedConfigurations != null) {
+            long oldLastModified = lastModified.get();
+            if (lastModified.compareAndSet(oldLastModified, 0)) {
+                logger.debug("Clearing cached LDAP configuration from \"{}\" (file no longer exists).", ldapServers);
+                cachedConfigurations = null;
+            }
+        }
+
         // Use guacamole.properties if not using YAML
         if (cachedConfigurations == null) {
             logger.debug("Reading LDAP configuration from guacamole.properties...");
