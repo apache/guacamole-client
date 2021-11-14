@@ -357,7 +357,7 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
 
     @Override
     public String getSearchBindPassword() throws GuacamoleException {
-        return withDefault(searchBindPassword, defaultConfig::getSearchBindDN);
+        return withDefault(searchBindPassword, defaultConfig::getSearchBindPassword);
     }
 
     @Override
