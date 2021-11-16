@@ -67,8 +67,11 @@ public class ConfigurationService {
 
     /**
      * The cached copy of the configuration read from {@link #LDAP_SERVERS_YML}.
+     * If the current set of LDAP servers has not yet been read from the YAML
+     * configuration file, or if guacamole.properties is being used instead,
+     * this will be null.
      */
-    private Collection<JacksonLDAPConfiguration> cachedConfigurations = Collections.emptyList();
+    private Collection<JacksonLDAPConfiguration> cachedConfigurations = null;
     
     /**
      * The Guacamole server environment.
@@ -90,7 +93,7 @@ public class ConfigurationService {
      */
     public Collection<? extends LDAPConfiguration> getLDAPConfigurations() throws GuacamoleException {
 
-        // Read configuration from YAML, if available
+        // Read/refresh configuration from YAML, if available
         File ldapServers = new File(environment.getGuacamoleHome(), LDAP_SERVERS_YML);
         if (ldapServers.exists()) {
 
@@ -105,9 +108,15 @@ public class ConfigurationService {
                     logger.debug("Reading updated LDAP configuration from \"{}\"...", ldapServers);
                     Collection<JacksonLDAPConfiguration> configs = mapper.readValue(ldapServers, new TypeReference<Collection<JacksonLDAPConfiguration>>() {});
 
-                    logger.debug("Reading LDAP configuration defaults from guacamole.properties...");
-                    LDAPConfiguration defaultConfig = new EnvironmentLDAPConfiguration(environment);
-                    configs.forEach((config) -> config.setDefaults(defaultConfig));
+                    if (configs != null) {
+                        logger.debug("Reading LDAP configuration defaults from guacamole.properties...");
+                        LDAPConfiguration defaultConfig = new EnvironmentLDAPConfiguration(environment);
+                        configs.forEach((config) -> config.setDefaults(defaultConfig));
+                    }
+                    else
+                        logger.debug("Using only guacamole.properties for "
+                                + "LDAP server definitions as \"{}\" is "
+                                + "empty.", ldapServers);
 
                     cachedConfigurations = configs;
 
@@ -119,13 +128,24 @@ public class ConfigurationService {
             else
                 logger.debug("Using cached LDAP configuration from \"{}\".", ldapServers);
 
-            return cachedConfigurations;
+        }
 
+        // Clear cached YAML if it no longer exists
+        else if (cachedConfigurations != null) {
+            long oldLastModified = lastModified.get();
+            if (lastModified.compareAndSet(oldLastModified, 0)) {
+                logger.debug("Clearing cached LDAP configuration from \"{}\" (file no longer exists).", ldapServers);
+                cachedConfigurations = null;
+            }
         }
 
         // Use guacamole.properties if not using YAML
-        logger.debug("Reading LDAP configuration from guacamole.properties...");
-        return Collections.singletonList(new EnvironmentLDAPConfiguration(environment));
+        if (cachedConfigurations == null) {
+            logger.debug("Reading LDAP configuration from guacamole.properties...");
+            return Collections.singletonList(new EnvironmentLDAPConfiguration(environment));
+        }
+
+        return cachedConfigurations;
 
     }
 
