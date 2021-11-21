@@ -22,15 +22,17 @@ package org.apache.guacamole.auth.saml;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.saml.acs.AssertionConsumerServiceResource;
+import org.apache.guacamole.auth.saml.acs.AuthenticationSessionManager;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
- * Class when provides authentication for the Guacamole Client against a
- * SAML SSO Identity Provider (IdP).  This module does not provide any
- * storage for connection information, and must be layered with other
- * modules in order to retrieve connections.
+ * AuthenticationProvider implementation that authenticates Guacamole users
+ * against a SAML SSO Identity Provider (IdP). This module does not provide any
+ * storage for connection information, and must be layered with other modules
+ * for authenticated users to have access to Guacamole connections.
  */
 public class SAMLAuthenticationProvider extends AbstractAuthenticationProvider {
 
@@ -43,12 +45,8 @@ public class SAMLAuthenticationProvider extends AbstractAuthenticationProvider {
     /**
      * Creates a new SAMLAuthenticationProvider that authenticates users
      * against a SAML IdP.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
      */
-    public SAMLAuthenticationProvider() throws GuacamoleException {
+    public SAMLAuthenticationProvider() {
 
         // Set up Guice injector.
         injector = Guice.createInjector(
@@ -64,7 +62,7 @@ public class SAMLAuthenticationProvider extends AbstractAuthenticationProvider {
 
     @Override
     public Object getResource() throws GuacamoleException {
-        return injector.getInstance(SAMLAuthenticationProviderResource.class);
+        return injector.getInstance(AssertionConsumerServiceResource.class);
     }
 
     @Override
@@ -80,7 +78,7 @@ public class SAMLAuthenticationProvider extends AbstractAuthenticationProvider {
     
     @Override
     public void shutdown() {
-        injector.getInstance(SAMLResponseMap.class).shutdown();
+        injector.getInstance(AuthenticationSessionManager.class).shutdown();
     }
 
 }
