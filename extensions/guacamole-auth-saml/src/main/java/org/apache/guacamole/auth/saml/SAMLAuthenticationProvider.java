@@ -24,9 +24,12 @@ import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.saml.acs.AssertionConsumerServiceResource;
 import org.apache.guacamole.auth.saml.acs.AuthenticationSessionManager;
+import org.apache.guacamole.auth.saml.user.SAMLAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.TokenInjectingUserContext;
+import org.apache.guacamole.net.auth.UserContext;
 
 /**
  * AuthenticationProvider implementation that authenticates Guacamole users
@@ -75,7 +78,22 @@ public class SAMLAuthenticationProvider extends AbstractAuthenticationProvider {
         return authProviderService.authenticateUser(credentials);
 
     }
-    
+
+    @Override
+    public UserContext decorate(UserContext context,
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
+
+        // Only decorate if the user authenticated with SAML
+        if (!(authenticatedUser instanceof SAMLAuthenticatedUser))
+            return context;
+
+        // Apply SAML-specific tokens to all connections / connection groups
+        return new TokenInjectingUserContext(context,
+                ((SAMLAuthenticatedUser) authenticatedUser).getTokens());
+
+    }
+
     @Override
     public void shutdown() {
         injector.getInstance(AuthenticationSessionManager.class).shutdown();
