@@ -21,7 +21,10 @@ package org.apache.guacamole.auth.saml;
 
 import com.google.inject.AbstractModule;
 import org.apache.guacamole.auth.saml.conf.ConfigurationService;
-import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.saml.acs.AssertionConsumerServiceResource;
+import org.apache.guacamole.auth.saml.acs.AuthenticationSessionManager;
+import org.apache.guacamole.auth.saml.acs.IdentifierGenerator;
+import org.apache.guacamole.auth.saml.acs.SAMLService;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -48,13 +51,8 @@ public class SAMLAuthenticationProviderModule extends AbstractModule {
      *
      * @param authProvider
      *     The AuthenticationProvider for which injection is being configured.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the Guacamole server
-     *     environment.
      */
-    public SAMLAuthenticationProviderModule(AuthenticationProvider authProvider)
-            throws GuacamoleException {
+    public SAMLAuthenticationProviderModule(AuthenticationProvider authProvider) {
 
         // Get local environment
         this.environment = LocalEnvironment.getInstance();
@@ -72,9 +70,11 @@ public class SAMLAuthenticationProviderModule extends AbstractModule {
         bind(Environment.class).toInstance(environment);
 
         // Bind SAML-specific services
+        bind(AssertionConsumerServiceResource.class);
+        bind(AuthenticationSessionManager.class);
         bind(ConfigurationService.class);
-        bind(SAMLAuthenticationProviderResource.class);
-        bind(SAMLResponseMap.class);
+        bind(IdentifierGenerator.class);
+        bind(SAMLService.class);
 
     }
 

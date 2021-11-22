@@ -32,6 +32,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
 
@@ -142,6 +143,21 @@ public class ConfigurationService {
             
         @Override
         public String getName() { return "saml-group-attribute"; }
+                
+    };
+
+    /**
+     * The maximum amount of time to allow for an in-progress SAML
+     * authentication attempt to be completed, in minutes. A user that takes
+     * longer than this amount of time to complete authentication with their
+     * identity provider will be redirected back to the identity provider to
+     * try again.
+     */
+    private static final IntegerGuacamoleProperty SAML_AUTH_TIMEOUT =
+            new IntegerGuacamoleProperty() {
+            
+        @Override
+        public String getName() { return "saml-auth-timeout"; }
                 
     };
 
@@ -293,6 +309,24 @@ public class ConfigurationService {
      */
     public String getGroupAttribute() throws GuacamoleException {
         return environment.getProperty(SAML_GROUP_ATTRIBUTE, "groups");
+    }
+
+    /**
+     * Returns the maximum amount of time to allow for an in-progress SAML
+     * authentication attempt to be completed, in minutes. A user that takes
+     * longer than this amount of time to complete authentication with their
+     * identity provider will be redirected back to the identity provider to
+     * try again.
+     *
+     * @return
+     *     The maximum amount of time to allow for an in-progress SAML
+     *     authentication attempt to be completed, in minutes.
+     *
+     * @throws GuacamoleException
+     *     If the authentication timeout cannot be parsed.
+     */
+    public int getAuthenticationTimeout() throws GuacamoleException {
+        return environment.getProperty(SAML_AUTH_TIMEOUT, 5);
     }
 
     /**
