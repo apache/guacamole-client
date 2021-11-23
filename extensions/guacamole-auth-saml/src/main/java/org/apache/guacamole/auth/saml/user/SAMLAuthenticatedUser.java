@@ -92,13 +92,13 @@ public class SAMLAuthenticatedUser extends AbstractAuthenticatedUser {
      *     for substitution as parameter tokens.
      */
     private Map<String, String> getTokens(AssertedIdentity identity) {
-        return identity.getAttributes().entrySet()
+        return Collections.unmodifiableMap(identity.getAttributes().entrySet()
                 .stream()
                 .filter((entry) -> !entry.getValue().isEmpty())
-                .collect(Collectors.toUnmodifiableMap(
+                .collect(Collectors.toMap(
                     (entry) -> TokenName.canonicalize(entry.getKey(), SAML_ATTRIBUTE_TOKEN_PREFIX),
                     (entry) -> entry.getValue().get(0)
-                ));
+                )));
     }
 
     /**
