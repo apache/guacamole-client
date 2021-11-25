@@ -228,7 +228,7 @@ public class AuthenticationProviderService {
             }
 
             // Attempt bind (authentication)
-            LdapNetworkConnection ldapConnection = ldapService.bindAs(config, bindDn.getName(), password);
+            LdapNetworkConnection ldapConnection = ldapService.bindAs(config, bindDn.getName(), (password == null || password.isEmpty()) ? config.getSearchBindPassword() : password);
             if (ldapConnection == null) {
                 logger.info("Unable to bind as user \"{}\" against LDAP "
                         + "server \"{}\". Proceeding with next server...",
