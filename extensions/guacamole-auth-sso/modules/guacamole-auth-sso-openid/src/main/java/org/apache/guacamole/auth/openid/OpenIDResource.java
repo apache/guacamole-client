@@ -16,31 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.guacamole.auth.openid;
 
-package org.apache.guacamole.auth.cas;
-
-import org.apache.guacamole.auth.sso.SSOAuthenticationProvider;
+import com.google.inject.Inject;
+import javax.ws.rs.core.Response;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.sso.SSOResource;
 
 /**
- * Guacamole authentication backend which authenticates users using an
- * arbitrary external system implementing CAS. No storage for connections is
- * provided - only authentication. Storage must be provided by some other
- * extension.
+ * REST API resource that automatically redirects users to the OpenID identity
+ * provider.
  */
-public class CASAuthenticationProvider extends SSOAuthenticationProvider {
-    
+public class OpenIDResource implements SSOResource {
+
     /**
-     * Creates a new CASAuthenticationProvider that authenticates users
-     * against an CAS service
+     * Service for authenticating users using OpenID.
      */
-    public CASAuthenticationProvider() {
-        super(AuthenticationProviderService.class,
-                CASResource.class, new CASAuthenticationProviderModule());
-    }
-    
+    @Inject
+    private AuthenticationProviderService authService;
+
     @Override
-    public String getIdentifier() {
-        return "cas";
+    public Response redirectToIdentityProvider() throws GuacamoleException {
+        return Response.seeOther(authService.getLoginURI()).build();
     }
 
 }

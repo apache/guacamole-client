@@ -9,6 +9,15 @@
         "org.apache.guacamole.auth.saml.SAMLAuthenticationProvider"
     ],
 
+    "css" : [
+        "styles/sso-providers.css"
+    ],
+
+    "html" : [
+        "html/sso-providers.html",
+        "html/sso-provider-saml.html"
+    ],
+
     "translations" : [
         "translations/ca.json",
         "translations/de.json",

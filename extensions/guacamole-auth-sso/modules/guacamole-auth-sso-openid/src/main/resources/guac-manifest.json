@@ -9,6 +9,15 @@
         "org.apache.guacamole.auth.openid.OpenIDAuthenticationProvider"
     ],
 
+    "css" : [
+        "styles/sso-providers.css"
+    ],
+
+    "html" : [
+        "html/sso-providers.html",
+        "html/sso-provider-openid.html"
+    ],
+
     "translations" : [
         "translations/ca.json",
         "translations/de.json",

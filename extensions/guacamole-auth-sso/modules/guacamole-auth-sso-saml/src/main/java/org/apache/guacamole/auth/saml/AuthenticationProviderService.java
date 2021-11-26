@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.saml;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.google.inject.Singleton;
 import java.net.URI;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
@@ -35,12 +36,13 @@ import org.apache.guacamole.form.RedirectField;
 import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
+import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 
 /**
  * Service that authenticates Guacamole users by processing the responses of
  * SAML identity providers.
  */
+@Singleton
 public class AuthenticationProviderService implements SSOAuthenticationProviderService {
 
     /**
@@ -94,7 +96,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         // Redirect to SAML IdP if no SAML identity is associated with the
         // Guacamole authentication request
         URI authUri = saml.createRequest();
-        throw new GuacamoleInsufficientCredentialsException("Redirecting to SAML IdP.",
+        throw new GuacamoleInvalidCredentialsException("Redirecting to SAML IdP.",
                 new CredentialsInfo(Arrays.asList(new Field[] {
                     new RedirectField(AUTH_SESSION_QUERY_PARAM, authUri,
                             new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING"))

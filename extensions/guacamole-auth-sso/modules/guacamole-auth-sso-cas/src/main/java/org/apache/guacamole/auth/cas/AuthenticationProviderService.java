@@ -20,24 +20,38 @@
 package org.apache.guacamole.auth.cas;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import java.net.URI;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.apache.guacamole.auth.cas.conf.ConfigurationService;
-import org.apache.guacamole.auth.cas.form.CASTicketField;
 import org.apache.guacamole.auth.cas.ticket.TicketValidationService;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
 import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
+import org.apache.guacamole.form.RedirectField;
 import org.apache.guacamole.language.TranslatableMessage;
 
 /**
  * Service that authenticates Guacamole users by processing CAS tickets.
  */
+@Singleton
 public class AuthenticationProviderService implements SSOAuthenticationProviderService {
+
+    /**
+     * The parameter that will be present upon successful CAS authentication.
+     */
+    public static final String TICKET_PARAMETER_NAME = "ticket";
+    
+    /**
+     * The standard URI name for the CAS login resource.
+     */
+    private static final String CAS_LOGIN_URI = "login";
 
     /**
      * Service for retrieving CAS configuration information.
@@ -58,27 +72,40 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         // Pull CAS ticket from request if present
         HttpServletRequest request = credentials.getRequest();
         if (request != null) {
-            String ticket = request.getParameter(CASTicketField.PARAMETER_NAME);
+            String ticket = request.getParameter(TICKET_PARAMETER_NAME);
             if (ticket != null) {
                 return ticketService.validateTicket(ticket, credentials);
             }
         }
 
-        // Request CAS ticket
+        // Request CAS ticket (will automatically redirect the user to the
+        // CAS authorization page via JavaScript)
         throw new GuacamoleInvalidCredentialsException("Invalid login.",
             new CredentialsInfo(Arrays.asList(new Field[] {
-
-                // CAS-specific ticket (will automatically redirect the user
-                // to the authorization page via JavaScript)
-                new CASTicketField(
-                    confService.getAuthorizationEndpoint(),
-                    confService.getRedirectURI(),
-                    new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING")
-                )
+                new RedirectField(TICKET_PARAMETER_NAME, getLoginURI(),
+                        new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING"))
 
             }))
         );
 
+    }
+
+    /**
+     * Returns the full URI of the CAS login endpoint to which a user must be
+     * redirected in order to authenticate and receive a CAS ticket.
+     *
+     * @return 
+     *     The full URI of the CAS login endpoint.
+     *
+     * @throws GuacamoleException
+     *     If configuration information required for generating the login URI
+     *     cannot be read.
+     */
+    public URI getLoginURI() throws GuacamoleException {
+        return UriBuilder.fromUri(confService.getAuthorizationEndpoint())
+                .path(CAS_LOGIN_URI)
+                .queryParam("service", confService.getRedirectURI())
+                .build();
     }
 
     @Override

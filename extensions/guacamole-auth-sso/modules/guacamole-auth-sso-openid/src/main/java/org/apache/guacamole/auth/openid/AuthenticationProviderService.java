@@ -21,18 +21,21 @@ package org.apache.guacamole.auth.openid;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.google.inject.Singleton;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
-import org.apache.guacamole.auth.openid.form.TokenField;
 import org.apache.guacamole.auth.openid.token.NonceService;
 import org.apache.guacamole.auth.openid.token.TokenValidationService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
 import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
 import org.apache.guacamole.form.Field;
+import org.apache.guacamole.form.RedirectField;
 import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
@@ -42,7 +45,14 @@ import org.jose4j.jwt.JwtClaims;
 /**
  * Service that authenticates Guacamole users by processing OpenID tokens.
  */
+@Singleton
 public class AuthenticationProviderService implements SSOAuthenticationProviderService {
+
+    /**
+     * The standard HTTP parameter which will be included within the URL by all
+     * OpenID services upon successful authentication and redirect.
+     */
+    public static final String TOKEN_PARAMETER_NAME = "id_token";
 
     /**
      * Service for retrieving OpenID configuration information.
@@ -78,7 +88,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         // Validate OpenID token in request, if present, and derive username
         HttpServletRequest request = credentials.getRequest();
         if (request != null) {
-            String token = request.getParameter(TokenField.PARAMETER_NAME);
+            String token = request.getParameter(TOKEN_PARAMETER_NAME);
             if (token != null) {
                 JwtClaims claims = tokenService.validateToken(token);
                 if (claims != null) {
@@ -99,24 +109,36 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
 
         }
 
-        // Request OpenID token
+        // Request OpenID token (will automatically redirect the user to the
+        // OpenID authorization page via JavaScript)
         throw new GuacamoleInvalidCredentialsException("Invalid login.",
             new CredentialsInfo(Arrays.asList(new Field[] {
-
-                // OpenID-specific token (will automatically redirect the user
-                // to the authorization page via JavaScript)
-                new TokenField(
-                    confService.getAuthorizationEndpoint(),
-                    confService.getScope(),
-                    confService.getClientID(),
-                    confService.getRedirectURI(),
-                    nonceService.generate(confService.getMaxNonceValidity() * 60000L),
-                    new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING")
-                )
-
+                new RedirectField(TOKEN_PARAMETER_NAME, getLoginURI(),
+                        new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING"))
             }))
         );
 
+    }
+
+    /**
+     * Returns the full URI of the OpenID login endpoint to which a user must
+     * be redirected in order to authenticate and receive an OpenID token.
+     *
+     * @return 
+     *     The full URI of the OpenID login endpoint, including unique nonce.
+     *
+     * @throws GuacamoleException
+     *     If configuration information required for generating the login URI
+     *     cannot be read.
+     */
+    public URI getLoginURI() throws GuacamoleException {
+        return UriBuilder.fromUri(confService.getAuthorizationEndpoint())
+                .queryParam("scope", confService.getScope())
+                .queryParam("response_type", "id_token")
+                .queryParam("client_id", confService.getClientID())
+                .queryParam("redirect_uri", confService.getRedirectURI())
+                .queryParam("nonce", nonceService.generate(confService.getMaxNonceValidity() * 60000L))
+                .build();
     }
 
     @Override

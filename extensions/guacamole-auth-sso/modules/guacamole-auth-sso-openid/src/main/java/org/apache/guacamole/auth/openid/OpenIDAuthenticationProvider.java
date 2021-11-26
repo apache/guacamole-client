@@ -34,7 +34,8 @@ public class OpenIDAuthenticationProvider extends SSOAuthenticationProvider {
      * against an OpenID service.
      */
     public OpenIDAuthenticationProvider() {
-        super(AuthenticationProviderService.class, new OpenIDAuthenticationProviderModule());
+        super(AuthenticationProviderService.class, OpenIDResource.class,
+                new OpenIDAuthenticationProviderModule());
     }
 
     @Override

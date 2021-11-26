@@ -30,6 +30,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.saml.AuthenticationProviderService;
 import org.apache.guacamole.auth.saml.conf.ConfigurationService;
+import org.apache.guacamole.auth.sso.SSOResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * endpoint. SAML identity providers will issue an HTTP POST to this endpoint
  * asserting the user's identity when the user has successfully authenticated.
  */
-public class AssertionConsumerServiceResource {
+public class AssertionConsumerServiceResource implements SSOResource {
 
     /**
      * Logger for this class.
@@ -62,6 +63,11 @@ public class AssertionConsumerServiceResource {
      */
     @Inject
     private SAMLService saml;
+
+    @Override
+    public Response redirectToIdentityProvider() throws GuacamoleException {
+        return Response.seeOther(saml.createRequest()).build();
+    }
 
     /**
      * Processes the SAML response submitted by the SAML IdP via an HTTP POST.

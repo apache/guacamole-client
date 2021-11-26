@@ -17,30 +17,34 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.cas;
+.login-ui .sso-providers {
+    display: none;
+}
 
-import org.apache.guacamole.auth.sso.SSOAuthenticationProvider;
+.login-ui .sso-providers:last-child {
+    display: table-row;
+}
 
-/**
- * Guacamole authentication backend which authenticates users using an
- * arbitrary external system implementing CAS. No storage for connections is
- * provided - only authentication. Storage must be provided by some other
- * extension.
- */
-public class CASAuthenticationProvider extends SSOAuthenticationProvider {
-    
-    /**
-     * Creates a new CASAuthenticationProvider that authenticates users
-     * against an CAS service
-     */
-    public CASAuthenticationProvider() {
-        super(AuthenticationProviderService.class,
-                CASResource.class, new CASAuthenticationProviderModule());
-    }
-    
-    @Override
-    public String getIdentifier() {
-        return "cas";
-    }
+.sso-providers ul {
+    list-style: none;
+}
 
+.sso-providers ul, .sso-providers li {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+.sso-providers li::before {
+    content: ' / ';
+}
+
+.sso-providers li:first-child::before {
+    display: none;
+}
+
+.sso-providers-content {
+    display: table-cell;
+    padding: 0.25em 0.5em;
+    height: 1px;
 }
