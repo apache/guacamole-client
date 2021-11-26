@@ -110,7 +110,8 @@ public class AuthenticationProviderService {
         URI authUri = saml.createRequest();
         throw new GuacamoleInsufficientCredentialsException("Redirecting to SAML IdP.",
                 new CredentialsInfo(Arrays.asList(new Field[] {
-                    new RedirectField("samlRedirect", authUri, new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING"))
+                    new RedirectField(AUTH_SESSION_QUERY_PARAM, authUri,
+                            new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING"))
                 }))
         );
 
