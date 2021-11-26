@@ -87,7 +87,7 @@ public class AuthenticationProviderService {
                 new CASTicketField(
                     confService.getAuthorizationEndpoint(),
                     confService.getRedirectURI(),
-                    new TranslatableMessage("LOGIN.INFO_CAS_REDIRECT_PENDING")
+                    new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING")
                 )
 
             }))

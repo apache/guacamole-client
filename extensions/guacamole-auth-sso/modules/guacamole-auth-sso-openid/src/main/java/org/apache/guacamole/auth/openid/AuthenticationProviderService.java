@@ -131,7 +131,7 @@ public class AuthenticationProviderService {
                     confService.getClientID(),
                     confService.getRedirectURI(),
                     nonceService.generate(confService.getMaxNonceValidity() * 60000L),
-                    new TranslatableMessage("LOGIN.INFO_OID_REDIRECT_PENDING")
+                    new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING")
                 )
 
             }))
