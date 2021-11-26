@@ -711,6 +711,17 @@ associate_json() {
 }
 
 ##
+## Adds properties to guacamole.process wich configure other
+## options
+##
+associate_other() {
+    # Skip unavailable
+    set_optional_property     \
+        "skip-if-unavailable" \
+        "$SKIP_IF_UNAVAILABLE"
+}
+
+##
 ## Starts Guacamole under Tomcat, replacing the current process with the
 ## Tomcat process. As the current process will be replaced, this MUST be the
 ## last function run within the script.
@@ -872,6 +883,9 @@ fi
 if [ -n "$JSON_SECRET_KEY" ]; then
     associate_json
 fi
+
+# Associate other keys
+associate_other
 
 # Set logback level if specified
 if [ -n "$LOGBACK_LEVEL" ]; then
