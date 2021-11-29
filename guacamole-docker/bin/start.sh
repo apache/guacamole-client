@@ -711,10 +711,11 @@ associate_json() {
 }
 
 ##
-## Adds properties to guacamole.process wich configure other
-## options
+## Adds properties to guacamole.properties which configure general
+## options.
+## Covers any properties that are not tied to a specific extension.
 ##
-associate_other() {
+associate_general_options() {
     # Skip unavailable
     set_optional_property     \
         "skip-if-unavailable" \
@@ -884,8 +885,8 @@ if [ -n "$JSON_SECRET_KEY" ]; then
     associate_json
 fi
 
-# Associate other keys
-associate_other
+# Associate general configuration
+associate_general_options
 
 # Set logback level if specified
 if [ -n "$LOGBACK_LEVEL" ]; then
