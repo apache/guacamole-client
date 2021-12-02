@@ -401,14 +401,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
         
     }
 
-    /**
-     * Returns the UUID of the underlying tunnel. If there is no underlying
-     * tunnel, this will be the UUID assigned to the underlying tunnel when the
-     * tunnel is set.
-     *
-     * @return
-     *     The current or future UUID of the underlying tunnel.
-     */
+    @Override
     public UUID getUUID() {
         return uuid;
     }

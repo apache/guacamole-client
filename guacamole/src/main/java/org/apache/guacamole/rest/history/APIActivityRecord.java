@@ -20,6 +20,8 @@
 package org.apache.guacamole.rest.history;
 
 import java.util.Date;
+import java.util.Map;
+import java.util.UUID;
 import org.apache.guacamole.net.auth.ActivityRecord;
 
 /**
@@ -56,6 +58,24 @@ public class APIActivityRecord {
     private final boolean active;
 
     /**
+     * The unique identifier assigned to this record, or null if this record
+     * has no such identifier.
+     */
+    private final String identifier;
+    
+    /**
+     * A UUID that uniquely identifies this record, or null if no such unique
+     * identifier exists.
+     */
+    private final UUID uuid;
+
+    /**
+     * A map of all attribute identifiers to their corresponding values, for
+     * all attributes associated with this record.
+     */
+    private final Map<String, String> attributes;
+    
+    /**
      * Creates a new APIActivityRecord, copying the data from the given activity
      * record.
      *
@@ -68,6 +88,8 @@ public class APIActivityRecord {
         this.remoteHost = record.getRemoteHost();
         this.username   = record.getUsername();
         this.active     = record.isActive();
+        this.uuid       = record.getUUID();
+        this.attributes = record.getAttributes();
     }
 
     /**
@@ -128,4 +150,27 @@ public class APIActivityRecord {
         return active;
     }
 
+    /**
+     * Returns a UUID that uniquely identifies this record. If not implemented
+     * by the extension exposing this history record, this may be null.
+     *
+     * @return
+     *     A UUID that uniquely identifies this record, or null if no such
+     *     unique identifier exists.
+     */
+    public UUID getUUID() {
+        return uuid;
+    }
+
+    /**
+     * Returns all attributes associated with this record.
+     *
+     * @return
+     *     A map of all attribute identifiers to their corresponding values,
+     *     for all attributes associated with this record.
+     */
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+    
 }

@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.UUID;
+
 /**
  * A logging record describing when a user started and ended usage of a
  * particular connection.
@@ -69,5 +71,16 @@ public interface ConnectionRecord extends ActivityRecord {
      *     was accessed directly.
      */
     public String getSharingProfileName();
+
+    /**
+     * {@inheritDoc}
+     * <p>If implemented, this UUID SHOULD be identical to the UUID of the
+     * {@link GuacamoleTunnel} originally returned when the connection was
+     * established to allow extensions and/or the web application to
+     * automatically associate connection information with corresponding
+     * history records, such as log messages and session recordings.
+     */
+    @Override
+    public UUID getUUID();
 
 }
