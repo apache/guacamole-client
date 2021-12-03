@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -470,6 +471,10 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 config = getGuacamoleConfiguration(connection, connectionID, activeConnection.getSharingProfile());
 
             }
+
+            // Include history record UUID as token
+            tokens = new HashMap<>(tokens);
+            tokens.put("HISTORY_UUID", activeConnection.getUUID().toString());
 
             // Build token filter containing credential tokens
             TokenFilter tokenFilter = new TokenFilter();
