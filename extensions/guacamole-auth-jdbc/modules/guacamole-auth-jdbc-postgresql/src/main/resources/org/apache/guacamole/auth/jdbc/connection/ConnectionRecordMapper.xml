@@ -25,6 +25,7 @@
 
     <!-- Result mapper for system permissions -->
     <resultMap id="ConnectionRecordResultMap" type="org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel">
+        <id     column="history_id"           property="recordID"                 jdbcType="INTEGER"/>
         <result column="connection_id"        property="connectionIdentifier"     jdbcType="INTEGER"/>
         <result column="connection_name"      property="connectionName"           jdbcType="VARCHAR"/>
         <result column="remote_host"          property="remoteHost"               jdbcType="VARCHAR"/>
@@ -40,6 +41,7 @@
     <select id="select" resultMap="ConnectionRecordResultMap">
 
         SELECT
+            guacamole_connection_history.history_id,
             guacamole_connection_history.connection_id,
             guacamole_connection_history.connection_name,
             guacamole_connection_history.remote_host,
@@ -94,6 +96,7 @@
     <select id="search" resultMap="ConnectionRecordResultMap">
 
         SELECT
+            guacamole_connection_history.history_id,
             guacamole_connection_history.connection_id,
             guacamole_connection_history.connection_name,
             guacamole_connection_history.remote_host,
@@ -157,6 +160,7 @@
     <select id="searchReadable" resultMap="ConnectionRecordResultMap">
 
         SELECT
+            guacamole_connection_history.history_id,
             guacamole_connection_history.connection_id,
             guacamole_connection_history.connection_name,
             guacamole_connection_history.remote_host,

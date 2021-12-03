@@ -37,6 +37,7 @@
     <select id="select" resultMap="UserRecordResultMap">
 
         SELECT
+            guacamole_user_history.history_id,
             guacamole_user_history.remote_host,
             guacamole_user_history.user_id,
             guacamole_user_history.username,
@@ -97,6 +98,7 @@
     <select id="search" resultMap="UserRecordResultMap">
 
         SELECT
+            guacamole_user_history.history_id,
             guacamole_user_history.remote_host,
             guacamole_user_history.user_id,
             guacamole_user_history.username,
@@ -153,6 +155,7 @@
     <select id="searchReadable" resultMap="UserRecordResultMap">
 
         SELECT
+            guacamole_user_history.history_id,
             guacamole_user_history.remote_host,
             guacamole_user_history.user_id,
             guacamole_user_history.username,

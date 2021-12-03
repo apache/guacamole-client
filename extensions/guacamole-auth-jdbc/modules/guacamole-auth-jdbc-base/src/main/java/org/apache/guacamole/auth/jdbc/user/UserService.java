@@ -546,7 +546,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      *     A connection record object which is backed by the given model.
      */
     protected ActivityRecord getObjectInstance(ActivityRecordModel model) {
-        return new ModeledActivityRecord(model);
+        return new ModeledActivityRecord(UserRecordSet.UUID_NAMESPACE, model);
     }
 
     /**
