@@ -29,10 +29,10 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.saml.acs.AssertedIdentity;
 import org.apache.guacamole.auth.saml.acs.AuthenticationSessionManager;
 import org.apache.guacamole.auth.saml.acs.SAMLService;
+import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.RedirectField;
 import org.apache.guacamole.language.TranslatableMessage;
-import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
@@ -41,7 +41,7 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredential
  * Service that authenticates Guacamole users by processing the responses of
  * SAML identity providers.
  */
-public class AuthenticationProviderService {
+public class AuthenticationProviderService implements SSOAuthenticationProviderService {
 
     /**
      * The name of the query parameter that identifies an active authentication
@@ -67,22 +67,8 @@ public class AuthenticationProviderService {
     @Inject
     private SAMLService saml;
 
-    /**
-     * Returns an AuthenticatedUser representing the user authenticated by the
-     * given credentials.
-     *
-     * @param credentials
-     *     The credentials to use for authentication.
-     *
-     * @return
-     *     An AuthenticatedUser representing the user authenticated by the
-     *     given credentials.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while authenticating the user, or if access is
-     *     denied.
-     */
-    public AuthenticatedUser authenticateUser(Credentials credentials)
+    @Override
+    public SAMLAuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 
         // No authentication can be attempted without a corresponding HTTP
@@ -115,6 +101,11 @@ public class AuthenticationProviderService {
                 }))
         );
 
+    }
+
+    @Override
+    public void shutdown() {
+        sessionManager.shutdown();
     }
     
 }

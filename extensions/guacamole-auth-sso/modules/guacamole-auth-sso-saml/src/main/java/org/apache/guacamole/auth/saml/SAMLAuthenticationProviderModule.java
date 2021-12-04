@@ -25,57 +25,19 @@ import org.apache.guacamole.auth.saml.acs.AssertionConsumerServiceResource;
 import org.apache.guacamole.auth.saml.acs.AuthenticationSessionManager;
 import org.apache.guacamole.auth.saml.acs.IdentifierGenerator;
 import org.apache.guacamole.auth.saml.acs.SAMLService;
-import org.apache.guacamole.environment.Environment;
-import org.apache.guacamole.environment.LocalEnvironment;
-import org.apache.guacamole.net.auth.AuthenticationProvider;
 
 /**
  * Guice module which configures SAML-specific injections.
  */
 public class SAMLAuthenticationProviderModule extends AbstractModule {
 
-    /**
-     * Guacamole server environment.
-     */
-    private final Environment environment;
-
-    /**
-     * A reference to the SAMLAuthenticationProvider on behalf of which this
-     * module has configured injection.
-     */
-    private final AuthenticationProvider authProvider;
-
-    /**
-     * Creates a new SAML authentication provider module which configures
-     * injection for the SAMLAuthenticationProvider.
-     *
-     * @param authProvider
-     *     The AuthenticationProvider for which injection is being configured.
-     */
-    public SAMLAuthenticationProviderModule(AuthenticationProvider authProvider) {
-
-        // Get local environment
-        this.environment = LocalEnvironment.getInstance();
-
-        // Store associated auth provider
-        this.authProvider = authProvider;
-
-    }
-
     @Override
     protected void configure() {
-
-        // Bind core implementations of guacamole-ext classes
-        bind(AuthenticationProvider.class).toInstance(authProvider);
-        bind(Environment.class).toInstance(environment);
-
-        // Bind SAML-specific services
         bind(AssertionConsumerServiceResource.class);
         bind(AuthenticationSessionManager.class);
         bind(ConfigurationService.class);
         bind(IdentifierGenerator.class);
         bind(SAMLService.class);
-
     }
 
 }

@@ -29,8 +29,7 @@ import java.util.stream.Collectors;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.saml.acs.AssertedIdentity;
 import org.apache.guacamole.auth.saml.conf.ConfigurationService;
-import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
-import org.apache.guacamole.net.auth.AuthenticationProvider;
+import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.token.TokenName;
 
@@ -39,7 +38,7 @@ import org.apache.guacamole.token.TokenName;
  * identity and particular set of credentials with the SAML authentication
  * provider.
  */
-public class SAMLAuthenticatedUser extends AbstractAuthenticatedUser {
+public class SAMLAuthenticatedUser extends SSOAuthenticatedUser {
 
     /**
      * The prefix that should be prepended to all parameter tokens generated
@@ -52,28 +51,6 @@ public class SAMLAuthenticatedUser extends AbstractAuthenticatedUser {
      */
     @Inject
     private ConfigurationService confService;
-
-    /**
-     * Reference to the authentication provider associated with this
-     * authenticated user.
-     */
-    @Inject
-    private AuthenticationProvider authProvider;
-
-    /**
-     * The credentials provided when this user was authenticated.
-     */
-    private Credentials credentials;
-    
-    /**
-     * The effective groups of the authenticated user.
-     */
-    private Set<String> effectiveGroups;
-    
-    /**
-     * Tokens associated with the authenticated user.
-     */
-    private Map<String, String> tokens;
 
     /**
      * Returns a Map of all parameter tokens that should be made available for
@@ -144,35 +121,7 @@ public class SAMLAuthenticatedUser extends AbstractAuthenticatedUser {
      */
     public void init(AssertedIdentity identity, Credentials credentials)
             throws GuacamoleException {
-        this.credentials = credentials;
-        this.effectiveGroups = getGroups(identity);
-        this.tokens = getTokens(identity);
-        setIdentifier(identity.getUsername());
+        super.init(identity.getUsername(), credentials, getGroups(identity), getTokens(identity));
     }
     
-    /**
-     * Returns a Map of tokens associated with this authenticated user.
-     * 
-     * @return 
-     *     A map of token names and values available from this user account.
-     */
-    public Map<String, String> getTokens() {
-        return tokens;
-    }
-
-    @Override
-    public AuthenticationProvider getAuthenticationProvider() {
-        return authProvider;
-    }
-
-    @Override
-    public Credentials getCredentials() {
-        return credentials;
-    }
-    
-    @Override
-    public Set<String> getEffectiveUserGroups() {
-        return effectiveGroups;
-    }
-
 }

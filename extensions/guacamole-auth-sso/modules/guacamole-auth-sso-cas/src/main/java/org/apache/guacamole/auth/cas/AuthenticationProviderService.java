@@ -30,14 +30,14 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsExce
 import org.apache.guacamole.auth.cas.conf.ConfigurationService;
 import org.apache.guacamole.auth.cas.form.CASTicketField;
 import org.apache.guacamole.auth.cas.ticket.TicketValidationService;
-import org.apache.guacamole.auth.cas.user.CASAuthenticatedUser;
+import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
+import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
 import org.apache.guacamole.language.TranslatableMessage;
 
 /**
- * Service providing convenience functions for the CAS AuthenticationProvider
- * implementation.
+ * Service that authenticates Guacamole users by processing CAS tickets.
  */
-public class AuthenticationProviderService {
+public class AuthenticationProviderService implements SSOAuthenticationProviderService {
 
     /**
      * Service for retrieving CAS configuration information.
@@ -51,22 +51,8 @@ public class AuthenticationProviderService {
     @Inject
     private TicketValidationService ticketService;
 
-    /**
-     * Returns an AuthenticatedUser representing the user authenticated by the
-     * given credentials.
-     *
-     * @param credentials
-     *     The credentials to use for authentication.
-     *
-     * @return
-     *     A CASAuthenticatedUser representing the user authenticated by the
-     *     given credentials.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while authenticating the user, or if access is
-     *     denied.
-     */
-    public CASAuthenticatedUser authenticateUser(Credentials credentials)
+    @Override
+    public SSOAuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 
         // Pull CAS ticket from request if present
@@ -95,4 +81,9 @@ public class AuthenticationProviderService {
 
     }
 
+    @Override
+    public void shutdown() {
+        // Nothing to clean up
+    }
+    
 }

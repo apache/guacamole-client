@@ -41,7 +41,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.cas.conf.ConfigurationService;
-import org.apache.guacamole.auth.cas.user.CASAuthenticatedUser;
+import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.token.TokenName;
 import org.jasig.cas.client.authentication.AttributePrincipal;
@@ -77,7 +77,7 @@ public class TicketValidationService {
      * Provider for AuthenticatedUser objects.
      */
     @Inject
-    private Provider<CASAuthenticatedUser> authenticatedUserProvider;
+    private Provider<SSOAuthenticatedUser> authenticatedUserProvider;
 
     /**
      * Converts the given CAS attribute value object (whose type is variable)
@@ -132,7 +132,7 @@ public class TicketValidationService {
      *     If the ID ticket is not valid or guacamole.properties could
      *     not be parsed.
      */
-    public CASAuthenticatedUser validateTicket(String ticket,
+    public SSOAuthenticatedUser validateTicket(String ticket,
             Credentials credentials) throws GuacamoleException {
 
         // Create a ticket validator that uses the configured CAS URL
@@ -159,6 +159,9 @@ public class TicketValidationService {
         String username = principal.getName();
         if (username == null)
             throw new GuacamoleSecurityException("No username provided by CAS.");
+
+        // Canonicalize username as lowercase
+        username = username.toLowerCase();
 
         // Update credentials with username provided by CAS for sake of
         // ${GUAC_USERNAME} token
@@ -196,8 +199,8 @@ public class TicketValidationService {
             }
         });
 
-        CASAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-        authenticatedUser.init(username, credentials, tokens, effectiveGroups);
+        SSOAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+        authenticatedUser.init(username, credentials, effectiveGroups, tokens);
         return authenticatedUser;
 
     }

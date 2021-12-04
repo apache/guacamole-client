@@ -23,61 +23,17 @@ import com.google.inject.AbstractModule;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
 import org.apache.guacamole.auth.openid.token.NonceService;
 import org.apache.guacamole.auth.openid.token.TokenValidationService;
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.environment.Environment;
-import org.apache.guacamole.environment.LocalEnvironment;
-import org.apache.guacamole.net.auth.AuthenticationProvider;
 
 /**
- * Guice module which configures openid-specific injections.
+ * Guice module which configures OpenID-specific injections.
  */
 public class OpenIDAuthenticationProviderModule extends AbstractModule {
 
-    /**
-     * Guacamole server environment.
-     */
-    private final Environment environment;
-
-    /**
-     * A reference to the OpenIDAuthenticationProvider on behalf of which this
-     * module has configured injection.
-     */
-    private final AuthenticationProvider authProvider;
-
-    /**
-     * Creates a new OpenID authentication provider module which configures
-     * injection for the OpenIDAuthenticationProvider.
-     *
-     * @param authProvider
-     *     The AuthenticationProvider for which injection is being configured.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the Guacamole server
-     *     environment.
-     */
-    public OpenIDAuthenticationProviderModule(AuthenticationProvider authProvider)
-            throws GuacamoleException {
-
-        // Get local environment
-        this.environment = LocalEnvironment.getInstance();
-
-        // Store associated auth provider
-        this.authProvider = authProvider;
-
-    }
-
     @Override
     protected void configure() {
-
-        // Bind core implementations of guacamole-ext classes
-        bind(AuthenticationProvider.class).toInstance(authProvider);
-        bind(Environment.class).toInstance(environment);
-
-        // Bind openid-specific services
         bind(ConfigurationService.class);
         bind(NonceService.class);
         bind(TokenValidationService.class);
-
     }
 
 }

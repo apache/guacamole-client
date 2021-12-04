@@ -19,12 +19,7 @@
 
 package org.apache.guacamole.auth.openid;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
-import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.auth.sso.SSOAuthenticationProvider;
 
 /**
  * Guacamole authentication backend which authenticates users using an
@@ -32,44 +27,19 @@ import org.apache.guacamole.net.auth.Credentials;
  * provided - only authentication. Storage must be provided by some other
  * extension.
  */
-public class OpenIDAuthenticationProvider extends AbstractAuthenticationProvider {
-
-    /**
-     * Injector which will manage the object graph of this authentication
-     * provider.
-     */
-    private final Injector injector;
+public class OpenIDAuthenticationProvider extends SSOAuthenticationProvider {
 
     /**
      * Creates a new OpenIDAuthenticationProvider that authenticates users
      * against an OpenID service.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
      */
-    public OpenIDAuthenticationProvider() throws GuacamoleException {
-
-        // Set up Guice injector.
-        injector = Guice.createInjector(
-            new OpenIDAuthenticationProviderModule(this)
-        );
-
+    public OpenIDAuthenticationProvider() {
+        super(AuthenticationProviderService.class, new OpenIDAuthenticationProviderModule());
     }
 
     @Override
     public String getIdentifier() {
         return "openid";
-    }
-
-    @Override
-    public AuthenticatedUser authenticateUser(Credentials credentials)
-            throws GuacamoleException {
-
-        // Attempt to authenticate user with given credentials
-        AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
-        return authProviderService.authenticateUser(credentials);
-
     }
 
 }

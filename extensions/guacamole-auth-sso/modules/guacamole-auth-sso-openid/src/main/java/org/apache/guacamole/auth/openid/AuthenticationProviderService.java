@@ -22,33 +22,27 @@ package org.apache.guacamole.auth.openid;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
 import org.apache.guacamole.auth.openid.form.TokenField;
 import org.apache.guacamole.auth.openid.token.NonceService;
 import org.apache.guacamole.auth.openid.token.TokenValidationService;
-import org.apache.guacamole.auth.openid.user.AuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
+import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.jose4j.jwt.JwtClaims;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Service providing convenience functions for the OpenID AuthenticationProvider
- * implementation.
+ * Service that authenticates Guacamole users by processing OpenID tokens.
  */
-public class AuthenticationProviderService {
-
-    /**
-     * Logger for this class.
-     */
-    private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
+public class AuthenticationProviderService implements SSOAuthenticationProviderService {
 
     /**
      * Service for retrieving OpenID configuration information.
@@ -72,24 +66,10 @@ public class AuthenticationProviderService {
      * Provider for AuthenticatedUser objects.
      */
     @Inject
-    private Provider<AuthenticatedUser> authenticatedUserProvider;
+    private Provider<SSOAuthenticatedUser> authenticatedUserProvider;
 
-    /**
-     * Returns an AuthenticatedUser representing the user authenticated by the
-     * given credentials.
-     *
-     * @param credentials
-     *     The credentials to use for authentication.
-     *
-     * @return
-     *     An AuthenticatedUser representing the user authenticated by the
-     *     given credentials.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while authenticating the user, or if access is
-     *     denied.
-     */
-    public AuthenticatedUser authenticateUser(Credentials credentials)
+    @Override
+    public SSOAuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 
         String username = null;
@@ -113,8 +93,8 @@ public class AuthenticationProviderService {
         if (username != null) {
 
             // Create corresponding authenticated user
-            AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-            authenticatedUser.init(username, credentials, groups);
+            SSOAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+            authenticatedUser.init(username, credentials, groups, Collections.emptyMap());
             return authenticatedUser;
 
         }
@@ -139,4 +119,9 @@ public class AuthenticationProviderService {
 
     }
 
+    @Override
+    public void shutdown() {
+        // Nothing to clean up
+    }
+    
 }

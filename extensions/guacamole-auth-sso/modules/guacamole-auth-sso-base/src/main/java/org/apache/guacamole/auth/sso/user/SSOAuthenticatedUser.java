@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.cas.user;
+package org.apache.guacamole.auth.sso.user;
 
 import com.google.inject.Inject;
 import java.util.Collections;
@@ -28,11 +28,12 @@ import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
- * An CAS-specific implementation of AuthenticatedUser, associating a
- * username and particular set of credentials with the CAS authentication
- * provider.
+ * An AuthenticatedUser whose identity has been supplied by an arbitrary SSO
+ * service. An SSOAuthenticatedUser may additionally be associated with a set
+ * of user-specific parameter tokens to be injected into any connections used
+ * by that user.
  */
-public class CASAuthenticatedUser extends AbstractAuthenticatedUser {
+public class SSOAuthenticatedUser extends AbstractAuthenticatedUser {
 
     /**
      * Reference to the authentication provider associated with this
@@ -45,60 +46,53 @@ public class CASAuthenticatedUser extends AbstractAuthenticatedUser {
      * The credentials provided when this user was authenticated.
      */
     private Credentials credentials;
-    
-    /**
-     * Tokens associated with this authenticated user.
-     */
-    private Map<String, String> tokens;
 
     /**
-     * The unique identifiers of all user groups which this user is a member of.
+     * The groups that this user belongs to.
      */
     private Set<String> effectiveGroups;
 
     /**
-     * Initializes this AuthenticatedUser using the given username and
-     * credentials, and an empty map of parameter tokens.
-     *
-     * @param username
-     *     The username of the user that was authenticated.
-     *
-     * @param credentials
-     *     The credentials provided when this user was authenticated.
+     * Parameter tokens to be automatically injected for any connections used
+     * by this user.
      */
-    public void init(String username, Credentials credentials) {
-        this.init(username, credentials, Collections.emptyMap(), Collections.emptySet());
-    }
-    
+    private Map<String, String> tokens;
+
     /**
-     * Initializes this AuthenticatedUser using the given username,
-     * credentials, and parameter tokens.
+     * Initializes this SSOAuthenticatedUser, associating it with the given
+     * username, credentials, groups, and parameter tokens. This function must
+     * be invoked for every SSOAuthenticatedUser created.
      *
      * @param username
      *     The username of the user that was authenticated.
      *
      * @param credentials
      *     The credentials provided when this user was authenticated.
-     * 
+     *
+     * @param effectiveGroups
+     *     The groups that the authenticated user belongs to.
+     *
      * @param tokens
      *     A map of all the name/value pairs that should be available
-     *     as tokens when connections are established with this user.
+     *     as tokens when connections are established by this user.
      */
     public void init(String username, Credentials credentials,
-            Map<String, String> tokens, Set<String> effectiveGroups) {
+            Set<String> effectiveGroups, Map<String, String> tokens) {
         this.credentials = credentials;
+        this.effectiveGroups = Collections.unmodifiableSet(effectiveGroups);
         this.tokens = Collections.unmodifiableMap(tokens);
-        this.effectiveGroups = effectiveGroups;
-        setIdentifier(username.toLowerCase());
+        setIdentifier(username);
     }
 
     /**
-     * Returns a Map containing the name/value pairs that can be applied
-     * as parameter tokens when connections are established by the user.
-     * 
+     * Returns a Map of the parameter tokens that should be automatically
+     * injected into connections used by this user during their session. If
+     * there are no parameter tokens applicable to the SSO implementation, this
+     * may simply be an empty map.
+     *
      * @return
-     *     A Map containing all of the name/value pairs that can be
-     *     used as parameter tokens by this user.
+     *     A map of the parameter token name/value pairs that should be
+     *     automatically injected into connections used by this user.
      */
     public Map<String, String> getTokens() {
         return tokens;
