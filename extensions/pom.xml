@@ -40,15 +40,13 @@
     <modules>
 
         <!-- Authentication extensions -->
-        <module>guacamole-auth-cas</module>
         <module>guacamole-auth-duo</module>
         <module>guacamole-auth-header</module>
         <module>guacamole-auth-jdbc</module>
         <module>guacamole-auth-json</module>
         <module>guacamole-auth-ldap</module>
-        <module>guacamole-auth-openid</module>
         <module>guacamole-auth-quickconnect</module>
-        <module>guacamole-auth-saml</module>
+        <module>guacamole-auth-sso</module>
         <module>guacamole-auth-totp</module>
 
     </modules>
