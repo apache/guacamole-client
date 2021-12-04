@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.openid;
 
 import org.apache.guacamole.auth.sso.SSOAuthenticationProvider;
+import org.apache.guacamole.auth.sso.SSOResource;
 
 /**
  * Guacamole authentication backend which authenticates users using an
@@ -34,7 +35,7 @@ public class OpenIDAuthenticationProvider extends SSOAuthenticationProvider {
      * against an OpenID service.
      */
     public OpenIDAuthenticationProvider() {
-        super(AuthenticationProviderService.class, OpenIDResource.class,
+        super(AuthenticationProviderService.class, SSOResource.class,
                 new OpenIDAuthenticationProviderModule());
     }
 

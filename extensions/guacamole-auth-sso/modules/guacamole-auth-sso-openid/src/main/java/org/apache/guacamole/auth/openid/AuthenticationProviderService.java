@@ -120,17 +120,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
 
     }
 
-    /**
-     * Returns the full URI of the OpenID login endpoint to which a user must
-     * be redirected in order to authenticate and receive an OpenID token.
-     *
-     * @return 
-     *     The full URI of the OpenID login endpoint, including unique nonce.
-     *
-     * @throws GuacamoleException
-     *     If configuration information required for generating the login URI
-     *     cannot be read.
-     */
+    @Override
     public URI getLoginURI() throws GuacamoleException {
         return UriBuilder.fromUri(confService.getAuthorizationEndpoint())
                 .queryParam("scope", confService.getScope())

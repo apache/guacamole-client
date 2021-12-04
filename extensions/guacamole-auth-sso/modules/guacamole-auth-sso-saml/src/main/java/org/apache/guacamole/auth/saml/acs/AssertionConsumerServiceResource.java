@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * endpoint. SAML identity providers will issue an HTTP POST to this endpoint
  * asserting the user's identity when the user has successfully authenticated.
  */
-public class AssertionConsumerServiceResource implements SSOResource {
+public class AssertionConsumerServiceResource extends SSOResource {
 
     /**
      * Logger for this class.
@@ -63,11 +63,6 @@ public class AssertionConsumerServiceResource implements SSOResource {
      */
     @Inject
     private SAMLService saml;
-
-    @Override
-    public Response redirectToIdentityProvider() throws GuacamoleException {
-        return Response.seeOther(saml.createRequest()).build();
-    }
 
     /**
      * Processes the SAML response submitted by the SAML IdP via an HTTP POST.

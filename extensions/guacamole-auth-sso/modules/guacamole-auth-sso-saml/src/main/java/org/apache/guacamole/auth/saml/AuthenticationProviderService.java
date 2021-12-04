@@ -95,14 +95,18 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
 
         // Redirect to SAML IdP if no SAML identity is associated with the
         // Guacamole authentication request
-        URI authUri = saml.createRequest();
         throw new GuacamoleInvalidCredentialsException("Redirecting to SAML IdP.",
                 new CredentialsInfo(Arrays.asList(new Field[] {
-                    new RedirectField(AUTH_SESSION_QUERY_PARAM, authUri,
+                    new RedirectField(AUTH_SESSION_QUERY_PARAM, getLoginURI(),
                             new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING"))
                 }))
         );
 
+    }
+
+    @Override
+    public URI getLoginURI() throws GuacamoleException {
+        return saml.createRequest();
     }
 
     @Override

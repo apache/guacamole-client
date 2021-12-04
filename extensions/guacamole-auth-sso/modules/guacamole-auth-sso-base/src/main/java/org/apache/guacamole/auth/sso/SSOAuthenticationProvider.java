@@ -24,6 +24,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.binder.LinkedBindingBuilder;
 import java.util.Arrays;
 import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
@@ -109,10 +110,18 @@ public abstract class SSOAuthenticationProvider extends AbstractAuthenticationPr
 
             @Override
             protected void configure() {
+
                 bind(AuthenticationProvider.class).toInstance(SSOAuthenticationProvider.this);
                 bind(Environment.class).toInstance(LocalEnvironment.getInstance());
                 bind(SSOAuthenticationProviderService.class).to(authService);
-                bind(SSOResource.class).to(ssoResource);
+
+                // Bind custom SSOResource implementation if different from
+                // core implementation (explicitly binding SSOResource as
+                // SSOResource results in a runtime error from Guice otherwise)
+                LinkedBindingBuilder<SSOResource> resourceBinding = bind(SSOResource.class);
+                if (ssoResource != SSOResource.class)
+                    resourceBinding.to(ssoResource);
+
             }
 
         }), modules));

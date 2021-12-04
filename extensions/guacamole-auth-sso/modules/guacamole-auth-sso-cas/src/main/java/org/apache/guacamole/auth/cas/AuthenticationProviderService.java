@@ -90,17 +90,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
 
     }
 
-    /**
-     * Returns the full URI of the CAS login endpoint to which a user must be
-     * redirected in order to authenticate and receive a CAS ticket.
-     *
-     * @return 
-     *     The full URI of the CAS login endpoint.
-     *
-     * @throws GuacamoleException
-     *     If configuration information required for generating the login URI
-     *     cannot be read.
-     */
+    @Override
     public URI getLoginURI() throws GuacamoleException {
         return UriBuilder.fromUri(confService.getAuthorizationEndpoint())
                 .path(CAS_LOGIN_URI)

@@ -18,6 +18,7 @@
  */
 package org.apache.guacamole.auth.sso;
 
+import com.google.inject.Inject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,7 +29,13 @@ import org.apache.guacamole.GuacamoleException;
  * the applicable identity provider. Implementations may also provide
  * additional resources and endpoints beneath this resource as needed.
  */
-public interface SSOResource {
+public class SSOResource {
+
+    /**
+     * Service for authenticating users using CAS.
+     */
+    @Inject
+    private SSOAuthenticationProviderService authService;
 
     /**
      * Redirects the user to the relevant identity provider. If the SSO
@@ -44,6 +51,8 @@ public interface SSOResource {
      */
     @GET
     @Path("login")
-    public Response redirectToIdentityProvider() throws GuacamoleException;
+    public Response redirectToIdentityProvider() throws GuacamoleException {
+        return Response.seeOther(authService.getLoginURI()).build();
+    }
 
 }

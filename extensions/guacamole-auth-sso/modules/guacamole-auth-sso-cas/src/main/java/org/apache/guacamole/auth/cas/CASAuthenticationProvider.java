@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.cas;
 
 import org.apache.guacamole.auth.sso.SSOAuthenticationProvider;
+import org.apache.guacamole.auth.sso.SSOResource;
 
 /**
  * Guacamole authentication backend which authenticates users using an
@@ -35,7 +36,7 @@ public class CASAuthenticationProvider extends SSOAuthenticationProvider {
      */
     public CASAuthenticationProvider() {
         super(AuthenticationProviderService.class,
-                CASResource.class, new CASAuthenticationProviderModule());
+                SSOResource.class, new CASAuthenticationProviderModule());
     }
     
     @Override
