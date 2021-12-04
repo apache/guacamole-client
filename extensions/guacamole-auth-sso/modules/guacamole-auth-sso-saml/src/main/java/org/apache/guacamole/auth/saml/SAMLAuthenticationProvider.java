@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.saml;
 
-import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.saml.acs.AssertionConsumerServiceResource;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProvider;
 
@@ -36,17 +35,14 @@ public class SAMLAuthenticationProvider extends SSOAuthenticationProvider {
      * against a SAML IdP.
      */
     public SAMLAuthenticationProvider() {
-        super(AuthenticationProviderService.class, new SAMLAuthenticationProviderModule());
+        super(AuthenticationProviderService.class,
+                AssertionConsumerServiceResource.class,
+                new SAMLAuthenticationProviderModule());
     }
 
     @Override
     public String getIdentifier() {
         return "saml";
-    }
-
-    @Override
-    public Object getResource() throws GuacamoleException {
-        return getInjector().getInstance(AssertionConsumerServiceResource.class);
     }
 
 }

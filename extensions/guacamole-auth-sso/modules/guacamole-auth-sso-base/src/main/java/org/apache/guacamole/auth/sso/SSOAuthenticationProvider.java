@@ -24,6 +24,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.binder.LinkedBindingBuilder;
 import java.util.Arrays;
 import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
@@ -64,14 +65,20 @@ public abstract class SSOAuthenticationProvider extends AbstractAuthenticationPr
      *     The SSOAuthenticationProviderService implementation that should be
      *     used for core authentication functions.
      *
+     * @param ssoResource
+     *     The SSOResource that should be used to manually redirect the user to
+     *     the IdP, as well as to provide any implementation-specific REST
+     *     endpoints.
+     *
      * @param modules
      *     Any additional modules that should be used when creating the Guice
      *     injector.
      */
     public SSOAuthenticationProvider(
             Class<? extends SSOAuthenticationProviderService> authService,
+            Class<? extends SSOResource> ssoResource,
             Module... modules) {
-        this(authService, Arrays.asList(modules));
+        this(authService, ssoResource, Arrays.asList(modules));
     }
 
     /**
@@ -86,20 +93,35 @@ public abstract class SSOAuthenticationProvider extends AbstractAuthenticationPr
      *     The SSOAuthenticationProviderService implementation that should be
      *     used for core authentication functions.
      *
+     * @param ssoResource
+     *     The SSOResource that should be used to manually redirect the user to
+     *     the IdP, as well as to provide any implementation-specific REST
+     *     endpoints.
+     *
      * @param modules
      *     Any additional modules that should be used when creating the Guice
      *     injector.
      */
     public SSOAuthenticationProvider(
             Class<? extends SSOAuthenticationProviderService> authService,
+            Class<? extends SSOResource> ssoResource,
             Iterable<? extends Module> modules) {
         injector = Guice.createInjector(Iterables.concat(Collections.singletonList(new AbstractModule() {
 
             @Override
             protected void configure() {
+
                 bind(AuthenticationProvider.class).toInstance(SSOAuthenticationProvider.this);
                 bind(Environment.class).toInstance(LocalEnvironment.getInstance());
                 bind(SSOAuthenticationProviderService.class).to(authService);
+
+                // Bind custom SSOResource implementation if different from
+                // core implementation (explicitly binding SSOResource as
+                // SSOResource results in a runtime error from Guice otherwise)
+                LinkedBindingBuilder<SSOResource> resourceBinding = bind(SSOResource.class);
+                if (ssoResource != SSOResource.class)
+                    resourceBinding.to(ssoResource);
+
             }
 
         }), modules));
@@ -143,6 +165,11 @@ public abstract class SSOAuthenticationProvider extends AbstractAuthenticationPr
         return new TokenInjectingUserContext(context,
                 ((SSOAuthenticatedUser) authenticatedUser).getTokens());
 
+    }
+
+    @Override
+    public SSOResource getResource() {
+        return getInjector().getInstance(SSOResource.class);
     }
 
     @Override

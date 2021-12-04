@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.sso;
 
+import java.net.URI;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
@@ -48,6 +49,19 @@ public interface SSOAuthenticationProviderService {
      */
     SSOAuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException;
+
+    /**
+     * Returns the full URI of the login endpoint to which a user must be
+     * redirected in order to authenticate with the SSO identity provider.
+     *
+     * @return 
+     *     The full URI of the SSO login endpoint.
+     *
+     * @throws GuacamoleException
+     *     If configuration information required for generating the login URI
+     *     cannot be read.
+     */
+    URI getLoginURI() throws GuacamoleException;
 
     /**
      * Frees all resources associated with the relevant
