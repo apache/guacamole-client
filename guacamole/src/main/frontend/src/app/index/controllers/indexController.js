@@ -25,6 +25,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
     // Required services
     const $document         = $injector.get('$document');
+    const $location         = $injector.get('$location');
     const $route            = $injector.get('$route');
     const $window           = $injector.get('$window');
     const clipboardService  = $injector.get('clipboardService');
@@ -220,13 +221,22 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     }, true);
 
     /**
-     * Reloads the current route and controller, effectively forcing
-     * reauthentication. If the user is not logged in, this will result in
-     * the login screen appearing.
+     * Navigates the user back to the root of the application (or reloads the
+     * current route and controller if the user is already there), effectively
+     * forcing reauthentication. If the user is not logged in, this will result
+     * in the login screen appearing.
      */
     $scope.reAuthenticate = function reAuthenticate() {
+
         $scope.reAuthenticating = true;
-        $route.reload();
+
+        // Clear out URL state to conveniently bring user back to home screen
+        // upon relogin
+        if ($location.path() !== '/')
+            $location.url('/');
+        else
+            $route.reload();
+
     };
 
     // Display login screen if a whole new set of credentials is needed
