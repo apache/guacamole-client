@@ -87,6 +87,11 @@ public class DelegatingActivityRecord implements ActivityRecord {
     }
 
     @Override
+    public Map<String, ActivityLog> getLogs() {
+        return record.getLogs();
+    }
+
+    @Override
     public Map<String, String> getAttributes() {
         return record.getAttributes();
     }

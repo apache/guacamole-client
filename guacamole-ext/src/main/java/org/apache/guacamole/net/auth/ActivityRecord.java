@@ -92,6 +92,20 @@ public interface ActivityRecord extends ReadableAttributes {
         return null;
     }
 
+    /**
+     * Returns a Map of logs related to this record and accessible by the
+     * current user, such as Guacamole session recordings. Each log is
+     * associated with a corresponding, arbitrary, unique name. If the user
+     * does not have access to any logs, or if no logs are available, this may
+     * be an empty map.
+     *
+     * @return
+     *     A Map of logs related to this record.
+     */
+    public default Map<String, ActivityLog> getLogs() {
+        return Collections.emptyMap();
+    }
+
     @Override 
     public default Map<String, String> getAttributes() {
         return Collections.emptyMap();

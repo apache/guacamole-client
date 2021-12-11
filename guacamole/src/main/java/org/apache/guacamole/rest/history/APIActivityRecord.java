@@ -22,6 +22,7 @@ package org.apache.guacamole.rest.history;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.apache.guacamole.net.auth.ActivityRecord;
 
 /**
@@ -74,7 +75,13 @@ public class APIActivityRecord {
      * all attributes associated with this record.
      */
     private final Map<String, String> attributes;
-    
+
+    /**
+     * A map of all logs associated and accessible via this record, associated
+     * with their corresponding unique names.
+     */
+    private final Map<String, APIActivityLog> logs;
+
     /**
      * Creates a new APIActivityRecord, copying the data from the given activity
      * record.
@@ -83,6 +90,7 @@ public class APIActivityRecord {
      *     The record to copy data from.
      */
     public APIActivityRecord(ActivityRecord record) {
+
         this.startDate  = record.getStartDate();
         this.endDate    = record.getEndDate();
         this.remoteHost = record.getRemoteHost();
@@ -90,6 +98,12 @@ public class APIActivityRecord {
         this.active     = record.isActive();
         this.uuid       = record.getUUID();
         this.attributes = record.getAttributes();
+
+        this.logs = record.getLogs().entrySet().stream().collect(Collectors.toMap(
+                Map.Entry::getKey,
+                (entry) -> new APIActivityLog(entry.getValue())
+        ));
+
     }
 
     /**
@@ -172,5 +186,17 @@ public class APIActivityRecord {
     public Map<String, String> getAttributes() {
         return attributes;
     }
-    
+
+    /**
+     * Returns a Map of logs related to this record and accessible by the
+     * current user, such as Guacamole session recordings. Each log is
+     * associated with a corresponding, arbitrary, unique name.
+     *
+     * @return
+     *     A Map of logs related to this record.
+     */
+    public Map<String, APIActivityLog> getLogs() {
+        return logs;
+    }
+
 }
