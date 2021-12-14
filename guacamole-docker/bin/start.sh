@@ -711,6 +711,13 @@ associate_json() {
 }
 
 ##
+## Adds api-session-timeout to guacamole.properties
+##
+associate_apisessiontimeout() {
+    set_optional_property "api-session-timeout" "$API_SESSION_TIMEOUT"
+}
+
+##
 ## Starts Guacamole under Tomcat, replacing the current process with the
 ## Tomcat process. As the current process will be replaced, this MUST be the
 ## last function run within the script.
@@ -871,6 +878,11 @@ fi
 # Use json-auth if specified.
 if [ -n "$JSON_SECRET_KEY" ]; then
     associate_json
+fi
+
+# Use api-session-timeout if specified.
+if [ -n "$API_SESSION_TIMEOUT" ]; then
+    associate_apisessiontimeout
 fi
 
 # Set logback level if specified
