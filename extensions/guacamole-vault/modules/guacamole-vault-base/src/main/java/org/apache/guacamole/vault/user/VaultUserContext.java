@@ -53,10 +53,13 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
     /**
      * The name of the token which will be replaced with the username of the
-     * current user if specified within the name of a secret. This token
-     * applies to both connections and connection groups.
+     * current user if specified within the name of a secret. Unlike the
+     * standard GUAC_USERNAME token, the username stored with the object
+     * representing the user is used here, not necessarily the username
+     * provided during authentication. This token applies to both connections
+     * and connection groups.
      */
-    private static final String USERNAME_TOKEN = "GUAC_USERNAME";
+    private static final String USERNAME_TOKEN = "USERNAME";
 
     /**
      * The name of the token which will be replaced with the name of the
@@ -139,7 +142,7 @@ public class VaultUserContext extends TokenInjectingUserContext {
     /**
      * Creates a new TokenFilter instance with token values set for all tokens
      * which are not specific to connections or connection groups. Currently,
-     * this is only the username token ("GUAC_USERNAME").
+     * this is only the vault-specific username token ("USERNAME").
      *
      * @return
      *     A new TokenFilter instance with token values set for all tokens
