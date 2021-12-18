@@ -21,6 +21,7 @@ package org.apache.guacamole.vault.conf;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.inject.Inject;
 import java.io.File;
 import java.io.IOException;
@@ -46,22 +47,22 @@ public abstract class VaultConfigurationService {
     private Environment environment;
 
     /**
-     * ObjectMapper for deserializing JSON.
+     * ObjectMapper for deserializing YAML.
      */
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
     /**
-     * The name of the file containing a JSON mapping of Guacamole parameter
+     * The name of the file containing a YAML mapping of Guacamole parameter
      * token to vault secret name.
      */
     private final String tokenMappingFilename;
 
     /**
      * Creates a new VaultConfigurationService which retrieves the token/secret
-     * mapping from a JSON file having the given name.
+     * mapping from a YAML file having the given name.
      *
      * @param tokenMappingFilename
-     *     The name of the JSON file containing the token/secret mapping.
+     *     The name of the YAML file containing the token/secret mapping.
      */
     protected VaultConfigurationService(String tokenMappingFilename) {
         this.tokenMappingFilename = tokenMappingFilename;
@@ -84,19 +85,19 @@ public abstract class VaultConfigurationService {
      *     parameter token.
      *
      * @throws GuacamoleException
-     *     If the JSON file defining the token/secret mapping cannot be read.
+     *     If the YAML file defining the token/secret mapping cannot be read.
      */
     public Map<String, String> getTokenMapping() throws GuacamoleException {
 
         // Get configuration file from GUACAMOLE_HOME
         File confFile = new File(environment.getGuacamoleHome(), tokenMappingFilename);
 
-        // Deserialize token mapping from JSON
+        // Deserialize token mapping from YAML
         try {
             return mapper.readValue(confFile, new TypeReference<Map<String, String>>() {});
         }
 
-        // Fail if JSON is invalid/unreadable
+        // Fail if YAML is invalid/unreadable
         catch (IOException e) {
             throw new GuacamoleServerException("Unable to read token mapping "
                     + "configuration file \"" + tokenMappingFilename + "\".", e);
