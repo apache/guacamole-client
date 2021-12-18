@@ -1,0 +1,16 @@
+{
+
+    "guacamoleVersion" : "1.4.0",
+
+    "name"      : "Azure Key Vault",
+    "namespace" : "azure-keyvault",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.vault.azure.AzureKeyVaultAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/en.json"
+    ]
+
+}
