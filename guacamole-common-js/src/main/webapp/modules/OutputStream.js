@@ -23,20 +23,25 @@ var Guacamole = Guacamole || {};
  * Abstract stream which can receive data.
  * 
  * @constructor
- * @param {Guacamole.Client} client The client owning this stream.
- * @param {Number} index The index of this stream.
+ * @param {!Guacamole.Client} client
+ *     The client owning this stream.
+ *
+ * @param {!number} index
+ *     The index of this stream.
  */
 Guacamole.OutputStream = function(client, index) {
 
     /**
      * Reference to this stream.
+     *
      * @private
+     * @type {!Guacamole.OutputStream}
      */
     var guac_stream = this;
 
     /**
      * The index of this stream.
-     * @type {Number}
+     * @type {!number}
      */
     this.index = index;
 
@@ -45,14 +50,16 @@ Guacamole.OutputStream = function(client, index) {
      * that a stream operation has completed, or an error has occurred.
      * 
      * @event
-     * @param {Guacamole.Status} status The status of the operation.
+     * @param {!Guacamole.Status} status
+     *     The status of the operation.
      */
     this.onack = null;
 
     /**
      * Writes the given base64-encoded data to this stream as a blob.
      * 
-     * @param {String} data The base64-encoded data to send.
+     * @param {!string} data
+     *     The base64-encoded data to send.
      */
     this.sendBlob = function(data) {
         client.sendBlob(guac_stream.index, data);

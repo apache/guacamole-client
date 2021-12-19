@@ -25,21 +25,24 @@ var Guacamole = Guacamole || {};
  * handlers on the given Guacamole.InputStream.
  * 
  * @constructor
- * @param {Guacamole.InputStream} stream The stream that data will be read
- *                                       from.
+ * @param {!Guacamole.InputStream} stream
+ *     The stream that data will be read from.
  */
 Guacamole.StringReader = function(stream) {
 
     /**
      * Reference to this Guacamole.InputStream.
+     *
      * @private
+     * @type {!Guacamole.StringReader}
      */
     var guac_reader = this;
 
     /**
      * Wrapped Guacamole.ArrayBufferReader.
+     *
      * @private
-     * @type {Guacamole.ArrayBufferReader}
+     * @type {!Guacamole.ArrayBufferReader}
      */
     var array_reader = new Guacamole.ArrayBufferReader(stream);
 
@@ -47,7 +50,7 @@ Guacamole.StringReader = function(stream) {
      * The number of bytes remaining for the current codepoint.
      *
      * @private
-     * @type {Number}
+     * @type {!number}
      */
     var bytes_remaining = 0;
 
@@ -55,7 +58,7 @@ Guacamole.StringReader = function(stream) {
      * The current codepoint value, as calculated from bytes read so far.
      *
      * @private
-     * @type {Number}
+     * @type {!number}
      */
     var codepoint = 0;
 
@@ -64,8 +67,11 @@ Guacamole.StringReader = function(stream) {
      * the middle of a multibyte character.
      * 
      * @private
-     * @param {ArrayBuffer} buffer Arbitrary UTF-8 data.
-     * @return {string} A decoded Unicode string.
+     * @param {!ArrayBuffer} buffer
+     *     Arbitrary UTF-8 data.
+     *
+     * @return {!string}
+     *     A decoded Unicode string.
      */
     function __decode_utf8(buffer) {
 
@@ -154,7 +160,8 @@ Guacamole.StringReader = function(stream) {
      * Fired once for every blob of text data received.
      * 
      * @event
-     * @param {String} text The data packet received.
+     * @param {!string} text
+     *     The data packet received.
      */
     this.ontext = null;
 

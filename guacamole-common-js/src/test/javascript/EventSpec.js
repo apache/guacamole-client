@@ -27,6 +27,8 @@ describe("Guacamole.Event", function EventSpec() {
      *
      * @constructor
      * @augments Guacamole.Event
+     * @param {object} value
+     *     An arbitrary value to expose to the handler of the event.
      */
     var TestEvent = function TestEvent(value) {
 
@@ -35,7 +37,7 @@ describe("Guacamole.Event", function EventSpec() {
         /**
          * An arbitrary value to expose to the handler of this event.
          *
-         * @type {Object}
+         * @type {object}
          */
         this.value = value;
 

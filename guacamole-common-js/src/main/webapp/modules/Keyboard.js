@@ -34,7 +34,9 @@ Guacamole.Keyboard = function Keyboard(element) {
 
     /**
      * Reference to this Guacamole.Keyboard.
+     *
      * @private
+     * @type {!Guacamole.Keyboard}
      */
     var guac_keyboard = this;
 
@@ -43,7 +45,7 @@ Guacamole.Keyboard = function Keyboard(element) {
      * instance with respect to other Guacamole.Keyboard instances.
      *
      * @private
-     * @type {Number}
+     * @type {!number}
      */
     var guacKeyboardID = Guacamole.Keyboard._nextID++;
 
@@ -53,7 +55,7 @@ Guacamole.Keyboard = function Keyboard(element) {
      *
      * @private
      * @constant
-     * @type {String}
+     * @type {!string}
      */
     var EVENT_MARKER = '_GUAC_KEYBOARD_HANDLED_BY_' + guacKeyboardID;
 
@@ -62,9 +64,12 @@ Guacamole.Keyboard = function Keyboard(element) {
      * with this Guacamole.Keyboard in focus.
      * 
      * @event
-     * @param {Number} keysym The keysym of the key being pressed.
-     * @return {Boolean} true if the key event should be allowed through to the
-     *                   browser, false otherwise.
+     * @param {!number} keysym
+     *     The keysym of the key being pressed.
+     *
+     * @return {!boolean}
+     *     true if the key event should be allowed through to the browser,
+     *     false otherwise.
      */
     this.onkeydown = null;
 
@@ -73,7 +78,8 @@ Guacamole.Keyboard = function Keyboard(element) {
      * with this Guacamole.Keyboard in focus.
      * 
      * @event
-     * @param {Number} keysym The keysym of the key being released.
+     * @param {!number} keysym
+     *     The keysym of the key being released.
      */
     this.onkeyup = null;
 
@@ -83,14 +89,14 @@ Guacamole.Keyboard = function Keyboard(element) {
      * reliably detect that quirk is to platform/browser-sniff.
      *
      * @private
-     * @type {Object.<String, Boolean>}
+     * @type {!Object.<string, boolean>}
      */
     var quirks = {
 
         /**
          * Whether keyup events are universally unreliable.
          *
-         * @type {Boolean}
+         * @type {!boolean}
          */
         keyupUnreliable: false,
 
@@ -98,7 +104,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          * Whether the Alt key is actually a modifier for typable keys and is
          * thus never used for keyboard shortcuts.
          *
-         * @type {Boolean}
+         * @type {!boolean}
          */
         altIsTypableOnly: false,
 
@@ -106,7 +112,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          * Whether we can rely on receiving a keyup event for the Caps Lock
          * key.
          *
-         * @type {Boolean}
+         * @type {!boolean}
          */
         capsLockKeyupUnreliable: false
 
@@ -143,6 +149,9 @@ Guacamole.Keyboard = function Keyboard(element) {
 
         /**
          * Reference to this key event.
+         *
+         * @private
+         * @type {!KeyEvent}
          */
         var key_event = this;
 
@@ -153,7 +162,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          * this is the Unicode codepoint of the character that would be typed
          * by the key pressed.
          *
-         * @type {Number}
+         * @type {!number}
          */
         this.keyCode = orig ? (orig.which || orig.keyCode) : 0;
 
@@ -161,7 +170,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          * The legacy DOM3 "keyIdentifier" of the key pressed, as defined at:
          * http://www.w3.org/TR/2009/WD-DOM-Level-3-Events-20090908/#events-Events-KeyboardEvent
          *
-         * @type {String}
+         * @type {!string}
          */
         this.keyIdentifier = orig && orig.keyIdentifier;
 
@@ -169,7 +178,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          * The standard name of the key pressed, as defined at:
          * http://www.w3.org/TR/DOM-Level-3-Events/#events-KeyboardEvent
          * 
-         * @type {String}
+         * @type {!string}
          */
         this.key = orig && orig.key;
 
@@ -178,7 +187,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          * defined at:
          * http://www.w3.org/TR/DOM-Level-3-Events/#events-KeyboardEvent
          * 
-         * @type {Number}
+         * @type {!number}
          */
         this.location = orig ? getEventLocation(orig) : 0;
 
@@ -186,7 +195,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          * The state of all local keyboard modifiers at the time this event was
          * received.
          *
-         * @type {Guacamole.Keyboard.ModifierState}
+         * @type {!Guacamole.Keyboard.ModifierState}
          */
         this.modifiers = orig ? Guacamole.Keyboard.ModifierState.fromKeyboardEvent(orig) : new Guacamole.Keyboard.ModifierState();
 
@@ -194,14 +203,14 @@ Guacamole.Keyboard = function Keyboard(element) {
          * An arbitrary timestamp in milliseconds, indicating this event's
          * position in time relative to other events.
          *
-         * @type {Number}
+         * @type {!number}
          */
         this.timestamp = new Date().getTime();
 
         /**
          * Whether the default action of this key event should be prevented.
          *
-         * @type {Boolean}
+         * @type {!boolean}
          */
         this.defaultPrevented = false;
 
@@ -210,7 +219,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          * by a best-effort guess using available event properties and keyboard
          * state.
          *
-         * @type {Number}
+         * @type {number}
          */
         this.keysym = null;
 
@@ -219,7 +228,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          * If false, the keysym may still be valid, but it's only a best guess,
          * and future key events may be a better source of information.
          *
-         * @type {Boolean}
+         * @type {!boolean}
          */
         this.reliable = false;
 
@@ -227,8 +236,9 @@ Guacamole.Keyboard = function Keyboard(element) {
          * Returns the number of milliseconds elapsed since this event was
          * received.
          *
-         * @return {!Number} The number of milliseconds elapsed since this
-         *                  event was received.
+         * @return {!number}
+         *     The number of milliseconds elapsed since this event was
+         *     received.
          */
         this.getAge = function() {
             return new Date().getTime() - key_event.timestamp;
@@ -244,7 +254,7 @@ Guacamole.Keyboard = function Keyboard(element) {
      * @private
      * @constructor
      * @augments Guacamole.Keyboard.KeyEvent
-     * @param {KeyboardEvent} orig
+     * @param {!KeyboardEvent} orig
      *     The relevant DOM "keydown" event.
      */
     var KeydownEvent = function KeydownEvent(orig) {
@@ -260,7 +270,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          * Whether the keyup following this keydown event is known to be
          * reliable. If false, we cannot rely on the keyup event to occur.
          *
-         * @type {Boolean}
+         * @type {!boolean}
          */
         this.keyupReliable = !quirks.keyupUnreliable;
 
@@ -311,7 +321,7 @@ Guacamole.Keyboard = function Keyboard(element) {
      * @private
      * @constructor
      * @augments Guacamole.Keyboard.KeyEvent
-     * @param {KeyboardEvent} orig
+     * @param {!KeyboardEvent} orig
      *     The relevant DOM "keypress" event.
      */
     var KeypressEvent = function KeypressEvent(orig) {
@@ -337,7 +347,7 @@ Guacamole.Keyboard = function Keyboard(element) {
      * @private
      * @constructor
      * @augments Guacamole.Keyboard.KeyEvent
-     * @param {KeyboardEvent} orig
+     * @param {!KeyboardEvent} orig
      *     The relevant DOM "keyup" event.
      */
     var KeyupEvent = function KeyupEvent(orig) {
@@ -367,14 +377,16 @@ Guacamole.Keyboard = function Keyboard(element) {
      * KeydownEvent, KeypressEvent, and KeyupEvent classes.
      *
      * @private
-     * @type {KeyEvent[]}
+     * @type {!KeyEvent[]}
      */
     var eventLog = [];
 
     /**
      * Map of known JavaScript keycodes which do not map to typable characters
      * to their X11 keysym equivalents.
+     *
      * @private
+     * @type {!Object.<number, number[]>}
      */
     var keycodeKeysyms = {
         8:   [0xFF08], // backspace
@@ -436,7 +448,9 @@ Guacamole.Keyboard = function Keyboard(element) {
     /**
      * Map of known JavaScript keyidentifiers which do not map to typable
      * characters to their unshifted X11 keysym equivalents.
+     *
      * @private
+     * @type {!Object.<string, number[]>}
      */
     var keyidentifier_keysym = {
         "Again": [0xFF66],
@@ -551,7 +565,9 @@ Guacamole.Keyboard = function Keyboard(element) {
 
     /**
      * All keysyms which should not repeat when held down.
+     *
      * @private
+     * @type {!Object.<number, boolean>}
      */
     var no_repeat = {
         0xFE03: true, // ISO Level 3 Shift (AltGr)
@@ -570,6 +586,8 @@ Guacamole.Keyboard = function Keyboard(element) {
 
     /**
      * All modifiers and their states.
+     *
+     * @type {!Guacamole.Keyboard.ModifierState}
      */
     this.modifiers = new Guacamole.Keyboard.ModifierState();
         
@@ -577,6 +595,8 @@ Guacamole.Keyboard = function Keyboard(element) {
      * The state of every key, indexed by keysym. If a particular key is
      * pressed, the value of pressed for that keysym will be true. If a key
      * is not currently pressed, it will not be defined. 
+     *
+     * @type {!Object.<number, boolean>}
      */
     this.pressed = {};
 
@@ -589,7 +609,7 @@ Guacamole.Keyboard = function Keyboard(element) {
      * of the key is explicitly known), it will not be defined.
      *
      * @private
-     * @tyle {Object.<Number, Boolean>}
+     * @type {!Object.<number, boolean>}
      */
     var implicitlyPressed = {};
 
@@ -600,6 +620,7 @@ Guacamole.Keyboard = function Keyboard(element) {
      * is (theoretically) still pressed.
      *
      * @private
+     * @type {!Object.<number, boolean>}
      */
     var last_keydown_result = {};
 
@@ -608,20 +629,24 @@ Guacamole.Keyboard = function Keyboard(element) {
      * fired. This object maps keycodes to keysyms.
      *
      * @private
-     * @type {Object.<Number, Number>}
+     * @type {!Object.<number, number>}
      */
     var recentKeysym = {};
 
     /**
      * Timeout before key repeat starts.
+     *
      * @private
+     * @type {number}
      */
     var key_repeat_timeout = null;
 
     /**
      * Interval which presses and releases the last key pressed while that
      * key is still being held down.
+     *
      * @private
+     * @type {number}
      */
     var key_repeat_interval = null;
 
@@ -631,11 +656,11 @@ Guacamole.Keyboard = function Keyboard(element) {
      * undefined.
      * 
      * @private
-     * @param {Number[]} keysyms
+     * @param {number[]} keysyms
      *     An array of keysyms, where the index of the keysym in the array is
      *     the location value.
      *
-     * @param {Number} location
+     * @param {!number} location
      *     The location on the keyboard corresponding to the key pressed, as
      *     defined at: http://www.w3.org/TR/DOM-Level-3-Events/#events-KeyboardEvent
      */
@@ -651,10 +676,10 @@ Guacamole.Keyboard = function Keyboard(element) {
      * Returns true if the given keysym corresponds to a printable character,
      * false otherwise.
      *
-     * @param {Number} keysym
+     * @param {!number} keysym
      *     The keysym to check.
      *
-     * @returns {boolean}
+     * @returns {!boolean}
      *     true if the given keysym corresponds to a printable character,
      *     false otherwise.
      */
@@ -733,13 +758,13 @@ Guacamole.Keyboard = function Keyboard(element) {
      * correct in all cases.
      *
      * @private
-     * @param {Number} keyCode
+     * @param {!number} keyCode
      *     The keyCode from a browser keydown/keyup event.
      *
-     * @param {String} keyIdentifier
+     * @param {string} keyIdentifier
      *     The legacy keyIdentifier from a browser keydown/keyup event.
      *
-     * @returns {boolean}
+     * @returns {!boolean}
      *     true if the keyIdentifier looks sane, false if the keyIdentifier
      *     appears incorrectly derived or is missing entirely.
      */
@@ -776,8 +801,11 @@ Guacamole.Keyboard = function Keyboard(element) {
      * not a modifier. The return value of this function depends on the
      * return value of the keydown event handler, if any.
      * 
-     * @param {Number} keysym The keysym of the key to press.
-     * @return {Boolean} true if event should NOT be canceled, false otherwise.
+     * @param {number} keysym
+     *     The keysym of the key to press.
+     *
+     * @return {boolean}
+     *     true if event should NOT be canceled, false otherwise.
      */
     this.press = function(keysym) {
 
@@ -820,7 +848,8 @@ Guacamole.Keyboard = function Keyboard(element) {
     /**
      * Marks a key as released, firing the keyup event if registered.
      * 
-     * @param {Number} keysym The keysym of the key to release.
+     * @param {number} keysym
+     *     The keysym of the key to release.
      */
     this.release = function(keysym) {
 
@@ -847,7 +876,7 @@ Guacamole.Keyboard = function Keyboard(element) {
      * Presses and releases the keys necessary to type the given string of
      * text.
      *
-     * @param {String} str
+     * @param {!string} str
      *     The string to type.
      */
     this.type = function type(str) {
@@ -889,14 +918,14 @@ Guacamole.Keyboard = function Keyboard(element) {
      * releasing keysyms.
      *
      * @private
-     * @param {string} modifier
+     * @param {!string} modifier
      *     The name of the {@link Guacamole.Keyboard.ModifierState} property
      *     being updated.
      *
-     * @param {number[]} keysyms
+     * @param {!number[]} keysyms
      *     The keysyms which represent the modifier being updated.
      *
-     * @param {KeyEvent} keyEvent
+     * @param {!KeyEvent} keyEvent
      *     Guacamole's current best interpretation of the key event being
      *     processed.
      */
@@ -954,7 +983,7 @@ Guacamole.Keyboard = function Keyboard(element) {
      * This function pays no attention to keycodes.
      *
      * @private
-     * @param {KeyEvent} keyEvent
+     * @param {!KeyEvent} keyEvent
      *     Guacamole's current best interpretation of the key event being
      *     processed.
      */
@@ -1002,7 +1031,7 @@ Guacamole.Keyboard = function Keyboard(element) {
      * inspection of other key events.
      *
      * @private
-     * @returns {boolean}
+     * @returns {!boolean}
      *     true if all currently pressed keys were implicitly pressed, false
      *     otherwise.
      */
@@ -1023,8 +1052,8 @@ Guacamole.Keyboard = function Keyboard(element) {
      * can be).
      * 
      * @private
-     * @return {Boolean} Whether the default action of the latest event should
-     *                   be prevented.
+     * @return {boolean}
+     *     Whether the default action of the latest event should be prevented.
      */
     function interpret_events() {
 
@@ -1054,7 +1083,8 @@ Guacamole.Keyboard = function Keyboard(element) {
      * looks like a key that may require AltGr.
      *
      * @private
-     * @param {Number} keysym The key that was just pressed.
+     * @param {!number} keysym
+     *     The key that was just pressed.
      */
     var release_simulated_altgr = function release_simulated_altgr(keysym) {
 
@@ -1214,11 +1244,11 @@ Guacamole.Keyboard = function Keyboard(element) {
      * have the same keycode, such as left shift vs. right shift.
      *
      * @private
-     * @param {KeyboardEvent} e
+     * @param {!KeyboardEvent} e
      *     A JavaScript keyboard event, as received through the DOM via a
      *     "keydown", "keyup", or "keypress" handler.
      *
-     * @returns {Number}
+     * @returns {!number}
      *     The location of the key event on the keyboard, as defined at:
      *     http://www.w3.org/TR/DOM-Level-3-Events/#events-KeyboardEvent
      */
@@ -1242,10 +1272,10 @@ Guacamole.Keyboard = function Keyboard(element) {
      * Guacamole.Keyboard. If the Event has already been marked as handled,
      * false is returned.
      *
-     * @param {Event} e
+     * @param {!Event} e
      *     The Event to mark.
      *
-     * @returns {boolean}
+     * @returns {!boolean}
      *     true if the given Event was successfully marked, false if the given
      *     Event was already marked.
      */
@@ -1267,7 +1297,7 @@ Guacamole.Keyboard = function Keyboard(element) {
      * events signalled through this Guacamole.Keyboard's onkeydown and
      * onkeyup handlers.
      *
-     * @param {Element|Document} element
+     * @param {!(Element|Document)} element
      *     The Element to attach event listeners to for the sake of handling
      *     key or input events.
      */
@@ -1339,7 +1369,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          * events is suspended, as such events may conflict with input events.
          *
          * @private
-         * @param {InputEvent} e
+         * @param {!InputEvent} e
          *     The "input" event to handle.
          */
         var handleInput = function handleInput(e) {
@@ -1365,7 +1395,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          * with composition events.
          *
          * @private
-         * @param {CompositionEvent} e
+         * @param {!CompositionEvent} e
          *     The "compositionend" event to handle.
          */
         var handleComposition = function handleComposition(e) {
@@ -1401,7 +1431,7 @@ Guacamole.Keyboard = function Keyboard(element) {
  * instance.
  *
  * @private
- * @type {Number}
+ * @type {!number}
  */
 Guacamole.Keyboard._nextID = 0;
 
@@ -1413,31 +1443,36 @@ Guacamole.Keyboard.ModifierState = function() {
     
     /**
      * Whether shift is currently pressed.
-     * @type {Boolean}
+     *
+     * @type {!boolean}
      */
     this.shift = false;
     
     /**
      * Whether ctrl is currently pressed.
-     * @type {Boolean}
+     *
+     * @type {!boolean}
      */
     this.ctrl = false;
     
     /**
      * Whether alt is currently pressed.
-     * @type {Boolean}
+     *
+     * @type {!boolean}
      */
     this.alt = false;
     
     /**
      * Whether meta (apple key) is currently pressed.
-     * @type {Boolean}
+     *
+     * @type {!boolean}
      */
     this.meta = false;
 
     /**
      * Whether hyper (windows key) is currently pressed.
-     * @type {Boolean}
+     *
+     * @type {!boolean}
      */
     this.hyper = false;
 
@@ -1446,9 +1481,11 @@ Guacamole.Keyboard.ModifierState = function() {
 /**
  * Returns the modifier state applicable to the keyboard event given.
  * 
- * @param {KeyboardEvent} e The keyboard event to read.
- * @returns {!Guacamole.Keyboard.ModifierState} The current state of keyboard
- *                                             modifiers.
+ * @param {!KeyboardEvent} e
+ *     The keyboard event to read.
+ *
+ * @returns {!Guacamole.Keyboard.ModifierState}
+ *     The current state of keyboard modifiers.
  */
 Guacamole.Keyboard.ModifierState.fromKeyboardEvent = function(e) {
     

@@ -26,14 +26,19 @@ var Guacamole = Guacamole || {};
  * given Guacamole.InputStream.
  * 
  * @constructor
- * @param {Guacamole.InputStream} stream
+ * @param {!Guacamole.InputStream} stream
  *     The stream that data will be read from.
+ *
+ * @param {!string} mimetype
+ *     The mimetype of the data being received.
  */
 Guacamole.DataURIReader = function(stream, mimetype) {
 
     /**
      * Reference to this Guacamole.DataURIReader.
+     *
      * @private
+     * @type {!Guacamole.DataURIReader}
      */
     var guac_reader = this;
 
@@ -41,7 +46,7 @@ Guacamole.DataURIReader = function(stream, mimetype) {
      * Current data URI.
      *
      * @private
-     * @type {String}
+     * @type {!string}
      */
     var uri = 'data:' + mimetype + ';base64,';
 
@@ -66,7 +71,7 @@ Guacamole.DataURIReader = function(stream, mimetype) {
      * Returns the data URI of all data received through the underlying stream
      * thus far.
      *
-     * @returns {String}
+     * @returns {!string}
      *     The data URI of all data received through the underlying stream thus
      *     far.
      */

@@ -26,7 +26,7 @@ var Guacamole = Guacamole || {};
  * overall sample rate.
  *
  * @constructor
- * @param {Guacamole.RawAudioFormat|Object} template
+ * @param {!(Guacamole.RawAudioFormat|object)} template
  *     The object whose properties should be copied into the corresponding
  *     properties of the new Guacamole.RawAudioFormat.
  */
@@ -36,21 +36,21 @@ Guacamole.RawAudioFormat = function RawAudioFormat(template) {
      * The number of bytes in each sample of audio data. This value is
      * independent of the number of channels.
      *
-     * @type {Number}
+     * @type {!number}
      */
     this.bytesPerSample = template.bytesPerSample;
 
     /**
      * The number of audio channels (ie: 1 for mono, 2 for stereo).
      *
-     * @type {Number}
+     * @type {!number}
      */
     this.channels = template.channels;
 
     /**
      * The number of samples per second, per channel.
      *
-     * @type {Number}
+     * @type {!number}
      */
     this.rate = template.rate;
 
@@ -61,7 +61,7 @@ Guacamole.RawAudioFormat = function RawAudioFormat(template) {
  * which describes the type of raw audio data represented by that mimetype. If
  * the mimetype is not a supported raw audio data mimetype, null is returned.
  *
- * @param {String} mimetype
+ * @param {!string} mimetype
  *     The audio mimetype to parse.
  *
  * @returns {Guacamole.RawAudioFormat}
