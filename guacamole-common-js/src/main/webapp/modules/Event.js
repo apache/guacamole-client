@@ -25,7 +25,7 @@ var Guacamole = Guacamole || {};
  * specific to the event type.
  *
  * @constructor
- * @param {String} type
+ * @param {!string} type
  *     The unique name of this event type.
  */
 Guacamole.Event = function Event(type) {
@@ -33,7 +33,7 @@ Guacamole.Event = function Event(type) {
     /**
      * The unique name of this event type.
      *
-     * @type {String}
+     * @type {!string}
      */
     this.type = type;
 
@@ -41,14 +41,14 @@ Guacamole.Event = function Event(type) {
      * An arbitrary timestamp in milliseconds, indicating this event's
      * position in time relative to other events.
      *
-     * @type {Number}
+     * @type {!number}
      */
     this.timestamp = new Date().getTime();
 
     /**
      * Returns the number of milliseconds elapsed since this event was created.
      *
-     * @return {Number}
+     * @return {!number}
      *     The number of milliseconds elapsed since this event was created.
      */
     this.getAge = function getAge() {
@@ -69,7 +69,7 @@ Guacamole.Event = function Event(type) {
      * <p>
      * Unless overridden, this function does nothing.
      *
-     * @param {Guacamole.Event.Target} eventTarget
+     * @param {!Guacamole.Event.Target} eventTarget
      *     The {@link Guacamole.Event.Target} that emitted this event.
      */
     this.invokeLegacyHandler = function invokeLegacyHandler(eventTarget) {
@@ -88,7 +88,7 @@ Guacamole.Event = function Event(type) {
  * @constructor
  * @augments Guacamole.Event
  *
- * @param {String} type
+ * @param {!string} type
  *     The unique name of this event type.
  *
  * @param {Event|Event[]} [events=[]]
@@ -137,7 +137,7 @@ Guacamole.Event.DOMEvent = function DOMEvent(type, events) {
  * event. Invoking this function prevents the default behavior of the event and
  * stops any further propagation.
  *
- * @param {Event} event
+ * @param {!Event} event
  *     The DOM event to cancel.
  */
 Guacamole.Event.DOMEvent.cancelEvent = function cancelEvent(event) {
@@ -163,10 +163,10 @@ Guacamole.Event.Target = function Target() {
      * target.
      *
      * @callback Guacamole.Event.Target~listener
-     * @param {Guacamole.Event} event
+     * @param {!Guacamole.Event} event
      *     The event that was dispatched.
      *
-     * @param {Guacamole.Event.Target} target
+     * @param {!Guacamole.Event.Target} target
      *     The object that dispatched the event.
      */
 
@@ -175,7 +175,7 @@ Guacamole.Event.Target = function Target() {
      * to {@link Guacamole.Event.Targer#on on()}.
      *
      * @private
-     * @type {Object.<String, Guacamole.Event.Target~listener[]>}
+     * @type {!Object.<string, Guacamole.Event.Target~listener[]>}
      */
     var listeners = {};
 
@@ -184,10 +184,10 @@ Guacamole.Event.Target = function Target() {
      * the {@link Guacamole.Event#type type} property of {@link Guacamole.Event}
      * provided to {@link Guacamole.Event.Target#dispatch dispatch()}.
      *
-     * @param {String} type
+     * @param {!string} type
      *     The unique name of this event type.
      *
-     * @param {Guacamole.Event.Target~listener} listener
+     * @param {!Guacamole.Event.Target~listener} listener
      *     The function to invoke when an event having the given type is
      *     dispatched. The {@link Guacamole.Event} object provided to
      *     {@link Guacamole.Event.Target#dispatch dispatch()} will be passed to
@@ -211,11 +211,11 @@ Guacamole.Event.Target = function Target() {
      * Invoking this function is equivalent to manually invoking
      * {@link Guacamole.Event.Target#on on()} for each of the provided types.
      *
-     * @param {String[]} types
+     * @param {!string[]} types
      *     The unique names of the event types to associate with the given
      *     listener.
      *
-     * @param {Guacamole.Event.Target~listener} listener
+     * @param {!Guacamole.Event.Target~listener} listener
      *     The function to invoke when an event having any of the given types
      *     is dispatched. The {@link Guacamole.Event} object provided to
      *     {@link Guacamole.Event.Target#dispatch dispatch()} will be passed to
@@ -232,7 +232,7 @@ Guacamole.Event.Target = function Target() {
      * this Guacamole.Event.Target for that event's
      * {@link Guacamole.Event#type type}.
      *
-     * @param {Guacamole.Event} event
+     * @param {!Guacamole.Event} event
      *     The event to dispatch.
      */
     this.dispatch = function dispatch(event) {
@@ -258,16 +258,16 @@ Guacamole.Event.Target = function Target() {
      * listener were registered, the first listener still registered will be
      * removed.
      *
-     * @param {String} type
+     * @param {!string} type
      *     The unique name of the event type handled by the listener being
      *     removed.
      *
-     * @param {Guacamole.Event.Target~listener} listener
+     * @param {!Guacamole.Event.Target~listener} listener
      *     The listener function previously provided to
      *     {@link Guacamole.Event.Target#on on()}or
      *     {@link Guacamole.Event.Target#onEach onEach()}.
      *
-     * @returns {Boolean}
+     * @returns {!boolean}
      *     true if the specified listener was removed, false otherwise.
      */
     this.off = function off(type, listener) {
@@ -298,16 +298,16 @@ Guacamole.Event.Target = function Target() {
      * Invoking this function is equivalent to manually invoking
      * {@link Guacamole.Event.Target#off off()} for each of the provided types.
      *
-     * @param {String[]} types
+     * @param {!string[]} types
      *     The unique names of the event types handled by the listeners being
      *     removed.
      *
-     * @param {Guacamole.Event.Target~listener} listener
+     * @param {!Guacamole.Event.Target~listener} listener
      *     The listener function previously provided to
      *     {@link Guacamole.Event.Target#on on()} or
      *     {@link Guacamole.Event.Target#onEach onEach()}.
      *
-     * @returns {Boolean}
+     * @returns {!boolean}
      *     true if any of the specified listeners were removed, false
      *     otherwise.
      */

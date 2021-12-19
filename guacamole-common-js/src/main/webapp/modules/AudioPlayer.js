@@ -46,10 +46,10 @@ Guacamole.AudioPlayer = function AudioPlayer() {
  * implementation of Guacamole.AudioPlayer, and thus will be properly handled
  * by Guacamole.AudioPlayer.getInstance().
  *
- * @param {String} mimetype
+ * @param {!string} mimetype
  *     The mimetype to check.
  *
- * @returns {Boolean}
+ * @returns {!boolean}
  *     true if the given mimetype is supported by any built-in
  *     Guacamole.AudioPlayer, false otherwise.
  */
@@ -68,7 +68,7 @@ Guacamole.AudioPlayer.isSupportedType = function isSupportedType(mimetype) {
  * additional parameters. Something like "audio/L8;rate=44100" would be valid,
  * however (see https://tools.ietf.org/html/rfc4856).
  *
- * @returns {String[]}
+ * @returns {!string[]}
  *     A list of all mimetypes supported by any built-in Guacamole.AudioPlayer,
  *     excluding any parameters.
  */
@@ -83,10 +83,10 @@ Guacamole.AudioPlayer.getSupportedTypes = function getSupportedTypes() {
  * audio format. If support for the given audio format is not available, null
  * is returned.
  *
- * @param {Guacamole.InputStream} stream
+ * @param {!Guacamole.InputStream} stream
  *     The Guacamole.InputStream to read audio data from.
  *
- * @param {String} mimetype
+ * @param {!string} mimetype
  *     The mimetype of the audio data in the provided stream.
  *
  * @return {Guacamole.AudioPlayer}
@@ -112,10 +112,10 @@ Guacamole.AudioPlayer.getInstance = function getInstance(stream, mimetype) {
  *
  * @constructor
  * @augments Guacamole.AudioPlayer
- * @param {Guacamole.InputStream} stream
+ * @param {!Guacamole.InputStream} stream
  *     The Guacamole.InputStream to read audio data from.
  *
- * @param {String} mimetype
+ * @param {!string} mimetype
  *     The mimetype of the audio data in the provided stream, which must be a
  *     "audio/L8" or "audio/L16" mimetype with necessary parameters, such as:
  *     "audio/L16;rate=44100,channels=2".
@@ -146,7 +146,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * resolution.
      *
      * @private
-     * @type {Number}
+     * @type {!number}
      */
     var nextPacketTime = context.currentTime;
 
@@ -155,7 +155,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * provided with this Guacamole.RawAudioPlayer was created.
      *
      * @private
-     * @type {Guacamole.ArrayBufferReader}
+     * @type {!Guacamole.ArrayBufferReader}
      */
     var reader = new Guacamole.ArrayBufferReader(stream);
 
@@ -167,7 +167,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      *
      * @private
      * @constant
-     * @type {Number}
+     * @type {!number}
      */
     var MIN_SPLIT_SIZE = 0.02;
 
@@ -177,7 +177,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * roughly one third of a second.
      *
      * @private
-     * @type {Number}
+     * @type {!number}
      */
     var maxLatency = 0.3;
 
@@ -197,7 +197,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * sample, and will be 128 for 8-bit audio and 32768 for 16-bit audio.
      *
      * @private
-     * @type {Number}
+     * @type {!number}
      */
     var maxSampleValue = (format.bytesPerSample === 1) ? 128 : 32768;
 
@@ -209,7 +209,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * no further modifications can be made to that packet.
      *
      * @private
-     * @type {SampleArray[]}
+     * @type {!SampleArray[]}
      */
     var packetQueue = [];
 
@@ -218,7 +218,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * containing the concatenation of those packets.
      *
      * @private
-     * @param {SampleArray[]} packets
+     * @param {!SampleArray[]} packets
      *     The array of audio packets to concatenate.
      *
      * @returns {SampleArray}
@@ -258,7 +258,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * the originally-provided audio packet is returned.
      *
      * @private
-     * @param {SampleArray} data
+     * @param {!SampleArray} data
      *     The audio packet to split.
      *
      * @returns {!SampleArray[]}
@@ -326,7 +326,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * conversions will be performed automatically internally.
      *
      * @private
-     * @param {ArrayBuffer} data
+     * @param {!ArrayBuffer} data
      *     A raw packet of audio data that should be pushed onto the audio
      *     playback queue.
      */
@@ -343,7 +343,8 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * @private
      * @returns {SampleArray}
      *     A packet of audio data pulled from the beginning of the playback
-     *     queue.
+     *     queue. If there is no audio currently in the playback queue, this
+     *     will be null.
      */
     var shiftAudioPacket = function shiftAudioPacket() {
 
@@ -367,7 +368,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * into isolated planes of channel-specific data.
      *
      * @private
-     * @param {SampleArray} data
+     * @param {!SampleArray} data
      *     The raw audio packet that should be converted into a Web Audio API
      *     AudioBuffer.
      *
@@ -460,10 +461,10 @@ Guacamole.RawAudioPlayer.prototype = new Guacamole.AudioPlayer();
  * Determines whether the given mimetype is supported by
  * Guacamole.RawAudioPlayer.
  *
- * @param {String} mimetype
+ * @param {!string} mimetype
  *     The mimetype to check.
  *
- * @returns {boolean}
+ * @returns {!boolean}
  *     true if the given mimetype is supported by Guacamole.RawAudioPlayer,
  *     false otherwise.
  */
@@ -485,7 +486,7 @@ Guacamole.RawAudioPlayer.isSupportedType = function isSupportedType(mimetype) {
  * additional parameters. Something like "audio/L8;rate=44100" would be valid,
  * however (see https://tools.ietf.org/html/rfc4856).
  *
- * @returns {string[]}
+ * @returns {!string[]}
  *     A list of all mimetypes supported by Guacamole.RawAudioPlayer, excluding
  *     any parameters. If the necessary JavaScript APIs for playing raw audio
  *     are absent, this list will be empty.

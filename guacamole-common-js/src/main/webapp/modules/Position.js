@@ -23,7 +23,7 @@ var Guacamole = Guacamole || {};
  * A position in 2-D space.
  *
  * @constructor
- * @param {Guacamole.Position|Object} [template={}]
+ * @param {Guacamole.Position|object} [template={}]
  *     The object whose properties should be copied within the new
  *     Guacamole.Position.
  */
@@ -34,7 +34,7 @@ Guacamole.Position = function Position(template) {
     /**
      * The current X position, in pixels.
      *
-     * @type {Number}
+     * @type {!number}
      * @default 0
      */
     this.x = template.x || 0;
@@ -42,7 +42,7 @@ Guacamole.Position = function Position(template) {
     /**
      * The current Y position, in pixels.
      *
-     * @type {Number}
+     * @type {!number}
      * @default 0
      */
     this.y = template.y || 0;
@@ -54,13 +54,13 @@ Guacamole.Position = function Position(template) {
      * JavaScript event objects. The final position is translated to
      * coordinates that are relative the given element.
      *
-     * @param {Element} element
+     * @param {!Element} element
      *     The element the coordinates should be relative to.
      *
-     * @param {Number} clientX
+     * @param {!number} clientX
      *     The viewport-relative X coordinate to translate.
      *
-     * @param {Number} clientY
+     * @param {!number} clientY
      *     The viewport-relative Y coordinate to translate.
      */
     this.fromClientPosition = function fromClientPosition(element, clientX, clientY) {
@@ -98,16 +98,16 @@ Guacamole.Position = function Position(template) {
  * commonly available within JavaScript event objects. The final position is
  * translated to  coordinates that are relative the given element.
  *
- * @param {Element} element
+ * @param {!Element} element
  *     The element the coordinates should be relative to.
  *
- * @param {Number} clientX
+ * @param {!number} clientX
  *     The viewport-relative X coordinate to translate.
  *
- * @param {Number} clientY
+ * @param {!number} clientY
  *     The viewport-relative Y coordinate to translate.
  *
- * @returns {Guacamole.Position}
+ * @returns {!Guacamole.Position}
  *     A new Guacamole.Position representing the relative position of the given
  *     client coordinates.
  */

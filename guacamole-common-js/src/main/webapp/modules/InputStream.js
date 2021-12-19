@@ -24,20 +24,26 @@ var Guacamole = Guacamole || {};
  * transfer of files or other binary data.
  * 
  * @constructor
- * @param {Guacamole.Client} client The client owning this stream.
- * @param {Number} index The index of this stream.
+ * @param {!Guacamole.Client} client
+ *     The client owning this stream.
+ *
+ * @param {!number} index
+ *     The index of this stream.
  */
 Guacamole.InputStream = function(client, index) {
 
     /**
      * Reference to this stream.
+     *
      * @private
+     * @type {!Guacamole.InputStream}
      */
     var guac_stream = this;
 
     /**
      * The index of this stream.
-     * @type {Number}
+     *
+     * @type {!number}
      */
     this.index = index;
 
@@ -45,7 +51,8 @@ Guacamole.InputStream = function(client, index) {
      * Called when a blob of data is received.
      * 
      * @event
-     * @param {String} data The received base64 data.
+     * @param {!string} data
+     *     The received base64 data.
      */
     this.onblob = null;
 
@@ -59,9 +66,11 @@ Guacamole.InputStream = function(client, index) {
     /**
      * Acknowledges the receipt of a blob.
      * 
-     * @param {String} message A human-readable message describing the error
-     *                         or status.
-     * @param {Number} code The error code, if any, or 0 for success.
+     * @param {!string} message
+     *     A human-readable message describing the error or status.
+     *
+     * @param {!number} code
+     *     The error code, if any, or 0 for success.
      */
     this.sendAck = function(message, code) {
         client.sendAck(guac_stream.index, message, code);

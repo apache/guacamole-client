@@ -24,10 +24,10 @@ var Guacamole = Guacamole || {};
  * input and output streams.
  * 
  * @constructor
- * @param {Guacamole.Client} client
+ * @param {!Guacamole.Client} client
  *     The client owning this object.
  *
- * @param {Number} index
+ * @param {!number} index
  *     The index of this object.
  */
 Guacamole.Object = function guacamoleObject(client, index) {
@@ -36,7 +36,7 @@ Guacamole.Object = function guacamoleObject(client, index) {
      * Reference to this Guacamole.Object.
      *
      * @private
-     * @type {Guacamole.Object}
+     * @type {!Guacamole.Object}
      */
     var guacObject = this;
 
@@ -45,7 +45,7 @@ Guacamole.Object = function guacamoleObject(client, index) {
      * callbacks is guaranteed to be in order of request.
      *
      * @private
-     * @type {Object.<String, Function[]>}
+     * @type {!Object.<string, function[]>}
      */
     var bodyCallbacks = {};
 
@@ -55,10 +55,10 @@ Guacamole.Object = function guacamoleObject(client, index) {
      * returned.
      *
      * @private
-     * @param {String} name
+     * @param {!string} name
      *     The name of the stream to retrieve a callback for.
      *
-     * @returns {Function}
+     * @returns {function}
      *     The next callback associated with the stream having the given name,
      *     or null if no such callback exists.
      */
@@ -84,10 +84,10 @@ Guacamole.Object = function guacamoleObject(client, index) {
      * having the given name.
      *
      * @private
-     * @param {String} name
+     * @param {!string} name
      *     The name of the stream to associate with the given callback.
      *
-     * @param {Function} callback
+     * @param {!function} callback
      *     The callback to add to the queue of the stream with the given name.
      */
     var enqueueBodyCallback = function enqueueBodyCallback(name, callback) {
@@ -107,7 +107,7 @@ Guacamole.Object = function guacamoleObject(client, index) {
     /**
      * The index of this object.
      *
-     * @type {Number}
+     * @type {!number}
      */
     this.index = index;
 
@@ -119,13 +119,13 @@ Guacamole.Object = function guacamoleObject(client, index) {
      * handler here.
      *
      * @event
-     * @param {Guacamole.InputStream} inputStream
+     * @param {!Guacamole.InputStream} inputStream
      *     The input stream of the received body.
      *
-     * @param {String} mimetype
+     * @param {!string} mimetype
      *     The mimetype of the data being received.
      *
-     * @param {String} name
+     * @param {!string} name
      *     The name of the stream whose body has been received.
      */
     this.onbody = function defaultBodyHandler(inputStream, mimetype, name) {
@@ -149,10 +149,10 @@ Guacamole.Object = function guacamoleObject(client, index) {
      * Requests read access to the input stream having the given name. If
      * successful, a new input stream will be created.
      *
-     * @param {String} name
+     * @param {!string} name
      *     The name of the input stream to request.
      *
-     * @param {Function} [bodyCallback]
+     * @param {function} [bodyCallback]
      *     The callback to invoke when the body of the requested input stream
      *     is received. This callback will be provided a Guacamole.InputStream
      *     and its mimetype as its two only arguments. If the onbody handler of
@@ -174,13 +174,13 @@ Guacamole.Object = function guacamoleObject(client, index) {
      * given mimetype and name. The legality of a mimetype and name is dictated
      * by the object itself.
      *
-     * @param {String} mimetype
+     * @param {!string} mimetype
      *     The mimetype of the data which will be sent to the output stream.
      *
-     * @param {String} name
+     * @param {!string} name
      *     The defined name of an output stream within this object.
      *
-     * @returns {Guacamole.OutputStream}
+     * @returns {!Guacamole.OutputStream}
      *     An output stream which will write blobs to the named output stream
      *     of this object.
      */
@@ -195,7 +195,7 @@ Guacamole.Object = function guacamoleObject(client, index) {
  * the root stream MUST be a JSON map of stream name to mimetype.
  *
  * @constant
- * @type {String}
+ * @type {!string}
  */
 Guacamole.Object.ROOT_STREAM = '/';
 
@@ -205,6 +205,6 @@ Guacamole.Object.ROOT_STREAM = '/';
  * have this mimetype.
  *
  * @constant
- * @type {String}
+ * @type {!string}
  */
 Guacamole.Object.STREAM_INDEX_MIMETYPE = 'application/vnd.glyptodon.guacamole.stream-index+json';

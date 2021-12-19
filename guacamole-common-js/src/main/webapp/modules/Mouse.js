@@ -41,7 +41,7 @@ var Guacamole = Guacamole || {};
  *
  * @constructor
  * @augments Guacamole.Mouse.Event.Target
- * @param {Element} element
+ * @param {!Element} element
  *     The Element to use to provide mouse events.
  */
 Guacamole.Mouse = function Mouse(element) {
@@ -50,29 +50,39 @@ Guacamole.Mouse = function Mouse(element) {
 
     /**
      * Reference to this Guacamole.Mouse.
+     *
      * @private
+     * @type {!Guacamole.Mouse}
      */
     var guac_mouse = this;
 
     /**
      * The number of mousemove events to require before re-enabling mouse
      * event handling after receiving a touch event.
+     *
+     * @type {!number}
      */
     this.touchMouseThreshold = 3;
 
     /**
      * The minimum amount of pixels scrolled required for a single scroll button
      * click.
+     *
+     * @type {!number}
      */
     this.scrollThreshold = 53;
 
     /**
      * The number of pixels to scroll per line.
+     *
+     * @type {!number}
      */
     this.PIXELS_PER_LINE = 18;
 
     /**
      * The number of pixels to scroll per page.
+     *
+     * @type {!number}
      */
     this.PIXELS_PER_PAGE = this.PIXELS_PER_LINE * 16;
 
@@ -81,7 +91,7 @@ Guacamole.Mouse = function Mouse(element) {
      * mouse button indices used by DOM mouse events.
      *
      * @private
-     * @type {String[]}
+     * @type {!string[]}
      */
     var MOUSE_BUTTONS = [
         Guacamole.Mouse.State.Buttons.LEFT,
@@ -92,7 +102,9 @@ Guacamole.Mouse = function Mouse(element) {
     /**
      * Counter of mouse events to ignore. This decremented by mousemove, and
      * while non-zero, mouse events will have no effect.
+     *
      * @private
+     * @type {!number}
      */
     var ignore_mouse = 0;
 
@@ -102,6 +114,7 @@ Guacamole.Mouse = function Mouse(element) {
      * threshold.
      *
      * @private
+     * @type {!number}
      */
     var scroll_delta = 0;
 
@@ -254,7 +267,7 @@ Guacamole.Mouse = function Mouse(element) {
      * coordinates.
      *
      * @private
-     * @type {Boolean}
+     * @type {!boolean}
      */
     var CSS3_CURSOR_SUPPORTED = (function() {
 
@@ -291,11 +304,18 @@ Guacamole.Mouse = function Mouse(element) {
      * to do something else, such as use the software cursor built into
      * Guacamole.Display, if the local cursor cannot be set.
      *
-     * @param {HTMLCanvasElement} canvas The cursor image.
-     * @param {Number} x The X-coordinate of the cursor hotspot.
-     * @param {Number} y The Y-coordinate of the cursor hotspot.
-     * @return {!Boolean} true if the cursor was successfully set, false if the
-     *                   cursor could not be set for any reason.
+     * @param {!HTMLCanvasElement} canvas
+     *     The cursor image.
+     *
+     * @param {!number} x
+     *     The X-coordinate of the cursor hotspot.
+     *
+     * @param {!number} y
+     *     The Y-coordinate of the cursor hotspot.
+     *
+     * @return {!boolean}
+     *     true if the cursor was successfully set, false if the cursor could
+     *     not be set for any reason.
      */
     this.setCursor = function(canvas, x, y) {
 
@@ -318,7 +338,7 @@ Guacamole.Mouse = function Mouse(element) {
  *
  * @constructor
  * @augments Guacamole.Position
- * @param {Guacamole.Mouse.State|Object} [template={}]
+ * @param {Guacamole.Mouse.State|object} [template={}]
  *     The object whose properties should be copied within the new
  *     Guacamole.Mouse.State.
  */
@@ -332,30 +352,30 @@ Guacamole.Mouse.State = function State(template) {
      * Guacamole.Mouse.State constructor of Apache Guacamole 1.3.0 and older.
      *
      * @private
-     * @param {Number} x
+     * @param {!number} x
      *     The X position of the mouse pointer in pixels.
      *
-     * @param {Number} y
+     * @param {!number} y
      *     The Y position of the mouse pointer in pixels.
      *
-     * @param {Boolean} left
+     * @param {!boolean} left
      *     Whether the left mouse button is pressed.
      *
-     * @param {Boolean} middle
+     * @param {!boolean} middle
      *     Whether the middle mouse button is pressed.
      *
-     * @param {Boolean} right
+     * @param {!boolean} right
      *     Whether the right mouse button is pressed.
      *
-     * @param {Boolean} up
+     * @param {!boolean} up
      *     Whether the up mouse button is pressed (the fourth button, usually
      *     part of a scroll wheel).
      *
-     * @param {Boolean} down
+     * @param {!boolean} down
      *     Whether the down mouse button is pressed (the fifth button, usually
      *     part of a scroll wheel).
      *
-     * @return {Object}
+     * @return {!object}
      *     The equivalent template object that would be passed to the new
      *     Guacamole.Mouse.State constructor.
      */
@@ -382,7 +402,7 @@ Guacamole.Mouse.State = function State(template) {
     /**
      * Whether the left mouse button is currently pressed.
      *
-     * @type {Boolean}
+     * @type {!boolean}
      * @default false
      */
     this.left = template.left || false;
@@ -390,7 +410,7 @@ Guacamole.Mouse.State = function State(template) {
     /**
      * Whether the middle mouse button is currently pressed.
      *
-     * @type {Boolean}
+     * @type {!boolean}
      * @default false
      */
     this.middle = template.middle || false;
@@ -398,7 +418,7 @@ Guacamole.Mouse.State = function State(template) {
     /**
      * Whether the right mouse button is currently pressed.
      *
-     * @type {Boolean}
+     * @type {!boolean}
      * @default false
      */
     this.right = template.right || false;
@@ -408,7 +428,7 @@ Guacamole.Mouse.State = function State(template) {
      * mouse button, associated with upward scrolling of the mouse scroll
      * wheel.
      *
-     * @type {Boolean}
+     * @type {!boolean}
      * @default false
      */
     this.up = template.up || false;
@@ -418,7 +438,7 @@ Guacamole.Mouse.State = function State(template) {
      * mouse button, associated with downward scrolling of the mouse scroll
      * wheel.
      *
-     * @type {Boolean}
+     * @type {!boolean}
      * @default false
      */
     this.down = template.down || false;
@@ -439,7 +459,7 @@ Guacamole.Mouse.State.Buttons = {
      * left mouse button.
      *
      * @constant
-     * @type {String}
+     * @type {!string}
      */
     LEFT : 'left',
 
@@ -448,7 +468,7 @@ Guacamole.Mouse.State.Buttons = {
      * middle mouse button.
      *
      * @constant
-     * @type {String}
+     * @type {!string}
      */
     MIDDLE : 'middle',
 
@@ -457,7 +477,7 @@ Guacamole.Mouse.State.Buttons = {
      * right mouse button.
      *
      * @constant
-     * @type {String}
+     * @type {!string}
      */
     RIGHT : 'right',
 
@@ -467,7 +487,7 @@ Guacamole.Mouse.State.Buttons = {
      * wheel is scrolled up).
      *
      * @constant
-     * @type {String}
+     * @type {!string}
      */
     UP : 'up',
 
@@ -477,7 +497,7 @@ Guacamole.Mouse.State.Buttons = {
      * wheel is scrolled up).
      *
      * @constant
-     * @type {String}
+     * @type {!string}
      */
     DOWN : 'down'
 
@@ -490,10 +510,10 @@ Guacamole.Mouse.State.Buttons = {
  *
  * @constructor
  * @augments Guacamole.Event.DOMEvent
- * @param {String} type
+ * @param {!string} type
  *     The type name of the event ("mousedown", "mouseup", etc.)
  *
- * @param {Guacamole.Mouse.State} state
+ * @param {!Guacamole.Mouse.State} state
  *     The current mouse state.
  *     
  * @param {Event|Event[]} [events=[]]
@@ -509,14 +529,14 @@ Guacamole.Mouse.Event = function MouseEvent(type, state, events) {
      *
      * @private
      * @constant
-     * @type {String}
+     * @type {!string}
      */
     var legacyHandlerName = 'on' + this.type;
 
     /**
      * The current mouse state at the time this event was fired.
      *
-     * @type {Guacamole.Mouse.State}
+     * @type {!Guacamole.Mouse.State}
      */
     this.state = state;
 
@@ -557,7 +577,7 @@ Guacamole.Mouse.Event.Target = function MouseEventTarget() {
      * mouse events fire. This state object is also passed in as a parameter to
      * the handler of any mouse events.
      *
-     * @type {Guacamole.Mouse.State}
+     * @type {!Guacamole.Mouse.State}
      */
     this.currentState = new Guacamole.Mouse.State();
 
@@ -572,7 +592,7 @@ Guacamole.Mouse.Event.Target = function MouseEventTarget() {
      * [click()]{@link Guacamole.Mouse.Event.Target#click}.
      *
      * @event Guacamole.Mouse.Event.Target#mousedown
-     * @param {Guacamole.Mouse.Event} event
+     * @param {!Guacamole.Mouse.Event} event
      *     The mousedown event that was fired.
      */
 
@@ -587,7 +607,7 @@ Guacamole.Mouse.Event.Target = function MouseEventTarget() {
      * [click()]{@link Guacamole.Mouse.Event.Target#click}.
      *
      * @event Guacamole.Mouse.Event.Target#mouseup
-     * @param {Guacamole.Mouse.Event} event
+     * @param {!Guacamole.Mouse.Event} event
      *     The mouseup event that was fired.
      */
 
@@ -601,7 +621,7 @@ Guacamole.Mouse.Event.Target = function MouseEventTarget() {
      * or [move()]{@link Guacamole.Mouse.Event.Target#move}.
      *
      * @event Guacamole.Mouse.Event.Target#mousemove
-     * @param {Guacamole.Mouse.Event} event
+     * @param {!Guacamole.Mouse.Event} event
      *     The mousemove event that was fired.
      */
 
@@ -614,7 +634,7 @@ Guacamole.Mouse.Event.Target = function MouseEventTarget() {
      * or [out()]{@link Guacamole.Mouse.Event.Target#out}.
      *
      * @event Guacamole.Mouse.Event.Target#mouseout
-     * @param {Guacamole.Mouse.Event} event
+     * @param {!Guacamole.Mouse.Event} event
      *     The mouseout event that was fired.
      */
 
@@ -626,7 +646,7 @@ Guacamole.Mouse.Event.Target = function MouseEventTarget() {
      *
      * @fires Guacamole.Mouse.Event.Target#mousedown
      *
-     * @param {String} button
+     * @param {!string} button
      *     The name of the mouse button to press, as defined by
      *     {@link Guacamole.Mouse.State.Buttons}.
      *
@@ -648,7 +668,7 @@ Guacamole.Mouse.Event.Target = function MouseEventTarget() {
      *
      * @fires Guacamole.Mouse.Event.Target#mouseup
      *
-     * @param {String} button
+     * @param {!string} button
      *     The name of the mouse button to release, as defined by
      *     {@link Guacamole.Mouse.State.Buttons}.
      *
@@ -671,7 +691,7 @@ Guacamole.Mouse.Event.Target = function MouseEventTarget() {
      * @fires Guacamole.Mouse.Event.Target#mousedown
      * @fires Guacamole.Mouse.Event.Target#mouseup
      *
-     * @param {String} button
+     * @param {!string} button
      *     The name of the mouse button to click, as defined by
      *     {@link Guacamole.Mouse.State.Buttons}.
      *
@@ -688,7 +708,7 @@ Guacamole.Mouse.Event.Target = function MouseEventTarget() {
      *
      * @fires Guacamole.Mouse.Event.Target#mousemove
      *
-     * @param {Guacamole.Position|Object} position
+     * @param {!(Guacamole.Position|object)} position
      *     The new coordinates of the mouse pointer. This object may be a
      *     {@link Guacamole.Position} or any object with "x" and "y"
      *     properties.
@@ -761,7 +781,7 @@ Guacamole.Mouse.Event.Target = function MouseEventTarget() {
  *
  * @constructor
  * @augments Guacamole.Mouse.Event.Target
- * @param {Element} element
+ * @param {!Element} element
  *     The Element to use to provide touch events.
  */
 Guacamole.Mouse.Touchpad = function Touchpad(element) {
@@ -777,25 +797,33 @@ Guacamole.Mouse.Touchpad = function Touchpad(element) {
 
     /**
      * Reference to this Guacamole.Mouse.Touchpad.
+     *
      * @private
+     * @type {!Guacamole.Mouse.Touchpad}
      */
     var guac_touchpad = this;
 
     /**
      * The distance a two-finger touch must move per scrollwheel event, in
      * pixels.
+     *
+     * @type {!number}
      */
     this.scrollThreshold = 20 * (window.devicePixelRatio || 1);
 
     /**
      * The maximum number of milliseconds to wait for a touch to end for the
      * gesture to be considered a click.
+     *
+     * @type {!number}
      */
     this.clickTimingThreshold = 250;
 
     /**
      * The maximum number of pixels to allow a touch to move for the gesture to
      * be considered a click.
+     *
+     * @type {!number}
      */
     this.clickMoveThreshold = 10 * (window.devicePixelRatio || 1);
 
@@ -804,7 +832,7 @@ Guacamole.Mouse.Touchpad = function Touchpad(element) {
      * mouse events fire. This state object is also passed in as a parameter to
      * the handler of any mouse events.
      * 
-     * @type {Guacamole.Mouse.State}
+     * @type {!Guacamole.Mouse.State}
      */
     this.currentState = new Guacamole.Mouse.State();
 
@@ -999,7 +1027,7 @@ Guacamole.Mouse.Touchpad = function Touchpad(element) {
  *
  * @constructor
  * @augments Guacamole.Mouse.Event.Target
- * @param {Element} element
+ * @param {!Element} element
  *     The Element to use to provide touch events.
  */
 Guacamole.Mouse.Touchscreen = function Touchscreen(element) {
@@ -1015,7 +1043,9 @@ Guacamole.Mouse.Touchscreen = function Touchscreen(element) {
 
     /**
      * Reference to this Guacamole.Mouse.Touchscreen.
+     *
      * @private
+     * @type {!Guacamole.Mouse.Touchscreen}
      */
     var guac_touchscreen = this;
 
@@ -1024,18 +1054,23 @@ Guacamole.Mouse.Touchscreen = function Touchscreen(element) {
      * will be ignored.
      *
      * @private
+     * @type {!boolean}
      */
     var gesture_in_progress = false;
 
     /**
      * The start X location of a gesture.
+     *
      * @private
+     * @type {number}
      */
     var gesture_start_x = null;
 
     /**
      * The start Y location of a gesture.
+     *
      * @private
+     * @type {number}
      */
     var gesture_start_y = null;
 
@@ -1043,6 +1078,7 @@ Guacamole.Mouse.Touchscreen = function Touchscreen(element) {
      * The timeout associated with the delayed, cancellable click release.
      *
      * @private
+     * @type {number}
      */
     var click_release_timeout = null;
 
@@ -1050,24 +1086,31 @@ Guacamole.Mouse.Touchscreen = function Touchscreen(element) {
      * The timeout associated with long-press for right click.
      *
      * @private
+     * @type {number}
      */
     var long_press_timeout = null;
 
     /**
      * The distance a two-finger touch must move per scrollwheel event, in
      * pixels.
+     *
+     * @type {!number}
      */
     this.scrollThreshold = 20 * (window.devicePixelRatio || 1);
 
     /**
      * The maximum number of milliseconds to wait for a touch to end for the
      * gesture to be considered a click.
+     *
+     * @type {!number}
      */
     this.clickTimingThreshold = 250;
 
     /**
      * The maximum number of pixels to allow a touch to move for the gesture to
      * be considered a click.
+     *
+     * @type {!number}
      */
     this.clickMoveThreshold = 16 * (window.devicePixelRatio || 1);
 
@@ -1082,9 +1125,11 @@ Guacamole.Mouse.Touchscreen = function Touchscreen(element) {
      * clicking, based on where the touch gesture began.
      *
      * @private
-     * @param {TouchEvent} e The touch event to check.
-     * @return {!Boolean} true if the movement threshold is exceeded, false
-     *                   otherwise.
+     * @param {!TouchEvent} e
+     *     The touch event to check.
+     *
+     * @return {!boolean}
+     *     true if the movement threshold is exceeded, false otherwise.
      */
     function finger_moved(e) {
         var touch = e.touches[0] || e.changedTouches[0];
@@ -1098,7 +1143,8 @@ Guacamole.Mouse.Touchscreen = function Touchscreen(element) {
      * touch event.
      * 
      * @private
-     * @param {TouchEvent} e The touch event beginning this new gesture.
+     * @param {!TouchEvent} e
+     *     The touch event beginning this new gesture.
      */
     function begin_gesture(e) {
         var touch = e.touches[0];

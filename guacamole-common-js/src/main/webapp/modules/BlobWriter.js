@@ -24,7 +24,7 @@ var Guacamole = Guacamole || {};
  * contents of provided Blob objects.
  *
  * @constructor
- * @param {Guacamole.OutputStream} stream
+ * @param {!Guacamole.OutputStream} stream
  *     The stream that data will be written to.
  */
 Guacamole.BlobWriter = function BlobWriter(stream) {
@@ -33,7 +33,7 @@ Guacamole.BlobWriter = function BlobWriter(stream) {
      * Reference to this Guacamole.BlobWriter.
      *
      * @private
-     * @type {Guacamole.BlobWriter}
+     * @type {!Guacamole.BlobWriter}
      */
     var guacWriter = this;
 
@@ -42,7 +42,7 @@ Guacamole.BlobWriter = function BlobWriter(stream) {
      * provided file data.
      *
      * @private
-     * @type {Guacamole.ArrayBufferWriter}
+     * @type {!Guacamole.ArrayBufferWriter}
      */
     var arrayBufferWriter = new Guacamole.ArrayBufferWriter(stream);
 
@@ -58,13 +58,13 @@ Guacamole.BlobWriter = function BlobWriter(stream) {
      * length.
      *
      * @private
-     * @param {Blob} blob
+     * @param {!Blob} blob
      *     The Blob to slice.
      *
-     * @param {Number} start
+     * @param {!number} start
      *     The starting offset of the slice, in bytes, inclusive.
      *
-     * @param {Number} end
+     * @param {!number} end
      *     The ending offset of the slice, in bytes, exclusive.
      *
      * @returns {!Blob}
@@ -102,7 +102,7 @@ Guacamole.BlobWriter = function BlobWriter(stream) {
     /**
      * Sends the contents of the given blob over the underlying stream.
      *
-     * @param {Blob} blob
+     * @param {!Blob} blob
      *     The blob to send.
      */
     this.sendBlob = function sendBlob(blob) {
@@ -196,7 +196,7 @@ Guacamole.BlobWriter = function BlobWriter(stream) {
      * Fired for received data, if acknowledged by the server.
      *
      * @event
-     * @param {Guacamole.Status} status
+     * @param {!Guacamole.Status} status
      *     The status of the operation.
      */
     this.onack = null;
@@ -207,13 +207,13 @@ Guacamole.BlobWriter = function BlobWriter(stream) {
      * the given blob will cease, but the stream will remain open.
      *
      * @event
-     * @param {Blob} blob
+     * @param {!Blob} blob
      *     The blob that was being read when the error occurred.
      *
-     * @param {Number} offset
+     * @param {!number} offset
      *     The offset of the failed read attempt within the blob, in bytes.
      *
-     * @param {DOMError} error
+     * @param {!DOMError} error
      *     The error that occurred.
      */
     this.onerror = null;
@@ -223,10 +223,10 @@ Guacamole.BlobWriter = function BlobWriter(stream) {
      * via [sendBlob()]{@link Guacamole.BlobWriter#sendBlob}.
      *
      * @event
-     * @param {Blob} blob
+     * @param {!Blob} blob
      *     The blob that is being read.
      *
-     * @param {Number} offset
+     * @param {!number} offset
      *     The offset of the read that just succeeded.
      */
     this.onprogress = null;
@@ -237,7 +237,7 @@ Guacamole.BlobWriter = function BlobWriter(stream) {
      * sent.
      *
      * @event
-     * @param {Blob} blob
+     * @param {!Blob} blob
      *     The blob that was sent.
      */
     this.oncomplete = null;

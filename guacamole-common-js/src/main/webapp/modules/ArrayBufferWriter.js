@@ -24,14 +24,16 @@ var Guacamole = Guacamole || {};
  * binary data, supplied as ArrayBuffers.
  * 
  * @constructor
- * @param {Guacamole.OutputStream} stream The stream that data will be written
- *                                        to.
+ * @param {!Guacamole.OutputStream} stream
+ *     The stream that data will be written to.
  */
 Guacamole.ArrayBufferWriter = function(stream) {
 
     /**
      * Reference to this Guacamole.StringWriter.
+     *
      * @private
+     * @type {!Guacamole.ArrayBufferWriter}
      */
     var guac_writer = this;
 
@@ -46,7 +48,8 @@ Guacamole.ArrayBufferWriter = function(stream) {
      * be small enough to fit into a single blob instruction.
      * 
      * @private
-     * @param {Uint8Array} bytes The data to send.
+     * @param {!Uint8Array} bytes
+     *     The data to send.
      */
     function __send_blob(bytes) {
 
@@ -70,7 +73,7 @@ Guacamole.ArrayBufferWriter = function(stream) {
      * 8192 bytes, and the contents of blobs will be base64-encoded, this value
      * should only be increased with extreme caution.
      *
-     * @type {Number}
+     * @type {!number}
      * @default {@link Guacamole.ArrayBufferWriter.DEFAULT_BLOB_LENGTH}
      */
     this.blobLength = Guacamole.ArrayBufferWriter.DEFAULT_BLOB_LENGTH;
@@ -78,7 +81,8 @@ Guacamole.ArrayBufferWriter = function(stream) {
     /**
      * Sends the given data.
      * 
-     * @param {ArrayBuffer|TypedArray} data The data to send.
+     * @param {!(ArrayBuffer|TypedArray)} data
+     *     The data to send.
      */
     this.sendData = function(data) {
 
@@ -107,7 +111,8 @@ Guacamole.ArrayBufferWriter = function(stream) {
     /**
      * Fired for received data, if acknowledged by the server.
      * @event
-     * @param {Guacamole.Status} status The status of the operation.
+     * @param {!Guacamole.Status} status
+     *     The status of the operation.
      */
     this.onack = null;
 
@@ -118,6 +123,6 @@ Guacamole.ArrayBufferWriter = function(stream) {
  * instances.
  *
  * @constant
- * @type {Number}
+ * @type {!number}
  */
 Guacamole.ArrayBufferWriter.DEFAULT_BLOB_LENGTH = 6048;

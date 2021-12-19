@@ -79,7 +79,7 @@ Guacamole.Display = function() {
      * the relative location within the image of the mouse cursor at which
      * each click occurs.
      * 
-     * @type {Number}
+     * @type {!number}
      */
     this.cursorHotspotX = 0;
 
@@ -88,7 +88,7 @@ Guacamole.Display = function() {
      * the relative location within the image of the mouse cursor at which
      * each click occurs.
      * 
-     * @type {Number}
+     * @type {!number}
      */
     this.cursorHotspotY = 0;
 
@@ -98,7 +98,7 @@ Guacamole.Display = function() {
      * the location of the cursor image within the Guacamole display, as
      * last set by moveCursor().
      * 
-     * @type {Number}
+     * @type {!number}
      */
     this.cursorX = 0;
 
@@ -108,7 +108,7 @@ Guacamole.Display = function() {
      * the location of the cursor image within the Guacamole display, as
      * last set by moveCursor().
      * 
-     * @type {Number}
+     * @type {!number}
      */
     this.cursorY = 0;
 
@@ -117,8 +117,11 @@ Guacamole.Display = function() {
      * is resized.
      * 
      * @event
-     * @param {Number} width The new width of the Guacamole display.
-     * @param {Number} height The new height of the Guacamole display.
+     * @param {!number} width
+     *     The new width of the Guacamole display.
+     *
+     * @param {!number} height
+     *     The new height of the Guacamole display.
      */
     this.onresize = null;
 
@@ -128,9 +131,14 @@ Guacamole.Display = function() {
      * the default use of a software cursor layer.
      * 
      * @event
-     * @param {HTMLCanvasElement} canvas The cursor image.
-     * @param {Number} x The X-coordinate of the cursor hotspot.
-     * @param {Number} y The Y-coordinate of the cursor hotspot.
+     * @param {!HTMLCanvasElement} canvas
+     *     The cursor image.
+     *
+     * @param {!number} x
+     *     The X-coordinate of the cursor hotspot.
+     *
+     * @param {!number} y
+     *     The Y-coordinate of the cursor hotspot.
      */
     this.oncursor = null;
 
@@ -139,16 +147,18 @@ Guacamole.Display = function() {
      * tasks added at the end of the queue and old tasks removed from the
      * front of the queue (FIFO). These tasks will eventually be grouped
      * into a Frame.
+     *
      * @private
-     * @type {Task[]}
+     * @type {!Task[]}
      */
     var tasks = [];
 
     /**
      * The queue of all frames. Each frame is a pairing of an array of tasks
      * and a callback which must be called when the frame is rendered.
+     *
      * @private
-     * @type {Frame[]}
+     * @type {!Frame[]}
      */
     var frames = [];
 
@@ -183,10 +193,11 @@ Guacamole.Display = function() {
      *
      * @private
      * @constructor
-     * @param {function} callback The function to call when this frame is
-     *                            rendered.
-     * @param {Task[]} tasks The set of tasks which must be executed to render
-     *                       this frame.
+     * @param {function} [callback]
+     *     The function to call when this frame is rendered.
+     *
+     * @param {!Task[]} tasks
+     *     The set of tasks which must be executed to render this frame.
      */
     function Frame(callback, tasks) {
 
@@ -194,8 +205,8 @@ Guacamole.Display = function() {
          * Returns whether this frame is ready to be rendered. This function
          * returns true if and only if ALL underlying tasks are unblocked.
          * 
-         * @returns {boolean} true if all underlying tasks are unblocked,
-         *                    false otherwise.
+         * @returns {!boolean}
+         *     true if all underlying tasks are unblocked, false otherwise.
          */
         this.isReady = function() {
 
@@ -237,12 +248,20 @@ Guacamole.Display = function() {
      *
      * @constructor
      * @private
-     * @param {function} taskHandler The function to call when this task 
-     *                               runs, if any.
-     * @param {boolean} blocked Whether this task should start blocked.
+     * @param {function} [taskHandler]
+     *     The function to call when this task runs, if any.
+     *
+     * @param {boolean} [blocked]
+     *     Whether this task should start blocked.
      */
     function Task(taskHandler, blocked) {
-       
+
+        /**
+         * Reference to this Task.
+         *
+         * @private
+         * @type {!Guacamole.Display.Task}
+         */
         var task = this;
        
         /**
@@ -280,10 +299,14 @@ Guacamole.Display = function() {
      * render (and no tasks within will execute) until all tasks are unblocked.
      * 
      * @private
-     * @param {function} handler The function to call when possible, if any.
-     * @param {boolean} blocked Whether the task should start blocked.
-     * @returns {!Task} The Task created and added to the queue for future
-     *                 running.
+     * @param {function} [handler]
+     *     The function to call when possible, if any.
+     *
+     * @param {boolean} [blocked]
+     *     Whether the task should start blocked.
+     *
+     * @returns {!Task}
+     *     The Task created and added to the queue for future running.
      */
     function scheduleTask(handler, blocked) {
         var task = new Task(handler, blocked);
@@ -294,7 +317,8 @@ Guacamole.Display = function() {
     /**
      * Returns the element which contains the Guacamole display.
      * 
-     * @return {!Element} The element containing the Guacamole display.
+     * @return {!Element}
+     *     The element containing the Guacamole display.
      */
     this.getElement = function() {
         return bounds;
@@ -303,7 +327,8 @@ Guacamole.Display = function() {
     /**
      * Returns the width of this display.
      * 
-     * @return {Number} The width of this display;
+     * @return {!number}
+     *     The width of this display;
      */
     this.getWidth = function() {
         return displayWidth;
@@ -312,7 +337,8 @@ Guacamole.Display = function() {
     /**
      * Returns the height of this display.
      * 
-     * @return {Number} The height of this display;
+     * @return {!number}
+     *     The height of this display;
      */
     this.getHeight = function() {
         return displayHeight;
@@ -324,7 +350,8 @@ Guacamole.Display = function() {
      * this layer, but the default layer cannot be removed and is the absolute
      * ancestor of all other layers.
      * 
-     * @return {!Guacamole.Display.VisibleLayer} The default layer.
+     * @return {!Guacamole.Display.VisibleLayer}
+     *     The default layer.
      */
     this.getDefaultLayer = function() {
         return default_layer;
@@ -335,7 +362,8 @@ Guacamole.Display = function() {
      * a layer for the image of the mouse cursor. This layer is a special case
      * and exists above all other layers, similar to the hardware mouse cursor.
      * 
-     * @return {!Guacamole.Display.VisibleLayer} The cursor layer.
+     * @return {!Guacamole.Display.VisibleLayer}
+     *     The cursor layer.
      */
     this.getCursorLayer = function() {
         return cursor;
@@ -346,7 +374,8 @@ Guacamole.Display = function() {
      * layer, but can be moved to be a child of any other layer. Layers returned
      * by this function are visible.
      * 
-     * @return {!Guacamole.Display.VisibleLayer} The newly-created layer.
+     * @return {!Guacamole.Display.VisibleLayer}
+     *     The newly-created layer.
      */
     this.createLayer = function() {
         var layer = new Guacamole.Display.VisibleLayer(displayWidth, displayHeight);
@@ -359,7 +388,8 @@ Guacamole.Display = function() {
      * are implemented in the same manner as layers, but do not provide the
      * same nesting semantics.
      * 
-     * @return {!Guacamole.Layer} The newly-created buffer.
+     * @return {!Guacamole.Layer}
+     *     The newly-created buffer.
      */
     this.createBuffer = function() {
         var buffer = new Guacamole.Layer(0, 0);
@@ -372,9 +402,9 @@ Guacamole.Display = function() {
      * frame is not ready, the flush will wait until all required tasks are
      * unblocked.
      * 
-     * @param {function} callback The function to call when this frame is
-     *                            flushed. This may happen immediately, or
-     *                            later when blocked tasks become unblocked.
+     * @param {function} [callback]
+     *     The function to call when this frame is flushed. This may happen
+     *     immediately, or later when blocked tasks become unblocked.
      */
     this.flush = function(callback) {
 
@@ -391,21 +421,31 @@ Guacamole.Display = function() {
      * Sets the hotspot and image of the mouse cursor displayed within the
      * Guacamole display.
      * 
-     * @param {Number} hotspotX The X coordinate of the cursor hotspot.
-     * @param {Number} hotspotY The Y coordinate of the cursor hotspot.
-     * @param {Guacamole.Layer} layer The source layer containing the data which
-     *                                should be used as the mouse cursor image.
-     * @param {Number} srcx The X coordinate of the upper-left corner of the
-     *                      rectangle within the source layer's coordinate
-     *                      space to copy data from.
-     * @param {Number} srcy The Y coordinate of the upper-left corner of the
-     *                      rectangle within the source layer's coordinate
-     *                      space to copy data from.
-     * @param {Number} srcw The width of the rectangle within the source layer's
-     *                      coordinate space to copy data from.
-     * @param {Number} srch The height of the rectangle within the source
-     *                      layer's coordinate space to copy data from.
-
+     * @param {!number} hotspotX
+     *     The X coordinate of the cursor hotspot.
+     *
+     * @param {!number} hotspotY
+     *     The Y coordinate of the cursor hotspot.
+     *
+     * @param {!Guacamole.Layer} layer
+     *     The source layer containing the data which should be used as the
+     *     mouse cursor image.
+     *
+     * @param {!number} srcx
+     *     The X coordinate of the upper-left corner of the rectangle within
+     *     the source layer's coordinate space to copy data from.
+     *
+     * @param {!number} srcy
+     *     The Y coordinate of the upper-left corner of the rectangle within
+     *     the source layer's coordinate space to copy data from.
+     *
+     * @param {!number} srcw
+     *     The width of the rectangle within the source layer's coordinate
+     *     space to copy data from.
+     *
+     * @param {!number} srch
+     *     The height of the rectangle within the source layer's coordinate
+     *     space to copy data from.
      */
     this.setCursor = function(hotspotX, hotspotY, layer, srcx, srcy, srcw, srch) {
         scheduleTask(function __display_set_cursor() {
@@ -433,7 +473,8 @@ Guacamole.Display = function() {
      * from the hardware cursor in that it is built into the Guacamole.Display,
      * and relies on its own Guacamole layer to render.
      *
-     * @param {Boolean} [shown=true] Whether to show the software cursor.
+     * @param {boolean} [shown=true]
+     *     Whether to show the software cursor.
      */
     this.showCursor = function(shown) {
 
@@ -457,8 +498,11 @@ Guacamole.Display = function() {
      * sake of responsiveness, this function performs its action immediately.
      * Cursor motion is not maintained within atomic frames.
      * 
-     * @param {Number} x The X coordinate to move the cursor to.
-     * @param {Number} y The Y coordinate to move the cursor to.
+     * @param {!number} x
+     *     The X coordinate to move the cursor to.
+     *
+     * @param {!number} y
+     *     The Y coordinate to move the cursor to.
      */
     this.moveCursor = function(x, y) {
 
@@ -477,9 +521,14 @@ Guacamole.Display = function() {
      * Resizing is only attempted if the new size provided is actually different
      * from the current size.
      * 
-     * @param {Guacamole.Layer} layer The layer to resize.
-     * @param {Number} width The new width.
-     * @param {Number} height The new height.
+     * @param {!Guacamole.Layer} layer
+     *     The layer to resize.
+     *
+     * @param {!number} width
+     *     The new width.
+     *
+     * @param {!number} height
+     *     The new height.
      */
     this.resize = function(layer, width, height) {
         scheduleTask(function __display_resize() {
@@ -512,16 +561,16 @@ Guacamole.Display = function() {
      * Draws the specified image at the given coordinates. The image specified
      * must already be loaded.
      * 
-     * @param {Guacamole.Layer} layer
+     * @param {!Guacamole.Layer} layer
      *     The layer to draw upon.
      *
-     * @param {Number} x
+     * @param {!number} x
      *     The destination X coordinate.
      *
-     * @param {Number} y 
+     * @param {!number} y 
      *     The destination Y coordinate.
      *
-     * @param {CanvasImageSource} image
+     * @param {!CanvasImageSource} image
      *     The image to draw. Note that this not a URL.
      */
     this.drawImage = function(layer, x, y, image) {
@@ -535,16 +584,16 @@ Guacamole.Display = function() {
      * coordinates. The Blob specified must already be populated with image
      * data.
      *
-     * @param {Guacamole.Layer} layer
+     * @param {!Guacamole.Layer} layer
      *     The layer to draw upon.
      *
-     * @param {Number} x
+     * @param {!number} x
      *     The destination X coordinate.
      *
-     * @param {Number} y
+     * @param {!number} y
      *     The destination Y coordinate.
      *
-     * @param {Blob} blob
+     * @param {!Blob} blob
      *     The Blob containing the image data to draw.
      */
     this.drawBlob = function(layer, x, y, blob) {
@@ -606,19 +655,19 @@ Guacamole.Display = function() {
      * given image stream, and should be preferred for received streams except
      * where manual decoding of the stream is unavoidable.
      *
-     * @param {Guacamole.Layer} layer
+     * @param {!Guacamole.Layer} layer
      *     The layer to draw upon.
      *
-     * @param {Number} x
+     * @param {!number} x
      *     The destination X coordinate.
      *
-     * @param {Number} y
+     * @param {!number} y
      *     The destination Y coordinate.
      *
-     * @param {Guacamole.InputStream} stream
+     * @param {!Guacamole.InputStream} stream
      *     The stream along which image data will be received.
      *
-     * @param {String} mimetype
+     * @param {!string} mimetype
      *     The mimetype of the image within the stream.
      */
     this.drawStream = function drawStream(layer, x, y, stream, mimetype) {
@@ -648,10 +697,17 @@ Guacamole.Display = function() {
      * will be loaded automatically, and this and any future operations will
      * wait for the image to finish loading.
      * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
-     * @param {Number} x The destination X coordinate.
-     * @param {Number} y The destination Y coordinate.
-     * @param {String} url The URL of the image to draw.
+     * @param {!Guacamole.Layer} layer
+     *     The layer to draw upon.
+     *
+     * @param {!number} x
+     *     The destination X coordinate.
+     *
+     * @param {!number} y
+     *     The destination Y coordinate.
+     *
+     * @param {!string} url
+     *     The URL of the image to draw.
      */
     this.draw = function(layer, x, y, url) {
 
@@ -676,10 +732,17 @@ Guacamole.Display = function() {
      * wait for the video to finish loading. Future operations will not be
      * executed until the video finishes playing.
      * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
-     * @param {String} mimetype The mimetype of the video to play.
-     * @param {Number} duration The duration of the video in milliseconds.
-     * @param {String} url The URL of the video to play.
+     * @param {!Guacamole.Layer} layer
+     *     The layer to draw upon.
+     *
+     * @param {!string} mimetype
+     *     The mimetype of the video to play.
+     *
+     * @param {!number} duration
+     *     The duration of the video in milliseconds.
+     *
+     * @param {!string} url
+     *     The URL of the video to play.
      */
     this.play = function(layer, mimetype, duration, url) {
 
@@ -709,23 +772,37 @@ Guacamole.Display = function() {
      * Transfer a rectangle of image data from one Layer to this Layer using the
      * specified transfer function.
      * 
-     * @param {Guacamole.Layer} srcLayer The Layer to copy image data from.
-     * @param {Number} srcx The X coordinate of the upper-left corner of the
-     *                      rectangle within the source Layer's coordinate
-     *                      space to copy data from.
-     * @param {Number} srcy The Y coordinate of the upper-left corner of the
-     *                      rectangle within the source Layer's coordinate
-     *                      space to copy data from.
-     * @param {Number} srcw The width of the rectangle within the source Layer's
-     *                      coordinate space to copy data from.
-     * @param {Number} srch The height of the rectangle within the source
-     *                      Layer's coordinate space to copy data from.
-     * @param {Guacamole.Layer} dstLayer The layer to draw upon.
-     * @param {Number} x The destination X coordinate.
-     * @param {Number} y The destination Y coordinate.
-     * @param {Function} transferFunction The transfer function to use to
-     *                                    transfer data from source to
-     *                                    destination.
+     * @param {!Guacamole.Layer} srcLayer
+     *     The Layer to copy image data from.
+     *
+     * @param {!number} srcx
+     *     The X coordinate of the upper-left corner of the rectangle within
+     *     the source Layer's coordinate space to copy data from.
+     *
+     * @param {!number} srcy
+     *     The Y coordinate of the upper-left corner of the rectangle within
+     *     the source Layer's coordinate space to copy data from.
+     *
+     * @param {!number} srcw
+     *     The width of the rectangle within the source Layer's coordinate
+     *     space to copy data from.
+     *
+     * @param {!number} srch
+     *     The height of the rectangle within the source Layer's coordinate
+     *     space to copy data from.
+     *
+     * @param {!Guacamole.Layer} dstLayer
+     *     The layer to draw upon.
+     *
+     * @param {!number} x
+     *     The destination X coordinate.
+     *
+     * @param {!number} y
+     *     The destination Y coordinate.
+     *
+     * @param {!function} transferFunction
+     *     The transfer function to use to transfer data from source to
+     *     destination.
      */
     this.transfer = function(srcLayer, srcx, srcy, srcw, srch, dstLayer, x, y, transferFunction) {
         scheduleTask(function __display_transfer() {
@@ -737,20 +814,33 @@ Guacamole.Display = function() {
      * Put a rectangle of image data from one Layer to this Layer directly
      * without performing any alpha blending. Simply copy the data.
      * 
-     * @param {Guacamole.Layer} srcLayer The Layer to copy image data from.
-     * @param {Number} srcx The X coordinate of the upper-left corner of the
-     *                      rectangle within the source Layer's coordinate
-     *                      space to copy data from.
-     * @param {Number} srcy The Y coordinate of the upper-left corner of the
-     *                      rectangle within the source Layer's coordinate
-     *                      space to copy data from.
-     * @param {Number} srcw The width of the rectangle within the source Layer's
-     *                      coordinate space to copy data from.
-     * @param {Number} srch The height of the rectangle within the source
-     *                      Layer's coordinate space to copy data from.
-     * @param {Guacamole.Layer} dstLayer The layer to draw upon.
-     * @param {Number} x The destination X coordinate.
-     * @param {Number} y The destination Y coordinate.
+     * @param {!Guacamole.Layer} srcLayer
+     *     The Layer to copy image data from.
+     *
+     * @param {!number} srcx
+     *     The X coordinate of the upper-left corner of the rectangle within
+     *     the source Layer's coordinate space to copy data from.
+     *
+     * @param {!number} srcy
+     *     The Y coordinate of the upper-left corner of the rectangle within
+     *     the source Layer's coordinate space to copy data from.
+     *
+     * @param {!number} srcw
+     *     The width of the rectangle within the source Layer's coordinate
+     *     space to copy data from.
+     *
+     * @param {!number} srch
+     *     The height of the rectangle within the source Layer's coordinate
+     *     space to copy data from.
+     *
+     * @param {!Guacamole.Layer} dstLayer
+     *     The layer to draw upon.
+     *
+     * @param {!number} x
+     *     The destination X coordinate.
+     *
+     * @param {!number} y
+     *     The destination Y coordinate.
      */
     this.put = function(srcLayer, srcx, srcy, srcw, srch, dstLayer, x, y) {
         scheduleTask(function __display_put() {
@@ -765,20 +855,32 @@ Guacamole.Display = function() {
      * function was called are complete. This operation will not alter the
      * size of the source Layer even if its autosize property is set to true.
      * 
-     * @param {Guacamole.Layer} srcLayer The Layer to copy image data from.
-     * @param {Number} srcx The X coordinate of the upper-left corner of the
-     *                      rectangle within the source Layer's coordinate
-     *                      space to copy data from.
-     * @param {Number} srcy The Y coordinate of the upper-left corner of the
-     *                      rectangle within the source Layer's coordinate
-     *                      space to copy data from.
-     * @param {Number} srcw The width of the rectangle within the source Layer's
-     *                      coordinate space to copy data from.
-     * @param {Number} srch The height of the rectangle within the source
-     *                      Layer's coordinate space to copy data from.
-     * @param {Guacamole.Layer} dstLayer The layer to draw upon.
-     * @param {Number} x The destination X coordinate.
-     * @param {Number} y The destination Y coordinate.
+     * @param {!Guacamole.Layer} srcLayer
+     *     The Layer to copy image data from.
+     *
+     * @param {!number} srcx
+     *     The X coordinate of the upper-left corner of the rectangle within
+     *     the source Layer's coordinate space to copy data from.
+     *
+     * @param {!number} srcy
+     *     The Y coordinate of the upper-left corner of the rectangle within
+     *     the source Layer's coordinate space to copy data from.
+     *
+     * @param {!number} srcw
+     *     The width of the rectangle within the source Layer's coordinate
+     *     space to copy data from.
+     *
+     * @param {!number} srch
+     *     The height of the rectangle within the source Layer's coordinate space to copy data from.
+     *
+     * @param {!Guacamole.Layer} dstLayer
+     *     The layer to draw upon.
+     *
+     * @param {!number} x
+     *     The destination X coordinate.
+     *
+     * @param {!number} y
+     *     The destination Y coordinate.
      */
     this.copy = function(srcLayer, srcx, srcy, srcw, srch, dstLayer, x, y) {
         scheduleTask(function __display_copy() {
@@ -789,9 +891,14 @@ Guacamole.Display = function() {
     /**
      * Starts a new path at the specified point.
      * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
-     * @param {Number} x The X coordinate of the point to draw.
-     * @param {Number} y The Y coordinate of the point to draw.
+     * @param {!Guacamole.Layer} layer
+     *     The layer to draw upon.
+     *
+     * @param {!number} x
+     *     The X coordinate of the point to draw.
+     *
+     * @param {!number} y
+     *     The Y coordinate of the point to draw.
      */
     this.moveTo = function(layer, x, y) {
         scheduleTask(function __display_moveTo() {
@@ -802,9 +909,14 @@ Guacamole.Display = function() {
     /**
      * Add the specified line to the current path.
      * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
-     * @param {Number} x The X coordinate of the endpoint of the line to draw.
-     * @param {Number} y The Y coordinate of the endpoint of the line to draw.
+     * @param {!Guacamole.Layer} layer
+     *     The layer to draw upon.
+     *
+     * @param {!number} x
+     *     The X coordinate of the endpoint of the line to draw.
+     *
+     * @param {!number} y
+     *     The Y coordinate of the endpoint of the line to draw.
      */
     this.lineTo = function(layer, x, y) {
         scheduleTask(function __display_lineTo() {
@@ -814,17 +926,29 @@ Guacamole.Display = function() {
 
     /**
      * Add the specified arc to the current path.
-     * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
-     * @param {Number} x The X coordinate of the center of the circle which
-     *                   will contain the arc.
-     * @param {Number} y The Y coordinate of the center of the circle which
-     *                   will contain the arc.
-     * @param {Number} radius The radius of the circle.
-     * @param {Number} startAngle The starting angle of the arc, in radians.
-     * @param {Number} endAngle The ending angle of the arc, in radians.
-     * @param {Boolean} negative Whether the arc should be drawn in order of
-     *                           decreasing angle.
+     *
+     * @param {!Guacamole.Layer} layer
+     *     The layer to draw upon.
+     *
+     * @param {!number} x
+     *     The X coordinate of the center of the circle which will contain the
+     *     arc.
+     *
+     * @param {!number} y
+     *     The Y coordinate of the center of the circle which will contain the
+     *     arc.
+     *
+     * @param {!number} radius
+     *     The radius of the circle.
+     *
+     * @param {!number} startAngle
+     *     The starting angle of the arc, in radians.
+     *
+     * @param {!number} endAngle
+     *     The ending angle of the arc, in radians.
+     *
+     * @param {!boolean} negative
+     *     Whether the arc should be drawn in order of decreasing angle.
      */
     this.arc = function(layer, x, y, radius, startAngle, endAngle, negative) {
         scheduleTask(function __display_arc() {
@@ -834,14 +958,27 @@ Guacamole.Display = function() {
 
     /**
      * Starts a new path at the specified point.
-     * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
-     * @param {Number} cp1x The X coordinate of the first control point.
-     * @param {Number} cp1y The Y coordinate of the first control point.
-     * @param {Number} cp2x The X coordinate of the second control point.
-     * @param {Number} cp2y The Y coordinate of the second control point.
-     * @param {Number} x The X coordinate of the endpoint of the curve.
-     * @param {Number} y The Y coordinate of the endpoint of the curve.
+     *
+     * @param {!Guacamole.Layer} layer
+     *     The layer to draw upon.
+     *
+     * @param {!number} cp1x
+     *     The X coordinate of the first control point.
+     *
+     * @param {!number} cp1y
+     *     The Y coordinate of the first control point.
+     *
+     * @param {!number} cp2x
+     *     The X coordinate of the second control point.
+     *
+     * @param {!number} cp2y
+     *     The Y coordinate of the second control point.
+     *
+     * @param {!number} x
+     *     The X coordinate of the endpoint of the curve.
+     *
+     * @param {!number} y
+     *     The Y coordinate of the endpoint of the curve.
      */
     this.curveTo = function(layer, cp1x, cp1y, cp2x, cp2y, x, y) {
         scheduleTask(function __display_curveTo() {
@@ -853,7 +990,8 @@ Guacamole.Display = function() {
      * Closes the current path by connecting the end point with the start
      * point (if any) with a straight line.
      * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
+     * @param {!Guacamole.Layer} layer
+     *     The layer to draw upon.
      */
     this.close = function(layer) {
         scheduleTask(function __display_close() {
@@ -863,14 +1001,21 @@ Guacamole.Display = function() {
 
     /**
      * Add the specified rectangle to the current path.
-     * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
-     * @param {Number} x The X coordinate of the upper-left corner of the
-     *                   rectangle to draw.
-     * @param {Number} y The Y coordinate of the upper-left corner of the
-     *                   rectangle to draw.
-     * @param {Number} w The width of the rectangle to draw.
-     * @param {Number} h The height of the rectangle to draw.
+     *
+     * @param {!Guacamole.Layer} layer
+     *     The layer to draw upon.
+     *
+     * @param {!number} x
+     *     The X coordinate of the upper-left corner of the rectangle to draw.
+     *
+     * @param {!number} y
+     *     The Y coordinate of the upper-left corner of the rectangle to draw.
+     *
+     * @param {!number} w
+     *     The width of the rectangle to draw.
+     *
+     * @param {!number} h
+     *     The height of the rectangle to draw.
      */
     this.rect = function(layer, x, y, w, h) {
         scheduleTask(function __display_rect() {
@@ -884,7 +1029,8 @@ Guacamole.Display = function() {
      * for other operations (such as fillColor()) but a new path will be started
      * once a path drawing operation (path() or rect()) is used.
      * 
-     * @param {Guacamole.Layer} layer The layer to affect.
+     * @param {!Guacamole.Layer} layer
+     *     The layer to affect.
      */
     this.clip = function(layer) {
         scheduleTask(function __display_clip() {
@@ -897,17 +1043,30 @@ Guacamole.Display = function() {
      * is implicitly closed. The current path can continue to be reused
      * for other operations (such as clip()) but a new path will be started
      * once a path drawing operation (path() or rect()) is used.
-     * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
-     * @param {String} cap The line cap style. Can be "round", "square",
-     *                     or "butt".
-     * @param {String} join The line join style. Can be "round", "bevel",
-     *                      or "miter".
-     * @param {Number} thickness The line thickness in pixels.
-     * @param {Number} r The red component of the color to fill.
-     * @param {Number} g The green component of the color to fill.
-     * @param {Number} b The blue component of the color to fill.
-     * @param {Number} a The alpha component of the color to fill.
+     *
+     * @param {!Guacamole.Layer} layer
+     *     The layer to draw upon.
+     *
+     * @param {!string} cap
+     *     The line cap style. Can be "round", "square", or "butt".
+     *
+     * @param {!string} join
+     *     The line join style. Can be "round", "bevel", or "miter".
+     *
+     * @param {!number} thickness
+     *     The line thickness in pixels.
+     *
+     * @param {!number} r
+     *     The red component of the color to fill.
+     *
+     * @param {!number} g
+     *     The green component of the color to fill.
+     *
+     * @param {!number} b
+     *     The blue component of the color to fill.
+     *
+     * @param {!number} a
+     *     The alpha component of the color to fill.
      */
     this.strokeColor = function(layer, cap, join, thickness, r, g, b, a) {
         scheduleTask(function __display_strokeColor() {
@@ -921,11 +1080,20 @@ Guacamole.Display = function() {
      * for other operations (such as clip()) but a new path will be started
      * once a path drawing operation (path() or rect()) is used.
      * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
-     * @param {Number} r The red component of the color to fill.
-     * @param {Number} g The green component of the color to fill.
-     * @param {Number} b The blue component of the color to fill.
-     * @param {Number} a The alpha component of the color to fill.
+     * @param {!Guacamole.Layer} layer
+     *     The layer to draw upon.
+     *
+     * @param {!number} r
+     *     The red component of the color to fill.
+     *
+     * @param {!number} g
+     *     The green component of the color to fill.
+     *
+     * @param {!number} b
+     *     The blue component of the color to fill.
+     *
+     * @param {!number} a
+     *     The alpha component of the color to fill.
      */
     this.fillColor = function(layer, r, g, b, a) {
         scheduleTask(function __display_fillColor() {
@@ -940,14 +1108,20 @@ Guacamole.Display = function() {
      * for other operations (such as clip()) but a new path will be started
      * once a path drawing operation (path() or rect()) is used.
      * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
-     * @param {String} cap The line cap style. Can be "round", "square",
-     *                     or "butt".
-     * @param {String} join The line join style. Can be "round", "bevel",
-     *                      or "miter".
-     * @param {Number} thickness The line thickness in pixels.
-     * @param {Guacamole.Layer} srcLayer The layer to use as a repeating pattern
-     *                                   within the stroke.
+     * @param {!Guacamole.Layer} layer
+     *     The layer to draw upon.
+     *
+     * @param {!string} cap
+     *     The line cap style. Can be "round", "square", or "butt".
+     *
+     * @param {!string} join
+     *     The line join style. Can be "round", "bevel", or "miter".
+     *
+     * @param {!number} thickness
+     *     The line thickness in pixels.
+     *
+     * @param {!Guacamole.Layer} srcLayer
+     *     The layer to use as a repeating pattern within the stroke.
      */
     this.strokeLayer = function(layer, cap, join, thickness, srcLayer) {
         scheduleTask(function __display_strokeLayer() {
@@ -962,9 +1136,11 @@ Guacamole.Display = function() {
      * for other operations (such as clip()) but a new path will be started
      * once a path drawing operation (path() or rect()) is used.
      * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
-     * @param {Guacamole.Layer} srcLayer The layer to use as a repeating pattern
-     *                                   within the fill.
+     * @param {!Guacamole.Layer} layer
+     *     The layer to draw upon.
+     *
+     * @param {!Guacamole.Layer} srcLayer
+     *     The layer to use as a repeating pattern within the fill.
      */
     this.fillLayer = function(layer, srcLayer) {
         scheduleTask(function __display_fillLayer() {
@@ -975,7 +1151,8 @@ Guacamole.Display = function() {
     /**
      * Push current layer state onto stack.
      * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
+     * @param {!Guacamole.Layer} layer
+     *     The layer to draw upon.
      */
     this.push = function(layer) {
         scheduleTask(function __display_push() {
@@ -986,7 +1163,8 @@ Guacamole.Display = function() {
     /**
      * Pop layer state off stack.
      * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
+     * @param {!Guacamole.Layer} layer
+     *     The layer to draw upon.
      */
     this.pop = function(layer) {
         scheduleTask(function __display_pop() {
@@ -998,7 +1176,8 @@ Guacamole.Display = function() {
      * Reset the layer, clearing the stack, the current path, and any transform
      * matrix.
      * 
-     * @param {Guacamole.Layer} layer The layer to draw upon.
+     * @param {!Guacamole.Layer} layer
+     *     The layer to draw upon.
      */
     this.reset = function(layer) {
         scheduleTask(function __display_reset() {
@@ -1009,14 +1188,27 @@ Guacamole.Display = function() {
     /**
      * Sets the given affine transform (defined with six values from the
      * transform's matrix).
-     * 
-     * @param {Guacamole.Layer} layer The layer to modify.
-     * @param {Number} a The first value in the affine transform's matrix.
-     * @param {Number} b The second value in the affine transform's matrix.
-     * @param {Number} c The third value in the affine transform's matrix.
-     * @param {Number} d The fourth value in the affine transform's matrix.
-     * @param {Number} e The fifth value in the affine transform's matrix.
-     * @param {Number} f The sixth value in the affine transform's matrix.
+     *
+     * @param {!Guacamole.Layer} layer
+     *     The layer to modify.
+     *
+     * @param {!number} a
+     *     The first value in the affine transform's matrix.
+     *
+     * @param {!number} b
+     *     The second value in the affine transform's matrix.
+     *
+     * @param {!number} c
+     *     The third value in the affine transform's matrix.
+     *
+     * @param {!number} d
+     *     The fourth value in the affine transform's matrix.
+     *
+     * @param {!number} e
+     *     The fifth value in the affine transform's matrix.
+     *
+     * @param {!number} f
+     *     The sixth value in the affine transform's matrix.
      */
     this.setTransform = function(layer, a, b, c, d, e, f) {
         scheduleTask(function __display_setTransform() {
@@ -1027,14 +1219,28 @@ Guacamole.Display = function() {
     /**
      * Applies the given affine transform (defined with six values from the
      * transform's matrix).
-     * 
-     * @param {Guacamole.Layer} layer The layer to modify.
-     * @param {Number} a The first value in the affine transform's matrix.
-     * @param {Number} b The second value in the affine transform's matrix.
-     * @param {Number} c The third value in the affine transform's matrix.
-     * @param {Number} d The fourth value in the affine transform's matrix.
-     * @param {Number} e The fifth value in the affine transform's matrix.
-     * @param {Number} f The sixth value in the affine transform's matrix.
+     *
+     * @param {!Guacamole.Layer} layer
+     *     The layer to modify.
+     *
+     * @param {!number} a
+     *     The first value in the affine transform's matrix.
+     *
+     * @param {!number} b
+     *     The second value in the affine transform's matrix.
+     *
+     * @param {!number} c
+     *     The third value in the affine transform's matrix.
+     *
+     * @param {!number} d
+     *     The fourth value in the affine transform's matrix.
+     *
+     * @param {!number} e
+     *     The fifth value in the affine transform's matrix.
+     *
+     * @param {!number} f
+     *     The sixth value in the affine transform's matrix.
+     *
      */
     this.transform = function(layer, a, b, c, d, e, f) {
         scheduleTask(function __display_transform() {
@@ -1051,9 +1257,11 @@ Guacamole.Display = function() {
      * destination where source transparent, and destination where source
      * opaque.
      * 
-     * @param {Guacamole.Layer} layer The layer to modify.
-     * @param {Number} mask The channel mask for future operations on this
-     *                      Layer.
+     * @param {!Guacamole.Layer} layer
+     *     The layer to modify.
+     *
+     * @param {!number} mask
+     *     The channel mask for future operations on this Layer.
      */
     this.setChannelMask = function(layer, mask) {
         scheduleTask(function __display_setChannelMask() {
@@ -1067,9 +1275,11 @@ Guacamole.Display = function() {
      * width. If this ratio is exceeded, the miter will not be drawn for that
      * joint of the path.
      * 
-     * @param {Guacamole.Layer} layer The layer to modify.
-     * @param {Number} limit The miter limit for stroke operations using the
-     *                       miter join.
+     * @param {!Guacamole.Layer} layer
+     *     The layer to modify.
+     *
+     * @param {!number} limit
+     *     The miter limit for stroke operations using the miter join.
      */
     this.setMiterLimit = function(layer, limit) {
         scheduleTask(function __display_setMiterLimit() {
@@ -1081,7 +1291,7 @@ Guacamole.Display = function() {
      * Removes the given layer container entirely, such that it is no longer
      * contained within its parent layer, if any.
      *
-     * @param {Guacamole.Display.VisibleLayer} layer
+     * @param {!Guacamole.Display.VisibleLayer} layer
      *     The layer being removed from its parent.
      */
     this.dispose = function dispose(layer) {
@@ -1094,25 +1304,25 @@ Guacamole.Display = function() {
      * Applies the given affine transform (defined with six values from the
      * transform's matrix) to the given layer.
      *
-     * @param {Guacamole.Display.VisibleLayer} layer
+     * @param {!Guacamole.Display.VisibleLayer} layer
      *     The layer being distorted.
      *
-     * @param {Number} a
+     * @param {!number} a
      *     The first value in the affine transform's matrix.
      *
-     * @param {Number} b
+     * @param {!number} b
      *     The second value in the affine transform's matrix.
      *
-     * @param {Number} c
+     * @param {!number} c
      *     The third value in the affine transform's matrix.
      *
-     * @param {Number} d
+     * @param {!number} d
      *     The fourth value in the affine transform's matrix.
      *
-     * @param {Number} e
+     * @param {!number} e
      *     The fifth value in the affine transform's matrix.
      *
-     * @param {Number} f
+     * @param {!number} f
      *     The sixth value in the affine transform's matrix.
      */
     this.distort = function distort(layer, a, b, c, d, e, f) {
@@ -1126,19 +1336,19 @@ Guacamole.Display = function() {
      * coordinate, sets the Z stacking order, and reparents the layer
      * to the given parent layer.
      *
-     * @param {Guacamole.Display.VisibleLayer} layer
+     * @param {!Guacamole.Display.VisibleLayer} layer
      *     The layer being moved.
      *
-     * @param {Guacamole.Display.VisibleLayer} parent
+     * @param {!Guacamole.Display.VisibleLayer} parent
      *     The parent to set.
      *
-     * @param {Number} x
+     * @param {!number} x
      *     The X coordinate to move to.
      *
-     * @param {Number} y
+     * @param {!number} y
      *     The Y coordinate to move to.
      *
-     * @param {Number} z
+     * @param {!number} z
      *     The Z coordinate to move to.
      */
     this.move = function move(layer, parent, x, y, z) {
@@ -1151,10 +1361,10 @@ Guacamole.Display = function() {
      * Sets the opacity of the given layer to the given value, where 255 is
      * fully opaque and 0 is fully transparent.
      *
-     * @param {Guacamole.Display.VisibleLayer} layer
+     * @param {!Guacamole.Display.VisibleLayer} layer
      *     The layer whose opacity should be set.
      *
-     * @param {Number} alpha
+     * @param {!number} alpha
      *     The opacity to set.
      */
     this.shade = function shade(layer, alpha) {
@@ -1168,8 +1378,8 @@ Guacamole.Display = function() {
      * a relatively smaller or larger size, without affecting the true
      * resolution of the display.
      *
-     * @param {Number} scale The scale to resize to, where 1.0 is normal
-     *                       size (1:1 scale).
+     * @param {!number} scale
+     *     The scale to resize to, where 1.0 is normal size (1:1 scale).
      */
     this.scale = function(scale) {
 
@@ -1192,7 +1402,8 @@ Guacamole.Display = function() {
     /**
      * Returns the scale of the display.
      *
-     * @return {Number} The scale of the display.
+     * @return {!number}
+     *     The scale of the display.
      */
     this.getScale = function() {
         return displayScale;
@@ -1202,8 +1413,8 @@ Guacamole.Display = function() {
      * Returns a canvas element containing the entire display, with all child
      * layers composited within.
      *
-     * @return {!HTMLCanvasElement} A new canvas element containing a copy of
-     *                             the display.
+     * @return {!HTMLCanvasElement}
+     *     A new canvas element containing a copy of the display.
      */
     this.flatten = function() {
        
@@ -1292,10 +1503,13 @@ Guacamole.Display = function() {
  * 
  * @constructor
  * @augments Guacamole.Layer
- * @param {Number} width The width of the Layer, in pixels. The canvas element
- *                       backing this Layer will be given this width.
- * @param {Number} height The height of the Layer, in pixels. The canvas element
- *                        backing this Layer will be given this height.
+ * @param {!number} width
+ *     The width of the Layer, in pixels. The canvas element backing this Layer
+ *     will be given this width.
+ *
+ * @param {!number} height
+ *     The height of the Layer, in pixels. The canvas element backing this
+ *     Layer will be given this height.
  */
 Guacamole.Display.VisibleLayer = function(width, height) {
 
@@ -1303,7 +1517,9 @@ Guacamole.Display.VisibleLayer = function(width, height) {
 
     /**
      * Reference to this layer.
+     *
      * @private
+     * @type {!Guacamole.Display.Layer}
      */
     var layer = this;
 
@@ -1313,33 +1529,38 @@ Guacamole.Display.VisibleLayer = function(width, height) {
      * to the Guacamole protocol, and not relevant at this level.
      * 
      * @private
-     * @type {Number}
+     * @type {!number}
      */
     this.__unique_id = Guacamole.Display.VisibleLayer.__next_id++;
 
     /**
      * The opacity of the layer container, where 255 is fully opaque and 0 is
      * fully transparent.
+     *
+     * @type {!number}
      */
     this.alpha = 0xFF;
 
     /**
      * X coordinate of the upper-left corner of this layer container within
      * its parent, in pixels.
-     * @type {Number}
+     *
+     * @type {!number}
      */
     this.x = 0;
 
     /**
      * Y coordinate of the upper-left corner of this layer container within
      * its parent, in pixels.
-     * @type {Number}
+     *
+     * @type {!number}
      */
     this.y = 0;
 
     /**
      * Z stacking order of this layer relative to other sibling layers.
-     * @type {Number}
+     *
+     * @type {!number}
      */
     this.z = 0;
 
@@ -1349,7 +1570,7 @@ Guacamole.Display.VisibleLayer = function(width, height) {
      * three values being the first row, and the last three values being the
      * second row. There are six values total.
      * 
-     * @type {Number[]}
+     * @type {!number[]}
      */
     this.matrix = [1, 0, 0, 1, 0, 0];
 
@@ -1362,6 +1583,8 @@ Guacamole.Display.VisibleLayer = function(width, height) {
     /**
      * Set of all children of this layer, indexed by layer index. This object
      * will have one property per child.
+     *
+     * @type {!Object.<number, Guacamole.Display.VisibleLayer>}
      */
     this.children = {};
 
@@ -1400,7 +1623,9 @@ Guacamole.Display.VisibleLayer = function(width, height) {
     /**
      * Returns the element containing the canvas and any other elements
      * associated with this layer.
-     * @returns {!Element} The element containing this layer's canvas.
+     *
+     * @returns {!Element}
+     *     The element containing this layer's canvas.
      */
     this.getElement = function() {
         return div;
@@ -1408,13 +1633,17 @@ Guacamole.Display.VisibleLayer = function(width, height) {
 
     /**
      * The translation component of this layer's transform.
+     *
      * @private
+     * @type {!string}
      */
     var translate = "translate(0px, 0px)"; // (0, 0)
 
     /**
      * The arbitrary matrix component of this layer's transform.
+     *
      * @private
+     * @type {!string}
      */
     var matrix = "matrix(1, 0, 0, 1, 0, 0)"; // Identity
 
@@ -1422,8 +1651,11 @@ Guacamole.Display.VisibleLayer = function(width, height) {
      * Moves the upper-left corner of this layer to the given X and Y
      * coordinate.
      * 
-     * @param {Number} x The X coordinate to move to.
-     * @param {Number} y The Y coordinate to move to.
+     * @param {!number} x
+     *     The X coordinate to move to.
+     *
+     * @param {!number} y
+     *     The Y coordinate to move to.
      */
     this.translate = function(x, y) {
 
@@ -1451,10 +1683,17 @@ Guacamole.Display.VisibleLayer = function(width, height) {
      * coordinate, sets the Z stacking order, and reparents this VisibleLayer
      * to the given VisibleLayer.
      * 
-     * @param {Guacamole.Display.VisibleLayer} parent The parent to set.
-     * @param {Number} x The X coordinate to move to.
-     * @param {Number} y The Y coordinate to move to.
-     * @param {Number} z The Z coordinate to move to.
+     * @param {!Guacamole.Display.VisibleLayer} parent
+     *     The parent to set.
+     *
+     * @param {!number} x
+     *     The X coordinate to move to.
+     *
+     * @param {!number} y
+     *     The Y coordinate to move to.
+     *
+     * @param {!number} z
+     *     The Z coordinate to move to.
      */
     this.move = function(parent, x, y, z) {
 
@@ -1484,7 +1723,8 @@ Guacamole.Display.VisibleLayer = function(width, height) {
      * Sets the opacity of this layer to the given value, where 255 is fully
      * opaque and 0 is fully transparent.
      * 
-     * @param {Number} a The opacity to set.
+     * @param {!number} a
+     *     The opacity to set.
      */
     this.shade = function(a) {
         layer.alpha = a;
@@ -1512,13 +1752,24 @@ Guacamole.Display.VisibleLayer = function(width, height) {
     /**
      * Applies the given affine transform (defined with six values from the
      * transform's matrix).
-     * 
-     * @param {Number} a The first value in the affine transform's matrix.
-     * @param {Number} b The second value in the affine transform's matrix.
-     * @param {Number} c The third value in the affine transform's matrix.
-     * @param {Number} d The fourth value in the affine transform's matrix.
-     * @param {Number} e The fifth value in the affine transform's matrix.
-     * @param {Number} f The sixth value in the affine transform's matrix.
+     *
+     * @param {!number} a
+     *     The first value in the affine transform's matrix.
+     *
+     * @param {!number} b
+     *     The second value in the affine transform's matrix.
+     *
+     * @param {!number} c
+     *     The third value in the affine transform's matrix.
+     *
+     * @param {!number} d
+     *     The fourth value in the affine transform's matrix.
+     *
+     * @param {!number} e
+     *     The fifth value in the affine transform's matrix.
+     *
+     * @param {!number} f
+     *     The sixth value in the affine transform's matrix.
      */
     this.distort = function(a, b, c, d, e, f) {
 
@@ -1554,6 +1805,6 @@ Guacamole.Display.VisibleLayer = function(width, height) {
  * the layer, which exists at the protocol/client level only.
  * 
  * @private
- * @type {Number}
+ * @type {!number}
  */
 Guacamole.Display.VisibleLayer.__next_id = 0;
