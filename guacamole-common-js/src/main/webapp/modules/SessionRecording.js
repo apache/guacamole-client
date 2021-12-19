@@ -27,7 +27,7 @@ var Guacamole = Guacamole || {};
  * while the recording has not yet finished being created or downloaded.
  *
  * @constructor
- * @param {Guacamole.Tunnel} tunnel
+ * @param {!Guacamole.Tunnel} tunnel
  *     The Guacamole.Tunnel from which the instructions of the recording should
  *     be read.
  */
@@ -37,7 +37,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * Reference to this Guacamole.SessionRecording.
      *
      * @private
-     * @type {Guacamole.SessionRecording}
+     * @type {!Guacamole.SessionRecording}
      */
     var recording = this;
 
@@ -47,7 +47,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      *
      * @private
      * @constant
-     * @type {Number}
+     * @type {!number}
      */
     var KEYFRAME_CHAR_INTERVAL = 16384;
 
@@ -56,7 +56,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      *
      * @private
      * @constant
-     * @type {Number}
+     * @type {!number}
      */
     var KEYFRAME_TIME_INTERVAL = 5000;
 
@@ -67,7 +67,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      *
      * @private
      * @constant
-     * @type {Number}
+     * @type {!number}
      */
     var MAXIMUM_SEEK_TIME = 5;
 
@@ -75,7 +75,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * All frames parsed from the provided tunnel.
      *
      * @private
-     * @type {Guacamole.SessionRecording._Frame[]}
+     * @type {!Guacamole.SessionRecording._Frame[]}
      */
     var frames = [];
 
@@ -84,7 +84,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * the frames array.
      *
      * @private
-     * @type {Guacamole.SessionRecording._Frame.Instruction[]}
+     * @type {!Guacamole.SessionRecording._Frame.Instruction[]}
      */
     var instructions = [];
 
@@ -93,7 +93,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * provided tunnel since the last frame was flagged for use as a keyframe.
      *
      * @private
-     * @type {Number}
+     * @type {!number}
      */
     var charactersSinceLastKeyframe = 0;
 
@@ -102,7 +102,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * If no timestamp has yet been flagged, this will be 0.
      *
      * @private
-     * @type {Number}
+     * @type {!number}
      */
     var lastKeyframeTimestamp = 0;
 
@@ -111,7 +111,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * Guacamole.SessionRecording for playback of the session recording.
      *
      * @private
-     * @type {Guacamole.SessionRecording._PlaybackTunnel}
+     * @type {!Guacamole.SessionRecording._PlaybackTunnel}
      */
     var playbackTunnel = new Guacamole.SessionRecording._PlaybackTunnel();
 
@@ -120,7 +120,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * recording.
      *
      * @private
-     * @type {Guacamole.Client}
+     * @type {!Guacamole.Client}
      */
     var playbackClient = new Guacamole.Client(playbackTunnel);
 
@@ -129,7 +129,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * yet rendered, this will be -1.
      *
      * @private
-     * @type {Number}
+     * @type {!number}
      */
     var currentFrame = -1;
 
@@ -138,7 +138,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * playback is not in progress, this will be null.
      *
      * @private
-     * @type {Number}
+     * @type {number}
      */
     var startVideoTimestamp = null;
 
@@ -147,7 +147,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * playback is not in progress, this will be null.
      *
      * @private
-     * @type {Number}
+     * @type {number}
      */
     var startRealTimestamp = null;
 
@@ -157,7 +157,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * any) will not be valid.
      *
      * @private
-     * @type {Number}
+     * @type {number}
      */
     var seekTimeout = null;
 
@@ -212,10 +212,10 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * to the first frame in the recording.
      *
      * @private
-     * @param {Number} timestamp
+     * @param {!number} timestamp
      *     The timestamp to convert to a relative timestamp.
      *
-     * @returns {number}
+     * @returns {!number}
      *     The difference in milliseconds between the given timestamp and the
      *     first frame of the recording, or zero if no frames yet exist.
      */
@@ -235,19 +235,19 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * relative timestamp closest to the timestamp given.
      *
      * @private
-     * @param {Number} minIndex
+     * @param {!number} minIndex
      *     The index of the first frame in the region (the frame having the
      *     smallest timestamp).
      *
-     * @param {Number} maxIndex
+     * @param {!number} maxIndex
      *     The index of the last frame in the region (the frame having the
      *     largest timestamp).
      *
-     * @param {Number} timestamp
+     * @param {!number} timestamp
      *     The relative timestamp to search for, where zero denotes the first
      *     frame in the recording.
      *
-     * @returns {Number}
+     * @returns {!number}
      *     The index of the frame having a relative timestamp closest to the
      *     given value.
      */
@@ -280,7 +280,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * instructions to the playback client.
      *
      * @private
-     * @param {Number} index
+     * @param {!number} index
      *     The index of the frame within the frames array which should be
      *     replayed.
      */
@@ -311,14 +311,14 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * can be observed through the onseek handler and the provided callback.
      *
      * @private
-     * @param {Number} index
+     * @param {!number} index
      *     The index of the frame which should become the new playback
      *     position.
      *
-     * @param {function} callback
+     * @param {!function} callback
      *     The callback to invoke once the seek operation has completed.
      *
-     * @param {Number} [delay=0]
+     * @param {number} [delay=0]
      *     The number of milliseconds that the seek operation should be
      *     scheduled to take.
      */
@@ -438,7 +438,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * being downloaded.
      *
      * @event
-     * @param {Number} duration
+     * @param {!number} duration
      *     The new duration of the recording, in milliseconds.
      */
     this.onprogress = null;
@@ -464,7 +464,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * Fired whenever the playback position within the recording changes.
      *
      * @event
-     * @param {Number} position
+     * @param {!number} position
      *     The new position within the recording, in milliseconds.
      */
     this.onseek = null;
@@ -474,7 +474,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * session. Playback of the Guacamole session cannot occur until at least
      * one frame worth of instructions has been downloaded.
      *
-     * @param {String} data
+     * @param {string} [data]
      *     The data to send to the tunnel when connecting.
      */
     this.connect = function connect(data) {
@@ -495,7 +495,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * which can be added to the DOM, causing the display (and thus playback of
      * the recording) to become visible.
      *
-     * @return {Guacamole.Display}
+     * @return {!Guacamole.Display}
      *     The underlying display of the Guacamole.Client used by this
      *     Guacamole.SessionRecording for playback.
      */
@@ -506,7 +506,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
     /**
      * Returns whether playback is currently in progress.
      *
-     * @returns {boolean}
+     * @returns {!boolean}
      *     true if playback is currently in progress, false otherwise.
      */
     this.isPlaying = function isPlaying() {
@@ -517,7 +517,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * Returns the current playback position within the recording, in
      * milliseconds, where zero is the start of the recording.
      *
-     * @returns {Number}
+     * @returns {!number}
      *     The current playback position within the recording, in milliseconds.
      */
     this.getPosition = function getPosition() {
@@ -536,7 +536,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * Returns the duration of this recording, in milliseconds. If the
      * recording is still being downloaded, this value will gradually increase.
      *
-     * @returns {Number}
+     * @returns {!number}
      *     The duration of this recording, in milliseconds.
      */
     this.getDuration = function getDuration() {
@@ -591,7 +591,7 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
      * progress, that seek is first aborted. The seek operation will proceed
      * asynchronously.
      *
-     * @param {Number} position
+     * @param {!number} position
      *     The position within the recording to seek to, in milliseconds.
      *
      * @param {function} [callback]
@@ -660,11 +660,11 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
  *
  * @private
  * @constructor
- * @param {Number} timestamp
+ * @param {!number} timestamp
  *     The timestamp of this frame, as dictated by the "sync" instruction which
  *     terminates the frame.
  *
- * @param {Guacamole.SessionRecording._Frame.Instruction[]} instructions
+ * @param {!Guacamole.SessionRecording._Frame.Instruction[]} instructions
  *     All instructions which are necessary to generate this frame relative to
  *     the previous frame in the Guacamole session.
  */
@@ -676,7 +676,7 @@ Guacamole.SessionRecording._Frame = function _Frame(timestamp, instructions) {
      * set for the frame to be used as a keyframe. By default, frames are not
      * keyframes.
      *
-     * @type {Boolean}
+     * @type {!boolean}
      * @default false
      */
     this.keyframe = false;
@@ -685,7 +685,7 @@ Guacamole.SessionRecording._Frame = function _Frame(timestamp, instructions) {
      * The timestamp of this frame, as dictated by the "sync" instruction which
      * terminates the frame.
      *
-     * @type {Number}
+     * @type {!number}
      */
     this.timestamp = timestamp;
 
@@ -693,7 +693,7 @@ Guacamole.SessionRecording._Frame = function _Frame(timestamp, instructions) {
      * All instructions which are necessary to generate this frame relative to
      * the previous frame in the Guacamole session.
      *
-     * @type {Guacamole.SessionRecording._Frame.Instruction[]}
+     * @type {!Guacamole.SessionRecording._Frame.Instruction[]}
      */
     this.instructions = instructions;
 
@@ -702,7 +702,7 @@ Guacamole.SessionRecording._Frame = function _Frame(timestamp, instructions) {
      * a call to exportState(). If no such snapshot has been taken, this will
      * be null.
      *
-     * @type {Object}
+     * @type {object}
      * @default null
      */
     this.clientState = null;
@@ -715,10 +715,10 @@ Guacamole.SessionRecording._Frame = function _Frame(timestamp, instructions) {
  *
  * @private
  * @constructor
- * @param {String} opcode
+ * @param {!string} opcode
  *     The opcode of this Guacamole instruction.
  *
- * @param {String[]} args
+ * @param {!string[]} args
  *     All arguments associated with this Guacamole instruction.
  */
 Guacamole.SessionRecording._Frame.Instruction = function Instruction(opcode, args) {
@@ -727,21 +727,21 @@ Guacamole.SessionRecording._Frame.Instruction = function Instruction(opcode, arg
      * Reference to this Guacamole.SessionRecording._Frame.Instruction.
      *
      * @private
-     * @type {Guacamole.SessionRecording._Frame.Instruction}
+     * @type {!Guacamole.SessionRecording._Frame.Instruction}
      */
     var instruction = this;
 
     /**
      * The opcode of this Guacamole instruction.
      *
-     * @type {String}
+     * @type {!string}
      */
     this.opcode = opcode;
 
     /**
      * All arguments associated with this Guacamole instruction.
      *
-     * @type {String[]}
+     * @type {!string[]}
      */
     this.args = args;
 
@@ -751,7 +751,7 @@ Guacamole.SessionRecording._Frame.Instruction = function Instruction(opcode, arg
      * prefixes and various delimiters used by the Guacamole protocol; only
      * the content of the opcode and each argument is taken into account.
      *
-     * @returns {Number}
+     * @returns {!number}
      *     The approximate size of this instruction, in characters.
      */
     this.getSize = function getSize() {
@@ -783,7 +783,7 @@ Guacamole.SessionRecording._PlaybackTunnel = function _PlaybackTunnel() {
      * Reference to this Guacamole.SessionRecording._PlaybackTunnel.
      *
      * @private
-     * @type {Guacamole.SessionRecording._PlaybackTunnel}
+     * @type {!Guacamole.SessionRecording._PlaybackTunnel}
      */
     var tunnel = this;
 
@@ -805,10 +805,10 @@ Guacamole.SessionRecording._PlaybackTunnel = function _PlaybackTunnel() {
      * been received. If the oninstruction handler has not been set, this
      * function has no effect.
      *
-     * @param {String} opcode
+     * @param {!string} opcode
      *     The opcode of the Guacamole instruction.
      *
-     * @param {String[]} args
+     * @param {!string[]} args
      *     All arguments associated with this Guacamole instruction.
      */
     this.receiveInstruction = function receiveInstruction(opcode, args) {

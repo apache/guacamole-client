@@ -27,7 +27,7 @@ var Guacamole = Guacamole || {};
  * 
  * @constructor
  * @augments Guacamole.Event.Target
- * @param {Element} element
+ * @param {!Element} element
  *     The Element to use to provide touch events.
  */
 Guacamole.Touch = function Touch(element) {
@@ -38,7 +38,7 @@ Guacamole.Touch = function Touch(element) {
      * Reference to this Guacamole.Touch.
      *
      * @private
-     * @type {Guacamole.Touch}
+     * @type {!Guacamole.Touch}
      */
     var guacTouch = this;
 
@@ -48,14 +48,14 @@ Guacamole.Touch = function Touch(element) {
      *
      * @private
      * @constant
-     * @type {Number}
+     * @type {!number}
      */
     var DEFAULT_CONTACT_RADIUS = Math.floor(16 * window.devicePixelRatio);
 
     /**
      * The set of all active touches, stored by their unique identifiers.
      *
-     * @type {Object.<Number, Guacamole.Touch.State>}
+     * @type {!Object.<Number, Guacamole.Touch.State>}
      */
     this.touches = {};
 
@@ -70,7 +70,7 @@ Guacamole.Touch = function Touch(element) {
      * associated with this Guacamole.Touch.
      * 
      * @event Guacamole.Touch#touchstart
-     * @param {Guacamole.Touch.Event} event
+     * @param {!Guacamole.Touch.Event} event
      *     A {@link Guacamole.Touch.Event} object representing the "touchstart"
      *     event.
      */
@@ -80,7 +80,7 @@ Guacamole.Touch = function Touch(element) {
      * associated with this Guacamole.Touch.
      * 
      * @event Guacamole.Touch#touchmove
-     * @param {Guacamole.Touch.Event} event
+     * @param {!Guacamole.Touch.Event} event
      *     A {@link Guacamole.Touch.Event} object representing the "touchmove"
      *     event.
      */
@@ -90,7 +90,7 @@ Guacamole.Touch = function Touch(element) {
      * associated with this Guacamole.Touch.
      * 
      * @event Guacamole.Touch#touchend
-     * @param {Guacamole.Touch.Event} event
+     * @param {!Guacamole.Touch.Event} event
      *     A {@link Guacamole.Touch.Event} object representing the "touchend"
      *     event.
      */
@@ -190,7 +190,7 @@ Guacamole.Touch = function Touch(element) {
  *
  * @constructor
  * @augments Guacamole.Position
- * @param {Guacamole.Touch.State|Object} [template={}]
+ * @param {Guacamole.Touch.State|object} [template={}]
  *     The object whose properties should be copied within the new
  *     Guacamole.Touch.State.
  */
@@ -204,7 +204,7 @@ Guacamole.Touch.State = function State(template) {
      * An arbitrary integer ID which uniquely identifies this contact relative
      * to other active contacts.
      *
-     * @type {Number}
+     * @type {!number}
      * @default 0
      */
     this.id = template.id || 0;
@@ -213,7 +213,7 @@ Guacamole.Touch.State = function State(template) {
      * The Y radius of the ellipse covering the general area of the touch
      * contact, in pixels.
      *
-     * @type {Number}
+     * @type {!number}
      * @default 0
      */
     this.radiusX = template.radiusX || 0;
@@ -222,7 +222,7 @@ Guacamole.Touch.State = function State(template) {
      * The X radius of the ellipse covering the general area of the touch
      * contact, in pixels.
      *
-     * @type {Number}
+     * @type {!number}
      * @default 0
      */
     this.radiusY = template.radiusY || 0;
@@ -231,7 +231,7 @@ Guacamole.Touch.State = function State(template) {
      * The rough angle of clockwise rotation of the general area of the touch
      * contact, in degrees.
      *
-     * @type {Number}
+     * @type {!number}
      * @default 0.0
      */
     this.angle = template.angle || 0.0;
@@ -241,7 +241,7 @@ Guacamole.Touch.State = function State(template) {
      * (the touch has been lifted) and 1 is maximum force (the maximum amount
      * of force representable by the device).
      *
-     * @type {Number}
+     * @type {!number}
      * @default 1.0
      */
     this.force = template.force || 1.0;
@@ -256,14 +256,14 @@ Guacamole.Touch.State = function State(template) {
  *
  * @constructor
  * @augments Guacamole.Event.DOMEvent
- * @param {String} type
+ * @param {!string} type
  *     The name of the touch event type. Possible values are "touchstart",
  *     "touchmove", and "touchend".
  *
- * @param {TouchEvent} event
+ * @param {!TouchEvent} event
  *     The DOM touch event that produced this Guacamole.Touch.Event.
  *
- * @param {Guacamole.Touch.State} state
+ * @param {!Guacamole.Touch.State} state
  *     The state of the touch contact associated with this event.
  */
 Guacamole.Touch.Event = function TouchEvent(type, event, state) {
@@ -273,7 +273,7 @@ Guacamole.Touch.Event = function TouchEvent(type, event, state) {
     /**
      * The state of the touch contact associated with this event.
      *
-     * @type{Guacamole.Touch.State}
+     * @type {!Guacamole.Touch.State}
      */
     this.state = state;
 

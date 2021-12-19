@@ -28,17 +28,21 @@ var Guacamole = Guacamole || {};
  * 
  * @constructor
  * 
- * @param {Number} width The width of the Layer, in pixels. The canvas element
- *                       backing this Layer will be given this width.
+ * @param {!number} width
+ *     The width of the Layer, in pixels. The canvas element backing this Layer
+ *     will be given this width.
  *                       
- * @param {Number} height The height of the Layer, in pixels. The canvas element
- *                        backing this Layer will be given this height.
+ * @param {!number} height
+ *     The height of the Layer, in pixels. The canvas element backing this
+ *     Layer will be given this height.
  */
 Guacamole.Layer = function(width, height) {
 
     /**
      * Reference to this Layer.
+     *
      * @private
+     * @type {!Guacamole.Layer}
      */
     var layer = this;
 
@@ -49,19 +53,23 @@ Guacamole.Layer = function(width, height) {
      *
      * @private
      * @constant
-     * @type Number
+     * @type {!number}
      */
     var CANVAS_SIZE_FACTOR = 64;
 
     /**
      * The canvas element backing this Layer.
+     *
      * @private
+     * @type {!HTMLCanvasElement}
      */
     var canvas = document.createElement("canvas");
 
     /**
      * The 2D display context of the canvas element backing this Layer.
+     *
      * @private
+     * @type {!CanvasRenderingContext2D}
      */
     var context = canvas.getContext("2d");
     context.save();
@@ -72,14 +80,16 @@ Guacamole.Layer = function(width, height) {
      * false.
      *
      * @private
-     * @type Boolean
+     * @type {!boolean}
      */
     var empty = true;
 
     /**
      * Whether a new path should be started with the next path drawing
      * operations.
+     *
      * @private
+     * @type {!boolean}
      */
     var pathClosed = true;
 
@@ -91,13 +101,16 @@ Guacamole.Layer = function(width, height) {
      * initial state.
      * 
      * @private
+     * @type {!number}
      */
     var stackSize = 0;
 
     /**
      * Map of all Guacamole channel masks to HTML5 canvas composite operation
      * names. Not all channel mask combinations are currently implemented.
+     *
      * @private
+     * @type {!Object.<number, string>}
      */
     var compositeOperation = {
      /* 0x0 NOT IMPLEMENTED */
@@ -123,10 +136,10 @@ Guacamole.Layer = function(width, height) {
      * be used internally.
      * 
      * @private
-     * @param {Number} [newWidth=0]
+     * @param {number} [newWidth=0]
      *     The new width to assign to this Layer.
      *
-     * @param {Number} [newHeight=0]
+     * @param {number} [newHeight=0]
      *     The new height to assign to this Layer.
      */
     var resize = function resize(newWidth, newHeight) {
@@ -201,12 +214,17 @@ Guacamole.Layer = function(width, height) {
      * coordinate space, the canvas is left unchanged.
      * 
      * @private
-     * @param {Number} x The X coordinate of the upper-left corner of the
-     *                   rectangle to fit.
-     * @param {Number} y The Y coordinate of the upper-left corner of the
-     *                   rectangle to fit.
-     * @param {Number} w The width of the rectangle to fit.
-     * @param {Number} h The height of the rectangle to fit.
+     * @param {!number} x
+     *     The X coordinate of the upper-left corner of the rectangle to fit.
+     *
+     * @param {!number} y
+     *     The Y coordinate of the upper-left corner of the rectangle to fit.
+     *
+     * @param {!number} w
+     *     The width of the rectangle to fit.
+     *
+     * @param {!number} h
+     *     The height of the rectangle to fit.
      */
     function fitRect(x, y, w, h) {
         
@@ -249,20 +267,22 @@ Guacamole.Layer = function(width, height) {
      *     layer.autosize = true;
      * });
      * 
-     * @type {Boolean}
+     * @type {!boolean}
      * @default false
      */
     this.autosize = false;
 
     /**
      * The current width of this layer.
-     * @type {Number}
+     *
+     * @type {!number}
      */
     this.width = width;
 
     /**
      * The current height of this layer.
-     * @type {Number}
+     *
+     * @type {!number}
      */
     this.height = height;
 
@@ -307,8 +327,11 @@ Guacamole.Layer = function(width, height) {
      * is only attempted if the new size provided is actually different from
      * the current size.
      * 
-     * @param {Number} newWidth The new width to assign to this Layer.
-     * @param {Number} newHeight The new height to assign to this Layer.
+     * @param {!number} newWidth
+     *     The new width to assign to this Layer.
+     *
+     * @param {!number} newHeight
+     *     The new height to assign to this Layer.
      */
     this.resize = function(newWidth, newHeight) {
         if (newWidth !== layer.width || newHeight !== layer.height)
@@ -319,13 +342,13 @@ Guacamole.Layer = function(width, height) {
      * Draws the specified image at the given coordinates. The image specified
      * must already be loaded.
      * 
-     * @param {Number} x
+     * @param {!number} x
      *     The destination X coordinate.
      *
-     * @param {Number} y
+     * @param {!number} y
      *     The destination Y coordinate.
      *
-     * @param {CanvasImageSource} image
+     * @param {!CanvasImageSource} image
      *     The image to draw. Note that this is not a URL.
      */
     this.drawImage = function(x, y, image) {
@@ -338,22 +361,34 @@ Guacamole.Layer = function(width, height) {
      * Transfer a rectangle of image data from one Layer to this Layer using the
      * specified transfer function.
      * 
-     * @param {Guacamole.Layer} srcLayer The Layer to copy image data from.
-     * @param {Number} srcx The X coordinate of the upper-left corner of the
-     *                      rectangle within the source Layer's coordinate
-     *                      space to copy data from.
-     * @param {Number} srcy The Y coordinate of the upper-left corner of the
-     *                      rectangle within the source Layer's coordinate
-     *                      space to copy data from.
-     * @param {Number} srcw The width of the rectangle within the source Layer's
-     *                      coordinate space to copy data from.
-     * @param {Number} srch The height of the rectangle within the source
-     *                      Layer's coordinate space to copy data from.
-     * @param {Number} x The destination X coordinate.
-     * @param {Number} y The destination Y coordinate.
-     * @param {Function} transferFunction The transfer function to use to
-     *                                    transfer data from source to
-     *                                    destination.
+     * @param {!Guacamole.Layer} srcLayer
+     *     The Layer to copy image data from.
+     *
+     * @param {!number} srcx
+     *     The X coordinate of the upper-left corner of the rectangle within
+     *     the source Layer's coordinate space to copy data from.
+     *
+     * @param {!number} srcy
+     *     The Y coordinate of the upper-left corner of the rectangle within
+     *     the source Layer's coordinate space to copy data from.
+     *
+     * @param {!number} srcw
+     *     The width of the rectangle within the source Layer's coordinate
+     *     space to copy data from.
+     *
+     * @param {!number} srch
+     *     The height of the rectangle within the source Layer's coordinate
+     *     space to copy data from.
+     *
+     * @param {!number} x
+     *     The destination X coordinate.
+     *
+     * @param {!number} y
+     *     The destination Y coordinate.
+     *
+     * @param {!function} transferFunction
+     *     The transfer function to use to transfer data from source to
+     *     destination.
      */
     this.transfer = function(srcLayer, srcx, srcy, srcw, srch, x, y, transferFunction) {
 
@@ -418,19 +453,30 @@ Guacamole.Layer = function(width, height) {
      * Put a rectangle of image data from one Layer to this Layer directly
      * without performing any alpha blending. Simply copy the data.
      * 
-     * @param {Guacamole.Layer} srcLayer The Layer to copy image data from.
-     * @param {Number} srcx The X coordinate of the upper-left corner of the
-     *                      rectangle within the source Layer's coordinate
-     *                      space to copy data from.
-     * @param {Number} srcy The Y coordinate of the upper-left corner of the
-     *                      rectangle within the source Layer's coordinate
-     *                      space to copy data from.
-     * @param {Number} srcw The width of the rectangle within the source Layer's
-     *                      coordinate space to copy data from.
-     * @param {Number} srch The height of the rectangle within the source
-     *                      Layer's coordinate space to copy data from.
-     * @param {Number} x The destination X coordinate.
-     * @param {Number} y The destination Y coordinate.
+     * @param {!Guacamole.Layer} srcLayer
+     *     The Layer to copy image data from.
+     *
+     * @param {!number} srcx
+     *     The X coordinate of the upper-left corner of the rectangle within
+     *     the source Layer's coordinate space to copy data from.
+     *
+     * @param {!number} srcy
+     *     The Y coordinate of the upper-left corner of the rectangle within
+     *     the source Layer's coordinate space to copy data from.
+     *
+     * @param {!number} srcw
+     *     The width of the rectangle within the source Layer's coordinate
+     *     space to copy data from.
+     *
+     * @param {!number} srch
+     *     The height of the rectangle within the source Layer's coordinate
+     *     space to copy data from.
+     *
+     * @param {!number} x
+     *     The destination X coordinate.
+     *
+     * @param {!number} y
+     *     The destination Y coordinate.
      */
     this.put = function(srcLayer, srcx, srcy, srcw, srch, x, y) {
 
@@ -465,19 +511,30 @@ Guacamole.Layer = function(width, height) {
      * function was called are complete. This operation will not alter the
      * size of the source Layer even if its autosize property is set to true.
      * 
-     * @param {Guacamole.Layer} srcLayer The Layer to copy image data from.
-     * @param {Number} srcx The X coordinate of the upper-left corner of the
-     *                      rectangle within the source Layer's coordinate
-     *                      space to copy data from.
-     * @param {Number} srcy The Y coordinate of the upper-left corner of the
-     *                      rectangle within the source Layer's coordinate
-     *                      space to copy data from.
-     * @param {Number} srcw The width of the rectangle within the source Layer's
-     *                      coordinate space to copy data from.
-     * @param {Number} srch The height of the rectangle within the source
-     *                      Layer's coordinate space to copy data from.
-     * @param {Number} x The destination X coordinate.
-     * @param {Number} y The destination Y coordinate.
+     * @param {!Guacamole.Layer} srcLayer
+     *     The Layer to copy image data from.
+     *
+     * @param {!number} srcx
+     *     The X coordinate of the upper-left corner of the rectangle within
+     *     the source Layer's coordinate space to copy data from.
+     *
+     * @param {!number} srcy
+     *     The Y coordinate of the upper-left corner of the rectangle within
+     *     the source Layer's coordinate space to copy data from.
+     *
+     * @param {!number} srcw
+     *     The width of the rectangle within the source Layer's coordinate
+     *     space to copy data from.
+     *
+     * @param {!number} srch
+     *     The height of the rectangle within the source Layer's coordinate
+     *     space to copy data from.
+     *
+     * @param {!number} x
+     *     The destination X coordinate.
+     *
+     * @param {!number} y
+     *     The destination Y coordinate.
      */
     this.copy = function(srcLayer, srcx, srcy, srcw, srch, x, y) {
 
@@ -505,8 +562,11 @@ Guacamole.Layer = function(width, height) {
     /**
      * Starts a new path at the specified point.
      * 
-     * @param {Number} x The X coordinate of the point to draw.
-     * @param {Number} y The Y coordinate of the point to draw.
+     * @param {!number} x
+     *     The X coordinate of the point to draw.
+     *
+     * @param {!number} y
+     *     The Y coordinate of the point to draw.
      */
     this.moveTo = function(x, y) {
         
@@ -524,8 +584,11 @@ Guacamole.Layer = function(width, height) {
     /**
      * Add the specified line to the current path.
      * 
-     * @param {Number} x The X coordinate of the endpoint of the line to draw.
-     * @param {Number} y The Y coordinate of the endpoint of the line to draw.
+     * @param {!number} x
+     *     The X coordinate of the endpoint of the line to draw.
+     *
+     * @param {!number} y
+     *     The Y coordinate of the endpoint of the line to draw.
      */
     this.lineTo = function(x, y) {
         
@@ -543,15 +606,25 @@ Guacamole.Layer = function(width, height) {
     /**
      * Add the specified arc to the current path.
      * 
-     * @param {Number} x The X coordinate of the center of the circle which
-     *                   will contain the arc.
-     * @param {Number} y The Y coordinate of the center of the circle which
-     *                   will contain the arc.
-     * @param {Number} radius The radius of the circle.
-     * @param {Number} startAngle The starting angle of the arc, in radians.
-     * @param {Number} endAngle The ending angle of the arc, in radians.
-     * @param {Boolean} negative Whether the arc should be drawn in order of
-     *                           decreasing angle.
+     * @param {!number} x
+     *     The X coordinate of the center of the circle which will contain the
+     *     arc.
+     *
+     * @param {!number} y
+     *     The Y coordinate of the center of the circle which will contain the
+     *     arc.
+     *
+     * @param {!number} radius
+     *     The radius of the circle.
+     *
+     * @param {!number} startAngle
+     *     The starting angle of the arc, in radians.
+     *
+     * @param {!number} endAngle
+     *     The ending angle of the arc, in radians.
+     *
+     * @param {!boolean} negative
+     *     Whether the arc should be drawn in order of decreasing angle.
      */
     this.arc = function(x, y, radius, startAngle, endAngle, negative) {
         
@@ -569,12 +642,23 @@ Guacamole.Layer = function(width, height) {
     /**
      * Starts a new path at the specified point.
      * 
-     * @param {Number} cp1x The X coordinate of the first control point.
-     * @param {Number} cp1y The Y coordinate of the first control point.
-     * @param {Number} cp2x The X coordinate of the second control point.
-     * @param {Number} cp2y The Y coordinate of the second control point.
-     * @param {Number} x The X coordinate of the endpoint of the curve.
-     * @param {Number} y The Y coordinate of the endpoint of the curve.
+     * @param {!number} cp1x
+     *     The X coordinate of the first control point.
+     *
+     * @param {!number} cp1y
+     *     The Y coordinate of the first control point.
+     *
+     * @param {!number} cp2x
+     *     The X coordinate of the second control point.
+     *
+     * @param {!number} cp2y
+     *     The Y coordinate of the second control point.
+     *
+     * @param {!number} x
+     *     The X coordinate of the endpoint of the curve.
+     *
+     * @param {!number} y
+     *     The Y coordinate of the endpoint of the curve.
      */
     this.curveTo = function(cp1x, cp1y, cp2x, cp2y, x, y) {
         
@@ -601,12 +685,17 @@ Guacamole.Layer = function(width, height) {
     /**
      * Add the specified rectangle to the current path.
      * 
-     * @param {Number} x The X coordinate of the upper-left corner of the
-     *                   rectangle to draw.
-     * @param {Number} y The Y coordinate of the upper-left corner of the
-     *                   rectangle to draw.
-     * @param {Number} w The width of the rectangle to draw.
-     * @param {Number} h The height of the rectangle to draw.
+     * @param {!number} x
+     *     The X coordinate of the upper-left corner of the rectangle to draw.
+     *
+     * @param {!number} y
+     *     The Y coordinate of the upper-left corner of the rectangle to draw.
+     *
+     * @param {!number} w
+     *     The width of the rectangle to draw.
+     *
+     * @param {!number} h
+     *     The height of the rectangle to draw.
      */
     this.rect = function(x, y, w, h) {
             
@@ -643,15 +732,26 @@ Guacamole.Layer = function(width, height) {
      * for other operations (such as clip()) but a new path will be started
      * once a path drawing operation (path() or rect()) is used.
      * 
-     * @param {String} cap The line cap style. Can be "round", "square",
-     *                     or "butt".
-     * @param {String} join The line join style. Can be "round", "bevel",
-     *                      or "miter".
-     * @param {Number} thickness The line thickness in pixels.
-     * @param {Number} r The red component of the color to fill.
-     * @param {Number} g The green component of the color to fill.
-     * @param {Number} b The blue component of the color to fill.
-     * @param {Number} a The alpha component of the color to fill.
+     * @param {!string} cap
+     *     The line cap style. Can be "round", "square", or "butt".
+     *
+     * @param {!string} join
+     *     The line join style. Can be "round", "bevel", or "miter".
+     *
+     * @param {!number} thickness
+     *     The line thickness in pixels.
+     *
+     * @param {!number} r
+     *     The red component of the color to fill.
+     *
+     * @param {!number} g
+     *     The green component of the color to fill.
+     *
+     * @param {!number} b
+     *     The blue component of the color to fill.
+     *
+     * @param {!number} a
+     *     The alpha component of the color to fill.
      */
     this.strokeColor = function(cap, join, thickness, r, g, b, a) {
 
@@ -674,10 +774,17 @@ Guacamole.Layer = function(width, height) {
      * for other operations (such as clip()) but a new path will be started
      * once a path drawing operation (path() or rect()) is used.
      * 
-     * @param {Number} r The red component of the color to fill.
-     * @param {Number} g The green component of the color to fill.
-     * @param {Number} b The blue component of the color to fill.
-     * @param {Number} a The alpha component of the color to fill.
+     * @param {!number} r
+     *     The red component of the color to fill.
+     *
+     * @param {!number} g
+     *     The green component of the color to fill.
+     *
+     * @param {!number} b
+     *     The blue component of the color to fill.
+     *
+     * @param {!number} a
+     *     The alpha component of the color to fill.
      */
     this.fillColor = function(r, g, b, a) {
 
@@ -698,13 +805,17 @@ Guacamole.Layer = function(width, height) {
      * for other operations (such as clip()) but a new path will be started
      * once a path drawing operation (path() or rect()) is used.
      * 
-     * @param {String} cap The line cap style. Can be "round", "square",
-     *                     or "butt".
-     * @param {String} join The line join style. Can be "round", "bevel",
-     *                      or "miter".
-     * @param {Number} thickness The line thickness in pixels.
-     * @param {Guacamole.Layer} srcLayer The layer to use as a repeating pattern
-     *                                   within the stroke.
+     * @param {!string} cap
+     *     The line cap style. Can be "round", "square", or "butt".
+     *
+     * @param {!string} join
+     *     The line join style. Can be "round", "bevel", or "miter".
+     *
+     * @param {!number} thickness
+     *     The line thickness in pixels.
+     *
+     * @param {!Guacamole.Layer} srcLayer
+     *     The layer to use as a repeating pattern within the stroke.
      */
     this.strokeLayer = function(cap, join, thickness, srcLayer) {
 
@@ -731,8 +842,8 @@ Guacamole.Layer = function(width, height) {
      * for other operations (such as clip()) but a new path will be started
      * once a path drawing operation (path() or rect()) is used.
      * 
-     * @param {Guacamole.Layer} srcLayer The layer to use as a repeating pattern
-     *                                   within the fill.
+     * @param {!Guacamole.Layer} srcLayer
+     *     The layer to use as a repeating pattern within the fill.
      */
     this.fillLayer = function(srcLayer) {
 
@@ -799,12 +910,23 @@ Guacamole.Layer = function(width, height) {
      * Sets the given affine transform (defined with six values from the
      * transform's matrix).
      * 
-     * @param {Number} a The first value in the affine transform's matrix.
-     * @param {Number} b The second value in the affine transform's matrix.
-     * @param {Number} c The third value in the affine transform's matrix.
-     * @param {Number} d The fourth value in the affine transform's matrix.
-     * @param {Number} e The fifth value in the affine transform's matrix.
-     * @param {Number} f The sixth value in the affine transform's matrix.
+     * @param {!number} a
+     *     The first value in the affine transform's matrix.
+     *
+     * @param {!number} b
+     *     The second value in the affine transform's matrix.
+     *
+     * @param {!number} c
+     *     The third value in the affine transform's matrix.
+     *
+     * @param {!number} d
+     *     The fourth value in the affine transform's matrix.
+     *
+     * @param {!number} e
+     *     The fifth value in the affine transform's matrix.
+     *
+     * @param {!number} f
+     *     The sixth value in the affine transform's matrix.
      */
     this.setTransform = function(a, b, c, d, e, f) {
         context.setTransform(
@@ -817,13 +939,24 @@ Guacamole.Layer = function(width, height) {
     /**
      * Applies the given affine transform (defined with six values from the
      * transform's matrix).
-     * 
-     * @param {Number} a The first value in the affine transform's matrix.
-     * @param {Number} b The second value in the affine transform's matrix.
-     * @param {Number} c The third value in the affine transform's matrix.
-     * @param {Number} d The fourth value in the affine transform's matrix.
-     * @param {Number} e The fifth value in the affine transform's matrix.
-     * @param {Number} f The sixth value in the affine transform's matrix.
+     *
+     * @param {!number} a
+     *     The first value in the affine transform's matrix.
+     *
+     * @param {!number} b
+     *     The second value in the affine transform's matrix.
+     *
+     * @param {!number} c
+     *     The third value in the affine transform's matrix.
+     *
+     * @param {!number} d
+     *     The fourth value in the affine transform's matrix.
+     *
+     * @param {!number} e
+     *     The fifth value in the affine transform's matrix.
+     *
+     * @param {!number} f
+     *     The sixth value in the affine transform's matrix.
      */
     this.transform = function(a, b, c, d, e, f) {
         context.transform(
@@ -842,8 +975,8 @@ Guacamole.Layer = function(width, height) {
      * destination where source transparent, and destination where source
      * opaque.
      * 
-     * @param {Number} mask The channel mask for future operations on this
-     *                      Layer.
+     * @param {!number} mask
+     *     The channel mask for future operations on this Layer.
      */
     this.setChannelMask = function(mask) {
         context.globalCompositeOperation = compositeOperation[mask];
@@ -855,8 +988,8 @@ Guacamole.Layer = function(width, height) {
      * width. If this ratio is exceeded, the miter will not be drawn for that
      * joint of the path.
      * 
-     * @param {Number} limit The miter limit for stroke operations using the
-     *                       miter join.
+     * @param {!number} limit
+     *     The miter limit for stroke operations using the miter join.
      */
     this.setMiterLimit = function(limit) {
         context.miterLimit = limit;
@@ -874,31 +1007,43 @@ Guacamole.Layer = function(width, height) {
 
 /**
  * Channel mask for the composite operation "rout".
+ *
+ * @type {!number}
  */
 Guacamole.Layer.ROUT  = 0x2;
 
 /**
  * Channel mask for the composite operation "atop".
+ *
+ * @type {!number}
  */
 Guacamole.Layer.ATOP  = 0x6;
 
 /**
  * Channel mask for the composite operation "xor".
+ *
+ * @type {!number}
  */
 Guacamole.Layer.XOR   = 0xA;
 
 /**
  * Channel mask for the composite operation "rover".
+ *
+ * @type {!number}
  */
 Guacamole.Layer.ROVER = 0xB;
 
 /**
  * Channel mask for the composite operation "over".
+ *
+ * @type {!number}
  */
 Guacamole.Layer.OVER  = 0xE;
 
 /**
  * Channel mask for the composite operation "plus".
+ *
+ * @type {!number}
  */
 Guacamole.Layer.PLUS  = 0xF;
 
@@ -907,6 +1052,8 @@ Guacamole.Layer.PLUS  = 0xF;
  * Beware that WebKit-based browsers may leave the contents of the destination
  * layer where the source layer is transparent, despite the definition of this
  * operation.
+ *
+ * @type {!number}
  */
 Guacamole.Layer.RIN   = 0x1;
 
@@ -915,6 +1062,8 @@ Guacamole.Layer.RIN   = 0x1;
  * Beware that WebKit-based browsers may leave the contents of the destination
  * layer where the source layer is transparent, despite the definition of this
  * operation.
+ *
+ * @type {!number}
  */
 Guacamole.Layer.IN    = 0x4;
 
@@ -923,6 +1072,8 @@ Guacamole.Layer.IN    = 0x4;
  * Beware that WebKit-based browsers may leave the contents of the destination
  * layer where the source layer is transparent, despite the definition of this
  * operation.
+ *
+ * @type {!number}
  */
 Guacamole.Layer.OUT   = 0x8;
 
@@ -931,6 +1082,8 @@ Guacamole.Layer.OUT   = 0x8;
  * Beware that WebKit-based browsers may leave the contents of the destination
  * layer where the source layer is transparent, despite the definition of this
  * operation.
+ *
+ * @type {!number}
  */
 Guacamole.Layer.RATOP = 0x9;
 
@@ -939,6 +1092,8 @@ Guacamole.Layer.RATOP = 0x9;
  * Beware that WebKit-based browsers may leave the contents of the destination
  * layer where the source layer is transparent, despite the definition of this
  * operation.
+ *
+ * @type {!number}
  */
 Guacamole.Layer.SRC   = 0xC;
 
@@ -948,34 +1103,49 @@ Guacamole.Layer.SRC   = 0xC;
  * 
  * @constructor
  * 
- * @param {Number} r The red component of this pixel.
- * @param {Number} g The green component of this pixel.
- * @param {Number} b The blue component of this pixel.
- * @param {Number} a The alpha component of this pixel.
+ * @param {!number} r
+ *     The red component of this pixel.
+ *
+ * @param {!number} g
+ *     The green component of this pixel.
+ *
+ * @param {!number} b
+ *     The blue component of this pixel.
+ *
+ * @param {!number} a
+ *     The alpha component of this pixel.
  */
 Guacamole.Layer.Pixel = function(r, g, b, a) {
 
     /**
      * The red component of this pixel, where 0 is the minimum value,
      * and 255 is the maximum.
+     *
+     * @type {!number}
      */
     this.red   = r;
 
     /**
      * The green component of this pixel, where 0 is the minimum value,
      * and 255 is the maximum.
+     *
+     * @type {!number}
      */
     this.green = g;
 
     /**
      * The blue component of this pixel, where 0 is the minimum value,
      * and 255 is the maximum.
+     *
+     * @type {!number}
      */
     this.blue  = b;
 
     /**
      * The alpha component of this pixel, where 0 is the minimum value,
      * and 255 is the maximum.
+     *
+     * @type {!number}
      */
     this.alpha = a;
 

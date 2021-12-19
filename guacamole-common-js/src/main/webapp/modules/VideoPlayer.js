@@ -47,10 +47,10 @@ Guacamole.VideoPlayer = function VideoPlayer() {
  * implementation of Guacamole.VideoPlayer, and thus will be properly handled
  * by Guacamole.VideoPlayer.getInstance().
  *
- * @param {String} mimetype
+ * @param {!string} mimetype
  *     The mimetype to check.
  *
- * @returns {boolean}
+ * @returns {!boolean}
  *     true if the given mimetype is supported by any built-in
  *     Guacamole.VideoPlayer, false otherwise.
  */
@@ -68,7 +68,7 @@ Guacamole.VideoPlayer.isSupportedType = function isSupportedType(mimetype) {
  * mimetypes themselves will be listed. Any mimetype parameters, even required
  * ones, will not be included in the list.
  *
- * @returns {string[]}
+ * @returns {!string[]}
  *     A list of all mimetypes supported by any built-in Guacamole.VideoPlayer,
  *     excluding any parameters.
  */
@@ -85,14 +85,14 @@ Guacamole.VideoPlayer.getSupportedTypes = function getSupportedTypes() {
  * video format. If support for the given video format is not available, null
  * is returned.
  *
- * @param {Guacamole.InputStream} stream
+ * @param {!Guacamole.InputStream} stream
  *     The Guacamole.InputStream to read video data from.
  *
- * @param {Guacamole.Display.VisibleLayer} layer
+ * @param {!Guacamole.Display.VisibleLayer} layer
  *     The destination layer in which this Guacamole.VideoPlayer should play
  *     the received video data.
  *
- * @param {String} mimetype
+ * @param {!string} mimetype
  *     The mimetype of the video data in the provided stream.
  *
  * @return {Guacamole.VideoPlayer}

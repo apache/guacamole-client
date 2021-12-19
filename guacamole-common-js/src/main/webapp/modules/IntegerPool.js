@@ -37,13 +37,14 @@ Guacamole.IntegerPool = function() {
      * Array of available integers.
      *
      * @private
-     * @type {Number[]}
+     * @type {!number[]}
      */
     var pool = [];
 
     /**
      * The next integer to return if no more integers remain.
-     * @type {Number}
+     *
+     * @type {!number}
      */
     this.next_int = 0;
 
@@ -51,7 +52,8 @@ Guacamole.IntegerPool = function() {
      * Returns the next available integer in the pool. If possible, a previously
      * used integer will be returned.
      * 
-     * @return {Number} The next available integer.
+     * @return {!number}
+     *     The next available integer.
      */
     this.next = function() {
 
@@ -67,7 +69,8 @@ Guacamole.IntegerPool = function() {
     /**
      * Frees the given integer, allowing it to be reused.
      * 
-     * @param {Number} integer The integer to free.
+     * @param {!number} integer
+     *     The integer to free.
      */
     this.free = function(integer) {
         pool.push(integer);

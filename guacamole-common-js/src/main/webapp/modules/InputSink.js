@@ -35,7 +35,7 @@ Guacamole.InputSink = function InputSink() {
      * Reference to this instance of Guacamole.InputSink.
      *
      * @private
-     * @type {Guacamole.InputSink}
+     * @type {!Guacamole.InputSink}
      */
     var sink = this;
 
@@ -43,7 +43,7 @@ Guacamole.InputSink = function InputSink() {
      * The underlying input field, styled to be invisible.
      *
      * @private
-     * @type {Element}
+     * @type {!Element}
      */
     var field = document.createElement('textarea');
     field.style.position   = 'fixed';
@@ -100,7 +100,8 @@ Guacamole.InputSink = function InputSink() {
      * Returns the underlying input field. This input field MUST be manually
      * added to the DOM for the Guacamole.InputSink to have any effect.
      *
-     * @returns {Element}
+     * @returns {!Element}
+     *     The underlying input field.
      */
     this.getElement = function getElement() {
         return field;

@@ -61,7 +61,8 @@ Guacamole.Parser = function() {
      * this Guacamole.Parser, executing all completed instructions at
      * the beginning of this buffer, if any.
      *
-     * @param {String} packet The instruction data to receive.
+     * @param {!string} packet
+     *     The instruction data to receive.
      */
     this.receive = function(packet) {
 
@@ -147,9 +148,11 @@ Guacamole.Parser = function() {
      * Fired once for every complete Guacamole instruction received, in order.
      * 
      * @event
-     * @param {String} opcode The Guacamole instruction opcode.
-     * @param {Array} parameters The parameters provided for the instruction,
-     *                           if any.
+     * @param {!string} opcode
+     *     The Guacamole instruction opcode.
+     *
+     * @param {!string[]} parameters
+     *     The parameters provided for the instruction, if any.
      */
     this.oninstruction = null;
 
