@@ -166,16 +166,6 @@ documented in
 Deploying Guacamole with SQLServer authentication
 --------------------------------------------------
 
-    docker run --name some-guacamole --link some-guacd:guacd \
-        --link some-sqlserver:sqlserver      \
-        -e SQLSERVER_DATABASE=guacamole_db  \
-        -e SQLSERVER_USER=guacamole_user    \
-        -e SQLSERVER_PASSWORD=some_password \
-        -e SQLSERVER_DATABASE_FILE=/run/secrets/<secret_name> \
-        -e SQLSERVER_USER_FILE=/run/secrets/<secret_name> \
-        -e SQLSERVER_PASSWORD_FILE=/run/secrets/<secret_name> \
-        -d -p 8080:8080 guacamole/guacamole
-
 Linking Guacamole to SQLServer requires three environment variables. If any of
 these environment variables are omitted, you will receive an error message, and
 the image will stop:
@@ -185,13 +175,31 @@ the image will stop:
 2. `SQLSERVER_USER` - The user that Guacamole will use to connect to SQLServer.
 3. `SQLSERVER_PASSWORD` - The password that Guacamole will provide when
    connecting to SQLServer as `SQLSERVER_USER`.
-4. `SQLSERVER_DATABASE_FILE` - The path of the docker secret containing the name
+
+    docker run --name some-guacamole --link some-guacd:guacd \
+        --link some-sqlserver:sqlserver      \
+        -e SQLSERVER_DATABASE=guacamole_db  \
+        -e SQLSERVER_USER=guacamole_user    \
+        -e SQLSERVER_PASSWORD=some_password \
+        -d -p 8080:8080 guacamole/guacamole
+
+Alternatively, if you want to store database credentials using Docker secrets,
+the following three variables are required and replace the previous three:
+
+1. `SQLSERVER_DATABASE_FILE` - The path of the docker secret containing the name
    of database to use for Guacamole authentication.
-5. `SQLSERVER_USER_FILE` - The path of the docker secret containing the name of
+2. `SQLSERVER_USER_FILE` - The path of the docker secret containing the name of
    the user that Guacamole will use to connect to SQLServer.
-6. `SQLSERVER_PASSWORD_FILE` - The path of the docker secret containing the
+3. `SQLSERVER_PASSWORD_FILE` - The path of the docker secret containing the
    password that Guacamole will provide when connecting to SQLServer as
    `SQLSERVER_USER.
+
+    docker run --name some-guacamole --link some-guacd:guacd \
+        --link some-sqlserver:sqlserver      \
+        -e SQLSERVER_DATABASE_FILE=/run/secrets/<secret_name> \
+        -e SQLSERVER_USER_FILE=/run/secrets/<secret_name> \
+        -e SQLSERVER_PASSWORD_FILE=/run/secrets/<secret_name> \
+        -d -p 8080:8080 guacamole/guacamole
 
 ### Initializing the SQLServer database
 

@@ -409,9 +409,7 @@ sqlserver_missing_vars() {
 FATAL: Missing required environment variables
 -------------------------------------------------------------------------------
 If using a SQLServer database, you must provide each of the following
-environment variables or their corresponding Docker secrets by appending _FILE
-to the environment variable, and setting the value to the path of the
-corresponding secret:
+environment variables:
 
     SQLSERVER_USER     The user to authenticate as when connecting to
                        SQLServer.
@@ -421,6 +419,20 @@ corresponding secret:
 
     SQLSERVER_DATABASE The name of the SQLServer database to use for Guacamole
                        authentication.
+
+Alternatively, if you want to store database credentials using Docker secrets,
+set the path of the corresponding secrets in the following three variables:
+
+    SQLSERVER_DATABASE_FILE   The path of the docker secret containing the name
+                              of database to use for Guacamole authentication.
+
+    SQLSERVER_USER_FILE       The path of the docker secret containing the name of
+                              the user that Guacamole will use to connect to SQLServer.
+
+    SQLSERVER_PASSWORD_FILE   The path of the docker secret containing the
+                              password that Guacamole will provide when connecting to 
+                              SQLServer as SQLSERVER_USER.
+
 END
     exit 1;
 }
