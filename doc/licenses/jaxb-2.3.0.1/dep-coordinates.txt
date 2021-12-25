@@ -1,0 +1,2 @@
+org.glassfish.jaxb:jaxb-core:jar:2.3.0.1
+org.glassfish.jaxb:txw2:jar:2.3.0.1
