@@ -115,7 +115,7 @@ curl -L "https://jdbc.postgresql.org/download/postgresql-9.4-1201.jdbc41.jar" > 
 #
 
 echo "Downloading SQL Server JDBC driver ..."
-curl -L "https://go.microsoft.com/fwlink/?linkid=2168494&clcid=0x409" | \
+curl -L "https://go.microsoft.com/fwlink/?linkid=2183223&clcid=0x409" | \
 tar -xz                        \
     -C "$DESTINATION/sqlserver/"   \
     --wildcards                \
