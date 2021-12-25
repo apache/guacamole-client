@@ -23,7 +23,7 @@
 ##
 ## Automatically configures and starts Guacamole under Tomcat. Guacamole's
 ## guacamole.properties file will be automatically generated based on the
-## linked database container (either MySQL,PostgreSQL or SQLServer) and the linked guacd
+## linked database container (either MySQL, PostgreSQL or SQLServer) and the linked guacd
 ## container. The Tomcat process will ultimately replace the process of this
 ## script, running in the foreground until terminated.
 ##
