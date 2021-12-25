@@ -496,6 +496,7 @@
         "FIELD_HEADER_IGNORE_CERT"     : "Ignore server certificate:",
         "FIELD_HEADER_INITIAL_PROGRAM" : "Initial program:",
         "FIELD_HEADER_LOAD_BALANCE_INFO" : "Load balance info/cookie:",
+        "FIELD_HEADER_NORMALIZE_CLIPBOARD" : "Line endings:",
         "FIELD_HEADER_PASSWORD"        : "Password:",
         "FIELD_HEADER_PORT"            : "Port:",
         "FIELD_HEADER_PRINTER_NAME"    : "Redirected printer name:",
@@ -535,7 +536,11 @@
         "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
         "FIELD_HEADER_WOL_UDP_PORT"       : "UDP port for WoL packet: ",
         "FIELD_HEADER_WOL_WAIT_TIME"      : "Host boot wait time:",
-        
+
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_EMPTY"    : "",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_PRESERVE" : "Preserve as-is",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_UNIX"     : "Linux/Mac/Unix (LF)",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_WINDOWS"  : "Windows (CRLF)",
 
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Low color (16-bit)",
         "FIELD_OPTION_COLOR_DEPTH_24"    : "True color (24-bit)",
