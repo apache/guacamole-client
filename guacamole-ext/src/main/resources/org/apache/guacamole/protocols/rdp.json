@@ -170,6 +170,11 @@
             "name"  : "clipboard",
             "fields" : [
                 {
+                    "name"    : "normalize-clipboard",
+                    "type"    : "ENUM",
+                    "options" : [ "", "preserve", "unix", "windows" ]
+                },
+                {
                     "name"    : "disable-copy",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
