@@ -44,6 +44,11 @@
     <div id="connection-warning" ng-show="isConnectionUnstable()">
         {{'CLIENT.TEXT_CLIENT_STATUS_UNSTABLE' | translate}}
     </div>
+    
+    <!-- Message dialog -->
+    <div id="message-dialog" ng-show="hasMessages()">
+        <guac-message-dialog client-group="clientGroup"></guac-message-dialog>
+    </div>
 
     <!-- Menu -->
     <div class="menu" ng-class="{open: menu.shown}" id="guac-menu">

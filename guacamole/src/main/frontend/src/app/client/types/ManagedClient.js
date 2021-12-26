@@ -173,6 +173,14 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * @type ManagedFilesystem[]
          */
         this.filesystems = template.filesystems || [];
+        
+        /**
+         * All messages that have been sent to the client that should be
+         * displayed.
+         * 
+         * @type String[]
+         */
+        this.messages = template.messages || [];
 
         /**
          * All available share links generated for the this ManagedClient via
@@ -485,6 +493,15 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                     status.code);
 
             });
+        };
+        
+        // Handle messages received from guacd to display to the client.
+        client.onmsg = function clientMessage(message) {
+            
+            $rootScope.$apply(function updateMessages() {
+                managedClient.messages.push(message);
+            });
+            
         };
 
         // Automatically update the client thumbnail
@@ -892,11 +909,27 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         return false;
 
     };
+    
+    /**
+     * Returns whether the given client has any associated messages to display.
+     * 
+     * @param {GuacamoleClient} client
+     *     The client for which messages should be checked.
+     *     
+     * @returns {Boolean}
+     *     true if the given client has any messages, otherwise false.
+     */
+    ManagedClient.hasMessages = function hasMessages(client) {
+        return !!(client && client.messages && client.messages.length);
+    };
 
     /**
      * Returns whether the given client has any associated file transfers,
      * regardless of those file transfers' state.
      *
+     * @param {GuacamoleClient} client
+     *     The client for which file transfers should be checked.
+     * 
      * @returns {boolean}
      *     true if there are any file transfers associated with the
      *     given client, false otherwise.
