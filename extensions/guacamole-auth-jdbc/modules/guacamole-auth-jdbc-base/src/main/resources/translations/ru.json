@@ -88,7 +88,6 @@
 
     "USER_ATTRIBUTES" : {
 
-        "FIELD_HEADER_DISABLED"            : "Аккаунт отключен:",
         "FIELD_HEADER_EXPIRED"             : "Пароль просрочен:",
         "FIELD_HEADER_ACCESS_WINDOW_END"   : "Запретить доступ после:",
         "FIELD_HEADER_ACCESS_WINDOW_START" : "Разрешить доступ после:",
@@ -102,8 +101,6 @@
     },
 
     "USER_GROUP_ATTRIBUTES" : {
-
-        "FIELD_HEADER_DISABLED" : "Группа отключена:",
 
         "SECTION_HEADER_RESTRICTIONS" : "Ограничения"
 

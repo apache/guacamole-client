@@ -36,6 +36,12 @@
     padding: .5em 1em;
 }
 
+.settings.users table.user-list tr.user.disabled,
+.settings.users table.user-list tr.user.disabled td.username a[href] {
+    color: gray;
+    font-style: italic;
+}
+
 .settings.users table.user-list tr.user td.username {
     padding: 0;
 }

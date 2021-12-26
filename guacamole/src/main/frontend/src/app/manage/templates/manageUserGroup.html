@@ -28,6 +28,10 @@
                         <span  ng-hide="canEditIdentifier()">{{userGroup.identifier}}</span>
                     </td>
                 </tr>
+                <tr>
+                    <th>{{'MANAGE_USER_GROUP.FIELD_HEADER_USER_GROUP_DISABLED' | translate}}</th>
+                    <td><input ng-model="userGroup.disabled" type="checkbox"></td>
+                </tr>
             </table>
         </div>
 

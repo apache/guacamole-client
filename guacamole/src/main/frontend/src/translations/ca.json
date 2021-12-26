@@ -343,6 +343,7 @@
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Crear noves connexions:",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Crear grups de connexió nous:",
         "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "Crear nous perfils per compartir:",
+        "FIELD_HEADER_USER_DISABLED"                 : "Inici de sessió desactivat:",
         "FIELD_HEADER_USERNAME"                      : "Nom d'usuari:",
 
         "HELP_NO_USER_GROUPS" : "Actualment, aquest usuari no pertany a cap grup. Amplieu aquesta secció per afegir-lo a grups.",
@@ -373,6 +374,7 @@
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
         "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+        "FIELD_HEADER_USER_GROUP_DISABLED"           : "Desactivat:",
         "FIELD_HEADER_USER_GROUP_NAME"               : "Nom del grup:",
 
         "HELP_NO_USER_GROUPS"        : "Actualment aquest grup no pertany a cap grup. Amplieu aquesta secció per afegir grups.",

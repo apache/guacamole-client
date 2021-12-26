@@ -45,6 +45,17 @@ angular.module('manage').factory('ManageableUser', [function defineManageableUse
          * @type User
          */
         this.user = template.user;
+        
+        /**
+         * Return true if the underlying user account is disabled, otherwise
+         * return false.
+         * 
+         * @returns
+         *     True if the underlying user account is disabled, otherwise false.
+         */
+        this.isDisabled = function isDisabled() {
+            return template.user.disabled;
+        };
 
     };
 
