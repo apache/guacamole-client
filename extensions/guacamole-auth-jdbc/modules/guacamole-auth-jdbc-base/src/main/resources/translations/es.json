@@ -89,7 +89,6 @@
 
     "USER_ATTRIBUTES" : {
 
-        "FIELD_HEADER_DISABLED"            : "Inicio de sesión deshabilitado:",
         "FIELD_HEADER_EXPIRED"             : "Contraseña expirada:",
         "FIELD_HEADER_ACCESS_WINDOW_END"   : "No permitir acceso despues de:",
         "FIELD_HEADER_ACCESS_WINDOW_START" : "Permitir acceso despues de:",
@@ -103,8 +102,6 @@
     },
 
     "USER_GROUP_ATTRIBUTES" : {
-
-        "FIELD_HEADER_DISABLED" : "Deshabilitado:",
 
         "SECTION_HEADER_RESTRICTIONS" : "Restricciones de grupo"
 

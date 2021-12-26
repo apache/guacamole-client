@@ -61,6 +61,13 @@ angular.module('rest').factory('User', [function defineUser() {
          * @type Number
          */
         this.lastActive = template.lastActive;
+        
+        /**
+         * True if this user account is disabled, otherwise false.
+         * 
+         * @type boolean
+         */
+        this.disabled = template.disabled;
 
         /**
          * Arbitrary name/value pairs which further describe this user. The

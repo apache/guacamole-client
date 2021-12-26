@@ -75,7 +75,7 @@
 
     "USER_ATTRIBUTES" : {
 
-        "FIELD_HEADER_DISABLED"            : "ログインの無効化:",
+        
         "FIELD_HEADER_EXPIRED"             : "パスワード変更の強制:",
         "FIELD_HEADER_ACCESS_WINDOW_END"   : "指定した時刻からアクセスを禁止する:",
         "FIELD_HEADER_ACCESS_WINDOW_START" : "指定した時刻からアクセスを許可する:",
@@ -89,8 +89,6 @@
     },
 
     "USER_GROUP_ATTRIBUTES" : {
-
-        "FIELD_HEADER_DISABLED" : "グループの無効化:",
 
         "SECTION_HEADER_RESTRICTIONS" : "グループ制限"
 
