@@ -54,10 +54,17 @@ public class GuacamoleProtocolVersion {
     public static final GuacamoleProtocolVersion VERSION_1_3_0 = new GuacamoleProtocolVersion(1, 3, 0);
 
     /**
+     * Protocol version 1.5.0, which introduces the "msg" instruction, allowing
+     * the server to send message notifications that will be displayed on the
+     * client.
+     */
+    public static final GuacamoleProtocolVersion VERSION_1_5_0 = new GuacamoleProtocolVersion(1, 5, 0);
+    
+    /**
      * The most recent version of the Guacamole protocol at the time this
      * version of GuacamoleProtocolVersion was built.
      */
-    public static final GuacamoleProtocolVersion LATEST = VERSION_1_3_0;
+    public static final GuacamoleProtocolVersion LATEST = VERSION_1_5_0;
     
     /**
      * A regular expression that matches the VERSION_X_Y_Z pattern, where

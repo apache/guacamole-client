@@ -687,6 +687,17 @@ Guacamole.Client = function(tunnel) {
      *     A status object which describes the error.
      */
     this.onerror = null;
+    
+    /**
+     * Fired when a message is received from the remote tunnel and needs to be
+     * displayed to the user.
+     * 
+     * @event
+     * @param {String} message
+     *     The message sent by the remote end of the tunnel that should be
+     *     displayed for the user.
+     */
+    this.onmsg = null;
 
     /**
      * Fired when a audio stream is created. The stream provided to this event
@@ -1398,6 +1409,12 @@ Guacamole.Client = function(tunnel) {
                 display.move(layer, parent, x, y, z);
             }
 
+        },
+        
+        "msg" : function(parameters) {
+            
+            if (guac_client.onmsg) guac_client.onmsg(parameters[0]);
+            
         },
 
         "name": function(parameters) {
