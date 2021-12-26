@@ -122,6 +122,20 @@ tar -xzf extensions/guacamole-auth-sso/modules/guacamole-auth-sso-dist/target/*.
     "*.jar"
 
 #
+# Download SQL Server JDBC driver
+#
+
+echo "Downloading SQL Server JDBC driver ..."
+curl -L "https://go.microsoft.com/fwlink/?linkid=2183223&clcid=0x409" | \
+tar -xz                        \
+    -C "$DESTINATION/sqlserver/"   \
+    --wildcards                \
+    --no-anchored              \
+    --no-wildcards-match-slash \
+    --strip-components=2       \
+    "mssql-jdbc-*.jre8.jar"
+
+#
 # Copy LDAP auth extension and schema modifications
 #
 
