@@ -18,11 +18,18 @@
  */
 
 .login-ui .sso-providers {
+
+    padding: 0.25em 0.5em;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
     display: none;
+
 }
 
 .login-ui .sso-providers:last-child {
-    display: table-row;
+    display: block;
 }
 
 .sso-providers ul {
@@ -41,10 +48,4 @@
 
 .sso-providers li:first-child::before {
     display: none;
-}
-
-.sso-providers-content {
-    display: table-cell;
-    padding: 0.25em 0.5em;
-    height: 1px;
 }
