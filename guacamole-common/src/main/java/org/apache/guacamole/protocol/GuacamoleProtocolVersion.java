@@ -56,7 +56,9 @@ public class GuacamoleProtocolVersion {
     /**
      * Protocol version 1.5.0, which introduces the "msg" instruction, allowing
      * the server to send message notifications that will be displayed on the
-     * client.
+     * client. The version also adds support for the "name" handshake
+     * instruction, allowing guacd to store the name of the user who is
+     * accessing the connection.
      */
     public static final GuacamoleProtocolVersion VERSION_1_5_0 = new GuacamoleProtocolVersion(1, 5, 0);
     
