@@ -427,25 +427,25 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                 switch (clientState) {
 
                     // Idle
-                    case 0:
+                    case Guacamole.Client.State.IDLE:
                         ManagedClientState.setConnectionState(managedClient.clientState,
                             ManagedClientState.ConnectionState.IDLE);
                         break;
 
                     // Connecting
-                    case 1:
+                    case Guacamole.Client.State.CONNECTING:
                         ManagedClientState.setConnectionState(managedClient.clientState,
                             ManagedClientState.ConnectionState.CONNECTING);
                         break;
 
                     // Connected + waiting
-                    case 2:
+                    case Guacamole.Client.State.WAITING:
                         ManagedClientState.setConnectionState(managedClient.clientState,
                             ManagedClientState.ConnectionState.WAITING);
                         break;
 
                     // Connected
-                    case 3:
+                    case Guacamole.Client.State.CONNECTED:
                         ManagedClientState.setConnectionState(managedClient.clientState,
                             ManagedClientState.ConnectionState.CONNECTED);
 
@@ -461,9 +461,9 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                         ManagedClient.updateThumbnail(managedClient);
                         break;
 
-                    // Update history when disconnecting
-                    case 4: // Disconnecting
-                    case 5: // Disconnected
+                    // Update history during disconnect phases
+                    case Guacamole.Client.State.DISCONNECTING:
+                    case Guacamole.Client.State.DISCONNECTED:
                         ManagedClient.updateThumbnail(managedClient);
                         break;
 
