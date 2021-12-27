@@ -55,7 +55,17 @@
         <dependency>
             <groupId>org.jasig.cas.client</groupId>
             <artifactId>cas-client-core</artifactId>
-            <version>3.6.2</version>
+            <version>3.6.4</version>
+            <exclusions>
+
+                <!-- Resolve version conflict (see below - transitive
+                    dependencies of cas-client-core disagree on 2.3.0 vs. 2.3.1) -->
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+
+            </exclusions>
         </dependency>
         
         <!-- Guava - Utility Library -->
@@ -97,6 +107,14 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!-- Force use of version 2.3.1 (transitive dependencies of
+            cas-client-core disagree on 2.3.0. vs. 2.3.1) -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
         </dependency>
 
     </dependencies>
