@@ -1,1 +1,0 @@
-commons-logging:commons-logging:jar:1.1.1

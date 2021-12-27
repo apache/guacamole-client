@@ -325,29 +325,15 @@
             <artifactId>jersey-media-json-jackson</artifactId>
             <exclusions>
 
-                <!-- Use newer 2.12.2 version required by Guacamole, rather
-                than 2.11.3 version required by Jersey (see below) -->
+                <!-- Resolve version conflict (see below - transitive
+                    dependencies of jersey-media-json-jackson disagree on
+                    1.2.1 vs. 1.2.2) -->
                 <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.module</groupId>
-                    <artifactId>jackson-module-jaxb-annotations</artifactId>
+                    <groupId>jakarta.activation</groupId>
+                    <artifactId>jakarta.activation-api</artifactId>
                 </exclusion>
 
             </exclusions>
-        </dependency>
-
-        <!-- Force newer version of Jackson, rather than slightly older version
-            specified by Jersey -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
         </dependency>
 
         <!-- JSR-250 annotations -->
@@ -361,6 +347,14 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+        </dependency>
+
+        <!-- Force use of version 1.2.2 (transitive dependencies of
+            jersey-media-json-jackson disagree on 1.2.1 vs. 1.2.2) -->
+        <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+            <version>1.2.2</version>
         </dependency>
 
     </dependencies>
