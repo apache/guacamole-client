@@ -41,11 +41,19 @@
 
         "FORMAT_DATE_TIME_PRECISE" : "dd-MM-yyyy HH:mm:ss",
 
+<<<<<<< HEAD
         "INFO_ACTIVE_USER_COUNT" : "Attualmente utilizzato da {USERS} {USERS, plural, one{user} other{users}}.",
         "INFO_LOGGED_OUT"        : "Sei stato disconnesso.",
 
         "TEXT_ANONYMOUS_USER"   : "Anonimo",
         "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{second} other{seconds}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{hour} other{hours}}} day{{VALUE, plural, one{day} other{days}}} other{}}",
+=======
+        "INFO_ACTIVE_USER_COUNT" : "Attualmente utilizzato da {USERS} {USERS, plural, one{utente} other{utenti}}.",
+        "INFO_LOGGED_OUT"        : "Sei stato disconnesso.",
+
+        "TEXT_ANONYMOUS_USER"   : "Anonimo",
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{secondo} other{secondi}}} minute{{VALUE, plural, one{minuto} other{minuti}}} hour{{VALUE, plural, one{ora} other{ore}}} day{{VALUE, plural, one{giorno} other{giorni}}} other{}}",
+>>>>>>> 31305a88e (GUACAMOLE-1482: Italian translation update)
         "TEXT_UNTRANSLATED" : "{MESSAGE}"
 
     },
@@ -117,7 +125,11 @@
         "HELP_MOUSE_MODE"          : "Determina come si deve comportare il mouse remoto in base al tocco.",
         "HELP_MOUSE_MODE_ABSOLUTE" : "Tocca per fare clic. Il clic è sostituito dal tocco.",
         "HELP_MOUSE_MODE_RELATIVE" : "Trascina il dito per muovere il puntatore del mouse e fai tap al posto del clic. Il clic sarà effettuato dove si trova il puntatore.",
+<<<<<<< HEAD
         "HELP_SHARE_LINK"          : "La connessione attuale è condivisa e chiunque abbia i seguenti {LINKS, plural, one{link} other{links}} può accedervi:",
+=======
+        "HELP_SHARE_LINK"          : "La connessione attuale è condivisa e chiunque abbia il/i {LINKS, plural, one{collegamenti} other{collegamenti}} seguente/i può accedervi:",
+>>>>>>> 31305a88e (GUACAMOLE-1482: Italian translation update)
 
         "INFO_CONNECTION_SHARED" : "Questa connessione è ora condivisa.",
         "INFO_NO_FILE_TRANSFERS" : "Nessun trasferimento di file.",
@@ -144,7 +156,11 @@
         "TEXT_CLIENT_STATUS_CONNECTING"   : "Connessione in corso a Guacamole...",
         "TEXT_CLIENT_STATUS_DISCONNECTED" : "Sei stato disconnesso.",
         "TEXT_CLIENT_STATUS_WAITING"      : "Connesso a Guacamole. In attesa di una risposta...",
+<<<<<<< HEAD
         "TEXT_RECONNECT_COUNTDOWN"        : "Nuova connessione in {REMAINING} {REMAINING, plural, one{second} other{seconds}}...",
+=======
+        "TEXT_RECONNECT_COUNTDOWN"        : "Nuova connessione in {REMAINING} {REMAINING, plural, one{secondo} other{secondi}}...",
+>>>>>>> 31305a88e (GUACAMOLE-1482: Italian translation update)
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
 
         "URL_OSK_LAYOUT" : "layouts/it-it-qwerty.json"
