@@ -81,15 +81,9 @@
         "ERROR_REQUIRES_DIGIT"         : "Le password devono contenere almeno una cifra.",
         "ERROR_REQUIRES_MULTIPLE_CASE" : "Le password devono contenere sia caratteri maiuscoli che minuscoli.",
         "ERROR_REQUIRES_NON_ALNUM"     : "Le password devono contenere almeno un simbolo.",
-<<<<<<< HEAD
-        "ERROR_REUSED"                 : "Questa password è stata già utilizzata. Non riutilizzare qualunque delle precedenti {HISTORY_SIZE} {HISTORY_SIZE, plural, one{password} other{passwords}}.",
-        "ERROR_TOO_SHORT"              : "Le password devono essere avere una lunghezza minima di {LENGTH} {LENGTH, plural, one{character} other{characters}} .",
-        "ERROR_TOO_YOUNG"              : "La password per questo account è stata già reimpostata. Attendi almeno {WAIT} more {WAIT, plural, one{day} other{days}} prima di cambiare nuovamente la password."
-=======
         "ERROR_REUSED"                 : "Questa password è stata già utilizzata. Non riutilizzare qualunque delle precedenti {HISTORY_SIZE} {HISTORY_SIZE, plural, one{password} other{password}}.",
         "ERROR_TOO_SHORT"              : "Le password devono essere avere una lunghezza minima di {LENGTH} {LENGTH, plural, one{carattere} other{caratteri}} .",
         "ERROR_TOO_YOUNG"              : "La password per questo account è stata già reimpostata. Attendi almeno {WAIT} more {WAIT, plural, one{giorno} other{giorni}} prima di cambiare nuovamente la password."
->>>>>>> 31305a88e (GUACAMOLE-1482: Italian translation update)
 
     },
 
