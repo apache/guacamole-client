@@ -136,6 +136,14 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
             DEFAULT.getEncryptionMethod()
         );
     }
+    
+    @Override
+    public LDAPSSLProtocol getSslProtocol() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_SSL_PROTOCOL,
+            DEFAULT.getSslProtocol()
+        );
+    }
 
     @Override
     public int getMaxResults() throws GuacamoleException {
