@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.jdbc.tunnel;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -82,6 +83,51 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     private final Logger logger = LoggerFactory.getLogger(AbstractGuacamoleTunnelService.class);
 
     /**
+     * The token that contains the date the connection was started.
+     */
+    private final String JDBC_DATE_TOKEN = "GUAC_JDBC_STARTDATE";
+    
+    /**
+     * The format of the date in the date token.
+     */
+    private final String JDBC_DATE_TOKEN_FORMAT = "yyyyMMdd";
+    
+    /**
+     * The token that contains the start time of the connection.
+     */
+    private final String JDBC_TIME_TOKEN = "GUAC_JDBC_STARTTIME";
+    
+    /**
+     * The format of the time in the time token.
+     */
+    private final String JDBC_TIME_TOKEN_FORMAT = "HHmmss";
+    
+    /**
+     * The token that contains the connection name.
+     */
+    private final String JDBC_CONNECTION_NAME_TOKEN = "GUAC_JDBC_CONNECTION_NAME";
+    
+    /**
+     * The token that contains the connection identifier.
+     */
+    private final String JDBC_CONNECTION_ID_TOKEN = "GUAC_JDBC_CONNECTION_ID";
+    
+    /**
+     * The token that contains the hostname configured in the connection parameters.
+     */
+    private final String JDBC_CONNECTION_HOSTNAME_TOKEN = "GUAC_JDBC_HOSTNAME";
+    
+    /**
+     * The name of the parameter containing the hostname in the configuration.
+     */
+    private final String JDBC_CONNECTION_HOSTNAME_TOKEN_PARAMETER = "hostname";
+    
+    /**
+     * The token containing the protocol configured in the connection.
+     */
+    private final String JDBC_CONNECTION_PROTOCOL_TOKEN = "GUAC_JDBC_PROTOCOL";
+    
+    /**
      * Mapper for accessing connections.
      */
     @Inject
@@ -121,7 +167,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      * All active connections through the tunnel having a given UUID.
      */
     private final Map<String, ActiveConnectionRecord> activeTunnels =
-            new ConcurrentHashMap<String, ActiveConnectionRecord>();
+            new ConcurrentHashMap<>();
     
     /**
      * All active connections to a connection having a given identifier.
@@ -415,7 +461,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     private GuacamoleTunnel assignGuacamoleTunnel(ActiveConnectionRecord activeConnection,
             GuacamoleClientInformation info, Map<String, String> tokens,
             boolean interceptErrors) throws GuacamoleException {
-
+        
         // Record new active connection
         Runnable cleanupTask = new ConnectionCleanupTask(activeConnection);
         try {
@@ -459,9 +505,25 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 config = getGuacamoleConfiguration(connection, connectionID, activeConnection.getSharingProfile());
 
             }
-
-            // Include history record UUID as token
+            
+            // Make a copy of the tokens
             tokens = new HashMap<>(tokens);
+
+            // Set up JDBC-specific tokens
+            tokens.put(JDBC_DATE_TOKEN,
+                    new SimpleDateFormat(JDBC_DATE_TOKEN_FORMAT)
+                        .format(activeConnection.getStartDate()));
+            tokens.put(JDBC_TIME_TOKEN,
+                    new SimpleDateFormat(JDBC_TIME_TOKEN_FORMAT)
+                        .format(activeConnection.getStartDate()));
+            tokens.put(JDBC_CONNECTION_NAME_TOKEN, activeConnection.getConnectionName());
+            tokens.put(JDBC_CONNECTION_ID_TOKEN, activeConnection.getConnectionIdentifier());
+            tokens.put(JDBC_CONNECTION_HOSTNAME_TOKEN,
+                    activeConnection.getConnection().getConfiguration().getParameter(JDBC_CONNECTION_HOSTNAME_TOKEN_PARAMETER));
+            tokens.put(JDBC_CONNECTION_PROTOCOL_TOKEN,
+                    activeConnection.getConnection().getConfiguration().getProtocol());
+            
+            // Include history record UUID as token
             tokens.put("HISTORY_UUID", activeConnection.getUUID().toString());
 
             // Build token filter containing credential tokens
