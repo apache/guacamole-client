@@ -180,7 +180,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
             ConnectionGroup.ROOT_IDENTIFIER
         );
         var getPermissionSets = dataSourceService.apply(
-            permissionService.getPermissions,
+            permissionService.getEffectivePermissions,
             authenticationService.getAvailableDataSources(),
             authenticationService.getCurrentUsername()
         );
