@@ -733,6 +733,7 @@ END
     set_property          "openid-client-id"                 "$OPENID_CLIENT_ID"
     set_property          "openid-redirect-uri"              "$OPENID_REDIRECT_URI"
     set_optional_property "openid-username-claim-type"       "$OPENID_USERNAME_CLAIM_TYPE"
+    set_optional_property "openid-groups-claim-type"         "$OPENID_GROUPS_CLAIM_TYPE"
     set_optional_property "openid-max-token-validity"        "$OPENID_MAX_TOKEN_VALIDITY"
 
     # Add required .jar files to GUACAMOLE_EXT
