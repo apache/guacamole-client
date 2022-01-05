@@ -1,0 +1,16 @@
+{
+
+    "guacamoleVersion" : "1.4.0",
+
+    "name"      : "Brute-force Authentication Detection/Prevention",
+    "namespace" : "ban",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.ban.BanningAuthenticationProvider"
+    ],
+
+    "listeners" : [
+        "org.apache.guacamole.auth.ban.BanningAuthenticationListener"
+    ]
+
+}

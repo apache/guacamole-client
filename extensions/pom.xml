@@ -40,6 +40,7 @@
     <modules>
 
         <!-- Authentication extensions -->
+        <module>guacamole-auth-ban</module>
         <module>guacamole-auth-duo</module>
         <module>guacamole-auth-header</module>
         <module>guacamole-auth-jdbc</module>
