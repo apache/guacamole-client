@@ -127,6 +127,17 @@ public class LDAPGuacamoleProperties {
 
     };
 
+     /**
+     * The domain used for a UPN username for LDAP server to connect to when authenticating users.
+     */
+    public static final StringGuacamoleProperty LDAP_UPN_DOMAIN =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ldap-upn-domain"; }
+
+    };
+
     /**
      * The user that the LDAP extension should bind as when searching for the
      * accounts of users attempting to log in. The format of this parameter
@@ -298,5 +309,5 @@ public class LDAPGuacamoleProperties {
         public String getName() { return "ldap-member-attribute-type"; }
 
     };
-
+    
 }
