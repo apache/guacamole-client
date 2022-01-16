@@ -118,11 +118,11 @@ Guacamole.InputSink = function InputSink() {
             var rect = focused.getBoundingClientRect();
             if (rect.left + rect.width > 0 && rect.top + rect.height > 0)
                 return;
+                sink.focus();
 
         }
 
         // Refocus input sink instead of handling click
-        sink.focus();
 
     }, true);
 

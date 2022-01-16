@@ -442,7 +442,9 @@ Guacamole.Keyboard = function Keyboard(element) {
         123: [0xFFC9], // f12
         144: [0xFF7F], // num lock
         145: [0xFF14], // scroll lock
-        225: [0xFE03]  // altgraph (iso_level3_shift)
+        225: [0xFE03], // altgraph (iso_level3_shift)
+        243: [0xFF28], // Zenkaku
+        244: [0xFF29]  // Hankaku
     };
 
     /**
@@ -559,8 +561,7 @@ Guacamole.Keyboard = function Keyboard(element) {
         "Up": [0xFF52],
         "Undo": [0xFF65],
         "Win": [0xFFE7, 0xFFE7, 0xFFE8],
-        "Zenkaku": [0xFF28],
-        "ZenkakuHankaku": [0xFF2A]
+        "Zenkaku": [0xFF28]
     };
 
     /**
@@ -570,6 +571,8 @@ Guacamole.Keyboard = function Keyboard(element) {
      * @type {!Object.<number, boolean>}
      */
     var no_repeat = {
+        0xFF28: true, // Zenkaku
+        0xFF29: true, // Hankaku
         0xFE03: true, // ISO Level 3 Shift (AltGr)
         0xFFE1: true, // Left shift
         0xFFE2: true, // Right shift
