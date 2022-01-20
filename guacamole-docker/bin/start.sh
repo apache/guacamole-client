@@ -1036,6 +1036,9 @@ if [ -n "$JSON_SECRET_KEY" ]; then
     associate_json
 fi
 
+# Set extension priority if specified
+set_optional_property "extension-priority" "$EXTENSION_PRIORITY"
+
 # Use api-session-timeout if specified.
 if [ -n "$API_SESSION_TIMEOUT" ]; then
     associate_apisessiontimeout
