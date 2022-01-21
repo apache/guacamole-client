@@ -21,6 +21,8 @@ package org.apache.guacamole.vault.ksm.secret;
 
 import com.google.inject.Singleton;
 import com.keepersecurity.secretsManager.core.HiddenField;
+import com.keepersecurity.secretsManager.core.Host;
+import com.keepersecurity.secretsManager.core.Hosts;
 import com.keepersecurity.secretsManager.core.KeeperRecord;
 import com.keepersecurity.secretsManager.core.KeeperRecordData;
 import com.keepersecurity.secretsManager.core.KeeperRecordField;
@@ -39,6 +41,13 @@ import java.util.regex.Pattern;
  */
 @Singleton
 public class KsmRecordService {
+
+    /**
+     * Regular expression which matches the labels of custom fields containing
+     * hostnames/addresses.
+     */
+    private static final Pattern HOSTNAME_LABEL_PATTERN =
+            Pattern.compile("hostname|(ip\\s*)?address", Pattern.CASE_INSENSITIVE);
 
     /**
      * Regular expression which matches the labels of custom fields containing
@@ -222,6 +231,44 @@ public class KsmRecordService {
 
         // Fall back on custom fields
         return getField(data.getCustom(), fieldClass, labelPattern);
+
+    }
+
+    /**
+     * Returns the single hostname (or address) associated with the given
+     * record. If the record has no associated hostname, or multiple hostnames,
+     * null is returned. Hostnames are retrieved from "Hosts" fields, as well
+     * as "Text" and "Hidden" fields that have the label "hostname", "address",
+     * or "ip address" (case-insensitive, space optional).
+     *
+     * @param record
+     *     The record to retrieve the hostname from.
+     *
+     * @return
+     *     The hostname associated with the given record, or null if the record
+     *     has no associated hostname or multiple hostnames.
+     */
+    public String getHostname(KeeperRecord record) {
+
+        // Prefer standard login field
+        Hosts hostsField = getField(record, Hosts.class, null);
+        if (hostsField != null)
+            return getSingleValue(hostsField.getValue(), Host::getHostName);
+
+        KeeperRecordData data = record.getData();
+        List<KeeperRecordField> custom = data.getCustom();
+
+        // Use text "hostname" custom field as fallback ...
+        Text textField = getField(custom, Text.class, HOSTNAME_LABEL_PATTERN);
+        if (textField != null)
+            return getSingleValue(textField.getValue());
+
+        // ... or hidden "hostname" custom field
+        HiddenField hiddenField = getField(custom, HiddenField.class, HOSTNAME_LABEL_PATTERN);
+        if (hiddenField != null)
+            return getSingleValue(hiddenField.getValue());
+
+        return null;
 
     }
 

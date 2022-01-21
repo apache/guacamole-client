@@ -72,6 +72,12 @@ public class KsmClient {
     private KsmConfigurationService confService;
 
     /**
+     * Service for retrieving data from records.
+     */
+    @Inject
+    private KsmRecordService recordService;
+
+    /**
      * The publicly-accessible URL for Keeper's documentation covering Keeper
      * notation.
      */
@@ -226,28 +232,17 @@ public class KsmClient {
             cachedRecordsByUsername.clear();
 
             // Store all records, sorting each into host-based and login-based
-            // buckets (note that a single record may be associated with
-            // multiple hosts and logins)
+            // buckets
             records.forEach(record -> {
 
                 // Store based on UID ...
                 cachedRecordsByUid.put(record.getRecordUid(), record);
 
-                // ... and standard fields ...
-                KeeperRecordData data = record.getData();
-                addRecordForHosts(record, (Hosts) data.getField(Hosts.class));
-                addRecordForLogin(record, (Login) data.getField(Login.class));
+                // ... and hostname/address ...
+                addRecordForHost(record, recordService.getHostname(record));
 
-                // ... and custom fields
-                List<KeeperRecordField> custom = data.getCustom();
-                if (custom != null) {
-                    custom.forEach(field -> {
-                        if (field instanceof Hosts)
-                            addRecordForHosts(record, (Hosts) field);
-                        else if (field instanceof Login)
-                            addRecordForLogin(record, (Login) field);
-                    });
-                }
+                // ... and username
+                addRecordForLogin(record, recordService.getUsername(record));
 
             });
 
@@ -262,62 +257,51 @@ public class KsmClient {
     }
 
     /**
-     * Associates the given record with each of the hosts in the given Hosts
-     * field. The given Hosts field may be null. Both {@link #cachedRecordsByHost}
-     * and {@link #cachedAmbiguousHosts} are updated appropriately. The write
-     * lock of {@link #cacheLock} must already be acquired before invoking this
-     * function.
-     *
-     * @param record
-     *     The record to associate with the hosts in the given field.
-     *
-     * @param hosts
-     *     The Hosts field containing the hosts that the given record should be
-     *     associated with. This may be null.
-     */
-    private void addRecordForHosts(KeeperRecord record, Hosts hosts) {
-
-        if (hosts == null)
-            return;
-
-        hosts.getValue().stream().map(host -> host.getHostName())
-            .forEachOrdered(hostname -> {
-
-                KeeperRecord existing = cachedRecordsByHost.putIfAbsent(hostname, record);
-                if (existing != null && record != existing)
-                    cachedAmbiguousHosts.add(hostname);
-
-            });
-
-    }
-
-    /**
-     * Associates the given record with each of the usernames in the given
-     * Login field. The given Hosts field may be null. Both
-     * {@link #cachedRecordsByUsername} and {@link #cachedAmbiguousUsernames}
+     * Associates the given record with the given hostname. The hostname may be
+     * null. Both {@link #cachedRecordsByHost} and {@link #cachedAmbiguousHosts}
      * are updated appropriately. The write lock of {@link #cacheLock} must
      * already be acquired before invoking this function.
      *
      * @param record
      *     The record to associate with the hosts in the given field.
      *
-     * @param login
-     *     The Login field containing the usernames that the given record
-     *     should be associated with. This may be null.
+     * @param hostname
+     *     The hostname/address that the given record should be associated
+     *     with. This may be null.
      */
-    private void addRecordForLogin(KeeperRecord record, Login login) {
+    private void addRecordForHost(KeeperRecord record, String hostname) {
 
-        if (login == null)
+        if (hostname == null)
             return;
 
-        login.getValue().stream()
-            .forEachOrdered(username -> {
+        KeeperRecord existing = cachedRecordsByHost.putIfAbsent(hostname, record);
+        if (existing != null && record != existing)
+            cachedAmbiguousHosts.add(hostname);
 
-                KeeperRecord existing = cachedRecordsByUsername.putIfAbsent(username, record);
-                if (existing != null && record != existing)
-                    cachedAmbiguousUsernames.add(username);
+    }
 
-            });
+    /**
+     * Associates the given record with the given username. The given username
+     * may be null. Both {@link #cachedRecordsByUsername} and
+     * {@link #cachedAmbiguousUsernames} are updated appropriately. The write
+     * lock of {@link #cacheLock} must already be acquired before invoking this
+     * function.
+     *
+     * @param record
+     *     The record to associate with the given username.
+     *
+     * @param username
+     *     The username that the given record should be associated with. This
+     *     may be null.
+     */
+    private void addRecordForLogin(KeeperRecord record, String username) {
+
+        if (username == null)
+            return;
+
+        KeeperRecord existing = cachedRecordsByUsername.putIfAbsent(username, record);
+        if (existing != null && record != existing)
+            cachedAmbiguousUsernames.add(username);
 
     }
 
