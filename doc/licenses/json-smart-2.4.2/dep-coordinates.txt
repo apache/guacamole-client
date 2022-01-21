@@ -1,2 +1,0 @@
-net.minidev:accessors-smart:jar:2.4.2
-net.minidev:json-smart:jar:2.4.2

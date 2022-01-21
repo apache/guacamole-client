@@ -46,7 +46,6 @@
         <module>modules/guacamole-vault-base</module>
 
         <!-- Provider-specific implementations -->
-        <module>modules/guacamole-vault-azure</module>
         <module>modules/guacamole-vault-ksm</module>
 
     </modules>

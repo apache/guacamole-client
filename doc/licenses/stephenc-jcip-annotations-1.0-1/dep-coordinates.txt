@@ -1,1 +1,0 @@
-com.github.stephenc.jcip:jcip-annotations:jar:1.0-1

@@ -1,3 +1,0 @@
-com.squareup.retrofit2:adapter-rxjava:jar:2.7.2
-com.squareup.retrofit2:converter-jackson:jar:2.7.2
-com.squareup.retrofit2:retrofit:jar:2.7.2

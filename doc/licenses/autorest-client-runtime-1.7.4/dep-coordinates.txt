@@ -1,2 +1,0 @@
-com.microsoft.rest:client-runtime:jar:1.7.4
-com.microsoft.azure:azure-client-runtime:jar:1.7.4

@@ -33,14 +33,6 @@
     <!-- Include extension .jars -->
     <dependencySets>
 
-        <!-- Azure Key Vault extension .jar -->
-        <dependencySet>
-            <outputDirectory>azure</outputDirectory>
-            <includes>
-                <include>org.apache.guacamole:guacamole-vault-azure</include>
-            </includes>
-        </dependencySet>
-
         <!-- Keeper Secrets Manager extension .jar -->
         <dependencySet>
             <outputDirectory>ksm</outputDirectory>

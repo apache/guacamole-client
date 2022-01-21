@@ -1,5 +1,0 @@
-com.microsoft.azure:azure-keyvault-core:jar:1.2.4
-com.microsoft.azure:azure-keyvault-cryptography:jar:1.2.4
-com.microsoft.azure:azure-keyvault-webkey:jar:1.2.4
-com.microsoft.azure:azure-keyvault:jar:1.2.4
-

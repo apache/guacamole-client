@@ -42,13 +42,6 @@
 
     <dependencies>
 
-        <!-- Azure Key Vault Extension -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-vault-azure</artifactId>
-            <version>1.4.0</version>
-        </dependency>
-
         <!-- Keeper Secrets Manager Extension -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
