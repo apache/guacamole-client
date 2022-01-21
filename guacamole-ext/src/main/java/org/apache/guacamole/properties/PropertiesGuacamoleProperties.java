@@ -24,7 +24,8 @@ import org.apache.guacamole.GuacamoleException;
 
 /**
  * GuacamoleProperties implementation which reads all properties from a
- * {@link Properties} object.
+ * {@link Properties} object. Whitespace at the end of property values is
+ * automatically trimmed.
  */
 public class PropertiesGuacamoleProperties implements GuacamoleProperties {
 
@@ -43,12 +44,19 @@ public class PropertiesGuacamoleProperties implements GuacamoleProperties {
      *     values exposed by this instance of PropertiesGuacamoleProperties.
      */
     public PropertiesGuacamoleProperties(Properties properties) {
-        this.properties = properties;
+        this(properties);
     }
+
 
     @Override
     public String getProperty(String name) throws GuacamoleException {
-        return properties.getProperty(name);
+
+        String value = properties.getProperty(name);
+        if (value == null)
+            return null;
+
+        return value.trim();
+
     }
 
 }
