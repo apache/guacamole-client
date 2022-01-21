@@ -25,6 +25,7 @@ import org.apache.guacamole.vault.ksm.conf.KsmConfigurationService;
 import org.apache.guacamole.vault.ksm.secret.KsmSecretService;
 import org.apache.guacamole.vault.conf.VaultConfigurationService;
 import org.apache.guacamole.vault.ksm.secret.KsmClient;
+import org.apache.guacamole.vault.ksm.secret.KsmRecordService;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 
 /**
@@ -49,6 +50,7 @@ public class KsmAuthenticationProviderModule
 
         // Bind services specific to Keeper Secrets Manager
         bind(KsmClient.class);
+        bind(KsmRecordService.class);
         bind(VaultConfigurationService.class).to(KsmConfigurationService.class);
         bind(VaultSecretService.class).to(KsmSecretService.class);
     }
