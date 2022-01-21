@@ -97,7 +97,13 @@ public abstract class VaultConfigurationService {
 
         // Deserialize token mapping from YAML
         try {
-            return mapper.readValue(confFile, new TypeReference<Map<String, String>>() {});
+
+            Map<String, String> mapping = mapper.readValue(confFile, new TypeReference<Map<String, String>>() {});
+            if (mapping == null)
+                return Collections.emptyMap();
+
+            return mapping;
+            
         }
 
         // Fail if YAML is invalid/unreadable
