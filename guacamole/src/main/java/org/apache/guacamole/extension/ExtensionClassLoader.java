@@ -20,14 +20,27 @@
 package org.apache.guacamole.extension;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ClassLoader implementation which prioritizes the classes defined within a
@@ -37,6 +50,23 @@ import org.apache.guacamole.GuacamoleServerException;
  * .jar, the versions defined within the extension .jar are used.
  */
 public class ExtensionClassLoader extends URLClassLoader {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ExtensionClassLoader.class);
+
+    /**
+     * The prefix that should be given to the temporary directory containing
+     * all library .jar files that were bundled with the extension.
+     */
+    private static final String EXTENSION_TEMP_DIR_PREFIX = "guac-extension-lib-";
+
+    /**
+     * The prefix that should be given to any files created for temporary
+     * storage of a library .jar file that was bundled with the extension.
+     */
+    private static final String EXTENSION_TEMP_LIB_PREFIX = "bundled-";
 
     /**
      * The ClassLoader to use if class resolution through the extension .jar
@@ -89,32 +119,170 @@ public class ExtensionClassLoader extends URLClassLoader {
     }
 
     /**
-     * Returns a URL which points to the given extension .jar file.
+     * Returns the URL that refers to the given file. If the given file refers
+     * to a directory, an exception is thrown.
      *
-     * @param extension
-     *     The extension .jar file to generate a URL for.
+     * @param file
+     *     The file to determine the URL of.
      *
      * @return
-     *     A URL which points to the given extension .jar.
+     *     A URL that refers to the given file.
      *
      * @throws GuacamoleException
-     *     If the given file is not actually a file, or the contents of the
-     *     file cannot be read.
+     *     If the given file refers to a directory.
      */
-    private static URL getExtensionURL(File extension)
-            throws GuacamoleException {
+    private static URL getFileURL(File file) throws GuacamoleException {
 
-        // Validate extension file is indeed a file
-        if (!extension.isFile())
-            throw new GuacamoleException(extension + " is not a file.");
+        // Validate extension-related file is indeed a file
+        if (!file.isFile())
+            throw new GuacamoleServerException("\"" + file + "\" is not a file.");
 
         try {
-            return extension.toURI().toURL();
+            return file.toURI().toURL();
         }
         catch (MalformedURLException e) {
             throw new GuacamoleServerException(e);
         }
 
+    }
+
+    /**
+     * Copies all bytes of data from a file within a .jar to a destination
+     * file.
+     * 
+     * @param jar
+     *     The JarFile containing the file to be copied.
+     *
+     * @param source
+     *     The JarEntry representing the file to be copied within the given
+     *     JarFile.
+     *
+     * @param dest
+     *     The destination file that the data should be copied to.
+     *
+     * @throws IOException
+     *     If an error occurs reading from the source .jar or writing to the
+     *     destination file.
+     */
+    private static void copyEntryToFile(JarFile jar, JarEntry source, File dest)
+            throws IOException {
+
+        int length;
+        byte[] buffer = new byte[8192];
+
+        try (InputStream input = jar.getInputStream(source)) {
+            try (OutputStream output = new FileOutputStream(dest)) {
+
+                while ((length = input.read(buffer)) > 0) {
+                    output.write(buffer, 0, length);
+                }
+
+            }
+        }
+
+    }
+    
+    /**
+     * Returns the URLs for the .jar files relevant to the given extension .jar
+     * file. Unless the extension bundles additional Java libraries, only the
+     * URL of the extension .jar will be returned. If additional Java libraries
+     * are bundled within the extension, URLs for those libraries will be
+     * included, as well. Temporary directories and/or files will be created as
+     * necessary to house bundled libraries. Only .jar files located directly
+     * within the root of the main extension .jar are considered.
+     *
+     * @param extension
+     *     The extension .jar file to generate URLs for.
+     *
+     * @return
+     *     An array of all URLs relevant to the given extension .jar.
+     *
+     * @throws GuacamoleException
+     *     If the given file is not actually a file, the contents of the file
+     *     cannot be read, or any necessary temporary files/directories cannot
+     *     be created.
+     */
+    private static URL[] getExtensionURLs(File extension)
+            throws GuacamoleException {
+
+        JarFile extensionJar;
+        try {
+            extensionJar = new JarFile(extension);
+        }
+        catch (IOException e) {
+            throw new GuacamoleServerException("Contents of extension \""
+                    + extension + "\" cannot be read.", e);
+        }
+
+        // Include extension itself within classpath
+        List<URL> urls = new ArrayList<>();
+        urls.add(getFileURL(extension));
+
+        Path extensionTempLibDir = null;
+
+        // Iterate through all entries (files) within the extension .jar,
+        // adding any nested .jar files within the archive root to the
+        // classpath
+        Enumeration<JarEntry> entries = extensionJar.entries();
+        while (entries.hasMoreElements()) {
+
+            JarEntry entry = entries.nextElement();
+            String name = entry.getName();
+
+            // Consider only .jar files located in root of archive
+            if (entry.isDirectory() ||! name.endsWith(".jar") || name.indexOf('/') != -1)
+                continue;
+
+            // Create temporary directory for housing this extension's
+            // bundled .jar files, if not already created
+            try {
+                if (extensionTempLibDir == null) {
+                    extensionTempLibDir = Files.createTempDirectory(EXTENSION_TEMP_DIR_PREFIX);
+                    extensionTempLibDir.toFile().deleteOnExit();
+                }
+            }
+            catch (IOException e) {
+                throw new GuacamoleServerException("Temporary directory "
+                        + "for libraries bundled with extension \""
+                        + extension + "\" could not be created.", e);
+            }
+
+            // Create temporary file to hold the contents of the current
+            // bundled .jar
+            File tempLibrary;
+            try {
+                tempLibrary = Files.createTempFile(extensionTempLibDir, EXTENSION_TEMP_LIB_PREFIX, ".jar").toFile();
+                tempLibrary.deleteOnExit();
+            }
+            catch (IOException e) {
+                throw new GuacamoleServerException("Temporary file "
+                        + "for library \"" + name + "\" bundled with "
+                        + "extension \"" + extension + "\" could not be "
+                        + "created.", e);
+            }
+
+            // Copy contents of bundled .jar to temporary file
+            try {
+                copyEntryToFile(extensionJar, entry, tempLibrary);
+            }
+            catch (IOException e) {
+                throw new GuacamoleServerException("Contents of library "
+                        + "\"" + name + "\" bundled with extension \""
+                        + extension + "\" could not be copied to a "
+                        + "temporary file.", e);
+            }
+
+            // Add temporary .jar file to classpath
+            urls.add(getFileURL(tempLibrary));
+
+        }
+
+        if (extensionTempLibDir != null)
+            logger.debug("Libraries bundled within extension \"{}\" have been "
+                    + "copied to temporary directory \"{}\".", extension, extensionTempLibDir);
+
+        return urls.toArray(new URL[0]);
+        
     }
 
     /**
@@ -137,7 +305,7 @@ public class ExtensionClassLoader extends URLClassLoader {
      */
     private ExtensionClassLoader(File extension, ClassLoader parent)
             throws GuacamoleException {
-        super(new URL[]{ getExtensionURL(extension) }, null);
+        super(getExtensionURLs(extension), null);
         this.parent = parent;
     }
 
