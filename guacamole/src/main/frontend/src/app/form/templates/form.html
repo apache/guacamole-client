@@ -1,9 +1,10 @@
 <div class="form-group">
     <div ng-repeat="form in forms" class="form"
+         ng-class="getFormClasses(form)"
          ng-show="containsVisible(form.fields)">
 
         <!-- Form name -->
-        <h3 ng-show="form.name">{{getSectionHeader(form) | translate}}</h3>
+        <h3 class="form-header" ng-show="form.name">{{getSectionHeader(form) | translate}}</h3>
 
         <!-- All fields in form -->
         <div class="fields">

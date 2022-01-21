@@ -86,6 +86,7 @@ angular.module('form').directive('guacForm', [function form() {
         controller: ['$scope', '$injector', function formController($scope, $injector) {
 
             // Required services
+            var formService              = $injector.get('formService');
             var translationStringService = $injector.get('translationStringService');
 
             /**
@@ -132,6 +133,22 @@ angular.module('form').directive('guacForm', [function form() {
                 return translationStringService.canonicalize($scope.namespace || 'MISSING_NAMESPACE')
                         + '.SECTION_HEADER_' + translationStringService.canonicalize(form.name);
 
+            };
+
+            /**
+             * Returns an object as would be provided to the ngClass directive
+             * that defines the CSS classes that should be applied to the given
+             * form.
+             *
+             * @param {Form} form
+             *     The form to generate the CSS classes for.
+             *
+             * @return {!Object.<string, boolean>}
+             *     The ngClass object defining the CSS classes for the given
+             *     form.
+             */
+            $scope.getFormClasses = function getFormClasses(form) {
+                return formService.getClasses('form-', form);
             };
 
             /**
