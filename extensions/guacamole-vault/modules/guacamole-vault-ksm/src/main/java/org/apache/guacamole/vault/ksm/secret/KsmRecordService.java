@@ -20,13 +20,19 @@
 package org.apache.guacamole.vault.ksm.secret;
 
 import com.google.inject.Singleton;
+import com.keepersecurity.secretsManager.core.HiddenField;
 import com.keepersecurity.secretsManager.core.KeeperRecord;
 import com.keepersecurity.secretsManager.core.KeeperRecordData;
+import com.keepersecurity.secretsManager.core.KeeperRecordField;
 import com.keepersecurity.secretsManager.core.KeyPair;
 import com.keepersecurity.secretsManager.core.KeyPairs;
 import com.keepersecurity.secretsManager.core.Login;
 import com.keepersecurity.secretsManager.core.Password;
+import com.keepersecurity.secretsManager.core.Text;
 import java.util.List;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Service for automatically parsing out secrets and data from Keeper records.
@@ -35,9 +41,196 @@ import java.util.List;
 public class KsmRecordService {
 
     /**
+     * Regular expression which matches the labels of custom fields containing
+     * usernames.
+     */
+    private static final Pattern USERNAME_LABEL_PATTERN =
+            Pattern.compile("username", Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Regular expression which matches the labels of custom fields containing
+     * passwords.
+     */
+    private static final Pattern PASSWORD_LABEL_PATTERN =
+            Pattern.compile("password", Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Regular expression which matches the labels of custom fields containing
+     * passphrases for private keys.
+     */
+    private static final Pattern PASSPHRASE_LABEL_PATTERN =
+            Pattern.compile("passphrase", Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Regular expression which matches the labels of custom fields containing
+     * private keys.
+     */
+    private static final Pattern PRIVATE_KEY_LABEL_PATTERN =
+            Pattern.compile("private\\s*key", Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Returns the single value stored in the given list. If the list is empty
+     * or contains multiple values, null is returned.
+     *
+     * @param <T>
+     *     The type of object stored in the list.
+     *
+     * @param values
+     *     The list to retrieve a single value from.
+     *
+     * @return
+     *     The single value stored in the given list, or null if the list is
+     *     empty or contains multiple values.
+     */
+    private <T> T getSingleValue(List<T> values) {
+
+        if (values == null || values.size() != 1)
+            return null;
+
+        return values.get(0);
+
+    }
+
+    /**
+     * Returns the single value stored in the given list, additionally
+     * performing a mapping transformation on the single value. If the list is
+     * empty or contains multiple values, null is returned.
+     * 
+     * @param <T>
+     *     The type of object stored in the list.
+     *     
+     * @param <R>
+     *     The type of object to return.
+     *     
+     * @param values
+     *     The list to retrieve a single value from.
+     *
+     * @param mapper
+     *     The function to use to map the single object of type T to type R.
+     *
+     * @return
+     *     The single value stored in the given list, transformed using the
+     *     provided mapping function, or null if the list is empty or contains
+     *     multiple values.
+     */
+    private <T, R> R getSingleValue(List<T> values, Function<T, R> mapper) {
+
+        T value = getSingleValue(values);
+        if (value == null)
+            return null;
+
+        return mapper.apply(value);
+        
+    }
+
+    /**
+     * Returns the instance of the only field that has the given type and
+     * matches the given label pattern. If there are no such fields, or
+     * multiple such fields, null is returned.
+     *
+     * @param <T>
+     *     The type of field to return.
+     *
+     * @param fields
+     *     The list of fields to retrieve the field from.
+     *
+     * @param fieldClass
+     *     The class representing the type of field to return.
+     *
+     * @param labelPattern
+     *     The pattern to match against the desired field's label, or null if
+     *     no label pattern match should be performed.
+     *
+     * @return
+     *     The field having the given type and matching the given label
+     *     pattern, or null if there is not exactly one such field.
+     */
+    @SuppressWarnings("unchecked") // Manually verified with isAssignableFrom()
+    private <T extends KeeperRecordField> T getField(List<KeeperRecordField> fields,
+            Class<T> fieldClass, Pattern labelPattern) {
+
+        T foundField = null;
+        for (KeeperRecordField field : fields) {
+
+            // Ignore fields of wrong class
+            if (!fieldClass.isAssignableFrom(field.getClass()))
+                continue;
+
+            // Match against provided pattern, if any
+            if (labelPattern != null) {
+
+                // Ignore fields without labels if a label match is requested
+                String label = field.getLabel();
+                if (label == null)
+                    continue;
+
+                // Ignore fields whose labels do not match
+                Matcher labelMatcher = labelPattern.matcher(label);
+                if (!labelMatcher.matches())
+                    continue;
+
+            }
+
+            // Ignore ambiguous fields
+            if (foundField != null)
+                return null;
+
+            // Tentative match found - we can use this as long as no other
+            // field matches the criteria
+            foundField = (T) field;
+
+        }
+
+        return foundField;
+
+    }
+
+    /**
+     * Returns the instance of the only field that has the given type and
+     * matches the given label pattern. If there are no such fields, or
+     * multiple such fields, null is returned. Both standard and custom fields
+     * are searched. As standard fields do not have labels, any given label
+     * pattern is ignored for standard fields.
+     * 
+     * @param <T>
+     *     The type of field to return.
+     *
+     * @param record
+     *     The Keeper record to retrieve the field from.
+     *
+     * @param fieldClass
+     *     The class representing the type of field to return.
+     *
+     * @param labelPattern
+     *     The pattern to match against the labels of custom fields, or null if
+     *     no label pattern match should be performed.
+     *
+     * @return
+     *     The field having the given type and matching the given label
+     *     pattern, or null if there is not exactly one such field.
+     */
+    private <T extends KeeperRecordField> T getField(KeeperRecord record,
+            Class<T> fieldClass, Pattern labelPattern) {
+
+        KeeperRecordData data = record.getData();
+
+        // Attempt to find standard field first, ignoring custom fields if a
+        // standard field exists (NOTE: standard fields do not have labels)
+        T field = getField(data.getFields(), fieldClass, null);
+        if (field != null)
+            return field;
+
+        // Fall back on custom fields
+        return getField(data.getCustom(), fieldClass, labelPattern);
+
+    }
+
+    /**
      * Returns the single username associated with the given record. If the
      * record has no associated username, or multiple usernames, null is
-     * returned. Usernames are retrieved from "Login" fields.
+     * returned. Usernames are retrieved from "Login" fields, as well as
+     * "Text" and "Hidden" fields that have the label "username"
+     * (case-insensitive).
      *
      * @param record
      *     The record to retrieve the username from.
@@ -48,23 +241,65 @@ public class KsmRecordService {
      */
     public String getUsername(KeeperRecord record) {
 
+        // Prefer standard login field
+        Login loginField = getField(record, Login.class, null);
+        if (loginField != null)
+            return getSingleValue(loginField.getValue());
+
         KeeperRecordData data = record.getData();
+        List<KeeperRecordField> custom = data.getCustom();
 
-        Login loginField = (Login) data.getField(Login.class);
-        if (loginField == null)
-            return null;
+        // Use text "username" custom field as fallback ...
+        Text textField = getField(custom, Text.class, USERNAME_LABEL_PATTERN);
+        if (textField != null)
+            return getSingleValue(textField.getValue());
 
-        List<String> usernames = loginField.getValue();
-        if (usernames.size() != 1)
-            return null;
+        // ... or hidden "username" custom field
+        HiddenField hiddenField = getField(custom, HiddenField.class, USERNAME_LABEL_PATTERN);
+        if (hiddenField != null)
+            return getSingleValue(hiddenField.getValue());
 
-        return usernames.get(0);
+        return null;
 
     }
 
     /**
-     * Returns the password associated with the given record, as dictated by
-     * the {@link KeeperRecord#getPassword()}.
+     * Returns the password associated with the given record and matching the
+     * given label pattern. Both standard and custom fields are searched. As
+     * standard fields do not have labels, the label pattern is ignored for
+     * standard fields. Only "Password" and "Hidden" field types are
+     * considered.
+     *
+     * @param record
+     *     The record to retrieve the password from.
+     *
+     * @param labelPattern
+     *     The pattern to match against the labels of custom fields, or null if
+     *     no label pattern match should be performed.
+     *
+     * @return
+     *     The password associated with the given record, or null if the record
+     *     has no associated password or multiple passwords.
+     */
+    private String getPassword(KeeperRecord record, Pattern labelPattern) {
+
+        Password passwordField = getField(record, Password.class, labelPattern);
+        if (passwordField != null)
+            return getSingleValue(passwordField.getValue());
+
+        HiddenField hiddenField = getField(record, HiddenField.class, labelPattern);
+        if (hiddenField != null)
+            return getSingleValue(hiddenField.getValue());
+
+        return null;
+
+    }
+
+    /**
+     * Returns the password associated with the given record. Both standard and
+     * custom fields are searched. Only "Password" and "Hidden" field types are
+     * considered. Custom fields must additionally have the label "password"
+     * (case-insensitive).
      *
      * @param record
      *     The record to retrieve the password from.
@@ -74,25 +309,16 @@ public class KsmRecordService {
      *     has no associated password.
      */
     public String getPassword(KeeperRecord record) {
-
-        KeeperRecordData data = record.getData();
-
-        Password passwordField = (Password) data.getField(Password.class);
-        if (passwordField == null)
-            return null;
-
-        List<String> values = passwordField.getValue();
-        if (values.size() != 1)
-            return null;
-
-        return values.get(0);
-
+        return getPassword(record, PASSWORD_LABEL_PATTERN);
     }
 
     /**
      * Returns the private key associated with the given record. If the record
      * has no associated private key, or multiple private keys, null is
      * returned. Private keys are retrieved from "KeyPairs" fields.
+     * Alternatively, private keys are retrieved from custom fields with the
+     * label "private key" (case-insensitive, space optional) if they are
+     * "KeyPairs", "Password", or "Hidden" fields.
      *
      * @param record
      *     The record to retrieve the private key from.
@@ -103,25 +329,23 @@ public class KsmRecordService {
      */
     public String getPrivateKey(KeeperRecord record) {
 
-        KeeperRecordData data = record.getData();
+        // Attempt to find single matching keypair field
+        KeyPairs keyPairsField = getField(record, KeyPairs.class, PRIVATE_KEY_LABEL_PATTERN);
+        if (keyPairsField != null)
+            return getSingleValue(keyPairsField.getValue(), KeyPair::getPrivateKey);
 
-        KeyPairs keyPairsField = (KeyPairs) data.getField(KeyPairs.class);
-        if (keyPairsField == null)
-            return null;
-
-        List<KeyPair> keyPairs = keyPairsField.getValue();
-        if (keyPairs.size() != 1)
-            return null;
-
-        return keyPairs.get(0).getPrivateKey();
+        // Fall back to general password/hidden fields if not found or ambiguous
+        return getPassword(record, PRIVATE_KEY_LABEL_PATTERN);
 
     }
 
     /**
      * Returns the passphrase for the private key associated with the given
-     * record. Currently, this is simply dictated by {@link KeeperRecord#getPassword()},
-     * as there is no specific association between private keys and passphrases
-     * in the "KeyPairs" field type.
+     * record. Both standard and custom fields are searched. Only "Password"
+     * and "Hidden" field types are considered. Custom fields must additionally
+     * have the label "passphrase" (case-insensitive). Note that there is no
+     * specific association between private keys and passphrases in the
+     * "KeyPairs" field type.
      *
      * @param record
      *     The record to retrieve the passphrase from.
@@ -131,7 +355,7 @@ public class KsmRecordService {
      *     or null if there is no such passphrase associated with the record.
      */
     public String getPassphrase(KeeperRecord record) {
-        return getPassword(record);
+        return getPassword(record, PASSPHRASE_LABEL_PATTERN);
     }
 
 }
