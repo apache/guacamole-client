@@ -311,38 +311,6 @@ public class KsmRecordService {
     }
 
     /**
-     * Returns the password associated with the given record and matching the
-     * given label pattern. Both standard and custom fields are searched. As
-     * standard fields do not have labels, the label pattern is ignored for
-     * standard fields. Only "Password" and "Hidden" field types are
-     * considered.
-     *
-     * @param record
-     *     The record to retrieve the password from.
-     *
-     * @param labelPattern
-     *     The pattern to match against the labels of custom fields, or null if
-     *     no label pattern match should be performed.
-     *
-     * @return
-     *     The password associated with the given record, or null if the record
-     *     has no associated password or multiple passwords.
-     */
-    private String getPassword(KeeperRecord record, Pattern labelPattern) {
-
-        Password passwordField = getField(record, Password.class, labelPattern);
-        if (passwordField != null)
-            return getSingleValue(passwordField.getValue());
-
-        HiddenField hiddenField = getField(record, HiddenField.class, labelPattern);
-        if (hiddenField != null)
-            return getSingleValue(hiddenField.getValue());
-
-        return null;
-
-    }
-
-    /**
      * Returns the password associated with the given record. Both standard and
      * custom fields are searched. Only "Password" and "Hidden" field types are
      * considered. Custom fields must additionally have the label "password"
@@ -356,7 +324,17 @@ public class KsmRecordService {
      *     has no associated password.
      */
     public String getPassword(KeeperRecord record) {
-        return getPassword(record, PASSWORD_LABEL_PATTERN);
+
+        Password passwordField = getField(record, Password.class, PASSWORD_LABEL_PATTERN);
+        if (passwordField != null)
+            return getSingleValue(passwordField.getValue());
+
+        HiddenField hiddenField = getField(record, HiddenField.class, PASSWORD_LABEL_PATTERN);
+        if (hiddenField != null)
+            return getSingleValue(hiddenField.getValue());
+
+        return null;
+
     }
 
     /**
@@ -381,8 +359,20 @@ public class KsmRecordService {
         if (keyPairsField != null)
             return getSingleValue(keyPairsField.getValue(), KeyPair::getPrivateKey);
 
-        // Fall back to general password/hidden fields if not found or ambiguous
-        return getPassword(record, PRIVATE_KEY_LABEL_PATTERN);
+        KeeperRecordData data = record.getData();
+        List<KeeperRecordField> custom = data.getCustom();
+
+        // Use password "private key" custom field as fallback ...
+        Password passwordField = getField(custom, Password.class, PRIVATE_KEY_LABEL_PATTERN);
+        if (passwordField != null)
+            return getSingleValue(passwordField.getValue());
+
+        // ... or hidden "private key" custom field
+        HiddenField hiddenField = getField(custom, HiddenField.class, PRIVATE_KEY_LABEL_PATTERN);
+        if (hiddenField != null)
+            return getSingleValue(hiddenField.getValue());
+
+        return null;
 
     }
 
@@ -402,7 +392,37 @@ public class KsmRecordService {
      *     or null if there is no such passphrase associated with the record.
      */
     public String getPassphrase(KeeperRecord record) {
-        return getPassword(record, PASSPHRASE_LABEL_PATTERN);
+
+        KeeperRecordData data = record.getData();
+        List<KeeperRecordField> fields = data.getFields();
+        List<KeeperRecordField> custom = data.getCustom();
+
+        // For records with a standard keypair field, the passphrase is the
+        // standard password field
+        if (getField(fields, KeyPairs.class, null) != null) {
+            Password passwordField = getField(fields, Password.class, null);
+            if (passwordField != null)
+                return getSingleValue(passwordField.getValue());
+        }
+
+        // For records WITHOUT a standard keypair field, the passphrase can
+        // only reasonably be a custom field (consider a "Login" record with
+        // a pair of custom hidden fields for the private key and passphrase:
+        // the standard password field of the "Login" record refers to the
+        // user's own password, if any, not the passphrase of their key)
+        
+        // Use password "private key" custom field as fallback ...
+        Password passwordField = getField(custom, Password.class, PASSPHRASE_LABEL_PATTERN);
+        if (passwordField != null)
+            return getSingleValue(passwordField.getValue());
+
+        // ... or hidden "private key" custom field
+        HiddenField hiddenField = getField(custom, HiddenField.class, PASSPHRASE_LABEL_PATTERN);
+        if (hiddenField != null)
+            return getSingleValue(hiddenField.getValue());
+
+        return null;
+        
     }
 
 }
