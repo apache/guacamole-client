@@ -23,9 +23,12 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 
 /**
@@ -57,6 +60,13 @@ public class KsmSecretService implements VaultSecretService {
     @Override
     public Future<String> getValue(String name) throws GuacamoleException {
         return ksm.getSecret(name);
+    }
+
+    @Override
+    public Map<String, Future<String>> getTokens(GuacamoleConfiguration config)
+            throws GuacamoleException {
+        // STUB
+        return Collections.emptyMap();
     }
 
 }

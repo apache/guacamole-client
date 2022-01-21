@@ -19,8 +19,10 @@
 
 package org.apache.guacamole.vault.secret;
 
+import java.util.Map;
 import java.util.concurrent.Future;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * Generic service for retrieving the value of a secret stored in a vault.
@@ -68,5 +70,30 @@ public interface VaultSecretService {
      *     If the secret cannot be retrieved due to an error.
      */
     Future<String> getValue(String name) throws GuacamoleException;
+
+    /**
+     * Returns a map of token names to corresponding Futures which eventually
+     * complete with the value of that token, where each token is dynamically
+     * defined based on connection parameters. If a vault implementation allows
+     * for predictable secrets based on the parameters of a connection, this
+     * function should be implemented to provide automatic tokens for those
+     * secrets and remove the need for manual mapping via YAML.
+     *
+     * @param config
+     *     The configuration of the Guacamole connection for which tokens are
+     *     being generated. This configuration may be empty or partial,
+     *     depending on the underlying implementation.
+     *
+     * @return
+     *     A map of token names to their corresponding future values, where
+     *     each token and value may be dynamically determined based on the
+     *     connection configuration.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs producing the tokens and values required for the
+     *     given configuration.
+     */
+    Map<String, Future<String>> getTokens(GuacamoleConfiguration config)
+            throws GuacamoleException;
 
 }

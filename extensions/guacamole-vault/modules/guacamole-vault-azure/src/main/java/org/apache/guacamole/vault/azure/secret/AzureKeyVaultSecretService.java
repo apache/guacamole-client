@@ -26,10 +26,14 @@ import com.microsoft.azure.keyvault.KeyVaultClient;
 import com.microsoft.azure.keyvault.authentication.KeyVaultCredentials;
 import com.microsoft.azure.keyvault.models.SecretBundle;
 import com.microsoft.rest.ServiceCallback;
+import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.vault.azure.conf.AzureKeyVaultAuthenticationException;
 import org.apache.guacamole.vault.azure.conf.AzureKeyVaultConfigurationService;
 import org.apache.guacamole.vault.secret.CachedVaultSecretService;
@@ -116,6 +120,12 @@ public class AzureKeyVaultSecretService extends CachedVaultSecretService {
         // Cache retrieved value
         return new CachedSecret(retrievedValue, ttl);
 
+    }
+
+    @Override
+    public Map<String, Future<String>> getTokens(GuacamoleConfiguration config)
+            throws GuacamoleException {
+        return Collections.emptyMap();
     }
 
 }

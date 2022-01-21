@@ -32,6 +32,7 @@ import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.TokenInjectingUserContext;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.GuacamoleTokenUndefinedException;
 import org.apache.guacamole.token.TokenFilter;
 import org.apache.guacamole.vault.conf.VaultConfigurationService;
@@ -188,6 +189,10 @@ public class VaultUserContext extends TokenInjectingUserContext {
      *     may contain its own tokens, which will be substituted using values
      *     from the given filter.
      *
+     * @param config
+     *     The GuacamoleConfiguration of the connection for which tokens are
+     *     being retrieved, if available. This may be null.
+     *
      * @param filter
      *     The filter to use to substitute values for tokens in the names of
      *     secrets to be retrieved from the vault.
@@ -202,7 +207,8 @@ public class VaultUserContext extends TokenInjectingUserContext {
      *     vault due to an error.
      */
     private Map<String, Future<String>> getTokens(Map<String, String> tokenMapping,
-            TokenFilter filter) throws GuacamoleException {
+            GuacamoleConfiguration config, TokenFilter filter)
+            throws GuacamoleException {
 
         // Populate map with pending secret retrieval operations corresponding
         // to each mapped token
@@ -230,6 +236,9 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
         }
 
+        // Additionally include any dynamic, parameter-based tokens
+        pendingTokens.putAll(secretService.getTokens(config));
+        
         return pendingTokens;
 
     }
@@ -304,28 +313,28 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
         // Substitute tokens producing secret names, retrieving and storing
         // those secrets as parameter tokens
-        return resolve(getTokens(confService.getTokenMapping(), filter));
+        return resolve(getTokens(confService.getTokenMapping(), null, filter));
 
     }
 
     /**
-     * Retrieves the connection parameters associated with the
-     * GuacamoleConfiguration of the given Connection. If possible, privileged
-     * access to those parameters is obtained first. Note that the underlying
-     * extension is not required to allow privileged access, nor is it
-     * required to expose the underlying connection parameters at all.
+     * Retrieves the GuacamoleConfiguration of the given Connection. If
+     * possible, privileged access to the configuration is obtained first. Note
+     * that the underlying extension is not required to allow privileged
+     * access, nor is it required to expose the underlying configuration at
+     * all.
      *
      * @param connection
-     *     The connection to retrieve parameters from.
+     *     The connection to retrieve the configuration from.
      *
      * @return
-     *     A Map of all connection parameters exposed by the underlying
-     *     extension for the given connection, which may be empty.
+     *     The GuacamoleConfiguration associated with the given connection,
+     *     which may be partial or empty.
      *
      * @throws GuacamoleException
-     *     If an error prevents privileged retrieval of parameters.
+     *     If an error prevents privileged retrieval of the configuration.
      */
-    private Map<String, String> getConnectionParameters(Connection connection)
+    private GuacamoleConfiguration getConnectionConfiguration(Connection connection)
             throws GuacamoleException {
 
         String identifier = connection.getIdentifier();
@@ -335,11 +344,11 @@ public class VaultUserContext extends TokenInjectingUserContext {
         // actually be privileged)
         Connection privilegedConnection = getPrivileged().getConnectionDirectory().get(identifier);
         if (privilegedConnection != null)
-            return privilegedConnection.getConfiguration().getParameters();
+            return privilegedConnection.getConfiguration();
 
         // Fall back to unprivileged access if not implemented/allowed by
         // extension
-        return connection.getConfiguration().getParameters();
+        return connection.getConfiguration();
 
     }
 
@@ -360,7 +369,8 @@ public class VaultUserContext extends TokenInjectingUserContext {
         // Add hostname and username tokens if available (implementations are
         // not required to expose connection configuration details)
 
-        Map<String, String> parameters = getConnectionParameters(connection);
+        GuacamoleConfiguration config = getConnectionConfiguration(connection);
+        Map<String, String> parameters = config.getParameters();
 
         String hostname = parameters.get("hostname");
         if (hostname != null && !hostname.isEmpty())
@@ -382,7 +392,7 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
         // Substitute tokens producing secret names, retrieving and storing
         // those secrets as parameter tokens
-        return resolve(getTokens(confService.getTokenMapping(), filter));
+        return resolve(getTokens(confService.getTokenMapping(), config, filter));
 
     }
 
