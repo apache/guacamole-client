@@ -238,11 +238,15 @@ public class KsmClient {
                 // Store based on UID ...
                 cachedRecordsByUid.put(record.getRecordUid(), record);
 
-                // ... and hostname/address ...
-                addRecordForHost(record, recordService.getHostname(record));
+                // ... and hostname/address
+                String hostname = recordService.getHostname(record);
+                addRecordForHost(record, hostname);
 
-                // ... and username
-                addRecordForLogin(record, recordService.getUsername(record));
+                // Store based on username ONLY if no hostname (will otherwise
+                // result in ambiguous entries for servers tied to identical
+                // accounts)
+                if (hostname == null)
+                    addRecordForLogin(record, recordService.getUsername(record));
 
             });
 
