@@ -77,14 +77,20 @@ public class VaultUserContext extends TokenInjectingUserContext {
     /**
      * The name of the token which will be replaced with the \"hostname\"
      * connection parameter of the current connection if specified within the
-     * name of a secret. This token only applies only to connections.
+     * name of a secret. If the \"hostname\" parameter cannot be retrieved, or
+     * if the parameter is blank, the token will not be replaced and any
+     * secrets involving that token will not be retrieved. This token only
+     * applies only to connections.
      */
     private static final String CONNECTION_HOSTNAME_TOKEN = "CONNECTION_HOSTNAME";
 
     /**
      * The name of the token which will be replaced with the \"username\"
      * connection parameter of the current connection if specified within the
-     * name of a secret. This token only applies only to connections.
+     * name of a secret. If the \"username\" parameter cannot be retrieved, or
+     * if the parameter is blank, the token will not be replaced and any
+     * secrets involving that token will not be retrieved. This token only
+     * applies only to connections.
      */
     private static final String CONNECTION_USERNAME_TOKEN = "CONNECTION_USERNAME";
 
@@ -340,7 +346,7 @@ public class VaultUserContext extends TokenInjectingUserContext {
         Map<String, String> parameters = getConnectionParameters(connection);
 
         String hostname = parameters.get("hostname");
-        if (hostname != null)
+        if (hostname != null && !hostname.isEmpty())
             filter.setToken(CONNECTION_HOSTNAME_TOKEN, hostname);
         else
             logger.debug("Hostname for connection \"{}\" (\"{}\") not "
@@ -349,7 +355,7 @@ public class VaultUserContext extends TokenInjectingUserContext {
                     CONNECTION_HOSTNAME_TOKEN);
 
         String username = parameters.get("username");
-        if (username != null)
+        if (username != null && !username.isEmpty())
             filter.setToken(CONNECTION_USERNAME_TOKEN, username);
         else
             logger.debug("Username for connection \"{}\" (\"{}\") not "
