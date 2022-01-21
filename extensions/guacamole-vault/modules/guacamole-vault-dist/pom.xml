@@ -49,6 +49,13 @@
             <version>1.4.0</version>
         </dependency>
 
+        <!-- Keeper Secrets Manager Extension -->
+        <dependency>
+            <groupId>org.apache.guacamole</groupId>
+            <artifactId>guacamole-vault-ksm</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+
    </dependencies>
 
     <build>

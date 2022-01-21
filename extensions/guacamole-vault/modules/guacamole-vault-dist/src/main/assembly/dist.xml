@@ -41,6 +41,14 @@
             </includes>
         </dependencySet>
 
+        <!-- Keeper Secrets Manager extension .jar -->
+        <dependencySet>
+            <outputDirectory>ksm</outputDirectory>
+            <includes>
+                <include>org.apache.guacamole:guacamole-vault-ksm</include>
+            </includes>
+        </dependencySet>
+
     </dependencySets>
 
     <!-- Licenses -->
