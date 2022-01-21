@@ -24,7 +24,10 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.vault.conf.VaultConfigurationService;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
@@ -149,9 +152,9 @@ public class VaultUserContext extends TokenInjectingUserContext {
     }
 
     /**
-     * Retrieve all applicable tokens and corresponding values from the vault,
-     * using the given TokenFilter to filter tokens within the secret names
-     * prior to retrieving those secrets.
+     * Initiates asynchronous retrieval of all applicable tokens and
+     * corresponding values from the vault, using the given TokenFilter to
+     * filter tokens within the secret names prior to retrieving those secrets.
      *
      * @param tokenMapping
      *     The mapping dictating the name of the secret which maps to each
@@ -165,20 +168,20 @@ public class VaultUserContext extends TokenInjectingUserContext {
      *     secrets to be retrieved from the vault.
      *
      * @return
-     *     The tokens which should be added to the in-progress call to
-     *     connect().
+     *     A Map of token name to Future, where each Future represents the
+     *     pending retrieval operation which will ultimately be completed with
+     *     the value of all secrets mapped to that token.
      *
      * @throws GuacamoleException
      *     If the value for any applicable secret cannot be retrieved from the
      *     vault due to an error.
      */
-    private Map<String, String> getTokens(Map<String, String> tokenMapping,
+    private Map<String, Future<String>> getTokens(Map<String, String> tokenMapping,
             TokenFilter filter) throws GuacamoleException {
 
-        Map<String, String> tokens = new HashMap<>();
-
-        // Populate map with tokens containing the values of all secrets
-        // indicated in the token mapping
+        // Populate map with pending secret retrieval operations corresponding
+        // to each mapped token
+        Map<String, Future<String>> pendingTokens = new HashMap<>(tokenMapping.size());
         for (Map.Entry<String, String> entry : tokenMapping.entrySet()) {
 
             // Translate secret pattern into secret name, ignoring any
@@ -195,19 +198,60 @@ public class VaultUserContext extends TokenInjectingUserContext {
                 continue;
             }
 
+            // Initiate asynchronous retrieval of the token value
+            String tokenName = entry.getKey();
+            Future<String> secret = secretService.getValue(secretName);
+            pendingTokens.put(tokenName, secret);
+
+        }
+
+        return pendingTokens;
+
+    }
+
+    /**
+     * Waits for all pending secret retrieval operations to complete,
+     * transforming each Future within the given Map into its contained String
+     * value.
+     *
+     * @param pendingTokens
+     *     A Map of token name to Future, where each Future represents the
+     *     pending retrieval operation which will ultimately be completed with
+     *     the value of all secrets mapped to that token.
+     *
+     * @throws GuacamoleException
+     *     If the value for any applicable secret cannot be retrieved from the
+     *     vault due to an error.
+     */
+    private Map<String, String> resolve(Map<String,
+            Future<String>> pendingTokens) throws GuacamoleException {
+
+        // Populate map with tokens containing the values of their
+        // corresponding secrets
+        Map<String, String> tokens = new HashMap<>(pendingTokens.size());
+        for (Map.Entry<String, Future<String>> entry : pendingTokens.entrySet()) {
+
+            // Complete secret retrieval operation, blocking if necessary
+            String secretValue;
+            try {
+                secretValue = entry.getValue().get();
+            }
+            catch (InterruptedException | ExecutionException e) {
+                throw new GuacamoleServerException("Retrieval of secret value "
+                        + "failed.", e);
+            }
+
             // If a value is defined for the secret in question, store that
             // value under the mapped token
             String tokenName = entry.getKey();
-            String secretValue = secretService.getValue(secretName);
             if (secretValue != null) {
                 tokens.put(tokenName, secretValue);
                 logger.debug("Token \"{}\" populated with value from "
-                        + "secret \"{}\".", tokenName, secretName);
+                        + "secret.", tokenName);
             }
             else
                 logger.debug("Token \"{}\" not populated. Mapped "
-                        + "secret \"{}\" has no value.",
-                        tokenName, secretName);
+                        + "secret has no value.", tokenName);
 
         }
 
@@ -231,7 +275,7 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
         // Substitute tokens producing secret names, retrieving and storing
         // those secrets as parameter tokens
-        return getTokens(confService.getTokenMapping(), filter);
+        return resolve(getTokens(confService.getTokenMapping(), filter));
 
     }
 
@@ -274,7 +318,7 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
         // Substitute tokens producing secret names, retrieving and storing
         // those secrets as parameter tokens
-        return getTokens(confService.getTokenMapping(), filter);
+        return resolve(getTokens(confService.getTokenMapping(), filter));
 
     }
 
