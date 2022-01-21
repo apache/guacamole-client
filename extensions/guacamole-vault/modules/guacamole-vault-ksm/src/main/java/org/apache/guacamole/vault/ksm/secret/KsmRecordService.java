@@ -23,6 +23,7 @@ import com.google.inject.Singleton;
 import com.keepersecurity.secretsManager.core.HiddenField;
 import com.keepersecurity.secretsManager.core.Host;
 import com.keepersecurity.secretsManager.core.Hosts;
+import com.keepersecurity.secretsManager.core.KeeperFile;
 import com.keepersecurity.secretsManager.core.KeeperRecord;
 import com.keepersecurity.secretsManager.core.KeeperRecordData;
 import com.keepersecurity.secretsManager.core.KeeperRecordField;
@@ -30,8 +31,12 @@ import com.keepersecurity.secretsManager.core.KeyPair;
 import com.keepersecurity.secretsManager.core.KeyPairs;
 import com.keepersecurity.secretsManager.core.Login;
 import com.keepersecurity.secretsManager.core.Password;
+import com.keepersecurity.secretsManager.core.SecretsManager;
 import com.keepersecurity.secretsManager.core.Text;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,6 +81,13 @@ public class KsmRecordService {
      */
     private static final Pattern PRIVATE_KEY_LABEL_PATTERN =
             Pattern.compile("private\\s*key", Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Regular expression which matches the filenames of private keys attached
+     * to Keeper records.
+     */
+    private static final Pattern PRIVATE_KEY_FILENAME_PATTERN =
+            Pattern.compile(".*\\.pem", Pattern.CASE_INSENSITIVE);
 
     /**
      * Returns the single value stored in the given list. If the list is empty
@@ -235,6 +247,70 @@ public class KsmRecordService {
     }
 
     /**
+     * Returns the file attached to the give Keeper record whose filename
+     * matches the given pattern. If there are no such files, or multiple such
+     * files, null is returned.
+     *
+     * @param record
+     *     The record to retrieve the file from.
+     *
+     * @param filenamePattern
+     *     The pattern to match filenames against.
+     *
+     * @return
+     *     The single matching file attached to the given Keeper record, or
+     *     null if there is not exactly one matching file.
+     */
+    private KeeperFile getFile(KeeperRecord record, Pattern filenamePattern) {
+
+        List<KeeperFile> files = record.getFiles();
+        if (files == null)
+            return null;
+
+        KeeperFile foundFile = null;
+        for (KeeperFile file : files) {
+
+            // Ignore files whose filenames do not match
+            Matcher filenameMatcher = filenamePattern.matcher(file.getData().getName());
+            if (!filenameMatcher.matches())
+                continue;
+
+            // Ignore ambiguous fields
+            if (foundFile != null)
+                return null;
+
+            foundFile = file;
+            
+        }
+
+        return foundFile;
+
+    }
+
+    /**
+     * Downloads the given file from the Keeper vault asynchronously. All files
+     * are read as UTF-8.
+     *
+     * @param file
+     *     The file to download, which may be null.
+     *
+     * @return
+     *     A Future which resolves with the contents of the file once
+     *     downloaded. If no file was provided (file was null), this Future
+     *     resolves with null.
+     */
+    public Future<String> download(final KeeperFile file) {
+
+        if (file == null)
+            return CompletableFuture.completedFuture(null);
+        
+        return CompletableFuture.supplyAsync(() -> {
+            return new String(SecretsManager.downloadFile(file), StandardCharsets.UTF_8);
+        });
+
+    }
+
+    /**
      * Returns the single hostname (or address) associated with the given
      * record. If the record has no associated hostname, or multiple hostnames,
      * null is returned. Hostnames are retrieved from "Hosts" fields, as well
@@ -341,23 +417,30 @@ public class KsmRecordService {
      * Returns the private key associated with the given record. If the record
      * has no associated private key, or multiple private keys, null is
      * returned. Private keys are retrieved from "KeyPairs" fields.
-     * Alternatively, private keys are retrieved from custom fields with the
-     * label "private key" (case-insensitive, space optional) if they are
-     * "KeyPairs", "Password", or "Hidden" fields.
+     * Alternatively, private keys are retrieved from PEM-type attachments or
+     * custom fields with the label "private key" (case-insensitive, space
+     * optional) if they are "KeyPairs", "Password", or "Hidden" fields. If
+     * file downloads are required, they will be performed asynchronously.
      *
      * @param record
      *     The record to retrieve the private key from.
      *
      * @return
-     *     The private key associated with the given record, or null if the
-     *     record has no associated private key or multiple private keys.
+     *     A Future which resolves with the private key associated with the
+     *     given record. If the record has no associated private key or
+     *     multiple private keys, the returned Future will resolve to null.
      */
-    public String getPrivateKey(KeeperRecord record) {
+    public Future<String> getPrivateKey(KeeperRecord record) {
 
         // Attempt to find single matching keypair field
         KeyPairs keyPairsField = getField(record, KeyPairs.class, PRIVATE_KEY_LABEL_PATTERN);
         if (keyPairsField != null)
-            return getSingleValue(keyPairsField.getValue(), KeyPair::getPrivateKey);
+            return CompletableFuture.completedFuture(getSingleValue(keyPairsField.getValue(), KeyPair::getPrivateKey));
+
+        // Lacking a typed keypair field, prefer a PEM-type attachment
+        KeeperFile keyFile = getFile(record, PRIVATE_KEY_FILENAME_PATTERN);
+        if (keyFile != null)
+            return download(keyFile);
 
         KeeperRecordData data = record.getData();
         List<KeeperRecordField> custom = data.getCustom();
@@ -365,14 +448,14 @@ public class KsmRecordService {
         // Use password "private key" custom field as fallback ...
         Password passwordField = getField(custom, Password.class, PRIVATE_KEY_LABEL_PATTERN);
         if (passwordField != null)
-            return getSingleValue(passwordField.getValue());
+            return CompletableFuture.completedFuture(getSingleValue(passwordField.getValue()));
 
         // ... or hidden "private key" custom field
         HiddenField hiddenField = getField(custom, HiddenField.class, PRIVATE_KEY_LABEL_PATTERN);
         if (hiddenField != null)
-            return getSingleValue(hiddenField.getValue());
+            return CompletableFuture.completedFuture(getSingleValue(hiddenField.getValue()));
 
-        return null;
+        return CompletableFuture.completedFuture(null);
 
     }
 

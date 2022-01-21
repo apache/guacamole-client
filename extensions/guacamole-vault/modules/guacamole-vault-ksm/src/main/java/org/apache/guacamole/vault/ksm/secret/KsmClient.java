@@ -24,13 +24,10 @@ import com.google.inject.Singleton;
 import com.keepersecurity.secretsManager.core.Hosts;
 import com.keepersecurity.secretsManager.core.KeeperFile;
 import com.keepersecurity.secretsManager.core.KeeperRecord;
-import com.keepersecurity.secretsManager.core.KeeperRecordData;
-import com.keepersecurity.secretsManager.core.KeeperRecordField;
 import com.keepersecurity.secretsManager.core.KeeperSecrets;
 import com.keepersecurity.secretsManager.core.Login;
 import com.keepersecurity.secretsManager.core.Notation;
 import com.keepersecurity.secretsManager.core.SecretsManager;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -446,16 +443,10 @@ public class KsmClient {
         cacheLock.readLock().lock();
         try {
 
+            // Retrieve any relevant file asynchronously
             Matcher fileNotationMatcher = KEEPER_FILE_NOTATION.matcher(notation);
-            if (fileNotationMatcher.matches()) {
-
-                // Retrieve any relevant file asynchronously
-                KeeperFile file = Notation.getFile(cachedSecrets, notation);
-                return CompletableFuture.supplyAsync(() -> {
-                    return new String(SecretsManager.downloadFile(file), StandardCharsets.UTF_8);
-                });
-
-            }
+            if (fileNotationMatcher.matches())
+                return recordService.download(Notation.getFile(cachedSecrets, notation));
 
             // Retrieve string values synchronously
             return CompletableFuture.completedFuture(Notation.getValue(cachedSecrets, notation));

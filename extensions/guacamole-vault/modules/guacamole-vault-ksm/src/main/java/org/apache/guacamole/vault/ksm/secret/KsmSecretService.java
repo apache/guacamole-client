@@ -109,9 +109,8 @@ public class KsmSecretService implements VaultSecretService {
             tokens.put(prefix + "PASSPHRASE", CompletableFuture.completedFuture(passphrase));
 
         // Private key of server-related record
-        String privateKey = recordService.getPrivateKey(record);
-        if (privateKey != null)
-            tokens.put(prefix + "KEY", CompletableFuture.completedFuture(privateKey));
+        Future<String> privateKey = recordService.getPrivateKey(record);
+        tokens.put(prefix + "KEY", privateKey);
 
     }
     
