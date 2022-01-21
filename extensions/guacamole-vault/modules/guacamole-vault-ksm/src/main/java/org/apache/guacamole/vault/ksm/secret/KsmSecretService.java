@@ -21,10 +21,12 @@ package org.apache.guacamole.vault.ksm.secret;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.keepersecurity.secretsManager.core.KeeperRecord;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 import org.apache.guacamole.GuacamoleException;
@@ -42,6 +44,12 @@ public class KsmSecretService implements VaultSecretService {
      */
     @Inject
     private KsmClient ksm;
+
+    /**
+     * Service for retrieving data from records.
+     */
+    @Inject
+    private KsmRecordService recordService;
 
     @Override
     public String canonicalize(String nameComponent) {
@@ -65,8 +73,48 @@ public class KsmSecretService implements VaultSecretService {
     @Override
     public Map<String, Future<String>> getTokens(GuacamoleConfiguration config)
             throws GuacamoleException {
-        // STUB
-        return Collections.emptyMap();
+
+        Map<String, Future<String>> tokens = new HashMap<>();
+
+        // TODO: Ensure tokens within parameters are evaluated when considering
+        // whether a KSM record matches (ie: "username" might be ${GUAC_USERNAME})
+
+        // TODO: Verify protocol before assuming meaning of "hostname"
+        // parameter
+
+        Map<String, String> parameters = config.getParameters();
+
+        // Retrieve and define server-specific tokens, if any
+        String hostname = parameters.get("hostname");
+        if (hostname != null && !hostname.isEmpty()) {
+            KeeperRecord record = ksm.getRecordByHost(hostname);
+            if (record != null) {
+
+                // Username of server-related record
+                String username = recordService.getUsername(record);
+                if (username != null)
+                    tokens.put("KEEPER_SERVER_USERNAME", CompletableFuture.completedFuture(username));
+
+                // Password of server-related record
+                String password = recordService.getPassword(record);
+                if (password != null)
+                    tokens.put("KEEPER_SERVER_PASSWORD", CompletableFuture.completedFuture(password));
+
+                // Key passphrase of server-related record
+                String passphrase = recordService.getPassphrase(record);
+                if (passphrase != null)
+                    tokens.put("KEEPER_SERVER_PASSPHRASE", CompletableFuture.completedFuture(passphrase));
+
+                // Private key of server-related record
+                String privateKey = recordService.getPrivateKey(record);
+                if (privateKey != null)
+                    tokens.put("KEEPER_SERVER_KEY", CompletableFuture.completedFuture(privateKey));
+
+            }
+        }
+
+        return tokens;
+
     }
 
 }
