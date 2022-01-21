@@ -91,7 +91,7 @@ angular.module('form').provider('formService', function formServiceProvider() {
          * @type FieldType
          */
         'USERNAME' : {
-            templateUrl : 'app/form/templates/textField.html'
+            templateUrl : 'app/form/templates/usernameField.html'
         },
 
         /**
