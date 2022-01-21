@@ -387,8 +387,12 @@ public class KsmClient {
         cacheLock.readLock().lock();
         try {
 
-            if (cachedAmbiguousHosts.contains(hostname))
+            if (cachedAmbiguousHosts.contains(hostname)) {
+                logger.debug("The hostname/address \"{}\" is referenced by "
+                        + "multiple Keeper records and cannot be used to "
+                        + "locate individual secrets.", hostname);
                 return null;
+            }
 
             return cachedRecordsByHost.get(hostname);
 
@@ -417,8 +421,12 @@ public class KsmClient {
         cacheLock.readLock().lock();
         try {
 
-            if (cachedAmbiguousUsernames.contains(username))
+            if (cachedAmbiguousUsernames.contains(username)) {
+                logger.debug("The username \"{}\" is referenced by multiple "
+                        + "Keeper records and cannot be used to locate "
+                        + "individual secrets.", username);
                 return null;
+            }
 
             return cachedRecordsByUsername.get(username);
 
