@@ -48,7 +48,9 @@
         <module>guacamole-auth-quickconnect</module>
         <module>guacamole-auth-sso</module>
         <module>guacamole-auth-totp</module>
-        <module>guacamole-auth-vault</module>
+
+        <!-- Additional features -->
+        <module>guacamole-vault</module>
 
     </modules>
 
