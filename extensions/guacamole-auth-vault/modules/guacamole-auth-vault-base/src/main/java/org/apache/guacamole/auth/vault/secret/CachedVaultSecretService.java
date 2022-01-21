@@ -40,7 +40,7 @@ public abstract class CachedVaultSecretService implements VaultSecretService {
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(CachedVaultSecretService.class);
+    private static final Logger logger = LoggerFactory.getLogger(CachedVaultSecretService.class);
 
     /**
      * The cached value of a secret.
