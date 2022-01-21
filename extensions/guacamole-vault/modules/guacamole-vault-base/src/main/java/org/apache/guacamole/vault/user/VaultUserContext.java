@@ -189,13 +189,18 @@ public class VaultUserContext extends TokenInjectingUserContext {
      *     may contain its own tokens, which will be substituted using values
      *     from the given filter.
      *
+     * @param secretNameFilter
+     *     The filter to use to substitute values for tokens in the names of
+     *     secrets to be retrieved from the vault.
+     *
      * @param config
      *     The GuacamoleConfiguration of the connection for which tokens are
      *     being retrieved, if available. This may be null.
      *
-     * @param filter
-     *     The filter to use to substitute values for tokens in the names of
-     *     secrets to be retrieved from the vault.
+     * @param configFilter
+     *     A TokenFilter instance that applies any tokens already available to
+     *     be applied to the configuration of the Guacamole connection. These
+     *     tokens will consist of tokens already supplied to connect().
      *
      * @return
      *     A Map of token name to Future, where each Future represents the
@@ -207,8 +212,8 @@ public class VaultUserContext extends TokenInjectingUserContext {
      *     vault due to an error.
      */
     private Map<String, Future<String>> getTokens(Map<String, String> tokenMapping,
-            GuacamoleConfiguration config, TokenFilter filter)
-            throws GuacamoleException {
+            TokenFilter secretNameFilter, GuacamoleConfiguration config,
+            TokenFilter configFilter) throws GuacamoleException {
 
         // Populate map with pending secret retrieval operations corresponding
         // to each mapped token
@@ -219,7 +224,7 @@ public class VaultUserContext extends TokenInjectingUserContext {
             // secrets which cannot be translated
             String secretName;
             try {
-                secretName = filter.filterStrict(entry.getValue());
+                secretName = secretNameFilter.filterStrict(entry.getValue());
             }
             catch (GuacamoleTokenUndefinedException e) {
                 logger.debug("Secret for token \"{}\" will not be retrieved. "
@@ -237,7 +242,7 @@ public class VaultUserContext extends TokenInjectingUserContext {
         }
 
         // Additionally include any dynamic, parameter-based tokens
-        pendingTokens.putAll(secretService.getTokens(config));
+        pendingTokens.putAll(secretService.getTokens(config, configFilter));
         
         return pendingTokens;
 
@@ -298,8 +303,8 @@ public class VaultUserContext extends TokenInjectingUserContext {
     }
 
     @Override
-    protected Map<String, String> getTokens(ConnectionGroup connectionGroup)
-            throws GuacamoleException {
+    protected void addTokens(ConnectionGroup connectionGroup,
+            Map<String, String> tokens) throws GuacamoleException {
 
         String name = connectionGroup.getName();
         String identifier = connectionGroup.getIdentifier();
@@ -313,7 +318,8 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
         // Substitute tokens producing secret names, retrieving and storing
         // those secrets as parameter tokens
-        return resolve(getTokens(confService.getTokenMapping(), null, filter));
+        tokens.putAll(resolve(getTokens(confService.getTokenMapping(), filter,
+                null, new TokenFilter(tokens))));
 
     }
 
@@ -353,7 +359,7 @@ public class VaultUserContext extends TokenInjectingUserContext {
     }
 
     @Override
-    protected Map<String, String> getTokens(Connection connection)
+    protected void addTokens(Connection connection, Map<String, String> tokens)
             throws GuacamoleException {
 
         String name = connection.getName();
@@ -392,7 +398,8 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
         // Substitute tokens producing secret names, retrieving and storing
         // those secrets as parameter tokens
-        return resolve(getTokens(confService.getTokenMapping(), config, filter));
+        tokens.putAll(resolve(getTokens(confService.getTokenMapping(), filter,
+                config, new TokenFilter(tokens))));
 
     }
 

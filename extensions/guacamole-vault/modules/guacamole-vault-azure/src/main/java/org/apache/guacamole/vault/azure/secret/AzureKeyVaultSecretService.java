@@ -34,6 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
+import org.apache.guacamole.token.TokenFilter;
 import org.apache.guacamole.vault.azure.conf.AzureKeyVaultAuthenticationException;
 import org.apache.guacamole.vault.azure.conf.AzureKeyVaultConfigurationService;
 import org.apache.guacamole.vault.secret.CachedVaultSecretService;
@@ -123,8 +124,8 @@ public class AzureKeyVaultSecretService extends CachedVaultSecretService {
     }
 
     @Override
-    public Map<String, Future<String>> getTokens(GuacamoleConfiguration config)
-            throws GuacamoleException {
+    public Map<String, Future<String>> getTokens(GuacamoleConfiguration config,
+            TokenFilter filter) throws GuacamoleException {
         return Collections.emptyMap();
     }
 

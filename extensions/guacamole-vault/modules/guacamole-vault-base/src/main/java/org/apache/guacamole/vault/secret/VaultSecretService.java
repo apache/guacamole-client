@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.Future;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
+import org.apache.guacamole.token.TokenFilter;
 
 /**
  * Generic service for retrieving the value of a secret stored in a vault.
@@ -84,6 +85,11 @@ public interface VaultSecretService {
      *     being generated. This configuration may be empty or partial,
      *     depending on the underlying implementation.
      *
+     * @param filter
+     *     A TokenFilter instance that applies any tokens already available to
+     *     be applied to the configuration of the Guacamole connection. These
+     *     tokens will consist of tokens already supplied to connect().
+     *
      * @return
      *     A map of token names to their corresponding future values, where
      *     each token and value may be dynamically determined based on the
@@ -93,7 +99,7 @@ public interface VaultSecretService {
      *     If an error occurs producing the tokens and values required for the
      *     given configuration.
      */
-    Map<String, Future<String>> getTokens(GuacamoleConfiguration config)
-            throws GuacamoleException;
+    Map<String, Future<String>> getTokens(GuacamoleConfiguration config,
+            TokenFilter filter) throws GuacamoleException;
 
 }

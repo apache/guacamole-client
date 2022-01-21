@@ -31,6 +31,7 @@ import java.util.concurrent.Future;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
+import org.apache.guacamole.token.TokenFilter;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 
 /**
@@ -71,13 +72,10 @@ public class KsmSecretService implements VaultSecretService {
     }
 
     @Override
-    public Map<String, Future<String>> getTokens(GuacamoleConfiguration config)
-            throws GuacamoleException {
+    public Map<String, Future<String>> getTokens(GuacamoleConfiguration config,
+            TokenFilter filter) throws GuacamoleException {
 
         Map<String, Future<String>> tokens = new HashMap<>();
-
-        // TODO: Ensure tokens within parameters are evaluated when considering
-        // whether a KSM record matches (ie: "username" might be ${GUAC_USERNAME})
 
         // TODO: Verify protocol before assuming meaning of "hostname"
         // parameter
@@ -87,7 +85,7 @@ public class KsmSecretService implements VaultSecretService {
         // Retrieve and define server-specific tokens, if any
         String hostname = parameters.get("hostname");
         if (hostname != null && !hostname.isEmpty()) {
-            KeeperRecord record = ksm.getRecordByHost(hostname);
+            KeeperRecord record = ksm.getRecordByHost(filter.filter(hostname));
             if (record != null) {
 
                 // Username of server-related record
