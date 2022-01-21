@@ -42,10 +42,10 @@ public class AzureKeyVaultConfigurationService extends VaultConfigurationService
     private Environment environment;
 
     /**
-     * The name of the file which contains the JSON mapping of connection
+     * The name of the file which contains the YAML mapping of connection
      * parameter token to Azure Key Vault secret name.
      */
-    private static final String TOKEN_MAPPING_FILENAME = "azure-keyvault-token-mapping.json";
+    private static final String TOKEN_MAPPING_FILENAME = "azure-keyvault-token-mapping.yml";
 
     /**
      * The number of milliseconds that each retrieved secret should be cached
@@ -101,8 +101,8 @@ public class AzureKeyVaultConfigurationService extends VaultConfigurationService
 
     /**
      * Creates a new AzureKeyVaultConfigurationService which reads the token
-     * mapping from "azure-keyvault-token-mapping.json". The token mapping is
-     * a JSON file which lists each connection parameter token and the name of
+     * mapping from "azure-keyvault-token-mapping.yml". The token mapping is a
+     * YAML file which lists each connection parameter token and the name of
      * the secret from which the value for that token should be read.
      */
     public AzureKeyVaultConfigurationService() {
