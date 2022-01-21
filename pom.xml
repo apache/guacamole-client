@@ -209,8 +209,8 @@
                         <target>1.8</target>
                         <compilerArgs>
                             <arg>-Xlint:all</arg>
-                            <arg>-Werror</arg>
                         </compilerArgs>
+                        <failOnWarning>true</failOnWarning>
                         <fork>true</fork>
                     </configuration>
                 </plugin>
@@ -380,6 +380,11 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-joda</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>

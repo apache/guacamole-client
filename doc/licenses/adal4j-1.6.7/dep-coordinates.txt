@@ -1,0 +1,1 @@
+com.microsoft.azure:adal4j:jar:1.6.7
