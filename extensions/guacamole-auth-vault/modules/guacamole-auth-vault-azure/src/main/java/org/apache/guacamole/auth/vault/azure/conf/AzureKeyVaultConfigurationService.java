@@ -25,6 +25,7 @@ import com.microsoft.aad.adal4j.ClientCredential;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.vault.conf.VaultConfigurationService;
 import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
 /**
@@ -45,6 +46,19 @@ public class AzureKeyVaultConfigurationService extends VaultConfigurationService
      * parameter token to Azure Key Vault secret name.
      */
     private static final String TOKEN_MAPPING_FILENAME = "azure-keyvault-token-mapping.json";
+
+    /**
+     * The number of milliseconds that each retrieved secret should be cached
+     * for.
+     */
+    private static final IntegerGuacamoleProperty SECRET_TTL = new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() {
+            return "azure-keyvault-secret-ttl";
+        }
+
+    };
 
     /**
      * The URL of the Azure Key Vault that should be used to populate token
@@ -93,6 +107,21 @@ public class AzureKeyVaultConfigurationService extends VaultConfigurationService
      */
     public AzureKeyVaultConfigurationService() {
         super(TOKEN_MAPPING_FILENAME);
+    }
+
+    /**
+     * Returns the number of milliseconds that each retrieved secret should be
+     * cached for. By default, secrets are cached for 10 seconds.
+     *
+     * @return
+     *     The number of milliseconds to cache each retrieved secret.
+     *
+     * @throws GuacamoleException
+     *     If the value specified within guacamole.properties cannot be
+     *     parsed.
+     */
+    public int getSecretTTL() throws GuacamoleException {
+        return environment.getProperty(SECRET_TTL, 10000);
     }
 
     /**
