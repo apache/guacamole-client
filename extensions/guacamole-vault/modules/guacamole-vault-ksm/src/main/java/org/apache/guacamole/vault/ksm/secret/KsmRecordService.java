@@ -25,6 +25,7 @@ import com.keepersecurity.secretsManager.core.KeeperRecordData;
 import com.keepersecurity.secretsManager.core.KeyPair;
 import com.keepersecurity.secretsManager.core.KeyPairs;
 import com.keepersecurity.secretsManager.core.Login;
+import com.keepersecurity.secretsManager.core.Password;
 import java.util.List;
 
 /**
@@ -73,7 +74,19 @@ public class KsmRecordService {
      *     has no associated password.
      */
     public String getPassword(KeeperRecord record) {
-        return record.getPassword();
+
+        KeeperRecordData data = record.getData();
+
+        Password passwordField = (Password) data.getField(Password.class);
+        if (passwordField == null)
+            return null;
+
+        List<String> values = passwordField.getValue();
+        if (values.size() != 1)
+            return null;
+
+        return values.get(0);
+
     }
 
     /**
