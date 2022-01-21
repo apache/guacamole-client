@@ -48,6 +48,13 @@ public class AzureKeyVaultConfigurationService extends VaultConfigurationService
     private static final String TOKEN_MAPPING_FILENAME = "azure-keyvault-token-mapping.yml";
 
     /**
+     * The name of the properties file containing Guacamole configuration
+     * properties whose values are the names of corresponding secrets within
+     * Azure Key Vault.
+     */
+    private static final String PROPERTIES_FILENAME = "guacamole.properties.azure";
+
+    /**
      * The number of milliseconds that each retrieved secret should be cached
      * for.
      */
@@ -101,12 +108,15 @@ public class AzureKeyVaultConfigurationService extends VaultConfigurationService
 
     /**
      * Creates a new AzureKeyVaultConfigurationService which reads the token
-     * mapping from "azure-keyvault-token-mapping.yml". The token mapping is a
-     * YAML file which lists each connection parameter token and the name of
-     * the secret from which the value for that token should be read.
+     * mapping from "azure-keyvault-token-mapping.yml" and properties from
+     * "guacamole.properties.azure". The token mapping is a YAML file which
+     * lists each connection parameter token and the name of the secret from
+     * which the value for that token should be read, while the properties
+     * file is an alternative to guacamole.properties where each property
+     * value is the name of a secret containing the actual value.
      */
     public AzureKeyVaultConfigurationService() {
-        super(TOKEN_MAPPING_FILENAME);
+        super(TOKEN_MAPPING_FILENAME, PROPERTIES_FILENAME);
     }
 
     /**

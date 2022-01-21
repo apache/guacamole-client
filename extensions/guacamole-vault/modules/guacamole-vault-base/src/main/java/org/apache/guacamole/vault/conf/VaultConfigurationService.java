@@ -27,10 +27,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.properties.FileGuacamoleProperties;
+import org.apache.guacamole.properties.GuacamoleProperties;
+import org.apache.guacamole.properties.PropertiesGuacamoleProperties;
 import org.apache.guacamole.vault.VaultAuthenticationProviderModule;
+import org.apache.guacamole.vault.secret.VaultSecretService;
 
 /**
  * Base class for services which retrieve key vault configuration information.
@@ -47,6 +53,9 @@ public abstract class VaultConfigurationService {
     @Inject
     private Environment environment;
 
+    @Inject
+    private VaultSecretService secretService;
+    
     /**
      * ObjectMapper for deserializing YAML.
      */
@@ -59,14 +68,29 @@ public abstract class VaultConfigurationService {
     private final String tokenMappingFilename;
 
     /**
+     * The name of the properties file containing Guacamole configuration
+     * properties. Unlike guacamole.properties, the values of these properties
+     * are read from the vault. Each property is expected to contain a secret
+     * name instead of a property value.
+     */
+    private final String propertiesFilename;
+
+    /**
      * Creates a new VaultConfigurationService which retrieves the token/secret
-     * mapping from a YAML file having the given name.
+     * mappings and Guacamole configuration properties from the files with the
+     * given names.
      *
      * @param tokenMappingFilename
      *     The name of the YAML file containing the token/secret mapping.
+     *
+     * @param propertiesFilename
+     *     The name of the properties file containing Guacamole configuration
+     *     properties whose values are the names of corresponding secrets.
      */
-    protected VaultConfigurationService(String tokenMappingFilename) {
+    protected VaultConfigurationService(String tokenMappingFilename,
+            String propertiesFilename) {
         this.tokenMappingFilename = tokenMappingFilename;
+        this.propertiesFilename = propertiesFilename;
     }
 
     /**
@@ -111,6 +135,55 @@ public abstract class VaultConfigurationService {
             throw new GuacamoleServerException("Unable to read token mapping "
                     + "configuration file \"" + tokenMappingFilename + "\".", e);
         }
+
+    }
+
+    /**
+     * Returns a GuacamoleProperties instance which automatically reads the
+     * values of requested properties from the vault. The name of the secret
+     * corresponding to a property stored in the vault is defined via the
+     * properties filename supplied at construction time.
+     *
+     * @return
+     *     A GuacamoleProperties instance which automatically reads property
+     *     values from the vault.
+     *
+     * @throws GuacamoleException
+     *     If the properties file containing the property/secret mappings
+     *     exists but cannot be read.
+     */
+    public GuacamoleProperties getProperties() throws GuacamoleException {
+
+        // Use empty properties if file cannot be found
+        File propFile = new File(environment.getGuacamoleHome(), propertiesFilename);
+        if (!propFile.exists())
+            return new PropertiesGuacamoleProperties(new Properties());
+
+        // Automatically pull properties from vault
+        return new FileGuacamoleProperties(propFile) {
+
+            @Override
+            public String getProperty(String name) throws GuacamoleException {
+                try {
+
+                    String secretName = super.getProperty(name);
+                    if (secretName == null)
+                        return null;
+                    
+                    return secretService.getValue(secretName).get();
+
+                }
+                catch (InterruptedException | ExecutionException e) {
+
+                    if (e.getCause() instanceof GuacamoleException)
+                        throw (GuacamoleException) e;
+                    
+                    throw new GuacamoleServerException(String.format("Property "
+                            + "\"%s\" could not be retrieved from the vault.", name), e);
+                }
+            }
+
+        };
 
     }
 

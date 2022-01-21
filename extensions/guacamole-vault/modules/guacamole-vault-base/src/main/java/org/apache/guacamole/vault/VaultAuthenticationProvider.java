@@ -22,10 +22,12 @@ package org.apache.guacamole.vault;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.vault.conf.VaultConfigurationService;
 import org.apache.guacamole.vault.user.VaultUserContextFactory;
 
 /**
@@ -47,10 +49,22 @@ public abstract class VaultAuthenticationProvider
      *
      * @param module
      *     The module to use to configure dependency injection.
+     *
+     * @throws GuacamoleException
+     *     If the properties file containing vault-mapped Guacamole
+     *     configuration properties exists but cannot be read.
      */
-    protected VaultAuthenticationProvider(VaultAuthenticationProviderModule module) {
+    protected VaultAuthenticationProvider(VaultAuthenticationProviderModule module)
+            throws GuacamoleException {
+
         Injector injector = Guice.createInjector(module);
         this.userContextFactory = injector.getInstance(VaultUserContextFactory.class);
+
+        // Automatically pull properties from vault
+        Environment environment = injector.getInstance(Environment.class);
+        VaultConfigurationService confService = injector.getInstance(VaultConfigurationService.class);
+        environment.addGuacamoleProperties(confService.getProperties());
+        
     }
 
     @Override
