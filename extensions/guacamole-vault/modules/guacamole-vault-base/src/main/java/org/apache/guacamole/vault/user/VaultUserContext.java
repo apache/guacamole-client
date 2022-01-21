@@ -32,7 +32,6 @@ import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.TokenInjectingUserContext;
 import org.apache.guacamole.net.auth.UserContext;
-import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.GuacamoleTokenUndefinedException;
 import org.apache.guacamole.token.TokenFilter;
 import org.apache.guacamole.vault.conf.VaultConfigurationService;
@@ -286,6 +285,41 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
     }
 
+    /**
+     * Retrieves the connection parameters associated with the
+     * GuacamoleConfiguration of the given Connection. If possible, privileged
+     * access to those parameters is obtained first. Note that the underlying
+     * extension is not required to allow privileged access, nor is it
+     * required to expose the underlying connection parameters at all.
+     *
+     * @param connection
+     *     The connection to retrieve parameters from.
+     *
+     * @return
+     *     A Map of all connection parameters exposed by the underlying
+     *     extension for the given connection, which may be empty.
+     *
+     * @throws GuacamoleException
+     *     If an error prevents privileged retrieval of parameters.
+     */
+    private Map<String, String> getConnectionParameters(Connection connection)
+            throws GuacamoleException {
+
+        String identifier = connection.getIdentifier();
+
+        // Obtain privileged access to parameters if possible (note that the
+        // UserContext returned by getPrivileged() is not guaranteed to
+        // actually be privileged)
+        Connection privilegedConnection = getPrivileged().getConnectionDirectory().get(identifier);
+        if (privilegedConnection != null)
+            return privilegedConnection.getConfiguration().getParameters();
+
+        // Fall back to unprivileged access if not implemented/allowed by
+        // extension
+        return connection.getConfiguration().getParameters();
+
+    }
+
     @Override
     protected Map<String, String> getTokens(Connection connection)
             throws GuacamoleException {
@@ -303,9 +337,9 @@ public class VaultUserContext extends TokenInjectingUserContext {
         // Add hostname and username tokens if available (implementations are
         // not required to expose connection configuration details)
 
-        GuacamoleConfiguration config = connection.getConfiguration();
+        Map<String, String> parameters = getConnectionParameters(connection);
 
-        String hostname = config.getParameter("hostname");
+        String hostname = parameters.get("hostname");
         if (hostname != null)
             filter.setToken(CONNECTION_HOSTNAME_TOKEN, hostname);
         else
@@ -314,7 +348,7 @@ public class VaultUserContext extends TokenInjectingUserContext {
                     + "secret names.", identifier, name,
                     CONNECTION_HOSTNAME_TOKEN);
 
-        String username = config.getParameter("username");
+        String username = parameters.get("username");
         if (username != null)
             filter.setToken(CONNECTION_USERNAME_TOKEN, username);
         else
