@@ -25,6 +25,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
@@ -91,6 +92,8 @@ public abstract class VaultConfigurationService {
 
         // Get configuration file from GUACAMOLE_HOME
         File confFile = new File(environment.getGuacamoleHome(), tokenMappingFilename);
+        if (!confFile.exists())
+            return Collections.emptyMap();
 
         // Deserialize token mapping from YAML
         try {
