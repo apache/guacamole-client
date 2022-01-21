@@ -36,7 +36,7 @@ public class AzureKeyVaultAuthenticationProviderModule
         extends VaultAuthenticationProviderModule {
 
     /**
-     * Creates a new AzureKeyVaultAuthenticationiProviderModule which
+     * Creates a new AzureKeyVaultAuthenticationProviderModule which
      * configures dependency injection for the Azure Key Vault authentication
      * provider and related services.
      *
