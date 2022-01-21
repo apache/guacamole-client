@@ -219,6 +219,10 @@ public class VaultUserContext extends TokenInjectingUserContext {
      *     pending retrieval operation which will ultimately be completed with
      *     the value of all secrets mapped to that token.
      *
+     * @return
+     *     A Map of token name to the corresponding String value retrieved for
+     *     that token from the vault.
+     *
      * @throws GuacamoleException
      *     If the value for any applicable secret cannot be retrieved from the
      *     vault due to an error.
