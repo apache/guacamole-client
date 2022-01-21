@@ -19,6 +19,7 @@
 
 package org.apache.guacamole;
 
+import com.google.common.collect.Lists;
 import org.apache.guacamole.tunnel.TunnelModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -118,6 +119,14 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
     private List<AuthenticationProvider> authProviders;
 
     /**
+     * All temporary files that should be deleted upon application shutdown, in
+     * reverse order of desired deletion. This will typically simply be the
+     * order that each file was created.
+     */
+    @Inject
+    private List<File> temporaryFiles;
+    
+    /**
      * Internal reference to the Guice injector that was lazily created when
      * getInjector() was first invoked.
      */
@@ -194,20 +203,49 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
         });
     }
 
+    /**
+     * Deletes the given temporary file/directory, if possible. If the deletion
+     * operation fails, a warning is logged noting the failure. If the given
+     * file is a directory, it will only be deleted if empty.
+     *
+     * @param temp
+     *     The temporary file to delete.
+     */
+    private void deleteTemporaryFile(File temp) {
+        if (!temp.delete()) {
+            logger.warn("Temporary file/directory \"{}\" could not be "
+                    + "deleted. The file may remain until the JVM exits, or "
+                    + "may need to be manually deleted.", temp);
+        }
+        else
+            logger.debug("Deleted temporary file/directory \"{}\".", temp);
+    }
+    
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
+        try {
+        
+            // Clean up reference to Guice injector
+            servletContextEvent.getServletContext().removeAttribute(GUICE_INJECTOR);
 
-        // Clean up reference to Guice injector
-        servletContextEvent.getServletContext().removeAttribute(GUICE_INJECTOR);
+            // Shutdown TokenSessionMap
+            if (sessionMap != null)
+                sessionMap.shutdown();
 
-        // Shutdown TokenSessionMap
-        if (sessionMap != null)
-            sessionMap.shutdown();
+            // Unload all extensions
+            if (authProviders != null) {
+                for (AuthenticationProvider authProvider : authProviders)
+                    authProvider.shutdown();
+            }
 
-        // Unload all extensions
-        if (authProviders != null) {
-            for (AuthenticationProvider authProvider : authProviders)
-                authProvider.shutdown();
+        }
+        finally {
+
+            // Regardless of what may succeed/fail here, always attempt to
+            // clean up ALL temporary files
+            if (temporaryFiles != null)
+                Lists.reverse(temporaryFiles).stream().forEachOrdered(this::deleteTemporaryFile);
+
         }
 
         // Continue any Guice-specific cleanup

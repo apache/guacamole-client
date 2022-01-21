@@ -141,6 +141,13 @@ public class ExtensionModule extends ServletModule {
             new ArrayList<Listener>();
 
     /**
+     * All temporary files that should be deleted upon application shutdown, in
+     * reverse order of desired deletion. This will typically simply be the
+     * order that each file was created.
+     */
+    private final List<File> temporaryFiles = new ArrayList<>();
+
+    /**
      * Service for adding and retrieving language resources.
      */
     private final LanguageResourceService languageResourceService;
@@ -261,6 +268,20 @@ public class ExtensionModule extends ServletModule {
         return Collections.unmodifiableList(boundAuthenticationProviders);
     }
 
+    /**
+     * Returns a list of all temporary files that should be deleted upon
+     * application shutdown, in reverse order of desired deletion. This will
+     * typically simply be the order that each file was created.
+     *
+     * @return
+     *     A List of all temporary files that should be deleted upon
+     *     application shutdown. The List is not modifiable.
+     */
+    @Provides
+    public List<File> getTemporaryFiles() {
+        return Collections.unmodifiableList(temporaryFiles);
+    }
+    
     /**
      * Binds the given provider class such that a listener is bound for each
      * listener interface implemented by the provider and such that all bound
@@ -479,7 +500,7 @@ public class ExtensionModule extends ServletModule {
             try {
 
                 // Load extension from file
-                Extension extension = new Extension(getParentClassLoader(), extensionFile);
+                Extension extension = new Extension(getParentClassLoader(), extensionFile, temporaryFiles);
 
                 // Validate Guacamole version of extension
                 if (!isCompatible(extension.getGuacamoleVersion())) {

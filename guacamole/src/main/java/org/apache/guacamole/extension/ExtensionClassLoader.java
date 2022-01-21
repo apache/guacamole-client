@@ -84,6 +84,11 @@ public class ExtensionClassLoader extends URLClassLoader {
      * @param extension
      *     The extension .jar file from which classes should be loaded.
      *
+     * @param temporaryFiles
+     *     A modifiable List that should be populated with all temporary files
+     *     created for the given extension. These files should be deleted on
+     *     application shutdown in reverse order.
+     *
      * @param parent
      *     The ClassLoader to use if class resolution through the extension
      *     .jar fails.
@@ -97,7 +102,8 @@ public class ExtensionClassLoader extends URLClassLoader {
      *     file cannot be read.
      */
     public static ExtensionClassLoader getInstance(final File extension,
-            final ClassLoader parent) throws GuacamoleException {
+            final List<File> temporaryFiles, final ClassLoader parent)
+            throws GuacamoleException {
 
         try {
             // Attempt to create classloader which loads classes from the given
@@ -106,7 +112,7 @@ public class ExtensionClassLoader extends URLClassLoader {
 
                 @Override
                 public ExtensionClassLoader run() throws GuacamoleException {
-                    return new ExtensionClassLoader(extension, parent);
+                    return new ExtensionClassLoader(extension, temporaryFiles, parent);
                 }
 
             });
@@ -194,6 +200,11 @@ public class ExtensionClassLoader extends URLClassLoader {
      * @param extension
      *     The extension .jar file to generate URLs for.
      *
+     * @param temporaryFiles
+     *     A modifiable List that should be populated with all temporary files
+     *     created for the given extension. These files should be deleted on
+     *     application shutdown in reverse order.
+     *
      * @return
      *     An array of all URLs relevant to the given extension .jar.
      *
@@ -202,8 +213,8 @@ public class ExtensionClassLoader extends URLClassLoader {
      *     cannot be read, or any necessary temporary files/directories cannot
      *     be created.
      */
-    private static URL[] getExtensionURLs(File extension)
-            throws GuacamoleException {
+    private static URL[] getExtensionURLs(File extension,
+            List<File> temporaryFiles) throws GuacamoleException {
 
         JarFile extensionJar;
         try {
@@ -238,6 +249,7 @@ public class ExtensionClassLoader extends URLClassLoader {
             try {
                 if (extensionTempLibDir == null) {
                     extensionTempLibDir = Files.createTempDirectory(EXTENSION_TEMP_DIR_PREFIX);
+                    temporaryFiles.add(extensionTempLibDir.toFile());
                     extensionTempLibDir.toFile().deleteOnExit();
                 }
             }
@@ -252,6 +264,7 @@ public class ExtensionClassLoader extends URLClassLoader {
             File tempLibrary;
             try {
                 tempLibrary = Files.createTempFile(extensionTempLibDir, EXTENSION_TEMP_LIB_PREFIX, ".jar").toFile();
+                temporaryFiles.add(tempLibrary);
                 tempLibrary.deleteOnExit();
             }
             catch (IOException e) {
@@ -295,6 +308,11 @@ public class ExtensionClassLoader extends URLClassLoader {
      * @param extension
      *     The extension .jar file from which classes should be loaded.
      *
+     * @param temporaryFiles
+     *     A modifiable List that should be populated with all temporary files
+     *     created for the given extension. These files should be deleted on
+     *     application shutdown in reverse order.
+     *
      * @param parent
      *     The ClassLoader to use if class resolution through the extension
      *     .jar fails.
@@ -303,9 +321,9 @@ public class ExtensionClassLoader extends URLClassLoader {
      *     If the given file is not actually a file, or the contents of the
      *     file cannot be read.
      */
-    private ExtensionClassLoader(File extension, ClassLoader parent)
-            throws GuacamoleException {
-        super(getExtensionURLs(extension), null);
+    private ExtensionClassLoader(File extension, List<File> temporaryFiles,
+            ClassLoader parent) throws GuacamoleException {
+        super(getExtensionURLs(extension, temporaryFiles), null);
         this.parent = parent;
     }
 

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -355,12 +356,18 @@ public class Extension {
      * @param file
      *     The file to load as an extension.
      *
+     * @param temporaryFiles
+     *     A modifiable List that should be populated with all temporary files
+     *     created for this extension. These files should be deleted on
+     *     application shutdown in reverse order.
+     *
      * @throws GuacamoleException
      *     If the provided file is not a .jar file, does not contain the
      *     guac-manifest.json, or if guac-manifest.json is invalid and cannot
      *     be parsed.
      */
-    public Extension(final ClassLoader parent, final File file) throws GuacamoleException {
+    public Extension(final ClassLoader parent, final File file,
+            final List<File> temporaryFiles) throws GuacamoleException {
 
         // Associate extension abstraction with original file
         this.file = file;
@@ -390,7 +397,7 @@ public class Extension {
             }
 
             // Create isolated classloader for this extension
-            classLoader = ExtensionClassLoader.getInstance(file, parent);
+            classLoader = ExtensionClassLoader.getInstance(file, temporaryFiles, parent);
 
         }
 
