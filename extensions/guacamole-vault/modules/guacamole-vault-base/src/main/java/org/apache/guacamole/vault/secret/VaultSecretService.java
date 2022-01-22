@@ -29,25 +29,25 @@ public interface VaultSecretService {
 
     /**
      * Translates an arbitrary string, which may contain characters not allowed
-     * by the vault implementation, into a string which is a valid secret name.
-     * The type of transformation performed on the string, if any, will depend
-     * on the specific requirements of the vault provider.
+     * by the vault implementation, into a string which is valid within a
+     * secret name. The type of transformation performed on the string, if any,
+     * will depend on the specific requirements of the vault provider.
      *
      * NOTE: It is critical that this transformation is deterministic and
      * reasonably predictable for users. If an implementation must apply a
      * transformation to secret names, that transformation needs to be
      * documented.
      *
-     * @param name
-     *     An arbitrary string intended for use as a secret name, but which may
-     *     contain characters not allowed by the vault implementation.
+     * @param nameComponent
+     *     An arbitrary string intended for use within a secret name, but which
+     *     may contain characters not allowed by the vault implementation.
      *
      * @return
-     *     A name containing essentially the same content as the provided
+     *     A string containing essentially the same content as the provided
      *     string, but transformed deterministically such that it is acceptable
-     *     as a secret name by the vault provider.
+     *     as a component of a secret name by the vault provider.
      */
-    String canonicalize(String name);
+    String canonicalize(String nameComponent);
 
     /**
      * Returns a Future which eventually completes with the value of the secret

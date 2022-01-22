@@ -147,14 +147,31 @@ public class VaultUserContext extends TokenInjectingUserContext {
     /**
      * Creates a new TokenFilter instance with token values set for all tokens
      * which are not specific to connections or connection groups. Currently,
-     * this is only the vault-specific username token ("USERNAME").
+     * this is only the vault-specific username token ("USERNAME"). Each token
+     * stored within the returned TokenFilter via setToken() will be
+     * automatically canonicalized for use within secret names.
      *
      * @return
      *     A new TokenFilter instance with token values set for all tokens
      *     which are not specific to connections or connection groups.
      */
     private TokenFilter createFilter() {
-        TokenFilter filter = new TokenFilter();
+
+        // Create filter that automatically canonicalizes all token values
+        TokenFilter filter = new TokenFilter() {
+
+            @Override
+            public void setToken(String name, String value) {
+                super.setToken(name, secretService.canonicalize(value));
+            }
+
+            @Override
+            public void setTokens(Map<String, String> tokens) {
+                tokens.entrySet().forEach((entry) -> setToken(entry.getKey(), entry.getValue()));
+            }
+
+        };
+
         filter.setToken(USERNAME_TOKEN, self().getIdentifier());
         return filter;
     }
@@ -196,7 +213,7 @@ public class VaultUserContext extends TokenInjectingUserContext {
             // secrets which cannot be translated
             String secretName;
             try {
-                secretName = secretService.canonicalize(filter.filterStrict(entry.getValue()));
+                secretName = filter.filterStrict(entry.getValue());
             }
             catch (GuacamoleTokenUndefinedException e) {
                 logger.debug("Secret for token \"{}\" will not be retrieved. "

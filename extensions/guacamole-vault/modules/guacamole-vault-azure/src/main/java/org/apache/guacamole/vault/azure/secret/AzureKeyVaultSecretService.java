@@ -66,8 +66,8 @@ public class AzureKeyVaultSecretService extends CachedVaultSecretService {
      * not allowed by Azure Key Vault, replacing them with a single dash.
      */
     @Override
-    public String canonicalize(String name) {
-        Matcher disallowed = DISALLOWED_CHARACTERS.matcher(name);
+    public String canonicalize(String nameComponent) {
+        Matcher disallowed = DISALLOWED_CHARACTERS.matcher(nameComponent);
         return disallowed.replaceAll("-");
     }
 
