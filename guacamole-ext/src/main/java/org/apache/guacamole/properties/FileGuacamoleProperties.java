@@ -29,7 +29,8 @@ import org.apache.guacamole.GuacamoleServerException;
 
 /**
  * GuacamoleProperties implementation which reads all properties from a
- * standard Java properties file.
+ * standard Java properties file. Whitespace at the end of property values is
+ * automatically trimmed.
  */
 public class FileGuacamoleProperties extends PropertiesGuacamoleProperties {
 
