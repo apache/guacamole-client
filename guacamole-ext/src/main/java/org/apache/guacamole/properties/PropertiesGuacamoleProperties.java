@@ -44,7 +44,7 @@ public class PropertiesGuacamoleProperties implements GuacamoleProperties {
      *     values exposed by this instance of PropertiesGuacamoleProperties.
      */
     public PropertiesGuacamoleProperties(Properties properties) {
-        this(properties);
+        this.properties = properties;
     }
 
 
