@@ -243,6 +243,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
             if (connectionState === ManagedClientState.ConnectionState.CONNECTING
              || connectionState === ManagedClientState.ConnectionState.WAITING) {
                 $scope.status = {
+                    className : "connecting",
                     title: "CLIENT.DIALOG_HEADER_CONNECTING",
                     text: {
                         key : "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase()
@@ -360,6 +361,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
 
             // Prompt for parameters
             $scope.status = {
+                className : "parameters-required",
                 formNamespace : Protocol.getNamespace($scope.client.protocol),
                 forms : $scope.client.forms,
                 formModel : requiredParameters,

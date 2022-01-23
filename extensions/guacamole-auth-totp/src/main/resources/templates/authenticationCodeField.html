@@ -41,6 +41,7 @@
     <div class="totp-code">
         <input type="text"
                placeholder="{{'TOTP.FIELD_PLACEHOLDER_CODE' |translate}}"
+               ng-attr-name="{{ field.name }}"
                ng-model="model" autocorrect="off" autocapitalize="off" autofocus>
     </div>
 

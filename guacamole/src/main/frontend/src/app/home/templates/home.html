@@ -1,5 +1,4 @@
-
-<div class="view" ng-class="{loading: !isLoaded()}">
+<div class="home-view view" ng-class="{loading: !isLoaded()}">
 
     <div class="connection-list-ui">
 
@@ -8,9 +7,7 @@
             <h2>{{'HOME.SECTION_HEADER_RECENT_CONNECTIONS' | translate}}</h2>
             <guac-user-menu></guac-user-menu>
         </div>
-        <div class="recent-connections">
-            <guac-recent-connections root-groups="rootConnectionGroups"></guac-recent-connections>
-        </div>
+        <guac-recent-connections root-groups="rootConnectionGroups"></guac-recent-connections>
 
         <!-- All connections for this user -->
         <div class="header">

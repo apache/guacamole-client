@@ -156,6 +156,21 @@ angular.module('form').directive('guacFormField', [function formField() {
             };
 
             /**
+             * Returns an object as would be provided to the ngClass directive
+             * that defines the CSS classes that should be applied to this
+             * field.
+             *
+             * @return {!Object.<string, boolean>}
+             *     The ngClass object defining the CSS classes for the current
+             *     field.
+             */
+            $scope.getFieldClasses = function getFieldClasses() {
+                return formService.getClasses('labeled-field-', $scope.field, {
+                    empty: !$scope.model
+                });
+            };
+
+            /**
              * Returns whether the current field should be displayed.
              *
              * @returns {Boolean}

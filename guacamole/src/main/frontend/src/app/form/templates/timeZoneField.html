@@ -10,6 +10,7 @@
 
     <!-- Time zones within selected region -->
     <select class="time-zone"
+            ng-attr-name="{{ field.name }}"
             ng-disabled="disabled || !region"
             ng-model="model"
             ng-options="timeZone.value as timeZone.key for timeZone in timeZones[region] | toArray | orderBy: key"></select>

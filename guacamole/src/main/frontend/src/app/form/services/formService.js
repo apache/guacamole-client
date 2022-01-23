@@ -91,7 +91,7 @@ angular.module('form').provider('formService', function formServiceProvider() {
          * @type FieldType
          */
         'USERNAME' : {
-            templateUrl : 'app/form/templates/textField.html'
+            templateUrl : 'app/form/templates/usernameField.html'
         },
 
         /**
@@ -269,6 +269,53 @@ angular.module('form').provider('formService', function formServiceProvider() {
             // future calls
             injectors[module] = injectors[module] || angular.injector(['ng', module]);
             return injectors[module];
+
+        };
+
+        /**
+         * Given form content and an arbitrary prefix, returns a corresponding
+         * CSS class object as would be provided to the ngClass directive that
+         * assigns a content-specific CSS class based on the prefix and
+         * form/field name. Generated class names follow the lowercase with
+         * dashes naming convention. For example, if the prefix is "field-" and
+         * the provided content is a field with the name "Swap red/blue", the
+         * object { 'field-swap-red-blue' : true } would be returned.
+         *
+         * @param {!string} prefix
+         *     The arbitrary prefix to prepend to the name of the generated CSS
+         *     class.
+         *
+         * @param {!(Form|Field)} [content]
+         *     The form or field whose name should be used to produce the CSS
+         *     class name.
+         *
+         * @param {Object.<string, boolean>} [object={}]
+         *     The optional base ngClass object that should be used to provide
+         *     additional name/value pairs within the returned object.
+         *
+         * @return {!Object.<string, boolean>}
+         *     The ngClass object based on the provided object and defining a
+         *     CSS class name for the given content.
+         */
+        service.getClasses = function getClasses(prefix, content, object) {
+
+            // Default to no additional properties
+            object = object || {};
+
+            // Perform no transformation if there is no content or
+            // corresponding name
+            if (!content || !content.name)
+                return object;
+
+            // Transform content name and prefix into lowercase-with-dashes
+            // CSS class name
+            var className = prefix + content.name.replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase();
+
+            // Add CSS class name to provided base object (without touching
+            // base object)
+            var classes = angular.extend({}, object);
+            classes[className] = true;
+            return classes;
 
         };
 
