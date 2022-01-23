@@ -216,86 +216,85 @@ public class ExtensionClassLoader extends URLClassLoader {
     private static URL[] getExtensionURLs(File extension,
             List<File> temporaryFiles) throws GuacamoleException {
 
-        JarFile extensionJar;
-        try {
-            extensionJar = new JarFile(extension);
+        try (JarFile extensionJar = new JarFile(extension)) {
+
+            // Include extension itself within classpath
+            List<URL> urls = new ArrayList<>();
+            urls.add(getFileURL(extension));
+
+            Path extensionTempLibDir = null;
+
+            // Iterate through all entries (files) within the extension .jar,
+            // adding any nested .jar files within the archive root to the
+            // classpath
+            Enumeration<JarEntry> entries = extensionJar.entries();
+            while (entries.hasMoreElements()) {
+
+                JarEntry entry = entries.nextElement();
+                String name = entry.getName();
+
+                // Consider only .jar files located in root of archive
+                if (entry.isDirectory() ||! name.endsWith(".jar") || name.indexOf('/') != -1)
+                    continue;
+
+                // Create temporary directory for housing this extension's
+                // bundled .jar files, if not already created
+                try {
+                    if (extensionTempLibDir == null) {
+                        extensionTempLibDir = Files.createTempDirectory(EXTENSION_TEMP_DIR_PREFIX);
+                        temporaryFiles.add(extensionTempLibDir.toFile());
+                        extensionTempLibDir.toFile().deleteOnExit();
+                    }
+                }
+                catch (IOException e) {
+                    throw new GuacamoleServerException("Temporary directory "
+                            + "for libraries bundled with extension \""
+                            + extension + "\" could not be created.", e);
+                }
+
+                // Create temporary file to hold the contents of the current
+                // bundled .jar
+                File tempLibrary;
+                try {
+                    tempLibrary = Files.createTempFile(extensionTempLibDir, EXTENSION_TEMP_LIB_PREFIX, ".jar").toFile();
+                    temporaryFiles.add(tempLibrary);
+                    tempLibrary.deleteOnExit();
+                }
+                catch (IOException e) {
+                    throw new GuacamoleServerException("Temporary file "
+                            + "for library \"" + name + "\" bundled with "
+                            + "extension \"" + extension + "\" could not be "
+                            + "created.", e);
+                }
+
+                // Copy contents of bundled .jar to temporary file
+                try {
+                    copyEntryToFile(extensionJar, entry, tempLibrary);
+                }
+                catch (IOException e) {
+                    throw new GuacamoleServerException("Contents of library "
+                            + "\"" + name + "\" bundled with extension \""
+                            + extension + "\" could not be copied to a "
+                            + "temporary file.", e);
+                }
+
+                // Add temporary .jar file to classpath
+                urls.add(getFileURL(tempLibrary));
+
+            }
+
+            if (extensionTempLibDir != null)
+                logger.debug("Libraries bundled within extension \"{}\" have been "
+                        + "copied to temporary directory \"{}\".", extension, extensionTempLibDir);
+
+            return urls.toArray(new URL[0]);
+
         }
         catch (IOException e) {
             throw new GuacamoleServerException("Contents of extension \""
                     + extension + "\" cannot be read.", e);
         }
 
-        // Include extension itself within classpath
-        List<URL> urls = new ArrayList<>();
-        urls.add(getFileURL(extension));
-
-        Path extensionTempLibDir = null;
-
-        // Iterate through all entries (files) within the extension .jar,
-        // adding any nested .jar files within the archive root to the
-        // classpath
-        Enumeration<JarEntry> entries = extensionJar.entries();
-        while (entries.hasMoreElements()) {
-
-            JarEntry entry = entries.nextElement();
-            String name = entry.getName();
-
-            // Consider only .jar files located in root of archive
-            if (entry.isDirectory() ||! name.endsWith(".jar") || name.indexOf('/') != -1)
-                continue;
-
-            // Create temporary directory for housing this extension's
-            // bundled .jar files, if not already created
-            try {
-                if (extensionTempLibDir == null) {
-                    extensionTempLibDir = Files.createTempDirectory(EXTENSION_TEMP_DIR_PREFIX);
-                    temporaryFiles.add(extensionTempLibDir.toFile());
-                    extensionTempLibDir.toFile().deleteOnExit();
-                }
-            }
-            catch (IOException e) {
-                throw new GuacamoleServerException("Temporary directory "
-                        + "for libraries bundled with extension \""
-                        + extension + "\" could not be created.", e);
-            }
-
-            // Create temporary file to hold the contents of the current
-            // bundled .jar
-            File tempLibrary;
-            try {
-                tempLibrary = Files.createTempFile(extensionTempLibDir, EXTENSION_TEMP_LIB_PREFIX, ".jar").toFile();
-                temporaryFiles.add(tempLibrary);
-                tempLibrary.deleteOnExit();
-            }
-            catch (IOException e) {
-                throw new GuacamoleServerException("Temporary file "
-                        + "for library \"" + name + "\" bundled with "
-                        + "extension \"" + extension + "\" could not be "
-                        + "created.", e);
-            }
-
-            // Copy contents of bundled .jar to temporary file
-            try {
-                copyEntryToFile(extensionJar, entry, tempLibrary);
-            }
-            catch (IOException e) {
-                throw new GuacamoleServerException("Contents of library "
-                        + "\"" + name + "\" bundled with extension \""
-                        + extension + "\" could not be copied to a "
-                        + "temporary file.", e);
-            }
-
-            // Add temporary .jar file to classpath
-            urls.add(getFileURL(tempLibrary));
-
-        }
-
-        if (extensionTempLibDir != null)
-            logger.debug("Libraries bundled within extension \"{}\" have been "
-                    + "copied to temporary directory \"{}\".", extension, extensionTempLibDir);
-
-        return urls.toArray(new URL[0]);
-        
     }
 
     /**
