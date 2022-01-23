@@ -4,7 +4,9 @@
     }">
 
     <!-- Pre-defined color scheme options -->
-    <select ng-attr-id="{{ fieldId }}" ng-model="selectedColorScheme">
+    <select ng-attr-id="{{ fieldId }}"
+            ng-attr-name="{{ field.name }}"
+            ng-model="selectedColorScheme">
         <option ng-repeat="option in field.options | orderBy: value"
                 ng-value="option">{{ getFieldOption(option) | translate }}</option>
         <option value="custom">{{ 'COLOR_SCHEME.FIELD_OPTION_CUSTOM' | translate }}</option>
