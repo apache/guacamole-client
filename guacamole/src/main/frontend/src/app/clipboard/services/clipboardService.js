@@ -615,7 +615,7 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      * components like the "guacClient" directive.
      */
     service.resyncClipboard = function resyncClipboard() {
-        service.getClipboard().then(function clipboardRead(data) {
+        getLocalClipboard().then(function clipboardRead(data) {
             return service.setClipboard(data);
         }, angular.noop);
     };
