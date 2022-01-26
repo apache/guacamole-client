@@ -33,7 +33,7 @@ import org.apache.guacamole.vault.user.VaultUserContextFactory;
  * key vaults. When adding support for a key vault provider, a subclass
  * specific to that vault implementation will need to be created.
  *
- * @see AzureKeyVaultAuthenticationProviderModule
+ * @see KsmAuthenticationProviderModule
  */
 public abstract class VaultAuthenticationProviderModule extends AbstractModule {
 
@@ -44,7 +44,8 @@ public abstract class VaultAuthenticationProviderModule extends AbstractModule {
 
     /**
      * Creates a new VaultAuthenticationProviderModule which configures
-     * dependency injection for the Azure Key Vault authentication provider.
+     * dependency injection for the authentication provider of a vault
+     * implementation.
      *
      * @throws GuacamoleException
      *     If an error occurs while retrieving the Guacamole server
@@ -63,7 +64,7 @@ public abstract class VaultAuthenticationProviderModule extends AbstractModule {
      *     - VaultConfigurationService
      *     - VaultSecretService
      *
-     * @see AzureKeyVaultAuthenticationProviderModule
+     * @see KsmAuthenticationProviderModule
      */
     protected abstract void configureVault();
 
