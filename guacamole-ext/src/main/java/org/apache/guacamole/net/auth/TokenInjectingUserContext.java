@@ -32,7 +32,7 @@ public class TokenInjectingUserContext extends DelegatingUserContext {
 
     /**
      * The additional tokens to include with each call to connect() if
-     * getTokens() is not overridden.
+     * getTokens() or addTokens() are not overridden.
      */
     private final Map<String, String> tokens;
 
@@ -42,8 +42,8 @@ public class TokenInjectingUserContext extends DelegatingUserContext {
      * parameter tokens are included. Any additional tokens which have the same
      * name as existing tokens will override the existing values. If tokens
      * specific to a particular connection or connection group need to be
-     * included, getTokens() may be overridden to provide a different set of
-     * tokens.
+     * included, getTokens() or addTokens() may be overridden to provide a
+     * different set of tokens.
      *
      * @param userContext
      *     The UserContext to wrap.
@@ -60,9 +60,9 @@ public class TokenInjectingUserContext extends DelegatingUserContext {
     /**
      * Wraps the given UserContext, overriding the connect() function of each
      * retrieved Connection and ConnectionGroup such that the additional
-     * parameter tokens returned by getTokens() are included. Any additional
-     * tokens which have the same name as existing tokens will override the
-     * existing values.
+     * parameter tokens added by addTokens() or returned by getTokens() are
+     * included. Any additional tokens which have the same name as existing
+     * tokens will override the existing values.
      *
      * @param userContext
      *     The UserContext to wrap.
@@ -75,7 +75,10 @@ public class TokenInjectingUserContext extends DelegatingUserContext {
      * Returns the tokens which should be added to an in-progress call to
      * connect() for the given Connection. If not overridden, this function
      * will return the tokens provided when this instance of
-     * TokenInjectingUserContext was created.
+     * TokenInjectingUserContext was created. If the values of existing tokens
+     * need to be considered, implementations should override
+     * {@link #addTokens(org.apache.guacamole.net.auth.Connection, java.util.Map)}
+     * instead.
      *
      * @param connection
      *     The Connection on which connect() has been called.
@@ -83,16 +86,45 @@ public class TokenInjectingUserContext extends DelegatingUserContext {
      * @return
      *     The tokens which should be added to the in-progress call to
      *     connect().
+     *
+     * @throws GuacamoleException
+     *     If the tokens applicable to the given connection cannot be
+     *     generated.
      */
-    protected Map<String, String> getTokens(Connection connection) {
+    protected Map<String, String> getTokens(Connection connection)
+            throws GuacamoleException {
         return tokens;
+    }
+
+    /**
+     * Adds tokens to an in-progress call to connect() for the given
+     * Connection. If not overridden, this function will add the tokens
+     * returned by {@link #getTokens(org.apache.guacamole.net.auth.Connection)}.
+     *
+     * @param connection
+     *     The Connection on which connect() has been called.
+     *
+     * @param tokens
+     *     A modifiable Map containing the tokens already supplied to
+     *     connect().
+     *
+     * @throws GuacamoleException
+     *     If the tokens applicable to the given connection cannot be
+     *     generated.
+     */
+    protected void addTokens(Connection connection, Map<String, String> tokens)
+            throws GuacamoleException {
+        tokens.putAll(getTokens(connection));
     }
 
     /**
      * Returns the tokens which should be added to an in-progress call to
      * connect() for the given ConnectionGroup. If not overridden, this
      * function will return the tokens provided when this instance of
-     * TokenInjectingUserContext was created.
+     * TokenInjectingUserContext was created. If the values of existing tokens
+     * need to be considered, implementations should override
+     * {@link #addTokens(org.apache.guacamole.net.auth.ConnectionGroup, java.util.Map)}
+     * instead.
      *
      * @param connectionGroup
      *     The ConnectionGroup on which connect() has been called.
@@ -100,9 +132,35 @@ public class TokenInjectingUserContext extends DelegatingUserContext {
      * @return
      *     The tokens which should be added to the in-progress call to
      *     connect().
+     *
+     * @throws GuacamoleException
+     *     If the tokens applicable to the given connection group cannot be
+     *     generated.
      */
-    protected Map<String, String> getTokens(ConnectionGroup connectionGroup) {
+    protected Map<String, String> getTokens(ConnectionGroup connectionGroup)
+            throws GuacamoleException {
         return tokens;
+    }
+
+    /**
+     * Adds tokens to an in-progress call to connect() for the given
+     * ConnectionGroup. If not overridden, this function will add the tokens
+     * returned by {@link #getTokens(org.apache.guacamole.net.auth.ConnectionGroup)}.
+     *
+     * @param connectionGroup
+     *     The ConnectionGroup on which connect() has been called.
+     *
+     * @param tokens
+     *     A modifiable Map containing the tokens already supplied to
+     *     connect().
+     *
+     * @throws GuacamoleException
+     *     If the tokens applicable to the given connection cannot be
+     *     generated.
+     */
+    protected void addTokens(ConnectionGroup connectionGroup,
+            Map<String, String> tokens) throws GuacamoleException {
+        tokens.putAll(getTokens(connectionGroup));
     }
 
     @Override
@@ -112,7 +170,14 @@ public class TokenInjectingUserContext extends DelegatingUserContext {
 
             @Override
             protected ConnectionGroup decorate(ConnectionGroup object) throws GuacamoleException {
-                return new TokenInjectingConnectionGroup(object, getTokens(object));
+                return new TokenInjectingConnectionGroup(object) {
+
+                    @Override
+                    protected void addTokens(Map<String, String> tokens) throws GuacamoleException {
+                        TokenInjectingUserContext.this.addTokens(object, tokens);
+                    }
+
+                };
             }
 
             @Override
@@ -130,7 +195,14 @@ public class TokenInjectingUserContext extends DelegatingUserContext {
 
             @Override
             protected Connection decorate(Connection object) throws GuacamoleException {
-                return new TokenInjectingConnection(object, getTokens(object));
+                return new TokenInjectingConnection(object) {
+
+                    @Override
+                    protected void addTokens(Map<String, String> tokens) throws GuacamoleException {
+                        TokenInjectingUserContext.this.addTokens(object, tokens);
+                    }
+
+                };
             }
 
             @Override
