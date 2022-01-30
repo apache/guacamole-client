@@ -434,8 +434,11 @@ public class KsmRecordService {
 
         // Attempt to find single matching keypair field
         KeyPairs keyPairsField = getField(record, KeyPairs.class, PRIVATE_KEY_LABEL_PATTERN);
-        if (keyPairsField != null)
-            return CompletableFuture.completedFuture(getSingleValue(keyPairsField.getValue(), KeyPair::getPrivateKey));
+        if (keyPairsField != null) {
+            String privateKey = getSingleValue(keyPairsField.getValue(), KeyPair::getPrivateKey);
+            if (privateKey != null && !privateKey.isEmpty())
+                return CompletableFuture.completedFuture(privateKey);
+        }
 
         // Lacking a typed keypair field, prefer a PEM-type attachment
         KeeperFile keyFile = getFile(record, PRIVATE_KEY_FILENAME_PATTERN);
