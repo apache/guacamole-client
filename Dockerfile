@@ -62,6 +62,9 @@ ARG GID=1001
 RUN groupadd --gid $GID guacamole
 RUN useradd --system --create-home --shell /usr/sbin/nologin --uid $UID --gid $GID guacamole
 
+# allow guacamole user to import certificates into default java keystore file cacerts
+run chown guacamole /usr/local/openjdk-8/jre/lib/security/cacerts && chmod +w /usr/local/openjdk-8/jre/lib/security/cacerts 
+
 # Run with user guacamole
 USER guacamole
 

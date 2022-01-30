@@ -599,6 +599,10 @@ END
     set_optional_property "ldap-max-referral-hops"          "$LDAP_MAX_REFERRAL_HOPS"
     set_optional_property "ldap-operation-timeout"          "$LDAP_OPERATION_TIMEOUT"
 
+    if [ -n "$LDAP_SSL_CERT_FILE" ]; then
+        keytool -importcert -file $LDAP_SSL_CERT_FILE -alias $LDAP_SSL_CERT_FILE -storepass changeit -noprompt -keystore $JAVA_HOME/jre/lib/security/cacerts || true
+    fi
+
     # Add required .jar files to GUACAMOLE_EXT
     ln -s /opt/guacamole/ldap/guacamole-auth-*.jar "$GUACAMOLE_EXT"
 
