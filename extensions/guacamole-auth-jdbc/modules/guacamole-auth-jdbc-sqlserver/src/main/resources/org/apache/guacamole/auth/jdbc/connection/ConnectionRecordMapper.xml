@@ -37,36 +37,11 @@
         <result column="end_date"             property="endDate"                  jdbcType="TIMESTAMP"/>
     </resultMap>
 
-    <!-- Select all connection records from a given connection -->
-    <select id="select" resultMap="ConnectionRecordResultMap">
-
-        SELECT
-            [guacamole_connection_history].history_id,
-            [guacamole_connection_history].connection_id,
-            [guacamole_connection_history].connection_name,
-            [guacamole_connection_history].remote_host,
-            [guacamole_connection_history].sharing_profile_id,
-            [guacamole_connection_history].sharing_profile_name,
-            [guacamole_connection_history].user_id,
-            [guacamole_connection_history].username,
-            [guacamole_connection_history].start_date,
-            [guacamole_connection_history].end_date
-        FROM [guacamole_connection_history]
-        WHERE
-            [guacamole_connection_history].connection_id = #{identifier,jdbcType=INTEGER}
-        ORDER BY
-            [guacamole_connection_history].start_date DESC,
-            [guacamole_connection_history].end_date DESC
-
-    </select>
-
     <!-- Update the given connection record, assigning an end date -->
     <update id="updateEndDate" parameterType="org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel">
-
         UPDATE [guacamole_connection_history]
         SET end_date = #{record.endDate,jdbcType=TIMESTAMP}
         WHERE history_id = #{record.recordID,jdbcType=INTEGER}
-
     </update>
 
     <!-- Insert the given connection record -->
