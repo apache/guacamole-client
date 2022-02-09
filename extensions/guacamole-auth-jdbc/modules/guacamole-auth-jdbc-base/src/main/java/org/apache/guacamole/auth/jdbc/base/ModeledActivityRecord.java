@@ -63,6 +63,18 @@ public class ModeledActivityRecord implements ActivityRecord {
         this.namespace = namespace;
     }
 
+    /**
+     * Returns the backing model object. Changes to this record will affect the
+     * backing model object, and changes to the backing model object will
+     * affect this record.
+     *
+     * @return
+     *     The backing model object.
+     */
+    public ActivityRecordModel getModel() {
+        return model;
+    }
+
     @Override
     public Date getStartDate() {
         return model.getStartDate();
@@ -103,5 +115,5 @@ public class ModeledActivityRecord implements ActivityRecord {
                 .array());
 
     }
-    
+
 }

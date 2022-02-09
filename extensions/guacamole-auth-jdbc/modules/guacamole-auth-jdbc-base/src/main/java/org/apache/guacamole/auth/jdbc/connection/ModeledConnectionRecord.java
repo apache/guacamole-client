@@ -67,4 +67,9 @@ public class ModeledConnectionRecord extends ModeledActivityRecord
         return model.getSharingProfileName();
     }
 
+    @Override
+    public ConnectionRecordModel getModel() {
+        return model;
+    }
+    
 }

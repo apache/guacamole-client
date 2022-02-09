@@ -57,6 +57,20 @@ public interface ConnectionRecordMapper {
     int insert(@Param("record") ConnectionRecordModel record);
 
     /**
+     * Updates the given connection record in the database, assigning an end
+     * date. No column of the existing connection record is updated except for
+     * the end date. If the record does not actually exist, this operation has
+     * no effect.
+     *
+     * @param record
+     *     The connection record to update.
+     *
+     * @return
+     *     The number of rows updated.
+     */
+    int updateEndDate(@Param("record") ConnectionRecordModel record);
+
+    /**
      * Searches for up to <code>limit</code> connection records that contain
      * the given terms, sorted by the given predicates, regardless of whether
      * the data they are associated with is is readable by any particular user.
