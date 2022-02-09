@@ -35,52 +35,13 @@ public class ModeledActivityRecord implements ActivityRecord {
     private final ActivityRecordModel model;
 
     /**
-     * The UUID uniquely identifies this record, or null if no such unique
-     * identifier exists.
+     * The UUID namespace of the type 3 name UUID to generate for the record.
+     * This namespace should correspond to the source of IDs for the model such
+     * that the combination of this namespace with the numeric record ID will
+     * always be unique and deterministic across all activity records,
+     * regardless of record type.
      */
-    private final UUID uuid;
-
-    /**
-     * Generates a UUID that uniquely identifies the record represented by the
-     * given ActivityRecordModel. The UUID generated is a type 3 name UUID and
-     * is guaranteed to be unique so long as the provided UUID namespace
-     * corresponds to the namespace of the record ID within the model.
-     * <p>
-     * IMPORTANT: Changing this function such that different UUIDs will be
-     * generated for the same records relative to past releases can potentially
-     * break compatibility with established history record associations. Any
-     * such change should be made with great care to avoid breaking history
-     * functionality that may be provided by third-party extensions.
-     *
-     * @param namespace
-     *     The UUID namespace of the type 3 name UUID to generate. This
-     *     namespace should correspond to the source of IDs for the model
-     *     such that the combination of this namespace with the numeric record
-     *     ID will always be unique and deterministic across all activity
-     *     records, regardless of record type.
-     *
-     * @param model
-     *     The model object representing the activity record.
-     *
-     * @return
-     *     The UUID uniquely identifies the record represented by the given
-     *     model, or null if no such unique identifier can be generated (there
-     *     is no corresponding record ID).
-     */
-    private static UUID getUUID(UUID namespace, ActivityRecordModel model) {
-
-        Integer id = model.getRecordID();
-        if (id == null)
-            return null;
-
-        // Convert record ID to a name UUID in the given namespace
-        return UUID.nameUUIDFromBytes(ByteBuffer.allocate(24)
-                .putLong(namespace.getMostSignificantBits())
-                .putLong(namespace.getLeastSignificantBits())
-                .putLong(id)
-                .array());
-
-    }
+    private final UUID namespace;
 
     /**
      * Creates a new ModeledActivityRecord backed by the given model object.
@@ -99,7 +60,7 @@ public class ModeledActivityRecord implements ActivityRecord {
      */
     public ModeledActivityRecord(UUID namespace, ActivityRecordModel model) {
         this.model = model;
-        this.uuid = getUUID(namespace, model);
+        this.namespace = namespace;
     }
 
     @Override
@@ -129,7 +90,18 @@ public class ModeledActivityRecord implements ActivityRecord {
 
     @Override
     public UUID getUUID() {
-        return uuid;
+
+        Integer id = model.getRecordID();
+        if (id == null)
+            return null;
+
+        // Convert record ID to a name UUID in the given namespace
+        return UUID.nameUUIDFromBytes(ByteBuffer.allocate(24)
+                .putLong(namespace.getMostSignificantBits())
+                .putLong(namespace.getLeastSignificantBits())
+                .putLong(id)
+                .array());
+
     }
     
 }
