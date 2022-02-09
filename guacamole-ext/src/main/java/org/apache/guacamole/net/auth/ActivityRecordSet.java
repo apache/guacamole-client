@@ -58,6 +58,30 @@ public interface ActivityRecordSet<RecordType extends ActivityRecord> {
     Collection<RecordType> asCollection() throws GuacamoleException;
 
     /**
+     * Returns the record having the given unique identifier, if records within
+     * this set have unique identifiers. If records within this set do not have
+     * defined unique identifiers, this function has no effect.
+     *
+     * @param identifier
+     *     The unique identifier of the record to retrieve.
+     *
+     * @return
+     *     The record having the given unique identifier, or null if there is
+     *     no such record.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the record.
+     */
+    default RecordType get(String identifier) throws GuacamoleException {
+        return asCollection().stream()
+                .filter((record) -> {
+                    String recordIdentifier = record.getIdentifier();
+                    return recordIdentifier != null && recordIdentifier.equals(identifier);
+                })
+                .findFirst().orElse(null);
+    }
+
+    /**
      * Returns the subset of records which contain the given value. The
      * properties and semantics involved with determining whether a particular
      * record "contains" the given value is implementation dependent. This

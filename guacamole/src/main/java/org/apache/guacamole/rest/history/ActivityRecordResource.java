@@ -19,7 +19,9 @@
 
 package org.apache.guacamole.rest.history;
 
+import java.util.function.Function;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -43,13 +45,36 @@ public class ActivityRecordResource {
     private final ActivityRecord record;
 
     /**
+     * The REST API object representing the ActivityRecord being exposed.
+     */
+    private final APIActivityRecord externalRecord;
+
+    /**
      * Creates a new ActivityRecordResource which exposes the given record.
      *
      * @param record
      *     The ActivityRecord that should be exposed.
+     *
+     * @param externalRecord
+     *     The REST API object representing the ActivityRecord being exposed.
      */
-    public ActivityRecordResource(ActivityRecord record) {
+    public ActivityRecordResource(ActivityRecord record,
+            APIActivityRecord externalRecord) {
         this.record = record;
+        this.externalRecord = externalRecord;
+    }
+
+    /**
+     * Returns the record represented by this ActivityRecordResource, in a
+     * format intended for interchange.
+     *
+     * @return
+     *     The record that this ActivityRecordResource represents, in a format
+     *     intended for interchange.
+     */
+    @GET
+    public APIActivityRecord getRecord() {
+        return externalRecord;
     }
 
     /**

@@ -21,7 +21,6 @@ package org.apache.guacamole.rest.history;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -29,7 +28,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.net.auth.ActivityRecord;
@@ -176,70 +174,28 @@ public abstract class ActivityRecordSetResource<InternalRecordType extends Activ
     }
 
     /**
-     * Retrieves record having the given UUID from among the list of activity
-     * records stored within the underlying ActivityRecordSet which match the
-     * given, arbitrary criteria. If specified, the returned records will also
-     * be sorted according to the given sort predicates. As the number of
-     * activity records retrieved at any given time may be limited by the
-     * extension providing those records, the sorting and search criteria may
-     * impact whether the record having a particular UUID can be located, even
-     * if it is known that the record exists.
+     * Retrieves record having the given identifier from among the set of
+     * activity records stored within the underlying ActivityRecordSet.
      *
-     * @param uuid
-     *     The UUID of the record to retrieve.
-     *
-     * @param requiredContents
-     *     The set of strings that each must occur somewhere within the
-     *     relevant records, whether within the associated username,
-     *     the name of some associated object (such as a connection), or any
-     *     associated date. If non-empty, any record not matching each of the
-     *     strings within the collection will not be considered.
-     *
-     * @param sortPredicates
-     *     A list of predicates to apply while sorting the relevant records,
-     *     describing the properties involved and the sort order for those
-     *     properties.
+     * @param identifier
+     *     The unique identifier of the record to retrieve.
      *
      * @return
-     *     The record having the given UUID which matches the provided
-     *     criteria.
+     *     A resource representing the record having the given identifier.
      *
      * @throws GuacamoleException
-     *     If an error occurs while applying the given filter criteria or
-     *     sort predicates, or if the requested record cannot be found.
+     *     If an error occurs while locating the requested record, or if the
+     *     requested record cannot be found.
      */
-    @Path("{uuid}")
-    public ActivityRecordResource getRecord(@PathParam("uuid") String uuid,
-            @QueryParam("contains") List<String> requiredContents,
-            @QueryParam("order") List<APISortPredicate> sortPredicates)
-            throws GuacamoleException {
+    @Path("{identifier}")
+    public ActivityRecordResource getRecord(@PathParam("identifier") String identifier)
+                throws GuacamoleException {
 
-        // Parse UUID from provided string
-        UUID parsedUUID;
-        try {
-            parsedUUID = UUID.fromString(uuid);
-        }
-        catch (IllegalArgumentException e) {
-            throw new GuacamoleClientException("Invalid UUID.", e);
-        }
+        InternalRecordType record = history.get(identifier);
+        if (record == null)
+            throw new GuacamoleResourceNotFoundException("Not found: \"" + identifier + "\"");
 
-        // Apply search/sort criteria
-        applyCriteria(requiredContents, sortPredicates);
-        
-        // Locate record having given UUID among all visible records
-        for (InternalRecordType record : history.asCollection()) {
-
-            // Ignore records lacking any UUID
-            UUID recordUUID = record.getUUID();
-            if (recordUUID == null)
-                continue;
-
-            if (recordUUID.equals(parsedUUID))
-                return new ActivityRecordResource(record);
-
-        }
-
-        throw new GuacamoleResourceNotFoundException("No such history entry.");
+        return new ActivityRecordResource(record, toExternalRecord(record));
 
     }
 

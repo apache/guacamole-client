@@ -79,6 +79,21 @@ public interface ActivityRecord extends ReadableAttributes {
     public boolean isActive();
 
     /**
+     * Returns the unique identifier assigned to this record, if any. If this
+     * record is not uniquely identifiable, this may be null. If provided, this
+     * unique identifier MUST be unique across all {@link ActivityRecord}
+     * objects within the same {@link ActivityRecordSet}.
+     *
+     * @return
+     *     The unique identifier assigned to this record, or null if this
+     *     record has no such identifier.
+     */
+    public default String getIdentifier() {
+        UUID uuid = getUUID();
+        return uuid != null ? uuid.toString() : null;
+    }
+
+    /**
      * Returns a UUID that uniquely identifies this record. If provided, this
      * UUID MUST be deterministic and unique across all {@link ActivityRecord}
      * objects within the same {@link ActivityRecordSet}, and SHOULD be unique

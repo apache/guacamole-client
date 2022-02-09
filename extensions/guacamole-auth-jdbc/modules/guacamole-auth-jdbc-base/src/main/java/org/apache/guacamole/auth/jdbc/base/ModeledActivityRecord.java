@@ -101,6 +101,17 @@ public class ModeledActivityRecord implements ActivityRecord {
     }
 
     @Override
+    public String getIdentifier() {
+
+        Integer id = model.getRecordID();
+        if (id == null)
+            return null;
+
+        return id.toString();
+
+    }
+
+    @Override
     public UUID getUUID() {
 
         Integer id = model.getRecordID();

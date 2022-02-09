@@ -123,6 +123,17 @@ public abstract class DecoratingActivityRecordSet<RecordType extends ActivityRec
     }
 
     @Override
+    public RecordType get(String string) throws GuacamoleException {
+
+        RecordType record = super.get(string);
+        if (record != null)
+            return decorate(record);
+
+        return null;
+
+    }
+
+    @Override
     public ActivityRecordSet<RecordType> sort(SortableProperty property,
             boolean desc) throws GuacamoleException {
         return decorate(super.sort(property, desc));

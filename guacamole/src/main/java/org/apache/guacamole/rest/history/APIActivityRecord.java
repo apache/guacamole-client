@@ -96,6 +96,7 @@ public class APIActivityRecord {
         this.remoteHost = record.getRemoteHost();
         this.username   = record.getUsername();
         this.active     = record.isActive();
+        this.identifier = record.getIdentifier();
         this.uuid       = record.getUUID();
         this.attributes = record.getAttributes();
 
@@ -162,6 +163,18 @@ public class APIActivityRecord {
      */
     public boolean isActive() {
         return active;
+    }
+
+    /**
+     * Returns the unique identifier assigned to this record, if any. If this
+     * record is not uniquely identifiable, this may be null.
+     *
+     * @return
+     *     The unique identifier assigned to this record, or null if this
+     *     record has no such identifier.
+     */
+    public String getIdentifier() {
+        return identifier;
     }
 
     /**

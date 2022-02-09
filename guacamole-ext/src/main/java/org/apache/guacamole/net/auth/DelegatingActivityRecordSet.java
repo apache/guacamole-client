@@ -60,6 +60,11 @@ public class DelegatingActivityRecordSet<RecordType extends ActivityRecord>
     }
 
     @Override
+    public RecordType get(String identifier) throws GuacamoleException {
+        return recordSet.get(identifier);
+    }
+
+    @Override
     public Collection<RecordType> asCollection() throws GuacamoleException {
         return recordSet.asCollection();
     }

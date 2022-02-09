@@ -82,6 +82,11 @@ public class DelegatingActivityRecord implements ActivityRecord {
     }
 
     @Override
+    public String getIdentifier() {
+        return record.getIdentifier();
+    }
+
+    @Override
     public UUID getUUID() {
         return record.getUUID();
     }
