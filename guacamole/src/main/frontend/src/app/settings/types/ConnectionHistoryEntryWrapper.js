@@ -37,52 +37,11 @@ angular.module('settings').factory('ConnectionHistoryEntryWrapper', ['$injector'
     var ConnectionHistoryEntryWrapper = function ConnectionHistoryEntryWrapper(historyEntry) {
 
         /**
-         * The identifier of the connection associated with this history entry.
+         * The wrapped ConnectionHistoryEntry.
          *
-         * @type String
+         * @type ConnectionHistoryEntry
          */
-        this.connectionIdentifier = historyEntry.connectionIdentifier;
-
-        /**
-         * The name of the connection associated with this history entry.
-         *
-         * @type String
-         */
-        this.connectionName = historyEntry.connectionName;
-
-        /**
-         * The remote host associated with this history entry.
-         *
-         * @type String
-         */
-        this.remoteHost = historyEntry.remoteHost;
-
-        /**
-         * The username of the user associated with this particular usage of
-         * the connection.
-         *
-         * @type String
-         */
-        this.username = historyEntry.username;
-
-        /**
-         * The time that usage began, in seconds since 1970-01-01 00:00:00 UTC.
-         *
-         * @type Number
-         */
-        this.startDate = historyEntry.startDate;
-
-        /**
-         * The time that usage ended, in seconds since 1970-01-01 00:00:00 UTC.
-         * The absence of an endDate does NOT necessarily indicate that the
-         * connection is still in use, particularly if the server was shutdown
-         * or restarted before the history entry could be updated. To determine
-         * whether a connection is still active, check the active property of
-         * this history entry.
-         *
-         * @type Number
-         */
-        this.endDate = historyEntry.endDate;
+        this.entry = historyEntry;
 
         /**
          * The total amount of time the connection associated with the wrapped
@@ -90,7 +49,7 @@ angular.module('settings').factory('ConnectionHistoryEntryWrapper', ['$injector'
          *
          * @type Number
          */
-        this.duration = this.endDate - this.startDate;
+        this.duration = historyEntry.endDate - historyEntry.startDate;
 
         /**
          * An object providing value and unit properties, denoting the duration
@@ -101,7 +60,7 @@ angular.module('settings').factory('ConnectionHistoryEntryWrapper', ['$injector'
         this.readableDuration = null;
 
         // Set the duration if the necessary information is present
-        if (this.endDate && this.startDate)
+        if (historyEntry.endDate && historyEntry.startDate)
             this.readableDuration = new ConnectionHistoryEntry.Duration(this.duration);
 
         /**
@@ -115,7 +74,7 @@ angular.module('settings').factory('ConnectionHistoryEntryWrapper', ['$injector'
         this.readableDurationText = 'SETTINGS_CONNECTION_HISTORY.TEXT_HISTORY_DURATION';
 
         // Inform user if end date is not known
-        if (!this.endDate)
+        if (!historyEntry.endDate)
             this.readableDurationText = 'SETTINGS_CONNECTION_HISTORY.INFO_CONNECTION_DURATION_UNKNOWN';
 
     };

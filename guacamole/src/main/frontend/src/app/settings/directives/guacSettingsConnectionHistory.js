@@ -82,11 +82,11 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
              * @type SortOrder
              */
             $scope.order = new SortOrder([
-                '-startDate',
+                '-entry.startDate',
                 '-duration',
-                'username',
-                'connectionName',
-                'remoteHost'
+                'entry.username',
+                'entry.connectionName',
+                'entry.remoteHost'
             ]);
 
             // Get session date format
@@ -216,11 +216,11 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
                         ),
                         function pushRecord(historyEntryWrapper) {
                             records.push([
-                                historyEntryWrapper.username,
-                                $filter('date')(historyEntryWrapper.startDate, $scope.dateFormat),
+                                historyEntryWrapper.entry.username,
+                                $filter('date')(historyEntryWrapper.entry.startDate, $scope.dateFormat),
                                 historyEntryWrapper.duration / 1000,
-                                historyEntryWrapper.connectionName,
-                                historyEntryWrapper.remoteHost
+                                historyEntryWrapper.entry.connectionName,
+                                historyEntryWrapper.entry.remoteHost
                             ]);
                         }
                     );
