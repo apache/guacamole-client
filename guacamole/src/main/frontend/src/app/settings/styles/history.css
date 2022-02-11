@@ -71,3 +71,19 @@
 .settings.connectionHistory .history-list {
     width: 100%;
 }
+
+.settings.connectionHistory a.history-session-recording {
+    color: #0000ee;
+}
+
+.settings.connectionHistory a.history-session-recording::after {
+    display: inline-block;
+    content: ' ';
+    width: 1em;
+    height: 1em;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url('images/action-icons/guac-play-link.svg');
+    vertical-align: middle;    
+}

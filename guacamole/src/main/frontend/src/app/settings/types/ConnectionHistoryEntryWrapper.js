@@ -24,7 +24,11 @@ angular.module('settings').factory('ConnectionHistoryEntryWrapper', ['$injector'
     function defineConnectionHistoryEntryWrapper($injector) {
 
     // Required types
+    var ActivityLog            = $injector.get('ActivityLog');
     var ConnectionHistoryEntry = $injector.get('ConnectionHistoryEntry');
+
+    // Required services
+    var $translate = $injector.get('$translate');
 
     /**
      * Wrapper for ConnectionHistoryEntry which adds display-specific
@@ -34,7 +38,7 @@ angular.module('settings').factory('ConnectionHistoryEntryWrapper', ['$injector'
      * @param {ConnectionHistoryEntry} historyEntry
      *     The ConnectionHistoryEntry that should be wrapped.
      */
-    var ConnectionHistoryEntryWrapper = function ConnectionHistoryEntryWrapper(historyEntry) {
+    var ConnectionHistoryEntryWrapper = function ConnectionHistoryEntryWrapper(dataSource, historyEntry) {
 
         /**
          * The wrapped ConnectionHistoryEntry.
@@ -76,6 +80,67 @@ angular.module('settings').factory('ConnectionHistoryEntryWrapper', ['$injector'
         // Inform user if end date is not known
         if (!historyEntry.endDate)
             this.readableDurationText = 'SETTINGS_CONNECTION_HISTORY.INFO_CONNECTION_DURATION_UNKNOWN';
+
+        /**
+         * The graphical session recording associated with this history entry,
+         * if any. If no session recordings are associated with the entry, this
+         * will be null. If there are multiple session recordings, this will be
+         * the first such recording.
+         *
+         * @type {ConnectionHistoryEntryWrapper.Log}
+         */
+        this.sessionRecording = (function getSessionRecording() {
+
+            var identifier = historyEntry.identifier;
+            if (!identifier)
+                return null;
+
+            var name = _.findKey(historyEntry.logs, log => log.type === ActivityLog.Type.GUACAMOLE_SESSION_RECORDING);
+            if (!name)
+                return null;
+
+            var log = historyEntry.logs[name];
+            return new ConnectionHistoryEntryWrapper.Log({
+
+                url : '#/settings/' + encodeURIComponent(dataSource)
+                    + '/recording/' + encodeURIComponent(identifier)
+                    + '/' + encodeURIComponent(name),
+
+                description : $translate(log.description.key, log.description.variables)
+
+            });
+
+        })();
+
+    };
+
+    /**
+     * Representation of the ActivityLog of a ConnectionHistoryEntry which adds
+     * display-specific properties, such as a URL for viewing the log.
+     *
+     * @param {ConnectionHistoryEntryWrapper.Log|Object} [template={}]
+     *     The object whose properties should be copied within the new
+     *     ConnectionHistoryEntryWrapper.Log.
+     */
+    ConnectionHistoryEntryWrapper.Log = function Log(template) {
+
+        // Use empty object by default
+        template = template || {};
+
+        /**
+         * The relative URL for a session recording player that loads the
+         * session recording represented by this log.
+         *
+         * @type {!string}
+         */
+        this.url = template.url;
+
+        /**
+         * A promise that resolves with a human-readable description of the log.
+         *
+         * @type {!Promise.<string>}
+         */
+        this.description = template.description;
 
     };
 

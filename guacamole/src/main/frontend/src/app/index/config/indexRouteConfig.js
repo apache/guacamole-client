@@ -180,6 +180,15 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
             resolve       : { updateCurrentToken: updateCurrentToken }
         })
 
+        // Recording player
+        .when('/settings/:dataSource/recording/:identifier/:name', {
+            title         : 'APP.NAME',
+            bodyClassName : 'settings',
+            templateUrl   : 'app/settings/templates/settingsConnectionHistoryPlayer.html',
+            controller    : 'connectionHistoryPlayerController',
+            resolve       : { updateCurrentToken: updateCurrentToken }
+        })
+
         // Client view
         .when('/client/:id', {
             bodyClassName : 'client',

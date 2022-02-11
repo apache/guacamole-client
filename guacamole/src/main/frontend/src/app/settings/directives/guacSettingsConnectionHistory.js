@@ -175,7 +175,7 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
                     // Wrap all history entries for sake of display
                     $scope.historyEntryWrappers = [];
                     angular.forEach(historyEntries, function wrapHistoryEntry(historyEntry) {
-                       $scope.historyEntryWrappers.push(new ConnectionHistoryEntryWrapper(historyEntry)); 
+                       $scope.historyEntryWrappers.push(new ConnectionHistoryEntryWrapper($scope.dataSource, historyEntry)); 
                     });
 
                 }, requestService.DIE);

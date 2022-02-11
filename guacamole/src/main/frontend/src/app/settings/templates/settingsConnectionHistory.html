@@ -32,6 +32,9 @@
                     <th guac-sort-order="order" guac-sort-property="'entry.remoteHost'">
                         {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_REMOTEHOST' | translate}}
                     </th>
+                    <th>
+                        {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_LOGS' | translate}}
+                    </th>
                 </tr>
             </thead>
             <tbody ng-class="{loading: !isLoaded()}">
@@ -42,6 +45,14 @@
                         translate-values="{VALUE: historyEntryWrapper.readableDuration.value, UNIT: historyEntryWrapper.readableDuration.unit}"></td>
                     <td>{{historyEntryWrapper.entry.connectionName}}</td>
                     <td>{{historyEntryWrapper.entry.remoteHost}}</td>
+                    <td>
+                        <a class="history-session-recording"
+                           ng-show="historyEntryWrapper.sessionRecording"
+                           ng-href="{{ historyEntryWrapper.sessionRecording.url }}"
+                           ng-attr-title="{{ historyEntryWrapper.sessionRecording.description | resolve }}">
+                            <span class="history-action-description">{{'SETTINGS_CONNECTION_HISTORY.ACTION_VIEW_RECORDING' | translate}}</span>
+                        </a>
+                    </td>
                 </tr>
             </tbody>
         </table>
