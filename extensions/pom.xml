@@ -50,6 +50,7 @@
         <module>guacamole-auth-totp</module>
 
         <!-- Additional features -->
+        <module>guacamole-history-recording-storage</module>
         <module>guacamole-vault</module>
 
     </modules>
