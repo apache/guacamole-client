@@ -211,6 +211,9 @@
     // Seek within recording if slider is moved
     positionSlider.onchange = function sliderPositionChanged() {
 
+        // Seek is in progress
+        player.className = 'seeking';
+
         // Request seek
         recording.seek(positionSlider.value, function seekComplete() {
 
@@ -218,9 +221,6 @@
             player.className = '';
 
         });
-
-        // Seek is in progress
-        player.className = 'seeking';
 
     };
 
