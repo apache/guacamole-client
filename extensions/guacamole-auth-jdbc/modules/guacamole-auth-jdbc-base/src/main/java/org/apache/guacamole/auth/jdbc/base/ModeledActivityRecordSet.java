@@ -29,6 +29,8 @@ import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.ActivityRecordSet.SortableProperty;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A JDBC implementation of ActivityRecordSet. Calls to asCollection() will
@@ -41,6 +43,11 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
 public abstract class ModeledActivityRecordSet<RecordType extends ActivityRecord>
         extends RestrictedObject implements ActivityRecordSet<RecordType> {
 
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ModeledActivityRecordSet.class);
+    
     /**
      * The set of strings that each must occur somewhere within the returned 
      * records, whether within the associated username, an associated date, or
@@ -73,6 +80,11 @@ public abstract class ModeledActivityRecordSet<RecordType extends ActivityRecord
      * @param user
      *     The user retrieving the history.
      *
+     * @param recordIdentifier
+     *     The identifier of the specific history record to retrieve, if not
+     *     all matching records. Search terms, etc. will still be applied to
+     *     the single record.
+     *
      * @param requiredContents
      *     The search terms that must be contained somewhere within each of the
      *     returned records.
@@ -90,16 +102,35 @@ public abstract class ModeledActivityRecordSet<RecordType extends ActivityRecord
      * @throws GuacamoleException
      *     If permission to read the history records is denied.
      */
-    protected abstract Collection<RecordType> retrieveHistory(
-            AuthenticatedUser user,
+    protected abstract List<RecordType> retrieveHistory(
+            AuthenticatedUser user, String recordIdentifier,
             Set<ActivityRecordSearchTerm> requiredContents,
             List<ActivityRecordSortPredicate> sortPredicates,
             int limit) throws GuacamoleException;
 
     @Override
+    public RecordType get(String identifier) throws GuacamoleException {
+
+        List<RecordType> records = retrieveHistory(getCurrentUser(),
+                identifier, requiredContents, sortPredicates, limit);
+
+        if (records.isEmpty())
+            return null;
+
+        if (records.size() == 1)
+            return records.get(0);
+
+        logger.warn("Multiple history records match ID \"{}\"! This should "
+                + "not be possible and may indicate a bug or database "
+                + "corruption.", identifier);
+        return null;
+
+    }
+
+    @Override
     public Collection<RecordType> asCollection()
             throws GuacamoleException {
-        return retrieveHistory(getCurrentUser(), requiredContents,
+        return retrieveHistory(getCurrentUser(), null, requiredContents,
                 sortPredicates, limit);
     }
 

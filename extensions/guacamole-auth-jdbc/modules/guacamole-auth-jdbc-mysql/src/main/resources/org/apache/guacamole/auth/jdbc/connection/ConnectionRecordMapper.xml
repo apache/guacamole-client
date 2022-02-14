@@ -97,9 +97,13 @@
 
         <!-- Search terms -->
         <where>
-            
+
+            <if test="recordIdentifier != null">
+                guacamole_connection_history.history_id = #{recordIdentifier,jdbcType=VARCHAR}
+            </if>
+
             <if test="identifier != null">
-                guacamole_connection_history.connection_id = #{identifier,jdbcType=VARCHAR}
+                AND guacamole_connection_history.connection_id = #{identifier,jdbcType=VARCHAR}
             </if>
             
             <foreach collection="terms" item="term" open=" AND " separator=" AND ">
@@ -163,9 +167,13 @@
 
         <!-- Search terms -->
         <where>
-            
+
+            <if test="recordIdentifier != null">
+                guacamole_connection_history.history_id = #{recordIdentifier,jdbcType=VARCHAR}
+            </if>
+
             <!-- Restrict to readable connections -->
-            guacamole_connection_history.connection_id IN (
+            AND guacamole_connection_history.connection_id IN (
                 <include refid="org.apache.guacamole.auth.jdbc.connection.ConnectionMapper.getReadableIDs">
                     <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
                     <property name="groups"   value="effectiveGroups"/>

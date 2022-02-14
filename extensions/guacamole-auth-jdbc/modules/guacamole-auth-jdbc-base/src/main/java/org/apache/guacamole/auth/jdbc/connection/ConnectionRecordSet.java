@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.jdbc.connection;
 
 import com.google.inject.Inject;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -79,14 +78,15 @@ public class ConnectionRecordSet extends ModeledActivityRecordSet<ConnectionReco
     }
     
     @Override
-    protected Collection<ConnectionRecord> retrieveHistory(
-            AuthenticatedUser user, Set<ActivityRecordSearchTerm> requiredContents,
-            List<ActivityRecordSortPredicate> sortPredicates, int limit)
-            throws GuacamoleException {
+    protected List<ConnectionRecord> retrieveHistory(
+            AuthenticatedUser user, String recordIdentifier,
+            Set<ActivityRecordSearchTerm> requiredContents,
+            List<ActivityRecordSortPredicate> sortPredicates,
+            int limit) throws GuacamoleException {
 
         // Retrieve history from database
         return connectionService.retrieveHistory(identifier, getCurrentUser(),
-                requiredContents, sortPredicates, limit);
+                recordIdentifier, requiredContents, sortPredicates, limit);
 
     }
 

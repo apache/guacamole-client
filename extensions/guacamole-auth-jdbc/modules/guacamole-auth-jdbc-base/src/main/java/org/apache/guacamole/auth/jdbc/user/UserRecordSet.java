@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.jdbc.user;
 
 import com.google.inject.Inject;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -80,14 +79,15 @@ public class UserRecordSet extends ModeledActivityRecordSet<ActivityRecord> {
     }
     
     @Override
-    protected Collection<ActivityRecord> retrieveHistory(
-            AuthenticatedUser user, Set<ActivityRecordSearchTerm> requiredContents,
+    protected List<ActivityRecord> retrieveHistory(
+            AuthenticatedUser user, String recordIdentifier,
+            Set<ActivityRecordSearchTerm> requiredContents,
             List<ActivityRecordSortPredicate> sortPredicates, int limit)
             throws GuacamoleException {
 
         // Retrieve history from database
         return userService.retrieveHistory(identifier, getCurrentUser(),
-                requiredContents, sortPredicates, limit);
+                recordIdentifier, requiredContents, sortPredicates, limit);
 
     }
 

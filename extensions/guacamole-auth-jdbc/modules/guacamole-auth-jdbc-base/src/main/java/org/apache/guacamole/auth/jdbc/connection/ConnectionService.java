@@ -391,40 +391,6 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
     }
 
     /**
-     * Retrieves the connection history of the given connection, including any
-     * active connections.
-     *
-     * @param user
-     *     The user retrieving the connection history.
-     *
-     * @param connection
-     *     The connection whose history is being retrieved.
-     *
-     * @return
-     *     The connection history of the given connection, including any
-     *     active connections.
-     *
-     * @throws GuacamoleException
-     *     If permission to read the connection history is denied.
-     */
-    public List<ConnectionRecord> retrieveHistory(ModeledAuthenticatedUser user,
-            ModeledConnection connection) throws GuacamoleException {
-
-        String identifier = connection.getIdentifier();
-        
-        // Get current active connections.
-        List<ConnectionRecord> records = new ArrayList<>(tunnelService.getActiveConnections(connection));
-        Collections.reverse(records);
-        
-        // Add in the history records.
-        records.addAll(retrieveHistory(identifier, user, Collections.emptyList(),
-                Collections.emptyList(), Integer.MAX_VALUE));
-        
-        return records;
-
-    }
-
-    /**
      * Retrieves the connection history records matching the given criteria.
      * Retrieves up to <code>limit</code> connection history records matching
      * the given terms and sorted by the given predicates. Only history records
@@ -436,6 +402,11 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
      * 
      * @param user
      *     The user retrieving the connection history.
+     *
+     * @param recordIdentifier
+     *     The identifier of the specific history record to retrieve, if not
+     *     all matching records. Search terms, etc. will still be applied to
+     *     the single record.
      *
      * @param requiredContents
      *     The search terms that must be contained somewhere within each of the
@@ -456,7 +427,7 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
      *     If permission to read the connection history is denied.
      */
     public List<ConnectionRecord> retrieveHistory(String identifier,
-            ModeledAuthenticatedUser user,
+            ModeledAuthenticatedUser user, String recordIdentifier,
             Collection<ActivityRecordSearchTerm> requiredContents,
             List<ActivityRecordSortPredicate> sortPredicates, int limit)
             throws GuacamoleException {
@@ -465,53 +436,18 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
 
         // Bypass permission checks if the user is privileged
         if (user.isPrivileged())
-            searchResults = connectionRecordMapper.search(identifier, requiredContents,
-                    sortPredicates, limit);
+            searchResults = connectionRecordMapper.search(identifier,
+                    recordIdentifier, requiredContents, sortPredicates, limit);
 
         // Otherwise only return explicitly readable history records
         else
             searchResults = connectionRecordMapper.searchReadable(identifier,
-                    user.getUser().getModel(), requiredContents, sortPredicates,
-                    limit, user.getEffectiveUserGroups());
+                    user.getUser().getModel(), recordIdentifier,
+                    requiredContents, sortPredicates, limit,
+                    user.getEffectiveUserGroups());
 
         return getObjectInstances(searchResults);
 
-    }
-    
-    /**
-     * Retrieves the connection history records matching the given criteria.
-     * Retrieves up to <code>limit</code> connection history records matching
-     * the given terms and sorted by the given predicates. Only history records
-     * associated with data that the given user can read are returned.
-     * 
-     * @param user
-     *     The user retrieving the connection history.
-     *
-     * @param requiredContents
-     *     The search terms that must be contained somewhere within each of the
-     *     returned records.
-     *
-     * @param sortPredicates
-     *     A list of predicates to sort the returned records by, in order of
-     *     priority.
-     *
-     * @param limit
-     *     The maximum number of records that should be returned.
-     *
-     * @return
-     *     The connection history of the given connection, including any
-     *     active connections.
-     *
-     * @throws GuacamoleException
-     *     If permission to read the connection history is denied.
-     */
-    public List<ConnectionRecord> retrieveHistory(ModeledAuthenticatedUser user,
-            Collection<ActivityRecordSearchTerm> requiredContents,
-            List<ActivityRecordSortPredicate> sortPredicates, int limit)
-            throws GuacamoleException {
-        
-        return retrieveHistory(null, user, requiredContents, sortPredicates, limit);
-        
     }
 
     /**

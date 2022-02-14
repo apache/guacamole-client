@@ -71,6 +71,11 @@ public interface ActivityRecordMapper<ModelType> {
      *     retrieved, or null if records related to any such object should be
      *     retrieved.
      *
+     * @param recordIdentifier
+     *     The identifier of the specific history record to retrieve, if not
+     *     all matching records. Search terms, etc. will still be applied to
+     *     the single record.
+     *
      * @param terms
      *     The search terms that must match the returned records.
      *
@@ -85,6 +90,7 @@ public interface ActivityRecordMapper<ModelType> {
      *     The results of the search performed with the given parameters.
      */
     List<ModelType> search(@Param("identifier") String identifier,
+            @Param("recordIdentifier") String recordIdentifier,
             @Param("terms") Collection<ActivityRecordSearchTerm> terms,
             @Param("sortPredicates") List<ActivityRecordSortPredicate> sortPredicates,
             @Param("limit") int limit);
@@ -105,6 +111,11 @@ public interface ActivityRecordMapper<ModelType> {
      * @param user
      *    The user whose permissions should determine whether a record is
      *    returned.
+     *
+     * @param recordIdentifier
+     *     The identifier of the specific history record to retrieve, if not
+     *     all matching records. Search terms, etc. will still be applied to
+     *     the single record.
      *
      * @param terms
      *     The search terms that must match the returned records.
@@ -127,6 +138,7 @@ public interface ActivityRecordMapper<ModelType> {
      */
     List<ModelType> searchReadable(@Param("identifier") String identifier,
             @Param("user") UserModel user,
+            @Param("recordIdentifier") String recordIdentifier,
             @Param("terms") Collection<ActivityRecordSearchTerm> terms,
             @Param("sortPredicates") List<ActivityRecordSortPredicate> sortPredicates,
             @Param("limit") int limit,
