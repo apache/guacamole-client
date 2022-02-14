@@ -548,7 +548,7 @@ Guacamole.SessionRecording = function SessionRecording(source) {
             // Store client state if frame is flagged as a keyframe
             if (frame.keyframe && !frame.clientState) {
                 playbackClient.exportState(function storeClientState(state) {
-                    frame.clientState = state;
+                    frame.clientState = new Blob([JSON.stringify(state)]);
                 });
             }
 
@@ -606,8 +606,10 @@ Guacamole.SessionRecording = function SessionRecording(source) {
             // If frame has associated absolute state, make that frame the
             // current state
             if (frame.clientState) {
-                playbackClient.importState(frame.clientState);
-                currentFrame = index;
+                frame.clientState.text().then(function textReady(text) {
+                    playbackClient.importState(JSON.parse(text));
+                    currentFrame = index;
+                });
                 break;
             }
 
@@ -1058,10 +1060,12 @@ Guacamole.SessionRecording._Frame = function _Frame(timestamp, start, end) {
 
     /**
      * A snapshot of client state after this frame was rendered, as returned by
-     * a call to exportState(). If no such snapshot has been taken, this will
-     * be null.
+     * a call to exportState(), serialized as JSON, and stored within a Blob.
+     * Use of Blobs here is required to ensure the browser can make use of
+     * larger disk-backed storage if the size of the recording is large. If no
+     * such snapshot has been taken, this will be null.
      *
-     * @type {object}
+     * @type {Blob}
      * @default null
      */
     this.clientState = null;
