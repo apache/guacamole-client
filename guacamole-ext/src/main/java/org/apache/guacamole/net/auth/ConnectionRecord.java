@@ -20,6 +20,7 @@
 package org.apache.guacamole.net.auth;
 
 import java.util.UUID;
+import org.apache.guacamole.net.GuacamoleTunnel;
 
 /**
  * A logging record describing when a user started and ended usage of a
