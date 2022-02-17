@@ -1051,24 +1051,6 @@ if [ -n "$SAML_IDP_METADATA_URL" ]; then
     INSTALLED_AUTH="$INSTALLED_AUTH saml"
 fi
 
-#
-# Validate that at least one authentication backend is installed
-#
-
-if [ -z "$INSTALLED_AUTH" -a -z "$GUACAMOLE_HOME_TEMPLATE" ]; then
-    cat <<END
-FATAL: No authentication configured
--------------------------------------------------------------------------------
-The Guacamole Docker container needs at least one authentication mechanism in
-order to function, such as a MySQL database, PostgreSQL database, SQLServer
-database, LDAP directory or RADIUS server. Please specify at least the
-MYSQL_DATABASE or POSTGRES_DATABASE or SQLSERVER_DATABASE environment variables,
-or check Guacamole's Docker documentation regarding configuring LDAP and/or
-custom extensions.
-END
-    exit 1;
-fi
-
 # Use TOTP if specified.
 if [ "$TOTP_ENABLED" = "true" ]; then
     associate_totp
@@ -1092,6 +1074,25 @@ fi
 # Use json-auth if specified.
 if [ -n "$JSON_SECRET_KEY" ]; then
     associate_json
+    INSTALLED_AUTH="$INSTALLED_AUTH json"
+fi
+
+#
+# Validate that at least one authentication backend is installed
+#
+
+if [ -z "$INSTALLED_AUTH" -a -z "$GUACAMOLE_HOME_TEMPLATE" ]; then
+    cat <<END
+FATAL: No authentication configured
+-------------------------------------------------------------------------------
+The Guacamole Docker container needs at least one authentication mechanism in
+order to function, such as a MySQL database, PostgreSQL database, SQLServer
+database, LDAP directory or RADIUS server. Please specify at least the
+MYSQL_DATABASE or POSTGRES_DATABASE or SQLSERVER_DATABASE environment variables,
+or check Guacamole's Docker documentation regarding configuring LDAP and/or
+custom extensions.
+END
+    exit 1;
 fi
 
 # Set extension priority if specified
