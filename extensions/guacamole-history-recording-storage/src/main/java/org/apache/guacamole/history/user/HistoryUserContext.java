@@ -19,15 +19,19 @@
 
 package org.apache.guacamole.history.user;
 
+import java.util.Collections;
+import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.history.HistoryAuthenticationProvider;
 import org.apache.guacamole.history.connection.HistoryConnection;
 import org.apache.guacamole.history.connection.RecordedConnectionActivityRecordSet;
 import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.Connection;
+import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.DecoratingDirectory;
-import org.apache.guacamole.net.auth.DelegatingUserContext;
 import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.TokenInjectingUserContext;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 
@@ -35,8 +39,14 @@ import org.apache.guacamole.net.auth.UserContext;
  * UserContext implementation that automatically defines ActivityLogs for
  * files that relate to history entries.
  */
-public class HistoryUserContext extends DelegatingUserContext {
+public class HistoryUserContext extends TokenInjectingUserContext {
 
+    /**
+     * The name of the parameter token that contains the automatically-searched
+     * history recording/log path.
+     */
+    private static final String HISTORY_PATH_TOKEN_NAME = "HISTORY_PATH";
+    
     /**
      * The current Guacamole user.
      */
@@ -56,6 +66,34 @@ public class HistoryUserContext extends DelegatingUserContext {
     public HistoryUserContext(User currentUser, UserContext context) {
         super(context);
         this.currentUser = currentUser;
+    }
+
+    /**
+     * Returns the tokens which should be added to an in-progress call to
+     * connect() for any Connectable object.
+     *
+     * @return
+     *     The tokens which should be added to the in-progress call to
+     *     connect().
+     *
+     * @throws GuacamoleException
+     *     If the relevant tokens cannot be generated.
+     */
+    private Map<String, String> getTokens() throws GuacamoleException {
+        return Collections.singletonMap(HISTORY_PATH_TOKEN_NAME,
+                HistoryAuthenticationProvider.getRecordingSearchPath().getAbsolutePath());
+    }
+    
+    @Override
+    protected Map<String, String> getTokens(ConnectionGroup connectionGroup)
+            throws GuacamoleException {
+        return getTokens();
+    }
+
+    @Override
+    protected Map<String, String> getTokens(Connection connection)
+            throws GuacamoleException {
+        return getTokens();
     }
 
     @Override

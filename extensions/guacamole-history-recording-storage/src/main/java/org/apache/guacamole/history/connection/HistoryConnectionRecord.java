@@ -32,8 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.environment.Environment;
-import org.apache.guacamole.environment.LocalEnvironment;
+import org.apache.guacamole.history.HistoryAuthenticationProvider;
 import org.apache.guacamole.io.GuacamoleReader;
 import org.apache.guacamole.io.ReaderGuacamoleReader;
 import org.apache.guacamole.language.TranslatableMessage;
@@ -41,7 +40,6 @@ import org.apache.guacamole.net.auth.ActivityLog;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 import org.apache.guacamole.net.auth.DelegatingConnectionRecord;
 import org.apache.guacamole.net.auth.FileActivityLog;
-import org.apache.guacamole.properties.FileGuacamoleProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,25 +65,6 @@ public class HistoryConnectionRecord extends DelegatingConnectionRecord {
     private static final String TIMING_FILE_SUFFIX = ".timing";
 
     /**
-     * The default directory to search for associated session recordings, if
-     * not overridden with the "recording-search-path" property.
-     */
-    private static final File DEFAULT_RECORDING_SEARCH_PATH = new File("/var/lib/guacamole/recordings");
-
-    /**
-     * The directory to search for associated session recordings. By default,
-     * "/var/lib/guacamole/recordings" will be used.
-     */
-    private static final FileGuacamoleProperty RECORDING_SEARCH_PATH = new FileGuacamoleProperty() {
-
-        @Override
-        public String getName() {
-            return "recording-search-path";
-        }
-
-    };
-
-    /**
      * The recording file associated with the wrapped connection record. This
      * may be a single file or a directory that may contain any number of
      * relevant recordings.
@@ -106,12 +85,8 @@ public class HistoryConnectionRecord extends DelegatingConnectionRecord {
     public HistoryConnectionRecord(ConnectionRecord record) throws GuacamoleException {
         super(record);
 
-        Environment environment = LocalEnvironment.getInstance();
-        File recordingPath = environment.getProperty(RECORDING_SEARCH_PATH,
-                DEFAULT_RECORDING_SEARCH_PATH);
-
         String uuid = record.getUUID().toString();
-        File recordingFile = new File(recordingPath, uuid);
+        File recordingFile = new File(HistoryAuthenticationProvider.getRecordingSearchPath(), uuid);
         this.recording = recordingFile.canRead() ? recordingFile : null;
 
     }
