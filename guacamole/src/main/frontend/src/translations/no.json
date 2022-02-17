@@ -344,6 +344,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "Fransk (Azerty)",
         "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italiensk (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japansk (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Polsk (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Svensk (Qwerty)",
 
         "NAME" : "RDP",
