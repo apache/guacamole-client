@@ -442,8 +442,8 @@ Guacamole.SessionRecording = function SessionRecording(source) {
         tunnel.onstatechange = function tunnelStateChanged(state) {
             if (state === Guacamole.Tunnel.State.CLOSED) {
 
-                // Append to Blob (creating a new Blob in the process)
-                if (instructionBuffer.length >= BLOCK_SIZE) {
+                // Append any remaining instructions
+                if (instructionBuffer.length) {
                     recordingBlob = new Blob([recordingBlob, instructionBuffer]);
                     instructionBuffer = '';
                 }
