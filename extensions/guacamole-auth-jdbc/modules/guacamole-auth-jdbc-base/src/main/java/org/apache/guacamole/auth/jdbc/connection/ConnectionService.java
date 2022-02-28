@@ -463,8 +463,8 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
 
         List<ConnectionRecordModel> searchResults;
 
-        // Bypass permission checks if the user is privileged
-        if (user.isPrivileged())
+        // Bypass permission checks if the user is privileged or has System-level audit permissions
+        if (user.isPrivileged() || user.getUser().getEffectivePermissions().getSystemPermissions().hasPermission(SystemPermission.Type.AUDIT))
             searchResults = connectionRecordMapper.search(identifier, requiredContents,
                     sortPredicates, limit);
 
