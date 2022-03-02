@@ -17,12 +17,25 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.jdbc.user;
+package org.apache.guacamole.net.auth;
 
-import org.apache.guacamole.auth.jdbc.base.ActivityRecordMapper;
-import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
+import java.util.Map;
 
 /**
- * Mapper for user login activity records.
+ * An object which is associated with a set of arbitrary attributes, defined
+ * as name/value pairs.
  */
-public interface UserRecordMapper extends ActivityRecordMapper<ActivityRecordModel> {}
+public interface ReadableAttributes {
+
+    /**
+     * Returns all attributes associated with this object. The returned map
+     * may not be modifiable.
+     *
+     * @return
+     *     A map of all attribute identifiers to their corresponding values,
+     *     for all attributes associated with this object, which may not be
+     *     modifiable.
+     */
+    Map<String, String> getAttributes();
+
+}

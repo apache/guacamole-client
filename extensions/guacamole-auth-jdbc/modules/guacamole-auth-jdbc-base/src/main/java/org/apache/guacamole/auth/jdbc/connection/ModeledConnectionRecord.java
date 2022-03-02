@@ -43,7 +43,7 @@ public class ModeledConnectionRecord extends ModeledActivityRecord
      *     The model object to use to back this connection record.
      */
     public ModeledConnectionRecord(ConnectionRecordModel model) {
-        super(model);
+        super(ConnectionRecordSet.UUID_NAMESPACE, model);
         this.model = model;
     }
 
@@ -67,4 +67,9 @@ public class ModeledConnectionRecord extends ModeledActivityRecord
         return model.getSharingProfileName();
     }
 
+    @Override
+    public ConnectionRecordModel getModel() {
+        return model;
+    }
+    
 }

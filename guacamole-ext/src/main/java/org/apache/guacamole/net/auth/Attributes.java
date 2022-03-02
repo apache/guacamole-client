@@ -22,21 +22,10 @@ package org.apache.guacamole.net.auth;
 import java.util.Map;
 
 /**
- * An object which is associated with a set of arbitrary attributes, defined
- * as name/value pairs.
+ * An object which is associated with a set of arbitrary attributes that may
+ * be modifiable, defined as name/value pairs.
  */
-public interface Attributes {
-
-    /**
-     * Returns all attributes associated with this object. The returned map
-     * may not be modifiable.
-     *
-     * @return
-     *     A map of all attribute identifiers to their corresponding values,
-     *     for all attributes associated with this object, which may not be
-     *     modifiable.
-     */
-    Map<String, String> getAttributes();
+public interface Attributes extends ReadableAttributes {
 
     /**
      * Sets the given attributes. If an attribute within the map is not

@@ -19,8 +19,9 @@
 
 package org.apache.guacamole.auth.jdbc.base;
 
-
+import java.nio.ByteBuffer;
 import java.util.Date;
+import java.util.UUID;
 import org.apache.guacamole.net.auth.ActivityRecord;
 
 /**
@@ -34,15 +35,44 @@ public class ModeledActivityRecord implements ActivityRecord {
     private final ActivityRecordModel model;
 
     /**
+     * The UUID namespace of the type 3 name UUID to generate for the record.
+     * This namespace should correspond to the source of IDs for the model such
+     * that the combination of this namespace with the numeric record ID will
+     * always be unique and deterministic across all activity records,
+     * regardless of record type.
+     */
+    private final UUID namespace;
+
+    /**
      * Creates a new ModeledActivityRecord backed by the given model object.
      * Changes to this record will affect the backing model object, and changes
      * to the backing model object will affect this record.
-     * 
+     *
+     * @param namespace
+     *     The UUID namespace of the type 3 name UUID to generate for the
+     *     record. This namespace should correspond to the source of IDs for
+     *     the model such that the combination of this namespace with the
+     *     numeric record ID will always be unique and deterministic across all
+     *     activity records, regardless of record type.
+     *
      * @param model
      *     The model object to use to back this activity record.
      */
-    public ModeledActivityRecord(ActivityRecordModel model) {
+    public ModeledActivityRecord(UUID namespace, ActivityRecordModel model) {
         this.model = model;
+        this.namespace = namespace;
+    }
+
+    /**
+     * Returns the backing model object. Changes to this record will affect the
+     * backing model object, and changes to the backing model object will
+     * affect this record.
+     *
+     * @return
+     *     The backing model object.
+     */
+    public ActivityRecordModel getModel() {
+        return model;
     }
 
     @Override
@@ -68,6 +98,33 @@ public class ModeledActivityRecord implements ActivityRecord {
     @Override
     public boolean isActive() {
         return false;
+    }
+
+    @Override
+    public String getIdentifier() {
+
+        Integer id = model.getRecordID();
+        if (id == null)
+            return null;
+
+        return id.toString();
+
+    }
+
+    @Override
+    public UUID getUUID() {
+
+        Integer id = model.getRecordID();
+        if (id == null)
+            return null;
+
+        // Convert record ID to a name UUID in the given namespace
+        return UUID.nameUUIDFromBytes(ByteBuffer.allocate(24)
+                .putLong(namespace.getMostSignificantBits())
+                .putLong(namespace.getLeastSignificantBits())
+                .putLong(id)
+                .array());
+
     }
 
 }

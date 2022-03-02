@@ -23,10 +23,13 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.ActivityRecordSet;
 
@@ -87,6 +90,45 @@ public abstract class ActivityRecordSetResource<InternalRecordType extends Activ
     protected abstract ExternalRecordType toExternalRecord(InternalRecordType record);
 
     /**
+     * Applies the given search and sorting criteria to the ActivityRecordSet
+     * exposed by this ActivityRecordSetResource. The ActivityRecordSet stored
+     * as {@link #history} is modified as a result of this call.
+     *
+     * @param requiredContents
+     *     The set of strings that each must occur somewhere within the
+     *     returned records, whether within the associated username,
+     *     the name of some associated object (such as a connection), or any
+     *     associated date. If non-empty, any record not matching each of the
+     *     strings within the collection will be excluded from the results.
+     *
+     * @param sortPredicates
+     *     A list of predicates to apply while sorting the resulting records,
+     *     describing the properties involved and the sort order for those
+     *     properties.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while applying the given filter criteria or
+     *     sort predicates.
+     */
+    private void applyCriteria(List<String> requiredContents,
+            List<APISortPredicate> sortPredicates) throws GuacamoleException {
+
+        // Restrict to records which contain the specified strings
+        for (String required : requiredContents) {
+            if (!required.isEmpty())
+                history = history.contains(required);
+        }
+
+        // Sort according to specified ordering
+        for (APISortPredicate predicate : sortPredicates)
+            history = history.sort(predicate.getProperty(), predicate.isDescending());
+
+        // Limit to maximum result size
+        history = history.limit(MAXIMUM_HISTORY_SIZE);
+
+    }
+
+    /**
      * Retrieves the list of activity records stored within the underlying
      * ActivityRecordSet which match the given, arbitrary criteria. If
      * specified, the returned records will also be sorted according to the
@@ -118,19 +160,9 @@ public abstract class ActivityRecordSetResource<InternalRecordType extends Activ
             @QueryParam("order") List<APISortPredicate> sortPredicates)
             throws GuacamoleException {
 
-        // Restrict to records which contain the specified strings
-        for (String required : requiredContents) {
-            if (!required.isEmpty())
-                history = history.contains(required);
-        }
-
-        // Sort according to specified ordering
-        for (APISortPredicate predicate : sortPredicates)
-            history = history.sort(predicate.getProperty(), predicate.isDescending());
-
-        // Limit to maximum result size
-        history = history.limit(MAXIMUM_HISTORY_SIZE);
-
+        // Apply search/sort criteria
+        applyCriteria(requiredContents, sortPredicates);
+        
         // Convert record set to collection of API records
         List<ExternalRecordType> apiRecords = new ArrayList<>();
         for (InternalRecordType record : history.asCollection())
@@ -138,6 +170,32 @@ public abstract class ActivityRecordSetResource<InternalRecordType extends Activ
 
         // Return the converted history
         return apiRecords;
+
+    }
+
+    /**
+     * Retrieves record having the given identifier from among the set of
+     * activity records stored within the underlying ActivityRecordSet.
+     *
+     * @param identifier
+     *     The unique identifier of the record to retrieve.
+     *
+     * @return
+     *     A resource representing the record having the given identifier.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while locating the requested record, or if the
+     *     requested record cannot be found.
+     */
+    @Path("{identifier}")
+    public ActivityRecordResource getRecord(@PathParam("identifier") String identifier)
+                throws GuacamoleException {
+
+        InternalRecordType record = history.get(identifier);
+        if (record == null)
+            throw new GuacamoleResourceNotFoundException("Not found: \"" + identifier + "\"");
+
+        return new ActivityRecordResource(record, toExternalRecord(record));
 
     }
 

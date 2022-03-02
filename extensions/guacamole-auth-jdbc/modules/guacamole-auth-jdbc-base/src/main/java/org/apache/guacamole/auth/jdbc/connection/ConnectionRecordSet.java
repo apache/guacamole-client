@@ -20,9 +20,9 @@
 package org.apache.guacamole.auth.jdbc.connection;
 
 import com.google.inject.Inject;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
@@ -37,6 +37,15 @@ import org.apache.guacamole.net.auth.ConnectionRecord;
  * records are returned will be determined by the values passed in earlier.
  */
 public class ConnectionRecordSet extends ModeledActivityRecordSet<ConnectionRecord> {
+
+    /**
+     * The namespace for the type 3 UUIDs generated for connection history
+     * records. This UUID namespace is itself a type 3 UUID within the "ns:OID"
+     * namespace for the OID "1.3.6.1.4.1.18060.18.2.1.2", which has been
+     * specifically allocated for Apache Guacamole database connection
+     * history records.
+     */
+    public static final UUID UUID_NAMESPACE = UUID.fromString("8b55f070-95f4-3d31-93ee-9c5845e7aa40");
 
     /**
      * Service for managing connection objects.
@@ -69,14 +78,15 @@ public class ConnectionRecordSet extends ModeledActivityRecordSet<ConnectionReco
     }
     
     @Override
-    protected Collection<ConnectionRecord> retrieveHistory(
-            AuthenticatedUser user, Set<ActivityRecordSearchTerm> requiredContents,
-            List<ActivityRecordSortPredicate> sortPredicates, int limit)
-            throws GuacamoleException {
+    protected List<ConnectionRecord> retrieveHistory(
+            AuthenticatedUser user, String recordIdentifier,
+            Set<ActivityRecordSearchTerm> requiredContents,
+            List<ActivityRecordSortPredicate> sortPredicates,
+            int limit) throws GuacamoleException {
 
         // Retrieve history from database
         return connectionService.retrieveHistory(identifier, getCurrentUser(),
-                requiredContents, sortPredicates, limit);
+                recordIdentifier, requiredContents, sortPredicates, limit);
 
     }
 

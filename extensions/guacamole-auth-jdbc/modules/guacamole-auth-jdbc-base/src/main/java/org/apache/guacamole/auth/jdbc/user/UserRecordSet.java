@@ -20,9 +20,9 @@
 package org.apache.guacamole.auth.jdbc.user;
 
 import com.google.inject.Inject;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
@@ -37,6 +37,15 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
  * earlier.
  */
 public class UserRecordSet extends ModeledActivityRecordSet<ActivityRecord> {
+
+    /**
+     * The namespace for the type 3 UUIDs generated for user history records.
+     * This UUID namespace is itself a type 3 UUID within the "ns:OID"
+     * namespace for the OID "1.3.6.1.4.1.18060.18.2.1.1", which has been
+     * specifically allocated for Apache Guacamole database user history 
+     * records.
+     */
+    public static final UUID UUID_NAMESPACE = UUID.fromString("e104741a-c949-3947-8d79-f3f2cdce7d6f");
 
     /**
      * Service for managing user objects.
@@ -70,14 +79,15 @@ public class UserRecordSet extends ModeledActivityRecordSet<ActivityRecord> {
     }
     
     @Override
-    protected Collection<ActivityRecord> retrieveHistory(
-            AuthenticatedUser user, Set<ActivityRecordSearchTerm> requiredContents,
+    protected List<ActivityRecord> retrieveHistory(
+            AuthenticatedUser user, String recordIdentifier,
+            Set<ActivityRecordSearchTerm> requiredContents,
             List<ActivityRecordSortPredicate> sortPredicates, int limit)
             throws GuacamoleException {
 
         // Retrieve history from database
         return userService.retrieveHistory(identifier, getCurrentUser(),
-                requiredContents, sortPredicates, limit);
+                recordIdentifier, requiredContents, sortPredicates, limit);
 
     }
 

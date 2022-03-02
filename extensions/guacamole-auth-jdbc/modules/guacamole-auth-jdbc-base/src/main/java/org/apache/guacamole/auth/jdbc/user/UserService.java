@@ -546,7 +546,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      *     A connection record object which is backed by the given model.
      */
     protected ActivityRecord getObjectInstance(ActivityRecordModel model) {
-        return new ModeledActivityRecord(model);
+        return new ModeledActivityRecord(UserRecordSet.UUID_NAMESPACE, model);
     }
 
     /**
@@ -573,32 +573,6 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     }
 
     /**
-     * Retrieves the login history of the given user, including any active
-     * sessions.
-     *
-     * @param authenticatedUser
-     *     The user retrieving the login history.
-     *
-     * @param user
-     *     The user whose history is being retrieved.
-     *
-     * @return
-     *     The login history of the given user, including any active sessions.
-     *
-     * @throws GuacamoleException
-     *     If permission to read the login history is denied.
-     */
-    public List<ActivityRecord> retrieveHistory(ModeledAuthenticatedUser authenticatedUser,
-            ModeledUser user) throws GuacamoleException {
-
-        String username = user.getIdentifier();
-        
-        return retrieveHistory(username, authenticatedUser, Collections.emptyList(),
-                Collections.emptyList(), Integer.MAX_VALUE);
-
-    }
-
-    /**
      * Retrieves user login history records matching the given criteria.
      * Retrieves up to <code>limit</code> user history records matching the
      * given terms and sorted by the given predicates. Only history records
@@ -610,6 +584,11 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      * 
      * @param user
      *     The user retrieving the login history.
+     *
+     * @param recordIdentifier
+     *     The identifier of the specific history record to retrieve, if not
+     *     all matching records. Search terms, etc. will still be applied to
+     *     the single record.
      *
      * @param requiredContents
      *     The search terms that must be contained somewhere within each of the
@@ -629,7 +608,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      *     If permission to read the user login history is denied.
      */
     public List<ActivityRecord> retrieveHistory(String username,
-            ModeledAuthenticatedUser user,
+            ModeledAuthenticatedUser user, String recordIdentifier,
             Collection<ActivityRecordSearchTerm> requiredContents,
             List<ActivityRecordSortPredicate> sortPredicates, int limit)
             throws GuacamoleException {
@@ -638,52 +617,18 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
         // Bypass permission checks if the user is privileged
         if (user.isPrivileged())
-            searchResults = userRecordMapper.search(username, requiredContents,
-                    sortPredicates, limit);
+            searchResults = userRecordMapper.search(username, recordIdentifier,
+                    requiredContents, sortPredicates, limit);
 
         // Otherwise only return explicitly readable history records
         else
             searchResults = userRecordMapper.searchReadable(username, 
-                    user.getUser().getModel(),
-                    requiredContents, sortPredicates, limit, user.getEffectiveUserGroups());
+                    user.getUser().getModel(), recordIdentifier,
+                    requiredContents, sortPredicates, limit,
+                    user.getEffectiveUserGroups());
 
         return getObjectInstances(searchResults);
 
-    }
-    
-    /**
-     * Retrieves user login history records matching the given criteria.
-     * Retrieves up to <code>limit</code> user history records matching the
-     * given terms and sorted by the given predicates. Only history records
-     * associated with data that the given user can read are returned.
-     * 
-     * @param user
-     *     The user retrieving the login history.
-     *
-     * @param requiredContents
-     *     The search terms that must be contained somewhere within each of the
-     *     returned records.
-     *
-     * @param sortPredicates
-     *     A list of predicates to sort the returned records by, in order of
-     *     priority.
-     *
-     * @param limit
-     *     The maximum number of records that should be returned.
-     *
-     * @return
-     *     The login history of the given user, including any active sessions.
-     *
-     * @throws GuacamoleException
-     *     If permission to read the user login history is denied.
-     */
-    public List<ActivityRecord> retrieveHistory(ModeledAuthenticatedUser user,
-            Collection<ActivityRecordSearchTerm> requiredContents,
-            List<ActivityRecordSortPredicate> sortPredicates, int limit)
-            throws GuacamoleException {
-        
-        return retrieveHistory(null, user, requiredContents, sortPredicates, limit);
-        
     }
 
 }

@@ -39,6 +39,23 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
         template = template || {};
 
         /**
+         * An arbitrary identifier that uniquely identifies this record
+         * relative to other records in the same set, or null if no such unique
+         * identifier exists.
+         *
+         * @type {string}
+         */
+        this.identifier = template.identifier;
+
+        /**
+         * A UUID that uniquely identifies this record, or null if no such
+         * unique identifier exists.
+         *
+         * @type {string}
+         */
+        this.uuid = template.uuid;
+
+        /**
          * The identifier of the connection associated with this history entry.
          *
          * @type String
@@ -102,6 +119,23 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
          * @type Boolean
          */
         this.active = template.active;
+
+        /**
+         * Arbitrary name/value pairs which further describe this history
+         * entry. The semantics and validity of these attributes are dictated
+         * by the extension which defines them.
+         *
+         * @type {!object.<string, string>}
+         */
+        this.attributes = template.attributes;
+
+        /**
+         * All logs associated and accessible via this record, stored by their
+         * corresponding unique names.
+         *
+         * @type {!object.<string, ActivityLog>}
+         */
+        this.logs = template.logs;
 
     };
 
