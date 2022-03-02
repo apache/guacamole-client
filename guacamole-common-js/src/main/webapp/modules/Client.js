@@ -228,11 +228,14 @@ Guacamole.Client = function(tunnel) {
         currentState = state.currentState;
         currentTimestamp = state.currentTimestamp;
 
+        // Cancel any pending display operations/frames
+        display.cancel();
+
         // Dispose of all layers
         for (key in layers) {
             index = parseInt(key);
             if (index > 0)
-                display.dispose(layers[key]);
+                layers[key].dispose();
         }
 
         layers = {};

@@ -202,6 +202,22 @@ Guacamole.Display = function() {
     function Frame(callback, tasks) {
 
         /**
+         * Cancels rendering of this frame and all associated tasks. The
+         * callback provided at construction time, if any, is not invoked.
+         */
+        this.cancel = function cancel() {
+
+            callback = null;
+
+            tasks.forEach(function cancelTask(task) {
+                task.cancel();
+            });
+
+            tasks = [];
+
+        };
+
+        /**
          * Returns whether this frame is ready to be rendered. This function
          * returns true if and only if ALL underlying tasks are unblocked.
          * 
@@ -270,6 +286,16 @@ Guacamole.Display = function() {
          * @type {boolean}
          */
         this.blocked = blocked;
+
+        /**
+         * Cancels this task such that it will not run. The task handler
+         * provided at construction time, if any, is not invoked. Calling
+         * execute() after calling this function has no effect.
+         */
+        this.cancel = function cancel() {
+            task.blocked = false;
+            taskHandler = null;
+        };
 
         /**
          * Unblocks this Task, allowing it to run.
@@ -414,6 +440,27 @@ Guacamole.Display = function() {
 
         // Attempt flush
         __flush_frames();
+
+    };
+
+    /**
+     * Cancels rendering of all pending frames and associated rendering
+     * operations. The callbacks provided to outstanding past calls to flush(),
+     * if any, are not invoked.
+     */
+    this.cancel = function cancel() {
+
+        frames.forEach(function cancelFrame(frame) {
+            frame.cancel();
+        });
+
+        frames = [];
+
+        tasks.forEach(function cancelTask(task) {
+            task.cancel();
+        });
+
+        tasks = [];
 
     };
 

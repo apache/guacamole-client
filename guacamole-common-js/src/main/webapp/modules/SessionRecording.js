@@ -577,11 +577,12 @@ Guacamole.SessionRecording = function SessionRecording(source) {
      * @param {function} callback
      *     The callback to invoke once the seek operation has completed.
      *
-     * @param {number} [delay=0]
-     *     The number of milliseconds that the seek operation should be
-     *     scheduled to take.
+     * @param {number} [nextRealTimestamp]
+     *     The timestamp of the point in time that the given frame should be
+     *     displayed, as would be returned by new Date().getTime(). If omitted,
+     *     the frame will be displayed as soon as possible.
      */
-    var seekToFrame = function seekToFrame(index, callback, delay) {
+    var seekToFrame = function seekToFrame(index, callback, nextRealTimestamp) {
 
         // Abort any in-progress seek
         abortSeek();
@@ -591,29 +592,7 @@ Guacamole.SessionRecording = function SessionRecording(source) {
             aborted : false
         };
 
-        var startIndex;
-
-        // Back up until startIndex represents current state
-        for (startIndex = index; startIndex >= 0; startIndex--) {
-
-            var frame = frames[startIndex];
-
-            // If we've reached the current frame, startIndex represents
-            // current state by definition
-            if (startIndex === currentFrame)
-                break;
-
-            // If frame has associated absolute state, make that frame the
-            // current state
-            if (frame.clientState) {
-                frame.clientState.text().then(function textReady(text) {
-                    playbackClient.importState(JSON.parse(text));
-                    currentFrame = index;
-                });
-                break;
-            }
-
-        }
+        var startIndex = index;
 
         // Replay any applicable incremental frames
         var continueReplay = function continueReplay() {
@@ -629,7 +608,7 @@ Guacamole.SessionRecording = function SessionRecording(source) {
                 return;
 
             // If frames remain, replay the next frame
-            if (!thisSeek.aborted && currentFrame < index)
+            if (currentFrame < index)
                 replayFrame(currentFrame + 1, continueReplay);
 
             // Otherwise, the seek operation is completed
@@ -640,11 +619,39 @@ Guacamole.SessionRecording = function SessionRecording(source) {
 
         // Continue replay after requested delay has elapsed, or
         // immediately if no delay was requested
-        if (delay)
-            window.setTimeout(continueReplay, delay);
-        else
-            continueReplay();
+        var continueAfterRequiredDelay = function continueAfterRequiredDelay() {
+            var delay = nextRealTimestamp ? Math.max(nextRealTimestamp - new Date().getTime(), 0) : 0;
+            if (delay)
+                window.setTimeout(continueReplay, delay);
+            else
+                continueReplay();
+        };
 
+        // Back up until startIndex represents current state
+        for (; startIndex >= 0; startIndex--) {
+
+            var frame = frames[startIndex];
+
+            // If we've reached the current frame, startIndex represents
+            // current state by definition
+            if (startIndex === currentFrame)
+                break;
+
+            // If frame has associated absolute state, make that frame the
+            // current state
+            if (frame.clientState) {
+                frame.clientState.text().then(function textReady(text) {
+                    playbackClient.importState(JSON.parse(text));
+                    currentFrame = startIndex;
+                    continueAfterRequiredDelay();
+                });
+                return;
+            }
+
+        }
+
+        continueAfterRequiredDelay();
+        
     };
 
     /**
@@ -679,14 +686,10 @@ Guacamole.SessionRecording = function SessionRecording(source) {
             // frame begins
             var nextRealTimestamp = next.timestamp - startVideoTimestamp + startRealTimestamp;
 
-            // Calculate the relative delay between the current time and
-            // the next frame start
-            var delay = Math.max(nextRealTimestamp - new Date().getTime(), 0);
-
             // Advance to next frame after enough time has elapsed
             seekToFrame(currentFrame + 1, function frameDelayElapsed() {
                 continuePlayback();
-            }, delay);
+            }, nextRealTimestamp);
 
         }
 
