@@ -613,7 +613,7 @@ Guacamole.SessionRecording = function SessionRecording(source) {
                         return;
 
                     playbackClient.importState(JSON.parse(text));
-                    currentFrame = index;
+                    currentFrame = startIndex;
 
                 });
                 break;
