@@ -104,7 +104,7 @@ Guacamole.Tunnel = function() {
      * 
      * @type {!number}
      */
-    this.state = Guacamole.Tunnel.State.CONNECTING;
+    this.state = Guacamole.Tunnel.State.CLOSED;
 
     /**
      * The maximum amount of time to wait for data to be received, in
