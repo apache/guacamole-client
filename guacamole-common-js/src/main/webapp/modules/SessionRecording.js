@@ -607,8 +607,14 @@ Guacamole.SessionRecording = function SessionRecording(source) {
             // current state
             if (frame.clientState) {
                 frame.clientState.text().then(function textReady(text) {
+
+                    // Cancel seek if aborted
+                    if (thisSeek.aborted)
+                        return;
+
                     playbackClient.importState(JSON.parse(text));
                     currentFrame = index;
+
                 });
                 break;
             }
@@ -629,7 +635,7 @@ Guacamole.SessionRecording = function SessionRecording(source) {
                 return;
 
             // If frames remain, replay the next frame
-            if (!thisSeek.aborted && currentFrame < index)
+            if (currentFrame < index)
                 replayFrame(currentFrame + 1, continueReplay);
 
             // Otherwise, the seek operation is completed
