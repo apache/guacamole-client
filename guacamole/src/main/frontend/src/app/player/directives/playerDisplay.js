@@ -50,7 +50,7 @@
  */
 angular.module('player').directive('guacPlayerDisplay', [function guacPlayerDisplay() {
 
-    var config = {
+    const config = {
         restrict : 'E',
         templateUrl : 'app/player/templates/playerDisplay.html'
     };
@@ -75,7 +75,7 @@ angular.module('player').directive('guacPlayerDisplay', [function guacPlayerDisp
          *
          * @type {Element}
          */
-        var element = $element.find('.guac-player-display')[0];
+        const element = $element.find('.guac-player-display')[0];
 
         /**
          * The element which serves as a container for the root element of the
@@ -83,7 +83,7 @@ angular.module('player').directive('guacPlayerDisplay', [function guacPlayerDisp
          *
          * @type {HTMLDivElement}
          */
-        var container = $element.find('.guac-player-display-container')[0];
+        const container = $element.find('.guac-player-display-container')[0];
 
         /**
          * Rescales the Guacamole.Display currently assigned to $scope.display

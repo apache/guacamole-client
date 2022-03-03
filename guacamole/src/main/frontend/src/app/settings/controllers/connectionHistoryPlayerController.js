@@ -24,8 +24,8 @@ angular.module('manage').controller('connectionHistoryPlayerController', ['$scop
         function connectionHistoryPlayerController($scope, $injector) {
 
     // Required services
-    var authenticationService = $injector.get('authenticationService');
-    var $routeParams          = $injector.get('$routeParams');
+    const authenticationService = $injector.get('authenticationService');
+    const $routeParams          = $injector.get('$routeParams');
 
     /**
      * The URL of the REST API resource exposing the requested session
@@ -33,7 +33,7 @@ angular.module('manage').controller('connectionHistoryPlayerController', ['$scop
      *
      * @type {!string}
      */
-    var recordingURL = 'api/session/data/' + encodeURIComponent($routeParams.dataSource)
+    const recordingURL = 'api/session/data/' + encodeURIComponent($routeParams.dataSource)
             + '/history/connections/' + encodeURIComponent($routeParams.identifier)
             + '/logs/' + encodeURIComponent($routeParams.name);
 

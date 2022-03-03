@@ -29,7 +29,7 @@ angular.module('index').filter('resolve', [function resolveFilter() {
      *
      * @type {!string}
      */
-    var RESOLVED_VALUE_KEY = '_guac_resolveFilter_resolvedValue';
+    const RESOLVED_VALUE_KEY = '_guac_resolveFilter_resolvedValue';
 
     return function resolveFilter(promise) {
 

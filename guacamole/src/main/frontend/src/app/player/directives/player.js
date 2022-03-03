@@ -77,7 +77,7 @@
  */
 angular.module('player').directive('guacPlayer', ['$injector', function guacPlayer($injector) {
 
-    var config = {
+    const config = {
         restrict : 'E',
         templateUrl : 'app/player/templates/player.html'
     };
@@ -172,7 +172,7 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
          *     The decimal string representation of the given value, padded
          *     with leading zeroes up to a minimum length of two digits.
          */
-        var zeroPad = function zeroPad(value) {
+        const zeroPad = function zeroPad(value) {
             return value > 9 ? value : '0' + value;
         };
 

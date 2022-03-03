@@ -24,11 +24,11 @@ angular.module('settings').factory('ConnectionHistoryEntryWrapper', ['$injector'
     function defineConnectionHistoryEntryWrapper($injector) {
 
     // Required types
-    var ActivityLog            = $injector.get('ActivityLog');
-    var ConnectionHistoryEntry = $injector.get('ConnectionHistoryEntry');
+    const ActivityLog            = $injector.get('ActivityLog');
+    const ConnectionHistoryEntry = $injector.get('ConnectionHistoryEntry');
 
     // Required services
-    var $translate = $injector.get('$translate');
+    const $translate = $injector.get('$translate');
 
     /**
      * Wrapper for ConnectionHistoryEntry which adds display-specific
@@ -38,7 +38,7 @@ angular.module('settings').factory('ConnectionHistoryEntryWrapper', ['$injector'
      * @param {ConnectionHistoryEntry} historyEntry
      *     The ConnectionHistoryEntry that should be wrapped.
      */
-    var ConnectionHistoryEntryWrapper = function ConnectionHistoryEntryWrapper(dataSource, historyEntry) {
+    const ConnectionHistoryEntryWrapper = function ConnectionHistoryEntryWrapper(dataSource, historyEntry) {
 
         /**
          * The wrapped ConnectionHistoryEntry.

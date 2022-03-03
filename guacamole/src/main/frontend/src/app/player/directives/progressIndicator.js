@@ -50,7 +50,7 @@
  */
 angular.module('player').directive('guacPlayerProgressIndicator', [function guacPlayerProgressIndicator() {
 
-    var config = {
+    const config = {
         restrict : 'E',
         templateUrl : 'app/player/templates/progressIndicator.html'
     };
