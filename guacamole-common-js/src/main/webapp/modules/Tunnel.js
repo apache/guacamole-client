@@ -1365,6 +1365,14 @@ Guacamole.StaticHTTPTunnel = function StaticHTTPTunnel(url, crossDomain, extraTu
      */
     var extraHeaders = extraTunnelHeaders || {};
 
+    /**
+     * The number of bytes in the file being downloaded, or null if this is not
+     * known.
+     *
+     * @type {number}
+     */
+    this.size = null;
+
     this.sendMessage = function sendMessage(elements) {
         // Do nothing
     };
@@ -1410,6 +1418,9 @@ Guacamole.StaticHTTPTunnel = function StaticHTTPTunnel(url, crossDomain, extraTu
                 return;
 
             }
+
+            // Report overall size of stream in bytes, if known
+            tunnel.size = response.headers.get('Content-Length');
 
             // Connection is open
             tunnel.setState(Guacamole.Tunnel.State.OPEN);

@@ -25,11 +25,14 @@
         "ACTION_MANAGE_USER_GROUPS" : "Groups",
         "ACTION_NAVIGATE_BACK"      : "Back",
         "ACTION_NAVIGATE_HOME"      : "Home",
+        "ACTION_PAUSE"              : "Pause",
+        "ACTION_PLAY"               : "Play",
         "ACTION_SAVE"               : "Save",
         "ACTION_SEARCH"             : "Search",
         "ACTION_SHARE"              : "Share",
         "ACTION_UPDATE_PASSWORD"    : "Update Password",
         "ACTION_VIEW_HISTORY"       : "History",
+        "ACTION_VIEW_RECORDING"     : "View",
 
         "DIALOG_HEADER_ERROR" : "Error",
 
@@ -383,6 +386,17 @@
         "SECTION_HEADER_USER_GROUPS"         : "Parent Groups",
 
         "TEXT_CONFIRM_DELETE" : "Groups cannot be restored after they have been deleted. Are you sure you want to delete this group?"
+
+    },
+
+    "PLAYER" : {
+
+        "ACTION_CANCEL" : "@:APP.ACTION_CANCEL",
+        "ACTION_PAUSE"  : "@:APP.ACTION_PAUSE",
+        "ACTION_PLAY"   : "@:APP.ACTION_PLAY",
+
+        "INFO_LOADING_RECORDING" : "Your recording is now being loaded. Please wait...",
+        "INFO_SEEK_IN_PROGRESS"  : "Seeking to the requested position. Please wait..."
 
     },
 
@@ -851,8 +865,9 @@
 
     "SETTINGS_CONNECTION_HISTORY" : {
 
-        "ACTION_DOWNLOAD" : "@:APP.ACTION_DOWNLOAD",
-        "ACTION_SEARCH"   : "@:APP.ACTION_SEARCH",
+        "ACTION_DOWNLOAD"       : "@:APP.ACTION_DOWNLOAD",
+        "ACTION_SEARCH"         : "@:APP.ACTION_SEARCH",
+        "ACTION_VIEW_RECORDING" : "@:APP.ACTION_VIEW_RECORDING",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
@@ -867,6 +882,7 @@
 
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Connection name",
         "TABLE_HEADER_SESSION_DURATION"        : "Duration",
+        "TABLE_HEADER_SESSION_LOGS"            : "Logs",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Remote host",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Start time",
         "TABLE_HEADER_SESSION_USERNAME"        : "Username",

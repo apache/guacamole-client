@@ -26,6 +26,7 @@ angular.module('settings', [
     'list',
     'navigation',
     'notification',
+    'player',
     'rest',
     'storage'
 ]);
