@@ -43,7 +43,13 @@ public class TOTPUser extends DelegatingUser {
      * confirmed by the user, and the user is thus fully enrolled.
      */
     public static final String TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME = "guac-totp-key-confirmed";
-    
+
+    /**
+     * The name of the user attribute defines an offset between the service
+     * and a TOTP token to compensate a timedrift between them.
+     */
+    public static final String TOTP_TIMEDRIFT_OFFSET_ATTRIBUTE_NAME = "guac-totp-timedrift-offset";
+
     /**
      * The name of the field used to trigger a reset of the TOTP data.
      */
@@ -110,7 +116,8 @@ public class TOTPUser extends DelegatingUser {
         
         // Do not expose any TOTP secret attribute outside this extension
         attributes.remove(TOTP_KEY_SECRET_ATTRIBUTE_NAME);
-        
+        attributes.remove(TOTP_TIMEDRIFT_OFFSET_ATTRIBUTE_NAME);
+
         // Pull off the boolean reset field
         String reset = attributes.remove(TOTP_KEY_SECRET_RESET_FIELD);
         
@@ -118,6 +125,7 @@ public class TOTPUser extends DelegatingUser {
         if (reset != null && reset.equals("true")) {
             attributes.put(TOTP_KEY_SECRET_ATTRIBUTE_NAME, null);
             attributes.put(TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME, null);
+            attributes.put(TOTP_TIMEDRIFT_OFFSET_ATTRIBUTE_NAME, "0");
         }
 
         super.setAttributes(attributes);
