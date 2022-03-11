@@ -45,17 +45,26 @@ public class TOTPUser extends DelegatingUser {
     public static final String TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME = "guac-totp-key-confirmed";
     
     /**
-     * The name of the field used to trigger a reset of the TOTP data.
+     * The name of the user attribute defines whether the TOTP key has been
+     * generated for the user, regardless of whether that key has been
+     * confirmed. This attribute is not stored, but is instead exposed
+     * dynamically in lieu of exposing the actual TOTP key.
      */
-    public static final String TOTP_KEY_SECRET_RESET_FIELD = "guac-totp-reset";
+    public static final String TOTP_KEY_SECRET_GENERATED_ATTRIBUTE_NAME = "guac-totp-key-generated";
+
+    /**
+     * The string value used by TOTP user attributes to represent the boolean
+     * value "true".
+     */
+    private static final String TRUTH_VALUE = "true";
 
     /**
      * The form which contains all configurable properties for this user.
      */
-    public static final Form TOTP_CONFIG_FORM = new Form("totp-config-form",
+    public static final Form TOTP_ENROLLMENT_STATUS = new Form("totp-enrollment-status",
             Arrays.asList(
-                    new BooleanField(TOTP_KEY_SECRET_RESET_FIELD, "true"),
-                    new BooleanField(TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME, "true")
+                    new BooleanField(TOTP_KEY_SECRET_GENERATED_ATTRIBUTE_NAME, TRUTH_VALUE),
+                    new BooleanField(TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME, TRUTH_VALUE)
             )
     );
     
@@ -86,17 +95,12 @@ public class TOTPUser extends DelegatingUser {
 
         // Create independent, mutable copy of attributes
         Map<String, String> attributes = new HashMap<>(super.getAttributes());
-        
-        // Protect the secret value by removing it
+
+        // Replace secret key with simple boolean attribute representing
+        // whether a key has been generated at all
         String secret = attributes.remove(TOTP_KEY_SECRET_ATTRIBUTE_NAME);
-        
-        // If secret is null or empty, mark the reset as true.
-        if (secret == null || secret.isEmpty())
-            attributes.put(TOTP_KEY_SECRET_RESET_FIELD, "true");
-            
-        // If secret has a value, mark the reset as false.
-        else
-            attributes.put(TOTP_KEY_SECRET_RESET_FIELD, "false");
+        if (secret != null && !secret.isEmpty())
+            attributes.put(TOTP_KEY_SECRET_GENERATED_ATTRIBUTE_NAME, TRUTH_VALUE);
 
         return attributes;
 
@@ -107,15 +111,13 @@ public class TOTPUser extends DelegatingUser {
 
         // Create independent, mutable copy of attributes
         attributes = new HashMap<>(attributes);
-        
-        // Do not expose any TOTP secret attribute outside this extension
+
+        // Do not allow TOTP secret to be directly manipulated
         attributes.remove(TOTP_KEY_SECRET_ATTRIBUTE_NAME);
-        
-        // Pull off the boolean reset field
-        String reset = attributes.remove(TOTP_KEY_SECRET_RESET_FIELD);
-        
-        // If reset has been set to true, clear the secret.
-        if (reset != null && reset.equals("true")) {
+
+        // Reset TOTP status entirely if requested
+        String generated = attributes.remove(TOTP_KEY_SECRET_GENERATED_ATTRIBUTE_NAME);
+        if (generated != null && !generated.equals(TRUTH_VALUE)) {
             attributes.put(TOTP_KEY_SECRET_ATTRIBUTE_NAME, null);
             attributes.put(TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME, null);
         }
