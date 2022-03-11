@@ -68,7 +68,7 @@ public class TOTPUserContext extends DelegatingUserContext {
     @Override
     public Collection<Form> getUserAttributes() {
         Collection<Form> userAttrs = new HashSet<>(super.getUserAttributes());
-        userAttrs.add(TOTPUser.TOTP_CONFIG_FORM);
+        userAttrs.add(TOTPUser.TOTP_ENROLLMENT_STATUS);
         return Collections.unmodifiableCollection(userAttrs);
     }
 
