@@ -550,6 +550,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_ES_LATAM_QWERTY" : "Latino-Américain (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
         "FIELD_OPTION_SERVER_LAYOUT_FR_BE_AZERTY" : "Français Belge (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_CA_QWERTY" : "Français Canada (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_FR_CH_QWERTZ" : "Français Suisse (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "Français (Azerty)",
         "FIELD_OPTION_SERVER_LAYOUT_HU_HU_QWERTZ" : "Hongrois (Qwertz)",
