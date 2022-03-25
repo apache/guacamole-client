@@ -1094,7 +1094,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
                     if (tunnel.uuid === null) {
 
                         // Associate tunnel UUID if received
-                        if (opcode === Guacamole.Tunnel.INTERNAL_DATA_OPCODE)
+                        if (opcode === Guacamole.Tunnel.INTERNAL_DATA_OPCODE && elements.length === 1)
                             tunnel.setUUID(elements[0]);
 
                         // Tunnel is now open and UUID is available
