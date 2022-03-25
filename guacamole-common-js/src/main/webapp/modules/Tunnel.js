@@ -1236,11 +1236,16 @@ Guacamole.ChainedTunnel = function(tunnelChain) {
             tunnel.onstatechange = chained_tunnel.onstatechange;
             tunnel.oninstruction = chained_tunnel.oninstruction;
             tunnel.onerror = chained_tunnel.onerror;
-            tunnel.onuuid = chained_tunnel.onuuid;
 
             // Assign UUID if already known
             if (tunnel.uuid)
                 chained_tunnel.setUUID(tunnel.uuid);
+
+            // Assign any future received UUIDs such that they are
+            // accessible from the main uuid property of the chained tunnel
+            tunnel.onuuid = function uuidReceived(uuid) {
+                chained_tunnel.setUUID(uuid);
+            };
 
             committedTunnel = tunnel;
 
