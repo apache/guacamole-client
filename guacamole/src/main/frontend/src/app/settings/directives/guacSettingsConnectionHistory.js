@@ -89,6 +89,37 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
                 'entry.remoteHost'
             ]);
 
+            /**
+             * The names of sortable properties supported by the REST API that
+             * correspond to the properties that may be stored within
+             * $scope.order.
+             *
+             * @type {!Object.<string, string>}
+             */
+            const apiSortProperties = {
+                 'entry.startDate' :  'startDate',
+                '-entry.startDate' : '-startDate'
+            };
+
+            /**
+             * Converts the given sort predicate to a correponding array of
+             * sortable properties supported by the REST API. Any properties
+             * within the predicate that are not supported will be dropped.
+             *
+             * @param {!string[]} predicate
+             *     The sort predicate to convert, as exposed by the predicate
+             *     property of SortOrder.
+             *
+             * @returns {!string[]}
+             *     A corresponding array of sortable properties, omitting any
+             *     properties not supported by the REST API.
+             */
+            var toAPISortPredicate = function toAPISortPredicate(predicate) {
+                return predicate
+                        .map((name) => apiSortProperties[name])
+                        .filter((name) => !!name);
+            };
+
             // Get session date format
             $translate('SETTINGS_CONNECTION_HISTORY.FORMAT_DATE')
             .then(function dateFormatReceived(retrievedDateFormat) {
@@ -166,9 +197,7 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
                 historyService.getConnectionHistory(
                     $scope.dataSource,
                     requiredContents,
-                    $scope.order.predicate.filter(function isSupportedPredicate(predicate) {
-                        return predicate === 'startDate' || predicate === '-startDate';
-                    })
+                    toAPISortPredicate($scope.order.predicate)
                 )
                 .then(function historyRetrieved(historyEntries) {
 
