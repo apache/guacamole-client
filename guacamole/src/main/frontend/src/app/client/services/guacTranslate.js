@@ -47,7 +47,7 @@
      *     A promise which resolves with a TranslationResult containing the results from
      *     the translation attempt.
      */
-    function translateWithFallback(translationId, defaultTranslationId) {
+    var translateWithFallback = function translateWithFallback(translationId, defaultTranslationId) {
         const deferredTranslation = $q.defer();
 
         // Attempt to translate the requested translation ID
