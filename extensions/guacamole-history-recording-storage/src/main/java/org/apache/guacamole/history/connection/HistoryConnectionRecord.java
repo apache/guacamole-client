@@ -72,6 +72,35 @@ public class HistoryConnectionRecord extends DelegatingConnectionRecord {
     private final File recording;
 
     /**
+     * Returns the file or directory providing recording storage for the given
+     * history record. If no such file or directory exists, or the file cannot
+     * be read, null is returned.
+     *
+     * @param record
+     *     The ConnectionRecord whose associated recording storage file
+     *     or directory should be returned.
+     *
+     * @return
+     *     A File pointing to the file or directory providing recording storage
+     *     for the given history record, or null if no such file exists.
+     *
+     * @throws GuacamoleException
+     *     If the configured path for stored recordings cannot be read.
+     */
+    private static File getRecordingFile(ConnectionRecord record) throws GuacamoleException {
+
+        UUID uuid = record.getUUID();
+        if (uuid != null) {
+            File recordingFile = new File(HistoryAuthenticationProvider.getRecordingSearchPath(), uuid.toString());
+            if (recordingFile.canRead())
+                return recordingFile;
+        }
+
+        return null;
+
+    }
+
+    /**
      * Creates a new HistoryConnectionRecord that wraps the given
      * ConnectionRecord, automatically associating ActivityLogs based on
      * related files (session recordings, typescripts, etc.).
@@ -84,11 +113,7 @@ public class HistoryConnectionRecord extends DelegatingConnectionRecord {
      */
     public HistoryConnectionRecord(ConnectionRecord record) throws GuacamoleException {
         super(record);
-
-        String uuid = record.getUUID().toString();
-        File recordingFile = new File(HistoryAuthenticationProvider.getRecordingSearchPath(), uuid);
-        this.recording = recordingFile.canRead() ? recordingFile : null;
-
+        this.recording = getRecordingFile(record);
     }
 
     /**
