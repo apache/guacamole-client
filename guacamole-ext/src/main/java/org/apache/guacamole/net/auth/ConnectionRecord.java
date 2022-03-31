@@ -82,6 +82,8 @@ public interface ConnectionRecord extends ActivityRecord {
      * history records, such as log messages and session recordings.
      */
     @Override
-    public UUID getUUID();
+    public default UUID getUUID() {
+        return null;
+    }
 
 }
