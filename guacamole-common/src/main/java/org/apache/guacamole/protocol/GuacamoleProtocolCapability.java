@@ -41,12 +41,12 @@ public enum GuacamoleProtocolCapability {
     MSG_INSTRUCTION(GuacamoleProtocolVersion.VERSION_1_5_0),
     
     /**
-     * Support for the "name" handshake instruction, allowing clients to send
-     * the name of the Guacamole user to be passed to guacd and associated with
-     * connections. Support for this insruction was introduced in
+     * Support for the "username" handshake instruction, allowing clients to
+     * send the name of the Guacamole user to be passed to guacd and associated
+     * with connections. Support for this instruction was introduced in
      * {@link GuacamoleProtocolVersion#VERSION_1_5_0}.
      */
-    NAME_HANDSHAKE(GuacamoleProtocolVersion.VERSION_1_5_0),
+    USERNAME_HANDSHAKE(GuacamoleProtocolVersion.VERSION_1_5_0),
     
     /**
      * Negotiation of Guacamole protocol version between client and server

@@ -62,7 +62,7 @@ public class GuacamoleClientInformation {
     /**
      * The name of the user reported by the client.
      */
-    private String name;
+    private String username;
     
     /**
      * The timezone reported by the client.
@@ -162,8 +162,8 @@ public class GuacamoleClientInformation {
      * @return 
      *     A string value of the human-readable name reported by the client.
      */
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
     
     /**
@@ -181,11 +181,11 @@ public class GuacamoleClientInformation {
     /**
      * Set the human-readable name of the user associated with this client.
      * 
-     * @param name 
+     * @param username 
      *     The human-readable name of the user associated with this client.
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
     
     /**

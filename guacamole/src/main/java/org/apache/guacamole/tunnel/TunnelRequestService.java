@@ -342,9 +342,9 @@ public class TunnelRequestService {
         UserContext userContext = session.getUserContext(authProviderIdentifier);
         
         // Attempt to get the username and set it for the tunnel client.
-        String name = authenticatedUser.getCredentials().getUsername();
-        if (name != null)
-            info.setName(name);
+        String username = authenticatedUser.getCredentials().getUsername();
+        if (username != null)
+            info.setUsername(username);
 
         try {
 

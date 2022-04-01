@@ -297,10 +297,10 @@ public class ConfiguredGuacamoleSocket extends DelegatingGuacamoleSocket {
         }
         
         // Send client name, if supported and available
-        if (GuacamoleProtocolCapability.NAME_HANDSHAKE.isSupported(protocolVersion)) {
-            String name = info.getName();
-            if (name != null)
-                writer.writeInstruction(new GuacamoleInstruction("name", name));
+        if (GuacamoleProtocolCapability.USERNAME_HANDSHAKE.isSupported(protocolVersion)) {
+            String username = info.getUsername();
+            if (username != null)
+                writer.writeInstruction(new GuacamoleInstruction("username", username));
         }
 
         // Send args
