@@ -25,17 +25,16 @@ angular.module('rest').factory('patchService', ['$injector',
 
     // Required services
     var requestService        = $injector.get('requestService');
-    var authenticationService = $injector.get('authenticationService');
     var cacheService          = $injector.get('cacheService');
 
     var service = {};
-    
+
     /**
      * Makes a request to the REST API to get the list of patches, returning
      * a promise that provides the array of all applicable patches if
      * successful. Each patch is a string of raw HTML with meta information
      * describing the patch operation stored within meta tags.
-     *                          
+     *
      * @returns {Promise.<String[]>}
      *     A promise which will resolve with an array of HTML patches upon
      *     success.
@@ -43,14 +42,14 @@ angular.module('rest').factory('patchService', ['$injector',
     service.getPatches = function getPatches() {
 
         // Retrieve all applicable HTML patches
-        return authenticationService.request({
+        return requestService({
             cache   : cacheService.patches,
             method  : 'GET',
             url     : 'api/patches'
         });
 
     };
-    
+
     return service;
 
 }]);
