@@ -1046,7 +1046,7 @@ if [ -n "$OPENID_AUTHORIZATION_ENDPOINT" ]; then
 fi
 
 # Use SAML if specified
-if [ -n "$SAML_IDP_METADATA_URL" ]; then
+if [ -n "$SAML_IDP_METADATA_URL" ] || [ -n "$SAML_ENTITY_ID" -a -n "$SAML_CALLBACK_URL" ]; then
     associate_saml
     INSTALLED_AUTH="$INSTALLED_AUTH saml"
 fi
