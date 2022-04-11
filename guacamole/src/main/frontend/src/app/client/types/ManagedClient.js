@@ -28,6 +28,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     const ClientIdentifier       = $injector.get('ClientIdentifier');
     const ClipboardData          = $injector.get('ClipboardData');
     const ManagedArgument        = $injector.get('ManagedArgument');
+    const ManagedClientMessage   = $injector.get('ManagedClientMessage');
     const ManagedClientState     = $injector.get('ManagedClientState');
     const ManagedClientThumbnail = $injector.get('ManagedClientThumbnail');
     const ManagedDisplay         = $injector.get('ManagedDisplay');
@@ -178,7 +179,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * All messages that have been sent to the client that should be
          * displayed.
          * 
-         * @type String[]
+         * @type ManagedClientMessage[]
          */
         this.messages = template.messages || [];
 
@@ -496,10 +497,14 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         };
         
         // Handle messages received from guacd to display to the client.
-        client.onmsg = function clientMessage(message) {
+        client.onmsg = function clientMessage(msgcode, args) {
+            
+            msg = new ManagedClientMessage();
+            msg.msgcode = msgcode;
+            msg.args = args;
             
             $rootScope.$apply(function updateMessages() {
-                managedClient.messages.push(message);
+                managedClient.messages.push(msg);
             });
             
         };

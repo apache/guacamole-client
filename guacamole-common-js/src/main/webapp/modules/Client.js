@@ -689,13 +689,17 @@ Guacamole.Client = function(tunnel) {
     this.onerror = null;
     
     /**
-     * Fired when a message is received from the remote tunnel and needs to be
-     * displayed to the user.
+     * Fired when an arbitrary message is received from the tunnel that should
+     * be processed by the client.
      * 
      * @event
-     * @param {String} message
-     *     The message sent by the remote end of the tunnel that should be
-     *     displayed for the user.
+     * @param {!number} msgcode
+     *     A status code sent by the remote server that indicates the nature of
+     *     the message that is being sent to the client.
+     *     
+     * @param {string[]} args
+     *     An array of arguments to be processed with the message sent to the
+     *     client.
      */
     this.onmsg = null;
 
@@ -1413,7 +1417,7 @@ Guacamole.Client = function(tunnel) {
         
         "msg" : function(parameters) {
             
-            if (guac_client.onmsg) guac_client.onmsg(parameters[0]);
+            if (guac_client.onmsg) guac_client.onmsg(parseInt(parameters[0]), parameters.slice(1));
             
         },
 
@@ -1840,4 +1844,32 @@ Guacamole.Client.DefaultTransferFunction = {
         dst.blue  =  0xFF & ( src.blue  | ~dst.blue);
     }
 
+};
+
+/**
+ * A list of possible messages that can be sent by the server for processing
+ * by the client.
+ * 
+ * @type {!Object.<string, number>}
+ */
+Guacamole.Client.Message = {
+    
+    /**
+     * A client message that indicates that a user has joined an existing
+     * connection. This message xpects a single additional argument - the
+     * username of the user who has joined the connection.
+     * 
+     * @type {!number}
+     */
+    "USER_JOINED": 0x0001,
+    
+    /**
+     * A client message that indicates that a user has left an existing
+     * connection. This message expects a single additional argument - the
+     * username of the user who has left the connection.
+     * 
+     * @type {!number}
+     */
+    "USER_LEFT": 0x0002
+    
 };

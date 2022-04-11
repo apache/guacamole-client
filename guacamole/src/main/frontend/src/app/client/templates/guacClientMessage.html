@@ -1,6 +1,8 @@
 <div class="client-message" ng-click="clear()">
 
     <!-- Message text -->
-    <p class="client-message-text">{{ message }}</p>
+    <p class="client-message-text"
+       translate="{{ getMessageKey() }}"
+       translate-values="{{ getMessageArgs() }}"></p>
 
 </div>

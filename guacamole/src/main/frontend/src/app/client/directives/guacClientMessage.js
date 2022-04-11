@@ -28,15 +28,54 @@ angular.module('client').directive('guacClientMessage', [function guacClientMess
         scope: {
 
             /**
-             * The message to display.
+             * The message to display to the client.
              * 
-             * @type String
+             * @type {!ManagedClientMessage}
              */
             message : '='
 
         },
 
-        templateUrl: 'app/client/templates/guacClientMessage.html'
+        templateUrl: 'app/client/templates/guacClientMessage.html',
+        
+        controller: ['$scope', '$injector', '$element',
+                function guacClientMessageController($scope, $injector, $element) {
+            
+            const ManagedClientMessage = $injector.get('ManagedClientMessage');
+            
+            /**
+             * Uses the msgcode to retrieve the correct translation key for
+             * the client message.
+             * 
+             * @returns {string}
+             */
+            $scope.getMessageKey = function getMessageKey() {
+                
+                let msgString = "DEFAULT";
+                if (Object.values(Guacamole.Client.Message).includes($scope.message.msgcode))
+                    msgString = Object.keys(Guacamole.Client.Message).find(key => Guacamole.Client.Message[key] === $scope.message.msgcode);
+                
+                return "CLIENT.CLIENT_MESSAGE_" + msgString.toUpperCase();
+            };
+            
+            /**
+             * Returns a set of key/value object pairs that represent the
+             * arguments provided as part of the message in the form
+             * ARGS[0] = value.
+             * 
+             * @returns {Object}
+             */
+            $scope.getMessageArgs = function getMessageArgs() {
+                return $scope.message.args.reduce(
+                    function(acc, value, index) {
+                        acc[`ARGS[${index}]`] = value;
+                        return acc;
+                    },
+                    {}
+                );
+            };
+                
+        }]
 
     };
 }]);
