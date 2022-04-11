@@ -91,7 +91,7 @@ To generate a SQL script which can be used to initialize a fresh PostgreSQL
 database
 [as documented in the Guacamole manual](http://guacamole.apache.org/doc/gug/jdbc-auth.html#jdbc-auth-postgresql):
 
-    docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgres > initdb.sql
+    docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgresql > initdb.sql
 
 Alternatively, you can use the SQL scripts included with the
 guacamole-auth-jdbc extension from
