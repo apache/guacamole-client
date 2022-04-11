@@ -55,31 +55,31 @@ Deploying Guacamole with PostgreSQL authentication
 --------------------------------------------------
 
     docker run --name some-guacamole --link some-guacd:guacd \
-        --link some-postgres:postgres      \
-        -e POSTGRES_DATABASE=guacamole_db  \
-        -e POSTGRES_USER=guacamole_user    \
-        -e POSTGRES_PASSWORD=some_password \
-        -e POSTGRES_DATABASE_FILE=/run/secrets/<secret_name> \
-        -e POSTGRES_USER_FILE=/run/secrets/<secret_name> \
-        -e POSTGRES_PASSWORD_FILE=/run/secrets/<secret_name> \
+        --link some-postgresql:postgresql      \
+        -e POSTGRESQL_DATABASE=guacamole_db  \
+        -e POSTGRESQL_USER=guacamole_user    \
+        -e POSTGRESQL_PASSWORD=some_password \
+        -e POSTGRESQL_DATABASE_FILE=/run/secrets/<secret_name> \
+        -e POSTGRESQL_USER_FILE=/run/secrets/<secret_name> \
+        -e POSTGRESQL_PASSWORD_FILE=/run/secrets/<secret_name> \
         -d -p 8080:8080 guacamole/guacamole
 
 Linking Guacamole to PostgreSQL requires three environment variables. If any of
 these environment variables are omitted, you will receive an error message, and
 the image will stop:
 
-1. `POSTGRES_DATABASE` - The name of the database to use for Guacamole
+1. `POSTGRESQL_DATABASE` - The name of the database to use for Guacamole
    authentication.
-2. `POSTGRES_USER` - The user that Guacamole will use to connect to PostgreSQL.
-3. `POSTGRES_PASSWORD` - The password that Guacamole will provide when
-   connecting to PostgreSQL as `POSTGRES_USER`.
-4. `POSTGRES_DATABASE_FILE` - The path of the docker secret containing the name
+2. `POSTGRESQL_USER` - The user that Guacamole will use to connect to PostgreSQL.
+3. `POSTGRESQL_PASSWORD` - The password that Guacamole will provide when
+   connecting to PostgreSQL as `POSTGRESQL_USER`.
+4. `POSTGRESQL_DATABASE_FILE` - The path of the docker secret containing the name
    of database to use for Guacamole authentication.
-5. `POSTGRES_USER_FILE` - The path of the docker secret containing the name of
+5. `POSTGRESQL_USER_FILE` - The path of the docker secret containing the name of
    the user that Guacamole will use to connect to PostgreSQL.
-6. `POSTGRES_PASSWORD_FILE` - The path of the docker secret containing the
+6. `POSTGRESQL_PASSWORD_FILE` - The path of the docker secret containing the
    password that Guacamole will provide when connecting to PostgreSQL as
-   `POSTGRES_USER.
+   `POSTGRESQL_USER.
 
 ### Initializing the PostgreSQL database
 
