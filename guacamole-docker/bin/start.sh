@@ -242,7 +242,7 @@ END
 }
 
 # Print error message regarding missing required variables for PostgreSQL authentication
-postgres_missing_vars() {
+postgresql_missing_vars() {
     cat <<END
 FATAL: Missing required environment variables
 -------------------------------------------------------------------------------
@@ -251,13 +251,13 @@ environment variables or their corresponding Docker secrets by appending _FILE
 to the environment variable, and setting the value to the path of the
 corresponding secret:
 
-    POSTGRES_USER      The user to authenticate as when connecting to
+    POSTGRESQL_USER      The user to authenticate as when connecting to
                        PostgreSQL.
 
-    POSTGRES_PASSWORD  The password to use when authenticating with PostgreSQL
-                       as POSTGRES_USER.
+    POSTGRESQL_PASSWORD  The password to use when authenticating with PostgreSQL
+                       as POSTGRESQL_USER.
 
-    POSTGRES_DATABASE  The name of the PostgreSQL database to use for Guacamole
+    POSTGRESQL_DATABASE  The name of the PostgreSQL database to use for Guacamole
                        authentication.
 END
     exit 1;
@@ -267,38 +267,38 @@ END
 ## Adds properties to guacamole.properties which select the PostgreSQL
 ## authentication provider, and configure it to connect to the linked
 ## PostgreSQL container. If a PostgreSQL database is explicitly specified using
-## the POSTGRES_HOSTNAME and POSTGRES_PORT environment variables, that will be
+## the POSTGRESQL_HOSTNAME and POSTGRESQL_PORT environment variables, that will be
 ## used instead of a linked container.
 ##
 associate_postgresql() {
 
     # Use linked container if specified
-    if [ -n "$POSTGRES_NAME" ]; then
-        POSTGRES_HOSTNAME="$POSTGRES_PORT_5432_TCP_ADDR"
-        POSTGRES_PORT="$POSTGRES_PORT_5432_TCP_PORT"
+    if [ -n "$POSTGRESQL_NAME" ]; then
+        POSTGRESQL_HOSTNAME="$POSTGRESQL_PORT_5432_TCP_ADDR"
+        POSTGRESQL_PORT="$POSTGRESQL_PORT_5432_TCP_PORT"
     fi
 
     # Use default port if none specified
-    POSTGRES_PORT="${POSTGRES_PORT-5432}"
+    POSTGRESQL_PORT="${POSTGRESQL_PORT-5432}"
 
     # Verify required connection information is present
-    if [ -z "$POSTGRES_HOSTNAME" -o -z "$POSTGRES_PORT" ]; then
+    if [ -z "$POSTGRESQL_HOSTNAME" -o -z "$POSTGRESQL_PORT" ]; then
         cat <<END
-FATAL: Missing POSTGRES_HOSTNAME or "postgres" link.
+FATAL: Missing POSTGRESQL_HOSTNAME or "postgresql" link.
 -------------------------------------------------------------------------------
 If using a PostgreSQL database, you must either:
 
-(a) Explicitly link that container with the link named "postgres".
+(a) Explicitly link that container with the link named "postgresql".
 
 (b) If not using a Docker container for PostgreSQL, explicitly specify the TCP
     connection to your database using the following environment variables:
 
-    POSTGRES_HOSTNAME  The hostname or IP address of the PostgreSQL server. If
+    POSTGRESQL_HOSTNAME  The hostname or IP address of the PostgreSQL server. If
                        not using a PostgreSQL Docker container and
                        corresponding link, this environment variable is
                        *REQUIRED*.
 
-    POSTGRES_PORT      The port on which the PostgreSQL server is listening for
+    POSTGRESQL_PORT      The port on which the PostgreSQL server is listening for
                        TCP connections. This environment variable is option. If
                        omitted, the standard PostgreSQL port of 5432 will be
                        used.
@@ -307,68 +307,68 @@ END
     fi
 
     # Verify that the required Docker secrets are present, else, default to their normal environment variables
-    if [ -n "$POSTGRES_USER_FILE" ]; then
-        set_property "postgresql-username" "`cat "$POSTGRES_USER_FILE"`"
-    elif [ -n "$POSTGRES_USER" ]; then
-        set_property "postgresql-username" "$POSTGRES_USER"
+    if [ -n "$POSTGRESQL_USER_FILE" ]; then
+        set_property "postgresql-username" "`cat "$POSTGRESQL_USER_FILE"`"
+    elif [ -n "$POSTGRESQL_USER" ]; then
+        set_property "postgresql-username" "$POSTGRESQL_USER"
     else
-        postgres_missing_vars
+        postgresql_missing_vars
         exit 1;
     fi
 
-    if [ -n "$POSTGRES_PASSWORD_FILE" ]; then
-        set_property "postgresql-password" "`cat "$POSTGRES_PASSWORD_FILE"`"
-    elif [ -n "$POSTGRES_PASSWORD" ]; then
-        set_property "postgresql-password" "$POSTGRES_PASSWORD"
+    if [ -n "$POSTGRESQL_PASSWORD_FILE" ]; then
+        set_property "postgresql-password" "`cat "$POSTGRESQL_PASSWORD_FILE"`"
+    elif [ -n "$POSTGRESQL_PASSWORD" ]; then
+        set_property "postgresql-password" "$POSTGRESQL_PASSWORD"
     else
-        postgres_missing_vars
+        postgresql_missing_vars
         exit 1;
     fi
 
-    if [ -n "$POSTGRES_DATABASE_FILE" ]; then
-        set_property "postgresql-database" "`cat "$POSTGRES_DATABASE_FILE"`"
-    elif [ -n "$POSTGRES_DATABASE" ]; then
-        set_property "postgresql-database" "$POSTGRES_DATABASE"
+    if [ -n "$POSTGRESQL_DATABASE_FILE" ]; then
+        set_property "postgresql-database" "`cat "$POSTGRESQL_DATABASE_FILE"`"
+    elif [ -n "$POSTGRESQL_DATABASE" ]; then
+        set_property "postgresql-database" "$POSTGRESQL_DATABASE"
     else
-        postgres_missing_vars
+        postgresql_missing_vars
         exit 1;
     fi
 
     # Update config file
-    set_property "postgresql-hostname" "$POSTGRES_HOSTNAME"
-    set_property "postgresql-port"     "$POSTGRES_PORT"
+    set_property "postgresql-hostname" "$POSTGRESQL_HOSTNAME"
+    set_property "postgresql-port"     "$POSTGRESQL_PORT"
 
     set_optional_property               \
         "postgresql-absolute-max-connections" \
-        "$POSTGRES_ABSOLUTE_MAX_CONNECTIONS"
+        "$POSTGRESQL_ABSOLUTE_MAX_CONNECTIONS"
 
     set_optional_property                    \
         "postgresql-default-max-connections" \
-        "$POSTGRES_DEFAULT_MAX_CONNECTIONS"
+        "$POSTGRESQL_DEFAULT_MAX_CONNECTIONS"
 
     set_optional_property                          \
         "postgresql-default-max-group-connections" \
-        "$POSTGRES_DEFAULT_MAX_GROUP_CONNECTIONS"
+        "$POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS"
 
     set_optional_property                             \
         "postgresql-default-max-connections-per-user" \
-        "$POSTGRES_DEFAULT_MAX_CONNECTIONS_PER_USER"
+        "$POSTGRESQL_DEFAULT_MAX_CONNECTIONS_PER_USER"
 
     set_optional_property                                   \
         "postgresql-default-max-group-connections-per-user" \
-        "$POSTGRES_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER"
+        "$POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER"
 
     set_optional_property                      \
         "postgresql-default-statement-timeout" \
-        "$POSTGRES_DEFAULT_STATEMENT_TIMEOUT"
+        "$POSTGRESQL_DEFAULT_STATEMENT_TIMEOUT"
 
     set_optional_property          \
         "postgresql-user-required" \
-        "$POSTGRES_USER_REQUIRED"
+        "$POSTGRESQL_USER_REQUIRED"
 
     set_optional_property           \
         "postgresql-socket-timeout" \
-        "$POSTGRES_SOCKET_TIMEOUT"
+        "$POSTGRESQL_SOCKET_TIMEOUT"
 
     set_optional_property      \
         "postgresql-ssl-mode"  \
@@ -387,10 +387,10 @@ END
         "$POSTGRESQL_SSL_ROOT_CERT_FILE"
 
     # For SSL key password, check secrets, first, then standard env variable
-    if [ -n "$POSTGRES_SSL_KEY_PASSWORD_FILE" ]; then
-        set_property "postgresql-ssl-key-password" "`cat "$POSTGRES_SSL_KEY_PASSWORD_FILE"`"
-    elif [ -n "$POSTGRES_SSL_KEY_PASSWORD" ]; then
-        set_property "postgresql-ssl-key-password" "$POSTGRES_SSL_KEY_PASSWORD"
+    if [ -n "$POSTGRESQL_SSL_KEY_PASSWORD_FILE" ]; then
+        set_property "postgresql-ssl-key-password" "`cat "$POSTGRESQL_SSL_KEY_PASSWORD_FILE"`"
+    elif [ -n "$POSTGRESQL_SSL_KEY_PASSWORD" ]; then
+        set_property "postgresql-ssl-key-password" "$POSTGRESQL_SSL_KEY_PASSWORD"
     fi
 
     set_optional_property                  \
@@ -1077,9 +1077,9 @@ if [ -n "$MYSQL_DATABASE" -o -n "$MYSQL_DATABASE_FILE" ]; then
 fi
 
 # Use PostgreSQL if database specified
-if [ -n "$POSTGRES_DATABASE" -o -n "$POSTGRES_DATABASE_FILE" ]; then
+if [ -n "$POSTGRESQL_DATABASE" -o -n "$POSTGRESQL_DATABASE_FILE" ]; then
     associate_postgresql
-    INSTALLED_AUTH="$INSTALLED_AUTH postgres"
+    INSTALLED_AUTH="$INSTALLED_AUTH postgresql"
 fi
 
 # Use SQLServer if database specified
@@ -1149,7 +1149,7 @@ FATAL: No authentication configured
 The Guacamole Docker container needs at least one authentication mechanism in
 order to function, such as a MySQL database, PostgreSQL database, SQLServer
 database, LDAP directory or RADIUS server. Please specify at least the
-MYSQL_DATABASE or POSTGRES_DATABASE or SQLSERVER_DATABASE environment variables,
+MYSQL_DATABASE or POSTGRESQL_DATABASE or SQLSERVER_DATABASE environment variables,
 or check Guacamole's Docker documentation regarding configuring LDAP and/or
 custom extensions.
 END
