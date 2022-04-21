@@ -54,7 +54,7 @@
             file generation (such as non-existent license documentation) as
             well as errors that occur during the RAT check (such as incorrect
             or missing license headers). -->
-        <ignoreLicenseErrors>false</ignoreLicenseErrors>
+        <ignoreLicenseErrors>true</ignoreLicenseErrors>
 
     </properties>
 
