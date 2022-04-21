@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/doc/guacamole-example/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/doc/guacamole-example/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/doc/guacamole-playback-example/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/doc/guacamole-playback-example/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-duo/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-duo/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-header/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-header/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-base/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-base/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-dist/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-dist/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-postgresql/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-postgresql/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-sqlserver/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-sqlserver/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-jdbc/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-jdbc/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-json/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-json/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-ldap/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-ldap/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-quickconnect/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-quickconnect/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-sso/modules/guacamole-auth-sso-base/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-sso/modules/guacamole-auth-sso-base/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-sso/modules/guacamole-auth-sso-cas/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-sso/modules/guacamole-auth-sso-cas/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-sso/modules/guacamole-auth-sso-dist/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-sso/modules/guacamole-auth-sso-dist/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-sso/modules/guacamole-auth-sso-openid/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-sso/modules/guacamole-auth-sso-openid/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-sso/modules/guacamole-auth-sso-saml/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-sso/modules/guacamole-auth-sso-saml/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-sso/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-sso/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-totp/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-auth-totp/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-history-recording-storage/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-history-recording-storage/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-vault/modules/guacamole-vault-base/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-vault/modules/guacamole-vault-base/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-vault/modules/guacamole-vault-dist/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-vault/modules/guacamole-vault-dist/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-vault/modules/guacamole-vault-ksm/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-vault/modules/guacamole-vault-ksm/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-vault/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/guacamole-vault/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/guacamole-common-js/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/guacamole-common-js/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/guacamole-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/guacamole-common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/guacamole-ext/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/guacamole-ext/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/guacamole/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/guacamole/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+  </component>
+</project>
