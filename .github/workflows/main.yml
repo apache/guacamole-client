@@ -26,7 +26,7 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
         with:
-          username: marcello.modica@logconsulting.it
+          username: lello1978
           password: 02500c69-acd2-4b57-bd80-2497defd6b14
       
       - name: Extract metadata (tags, labels) for Docker
