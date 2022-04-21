@@ -5,9 +5,15 @@
 
 name: Publish Docker image
 
-on:
-  release:
-    types: [published]
+on: 
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'debug'
+      tags:
+        description: 'Test scenario tags' 
 
 jobs:
   push_to_registry:
