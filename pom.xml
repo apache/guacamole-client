@@ -148,7 +148,6 @@
 
                 </executions>
             </plugin>
-
             <!-- Automatically generate list of Maven runtime dependencies -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
