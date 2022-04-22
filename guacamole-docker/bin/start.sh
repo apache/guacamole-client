@@ -912,6 +912,68 @@ associate_json() {
 }
 
 
+
+
+##
+## Adds properties to guacamole.properties which select the LDAPAD Active Directory
+## authentication provider, and configure it to connect to the specified LDAP
+## directory.
+##
+associate_ldapad() {
+
+    # Verify required parameters are present
+    if [ -z "$LDAPAD_HOSTNAME" -o -z "$LDAPAD_USER_BASE_DN" ]; then
+        cat <<END
+FATAL: Missing required environment variables
+-------------------------------------------------------------------------------
+If using an LDAP active directory, you must provide each of the following environment
+variables:
+
+    LDAPAD_HOSTNAME      The hostname or IP address of your LDAP server.
+
+    LDAPAD_USER_BASE_DN  The base DN under which all Guacamole users will be
+                       located. Absolutely all Guacamole users that will
+                       authenticate via LDAP must exist within the subtree of
+                       this DN.
+END
+        exit 1;
+    fi
+
+    # Update config file
+    set_property          "ldapad-hostname"                   "$LDAPAD_HOSTNAME"
+    set_property          "ldapad-user-base-dn"               "$LDAPAD_USER_BASE_DN"
+
+    set_optional_property "ldapad-port"                       "$LDAPAD_PORT"
+    set_optional_property "ldapad-encryption-method"          "$LDAPAD_ENCRYPTION_METHOD"
+    set_optional_property "ldapad-max-search-results"         "$LDAPAD_MAX_SEARCH_RESULTS"
+    set_optional_property "ldapad-search-bind-dn"             "$LDAPAD_SEARCH_BIND_DN"
+    set_optional_property "ldapad-user-attributes"            "$LDAPAD_USER_ATTRIBUTES"
+    set_optional_property "ldapad-search-bind-password"       "$LDAPAD_SEARCH_BIND_PASSWORD"
+    set_optional_property "ldapad-username-attribute"         "$LDAPAD_USERNAME_ATTRIBUTE"
+    set_optional_property "ldapad-member-attribute"           "$LDAPAD_MEMBER_ATTRIBUTE"
+    set_optional_property "ldapad-user-search-filter"         "$LDAPAD_USER_SEARCH_FILTER"
+    set_optional_property "ldapad-config-base-dn"             "$LDAPAD_CONFIG_BASE_DN"
+    set_optional_property "ldapad-group-base-dn"              "$LDAPAD_GROUP_BASE_DN"
+    set_optional_property "ldapad-group-search-filter"        "$LDAPAD_GROUP_SEARCH_FILTER"
+    set_optional_property "ldapad-member-attribute-type"      "$LDAPAD_MEMBER_ATTRIBUTE_TYPE"
+    set_optional_property "ldapad-group-name-attribute"       "$LDAPAD_GROUP_NAME_ATTRIBUTE"
+    set_optional_property "ldapad-dereference-aliases"        "$LDAPAD_DEREFERENCE_ALIASES"
+    set_optional_property "ldapad-follow-referrals"           "$LDAPAD_FOLLOW_REFERRALS"
+    set_optional_property "ldapad-max-referral-hops"          "$LDAPAD_MAX_REFERRAL_HOPS"
+    set_optional_property "ldapad-operation-timeout"          "$LDAPAD_OPERATION_TIMEOUT"
+
+    # Add required .jar files to GUACAMOLE_EXT
+    ln -s /opt/guacamole/ldapad/guacamole-auth-*.jar "$GUACAMOLE_EXT"
+
+}
+
+
+
+
+
+
+
+
 ##
 ## Adds properties to guacamole.properties which configure the custom
 ## authentication provider.
@@ -1044,6 +1106,13 @@ fi
 if [ -n "$LDAP_HOSTNAME" ]; then
     associate_ldap
     INSTALLED_AUTH="$INSTALLED_AUTH ldap"
+fi
+
+
+# Use LDAP Active directory if specified
+if [ -n "$LDAPAD_HOSTNAME" ]; then
+    associate_ldap
+    INSTALLED_AUTH="$INSTALLED_AUTH ldapad"
 fi
 
 # Use RADIUS server if specified

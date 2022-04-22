@@ -206,3 +206,12 @@ if [ -f /opt/guacamole/bin/guacamole-auth-custom/guacamole-auth-custom*.jar ]; t
     mkdir -p "$DESTINATION/custom"
     cp /opt/guacamole/bin/guacamole-auth-custom/guacamole-auth-custom*.jar "$DESTINATION/custom"
 fi
+
+
+#
+# Copy custom auth extension if it was present in  - guacamole-docker/bin/ -
+#
+if [ -f /opt/guacamole/bin/guacamole-auth-ldapad/guacamole-auth-ldapad*.jar ]; then
+    mkdir -p "$DESTINATION/ldapad"
+    cp /opt/guacamole/bin/guacamole-auth-ldapad/guacamole-auth-ldapad*.jar "$DESTINATION/ldapad"
+fi
