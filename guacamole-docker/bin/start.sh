@@ -1111,7 +1111,7 @@ fi
 
 # Use LDAP Active directory if specified
 if [ -n "$LDAPAD_HOSTNAME" ]; then
-    associate_ldap
+    associate_ldapad
     INSTALLED_AUTH="$INSTALLED_AUTH ldapad"
 fi
 
