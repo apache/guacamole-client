@@ -202,7 +202,7 @@ fi
 #
 # Copy custom auth extension if it was present in  - guacamole-docker/bin/ -
 #
-if [ -f bin/guacamole-auth-custom/guacamole-auth-custom*.jar ]; then
+if [ -f /opt/guacamole/bin/guacamole-auth-custom/guacamole-auth-custom*.jar ]; then
     mkdir -p "$DESTINATION/custom"
-    cp bin/guacamole-auth-custom/guacamole-auth-custom*.jar "$DESTINATION/custom"
+    cp /opt/guacamole/bin/guacamole-auth-custom/guacamole-auth-custom*.jar "$DESTINATION/custom"
 fi
