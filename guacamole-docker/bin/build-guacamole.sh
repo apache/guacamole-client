@@ -198,3 +198,11 @@ if [ -f extensions/guacamole-auth-json/target/guacamole-auth-json*.jar ]; then
     mkdir -p "$DESTINATION/json"
     cp extensions/guacamole-auth-json/target/guacamole-auth-json*.jar "$DESTINATION/json"
 fi
+
+#
+# Copy custom auth extension if it was present in  - guacamole-docker/bin/ -
+#
+if [ -f /opt/guacamole/bin/guacamole-auth-custom/guacamole-auth-custom*.jar ]; then
+    mkdir -p "$DESTINATION/custom"
+    cp /opt/guacamole/bin/guacamole-auth-custom/guacamole-auth-custom*.jar "$DESTINATION/custom"
+fi

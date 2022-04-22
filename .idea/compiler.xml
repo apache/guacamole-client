@@ -6,10 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="guacamole-vault-base" />
         <module name="guacamole" />
         <module name="guacamole-auth-header" />
         <module name="guacamole-auth-sso-saml" />
         <module name="guacamole-auth-jdbc-sqlserver" />
+        <module name="guacamole-history-recording-storage" />
         <module name="guacamole-ext" />
         <module name="guacamole-auth-json" />
         <module name="guacamole-auth-sso-cas" />
@@ -23,38 +25,32 @@
         <module name="guacamole-playback-example" />
         <module name="guacamole-auth-sso-openid" />
         <module name="guacamole-auth-quickconnect" />
+        <module name="guacamole-vault-ksm" />
         <module name="guacamole-auth-jdbc-base" />
         <module name="guacamole-example" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="guacamole-history-recording-storage" target="1.8" />
-      <module name="guacamole-vault" target="1.5" />
-      <module name="guacamole-vault-base" target="1.8" />
-      <module name="guacamole-vault-dist" target="1.5" />
-      <module name="guacamole-vault-ksm" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="guacamole" options="-Xlint:all -Werror" />
-      <module name="guacamole-auth-duo" options="-Xlint:all -Werror" />
-      <module name="guacamole-auth-header" options="-Xlint:all -Werror" />
-      <module name="guacamole-auth-jdbc-base" options="-Xlint:all -Werror" />
-      <module name="guacamole-auth-jdbc-mysql" options="-Xlint:all -Werror" />
-      <module name="guacamole-auth-jdbc-postgresql" options="-Xlint:all -Werror" />
-      <module name="guacamole-auth-jdbc-sqlserver" options="-Xlint:all -Werror" />
-      <module name="guacamole-auth-json" options="-Xlint:all -Werror" />
-      <module name="guacamole-auth-ldap" options="-Xlint:all -Werror" />
-      <module name="guacamole-auth-quickconnect" options="-Xlint:all -Werror" />
-      <module name="guacamole-auth-sso-base" options="-Xlint:all -Werror" />
-      <module name="guacamole-auth-sso-cas" options="-Xlint:all -Werror" />
-      <module name="guacamole-auth-sso-openid" options="-Xlint:all -Werror" />
-      <module name="guacamole-auth-sso-saml" options="-Xlint:all -Werror" />
-      <module name="guacamole-auth-totp" options="-Xlint:all -Werror" />
-      <module name="guacamole-common" options="-Xlint:all -Werror" />
+      <module name="guacamole" options="-Xlint:all" />
+      <module name="guacamole-auth-duo" options="-Xlint:all" />
+      <module name="guacamole-auth-header" options="-Xlint:all" />
+      <module name="guacamole-auth-jdbc-base" options="-Xlint:all" />
+      <module name="guacamole-auth-jdbc-mysql" options="-Xlint:all" />
+      <module name="guacamole-auth-jdbc-postgresql" options="-Xlint:all" />
+      <module name="guacamole-auth-jdbc-sqlserver" options="-Xlint:all" />
+      <module name="guacamole-auth-json" options="-Xlint:all" />
+      <module name="guacamole-auth-ldap" options="-Xlint:all" />
+      <module name="guacamole-auth-quickconnect" options="-Xlint:all" />
+      <module name="guacamole-auth-sso-base" options="-Xlint:all" />
+      <module name="guacamole-auth-sso-cas" options="-Xlint:all" />
+      <module name="guacamole-auth-sso-openid" options="-Xlint:all" />
+      <module name="guacamole-auth-sso-saml" options="-Xlint:all" />
+      <module name="guacamole-auth-totp" options="-Xlint:all" />
+      <module name="guacamole-common" options="-Xlint:all" />
       <module name="guacamole-example" options="-Xlint:all -Werror" />
-      <module name="guacamole-ext" options="-Xlint:all -Werror" />
+      <module name="guacamole-ext" options="-Xlint:all" />
       <module name="guacamole-history-recording-storage" options="-Xlint:all" />
       <module name="guacamole-vault-base" options="-Xlint:all" />
       <module name="guacamole-vault-ksm" options="-Xlint:all" />

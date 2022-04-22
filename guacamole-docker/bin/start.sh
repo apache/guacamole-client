@@ -911,6 +911,19 @@ associate_json() {
     ln -s /opt/guacamole/json/guacamole-auth-*.jar "$GUACAMOLE_EXT"
 }
 
+
+##
+## Adds properties to guacamole.properties which configure the custom
+## authentication provider.
+##
+associate_custom() {
+    # Update config file
+    set_property          "custom-secret-key"        "$CUSTOM_SECRET_KEY"
+
+    # Add required .jar files to GUACAMOLE_EXT
+    ln -s /opt/guacamole/custom/guacamole-auth-*.jar "$GUACAMOLE_EXT"
+}
+
 ##
 ## Adds api-session-timeout to guacamole.properties
 ##
@@ -1076,6 +1089,13 @@ if [ -n "$JSON_SECRET_KEY" ]; then
     associate_json
     INSTALLED_AUTH="$INSTALLED_AUTH json"
 fi
+
+# Use custom-auth if specified.
+if [ -n "$CUSTOM_SECRET_KEY" ]; then
+    associate_custom
+    INSTALLED_AUTH="$INSTALLED_AUTH custom"
+fi
+
 
 #
 # Validate that at least one authentication backend is installed
