@@ -55,7 +55,7 @@ Deploying Guacamole with PostgreSQL authentication
 --------------------------------------------------
 
     docker run --name some-guacamole --link some-guacd:guacd \
-        --link some-postgresql:postgresql      \
+        --link some-postgres:postgres        \
         -e POSTGRESQL_DATABASE=guacamole_db  \
         -e POSTGRESQL_USER=guacamole_user    \
         -e POSTGRESQL_PASSWORD=some_password \
