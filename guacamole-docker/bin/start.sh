@@ -263,6 +263,63 @@ END
     exit 1;
 }
 
+## Provide backward compatibility on POSTGRES_* environment variables
+## In case of new deployment, please use POSTGRESQL_* equivalent variables.
+if [ -n "$POSTGRES_HOSTNAME" ]; then
+    POSTGRESQL_HOSTNAME=$POSTGRES_HOSTNAME;
+fi
+if [ -n "$POSTGRES_PORT" ]; then
+    POSTGRESQL_PORT=$POSTGRES_PORT;
+fi
+if [ -n "$POSTGRES_DATABASE" ]; then
+    POSTGRESQL_DATABASE=$POSTGRES_DATABASE;
+fi
+if [ -n "$POSTGRES_DATABASE_FILE" ]; then
+    POSTGRESQL_DATABASE=$POSTGRES_DATABASE_FILE;
+fi
+if [ -n "$POSTGRES_USER_FILE" ]; then
+    POSTGRESQL_USER_FILE=$POSTGRES_USER_FILE;
+fi
+if [ -n "$POSTGRES_USER" ]; then
+    POSTGRESQL_USER=$POSTGRES_USER;
+fi
+if [ -n "$POSTGRES_PASSWORD_FILE" ]; then
+    POSTGRESQL_PASSWORD_FILE=$POSTGRES_PASSWORD_FILE;
+fi
+if [ -n "$POSTGRES_PASSWORD" ]; then
+    POSTGRESQL_PASSWORD=$POSTGRES_PASSWORD;
+fi
+if [ -n "$POSTGRES_ABSOLUTE_MAX_CONNECTIONS" ]; then
+    POSTGRESQL_ABSOLUTE_MAX_CONNECTIONS=$POSTGRES_ABSOLUTE_MAX_CONNECTIONS;
+fi
+if [ -n "$POSTGRES_DEFAULT_MAX_CONNECTIONS" ]; then
+    POSTGRESQL_DEFAULT_MAX_CONNECTIONS=$POSTGRES_DEFAULT_MAX_CONNECTIONS;
+fi
+if [ -n "$POSTGRES_DEFAULT_MAX_GROUP_CONNECTIONS" ]; then
+    POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS=$POSTGRES_DEFAULT_MAX_GROUP_CONNECTIONS;
+fi
+if [ -n "$POSTGRES_DEFAULT_MAX_CONNECTIONS_PER_USER" ]; then
+    POSTGRESQL_DEFAULT_MAX_CONNECTIONS_PER_USER=$POSTGRES_DEFAULT_MAX_CONNECTIONS_PER_USER;
+fi
+if [ -n "$POSTGRES_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER" ]; then
+    POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER=$POSTGRES_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER;
+fi
+if [ -n "$POSTGRES_DEFAULT_STATEMENT_TIMEOUT" ]; then
+    POSTGRESQL_DEFAULT_STATEMENT_TIMEOUT=$POSTGRES_DEFAULT_STATEMENT_TIMEOUT;
+fi
+if [ -n "$POSTGRES_USER_REQUIRED" ]; then
+    POSTGRESQL_USER_REQUIRED=$POSTGRES_USER_REQUIRED;
+fi
+if [ -n "$POSTGRES_SOCKET_TIMEOUT" ]; then
+    POSTGRESQL_SOCKET_TIMEOUT=$POSTGRES_SOCKET_TIMEOUT;
+fi
+if [ -n "$POSTGRES_SSL_KEY_PASSWORD_FILE" ]; then
+    POSTGRESQL_SSL_KEY_PASSWORD_FILE=$POSTGRES_SSL_KEY_PASSWORD_FILE;
+fi
+if [ -n "$POSTGRES_SSL_KEY_PASSWORD" ]; then
+    POSTGRESQL_SSL_KEY_PASSWORD=$POSTGRES_SSL_KEY_PASSWORD;
+fi
+
 ##
 ## Adds properties to guacamole.properties which select the PostgreSQL
 ## authentication provider, and configure it to connect to the linked
@@ -294,14 +351,14 @@ If using a PostgreSQL database, you must either:
     connection to your database using the following environment variables:
 
     POSTGRESQL_HOSTNAME  The hostname or IP address of the PostgreSQL server. If
-                       not using a PostgreSQL Docker container and
-                       corresponding link, this environment variable is
-                       *REQUIRED*.
+                         not using a PostgreSQL Docker container and
+                         corresponding link, this environment variable is
+                         *REQUIRED*.
 
     POSTGRESQL_PORT      The port on which the PostgreSQL server is listening for
-                       TCP connections. This environment variable is option. If
-                       omitted, the standard PostgreSQL port of 5432 will be
-                       used.
+                         TCP connections. This environment variable is option. If
+                         omitted, the standard PostgreSQL port of 5432 will be
+                         used.
 END
         exit 1;
     fi
@@ -430,7 +487,7 @@ set the path of the corresponding secrets in the following three variables:
                               the user that Guacamole will use to connect to SQLServer.
 
     SQLSERVER_PASSWORD_FILE   The path of the docker secret containing the
-                              password that Guacamole will provide when connecting to 
+                              password that Guacamole will provide when connecting to
                               SQLServer as SQLSERVER_USER.
 
 END
