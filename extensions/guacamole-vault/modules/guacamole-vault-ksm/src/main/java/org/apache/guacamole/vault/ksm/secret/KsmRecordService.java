@@ -91,7 +91,8 @@ public class KsmRecordService {
 
     /**
      * Returns the single value stored in the given list. If the list is empty
-     * or contains multiple values, null is returned.
+     * or contains multiple values, null is returned. Note that null will also
+     * be returned if the single value stored in the list is itself null.
      *
      * @param <T>
      *     The type of object stored in the list.
@@ -115,7 +116,8 @@ public class KsmRecordService {
     /**
      * Returns the single value stored in the given list of strings. If the
      * list is empty, contains multiple values, or contains only a single empty
-     * string, null is returned.
+     * string, null is returned. Note that null will also be returned if the
+     * single value stored in the list is itself null.
      *
      * @param values
      *     The list to retrieve a single value from.
@@ -138,7 +140,9 @@ public class KsmRecordService {
     /**
      * Returns the single value stored in the given list, additionally
      * performing a mapping transformation on the single value. If the list is
-     * empty or contains multiple values, null is returned.
+     * empty or contains multiple values, null is returned. Note that null will
+     * also be returned if the mapping transformation returns null for the
+     * single value stored in the list.
      * 
      * @param <T>
      *     The type of object stored in the list.
@@ -171,7 +175,9 @@ public class KsmRecordService {
      * Returns the single value stored in the given list of strings,
      * additionally performing a mapping transformation on the single value. If
      * the list is empty, contains multiple values, or contains only a single
-     * empty string, null is returned.
+     * empty string, null is returned. Note that null will also be returned if
+     * the mapping transformation returns null for the single value stored in
+     * the list.
      *
      * @param <T>
      *     The type of object stored in the list.
