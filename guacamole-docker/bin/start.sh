@@ -273,9 +273,9 @@ END
 associate_postgresql() {
 
     # Use linked container if specified
-    if [ -n "$POSTGRESQL_NAME" ]; then
-        POSTGRESQL_HOSTNAME="$POSTGRESQL_PORT_5432_TCP_ADDR"
-        POSTGRESQL_PORT="$POSTGRESQL_PORT_5432_TCP_PORT"
+    if [ -n "$POSTGRES_NAME" ]; then
+        POSTGRESQL_HOSTNAME="$POSTGRES_PORT_5432_TCP_ADDR"
+        POSTGRESQL_PORT="$POSTGRES_PORT_5432_TCP_PORT"
     fi
 
     # Use default port if none specified
@@ -284,11 +284,11 @@ associate_postgresql() {
     # Verify required connection information is present
     if [ -z "$POSTGRESQL_HOSTNAME" -o -z "$POSTGRESQL_PORT" ]; then
         cat <<END
-FATAL: Missing POSTGRESQL_HOSTNAME or "postgresql" link.
+FATAL: Missing POSTGRESQL_HOSTNAME or "postgres" link.
 -------------------------------------------------------------------------------
 If using a PostgreSQL database, you must either:
 
-(a) Explicitly link that container with the link named "postgresql".
+(a) Explicitly link that container with the link named "postgres".
 
 (b) If not using a Docker container for PostgreSQL, explicitly specify the TCP
     connection to your database using the following environment variables:
