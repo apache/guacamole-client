@@ -91,7 +91,8 @@ public class KsmRecordService {
 
     /**
      * Returns the single value stored in the given list. If the list is empty
-     * or contains multiple values, null is returned.
+     * or contains multiple values, null is returned. Note that null will also
+     * be returned if the single value stored in the list is itself null.
      *
      * @param <T>
      *     The type of object stored in the list.
@@ -113,9 +114,35 @@ public class KsmRecordService {
     }
 
     /**
+     * Returns the single value stored in the given list of strings. If the
+     * list is empty, contains multiple values, or contains only a single empty
+     * string, null is returned. Note that null will also be returned if the
+     * single value stored in the list is itself null.
+     *
+     * @param values
+     *     The list to retrieve a single value from.
+     *
+     * @return
+     *     The single value stored in the given list, or null if the list is
+     *     empty, contains multiple values, or contains only a single empty
+     *     string.
+     */
+    private String getSingleStringValue(List<String> values) {
+
+        String value = getSingleValue(values);
+        if (value != null && !value.isEmpty())
+            return value;
+
+        return null;
+
+    }
+
+    /**
      * Returns the single value stored in the given list, additionally
      * performing a mapping transformation on the single value. If the list is
-     * empty or contains multiple values, null is returned.
+     * empty or contains multiple values, null is returned. Note that null will
+     * also be returned if the mapping transformation returns null for the
+     * single value stored in the list.
      * 
      * @param <T>
      *     The type of object stored in the list.
@@ -142,6 +169,38 @@ public class KsmRecordService {
 
         return mapper.apply(value);
         
+    }
+
+    /**
+     * Returns the single value stored in the given list of strings,
+     * additionally performing a mapping transformation on the single value. If
+     * the list is empty, contains multiple values, or contains only a single
+     * empty string, null is returned. Note that null will also be returned if
+     * the mapping transformation returns null for the single value stored in
+     * the list.
+     *
+     * @param <T>
+     *     The type of object stored in the list.
+     *
+     * @param values
+     *     The list to retrieve a single value from.
+     *
+     * @param mapper
+     *     The function to use to map the single object of type T to type R.
+     *
+     * @return
+     *     The single value stored in the given list, transformed using the
+     *     provided mapping function, or null if the list is empty, contains
+     *     multiple values, or contains only a single empty string.
+     */
+    private <T> String getSingleStringValue(List<T> values, Function<T, String> mapper) {
+
+        String value = getSingleValue(values, mapper);
+        if (value != null && !value.isEmpty())
+            return value;
+
+        return null;
+
     }
 
     /**
@@ -329,7 +388,7 @@ public class KsmRecordService {
         // Prefer standard login field
         Hosts hostsField = getField(record, Hosts.class, null);
         if (hostsField != null)
-            return getSingleValue(hostsField.getValue(), Host::getHostName);
+            return getSingleStringValue(hostsField.getValue(), Host::getHostName);
 
         KeeperRecordData data = record.getData();
         List<KeeperRecordField> custom = data.getCustom();
@@ -337,12 +396,12 @@ public class KsmRecordService {
         // Use text "hostname" custom field as fallback ...
         Text textField = getField(custom, Text.class, HOSTNAME_LABEL_PATTERN);
         if (textField != null)
-            return getSingleValue(textField.getValue());
+            return getSingleStringValue(textField.getValue());
 
         // ... or hidden "hostname" custom field
         HiddenField hiddenField = getField(custom, HiddenField.class, HOSTNAME_LABEL_PATTERN);
         if (hiddenField != null)
-            return getSingleValue(hiddenField.getValue());
+            return getSingleStringValue(hiddenField.getValue());
 
         return null;
 
@@ -367,7 +426,7 @@ public class KsmRecordService {
         // Prefer standard login field
         Login loginField = getField(record, Login.class, null);
         if (loginField != null)
-            return getSingleValue(loginField.getValue());
+            return getSingleStringValue(loginField.getValue());
 
         KeeperRecordData data = record.getData();
         List<KeeperRecordField> custom = data.getCustom();
@@ -375,12 +434,12 @@ public class KsmRecordService {
         // Use text "username" custom field as fallback ...
         Text textField = getField(custom, Text.class, USERNAME_LABEL_PATTERN);
         if (textField != null)
-            return getSingleValue(textField.getValue());
+            return getSingleStringValue(textField.getValue());
 
         // ... or hidden "username" custom field
         HiddenField hiddenField = getField(custom, HiddenField.class, USERNAME_LABEL_PATTERN);
         if (hiddenField != null)
-            return getSingleValue(hiddenField.getValue());
+            return getSingleStringValue(hiddenField.getValue());
 
         return null;
 
@@ -403,11 +462,11 @@ public class KsmRecordService {
 
         Password passwordField = getField(record, Password.class, PASSWORD_LABEL_PATTERN);
         if (passwordField != null)
-            return getSingleValue(passwordField.getValue());
+            return getSingleStringValue(passwordField.getValue());
 
         HiddenField hiddenField = getField(record, HiddenField.class, PASSWORD_LABEL_PATTERN);
         if (hiddenField != null)
-            return getSingleValue(hiddenField.getValue());
+            return getSingleStringValue(hiddenField.getValue());
 
         return null;
 
@@ -435,7 +494,7 @@ public class KsmRecordService {
         // Attempt to find single matching keypair field
         KeyPairs keyPairsField = getField(record, KeyPairs.class, PRIVATE_KEY_LABEL_PATTERN);
         if (keyPairsField != null) {
-            String privateKey = getSingleValue(keyPairsField.getValue(), KeyPair::getPrivateKey);
+            String privateKey = getSingleStringValue(keyPairsField.getValue(), KeyPair::getPrivateKey);
             if (privateKey != null && !privateKey.isEmpty())
                 return CompletableFuture.completedFuture(privateKey);
         }
@@ -451,12 +510,12 @@ public class KsmRecordService {
         // Use password "private key" custom field as fallback ...
         Password passwordField = getField(custom, Password.class, PRIVATE_KEY_LABEL_PATTERN);
         if (passwordField != null)
-            return CompletableFuture.completedFuture(getSingleValue(passwordField.getValue()));
+            return CompletableFuture.completedFuture(getSingleStringValue(passwordField.getValue()));
 
         // ... or hidden "private key" custom field
         HiddenField hiddenField = getField(custom, HiddenField.class, PRIVATE_KEY_LABEL_PATTERN);
         if (hiddenField != null)
-            return CompletableFuture.completedFuture(getSingleValue(hiddenField.getValue()));
+            return CompletableFuture.completedFuture(getSingleStringValue(hiddenField.getValue()));
 
         return CompletableFuture.completedFuture(null);
 
@@ -488,7 +547,7 @@ public class KsmRecordService {
         if (getField(fields, KeyPairs.class, null) != null) {
             Password passwordField = getField(fields, Password.class, null);
             if (passwordField != null)
-                return getSingleValue(passwordField.getValue());
+                return getSingleStringValue(passwordField.getValue());
         }
 
         // For records WITHOUT a standard keypair field, the passphrase can
@@ -500,12 +559,12 @@ public class KsmRecordService {
         // Use password "private key" custom field as fallback ...
         Password passwordField = getField(custom, Password.class, PASSPHRASE_LABEL_PATTERN);
         if (passwordField != null)
-            return getSingleValue(passwordField.getValue());
+            return getSingleStringValue(passwordField.getValue());
 
         // ... or hidden "private key" custom field
         HiddenField hiddenField = getField(custom, HiddenField.class, PASSPHRASE_LABEL_PATTERN);
         if (hiddenField != null)
-            return getSingleValue(hiddenField.getValue());
+            return getSingleStringValue(hiddenField.getValue());
 
         return null;
         
