@@ -255,11 +255,6 @@
             "name" : "performance",
             "fields" : [
                 {
-                    "name"    : "enable-gfx",
-                    "type"    : "BOOLEAN",
-                    "options" : [ "true" ]
-                },
-                {
                     "name"    : "enable-wallpaper",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
@@ -301,6 +296,11 @@
                 },
                 {
                     "name"    : "disable-glyph-caching",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-gfx",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
                 }
