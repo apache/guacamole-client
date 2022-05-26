@@ -35,7 +35,7 @@ public class MySQLGuacamoleProperties {
      * This class should not be instantiated.
      */
     private MySQLGuacamoleProperties() {}
-    
+
     /**
      * The JDBC driver that should be used to talk to MySQL-compatible servers.
      */
@@ -48,7 +48,7 @@ public class MySQLGuacamoleProperties {
     };
 
     /**
-     * The hostname of the MySQL server hosting the Guacamole authentication 
+     * The hostname of the MySQL server hosting the Guacamole authentication
      * tables.
      */
     public static final StringGuacamoleProperty MYSQL_HOSTNAME = new StringGuacamoleProperty() {
@@ -59,7 +59,7 @@ public class MySQLGuacamoleProperties {
     };
 
     /**
-     * The port number of the MySQL server hosting the Guacamole authentication 
+     * The port number of the MySQL server hosting the Guacamole authentication
      * tables.
      */
     public static final IntegerGuacamoleProperty MYSQL_PORT = new IntegerGuacamoleProperty() {
@@ -70,7 +70,7 @@ public class MySQLGuacamoleProperties {
     };
 
     /**
-     * The name of the MySQL database containing the Guacamole authentication 
+     * The name of the MySQL database containing the Guacamole authentication
      * tables.
      */
     public static final StringGuacamoleProperty MYSQL_DATABASE = new StringGuacamoleProperty() {
@@ -179,19 +179,19 @@ public class MySQLGuacamoleProperties {
         public String getName() { return "mysql-default-max-group-connections-per-user"; }
 
     };
-    
+
     /**
      * The SSL mode used to connect to the MySQL Server.  By default the driver
      * will attempt SSL connections and fall back to plain-text if SSL fails.
      */
     public static final EnumGuacamoleProperty<MySQLSSLMode> MYSQL_SSL_MODE =
             new EnumGuacamoleProperty<MySQLSSLMode>(MySQLSSLMode.class) {
-        
+
         @Override
         public String getName() { return "mysql-ssl-mode" ; }
-        
+
     };
-    
+
     /**
      * The File where trusted SSL certificate authorities and server certificates
      * are stored.  By default no file is specified, and the default Java
@@ -199,24 +199,24 @@ public class MySQLGuacamoleProperties {
      */
     public static final FileGuacamoleProperty MYSQL_SSL_TRUST_STORE =
             new FileGuacamoleProperty() {
-        
+
         @Override
         public String getName() { return "mysql-ssl-trust-store"; }
-        
+
     };
-    
+
     /**
      * The password to use to access the mysql-ssl-trust-store, if required.  By
      * default no password will be used to attempt to access the store.
      */
     public static final StringGuacamoleProperty MYSQL_SSL_TRUST_PASSWORD =
             new StringGuacamoleProperty() {
-        
+
         @Override
         public String getName() { return "mysql-ssl-trust-password"; }
-        
+
     };
-    
+
     /**
      * The File used to store the client certificate for configurations where
      * a client certificate is required for authentication.  By default no
@@ -224,24 +224,24 @@ public class MySQLGuacamoleProperties {
      */
     public static final FileGuacamoleProperty MYSQL_SSL_CLIENT_STORE =
             new FileGuacamoleProperty() {
-        
+
         @Override
         public String getName() { return "mysql-ssl-client-store"; }
-        
+
     };
-    
+
     /**
      * The password to use to access the mysql-ssl-client-store file.  By
      * default no password will be used to attempt to access the file.
      */
     public static final StringGuacamoleProperty MYSQL_SSL_CLIENT_PASSWORD =
             new StringGuacamoleProperty() {
-        
+
         @Override
         public String getName() { return "mysql-ssl-client-password"; }
-        
+
     };
-    
+
     /**
      * Whether or not to automatically create accounts in the MySQL database for
      * users who successfully authenticate through another extension. By default
@@ -249,7 +249,7 @@ public class MySQLGuacamoleProperties {
      */
     public static final BooleanGuacamoleProperty MYSQL_AUTO_CREATE_ACCOUNTS =
             new BooleanGuacamoleProperty() {
-    
+
         @Override
         public String getName() { return "mysql-auto-create-accounts"; }
     };
@@ -259,10 +259,23 @@ public class MySQLGuacamoleProperties {
      */
     public static final TimeZoneGuacamoleProperty SERVER_TIMEZONE =
             new TimeZoneGuacamoleProperty() {
-                
+
         @Override
         public String getName() { return "mysql-server-timezone"; }
-                
+
+    };
+
+    /**
+     * Whether or not to track connection history for connections that do not originate
+     * from within the MySQL database. By default, external connection history will be
+     * tracked.
+     */
+    public static final BooleanGuacamoleProperty MYSQL_TRACK_EXTERNAL_CONNECTION_HISTORY =
+            new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "mysql-track-external-connection-history"; }
+
     };
 
 }

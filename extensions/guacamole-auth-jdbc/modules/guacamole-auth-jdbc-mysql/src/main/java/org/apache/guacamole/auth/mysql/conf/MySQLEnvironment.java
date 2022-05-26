@@ -99,7 +99,7 @@ public class MySQLEnvironment extends JDBCEnvironment {
      * allowed to any one connection group.
      */
     private final int DEFAULT_MAX_GROUP_CONNECTIONS = 0;
-    
+
     /**
      * The default SSL mode for connecting to MySQL servers.
      */
@@ -108,8 +108,8 @@ public class MySQLEnvironment extends JDBCEnvironment {
     /**
      * Constructs a new MySQLEnvironment, providing access to MySQL-specific
      * configuration options.
-     * 
-     * @throws GuacamoleException 
+     *
+     * @throws GuacamoleException
      *     If an error occurs while setting up the underlying JDBCEnvironment
      *     or while parsing legacy MySQL configuration options.
      */
@@ -177,12 +177,12 @@ public class MySQLEnvironment extends JDBCEnvironment {
      * database server hosting the Guacamole database. If unspecified, the
      * installed MySQL driver will be automatically detected by inspecting the
      * classes available in the classpath.
-     * 
+     *
      * @return
      *     The MySQL driver that will be used to communicate with the MySQL-
      *     compatible server.
-     * 
-     * @throws GuacamoleException 
+     *
+     * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed, or if no MySQL-compatible
      *     JDBC driver is present.
      */
@@ -210,15 +210,15 @@ public class MySQLEnvironment extends JDBCEnvironment {
         throw new GuacamoleServerException("No JDBC driver for MySQL/MariaDB is installed.");
 
     }
-    
+
     /**
      * Returns the hostname of the MySQL server hosting the Guacamole
      * authentication tables. If unspecified, this will be "localhost".
-     * 
+     *
      * @return
      *     The URL of the MySQL server.
      *
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      *     If an error occurs while retrieving the property value.
      */
     public String getMySQLHostname() throws GuacamoleException {
@@ -227,30 +227,30 @@ public class MySQLEnvironment extends JDBCEnvironment {
             DEFAULT_HOSTNAME
         );
     }
-    
+
     /**
      * Returns the port number of the MySQL server hosting the Guacamole
      * authentication tables. If unspecified, this will be the default MySQL
      * port of 3306.
-     * 
+     *
      * @return
      *     The port number of the MySQL server.
      *
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      *     If an error occurs while retrieving the property value.
      */
     public int getMySQLPort() throws GuacamoleException {
         return getProperty(MySQLGuacamoleProperties.MYSQL_PORT, DEFAULT_PORT);
     }
-    
+
     /**
-     * Returns the name of the MySQL database containing the Guacamole 
+     * Returns the name of the MySQL database containing the Guacamole
      * authentication tables.
-     * 
+     *
      * @return
      *     The name of the MySQL database.
      *
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      *     If an error occurs while retrieving the property value, or if the
      *     value was not set, as this property is required.
      */
@@ -262,7 +262,7 @@ public class MySQLEnvironment extends JDBCEnvironment {
     public String getUsername() throws GuacamoleException {
         return getRequiredProperty(MySQLGuacamoleProperties.MYSQL_USERNAME);
     }
-    
+
     @Override
     public String getPassword() throws GuacamoleException {
         return getRequiredProperty(MySQLGuacamoleProperties.MYSQL_PASSWORD);
@@ -303,15 +303,15 @@ public class MySQLEnvironment extends JDBCEnvironment {
         }
 
     }
-    
+
     /**
      * Return the MySQL SSL mode as configured in guacamole.properties, or the
      * default value of PREFERRED if not configured.
-     * 
+     *
      * @return
      *     The SSL mode to use when connecting to the MySQL server.
-     * 
-     * @throws GuacamoleException 
+     *
+     * @throws GuacamoleException
      *     If an error occurs retrieving the property value.
      */
     public MySQLSSLMode getMySQLSSLMode() throws GuacamoleException {
@@ -319,71 +319,71 @@ public class MySQLEnvironment extends JDBCEnvironment {
                 MySQLGuacamoleProperties.MYSQL_SSL_MODE,
                 DEFAULT_SSL_MODE);
     }
-    
+
     /**
      * Returns the File where the trusted certificate store is located as
      * configured in guacamole.properties, or null if no value has been
      * configured.  The trusted certificate store is used to validate server
      * certificates when making SSL connections to MySQL servers.
-     * 
+     *
      * @return
      *     The File where the trusted certificate store is located, or null
      *     if the value has not been configured.
-     * 
+     *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
     public File getMySQLSSLTrustStore() throws GuacamoleException {
         return getProperty(MySQLGuacamoleProperties.MYSQL_SSL_TRUST_STORE);
     }
-    
+
     /**
      * Returns the password used to access the trusted certificate store as
      * configured in guacamole.properties, or null if no password has been
      * specified.
-     * 
+     *
      * @return
      *     The password used to access the trusted certificate store.
-     * 
-     * @throws GuacamoleException 
+     *
+     * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
     public String getMySQLSSLTrustPassword() throws GuacamoleException {
         return getProperty(MySQLGuacamoleProperties.MYSQL_SSL_TRUST_PASSWORD);
     }
-    
+
     /**
      * Returns the File used to store the client SSL certificate as configured
      * in guacamole.properties, or null if no value has been specified.  This
      * file will be used to load the client certificate used for SSL connections
      * to MySQL servers, if the SSL connection is so configured to require
      * client certificate authentication.
-     * 
+     *
      * @return
      *     The File where the client SSL certificate is stored.
-     * 
-     * @throws GuacamoleException 
+     *
+     * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
     public File getMySQLSSLClientStore() throws GuacamoleException {
         return getProperty(MySQLGuacamoleProperties.MYSQL_SSL_CLIENT_STORE);
     }
-    
+
     /**
      * Returns the password used to access the client certificate store as
      * configured in guacamole.properties, or null if no value has been
      * specified.
-     * 
+     *
      * @return
      *     The password used to access the client SSL certificate store.
-     * 
-     * @throws GuacamoleException 
+     *
+     * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
     public String getMYSQLSSLClientPassword() throws GuacamoleException {
         return getProperty(MySQLGuacamoleProperties.MYSQL_SSL_CLIENT_PASSWORD);
     }
-    
+
     @Override
     public boolean autoCreateAbsentAccounts() throws GuacamoleException {
         return getProperty(MySQLGuacamoleProperties.MYSQL_AUTO_CREATE_ACCOUNTS,
@@ -393,15 +393,23 @@ public class MySQLEnvironment extends JDBCEnvironment {
     /**
      * Return the server timezone if configured in guacamole.properties, or
      * null if the configuration option is not present.
-     * 
+     *
      * @return
      *     The server timezone as configured in guacamole.properties.
-     * 
-     * @throws GuacamoleException 
+     *
+     * @throws GuacamoleException
      *     If an error occurs retrieving the configuration value.
      */
     public TimeZone getServerTimeZone() throws GuacamoleException {
         return getProperty(MySQLGuacamoleProperties.SERVER_TIMEZONE);
+    }
+
+    @Override
+    public boolean trackExternalConnectionHistory() throws GuacamoleException {
+
+        // Track external connection history unless explicitly disabled
+        return getProperty(MySQLGuacamoleProperties.MYSQL_TRACK_EXTERNAL_CONNECTION_HISTORY,
+                true);
     }
 
 }
