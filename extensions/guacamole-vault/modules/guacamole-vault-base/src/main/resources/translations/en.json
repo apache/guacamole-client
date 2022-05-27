@@ -1,7 +1,0 @@
-{
-
-    "DATA_SOURCE_AZURE_KEYVAULT" : {
-        "NAME" : "Azure Key Vault"
-    }
-
-}

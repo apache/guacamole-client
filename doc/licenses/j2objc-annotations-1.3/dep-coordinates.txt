@@ -1,1 +1,0 @@
-com.google.j2objc:j2objc-annotations:jar:1.3
