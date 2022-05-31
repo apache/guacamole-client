@@ -20,11 +20,13 @@
 package org.apache.guacamole.auth.jdbc;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordMapper;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel;
+import org.apache.guacamole.auth.jdbc.connection.ModeledConnectionRecord;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.DelegatingConnection;
@@ -97,6 +99,11 @@ public class HistoryTrackingConnection extends DelegatingConnection {
 
         // Insert the connection history record to mark the start of this connection
         connectionRecordMapper.insert(connectionRecordModel);
+
+        // Include history record UUID as token
+        ModeledConnectionRecord modeledRecord = new ModeledConnectionRecord(connectionRecordModel);
+        Map<String, String> updatedTokens = new HashMap<>(tokens);
+        updatedTokens.put("HISTORY_UUID", modeledRecord.getUUID().toString());
 
         // Connect, and wrap the tunnel for return
         GuacamoleTunnel tunnel = super.connect(info, tokens);
