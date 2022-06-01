@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.jdbc;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordMapper;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicyService;
 import org.apache.guacamole.auth.jdbc.sharing.user.SharedAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
@@ -68,6 +69,12 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
     @Inject
     private Provider<ModeledUserContext> userContextProvider;
 
+    /**
+     * Mapper for writing connection history.
+     */
+    @Inject
+    private ConnectionRecordMapper connectionRecordMapper;
+
     @Override
     public AuthenticatedUser authenticateUser(AuthenticationProvider authenticationProvider,
             Credentials credentials) throws GuacamoleException {
@@ -99,7 +106,7 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
         ModeledUser user = userService.retrieveUser(authenticationProvider, authenticatedUser);
         ModeledUserContext context = userContextProvider.get();
         if (user != null && !user.isDisabled()) {
-            
+
             // Enforce applicable account restrictions
             if (databaseRestrictionsApplicable) {
 
@@ -125,18 +132,18 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
             }
 
         }
-        
+
         // If no user account is found, and database-specific account
         // restrictions do not apply, get a skeleton user.
         else if (!databaseRestrictionsApplicable) {
             user = userService.retrieveSkeletonUser(authenticationProvider, authenticatedUser);
-            
+
             // If auto account creation is enabled, add user to DB.
             if (environment.autoCreateAbsentAccounts()) {
                 ModeledUser createdUser = userService.createObject(new PrivilegedModeledAuthenticatedUser(user.getCurrentUser()), user);
                 user.setModel(createdUser.getModel());
             }
-            
+
         }
 
         // Veto authentication result only if database-specific account
@@ -144,7 +151,7 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
         else
             throw new GuacamoleInvalidCredentialsException("Invalid login",
                     CredentialsInfo.USERNAME_PASSWORD);
-        
+
         // Initialize the UserContext with the user account and return it.
         context.init(user.getCurrentUser());
         context.recordUserLogin();
@@ -158,6 +165,20 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
             Credentials credentials) throws GuacamoleException {
 
         // No need to update the context
+        return context;
+
+    }
+
+    @Override
+    public UserContext decorateUserContext(AuthenticationProvider authenticationProvider,
+            UserContext context, AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException {
+
+        // Track connection history only for external connections, and only if enabled in the config
+        if (environment.trackExternalConnectionHistory() && context.getAuthenticationProvider() != authenticationProvider) {
+            return new HistoryTrackingUserContext(context, credentials.getRemoteHostname(), connectionRecordMapper);
+        }
+
         return context;
 
     }

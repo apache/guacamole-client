@@ -44,7 +44,7 @@ public class SQLServerGuacamoleProperties {
         public String getName() { return "sqlserver-hostname"; }
 
     };
-    
+
     /**
      * The instance name of the SQL Server where the Guacamole database is running.
      */
@@ -53,7 +53,7 @@ public class SQLServerGuacamoleProperties {
 
         @Override
         public String getName() { return "sqlserver-instance"; }
-                
+
     };
 
     /**
@@ -193,7 +193,7 @@ public class SQLServerGuacamoleProperties {
         public String getName() { return "sqlserver-driver"; }
 
     };
-    
+
     /**
      * Whether or not to automatically create accounts in the SQL Server
      * database for users who successfully authenticate through another
@@ -201,10 +201,23 @@ public class SQLServerGuacamoleProperties {
      */
     public static final BooleanGuacamoleProperty SQLSERVER_AUTO_CREATE_ACCOUNTS =
             new BooleanGuacamoleProperty() {
-        
+
         @Override
         public String getName() { return "sqlserver-auto-create-accounts"; }
-        
+
+    };
+
+    /**
+     * Whether or not to track connection history for connections that do not originate
+     * from within the SQL Server database. By default, external connection history will be
+     * tracked.
+     */
+    public static final BooleanGuacamoleProperty SQLSERVER_TRACK_EXTERNAL_CONNECTION_HISTORY =
+            new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "sqlserver-track-external-connection-history"; }
+
     };
 
 }

@@ -30,7 +30,7 @@ import org.apache.ibatis.session.SqlSession;
  * intended for use within JDBC based authentication providers.
  */
 public abstract class JDBCEnvironment extends DelegatingEnvironment {
-    
+
     /**
      * Constructs a new JDBCEnvironment using an underlying LocalEnviroment to
      * read properties from the file system.
@@ -68,12 +68,12 @@ public abstract class JDBCEnvironment extends DelegatingEnvironment {
     public abstract int getAbsoluteMaxConnections() throws GuacamoleException;
 
     /**
-     * Returns the default maximum number of concurrent connections to allow to 
-     * any one connection, unless specified differently on an individual 
+     * Returns the default maximum number of concurrent connections to allow to
+     * any one connection, unless specified differently on an individual
      * connection. Zero denotes unlimited.
-     * 
+     *
      * @return
-     *     The default maximum allowable number of concurrent connections 
+     *     The default maximum allowable number of concurrent connections
      *     to any connection.
      *
      * @throws GuacamoleException
@@ -82,10 +82,10 @@ public abstract class JDBCEnvironment extends DelegatingEnvironment {
     public abstract int getDefaultMaxConnections() throws GuacamoleException;
 
     /**
-     * Returns the default maximum number of concurrent connections to allow to 
-     * any one connection group, unless specified differently on an individual 
+     * Returns the default maximum number of concurrent connections to allow to
+     * any one connection group, unless specified differently on an individual
      * connection group. Zero denotes unlimited.
-     * 
+     *
      * @return
      *     The default maximum allowable number of concurrent connections
      *     to any connection group.
@@ -95,12 +95,12 @@ public abstract class JDBCEnvironment extends DelegatingEnvironment {
      */
     public abstract int getDefaultMaxGroupConnections()
             throws GuacamoleException;
-    
+
     /**
-     * Returns the default maximum number of concurrent connections to allow to 
+     * Returns the default maximum number of concurrent connections to allow to
      * any one connection by an individual user, unless specified differently on
      * an individual connection. Zero denotes unlimited.
-     * 
+     *
      * @return
      *     The default maximum allowable number of concurrent connections to
      *     any connection by an individual user.
@@ -110,12 +110,12 @@ public abstract class JDBCEnvironment extends DelegatingEnvironment {
      */
     public abstract int getDefaultMaxConnectionsPerUser()
             throws GuacamoleException;
-    
+
     /**
-     * Returns the default maximum number of concurrent connections to allow to 
-     * any one connection group by an individual user, unless specified 
+     * Returns the default maximum number of concurrent connections to allow to
+     * any one connection group by an individual user, unless specified
      * differently on an individual connection group. Zero denotes unlimited.
-     * 
+     *
      * @return
      *     The default maximum allowable number of concurrent connections to
      *     any connection group by an individual user.
@@ -149,19 +149,19 @@ public abstract class JDBCEnvironment extends DelegatingEnvironment {
      *     true if the database supports recursive queries, false otherwise.
      */
     public abstract boolean isRecursiveQuerySupported(SqlSession session);
-    
+
     /**
      * Returns a boolean value representing whether or not the JDBC module
      * should automatically create accounts within the database for users that
      * are successfully authenticated via other extensions. Returns true if
      * accounts should be auto-created, otherwise returns false.
-     * 
+     *
      * @return
      *     true if user accounts should be automatically created within the
      *     database when authentication succeeds from another extension;
      *     otherwise false.
-     * 
-     * @throws GuacamoleException 
+     *
+     * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
     public abstract boolean autoCreateAbsentAccounts() throws GuacamoleException;
@@ -211,5 +211,20 @@ public abstract class JDBCEnvironment extends DelegatingEnvironment {
             return false;
         }
     }
+
+    /**
+     * Returns a boolean value representing whether or not the JDBC module
+     * should automatically track connection history for external connections,
+     * i.e. connections not originated from within the JDBC auth provider
+     * itself.
+     *
+     * @return
+     *     true if connection history should be tracked for connections that
+     *     do not originate from within this JDBC auth provider, false otherwise.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public abstract boolean trackExternalConnectionHistory() throws GuacamoleException;
 
 }

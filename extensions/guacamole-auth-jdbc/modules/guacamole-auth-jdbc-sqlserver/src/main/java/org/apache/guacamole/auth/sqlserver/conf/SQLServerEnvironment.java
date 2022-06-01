@@ -91,8 +91,8 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     /**
      * Constructs a new SQLServerEnvironment, providing access to SQLServer-specific
      * configuration options.
-     * 
-     * @throws GuacamoleException 
+     *
+     * @throws GuacamoleException
      *     If an error occurs while setting up the underlying JDBCEnvironment
      *     or while parsing legacy SQLServer configuration options.
      */
@@ -158,11 +158,11 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     /**
      * Returns the hostname of the SQLServer server hosting the Guacamole
      * authentication tables. If unspecified, this will be "localhost".
-     * 
+     *
      * @return
      *     The URL of the SQLServer server.
      *
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      *     If an error occurs while retrieving the property value.
      */
     public String getSQLServerHostname() throws GuacamoleException {
@@ -171,15 +171,15 @@ public class SQLServerEnvironment extends JDBCEnvironment {
             DEFAULT_HOSTNAME
         );
     }
-    
+
     /**
      * Returns the instance name of the SQL Server installation hosting the
      * Guacamole database, if any.  If unspecified it will be null.
-     * 
+     *
      * @return
      *     The instance name of the SQL Server install hosting the Guacamole
      *     database, or null if undefined.
-     * 
+     *
      * @throws GuacamoleException
      *     If an error occurs reading guacamole.properties.
      */
@@ -188,16 +188,16 @@ public class SQLServerEnvironment extends JDBCEnvironment {
             SQLServerGuacamoleProperties.SQLSERVER_INSTANCE
         );
     }
-    
+
     /**
      * Returns the port number of the SQLServer server hosting the Guacamole
      * authentication tables. If unspecified, this will be the default
      * SQLServer port of 5432.
-     * 
+     *
      * @return
      *     The port number of the SQLServer server.
      *
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      *     If an error occurs while retrieving the property value.
      */
     public int getSQLServerPort() throws GuacamoleException {
@@ -206,15 +206,15 @@ public class SQLServerEnvironment extends JDBCEnvironment {
             DEFAULT_PORT
         );
     }
-    
+
     /**
      * Returns the name of the SQLServer database containing the Guacamole
      * authentication tables.
-     * 
+     *
      * @return
      *     The name of the SQLServer database.
      *
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      *     If an error occurs while retrieving the property value, or if the
      *     value was not set, as this property is required.
      */
@@ -226,7 +226,7 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     public String getUsername() throws GuacamoleException {
         return getRequiredProperty(SQLServerGuacamoleProperties.SQLSERVER_USERNAME);
     }
-    
+
     @Override
     public String getPassword() throws GuacamoleException {
         return getRequiredProperty(SQLServerGuacamoleProperties.SQLSERVER_PASSWORD);
@@ -253,11 +253,19 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     public boolean isRecursiveQuerySupported(SqlSession session) {
         return true; // All versions of SQL Server support recursive queries through CTEs
     }
-    
+
     @Override
     public boolean autoCreateAbsentAccounts() throws GuacamoleException {
         return getProperty(SQLServerGuacamoleProperties.SQLSERVER_AUTO_CREATE_ACCOUNTS,
                 false);
+    }
+
+    @Override
+    public boolean trackExternalConnectionHistory() throws GuacamoleException {
+
+        // Track external connection history unless explicitly disabled
+        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_TRACK_EXTERNAL_CONNECTION_HISTORY,
+                true);
     }
 
 }

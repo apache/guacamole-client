@@ -90,4 +90,12 @@ public abstract class InjectedAuthenticationProvider extends AbstractAuthenticat
                 authenticatedUser, credentials);
     }
 
+    @Override
+    public UserContext decorate(UserContext context,
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
+        return authProviderService.decorateUserContext(this, context,
+                authenticatedUser, credentials);
+    }
+
 }
