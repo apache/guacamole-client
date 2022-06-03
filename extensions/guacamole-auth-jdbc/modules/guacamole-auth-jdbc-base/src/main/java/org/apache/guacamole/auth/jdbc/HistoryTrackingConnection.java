@@ -106,7 +106,7 @@ public class HistoryTrackingConnection extends DelegatingConnection {
         updatedTokens.put("HISTORY_UUID", modeledRecord.getUUID().toString());
 
         // Connect, and wrap the tunnel for return
-        GuacamoleTunnel tunnel = super.connect(info, tokens);
+        GuacamoleTunnel tunnel = super.connect(info, updatedTokens);
         return new HistoryTrackingTunnel(
             tunnel, this.connectionRecordMapper, connectionRecordModel);
     }
