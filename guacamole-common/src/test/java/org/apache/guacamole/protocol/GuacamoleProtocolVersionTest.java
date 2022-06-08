@@ -126,6 +126,7 @@ public class GuacamoleProtocolVersionTest {
         Assert.assertFalse(version.equals(new GuacamoleProtocolVersion(12, 102, 399)));
         Assert.assertFalse(version.equals(new GuacamoleProtocolVersion(12, 103, 398)));
         Assert.assertFalse(version.equals(new GuacamoleProtocolVersion(11, 102, 398)));
+        Assert.assertFalse(version.equals(new Object()));
 
         version = GuacamoleProtocolVersion.parseVersion("VERSION_1_0_0");
         Assert.assertTrue(version.equals(GuacamoleProtocolVersion.VERSION_1_0_0));
@@ -135,11 +136,6 @@ public class GuacamoleProtocolVersionTest {
         Assert.assertTrue(version.equals(GuacamoleProtocolVersion.VERSION_1_1_0));
         Assert.assertFalse(version.equals(GuacamoleProtocolVersion.VERSION_1_0_0));
 
-    }
-
-    @Test
-    public void testEquals() {
-        Assert.assertFalse(GuacamoleProtocolVersion.parseVersion("VERSION_012_102_398").equals(new Object()));
     }
 
     /**
