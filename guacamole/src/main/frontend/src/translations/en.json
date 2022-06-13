@@ -494,6 +494,7 @@
         "FIELD_HEADER_DISABLE_BITMAP_CACHING"     : "Disable bitmap caching:",
         "FIELD_HEADER_DISABLE_OFFSCREEN_CACHING"  : "Disable off-screen caching:",
         "FIELD_HEADER_DISABLE_GLYPH_CACHING"      : "Disable glyph caching:",
+        "FIELD_HEADER_DISABLE_GFX"                : "Disable Graphics Pipeline Extension:",
         "FIELD_HEADER_ENABLE_PRINTING"            : "Enable printing:",
         "FIELD_HEADER_ENABLE_SFTP"     : "Enable SFTP:",
         "FIELD_HEADER_ENABLE_THEMING"             : "Enable theming:",
