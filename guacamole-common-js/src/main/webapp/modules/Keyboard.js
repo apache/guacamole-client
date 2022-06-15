@@ -585,6 +585,17 @@ Guacamole.Keyboard = function Keyboard(element) {
     };
 
     /**
+     * Keeps all key code pressed while holding SHIFT key.
+     * The keys will be released (keyup) when SHIFT key is released to
+     * ensure client receives the corret keyup event for the shifted key.
+     * Use case:
+     *  You press SHIFT + . sending a ":" key code
+     *  You release SHIFT key first, shiftedKeys has a ":" so it's released as well.
+     */
+    this.shiftedKeys = {}
+
+
+    /**
      * All modifiers and their states.
      *
      * @type {!Guacamole.Keyboard.ModifierState}
@@ -1312,6 +1323,10 @@ Guacamole.Keyboard = function Keyboard(element) {
             // Ignore events which have already been handled
             if (!markEvent(e)) return;
 
+            if (e.shiftKey && e.keyCode !== 16) {
+                guac_keyboard.shiftedKeys[e.code] = e
+            }
+
             var keydownEvent = new KeydownEvent(e);
 
             // Ignore (but do not prevent) the "composition" keycode sent by some
@@ -1354,6 +1369,18 @@ Guacamole.Keyboard = function Keyboard(element) {
 
             // Ignore events which have already been handled
             if (!markEvent(e)) return;
+
+            // Check if we have to release shifted keys first
+            if (e.keyCode === 16 /* SHIFT */) {
+                const evs = Object.values(guac_keyboard.shiftedKeys)
+                evs.forEach(e => {
+                    eventLog.push(new KeyupEvent(e));
+                    interpret_events();
+                })
+                guac_keyboard.shiftedKeys = {}
+            } else if (guac_keyboard.shiftedKeys[e.keyCode]) {
+                delete guac_keyboard.shiftedKeys[e.keyCode]
+            }
 
             e.preventDefault();
 
