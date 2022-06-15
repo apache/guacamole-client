@@ -32,7 +32,9 @@ import java.util.concurrent.Future;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.TokenFilter;
+import org.apache.guacamole.vault.ksm.conf.KsmConfigurationService;
 import org.apache.guacamole.vault.secret.VaultSecretService;
+import org.apache.guacamole.vault.secret.WindowsUsername;
 
 /**
  * Service which retrieves secrets from Keeper Secrets Manager.
@@ -51,6 +53,12 @@ public class KsmSecretService implements VaultSecretService {
      */
     @Inject
     private KsmRecordService recordService;
+
+    /**
+     * Service for retrieving configuration information.
+     */
+    @Inject
+    private KsmConfigurationService confService;
 
     @Override
     public String canonicalize(String nameComponent) {
@@ -86,17 +94,48 @@ public class KsmSecretService implements VaultSecretService {
      * @param record
      *     The record to retrieve secrets from when generating tokens. This may
      *     be null.
+     *
+     * @throws GuacamoleException
+     *     If configuration details in guacamole.properties cannot be parsed.
      */
     private void addRecordTokens(Map<String, Future<String>> tokens, String prefix,
-            KeeperRecord record) {
+            KeeperRecord record) throws GuacamoleException {
 
         if (record == null)
             return;
 
+        // Domain of server-related record
+        String domain = recordService.getDomain(record);
+        if (domain != null)
+            tokens.put(prefix + "DOMAIN", CompletableFuture.completedFuture(domain));
+
         // Username of server-related record
         String username = recordService.getUsername(record);
-        if (username != null)
-            tokens.put(prefix + "USERNAME", CompletableFuture.completedFuture(username));
+        if (username != null) {
+
+            // If the record had no directly defined domain, but there is a
+            // username, and the configuration is enabled to split Windows
+            // domains out of usernames, attempt to split the domain out now
+            if (domain == null && confService.getSplitWindowsUsernames()) {
+                WindowsUsername usernameAndDomain =
+                        WindowsUsername.splitWindowsUsernameFromDomain(username);
+
+                // Always store the username token
+                tokens.put(prefix + "USERNAME", CompletableFuture.completedFuture(
+                        usernameAndDomain.getUsername()));
+
+                // Only store the domain if one is detected
+                if (usernameAndDomain.hasDomain())
+                    tokens.put(prefix + "DOMAIN", CompletableFuture.completedFuture(
+                        usernameAndDomain.getDomain()));
+
+            }
+
+            // If splitting is not enabled, store the whole value in the USERNAME token
+            else {
+                tokens.put(prefix + "USERNAME", CompletableFuture.completedFuture(username));
+            }
+        }
 
         // Password of server-related record
         String password = recordService.getPassword(record);
@@ -113,7 +152,7 @@ public class KsmSecretService implements VaultSecretService {
         tokens.put(prefix + "KEY", privateKey);
 
     }
-    
+
     @Override
     public Map<String, Future<String>> getTokens(GuacamoleConfiguration config,
             TokenFilter filter) throws GuacamoleException {
@@ -135,7 +174,7 @@ public class KsmSecretService implements VaultSecretService {
 
         // Tokens specific to RDP
         if ("rdp".equals(config.getProtocol())) {
-        
+
             // Retrieve and define gateway server-specific tokens, if any
             String gatewayHostname = parameters.get("gateway-hostname");
             if (gatewayHostname != null && !gatewayHostname.isEmpty())

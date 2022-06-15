@@ -22,7 +22,6 @@ package org.apache.guacamole.vault.ksm.secret;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.keepersecurity.secretsManager.core.Hosts;
-import com.keepersecurity.secretsManager.core.KeeperFile;
 import com.keepersecurity.secretsManager.core.KeeperRecord;
 import com.keepersecurity.secretsManager.core.KeeperSecrets;
 import com.keepersecurity.secretsManager.core.Login;
@@ -119,7 +118,7 @@ public class KsmClient {
      * {@link #cacheLock} acquired appropriately.
      */
     private KeeperSecrets cachedSecrets = null;
-    
+
     /**
      * All records retrieved from Keeper Secrets Manager, where each key is the
      * UID of the corresponding record. The contents of this Map are
@@ -216,7 +215,7 @@ public class KsmClient {
 
             // Store all secrets within cache
             cachedSecrets = secrets;
-            
+
             // Clear unambiguous cache of all records by UID
             cachedRecordsByUid.clear();
 
@@ -398,7 +397,7 @@ public class KsmClient {
      *     The record associated with the given username, or null if there is
      *     no such record or multiple such records.
      *
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      *     If an error occurs that prevents the record from being retrieved.
      */
     public KeeperRecord getRecordByLogin(String username) throws GuacamoleException {

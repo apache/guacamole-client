@@ -41,11 +41,19 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 /**
  * Service for automatically parsing out secrets and data from Keeper records.
  */
 @Singleton
 public class KsmRecordService {
+
+    /**
+     * Regular expression which matches the labels of custom fields containing
+     * domains.
+     */
+    private static final Pattern DOMAIN_LABEL_PATTERN =
+            Pattern.compile("domain", Pattern.CASE_INSENSITIVE);
 
     /**
      * Regular expression which matches the labels of custom fields containing
@@ -143,13 +151,13 @@ public class KsmRecordService {
      * empty or contains multiple values, null is returned. Note that null will
      * also be returned if the mapping transformation returns null for the
      * single value stored in the list.
-     * 
+     *
      * @param <T>
      *     The type of object stored in the list.
-     *     
+     *
      * @param <R>
      *     The type of object to return.
-     *     
+     *
      * @param values
      *     The list to retrieve a single value from.
      *
@@ -168,7 +176,7 @@ public class KsmRecordService {
             return null;
 
         return mapper.apply(value);
-        
+
     }
 
     /**
@@ -271,7 +279,7 @@ public class KsmRecordService {
      * multiple such fields, null is returned. Both standard and custom fields
      * are searched. As standard fields do not have labels, any given label
      * pattern is ignored for standard fields.
-     * 
+     *
      * @param <T>
      *     The type of field to return.
      *
@@ -339,7 +347,7 @@ public class KsmRecordService {
                 return null;
 
             foundFile = file;
-            
+
         }
 
         return foundFile;
@@ -362,7 +370,7 @@ public class KsmRecordService {
 
         if (file == null)
             return CompletableFuture.completedFuture(null);
-        
+
         return CompletableFuture.supplyAsync(() -> {
             return new String(SecretsManager.downloadFile(file), StandardCharsets.UTF_8);
         });
@@ -438,6 +446,38 @@ public class KsmRecordService {
 
         // ... or hidden "username" custom field
         HiddenField hiddenField = getField(custom, HiddenField.class, USERNAME_LABEL_PATTERN);
+        if (hiddenField != null)
+            return getSingleStringValue(hiddenField.getValue());
+
+        return null;
+
+    }
+
+    /**
+     * Returns the single domain associated with the given record. If the
+     * record has no associated domain, or multiple domains, null is
+     * returned. Domains are retrieved from "Text" and "Hidden" fields
+     * that have the label "domain" (case-insensitive).
+     *
+     * @param record
+     *     The record to retrieve the domain from.
+     *
+     * @return
+     *     The domain associated with the given record, or null if the record
+     *     has no associated domain or multiple domains.
+     */
+    public String getDomain(KeeperRecord record) {
+
+        KeeperRecordData data = record.getData();
+        List<KeeperRecordField> custom = data.getCustom();
+
+        // First check text "domain" custom field ...
+        Text textField = getField(custom, Text.class, DOMAIN_LABEL_PATTERN);
+        if (textField != null)
+            return getSingleStringValue(textField.getValue());
+
+        // ... or hidden "domain" custom field if that's not found
+        HiddenField hiddenField = getField(custom, HiddenField.class, DOMAIN_LABEL_PATTERN);
         if (hiddenField != null)
             return getSingleStringValue(hiddenField.getValue());
 
@@ -555,7 +595,7 @@ public class KsmRecordService {
         // a pair of custom hidden fields for the private key and passphrase:
         // the standard password field of the "Login" record refers to the
         // user's own password, if any, not the passphrase of their key)
-        
+
         // Use password "private key" custom field as fallback ...
         Password passwordField = getField(custom, Password.class, PASSPHRASE_LABEL_PATTERN);
         if (passwordField != null)
@@ -567,7 +607,7 @@ public class KsmRecordService {
             return getSingleStringValue(hiddenField.getValue());
 
         return null;
-        
+
     }
 
 }

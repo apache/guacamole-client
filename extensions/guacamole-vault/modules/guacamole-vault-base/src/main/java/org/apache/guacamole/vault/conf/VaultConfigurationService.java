@@ -55,7 +55,7 @@ public abstract class VaultConfigurationService {
 
     @Inject
     private VaultSecretService secretService;
-    
+
     /**
      * ObjectMapper for deserializing YAML.
      */
@@ -127,7 +127,7 @@ public abstract class VaultConfigurationService {
                 return Collections.emptyMap();
 
             return mapping;
-            
+
         }
 
         // Fail if YAML is invalid/unreadable
@@ -169,7 +169,7 @@ public abstract class VaultConfigurationService {
                     String secretName = super.getProperty(name);
                     if (secretName == null)
                         return null;
-                    
+
                     return secretService.getValue(secretName).get();
 
                 }
@@ -177,7 +177,7 @@ public abstract class VaultConfigurationService {
 
                     if (e.getCause() instanceof GuacamoleException)
                         throw (GuacamoleException) e;
-                    
+
                     throw new GuacamoleServerException(String.format("Property "
                             + "\"%s\" could not be retrieved from the vault.", name), e);
                 }
@@ -186,5 +186,24 @@ public abstract class VaultConfigurationService {
         };
 
     }
+
+    /**
+     * Return whether Windows domains should be split out from usernames when
+     * fetched from the vault.
+     *
+     * For example: "DOMAIN\\user" or "user@DOMAIN" should both
+     * be split into seperate username and domain tokens if this configuration
+     * is true. If false, no domain token should be created and the above values
+     * should be stored directly in the username token.
+     *
+     * @return
+     *     true if windows domains should be split out from usernames, false
+     *     otherwise.
+     *
+     * @throws GuacamoleException
+     *     If the value specified within guacamole.properties cannot be
+     *     parsed.
+     */
+    public abstract boolean getSplitWindowsUsernames() throws GuacamoleException;
 
 }
