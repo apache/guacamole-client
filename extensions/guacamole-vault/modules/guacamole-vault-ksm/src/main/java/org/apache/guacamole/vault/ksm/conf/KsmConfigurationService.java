@@ -77,6 +77,18 @@ public class KsmConfigurationService extends VaultConfigurationService {
     };
 
     /**
+     * Whether windows domains should be stripped off from usernames that are
+     * read from the KSM vault.
+     */
+    private static final BooleanGuacamoleProperty STRIP_WINDOWS_DOMAINS = new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() {
+            return "ksm-strip-windows-domains";
+        }
+    };
+
+    /**
      * Creates a new KsmConfigurationService which reads the configuration
      * from "ksm-token-mapping.yml" and properties from
      * "guacamole.properties.ksm". The token mapping is a YAML file which lists
@@ -103,6 +115,11 @@ public class KsmConfigurationService extends VaultConfigurationService {
      */
     public boolean getAllowUnverifiedCertificate() throws GuacamoleException {
         return environment.getProperty(ALLOW_UNVERIFIED_CERT, false);
+    }
+
+    @Override
+    public boolean getSplitWindowsUsernames() throws GuacamoleException {
+        return environment.getProperty(STRIP_WINDOWS_DOMAINS, false);
     }
 
     /**
