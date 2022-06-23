@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -60,7 +61,7 @@ public class WindowsUsernameTest {
         assertEquals("localhost", usernameAndDomain.getDomain());
 
         // It should not match if there are an invalid number of separators
-        List<String> invalidSeparators = List.of(
+        List<String> invalidSeparators = Arrays.asList(
                 "bob@local@host", "local\\host\\bob",
                 "bob\\local@host", "local@host\\bob");
         invalidSeparators.stream().forEach(
