@@ -125,7 +125,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
         /**
          * Guacamole touch event handling object, wrapped around the main
-         * client dislay.
+         * client display.
          *
          * @type Guacamole.Touch
          */
