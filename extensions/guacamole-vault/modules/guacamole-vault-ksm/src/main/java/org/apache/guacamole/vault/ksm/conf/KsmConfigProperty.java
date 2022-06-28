@@ -19,10 +19,8 @@
 
 package org.apache.guacamole.vault.ksm.conf;
 
-import com.keepersecurity.secretsManager.core.InMemoryStorage;
 import com.keepersecurity.secretsManager.core.KeyValueStorage;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.properties.GuacamoleProperty;
 
 /**
@@ -39,15 +37,8 @@ public abstract class KsmConfigProperty implements GuacamoleProperty<KeyValueSto
         if (value == null)
             return null;
 
-        // Parse base64 value as KSM config storage
-        try {
-            return new InMemoryStorage(value);
-        }
-        catch (IllegalArgumentException e) {
-            throw new GuacamoleServerException("Invalid base64 configuration "
-                    + "for Keeper Secrets Manager.", e);
-        }
-
+        // Parse the base-64 encoded JSON into a KeyValueStorage object
+        return KsmConfig.parseKsmConfig(value);
     }
 
 }
