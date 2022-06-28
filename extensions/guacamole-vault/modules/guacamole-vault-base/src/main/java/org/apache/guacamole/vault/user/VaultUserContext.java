@@ -22,12 +22,15 @@ package org.apache.guacamole.vault.user;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.TokenInjectingUserContext;
@@ -35,6 +38,7 @@ import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.GuacamoleTokenUndefinedException;
 import org.apache.guacamole.token.TokenFilter;
+import org.apache.guacamole.vault.conf.VaultAttributeService;
 import org.apache.guacamole.vault.conf.VaultConfigurationService;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 import org.slf4j.Logger;
@@ -120,6 +124,13 @@ public class VaultUserContext extends TokenInjectingUserContext {
      */
     @Inject
     private VaultSecretService secretService;
+
+    /**
+     * Service for retrieving any custom attributes defined for the
+     * current vault implementation.
+     */
+    @Inject
+    private VaultAttributeService attributeService;
 
     /**
      * Creates a new VaultUserContext which automatically injects tokens
@@ -401,6 +412,11 @@ public class VaultUserContext extends TokenInjectingUserContext {
         tokens.putAll(resolve(getTokens(confService.getTokenMapping(), filter,
                 config, new TokenFilter(tokens))));
 
+    }
+
+    @Override
+    public Collection<Form> getConnectionGroupAttributes() {
+        return attributeService.getConnectionGroupAttributes();
     }
 
 }
