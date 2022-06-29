@@ -31,6 +31,7 @@ import java.util.concurrent.Future;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.form.Form;
+import org.apache.guacamole.net.auth.Connectable;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.TokenInjectingUserContext;
@@ -193,6 +194,10 @@ public class VaultUserContext extends TokenInjectingUserContext {
      * corresponding values from the vault, using the given TokenFilter to
      * filter tokens within the secret names prior to retrieving those secrets.
      *
+     * @param connectable
+     *     The connection or connection group to which the connection is being
+     *     established.
+     *
      * @param tokenMapping
      *     The mapping dictating the name of the secret which maps to each
      *     parameter token, where the key is the name of the parameter token
@@ -222,7 +227,8 @@ public class VaultUserContext extends TokenInjectingUserContext {
      *     If the value for any applicable secret cannot be retrieved from the
      *     vault due to an error.
      */
-    private Map<String, Future<String>> getTokens(Map<String, String> tokenMapping,
+    private Map<String, Future<String>> getTokens(
+            Connectable connectable, Map<String, String> tokenMapping,
             TokenFilter secretNameFilter, GuacamoleConfiguration config,
             TokenFilter configFilter) throws GuacamoleException {
 
@@ -247,14 +253,16 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
             // Initiate asynchronous retrieval of the token value
             String tokenName = entry.getKey();
-            Future<String> secret = secretService.getValue(secretName);
+            Future<String> secret = secretService.getValue(
+                    this, connectable, secretName);
             pendingTokens.put(tokenName, secret);
 
         }
 
         // Additionally include any dynamic, parameter-based tokens
-        pendingTokens.putAll(secretService.getTokens(config, configFilter));
-        
+        pendingTokens.putAll(secretService.getTokens(
+                this, connectable, config, configFilter));
+
         return pendingTokens;
 
     }
@@ -329,7 +337,8 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
         // Substitute tokens producing secret names, retrieving and storing
         // those secrets as parameter tokens
-        tokens.putAll(resolve(getTokens(confService.getTokenMapping(), filter,
+        tokens.putAll(resolve(getTokens(
+                connectionGroup, confService.getTokenMapping(), filter,
                 null, new TokenFilter(tokens))));
 
     }
@@ -409,8 +418,8 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
         // Substitute tokens producing secret names, retrieving and storing
         // those secrets as parameter tokens
-        tokens.putAll(resolve(getTokens(confService.getTokenMapping(), filter,
-                config, new TokenFilter(tokens))));
+        tokens.putAll(resolve(getTokens(connection, confService.getTokenMapping(),
+                filter, config, new TokenFilter(tokens))));
 
     }
 

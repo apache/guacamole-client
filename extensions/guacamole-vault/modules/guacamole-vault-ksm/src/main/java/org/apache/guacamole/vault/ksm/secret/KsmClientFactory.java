@@ -24,22 +24,22 @@ import javax.annotation.Nonnull;
 import com.keepersecurity.secretsManager.core.SecretsManagerOptions;
 
 /**
- * Factory for creating KsmCache instances.
+ * Factory for creating KsmClient instances.
  */
-public interface KsmCacheFactory {
+public interface KsmClientFactory {
 
     /**
-     * Returns a new instance of a KsmCache instance associated with
+     * Returns a new instance of a KsmClient instance associated with
      * the provided KSM configuration options.
      *
      * @param ksmConfigOptions
-     *     The KSM config options to use when constructing the KsmCache
+     *     The KSM config options to use when constructing the KsmClient
      *     object.
      *
      * @return
-     *     A new KsmCache instance associated with the provided KSM config
+     *     A new KsmClient instance associated with the provided KSM config
      *     options.
      */
-    KsmCache create(@Nonnull SecretsManagerOptions ksmConfigOptions);
+    KsmClient create(@Nonnull SecretsManagerOptions ksmConfigOptions);
 
 }

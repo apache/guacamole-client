@@ -22,31 +22,47 @@ package org.apache.guacamole.vault.ksm.secret;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.keepersecurity.secretsManager.core.KeeperRecord;
+import com.keepersecurity.secretsManager.core.SecretsManagerOptions;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
 
+import javax.annotation.Nonnull;
+
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.Connectable;
+import org.apache.guacamole.net.auth.Connection;
+import org.apache.guacamole.net.auth.ConnectionGroup;
+import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.TokenFilter;
+import org.apache.guacamole.vault.ksm.conf.KsmAttributeService;
 import org.apache.guacamole.vault.ksm.conf.KsmConfigurationService;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 import org.apache.guacamole.vault.secret.WindowsUsername;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service which retrieves secrets from Keeper Secrets Manager.
+ * The configuration used to connect to KSM can be set at a global
+ * level using guacamole.properties, or using a connection group
+ * attribute.
  */
 @Singleton
 public class KsmSecretService implements VaultSecretService {
 
     /**
-     * Client for retrieving records and secrets from Keeper Secrets Manager.
+     * Logger for this class.
      */
-    @Inject
-    private KsmClient ksm;
+    private static final Logger logger = LoggerFactory.getLogger(VaultSecretService.class);
 
     /**
      * Service for retrieving data from records.
@@ -59,6 +75,53 @@ public class KsmSecretService implements VaultSecretService {
      */
     @Inject
     private KsmConfigurationService confService;
+
+    /**
+     * Factory for creating KSM client instances.
+     */
+    @Inject
+    private KsmClientFactory ksmClientFactory;
+
+    /**
+     * A map of base-64 encoded JSON KSM config blobs to associated KSM client instances.
+     * The `null` entry in this Map is associated with the KSM configuration parsed
+     * from the guacamole.properties config file. A distinct KSM client will exist for
+     * every KSM config.
+     */
+    private final ConcurrentMap<String, KsmClient> ksmClientMap = new ConcurrentHashMap<>();
+
+    /**
+     * Create and return a KSM cache for the provided KSM config if not already
+     * present in the cache map, otherwise return the existing cache entry.
+     *
+     * @param ksmConfig
+     *     The base-64 encoded JSON KSM config blob associated with the cache entry.
+     *     If an associated entry does not already exist, it will be created using
+     *     this configuration.
+     *
+     * @return
+     *     A KSM cache for the provided KSM config if not already present in the
+     *     cache map, otherwise the existing cache entry.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while creating the KSM cache.
+     */
+    private KsmClient getClient(@Nonnull String ksmConfig)
+            throws GuacamoleException {
+
+        // If a cache already exists for the provided config, use it
+        KsmClient ksmClient = ksmClientMap.get(ksmConfig);
+        if (ksmClient != null)
+            return ksmClient;
+
+        // Create and store a new KSM cache instance for the provided KSM config blob
+        SecretsManagerOptions options = confService.getSecretsManagerOptions(ksmConfig);
+        ksmClient = ksmClientFactory.create(options);
+        KsmClient prevClient = ksmClientMap.putIfAbsent(ksmConfig, ksmClient);
+
+        // If the cache was already set before this thread got there, use the existing one
+        return prevClient != null ? prevClient : ksmClient;
+    }
 
     @Override
     public String canonicalize(String nameComponent) {
@@ -75,8 +138,20 @@ public class KsmSecretService implements VaultSecretService {
     }
 
     @Override
+    public Future<String> getValue(UserContext userContext, Connectable connectable,
+            String name) throws GuacamoleException {
+
+        // Attempt to find a KSM config for this connection or group
+        String ksmConfig = getConnectionGroupKsmConfig(userContext, connectable);
+
+        return getClient(ksmConfig).getSecret(name);
+    }
+
+    @Override
     public Future<String> getValue(String name) throws GuacamoleException {
-        return ksm.getSecret(name);
+
+        // Use the default KSM configuration from guacamole.properties
+        return getClient(confService.getKsmConfig()).getSecret(name);
     }
 
     /**
@@ -153,12 +228,81 @@ public class KsmSecretService implements VaultSecretService {
 
     }
 
+    /**
+     * Search for a KSM configuration attribute, recursing up the connection group tree
+     * until a connection group with the appropriate attribute is found. If the KSM config
+     * is found, it will be returned. If not, the default value from the config file will
+     * be returned.
+     *
+     * @param userContext
+     *     The userContext associated with the connection or connection group.
+     *
+     * @param connectable
+     *     A connection or connection group for which the tokens are being replaced.
+     *
+     * @return
+     *     The value of the KSM configuration attribute if found in the tree, the default
+     *     KSM config blob defined in guacamole.properties otherwise.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while attempting to retrieve the KSM config attribute, or if
+     *     no KSM config is found in the connection group tree, and the value is also not
+     *     defined in the config file.
+     */
+    private String getConnectionGroupKsmConfig(
+            UserContext userContext, Connectable connectable) throws GuacamoleException {
+
+        // Check to make sure it's a usable type before proceeding
+        if (
+                !(connectable instanceof Connection)
+                && !(connectable instanceof ConnectionGroup)) {
+            logger.warn(
+                    "Unsupported Connectable type: {}; skipping KSM config lookup.",
+                    connectable.getClass());
+
+            // Use the default value if searching is impossible
+            return confService.getKsmConfig();
+        }
+
+        // For connections, start searching the parent group for the KSM config
+        // For connection groups, start searching the group directly
+        String parentIdentifier = (connectable instanceof Connection)
+                ? ((Connection) connectable).getParentIdentifier()
+                : ((ConnectionGroup) connectable).getIdentifier();
+
+        Directory<ConnectionGroup> connectionGroupDirectory = userContext.getConnectionGroupDirectory();
+        while (true) {
+
+            // Fetch the parent group, if one exists
+            ConnectionGroup group = connectionGroupDirectory.get(parentIdentifier);
+            if (group == null)
+                break;
+
+            // If the current connection group has the KSM configuration attribute, return immediately
+            String ksmConfig = group.getAttributes().get(KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE);
+            if (ksmConfig != null)
+                return ksmConfig;
+
+            // Otherwise, keep searching up the tree until an appropriate configuration is found
+            parentIdentifier = group.getParentIdentifier();
+        }
+
+        // If no KSM configuration was ever found, use the default value
+        return confService.getKsmConfig();
+    }
+
     @Override
-    public Map<String, Future<String>> getTokens(GuacamoleConfiguration config,
-            TokenFilter filter) throws GuacamoleException {
+    public Map<String, Future<String>> getTokens(UserContext userContext, Connectable connectable,
+            GuacamoleConfiguration config, TokenFilter filter) throws GuacamoleException {
 
         Map<String, Future<String>> tokens = new HashMap<>();
         Map<String, String> parameters = config.getParameters();
+
+        // Attempt to find a KSM config for this connection or group
+        String ksmConfig = getConnectionGroupKsmConfig(userContext, connectable);
+
+        // Get a client instance for this KSM config
+        KsmClient ksm = getClient(ksmConfig);
 
         // Retrieve and define server-specific tokens, if any
         String hostname = parameters.get("hostname");
